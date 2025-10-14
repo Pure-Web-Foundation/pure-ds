@@ -1,0 +1,105 @@
+{
+  "colors": {
+    "primary": "#2d9dc9",
+    "secondary": "#a99b95",
+    "accent": "#e54271",
+    "background": "#e7e6de",
+    "success": null,
+    "warning": null,
+    "danger": null,
+    "info": null,
+    "gradientStops": 3,
+    "elevationOpacity": 0.05
+  },
+  "typography": {
+    "fontFamilySans": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+    "fontFamilyMono": "ui-monospace, \"Cascadia Code\", \"Source Code Pro\", Menlo, Consolas, monospace",
+    "baseFontSize": 16,
+    "fontWeightLight": "light",
+    "fontWeightNormal": "normal",
+    "fontWeightMedium": "medium",
+    "fontWeightSemibold": "semibold",
+    "fontWeightBold": "bold",
+    "lineHeightTight": "tight",
+    "lineHeightNormal": "normal",
+    "lineHeightRelaxed": "relaxed",
+    "letterSpacingTight": -0.025,
+    "letterSpacingNormal": 0,
+    "letterSpacingWide": 0.025
+  },
+  "spatialRhythm": {
+    "baseUnit": 16,
+    "scaleRatio": 1.25,
+    "maxSpacingSteps": 32,
+    "containerMaxWidth": 1200,
+    "containerPadding": 1,
+    "inputPadding": 0.75,
+    "buttonPadding": 1,
+    "sectionSpacing": 2
+  },
+  "layers": {
+    "shadowDepth": "medium",
+    "blurLight": 4,
+    "blurMedium": 8,
+    "blurHeavy": 16,
+    "zIndexBase": 0,
+    "zIndexDropdown": 1000,
+    "zIndexSticky": 1020,
+    "zIndexFixed": 1030,
+    "zIndexModal": 1040,
+    "zIndexPopover": 1050,
+    "zIndexTooltip": 1060,
+    "zIndexNotification": 1070
+  },
+  "shape": {
+    "radiusSize": "large",
+    "borderWidth": "thin",
+    "customRadius": null
+  },
+  "behavior": {
+    "transitionSpeed": "normal",
+    "animationEasing": "ease-out",
+    "customTransitionSpeed": null,
+    "customEasing": null,
+    "focusRingWidth": 3,
+    "focusRingOpacity": 0.3,
+    "hoverOpacity": 0.8
+  },
+  "layout": {
+    "gridColumns": 12,
+    "gridGutter": 1,
+    "breakpoints": {
+      "sm": 640,
+      "md": 768,
+      "lg": 1024,
+      "xl": 1280
+    },
+    "densityCompact": 0.8,
+    "densityNormal": 1,
+    "densityComfortable": 1.2,
+    "buttonMinHeight": 44,
+    "inputMinHeight": 40
+  },
+  "advanced": {
+    "linkStyle": "inline",
+    "colorDerivation": "hsl"
+  },
+  "a11y": {
+    "minTouchTarget": 44,
+    "prefersReducedMotion": true,
+    "focusStyle": "ring"
+  },
+  "components": {
+    "tables": true,
+    "alerts": true,
+    "badges": true,
+    "modals": true,
+    "forms": true
+  },
+  "debug": false,
+  "output": {
+    "file": "public/assets/css/auto-designer.css",
+    "minify": false,
+    "sourceMap": false
+  }
+}
