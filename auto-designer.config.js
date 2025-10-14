@@ -175,6 +175,159 @@ export const autoDesignerConfig = {
     forms: true,
   },
   
+  // Icon System Configuration
+  icons: {
+    // Icon set to use
+    set: 'phosphor',           // 'phosphor', 'lucide', 'heroicons', 'tabler', 'custom'
+    
+    // Phosphor-specific weight setting
+    // Options: 'thin', 'light', 'regular', 'bold', 'fill', 'duotone'
+    weight: 'regular',
+    
+    // Default icon size in pixels
+    defaultSize: 24,
+    
+    // Size scale for icon utilities
+    sizes: {
+      xs: 16,
+      sm: 20,
+      md: 24,
+      lg: 32,
+      xl: 48,
+      '2xl': 64,
+    },
+    
+    // Icons to include in sprite (organized by category)
+    // Full list: https://phosphoricons.com
+    include: {
+      // Navigation & UI Core
+      navigation: [
+        'arrow-left',
+        'arrow-right', 
+        'arrow-up',
+        'arrow-down',
+        'caret-left',
+        'caret-right',
+        'caret-down',
+        'caret-up',
+        'x',
+        'list',
+        'dots-three-vertical',
+        'dots-three',
+        'house',
+        'gear',
+        'magnifying-glass',
+        'funnel',
+      ],
+      
+      // Actions & Controls
+      actions: [
+        'plus',
+        'minus',
+        'check',
+        'trash',
+        'pencil',
+        'floppy-disk',
+        'copy',
+        'download',
+        'upload',
+        'share',
+        'link',
+        'eye',
+        'eye-slash',
+        'heart',
+        'star',
+        'bookmark',
+      ],
+      
+      // Communication
+      communication: [
+        'envelope',
+        'bell',
+        'chat-circle',
+        'phone',
+        'paper-plane-tilt',
+        'user',
+        'users',
+        'at',
+      ],
+      
+      // Content & Media
+      content: [
+        'image',
+        'file',
+        'file-text',
+        'folder',
+        'folder-open',
+        'camera',
+        'video-camera',
+        'play',
+        'pause',
+        'microphone',
+      ],
+      
+      // Alerts & Status
+      status: [
+        'info',
+        'warning',
+        'check-circle',
+        'x-circle',
+        'question',
+        'shield-check',
+        'shield-warning',
+        'lock',
+        'lock-open',
+      ],
+      
+      // Calendar & Time
+      time: [
+        'calendar',
+        'clock',
+        'timer',
+        'hourglass',
+      ],
+      
+      // Business & Shopping
+      commerce: [
+        'shopping-cart',
+        'credit-card',
+        'currency-dollar',
+        'tag',
+        'receipt',
+        'storefront',
+      ],
+      
+      // Layout & Formatting
+      formatting: [
+        'text-align-left',
+        'text-align-center',
+        'text-align-right',
+        'text-b',
+        'text-italic',
+        'text-underline',
+        'list-bullets',
+        'list-numbers',
+      ],
+      
+      // System & Settings
+      system: [
+        'cloud',
+        'cloud-arrow-up',
+        'cloud-arrow-down',
+        'desktop',
+        'device-mobile',
+        'globe',
+        'wifi-high',
+        'battery-charging',
+        'sun',
+        'moon',
+      ],
+    },
+    
+    // Output path for generated sprite
+    spritePath: 'public/assets/img/icons.svg',
+  },
+  
   // Debug options
   debug: false,              // Enable console logging
   

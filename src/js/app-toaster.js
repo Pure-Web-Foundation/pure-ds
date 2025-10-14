@@ -1,3 +1,5 @@
+import './svg-icon.js';
+
 export class AppToaster extends HTMLElement {
   constructor() {
     super();
@@ -88,9 +90,10 @@ export class AppToaster extends HTMLElement {
     toast.setAttribute('role', 'status');
     toast.setAttribute('aria-live', 'polite');
     
-    const icon = document.createElement('div');
+    const icon = document.createElement('svg-icon');
     icon.className = 'alert-icon';
-    icon.textContent = this.getToastIcon(type);
+    icon.setAttribute('icon', this.getToastIcon(type));
+    icon.setAttribute('size', 'lg');
     
     const content = document.createElement('div');
     
@@ -172,10 +175,10 @@ export class AppToaster extends HTMLElement {
 
   getToastIcon(type) {
     const icons = {
-      information: 'ℹ',
-      success: '✓',
-      warning: '⚠',
-      error: '✕'
+      information: 'info',
+      success: 'check-circle',
+      warning: 'warning',
+      error: 'x-circle'
     };
     return icons[type] || icons.information;
   }

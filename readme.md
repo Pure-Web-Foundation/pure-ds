@@ -1,20 +1,37 @@
 # Pure Design System
 
-A JS-config-first design system that generates world-class PWA styles from minimal configuration.
+A JavaScript-config-first design system that generates complete, production-ready CSS from minimal configuration. Generate a world-class design system with just 5 base variables.
 
-## Features
+## Philosophy
 
-🎨 **AutoDesigner** - Complete design system from 5 base variables
-📱 **PWA-Ready** - Mobile-first, responsive, accessible  
-🌓 **Smart Dark Mode** - Automatic color inversion with image dimming
-♿ **Accessibility First** - WCAG compliant, reduced motion support
-🎯 **Form Perfection** - Beautiful controls with all interactive states
-📐 **Consistent Spacing** - Mathematical scale from single base unit
-🎭 **Surface Nesting** - Proper contrast for layered interfaces
-🚀 **PureApp Component** - Main app orchestrator with built-in features
-📝 **AutoForm System** - Generate forms from readable YAML-like syntax
-💬 **Smart Dialogs** - Sophisticated `ask()` system with form integration
-🍞 **Toast Notifications** - Intelligent notifications with reading-time duration
+**Browser = Framework** • Pure web standards • No build dependencies • Progressive enhancement
+
+---
+
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [Core Concepts](#core-concepts)
+- [Configuration](#configuration)
+  - [Colors](#colors)
+  - [Typography](#typography)
+  - [Spatial Rhythm](#spatial-rhythm)
+  - [Shape & Borders](#shape--borders)
+  - [Layers & Shadows](#layers--shadows)
+  - [Behavior & Motion](#behavior--motion)
+  - [Layout](#layout)
+  - [Icons](#icons)
+  - [Accessibility](#accessibility)
+- [Web Components](#web-components)
+  - [PureApp](#pure-app)
+  - [AutoForm](#auto-form)
+  - [SvgIcon](#svg-icon)
+  - [AppToaster](#app-toaster)
+- [Features](#features)
+- [API Reference](#api-reference)
+- [Examples](#examples)
+
+---
 
 ## Quick Start
 
@@ -22,18 +39,535 @@ A JS-config-first design system that generates world-class PWA styles from minim
 import { AutoDesigner } from './src/js/auto-designer.js';
 
 const designer = new AutoDesigner({
-  mainColor: '#2563eb',     // Your brand color
-  accentColor: '#f59e0b',   // Accent highlights
-  gap: 16,                  // Base spacing (px)
-  radius: 8                 // Border roundness (px)
+  colors: {
+    primary: '#2563eb',     // Your brand color
+    accent: '#f59e0b',      // Accent highlights
+  },
+  spatialRhythm: {
+    baseUnit: 16,           // Base spacing (px)
+  },
+  shape: {
+    radiusSize: 'medium',   // Border roundness
+  }
 });
 ```
 
-This generates 500+ CSS variables and comprehensive styles for forms, typography, layout, and components.
+This generates **500+ CSS variables** and comprehensive styles for:
+- ✅ Complete color system with semantic scales
+- ✅ Typography with responsive sizes
+- ✅ Spacing and layout utilities
+- ✅ Form controls with all interactive states
+- ✅ Components (buttons, alerts, badges, modals)
+- ✅ Dark mode support
+- ✅ Accessibility features
+- ✅ Icon system integration
 
-## PureApp Component
+---
 
-The `<pure-app>` component is the main orchestrator that provides integrated application features:
+## Core Concepts
+
+### 🎨 AutoDesigner
+
+The heart of the system. Transforms minimal configuration into a complete design language:
+
+```javascript
+const designer = new AutoDesigner(config);
+designer.injectStyles(); // Injects into document
+const css = designer.css; // Or get as string
+```
+
+### 📐 Mathematical Scales
+
+Everything derives from base values using mathematical ratios:
+- **Colors**: 9-step scale (50-900) generated from single color
+- **Spacing**: Exponential scale from `baseUnit` × `scaleRatio`
+- **Typography**: Modular scale for font sizes
+- **Semantic tokens**: Meaningful names mapped to scales
+
+### 🌓 Smart Dark Mode
+
+Automatic color inversion with intelligent adjustments:
+- Image dimming for dark backgrounds
+- Preserves color relationships
+- Maintains WCAG contrast ratios
+- Optional manual overrides
+
+---
+
+## Configuration
+
+### Colors
+
+Generate complete color palettes from base colors:
+
+```javascript
+colors: {
+  // Core brand colors (required)
+  primary: '#2563eb',      // Primary brand color
+  secondary: '#64748b',    // Secondary/neutral color
+  accent: '#f59e0b',       // Accent/highlight color
+  background: '#ffffff',   // Base background
+  
+  // Semantic colors (auto-generated if omitted)
+  success: null,           // Auto: green variant of primary
+  warning: null,           // Auto: uses accent
+  danger: null,            // Auto: red variant of primary
+  info: null,              // Auto: uses primary
+  
+  // Dark mode (auto-generated if omitted)
+  darkMode: {
+    background: '#1a1a1a', // Dark background
+    secondary: '#8b9199',  // Override specific colors
+    // Other colors auto-adjust from light mode
+  },
+  
+  // Advanced
+  gradientStops: 3,        // Gradient color steps
+  elevationOpacity: 0.05,  // Shadow overlay opacity
+}
+```
+
+**Generated tokens:**
+```css
+--color-primary-50 through --color-primary-900
+--color-secondary-50 through --color-secondary-900
+--color-success-600, --color-danger-600, etc.
+--color-text-primary, --color-text-secondary, --color-text-muted
+--color-surface-base, --color-surface-raised, --color-surface-overlay
+--color-border, --color-border-subtle, --color-focus
+```
+
+### Typography
+
+Complete type system with modular scale:
+
+```javascript
+typography: {
+  // Font stacks
+  fontFamilySans: 'system-ui, -apple-system, sans-serif',
+  fontFamilyMono: 'ui-monospace, Consolas, monospace',
+  
+  // Base size (default: 16px)
+  baseFontSize: 16,
+  
+  // Font weights (enum or number)
+  fontWeightLight: 'light',      // or 300
+  fontWeightNormal: 'normal',    // or 400
+  fontWeightMedium: 'medium',    // or 500
+  fontWeightSemibold: 'semibold',// or 600
+  fontWeightBold: 'bold',        // or 700
+  
+  // Line heights (enum or number)
+  lineHeightTight: 'tight',      // or 1.25
+  lineHeightNormal: 'normal',    // or 1.5
+  lineHeightRelaxed: 'relaxed',  // or 1.75
+  
+  // Letter spacing
+  letterSpacingTight: -0.025,
+  letterSpacingNormal: 0,
+  letterSpacingWide: 0.025,
+}
+```
+
+**Generated tokens:**
+```css
+--font-fontFamily-sans, --font-fontFamily-mono
+--font-fontSize-xs through --font-fontSize-4xl
+--font-fontWeight-light through --font-fontWeight-bold
+--font-lineHeight-tight, --font-lineHeight-normal, --font-lineHeight-relaxed
+```
+
+### Spatial Rhythm
+
+Mathematical spacing system:
+
+```javascript
+spatialRhythm: {
+  baseUnit: 16,            // All spacing derives from this
+  scaleRatio: 1.25,        // Growth ratio (1.25 = major third)
+  maxSpacingSteps: 32,     // Maximum spacing value
+  
+  // Container
+  containerMaxWidth: 1200,
+  containerPadding: 1.0,   // Multiplier of baseUnit
+  
+  // Component spacing
+  inputPadding: 0.75,
+  buttonPadding: 1.0,
+  sectionSpacing: 2.0,
+}
+```
+
+**Generated scale:**
+```css
+--spacing-0: 0
+--spacing-1: 4px     /* baseUnit × 0.25 */
+--spacing-2: 8px     /* baseUnit × 0.5 */
+--spacing-3: 12px    /* baseUnit × 0.75 */
+--spacing-4: 16px    /* baseUnit × 1 */
+--spacing-5: 20px    /* baseUnit × 1.25 */
+--spacing-6: 24px    /* baseUnit × 1.5 */
+/* ... continues to 32 */
+```
+
+### Shape & Borders
+
+Control roundness and borders:
+
+```javascript
+shape: {
+  // Corner radius (enum or custom)
+  radiusSize: 'medium',    // none, small, medium, large, full
+  customRadius: null,      // Or specify px value: 8
+  
+  // Border width (enum)
+  borderWidth: 'thin',     // hairline, thin, medium, thick
+}
+```
+
+**Enum values:**
+```javascript
+RadiusSizes: {
+  none: 0,
+  small: 4,
+  medium: 8,
+  large: 16,
+  full: 9999,
+}
+
+BorderWidths: {
+  hairline: 0.5,
+  thin: 1,
+  medium: 2,
+  thick: 3,
+}
+```
+
+### Layers & Shadows
+
+Depth and z-index hierarchy:
+
+```javascript
+layers: {
+  // Shadow depth
+  shadowDepth: 'medium',   // none, light, medium, deep, extreme
+  
+  // Blur levels (px)
+  blurLight: 4,
+  blurMedium: 8,
+  blurHeavy: 16,
+  
+  // Z-index scale
+  zIndexBase: 0,
+  zIndexDropdown: 1000,
+  zIndexSticky: 1020,
+  zIndexFixed: 1030,
+  zIndexModal: 1040,
+  zIndexPopover: 1050,
+  zIndexTooltip: 1060,
+  zIndexNotification: 1070,
+}
+```
+
+### Behavior & Motion
+
+Transitions and animations:
+
+```javascript
+behavior: {
+  // Transition speed (enum or custom ms)
+  transitionSpeed: 'normal',  // fast (150ms), normal (250ms), slow (350ms)
+  customTransitionSpeed: null,
+  
+  // Easing function
+  animationEasing: 'ease-out',  // linear, ease, ease-in, ease-out, ease-in-out, bounce
+  customEasing: null,            // Or cubic-bezier(...)
+  
+  // Focus ring
+  focusRingWidth: 3,
+  focusRingOpacity: 0.3,
+  
+  // Hover effects
+  hoverOpacity: 0.8,
+}
+```
+
+### Layout
+
+Grid system and breakpoints:
+
+```javascript
+layout: {
+  // Grid
+  gridColumns: 12,
+  gridGutter: 1.0,         // Multiplier of baseUnit
+  
+  // Responsive breakpoints (px)
+  breakpoints: {
+    sm: 640,   // Mobile
+    md: 768,   // Tablet
+    lg: 1024,  // Desktop
+    xl: 1280,  // Wide
+  },
+  
+  // Density variants
+  densityCompact: 0.8,
+  densityNormal: 1.0,
+  densityComfortable: 1.2,
+  
+  // Touch targets
+  buttonMinHeight: 44,     // iOS/Android standard
+  inputMinHeight: 40,
+}
+```
+
+### Icons
+
+**Professional icon system with Phosphor Icons** - 9,072+ icons, 6 weights, world-class design.
+
+#### Configuration
+
+```javascript
+icons: {
+  set: 'phosphor',         // phosphor, lucide, heroicons, tabler, custom
+  weight: 'regular',       // For Phosphor: thin, light, regular, bold, fill, duotone
+  defaultSize: 24,
+  
+  // Size scale
+  sizes: {
+    xs: 16,
+    sm: 20,
+    md: 24,
+    lg: 32,
+    xl: 48,
+    '2xl': 64,
+  },
+  
+  // Icons organized by category (87 icons included)
+  include: {
+    navigation: ['arrow-left', 'arrow-right', 'arrow-up', 'arrow-down', 'caret-left', 
+                 'caret-right', 'caret-up', 'caret-down', 'house', 'magnifying-glass',
+                 'list', 'dots-three-vertical', 'dots-three', 'x', 'check', 'gear'],
+    actions: ['plus', 'minus', 'check', 'x', 'trash', 'pencil', 'copy', 'download',
+              'upload', 'share', 'heart', 'star', 'bookmark', 'eye', 'eye-slash', 'lock'],
+    communication: ['envelope', 'bell', 'chat-circle', 'phone', 'video-camera', 
+                    'user', 'users', 'at'],
+    content: ['image', 'file', 'file-text', 'folder', 'link', 'paperclip', 
+              'play', 'pause', 'microphone', 'speaker-high'],
+    status: ['info', 'warning', 'check-circle', 'x-circle', 'question', 
+             'exclamation', 'shield-check', 'clock', 'spinner'],
+    time: ['calendar', 'clock', 'timer', 'hourglass'],
+    commerce: ['shopping-cart', 'credit-card', 'currency-dollar', 'tag', 'gift', 'package'],
+    formatting: ['text-align-left', 'text-align-center', 'text-align-right', 
+                 'text-b', 'text-italic', 'text-underline', 'list-bullets', 'list-numbers'],
+    system: ['cloud', 'desktop', 'device-mobile', 'wifi', 'bluetooth', 
+             'sun', 'moon', 'cpu', 'hard-drive', 'globe'],
+  },
+  
+  spritePath: 'public/assets/img/icons.svg',
+}
+```
+
+#### Build Process
+
+**Generate icon sprite:**
+```bash
+npm run build-icons
+```
+
+This script:
+1. Reads configuration from `auto-designer.config.js`
+2. Downloads icons from Phosphor Icons CDN (v2.1.1)
+3. Converts SVGs to optimized `<symbol>` elements
+4. Generates sprite sheet at `public/assets/img/icons.svg`
+5. Reports build statistics
+
+#### Basic Usage
+
+```html
+<!-- Simple icon -->
+<svg-icon icon="house"></svg-icon>
+
+<!-- With size -->
+<svg-icon icon="gear" size="lg"></svg-icon>
+<svg-icon icon="heart" size="32"></svg-icon>
+
+<!-- With color -->
+<svg-icon icon="star" color="gold"></svg-icon>
+<svg-icon icon="check" class="icon-success"></svg-icon>
+
+<!-- With accessibility label -->
+<svg-icon icon="menu" label="Open navigation menu"></svg-icon>
+```
+
+#### Size Variants
+
+Use named sizes or pixel values:
+
+```html
+<svg-icon icon="home" size="xs"></svg-icon>  <!-- 16px -->
+<svg-icon icon="home" size="sm"></svg-icon>  <!-- 20px -->
+<svg-icon icon="home" size="md"></svg-icon>  <!-- 24px (default) -->
+<svg-icon icon="home" size="lg"></svg-icon>  <!-- 32px -->
+<svg-icon icon="home" size="xl"></svg-icon>  <!-- 48px -->
+<svg-icon icon="home" size="2xl"></svg-icon> <!-- 64px -->
+<svg-icon icon="home" size="40"></svg-icon>  <!-- Custom 40px -->
+```
+
+Or use utility classes:
+
+```html
+<svg-icon icon="gear" class="icon-xs"></svg-icon>
+<svg-icon icon="gear" class="icon-sm"></svg-icon>
+<svg-icon icon="gear" class="icon-lg"></svg-icon>
+```
+
+#### Color Utilities
+
+Icons inherit `currentColor` by default:
+
+```html
+<!-- Inherits text color -->
+<div style="color: blue;">
+  <svg-icon icon="heart"></svg-icon>
+</div>
+
+<!-- Semantic colors -->
+<svg-icon icon="check-circle" class="icon-success"></svg-icon>
+<svg-icon icon="info" class="icon-primary"></svg-icon>
+<svg-icon icon="warning" class="icon-warning"></svg-icon>
+<svg-icon icon="x-circle" class="icon-danger"></svg-icon>
+
+<!-- Custom color -->
+<svg-icon icon="star" color="#fbbf24"></svg-icon>
+```
+
+#### Icon + Text Patterns
+
+```html
+<!-- Icon before text -->
+<button class="icon-text">
+  <svg-icon icon="plus"></svg-icon>
+  <span>Add Item</span>
+</button>
+
+<!-- Icon after text -->
+<button class="icon-text-end">
+  <span>Next</span>
+  <svg-icon icon="arrow-right"></svg-icon>
+</button>
+
+<!-- Icon-only button -->
+<button class="icon-only">
+  <svg-icon icon="x" label="Close"></svg-icon>
+</button>
+```
+
+#### Icons in Inputs
+
+```html
+<!-- Icon at start -->
+<div class="input-icon">
+  <svg-icon icon="magnifying-glass"></svg-icon>
+  <input type="search" placeholder="Search...">
+</div>
+
+<!-- Icon at end -->
+<div class="input-icon-end">
+  <input type="email" placeholder="Email">
+  <svg-icon icon="envelope"></svg-icon>
+</div>
+```
+
+#### Generated CSS Tokens
+
+AutoDesigner generates these CSS variables:
+
+```css
+/* Icon configuration */
+--icon-set: phosphor;
+--icon-weight: regular;
+--icon-size: 24px;
+--icon-sprite-path: /assets/img/icons.svg;
+
+/* Size scale */
+--icon-size-xs: 16px;
+--icon-size-sm: 20px;
+--icon-size-md: 24px;
+--icon-size-lg: 32px;
+--icon-size-xl: 48px;
+--icon-size-2xl: 64px;
+```
+
+#### Why Phosphor Icons?
+
+- **9,072+ icons** - Most comprehensive modern icon set
+- **6 weights** - thin, light, regular, bold, fill, duotone
+- **Consistent design** - Professional, Airbnb-quality aesthetic
+- **Active development** - Regular updates, maintained in 2025
+- **MIT licensed** - Free for commercial use
+- **Perfect for modern apps** - Clean, minimal, versatile
+
+#### Features
+
+✅ **Smart fallbacks** - Critical icons embedded in component  
+✅ **Flexible sizing** - Named sizes or pixel values  
+✅ **Color inheritance** - Uses `currentColor` by default  
+✅ **Accessibility** - Optional labels, proper ARIA attributes  
+✅ **Performance** - Single sprite sheet, minimal footprint  
+✅ **Type safety** - Works seamlessly with TypeScript  
+✅ **Framework agnostic** - Pure web components
+
+#### Adding More Icons
+
+1. Add icon names to `auto-designer.config.js`:
+```javascript
+icons: {
+  include: {
+    navigation: [..., 'compass', 'map-pin'],
+    // Add to existing categories or create new ones
+  }
+}
+```
+
+2. Rebuild sprite:
+```bash
+npm run build-icons
+```
+
+3. Use immediately:
+```html
+<svg-icon icon="compass"></svg-icon>
+```
+
+#### Demo
+
+View comprehensive examples at `/public/icons-demo.html` including:
+- All 87 icons organized by category
+- Size and color variants
+- Icon + text combinations
+- Icon buttons and inputs
+- Live code examples
+
+### Accessibility
+
+WCAG compliance and motion preferences:
+
+```javascript
+a11y: {
+  minTouchTarget: 44,           // Minimum tap size (iOS/Android standard)
+  prefersReducedMotion: true,   // Respect user preferences
+  focusStyle: 'ring',           // ring, outline, border, glow
+}
+```
+
+---
+
+## Web Components
+
+### PureApp
+
+Main application orchestrator. Auto-injects toaster and provides integrated features:
 
 ```html
 <pure-app>
@@ -42,33 +576,399 @@ The `<pure-app>` component is the main orchestrator that provides integrated app
 </pure-app>
 ```
 
-### Toast Notifications
+**Features:**
+- Toast notifications
+- Dialog system with form integration
+- Design system configuration
+- Auto-injection of sub-components
 
-PureApp automatically provides a toast notification system with intelligent duration calculation:
+**API:**
 
 ```javascript
 const app = document.querySelector('pure-app');
 
-// Basic notifications
-app.toast('Information message');
-app.success('Operation completed successfully!');
-app.warning('Please review your input');
-app.error('Something went wrong');
+// Configure design system
+app.configure({
+  colors: { primary: '#2563eb' },
+  spatialRhythm: { baseUnit: 16 },
+});
 
-// With custom duration
-app.toast('Custom message', 'information', 5000);
+// Toast notifications
+app.toast('Message', 'information', duration);
+app.success('Success message');
+app.warning('Warning message');
+app.error('Error message');
+
+// Smart dialogs
+const confirmed = await app.ask('Delete this item?');
+
+const result = await app.ask('Choose action', {
+  content: '<p>Additional content</p>',
+  buttons: {
+    save: { name: 'Save' },
+    cancel: { name: 'Cancel', cancel: true }
+  }
+});
+
+// With forms
+const formData = await app.ask(`
+  <form>
+    <auto-form>
+      # User Input
+      name: text
+      email: email
+      age: range(18, 100) = 25
+    </auto-form>
+  </form>
+`, { useForm: true });
 ```
 
-Features:
-- **Smart Duration**: Automatically calculates reading time based on ~200 WPM
-- **Type-Specific Styling**: Different colors and icons for each notification type
-- **Mobile Responsive**: Adapts positioning and animations for mobile devices
-- **Progress Indicators**: Visual countdown showing remaining time
-- **Accessibility**: ARIA labels and keyboard navigation support
+### AutoForm
 
-### AutoForm System
+Intelligent form generator from readable YAML-like syntax:
 
-Generate intelligent forms from readable YAML-like syntax:
+```html
+<auto-form>
+  # Section Title
+  
+  fieldName: type = default
+  Helper text for the field
+  
+  email: email
+  We'll use this for notifications
+  
+  age: range(18, 100) = 25
+  Must be 18 or older
+  
+  country: select = US
+  Your country of residence
+</auto-form>
+```
+
+**Supported field types:**
+- `text`, `email`, `password`, `url`, `tel`
+- `number`, `range(min, max)`
+- `date`, `time`, `datetime-local`
+- `textarea`
+- `checkbox`, `select`
+- `color`
+
+**Features:**
+- Semantic HTML (`fieldset`, `legend`)
+- Automatic validation
+- Accessibility labels
+- Default values
+- Helper text
+
+**Programmatic usage:**
+```javascript
+import { AutoForm } from './src/js/auto-form.js';
+
+const form = document.querySelector('auto-form');
+const data = Object.fromEntries(new FormData(form.form));
+```
+
+### SvgIcon
+
+Display icons from sprite sheet with automatic fallbacks:
+
+```html
+<svg-icon icon="house"></svg-icon>
+<svg-icon icon="gear" size="32"></svg-icon>
+<svg-icon icon="heart" size="lg" color="red"></svg-icon>
+<svg-icon icon="menu" label="Open menu"></svg-icon>
+```
+
+**Attributes:**
+- `icon`: Icon name (from sprite)
+- `size`: Number (px) or named size (xs, sm, md, lg, xl, 2xl)
+- `color`: CSS color value (default: currentColor)
+- `label`: Aria label for accessibility
+
+**Features:**
+- Loads from SVG sprite sheet
+- Inline fallbacks for critical icons
+- Respects CSS color
+- Flex-friendly sizing
+- Accessibility support
+
+**Utility classes:**
+```html
+<div class="icon-text">
+  <svg-icon icon="envelope"></svg-icon>
+  <span>Email</span>
+</div>
+
+<button class="icon-only">
+  <svg-icon icon="gear"></svg-icon>
+</button>
+
+<div class="input-icon">
+  <svg-icon icon="magnifying-glass"></svg-icon>
+  <input type="search" placeholder="Search...">
+</div>
+```
+
+### AppToaster
+
+Toast notification system (auto-injected by PureApp):
+
+**Features:**
+- **Smart duration**: Calculates reading time (~200 WPM)
+- **Type-specific styling**: Information, success, warning, error
+- **Progress indicators**: Visual countdown
+- **Mobile responsive**: Adaptive positioning
+- **Accessibility**: ARIA labels, keyboard navigation
+- **Auto-cleanup**: Memory management
+
+**Direct usage (if not using PureApp):**
+```javascript
+import './src/js/app-toaster.js';
+
+const toaster = document.querySelector('app-toaster');
+toaster.toast('Message', 'success', 3000);
+```
+
+---
+
+## Features
+
+### 🎨 Complete Color System
+
+- **9-step scales** (50-900) for all brand colors
+- **Semantic colors** auto-derived with proper contrast
+- **Gray scale** from neutral color
+- **Surface levels** for nested components
+- **Border colors** with multiple opacities
+- **Text colors** with hierarchy (primary, secondary, muted)
+
+### 🌓 Smart Dark Mode
+
+```css
+@media (prefers-color-scheme: dark) {
+  /* Automatically generated dark mode variants */
+  --color-surface-base: hsl(...);
+  --color-text-primary: hsl(...);
+  /* Images auto-dim */
+  img { opacity: 0.8; }
+}
+```
+
+Manual override:
+```javascript
+colors: {
+  darkMode: {
+    background: '#1a1a1a',  // Custom dark background
+    secondary: '#8b9199',   // Override specific colors
+  }
+}
+```
+
+### 📱 PWA-Ready
+
+- **Mobile-first** responsive design
+- **Touch targets** meet iOS/Android standards (44px minimum)
+- **Semantic HTML** for better SEO and accessibility
+- **Progressive enhancement** works without JavaScript
+
+### ♿ Accessibility First
+
+- **WCAG AAA** contrast ratios
+- **Reduced motion** support (`prefers-reduced-motion`)
+- **Focus indicators** keyboard navigation
+- **ARIA labels** on all interactive elements
+- **Screen reader** friendly markup
+
+### 📐 Mathematical Spacing
+
+All spacing uses consistent scale:
+```css
+gap: var(--spacing-4);
+padding: var(--spacing-6);
+margin: var(--spacing-8);
+```
+
+### 🎯 Form Perfection
+
+Complete form control styling with:
+- All input types
+- Interactive states (hover, focus, disabled, invalid)
+- Custom checkboxes/radios
+- Select dropdowns
+- Textareas with auto-resize
+- Field validation states
+
+### 🎭 Surface Nesting
+
+Automatic contrast adjustment for layered UI:
+```css
+.surface-base     /* Level 0 - base background */
+.surface-raised   /* Level 1 - cards, panels */
+.surface-overlay  /* Level 2 - dropdowns, modals */
+```
+
+### 📊 Component Library
+
+Optional components (enable/disable in config):
+- **Tables** with sorting indicators
+- **Alerts** with semantic colors
+- **Badges** with variants
+- **Modals** with backdrop blur
+- **Toasts** with smart timing
+- **Buttons** with states
+
+---
+
+## API Reference
+
+### AutoDesigner Class
+
+```javascript
+import { AutoDesigner } from './src/js/auto-designer.js';
+
+const designer = new AutoDesigner(config);
+```
+
+**Methods:**
+
+```javascript
+// Inject styles into document
+designer.injectStyles();
+
+// Get generated CSS as string
+const css = designer.css;
+
+// Access generated tokens
+const tokens = designer.tokens;
+console.log(tokens.colors.primary);
+
+// Re-configure (regenerates CSS)
+designer.configure(newConfig);
+```
+
+**Static Enums:**
+
+```javascript
+AutoDesigner.RadiusSizes     // none, small, medium, large, full
+AutoDesigner.BorderWidths    // hairline, thin, medium, thick
+AutoDesigner.FontWeights     // light, normal, medium, semibold, bold
+AutoDesigner.LineHeights     // tight, normal, relaxed
+AutoDesigner.ShadowDepths    // none, light, medium, deep, extreme
+AutoDesigner.TransitionSpeeds // fast, normal, slow
+AutoDesigner.AnimationEasings // linear, ease, ease-in, ease-out, ...
+```
+
+### PureApp Component
+
+```javascript
+const app = document.querySelector('pure-app');
+
+// Configuration
+app.configure(config);
+app.designer;  // Access AutoDesigner instance
+app.definer;   // Access SchemaFormDefiner instance
+
+// Notifications
+app.toast(message, type, duration);
+app.success(message, duration);
+app.warning(message, duration);
+app.error(message, duration);
+
+// Dialogs
+await app.ask(message, options);
+```
+
+**Ask Options:**
+
+```javascript
+{
+  title: 'Dialog Title',
+  content: '<p>Additional HTML</p>',
+  useForm: false,  // Parse <auto-form> in content
+  buttons: {
+    ok: { name: 'OK', default: true },
+    cancel: { name: 'Cancel', cancel: true },
+    custom: { name: 'Custom Action' }
+  }
+}
+```
+
+### AutoForm Component
+
+```javascript
+const form = document.querySelector('auto-form');
+
+// Get generated form element
+const formElement = form.form;
+
+// Get form data
+const data = Object.fromEntries(new FormData(formElement));
+
+// Validation
+if (formElement.checkValidity()) {
+  // Form is valid
+}
+```
+
+### SvgIcon Component
+
+```javascript
+const icon = document.querySelector('svg-icon');
+
+// Attributes
+icon.setAttribute('icon', 'house');
+icon.setAttribute('size', '32');
+icon.setAttribute('color', '#ff0000');
+icon.setAttribute('label', 'Home');
+
+// CSS Custom Properties
+icon.style.setProperty('--icon-size', '48px');
+```
+
+---
+
+## Examples
+
+### Complete Configuration
+
+See `auto-designer.config.js` for full example with all options.
+
+### Basic Page Setup
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pure App</title>
+</head>
+<body>
+  <pure-app>
+    <div class="container">
+      <h1>Welcome</h1>
+      <button onclick="this.closest('pure-app').success('Hello!')">
+        <svg-icon icon="heart"></svg-icon>
+        Click Me
+      </button>
+    </div>
+  </pure-app>
+
+  <script type="module">
+    import './src/js/pure-app.js';
+    import './src/js/svg-icon.js';
+    
+    const app = document.querySelector('pure-app');
+    app.configure({
+      colors: { primary: '#2563eb' },
+      icons: { set: 'phosphor', weight: 'regular' }
+    });
+  </script>
+</body>
+</html>
+```
+
+### Form Example
 
 ```javascript
 const result = await app.ask(`
@@ -80,113 +980,189 @@ const result = await app.ask(`
       Full name for your account
       
       email: email
-      We'll use this for login and notifications
+      We'll use this for login
+      
+      password: password
+      Minimum 8 characters
       
       age: range(18, 100) = 25
-      Must be 18 or older to register
+      Must be 18 or older
       
       country: select = US
-      Your country of residence
+      Select your country
+      
+      terms: checkbox
+      I agree to the terms and conditions
     </auto-form>
   </form>
 `, {
   title: 'Sign Up',
   useForm: true,
   buttons: {
-    ok: { name: 'Create Account' },
+    submit: { name: 'Create Account', default: true },
     cancel: { name: 'Cancel', cancel: true }
   }
 });
 
 if (result) {
-  console.log('Form data:', Object.fromEntries(result));
+  const formData = Object.fromEntries(result);
+  console.log('Registration data:', formData);
 }
 ```
 
-### Smart Dialog System
+### Icon Usage
 
-The `ask()` method provides sophisticated dialog management:
+```html
+<!-- Basic icon -->
+<svg-icon icon="house"></svg-icon>
 
-```javascript
-// Simple confirmation
-const confirmed = await app.ask('Delete this item?');
+<!-- Sized icon -->
+<svg-icon icon="gear" size="lg"></svg-icon>
 
-// Rich content with custom buttons
-const choice = await app.ask('Choose an option', {
-  content: '<p>Select how you want to proceed:</p>',
-  buttons: {
-    save: { name: 'Save & Continue' },
-    draft: { name: 'Save as Draft' },
-    cancel: { name: 'Cancel', cancel: true, default: true }
-  }
-});
+<!-- Colored icon -->
+<svg-icon icon="heart" color="red"></svg-icon>
+
+<!-- Icon with text -->
+<div class="icon-text">
+  <svg-icon icon="envelope"></svg-icon>
+  <span>Email</span>
+</div>
+
+<!-- Icon button -->
+<button class="icon-only">
+  <svg-icon icon="x" label="Close"></svg-icon>
+</button>
+
+<!-- Input with icon -->
+<div class="input-icon">
+  <svg-icon icon="magnifying-glass"></svg-icon>
+  <input type="search" placeholder="Search...">
+</div>
 ```
 
-## Demo
+---
 
-- `design-system-demo.html` - Complete design system showcase with live controls
-- `toast-demo.html` - Interactive toast notification examples
-- `index.html` - AutoForm and dialog system demonstrations
+## Demos
 
-## Web Components
+- **`index.html`** - AutoForm and dialog system demonstrations
+- **`public/demo.html`** - Complete design system showcase with live controls
+- **`public/schema-form-actions-demo.html`** - Advanced form examples
 
-### `<pure-app>`
-Main application component that auto-injects the toaster and provides:
-- Toast notification methods (`success()`, `error()`, `warning()`, `information()`)
-- `ask()` dialog system with form integration
-- `configure()` method for design system settings
-- Access to `designer` and `definer` instances
-
-### `<app-toaster>`
-Standalone toast notification component (auto-injected by PureApp):
-- Intelligent duration calculation based on reading time (200 WPM)
-- Type-specific styling (information, success, warning, error)
-- Mobile-responsive positioning and animations
-- Progress indicators with smooth animations
-- Automatic cleanup and memory management
-
-### `<auto-form>`
-Intelligent form generator:
-- YAML-like syntax for readable form definitions
-- Semantic HTML with `fieldset` and `legend` elements
-- Automatic field type inference
-- Built-in validation and accessibility features
-
-## Documentation
-
-- [Complete Design System Guide](./DESIGN-SYSTEM.md) - Full documentation
-- [AutoDesigner API](./src/js/auto-designer.js) - Design system generation
-- [PureApp Component](./src/js/pure-app.js) - Main application orchestrator
-- [AutoForm System](./src/js/auto-form.js) - Intelligent form generation
-- [Toast Notifications](./src/js/app-toaster.js) - Notification component
-- [Dialog System](./src/js/ask.js) - Smart dialog management
+---
 
 ## Architecture
 
-- **Pure Web Components** - No framework dependencies, uses Lit for advanced components
-- **CSS Custom Properties** - Runtime design updates with full theme system
-- **Semantic Tokens** - Meaningful color and spacing scales  
-- **Mobile-First** - Responsive breakpoints and utilities
-- **Zero Config** - Works great with defaults, customizable as needed
-- **Modular Components** - Each component is standalone and reusable
-- **Auto-Injection** - PureApp automatically provides necessary sub-components
-- **Shadow DOM Isolation** - Components don't interfere with each other
-- **Progressive Enhancement** - Works without JavaScript, enhanced with it
+### Pure Web Standards
+
+- **No framework dependencies** - Vanilla JavaScript + Web Components
+- **ESM modules** - Native JavaScript modules
+- **CSS Custom Properties** - Runtime design updates
+- **Semantic HTML** - Accessible, SEO-friendly markup
+- **Progressive enhancement** - Works without JS, enhanced with it
+
+### Component Architecture
+
+- **Web Components** using standard Custom Elements API
+- **Lit** for advanced reactive components
+- **Shadow DOM** isolation where appropriate
+- **Auto-registration** components self-register
+- **Modular imports** use only what you need
+
+### Design Token System
+
+1. **Configuration** → AutoDesigner config object
+2. **Token Generation** → Semantic design tokens
+3. **CSS Variables** → Runtime-modifiable properties
+4. **Component Styles** → Tokens applied to components
+
+```
+Config → Tokens → CSS Variables → Components
+```
+
+---
+
+## Build & Development
+
+### Build Icon Sprite
+
+```bash
+node scripts/build-icons.mjs
+```
+
+Downloads icons from CDN and generates optimized SVG sprite.
+
+### Export Config to JSON
+
+```bash
+node scripts/export-config-json.mjs
+```
+
+### Verify Configurations
+
+```bash
+node scripts/verify-configs.mjs
+```
+
+### Dev Server
+
+```bash
+npm run dev
+```
+
+Runs esbuild in watch mode with live reload.
+
+---
+
+## Browser Support
+
+- **Modern browsers** with ES2020+ support
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+- No IE11 support
 
 ---
 
 ## Qogni Dev Onboarding
 
-### Topics
-- https://pureweb.dev/manifesto
-- Semantic HTML 
-- Pure CSS, variables
-- https://web.dev/baseline
-- ESM / ECMASCRIPT
-- Web Components
-- Vanilla JS - Browser = Framework
-- Lit
-- Bundling / ESBuild
-- PWA
+### Core Topics
+
+- [Pure Web Manifesto](https://pureweb.dev/manifesto)
+- **Semantic HTML** - Meaningful, accessible markup
+- **Pure CSS** - Custom properties, no preprocessors
+- [Baseline Web Standards](https://web.dev/baseline)
+- **ESM/ECMAScript** - Native JavaScript modules
+- **Web Components** - Custom elements, Shadow DOM
+- **Vanilla JS** - Browser as framework
+- **Lit** - Lightweight reactive components
+- **ESBuild** - Fast bundling
+- **PWA** - Progressive web apps
+
+### Philosophy
+
+> **"The browser is the framework"**
+
+Use web standards first. Add abstractions only when they provide clear value. Prefer composition over inheritance. Keep it simple, keep it fast, keep it accessible.
+
+---
+
+## License
+
+MIT
+
+---
+
+## Contributing
+
+Contributions welcome! Please ensure:
+- Code follows Pure Web principles
+- No framework dependencies
+- Accessibility tested
+- Works without JavaScript (progressive enhancement)
+- Documentation updated
+
+---
+
+**Made with ❤️ for the open web**
 
 

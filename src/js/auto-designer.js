@@ -122,6 +122,7 @@ export class AutoDesigner {
       layout: this.generateLayoutTokens(config.layout || {}),
       transitions: this.generateTransitionTokens(config.behavior || {}),
       zIndex: this.generateZIndexTokens(config.layers || {}),
+      icons: this.generateIconTokens(config.icons || {}),
     };
   }
 
@@ -533,6 +534,33 @@ export class AutoDesigner {
     };
   }
 
+  generateIconTokens(iconConfig) {
+    const {
+      set = 'phosphor',
+      weight = 'regular',
+      defaultSize = 24,
+      sizes = {
+        xs: 16,
+        sm: 20,
+        md: 24,
+        lg: 32,
+        xl: 48,
+        '2xl': 64,
+      },
+      spritePath = '/assets/img/icons.svg',
+    } = iconConfig;
+
+    return {
+      set,
+      weight,
+      defaultSize: `${defaultSize}px`,
+      sizes: Object.fromEntries(
+        Object.entries(sizes).map(([key, value]) => [key, `${value}px`])
+      ),
+      spritePath,
+    };
+  }
+
   generateCSS() {
     const {
       colors,
@@ -543,6 +571,7 @@ export class AutoDesigner {
       layout,
       transitions,
       zIndex,
+      icons,
     } = this.tokens;
 
     const { components = {} } = this.options;
@@ -577,6 +606,9 @@ export class AutoDesigner {
 
     // Z-index variables
     css += this.generateZIndexVariables(zIndex);
+
+    // Icon variables
+    css += this.generateIconVariables(icons);
 
     css += "}\n\n";
 
@@ -617,6 +649,9 @@ export class AutoDesigner {
     if (components.modals !== false) {
       css += this.generateModalStyles();
     }
+
+    // Icon utilities
+    css += this.generateIconStyles();
 
     // Layout utilities
     css += this.generateLayoutUtilities();
@@ -722,6 +757,21 @@ export class AutoDesigner {
     Object.entries(zIndex).forEach(([key, value]) => {
       css += `  --z-${key}: ${value};\n`;
     });
+    return css + "\n";
+  }
+
+  generateIconVariables(icons) {
+    let css = "  /* Icon System */\n";
+    css += `  --icon-set: ${icons.set};\n`;
+    css += `  --icon-weight: ${icons.weight};\n`;
+    css += `  --icon-size: ${icons.defaultSize};\n`;
+    css += `  --icon-sprite-path: ${icons.spritePath};\n`;
+    
+    // Icon size scale
+    Object.entries(icons.sizes).forEach(([key, value]) => {
+      css += `  --icon-size-${key}: ${value};\n`;
+    });
+    
     return css + "\n";
   }
 
@@ -912,6 +962,7 @@ li {
 code, pre {
   font-family: var(--font-fontFamily-mono);
   font-size: var(--font-fontSize-sm);
+  line-height: var(--font-lineHeight-relaxed);
 }
 
 code {
@@ -925,6 +976,12 @@ pre {
   padding: var(--spacing-4);
   border-radius: var(--radius-md);
   overflow-x: auto;
+}
+
+pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
 }
 
 /* Media Elements */
@@ -1332,7 +1389,6 @@ fieldset[role="radiogroup"] label,
 fieldset[role="radiogroup"] label:has(input[type="radio"]) {
   padding: calc(var(--spacing-1) * ${buttonPaddingValue * 0.5}) calc(var(--spacing-4) * 0.75);
   min-height: calc(${minButtonHeight}px * 0.85);
-}
   flex: 0 1 auto;
   white-space: nowrap;
 }
@@ -2111,13 +2167,13 @@ tbody tr:last-child td {
 
 .alert-icon {
   flex-shrink: 0;
-  width: var(--spacing-6);
-  height: var(--spacing-6);
-  margin-top: 2px;
-  font-size: var(--font-fontSize-xl);
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.alert-icon svg-icon {
+  flex-shrink: 0;
 }
 
 .alert-dismissible {
@@ -2490,6 +2546,161 @@ app-toaster aside.toast.alert-error .toast-progress {
     max-width: 90vw;
     max-height: 90vh;
   }
+}
+
+`;
+  }
+
+  generateIconStyles() {
+    return /*css*/`/* Icon System */
+
+svg-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* Icon size utilities */
+.icon-xs,
+svg-icon[size="xs"] {
+  width: var(--icon-size-xs);
+  height: var(--icon-size-xs);
+}
+
+.icon-sm,
+svg-icon[size="sm"] {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+.icon-md,
+svg-icon[size="md"] {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+.icon-lg,
+svg-icon[size="lg"] {
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
+}
+
+.icon-xl,
+svg-icon[size="xl"] {
+  width: var(--icon-size-xl);
+  height: var(--icon-size-xl);
+}
+
+.icon-2xl,
+svg-icon[size="2xl"] {
+  width: var(--icon-size-2xl);
+  height: var(--icon-size-2xl);
+}
+
+/* Icon color utilities */
+.icon-primary,
+svg-icon.primary {
+  color: var(--color-primary-600);
+}
+
+.icon-secondary,
+svg-icon.secondary {
+  color: var(--color-secondary-600);
+}
+
+.icon-accent,
+svg-icon.accent {
+  color: var(--color-accent-600);
+}
+
+.icon-success,
+svg-icon.success {
+  color: var(--color-success-600);
+}
+
+.icon-warning,
+svg-icon.warning {
+  color: var(--color-warning-600);
+}
+
+.icon-danger,
+svg-icon.danger {
+  color: var(--color-danger-600);
+}
+
+.icon-info,
+svg-icon.info {
+  color: var(--color-info-600);
+}
+
+.icon-muted,
+svg-icon.muted {
+  color: var(--color-text-muted);
+}
+
+.icon-subtle,
+svg-icon.subtle {
+  color: var(--color-text-subtle);
+}
+
+/* Icon with text combinations */
+.icon-text {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.icon-text-start {
+  flex-direction: row;
+}
+
+.icon-text-end {
+  flex-direction: row-reverse;
+}
+
+/* Button icon utilities */
+button svg-icon,
+a svg-icon {
+  flex-shrink: 0;
+}
+
+button.icon-only,
+a.icon-only {
+  padding: var(--spacing-2);
+  aspect-ratio: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Icon in inputs */
+.input-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon svg-icon {
+  position: absolute;
+  left: var(--spacing-3);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.input-icon input {
+  padding-left: calc(var(--icon-size) + var(--spacing-5));
+}
+
+.input-icon-end svg-icon {
+  left: auto;
+  right: var(--spacing-3);
+}
+
+.input-icon-end input {
+  padding-left: var(--spacing-3);
+  padding-right: calc(var(--icon-size) + var(--spacing-5));
 }
 
 `;

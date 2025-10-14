@@ -23,7 +23,8 @@
         <nav style="margin-top: var(--spacing-6); padding: var(--spacing-4); background: var(--color-surface-elevated); border-radius: var(--radius-md);">
           <strong style="display: block; margin-bottom: var(--spacing-3);">Quick Navigation:</strong>
           <ul style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-2); list-style: none; padding: 0; margin: 0;">
-            <li><a href="#colors">Colors</a></li>
+            <li><a href="#icons">Icons</a></li>
+            <li><a href="#colors">Color Scales</a></li>
             <li><a href="#typography">Typography</a></li>
             <li><a href="#forms">Forms</a></li>
             <li><a href="#buttons">Buttons</a></li>
@@ -41,76 +42,367 @@
       </header>
 
       <main class="grid gap-8">
+        <!-- Icon System Demo -->
+        <section class="card" id="icons">
+          <h2>
+            <svg-icon icon="star" size="lg" class="icon-accent"></svg-icon>
+            Icon System
+          </h2>
+          <p>87 Phosphor icons with flexible sizing, colors, and utilities. <a href="icons-demo.html">View full icon library →</a></p>
+          
+          <h3 style="margin-top: var(--spacing-6);">Size Variants</h3>
+          <div style="display: flex; align-items: center; gap: var(--spacing-4); padding: var(--spacing-4); background: var(--color-surface-raised); border-radius: var(--radius-md);">
+            <svg-icon icon="heart" size="xs"></svg-icon>
+            <svg-icon icon="heart" size="sm"></svg-icon>
+            <svg-icon icon="heart" size="md"></svg-icon>
+            <svg-icon icon="heart" size="lg"></svg-icon>
+            <svg-icon icon="heart" size="xl"></svg-icon>
+            <svg-icon icon="heart" size="2xl"></svg-icon>
+          </div>
+          
+          <h3 style="margin-top: var(--spacing-6);">Semantic Colors</h3>
+          <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-4); padding: var(--spacing-4); background: var(--color-surface-raised); border-radius: var(--radius-md);">
+            <svg-icon icon="check-circle" class="icon-primary" size="lg"></svg-icon>
+            <svg-icon icon="check-circle" class="icon-secondary" size="lg"></svg-icon>
+            <svg-icon icon="check-circle" class="icon-accent" size="lg"></svg-icon>
+            <svg-icon icon="check-circle" class="icon-success" size="lg"></svg-icon>
+            <svg-icon icon="warning" class="icon-warning" size="lg"></svg-icon>
+            <svg-icon icon="x-circle" class="icon-danger" size="lg"></svg-icon>
+            <svg-icon icon="info" class="icon-info" size="lg"></svg-icon>
+          </div>
+          
+          <h3 style="margin-top: var(--spacing-6);">Icon with Text</h3>
+          <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-4);">
+            <div class="icon-text">
+              <svg-icon icon="envelope"></svg-icon>
+              <span>Email</span>
+            </div>
+            <div class="icon-text">
+              <svg-icon icon="phone"></svg-icon>
+              <span>Phone</span>
+            </div>
+            <div class="icon-text">
+              <svg-icon icon="user"></svg-icon>
+              <span>Profile</span>
+            </div>
+            <div class="icon-text">
+              <svg-icon icon="calendar"></svg-icon>
+              <span>Schedule</span>
+            </div>
+          </div>
+          
+          <h3 style="margin-top: var(--spacing-6);">Icon Buttons</h3>
+          <div style="display: flex; gap: var(--spacing-3); flex-wrap: wrap;">
+            <button class="icon-only">
+              <svg-icon icon="gear" label="Settings"></svg-icon>
+            </button>
+            <button class="icon-only">
+              <svg-icon icon="bell" label="Notifications"></svg-icon>
+            </button>
+            <button class="icon-only">
+              <svg-icon icon="x" label="Close"></svg-icon>
+            </button>
+            <button>
+              <svg-icon icon="plus"></svg-icon>
+              Add Item
+            </button>
+            <button>
+              <svg-icon icon="download"></svg-icon>
+              Download
+            </button>
+          </div>
+          
+          <h3 style="margin-top: var(--spacing-6);">Input with Icons</h3>
+          <div style="max-width: 400px;">
+            <div class="input-icon" style="margin-bottom: var(--spacing-3);">
+              <svg-icon icon="magnifying-glass"></svg-icon>
+              <input type="search" placeholder="Search...">
+            </div>
+            <div class="input-icon input-icon-end">
+              <input type="text" placeholder="Username">
+              <svg-icon icon="user"></svg-icon>
+            </div>
+          </div>
+          
+          <h3 style="margin-top: var(--spacing-6);">Common Icons</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: var(--spacing-3); padding: var(--spacing-4); background: var(--color-surface-raised); border-radius: var(--radius-md);">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-1);">
+              <svg-icon icon="house" size="lg"></svg-icon>
+              <span style="font-size: var(--font-fontSize-xs); color: var(--color-text-muted);">house</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-1);">
+              <svg-icon icon="gear" size="lg"></svg-icon>
+              <span style="font-size: var(--font-fontSize-xs); color: var(--color-text-muted);">gear</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-1);">
+              <svg-icon icon="bell" size="lg"></svg-icon>
+              <span style="font-size: var(--font-fontSize-xs); color: var(--color-text-muted);">bell</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-1);">
+              <svg-icon icon="heart" size="lg"></svg-icon>
+              <span style="font-size: var(--font-fontSize-xs); color: var(--color-text-muted);">heart</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-1);">
+              <svg-icon icon="star" size="lg"></svg-icon>
+              <span style="font-size: var(--font-fontSize-xs); color: var(--color-text-muted);">star</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-1);">
+              <svg-icon icon="trash" size="lg"></svg-icon>
+              <span style="font-size: var(--font-fontSize-xs); color: var(--color-text-muted);">trash</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-1);">
+              <svg-icon icon="pencil" size="lg"></svg-icon>
+              <span style="font-size: var(--font-fontSize-xs); color: var(--color-text-muted);">pencil</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-1);">
+              <svg-icon icon="check" size="lg"></svg-icon>
+              <span style="font-size: var(--font-fontSize-xs); color: var(--color-text-muted);">check</span>
+            </div>
+          </div>
+        </section>
+
         <!-- Color Palette Demo -->
         <section class="card" id="colors">
-          <h2>Color Palette</h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            <div
-              class="p-4"
-              style="
-                background-color: var(--color-primary-500);
-                color: white;
-                border-radius: var(--radius-md);
-              "
-            >
-              Primary
+          <h2>
+            <svg-icon icon="sun" size="lg" class="icon-warning"></svg-icon>
+            Derived Color Scales
+          </h2>
+          <p>Complete 9-step color scales (50-900) automatically generated from your base colors. Each scale maintains proper contrast and color relationships.</p>
+          
+          <style>
+            .color-scale {
+              display: grid;
+              gap: var(--spacing-1);
+              margin-bottom: var(--spacing-6);
+            }
+            .color-scale-row {
+              display: grid;
+              grid-template-columns: 120px 1fr;
+              gap: var(--spacing-2);
+              align-items: center;
+            }
+            .color-scale-label {
+              font-family: var(--font-fontFamily-mono);
+              font-size: var(--font-fontSize-sm);
+              font-weight: var(--font-fontWeight-medium);
+            }
+            .color-scale-values {
+              display: grid;
+              grid-template-columns: repeat(9, 1fr);
+              gap: 2px;
+              border-radius: var(--radius-sm);
+              overflow: hidden;
+            }
+            .color-swatch {
+              height: 60px;
+              display: flex;
+              align-items: flex-end;
+              justify-content: center;
+              padding: var(--spacing-1);
+              font-size: var(--font-fontSize-xs);
+              font-family: var(--font-fontFamily-mono);
+              transition: transform var(--transition-fast);
+            }
+            .color-swatch:hover {
+              transform: translateY(-4px);
+              z-index: 10;
+              box-shadow: var(--shadow-md);
+            }
+            .semantic-colors {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+              gap: var(--spacing-4);
+              margin-top: var(--spacing-6);
+            }
+            .semantic-card {
+              padding: var(--spacing-4);
+              border-radius: var(--radius-md);
+              border: 2px solid;
+              display: flex;
+              align-items: center;
+              gap: var(--spacing-3);
+            }
+          </style>
+          
+          <h3>Primary Color Scale</h3>
+          <div class="color-scale">
+            <div class="color-scale-row">
+              <div class="color-scale-label">primary</div>
+              <div class="color-scale-values">
+                <div class="color-swatch" style="background: var(--color-primary-50); color: var(--color-primary-900);">50</div>
+                <div class="color-swatch" style="background: var(--color-primary-100); color: var(--color-primary-900);">100</div>
+                <div class="color-swatch" style="background: var(--color-primary-200); color: var(--color-primary-900);">200</div>
+                <div class="color-swatch" style="background: var(--color-primary-300); color: var(--color-primary-900);">300</div>
+                <div class="color-swatch" style="background: var(--color-primary-400); color: white;">400</div>
+                <div class="color-swatch" style="background: var(--color-primary-500); color: white;">500</div>
+                <div class="color-swatch" style="background: var(--color-primary-600); color: white;">600</div>
+                <div class="color-swatch" style="background: var(--color-primary-700); color: white;">700</div>
+                <div class="color-swatch" style="background: var(--color-primary-800); color: white;">800</div>
+              </div>
             </div>
-            <div
-              class="p-4"
-              style="
-                background-color: var(--color-secondary-500);
-                color: white;
-                border-radius: var(--radius-md);
-              "
-            >
-              Secondary
+          </div>
+          
+          <h3>Secondary (Neutral) Scale</h3>
+          <div class="color-scale">
+            <div class="color-scale-row">
+              <div class="color-scale-label">secondary</div>
+              <div class="color-scale-values">
+                <div class="color-swatch" style="background: var(--color-secondary-50); color: var(--color-secondary-900);">50</div>
+                <div class="color-swatch" style="background: var(--color-secondary-100); color: var(--color-secondary-900);">100</div>
+                <div class="color-swatch" style="background: var(--color-secondary-200); color: var(--color-secondary-900);">200</div>
+                <div class="color-swatch" style="background: var(--color-secondary-300); color: var(--color-secondary-900);">300</div>
+                <div class="color-swatch" style="background: var(--color-secondary-400); color: white;">400</div>
+                <div class="color-swatch" style="background: var(--color-secondary-500); color: white;">500</div>
+                <div class="color-swatch" style="background: var(--color-secondary-600); color: white;">600</div>
+                <div class="color-swatch" style="background: var(--color-secondary-700); color: white;">700</div>
+                <div class="color-swatch" style="background: var(--color-secondary-800); color: white;">800</div>
+              </div>
             </div>
-            <div
-              class="p-4"
-              style="
-                background-color: var(--color-accent-500);
-                color: white;
-                border-radius: var(--radius-md);
-              "
-            >
-              Accent
+          </div>
+          
+          <h3>Accent Color Scale</h3>
+          <div class="color-scale">
+            <div class="color-scale-row">
+              <div class="color-scale-label">accent</div>
+              <div class="color-scale-values">
+                <div class="color-swatch" style="background: var(--color-accent-50); color: var(--color-accent-900);">50</div>
+                <div class="color-swatch" style="background: var(--color-accent-100); color: var(--color-accent-900);">100</div>
+                <div class="color-swatch" style="background: var(--color-accent-200); color: var(--color-accent-900);">200</div>
+                <div class="color-swatch" style="background: var(--color-accent-300); color: var(--color-accent-900);">300</div>
+                <div class="color-swatch" style="background: var(--color-accent-400); color: white;">400</div>
+                <div class="color-swatch" style="background: var(--color-accent-500); color: white;">500</div>
+                <div class="color-swatch" style="background: var(--color-accent-600); color: white;">600</div>
+                <div class="color-swatch" style="background: var(--color-accent-700); color: white;">700</div>
+                <div class="color-swatch" style="background: var(--color-accent-800); color: white;">800</div>
+              </div>
             </div>
-            <div
-              class="p-4"
-              style="
-                background-color: var(--color-success-500);
-                color: white;
-                border-radius: var(--radius-md);
-              "
-            >
-              Success
+          </div>
+          
+          <h3 style="margin-top: var(--spacing-8);">Semantic Color Scales (Auto-Derived)</h3>
+          <p style="color: var(--color-text-muted); margin-bottom: var(--spacing-4);">These colors are automatically derived from your primary color with intelligent hue shifting for semantic meaning.</p>
+          
+          <div class="color-scale">
+            <div class="color-scale-row">
+              <div class="color-scale-label">success</div>
+              <div class="color-scale-values">
+                <div class="color-swatch" style="background: var(--color-success-50); color: var(--color-success-900);">50</div>
+                <div class="color-swatch" style="background: var(--color-success-100); color: var(--color-success-900);">100</div>
+                <div class="color-swatch" style="background: var(--color-success-200); color: var(--color-success-900);">200</div>
+                <div class="color-swatch" style="background: var(--color-success-300); color: var(--color-success-900);">300</div>
+                <div class="color-swatch" style="background: var(--color-success-400); color: white;">400</div>
+                <div class="color-swatch" style="background: var(--color-success-500); color: white;">500</div>
+                <div class="color-swatch" style="background: var(--color-success-600); color: white;">600</div>
+                <div class="color-swatch" style="background: var(--color-success-700); color: white;">700</div>
+                <div class="color-swatch" style="background: var(--color-success-800); color: white;">800</div>
+              </div>
             </div>
-            <div
-              class="p-4"
-              style="
-                background-color: var(--color-warning-500);
-                color: white;
-                border-radius: var(--radius-md);
-              "
-            >
-              Warning
+            
+            <div class="color-scale-row">
+              <div class="color-scale-label">warning</div>
+              <div class="color-scale-values">
+                <div class="color-swatch" style="background: var(--color-warning-50); color: var(--color-warning-900);">50</div>
+                <div class="color-swatch" style="background: var(--color-warning-100); color: var(--color-warning-900);">100</div>
+                <div class="color-swatch" style="background: var(--color-warning-200); color: var(--color-warning-900);">200</div>
+                <div class="color-swatch" style="background: var(--color-warning-300); color: var(--color-warning-900);">300</div>
+                <div class="color-swatch" style="background: var(--color-warning-400); color: white;">400</div>
+                <div class="color-swatch" style="background: var(--color-warning-500); color: white;">500</div>
+                <div class="color-swatch" style="background: var(--color-warning-600); color: white;">600</div>
+                <div class="color-swatch" style="background: var(--color-warning-700); color: white;">700</div>
+                <div class="color-swatch" style="background: var(--color-warning-800); color: white;">800</div>
+              </div>
             </div>
-            <div
-              class="p-4"
-              style="
-                background-color: var(--color-danger-500);
-                color: white;
-                border-radius: var(--radius-md);
-              "
-            >
-              Danger
+            
+            <div class="color-scale-row">
+              <div class="color-scale-label">danger</div>
+              <div class="color-scale-values">
+                <div class="color-swatch" style="background: var(--color-danger-50); color: var(--color-danger-900);">50</div>
+                <div class="color-swatch" style="background: var(--color-danger-100); color: var(--color-danger-900);">100</div>
+                <div class="color-swatch" style="background: var(--color-danger-200); color: var(--color-danger-900);">200</div>
+                <div class="color-swatch" style="background: var(--color-danger-300); color: var(--color-danger-900);">300</div>
+                <div class="color-swatch" style="background: var(--color-danger-400); color: white;">400</div>
+                <div class="color-swatch" style="background: var(--color-danger-500); color: white;">500</div>
+                <div class="color-swatch" style="background: var(--color-danger-600); color: white;">600</div>
+                <div class="color-swatch" style="background: var(--color-danger-700); color: white;">700</div>
+                <div class="color-swatch" style="background: var(--color-danger-800); color: white;">800</div>
+              </div>
+            </div>
+            
+            <div class="color-scale-row">
+              <div class="color-scale-label">info</div>
+              <div class="color-scale-values">
+                <div class="color-swatch" style="background: var(--color-info-50); color: var(--color-info-900);">50</div>
+                <div class="color-swatch" style="background: var(--color-info-100); color: var(--color-info-900);">100</div>
+                <div class="color-swatch" style="background: var(--color-info-200); color: var(--color-info-900);">200</div>
+                <div class="color-swatch" style="background: var(--color-info-300); color: var(--color-info-900);">300</div>
+                <div class="color-swatch" style="background: var(--color-info-400); color: white;">400</div>
+                <div class="color-swatch" style="background: var(--color-info-500); color: white;">500</div>
+                <div class="color-swatch" style="background: var(--color-info-600); color: white;">600</div>
+                <div class="color-swatch" style="background: var(--color-info-700); color: white;">700</div>
+                <div class="color-swatch" style="background: var(--color-info-800); color: white;">800</div>
+              </div>
+            </div>
+          </div>
+          
+          <h3 style="margin-top: var(--spacing-8);">Semantic Color Usage</h3>
+          <div class="semantic-colors">
+            <div class="semantic-card" style="background: var(--color-success-50); border-color: var(--color-success-600); color: var(--color-success-900);">
+              <svg-icon icon="check-circle" class="icon-success" size="lg"></svg-icon>
+              <div>
+                <strong>Success</strong>
+                <p style="margin: 0; font-size: var(--font-fontSize-sm);">Operations completed</p>
+              </div>
+            </div>
+            
+            <div class="semantic-card" style="background: var(--color-warning-50); border-color: var(--color-warning-600); color: var(--color-warning-900);">
+              <svg-icon icon="warning" class="icon-warning" size="lg"></svg-icon>
+              <div>
+                <strong>Warning</strong>
+                <p style="margin: 0; font-size: var(--font-fontSize-sm);">Please review carefully</p>
+              </div>
+            </div>
+            
+            <div class="semantic-card" style="background: var(--color-danger-50); border-color: var(--color-danger-600); color: var(--color-danger-900);">
+              <svg-icon icon="x-circle" class="icon-danger" size="lg"></svg-icon>
+              <div>
+                <strong>Danger</strong>
+                <p style="margin: 0; font-size: var(--font-fontSize-sm);">Critical error occurred</p>
+              </div>
+            </div>
+            
+            <div class="semantic-card" style="background: var(--color-info-50); border-color: var(--color-info-600); color: var(--color-info-900);">
+              <svg-icon icon="info" class="icon-info" size="lg"></svg-icon>
+              <div>
+                <strong>Info</strong>
+                <p style="margin: 0; font-size: var(--font-fontSize-sm);">Helpful information</p>
+              </div>
+            </div>
+          </div>
+          
+          <h3 style="margin-top: var(--spacing-8);">Gray Scale (from Secondary)</h3>
+          <div class="color-scale">
+            <div class="color-scale-row">
+              <div class="color-scale-label">gray</div>
+              <div class="color-scale-values">
+                <div class="color-swatch" style="background: var(--color-gray-50); color: var(--color-gray-900);">50</div>
+                <div class="color-swatch" style="background: var(--color-gray-100); color: var(--color-gray-900);">100</div>
+                <div class="color-swatch" style="background: var(--color-gray-200); color: var(--color-gray-900);">200</div>
+                <div class="color-swatch" style="background: var(--color-gray-300); color: var(--color-gray-900);">300</div>
+                <div class="color-swatch" style="background: var(--color-gray-400); color: white;">400</div>
+                <div class="color-swatch" style="background: var(--color-gray-500); color: white;">500</div>
+                <div class="color-swatch" style="background: var(--color-gray-600); color: white;">600</div>
+                <div class="color-swatch" style="background: var(--color-gray-700); color: white;">700</div>
+                <div class="color-swatch" style="background: var(--color-gray-800); color: white;">800</div>
+              </div>
             </div>
           </div>
         </section>
 
         <!-- Typography Demo -->
         <section class="card" id="typography">
-          <h2>Typography</h2>
+          <h2>
+            <svg-icon icon="text-b" size="lg" class="icon-primary"></svg-icon>
+            Typography
+          </h2>
           <div class="grid gap-4">
             <h1>Heading 1 - The quick brown fox</h1>
             <h2>Heading 2 - The quick brown fox</h2>
@@ -131,7 +423,10 @@ function hello() {
 
         <!-- Form Elements Demo -->
         <section class="card" id="forms">
-          <h2>Form Elements</h2>
+          <h2>
+            <svg-icon icon="pencil" size="lg" class="icon-primary"></svg-icon>
+            Form Elements
+          </h2>
           <form class="demo-form" style="display: grid; gap: var(--spacing-4); max-width: 500px;">
             <fieldset style="border: none; padding: 0; margin: 0;">
               <legend style="font-weight: 600; margin-bottom: var(--spacing-3); padding: 0;">Contact Information</legend>
@@ -187,7 +482,10 @@ function hello() {
 
         <!-- Button Variants Demo -->
         <section class="card" id="buttons">
-          <h2>Button Variants</h2>
+          <h2>
+            <svg-icon icon="check-circle" size="lg" class="icon-success"></svg-icon>
+            Button Variants
+          </h2>
           <div class="grid gap-4">
             <div class="flex gap-4 items-center">
               <button class="btn-primary">Primary</button>
@@ -206,7 +504,10 @@ function hello() {
 
         <!-- Layout Demo -->
         <section class="card" id="layout">
-          <h2>Layout & Spacing</h2>
+          <h2>
+            <svg-icon icon="desktop" size="lg" class="icon-primary"></svg-icon>
+            Layout & Spacing
+          </h2>
           <div class="grid gap-6">
             <div class="surface-elevated p-4">
               <h3>Elevated Surface</h3>
@@ -237,7 +538,10 @@ function hello() {
 
         <!-- Media Elements Demo -->
         <section class="card" id="media">
-          <h2>Media Elements</h2>
+          <h2>
+            <svg-icon icon="image" size="lg" class="icon-primary"></svg-icon>
+            Media Elements
+          </h2>
           <div class="grid gap-6">
             <!-- Images with figures -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -474,7 +778,9 @@ function hello() {
           <h2>Alerts & Notifications</h2>
           
           <div class="alert alert-success">
-            <div class="alert-icon">✓</div>
+            <div class="alert-icon">
+              <svg-icon icon="check-circle" class="icon-success" size="lg"></svg-icon>
+            </div>
             <div>
               <div class="alert-title">Success!</div>
               <p>Your changes have been saved successfully.</p>
@@ -482,7 +788,9 @@ function hello() {
           </div>
 
           <div class="alert alert-info">
-            <div class="alert-icon">ℹ</div>
+            <div class="alert-icon">
+              <svg-icon icon="info" class="icon-info" size="lg"></svg-icon>
+            </div>
             <div>
               <div class="alert-title">Information</div>
               <p>This is an informational message with additional context.</p>
@@ -490,7 +798,9 @@ function hello() {
           </div>
 
           <div class="alert alert-warning">
-            <div class="alert-icon">⚠</div>
+            <div class="alert-icon">
+              <svg-icon icon="warning" class="icon-warning" size="lg"></svg-icon>
+            </div>
             <div>
               <div class="alert-title">Warning</div>
               <p>Please review this warning before proceeding with the action.</p>
@@ -498,7 +808,9 @@ function hello() {
           </div>
 
           <div class="alert alert-danger">
-            <div class="alert-icon">✕</div>
+            <div class="alert-icon">
+              <svg-icon icon="x-circle" class="icon-danger" size="lg"></svg-icon>
+            </div>
             <div>
               <div class="alert-title">Error</div>
               <p>An error occurred while processing your request. Please try again.</p>
@@ -700,40 +1012,41 @@ function hello() {
             <pre style="margin: 0; font-family: var(--font-fontFamily-mono); font-size: var(--font-fontSize-sm); overflow-x: auto;"><code>// Get the pure-app element
 const app = document.querySelector('pure-app');
 
-// Show different toast types
-app.toast('Message', 'information', 3000);
-app.success('Success message', 3000);
-app.warning('Warning message', 5000);
-app.error('Error message', 5000);
+// Show toast notifications (duration is auto-calculated)
+app.toast('Success message', { type: 'success' });
+app.toast('Informational message', { type: 'info' });
+app.toast('Warning message', { type: 'warning' });
+app.toast('Error message', { type: 'error' });
 
-// Or use legacy methods
-app.toastSuccess('Success!');
-app.toastInfo('Info!');
-app.toastWarning('Warning!');
-app.toastError('Error!');</code></pre>
+// Options object (all optional):
+
+ {
+   type: 'info' | 'success' | 'warning' | 'error',  // default: 'info'
+   duration: 3000,      // default: auto-calculated from message length
+   closable: true,      // default: true
+   persistent: false    // default: false (auto-dismiss)
+ }</code></pre>
           </div>
         </section>
 
-        <!-- Application Configuration -->
-        <section class="card">
-          <h2>Application Configuration</h2>
-          <p>Configure the design system and application settings:</p>
-          <div class="flex gap-4">
-            <button id="openConfig" class="btn-primary">
-              Configure Application
-            </button>
-            <button id="resetConfig" class="btn-secondary">
-              Reset to Defaults
-            </button>
-          </div>
-        </section>
+        
       </main>
     </pure-app>
 
     <script type="module">
+      // Import icon component
+      
+      
       // Set up application configuration
       document.addEventListener("DOMContentLoaded", () => {
         const pure = document.querySelector("pure-app");
+        
+        // Wait for pure-app to be fully initialized
+        if (!pure) {
+          console.error('pure-app element not found');
+          return;
+        }
+        
         const openConfigButton = document.getElementById("openConfig");
         const resetConfigButton = document.getElementById("resetConfig");
 
@@ -744,21 +1057,33 @@ app.toastError('Error!');</code></pre>
         const toastErrorBtn = document.getElementById("toast-error");
 
         // Toast button event listeners
-        toastSuccessBtn?.addEventListener("click", () => {
-          pure.success("Operation completed successfully! Your changes have been saved.", 4000);
-        });
+        if (toastSuccessBtn) {
+          toastSuccessBtn.addEventListener("click", () => {
+            console.log('Success button clicked');
+            pure.toast("Operation completed successfully! Your changes have been saved.", { type: "success" });
+          });
+        }
 
-        toastInfoBtn?.addEventListener("click", () => {
-          pure.information("This is an informational message with some additional context.", 4000);
-        });
+        if (toastInfoBtn) {
+          toastInfoBtn.addEventListener("click", () => {
+            console.log('Info button clicked');
+            pure.toast("This is an informational message with some additional context.", { type: "info" });
+          });
+        }
 
-        toastWarningBtn?.addEventListener("click", () => {
-          pure.warning("Warning: Please review this before proceeding with the action.", 5000);
-        });
+        if (toastWarningBtn) {
+          toastWarningBtn.addEventListener("click", () => {
+            console.log('Warning button clicked');
+            pure.toast("Warning: Please review this before proceeding with the action.", { type: "warning" });
+          });
+        }
 
-        toastErrorBtn?.addEventListener("click", () => {
-          pure.error("Error: Something went wrong. Please try again later.", 5000);
-        });
+        if (toastErrorBtn) {
+          toastErrorBtn.addEventListener("click", () => {
+            console.log('Error button clicked');
+            pure.toast("Error: Something went wrong. Please try again later.", { type: "error" });
+          });
+        }
 
         // Open configuration dialog
         openConfigButton.addEventListener("click", async () => {
@@ -768,12 +1093,12 @@ app.toastError('Error!');</code></pre>
               console.log("Configuration applied successfully");
               // Show success toast
               setTimeout(() => {
-                pure.success("Configuration has been applied successfully!");
+                pure.toast("Configuration has been applied successfully!", { type: "success" });
               }, 100);
             }
           } catch (error) {
             console.error("Configuration failed:", error);
-            pure.error("Failed to apply configuration. Please try again.");
+            pure.toast("Failed to apply configuration. Please try again.", { type: "error" });
           }
         });
 
@@ -800,7 +1125,7 @@ app.toastError('Error!');</code></pre>
             pure.designer.updateDesign(defaultConfig);
             console.log("Configuration reset to defaults");
 
-            pure.success("Configuration has been reset to default values!");
+            pure.toast("Configuration has been reset to default values!", { type: "success" });
           }
         });
       });
