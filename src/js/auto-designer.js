@@ -879,6 +879,8 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   tab-size: ${tabSize};
+  /* Better mobile tap behavior */
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
 }
 
 body {
@@ -887,6 +889,8 @@ body {
   min-height: 100vh;
   min-height: var(--layout-minHeight);
   overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+  /* Smooth scrolling on mobile */
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Mobile-first Typography */
@@ -896,6 +900,8 @@ h1, h2, h3, h4, h5, h6 {
   line-height: var(--font-lineHeight-tight);
   word-wrap: break-word;
   hyphens: auto;
+  /* Better text wrapping on mobile */
+  overflow-wrap: break-word;
 }
 
 /* Mobile font sizes (smaller) */
@@ -1563,7 +1569,6 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   text-decoration: none;
   touch-action: manipulation;
   user-select: none;
-  width: 100%;
   background-color: var(--color-surface-base);
   color: var(--color-text-primary);
   border-color: var(--color-border);
@@ -1741,8 +1746,16 @@ button:disabled, .btn:disabled, input[type="submit"]:disabled, input[type="butto
     flex-direction: column;
   }
   
-  .actions button {
+  .actions button,
+  .actions .btn {
     width: 100%;
+  }
+  
+  /* Icon-only buttons should remain compact even on mobile */
+  .actions button.icon-only,
+  .actions a.icon-only {
+    width: ${minButtonHeight}px;
+    align-self: center;
   }
 }
 
@@ -2552,6 +2565,9 @@ app-toaster aside.toast.alert-error .toast-progress {
   }
 
   generateIconStyles() {
+    const { a11y = {} } = this.options;
+    const minTouchTarget = a11y.minTouchTarget || AutoDesigner.TouchTargetSizes.standard;
+    
     return /*css*/`/* Icon System */
 
 svg-icon {
@@ -2669,7 +2685,9 @@ a svg-icon {
 button.icon-only,
 a.icon-only {
   padding: var(--spacing-2);
-  aspect-ratio: 1;
+  min-width: ${minTouchTarget}px;
+  width: ${minTouchTarget}px;
+  height: ${minTouchTarget}px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2716,6 +2734,7 @@ a.icon-only {
   width: 100%;
   margin: 0 auto;
   padding: 0 var(--spacing-4); /* Mobile padding */
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 /* Responsive container padding and max-width */
@@ -2736,6 +2755,10 @@ a.icon-only {
 .flex {
   display: flex;
   flex-wrap: wrap; /* Allow wrapping on mobile */
+}
+
+.flex > * {
+  min-width: 0; /* Prevent flex children from overflowing */
 }
 
 .flex-col {
@@ -2794,6 +2817,10 @@ a.icon-only {
   display: grid;
   width: 100%;
   gap: var(--spacing-4);
+}
+
+.grid > * {
+  min-width: 0; /* Prevent grid children from overflowing */
 }
 
 /* Mobile: single column by default */

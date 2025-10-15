@@ -1,7 +1,4 @@
 // AutoDesigner Configuration
-// This file is used by the Node.js script to generate CSS
-// ⚠️  IMPORTANT: Keep this in sync with src/js/config.js (used by browser runtime)
-// The two files must have matching color/design settings to generate identical CSS
 
 import { AutoDesigner } from "./src/js/auto-designer.js";
 
