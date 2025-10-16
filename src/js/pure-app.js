@@ -4,7 +4,6 @@ import { html, LitElement, css } from "lit";
 export { html, LitElement, css };
 import { config } from "./config";
 import { ask } from "./ask";
-import "./auto-form";
 import "./app-toaster";
 import "./schema-form";
 import "./svg-icon"
@@ -15,6 +14,13 @@ const designer = new AutoDesigner(config.design);
 // Apply the generated CSS to the document
 // The host application controls when/how styles are applied
 AutoDesigner.applyStyles(designer.css);
+
+// Load showcase.css AFTER design tokens are available
+// This ensures all CSS custom properties referenced in showcase.css exist
+const showcaseLink = document.createElement('link');
+showcaseLink.rel = 'stylesheet';
+showcaseLink.href = '/assets/css/showcase.css';
+document.head.appendChild(showcaseLink);
 
 // Export designer instance for programmatic access
 export { designer };

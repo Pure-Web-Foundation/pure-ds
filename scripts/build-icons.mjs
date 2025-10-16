@@ -4,7 +4,7 @@
  * Icon Sprite Builder
  * 
  * Downloads SVG icons from Phosphor Icons CDN and builds an SVG sprite sheet
- * based on the configuration in auto-designer.config.js
+ * based on the configuration in config.js
  * 
  * Usage: node scripts/build-icons.mjs
  */
@@ -128,13 +128,13 @@ async function buildIconSprite() {
   log('\n🎨 Building Icon Sprite...', 'bright');
   
   // Load configuration
-  const configPath = resolve(projectRoot, 'auto-designer.config.js');
-  const { autoDesignerConfig } = await import(`file://${configPath}`);
+  const configPath = resolve(projectRoot, 'src/js/config.js');
+  const { config } = await import(`file://${configPath}`);
   
-  const iconConfig = autoDesignerConfig.icons;
+  const iconConfig = config.design.icons;
   
   if (!iconConfig || !iconConfig.include) {
-    log('❌ No icon configuration found in auto-designer.config.js', 'red');
+    log('❌ No icon configuration found in config.js', 'red');
     return;
   }
   

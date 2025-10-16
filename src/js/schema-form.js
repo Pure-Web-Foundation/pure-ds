@@ -171,6 +171,8 @@ export class SchemaForm extends LitElement {
         case 'url': return 'input-url';
         case 'date': return 'input-date';
         case 'time': return 'input-time';
+        case 'datetime-local': return 'input-datetime';
+        case 'color': return 'input-color';
         case 'date-time': return 'input-datetime';
         default:
           if ((schema.maxLength ?? Infinity) > 160 || ui?.['ui:widget'] === 'textarea') return 'textarea';
@@ -198,7 +200,12 @@ export class SchemaForm extends LitElement {
 
   // ===== Rendering =====
   render() {
+    
     const tree = this.#compiled;
+    if (!tree) return html`<div class="schema-form-error" style="color: red; padding: 1rem; border: 1px solid red; background: #fee;">
+      <p>Failed to generate form schema.</p>
+      <pre>${JSON.stringify(this.#data, null, 2)}</pre>
+    </div>`;
     const m = (this.method === 'get' || this.method === 'post' || this.method === 'dialog') ? this.method : 'post';
     return html`
       <form method=${m} action=${this.action ?? nothing} @submit=${this.#onSubmit} ?disabled=${this.disabled}>
@@ -333,7 +340,7 @@ export class SchemaForm extends LitElement {
       id, path, label, value, required, ui, schema: node.schema,
       get: (p) => this.#getByPath(this.#data, p ?? path),
       set: (val, p) => this.#assignValue(p ?? path, val),
-      attrs: this.#nativeConstraints(node.schema),
+      attrs: this.#nativeConstraints(path, node.schema),
       host: this,
     }) : nothing;
 
@@ -358,8 +365,12 @@ export class SchemaForm extends LitElement {
 
     // Standard label wrapper
     queueMicrotask(() => this.#emit('pw:after-render-field', { path, schema: node.schema }));
+    
+    // Add data-toggle for boolean checkboxes
+    const isCheckbox = node.widgetKey === 'checkbox';
+    
     return html`
-      <label for=${id}>
+      <label for=${id} ?data-toggle=${isCheckbox}>
         <span data-label>${label}</span>
         ${controlTpl}
         ${help ? html`<div data-help>${help}</div>` : nothing}
@@ -473,6 +484,17 @@ export class SchemaForm extends LitElement {
       <input
         id=${id}
         type="time"
+        .value=${value ?? ''}
+        ?readonly=${!!attrs.readOnly}
+        ?required=${!!attrs.required}
+        @input=${(e) => set(e.target.value)}
+      />
+    `);
+
+    this.defineRenderer('input-color', ({ id, value, attrs, set }) => html`
+      <input
+        id=${id}
+        type="color"
         .value=${value ?? ''}
         ?readonly=${!!attrs.readOnly}
         ?required=${!!attrs.required}
@@ -609,7 +631,7 @@ export class SchemaForm extends LitElement {
     return seg.replace(/-/g,' ').replace(/_/g,' ').replace(/\*/g,'').replace(/\b\w/g, c => c.toUpperCase());
   }
 
-  #nativeConstraints(schema) {
+  #nativeConstraints(path,schema) {
     const attrs = {};
     if (schema.type === 'string') {
       if (schema.minLength != null) attrs.minLength = schema.minLength;
@@ -624,7 +646,7 @@ export class SchemaForm extends LitElement {
     if (schema.readOnly) attrs.readOnly = true;
     if (schema.writeOnly) attrs.readOnly = true;
     if (schema.format === 'email') attrs.autocomplete = 'email';
-    if (this.#isRequired(null, schema)) attrs.required = true;
+    if (this.#isRequired(path, schema)) attrs.required = true;
     return attrs;
   }
 

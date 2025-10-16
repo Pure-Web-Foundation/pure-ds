@@ -22,19 +22,19 @@ async function main() {
     console.log('🎨 AutoDesigner - Generating CSS...\n');
     
     // Load configuration
-    console.log('📋 Loading configuration from auto-designer.config.js...');
-    const configPath = resolve(rootDir, 'auto-designer.config.js');
+    console.log('📋 Loading configuration from config.js...');
+    const configPath = resolve(rootDir, 'src/js/config.js');
     
     if (!existsSync(configPath)) {
       throw new Error(`Configuration file not found: ${configPath}`);
     }
     
-    const { autoDesignerConfig } = await import(`file://${configPath}`);
+    const { config } = await import(`file://${configPath}`);
     console.log('✓ Configuration loaded\n');
     
     // Create AutoDesigner instance
     console.log('🔧 Initializing AutoDesigner...');
-    const designer = new AutoDesigner(autoDesignerConfig);
+    const designer = new AutoDesigner(config.design);
     console.log('✓ AutoDesigner initialized\n');
     
     // Get generated CSS
@@ -51,7 +51,7 @@ async function main() {
     }
     
     // Determine output path
-    const outputPath = resolve(rootDir, autoDesignerConfig.output?.file || 'public/assets/css/auto-designer.css');
+    const outputPath = resolve(rootDir, config.autoDefine?.output?.file || 'public/assets/css/auto-designer.css');
     const outputDir = dirname(outputPath);
     
     // Create output directory if it doesn't exist
@@ -75,7 +75,7 @@ async function main() {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
     
     // Print token summary if debug enabled
-    if (autoDesignerConfig.debug) {
+    if (config.autoDefine?.debug) {
       console.log('🔍 Debug Info:');
       const tokens = designer.getTokens();
       console.log(`  Colors: ${Object.keys(tokens.colors).length} palettes`);

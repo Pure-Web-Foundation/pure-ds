@@ -33,13 +33,20 @@ export class SvgIcon extends HTMLElement {
     
     'missing': '<circle cx="128" cy="128" r="96" stroke="currentColor" fill="none" stroke-width="16"/>',
   };
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
   
   connectedCallback() {
     this.render();
   }
   
-  attributeChangedCallback() {
-    this.render();
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue !== newValue) {
+      this.render();
+    }
   }
   
   render() {
@@ -62,7 +69,7 @@ export class SvgIcon extends HTMLElement {
     // Determine if we should use sprite or fallback
     const useFallback = this.hasAttribute('no-sprite') || !this.spriteAvailable();
     
-    this.innerHTML = `
+    this.shadowRoot.innerHTML = `
       <svg
         width="${size}"
         height="${size}"

@@ -24,9 +24,9 @@ A JavaScript-config-first design system that generates complete, production-read
   - [Accessibility](#accessibility)
 - [Web Components](#web-components)
   - [PureApp](#pure-app)
-  - [AutoForm](#auto-form)
   - [SvgIcon](#svg-icon)
   - [AppToaster](#app-toaster)
+  - [TabStrip](#tabstrip)
 - [Features](#features)
 - [API Reference](#api-reference)
 - [Examples](#examples)
@@ -610,63 +610,6 @@ const result = await app.ask('Choose action', {
   }
 });
 
-// With forms
-const formData = await app.ask(`
-  <form>
-    <auto-form>
-      # User Input
-      name: text
-      email: email
-      age: range(18, 100) = 25
-    </auto-form>
-  </form>
-`, { useForm: true });
-```
-
-### AutoForm
-
-Intelligent form generator from readable YAML-like syntax:
-
-```html
-<auto-form>
-  # Section Title
-  
-  fieldName: type = default
-  Helper text for the field
-  
-  email: email
-  We'll use this for notifications
-  
-  age: range(18, 100) = 25
-  Must be 18 or older
-  
-  country: select = US
-  Your country of residence
-</auto-form>
-```
-
-**Supported field types:**
-- `text`, `email`, `password`, `url`, `tel`
-- `number`, `range(min, max)`
-- `date`, `time`, `datetime-local`
-- `textarea`
-- `checkbox`, `select`
-- `color`
-
-**Features:**
-- Semantic HTML (`fieldset`, `legend`)
-- Automatic validation
-- Accessibility labels
-- Default values
-- Helper text
-
-**Programmatic usage:**
-```javascript
-import { AutoForm } from './src/js/auto-form.js';
-
-const form = document.querySelector('auto-form');
-const data = Object.fromEntries(new FormData(form.form));
-```
 
 ### SvgIcon
 
@@ -727,6 +670,95 @@ import './src/js/app-toaster.js';
 
 const toaster = document.querySelector('app-toaster');
 toaster.toast('Message', 'success', 3000);
+```
+
+### TabStrip
+
+Accessible tab navigation with hash-based routing and keyboard support:
+
+```html
+<tab-strip label="Product Details">
+  <tab-panel id="overview" label="Overview">
+    <h2>Product Overview</h2>
+    <p>Main product information...</p>
+  </tab-panel>
+  
+  <tab-panel id="specs" label="Specifications">
+    <h2>Technical Specs</h2>
+    <ul>
+      <li>Processor: Intel i7</li>
+      <li>RAM: 16GB</li>
+    </ul>
+  </tab-panel>
+  
+  <tab-panel id="reviews" label="Reviews">
+    <h2>Customer Reviews</h2>
+    <p>See what customers are saying...</p>
+  </tab-panel>
+</tab-strip>
+```
+
+**Features:**
+- **Hash-based routing**: Each tab has shareable URL (`#overview`, `#specs`)
+- **Keyboard navigation**: Arrow keys move between tabs
+- **Accessible**: Full ARIA support (aria-current, aria-controls, role)
+- **Progressive enhancement**: Works without JavaScript
+- **Light DOM**: Natural CSS and page anchor behavior
+- **Auto-management**: Generates IDs if missing
+
+**Variants:**
+
+```html
+<!-- Default: Underline style -->
+<tab-strip>...</tab-strip>
+
+<!-- Pill style tabs -->
+<tab-strip class="tabs-pills">...</tab-strip>
+
+<!-- Boxed style tabs -->
+<tab-strip class="tabs-boxed">...</tab-strip>
+
+<!-- Vertical tabs -->
+<tab-strip class="tabs-vertical">...</tab-strip>
+```
+
+**API:**
+
+```javascript
+const tabStrip = document.querySelector('tab-strip');
+
+// Programmatically select tab
+window.location.hash = '#specs';
+
+// Listen for tab changes
+addEventListener('hashchange', () => {
+  console.log('Tab changed to:', location.hash);
+});
+```
+
+**Styling:**
+- Uses design system tokens (`--color-*`, `--spacing-*`, `--font-*`)
+- Animated tab indicator with smooth transitions
+- Hover states with subtle backgrounds
+- Focus-visible outline for keyboard navigation
+- Mobile responsive with horizontal scrolling
+- Vertical tabs collapse to horizontal on mobile
+
+**Accessibility:**
+- `aria-label` on navigation for screen readers
+- `aria-current="page"` on active tab
+- `aria-controls` linking tabs to panels
+- `role="region"` on tab panels
+- Keyboard navigation (Arrow keys, Enter, Space)
+- Focus management and proper tab order
+
+**Configuration:**
+
+Enable/disable in your config:
+```javascript
+components: {
+  tabStrip: true  // Default: true
+}
 ```
 
 ---
@@ -884,7 +916,7 @@ await app.ask(message, options);
 {
   title: 'Dialog Title',
   content: '<p>Additional HTML</p>',
-  useForm: false,  // Parse <auto-form> in content
+  useForm: false,  
   buttons: {
     ok: { name: 'OK', default: true },
     cancel: { name: 'Cancel', cancel: true },
@@ -966,48 +998,6 @@ See `auto-designer.config.js` for full example with all options.
   </script>
 </body>
 </html>
-```
-
-### Form Example
-
-```javascript
-const result = await app.ask(`
-  <form>
-    <auto-form>
-      # User Registration
-      
-      name: text = John Doe
-      Full name for your account
-      
-      email: email
-      We'll use this for login
-      
-      password: password
-      Minimum 8 characters
-      
-      age: range(18, 100) = 25
-      Must be 18 or older
-      
-      country: select = US
-      Select your country
-      
-      terms: checkbox
-      I agree to the terms and conditions
-    </auto-form>
-  </form>
-`, {
-  title: 'Sign Up',
-  useForm: true,
-  buttons: {
-    submit: { name: 'Create Account', default: true },
-    cancel: { name: 'Cancel', cancel: true }
-  }
-});
-
-if (result) {
-  const formData = Object.fromEntries(result);
-  console.log('Registration data:', formData);
-}
 ```
 
 ### Icon Usage

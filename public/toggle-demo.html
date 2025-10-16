@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toggle Switch Demo - Pure DS</title>
+  <link rel="stylesheet" href="/assets/css/auto-designer.css">
+  <style>
+    body {
+      padding: 2rem;
+      max-width: 600px;
+      margin: 0 auto;
+      font-family: var(--font-family-sans);
+    }
+    
+    .demo-section {
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: var(--color-surface-base);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border);
+    }
+    
+    .demo-section h2 {
+      margin-top: 0;
+      color: var(--color-text-primary);
+    }
+    
+    .toggle-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .toggle-description {
+      color: var(--color-text-secondary);
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Toggle Switch Demo</h1>
+  <p>Progressive enhancement of checkboxes using <code>data-toggle</code> attribute.</p>
+
+  <div class="demo-section">
+    <h2>Basic Toggles</h2>
+    <div class="toggle-group">
+      <label data-toggle>
+        <input type="checkbox" checked>
+        Enable notifications
+      </label>
+
+      <label data-toggle>
+        <input type="checkbox">
+        Dark mode
+      </label>
+
+      <label data-toggle>
+        <input type="checkbox" checked>
+        Auto-save
+      </label>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h2>Settings Panel</h2>
+    <div class="toggle-group">
+      <div>
+        <label data-toggle>
+          <input type="checkbox" checked>
+          Show desktop notifications
+        </label>
+        <p class="toggle-description">
+          Receive notifications on your desktop when you're mentioned or assigned.
+        </p>
+      </div>
+
+      <div>
+        <label data-toggle>
+          <input type="checkbox">
+          Email notifications
+        </label>
+        <p class="toggle-description">
+          Get email updates about your activity and mentions.
+        </p>
+      </div>
+
+      <div>
+        <label data-toggle>
+          <input type="checkbox" checked>
+          Marketing emails
+        </label>
+        <p class="toggle-description">
+          Receive tips, surveys, and product updates.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h2>Privacy Settings</h2>
+    <div class="toggle-group">
+      <label data-toggle>
+        <input type="checkbox" checked>
+        Make profile public
+      </label>
+
+      <label data-toggle>
+        <input type="checkbox">
+        Allow search engines to index
+      </label>
+
+      <label data-toggle>
+        <input type="checkbox" checked>
+        Show activity status
+      </label>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h2>Standard Checkbox (no enhancement)</h2>
+    <p>For comparison, here's a regular checkbox without <code>data-toggle</code>:</p>
+    <label>
+      <input type="checkbox" checked>
+      Regular checkbox
+    </label>
+  </div>
+
+  <script type="module" src="/assets/js/lit.js"></script>
+  <script type="module" src="/assets/js/app.js"></script>
+</body>
+</html>

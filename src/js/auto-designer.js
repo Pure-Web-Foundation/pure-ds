@@ -411,8 +411,9 @@ export class AutoDesigner {
 
   generateTypographyTokens(typographyConfig) {
     const { 
-      fontFamily = 'system-ui, -apple-system, sans-serif',
-      monoFontFamily = 'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace',
+      fontFamilyHeadings = 'system-ui, -apple-system, sans-serif',
+      fontFamilyBody = 'system-ui, -apple-system, sans-serif',
+      fontFamilyMono = 'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace',
       baseFontSize = 16,
       fontScale = 1.2,
       fontWeightLight = AutoDesigner.FontWeights.light,
@@ -427,8 +428,9 @@ export class AutoDesigner {
     
     return {
       fontFamily: {
-        sans: fontFamily,
-        mono: monoFontFamily,
+        headings: fontFamilyHeadings,
+        body: fontFamilyBody,
+        mono: fontFamilyMono,
       },
       fontSize: {
         xs: `${Math.round(baseFontSize * 0.75)}px`,
@@ -502,11 +504,19 @@ export class AutoDesigner {
 
   generateTransitionTokens(behaviorConfig) {
     const { 
-      transitionSpeed = AutoDesigner.TransitionSpeeds.NORMAL,
-      animationEasing = AutoDesigner.AnimationEasings.EASE_OUT
+      transitionSpeed = AutoDesigner.TransitionSpeeds.normal,
+      animationEasing = AutoDesigner.AnimationEasings['ease-out']
     } = behaviorConfig;
     
-    const baseSpeed = transitionSpeed;
+    // Handle both number values and string keys
+    let baseSpeed;
+    if (typeof transitionSpeed === 'number') {
+      baseSpeed = transitionSpeed;
+    } else if (typeof transitionSpeed === 'string' && AutoDesigner.TransitionSpeeds[transitionSpeed]) {
+      baseSpeed = AutoDesigner.TransitionSpeeds[transitionSpeed];
+    } else {
+      baseSpeed = AutoDesigner.TransitionSpeeds.normal;
+    }
     
     // Transition variables should only contain duration, not easing
     // This allows specific easing functions to be applied per property
@@ -650,6 +660,14 @@ export class AutoDesigner {
       css += this.generateModalStyles();
     }
 
+    if (components.tabStrip !== false) {
+      css += this.generateTabStripStyles();
+    }
+
+    if (components.customScrollbars !== false) {
+      css += this.generateScrollbarStyles();
+    }
+
     // Icon utilities
     css += this.generateIconStyles();
 
@@ -721,8 +739,10 @@ export class AutoDesigner {
   generateTypographyVariables(typography) {
     let css = "  /* Typography */\n";
     Object.entries(typography).forEach(([category, values]) => {
+      // Remove "font" prefix from category names (fontFamily -> family, fontSize -> size, etc.)
+      const cleanCategory = category.replace(/^font/, '').replace(/^(.)/, (m) => m.toLowerCase());
       Object.entries(values).forEach(([key, value]) => {
-        css += `  --font-${category}-${key}: ${value};\n`;
+        css += `  --font-${cleanCategory}-${key}: ${value};\n`;
       });
     });
     return css + "\n";
@@ -870,8 +890,8 @@ export class AutoDesigner {
 }
 
 html {
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-base);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
   line-height: var(--font-lineHeight-normal);
   color: var(--color-text-primary);
   background-color: var(--color-surface-base);
@@ -896,8 +916,9 @@ body {
 /* Mobile-first Typography */
 h1, h2, h3, h4, h5, h6 {
   margin: 0 0 var(--spacing-4) 0;
-  font-weight: var(--font-fontWeight-semibold);
-  line-height: var(--font-lineHeight-tight);
+  font-family: var(--font-family-headings);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--font-lineHeight-normal);
   word-wrap: break-word;
   hyphens: auto;
   /* Better text wrapping on mobile */
@@ -905,21 +926,21 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Mobile font sizes (smaller) */
-h1 { font-size: var(--font-fontSize-2xl); }
-h2 { font-size: var(--font-fontSize-xl); }
-h3 { font-size: var(--font-fontSize-lg); }
-h4 { font-size: var(--font-fontSize-base); }
-h5 { font-size: var(--font-fontSize-sm); }
-h6 { font-size: var(--font-fontSize-xs); }
+h1 { font-size: var(--font-size-2xl); }
+h2 { font-size: var(--font-size-xl); }
+h3 { font-size: var(--font-size-lg); }
+h4 { font-size: var(--font-size-base); }
+h5 { font-size: var(--font-size-sm); }
+h6 { font-size: var(--font-size-xs); }
 
 /* Scale up typography on larger screens */
 @media (min-width: ${breakpoints.sm}px) {
-  h1 { font-size: var(--font-fontSize-3xl); }
-  h2 { font-size: var(--font-fontSize-2xl); }
-  h3 { font-size: var(--font-fontSize-xl); }
-  h4 { font-size: var(--font-fontSize-lg); }
-  h5 { font-size: var(--font-fontSize-base); }
-  h6 { font-size: var(--font-fontSize-sm); }
+  h1 { font-size: var(--font-size-3xl); }
+  h2 { font-size: var(--font-size-2xl); }
+  h3 { font-size: var(--font-size-xl); }
+  h4 { font-size: var(--font-size-lg); }
+  h5 { font-size: var(--font-size-base); }
+  h6 { font-size: var(--font-size-sm); }
 }
 
 p {
@@ -966,8 +987,8 @@ li {
 
 /* Code */
 code, pre {
-  font-family: var(--font-fontFamily-mono);
-  font-size: var(--font-fontSize-sm);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
   line-height: var(--font-lineHeight-relaxed);
 }
 
@@ -1113,8 +1134,8 @@ mark {
 kbd {
   display: inline-block;
   padding: var(--spacing-1) var(--spacing-2);
-  font-family: var(--font-fontFamily-mono);
-  font-size: var(--font-fontSize-sm);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
   color: var(--color-text-primary);
   background-color: var(--color-surface-elevated);
   border: 1px solid var(--color-border);
@@ -1292,8 +1313,8 @@ input, textarea, select {
   padding: calc(var(--spacing-1) * ${inputPaddingValue}) var(--spacing-4);
   border: ${borderWidth}px solid var(--color-border);
   border-radius: var(--radius-md);
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-base);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
   line-height: var(--font-lineHeight-normal);
   background-color: var(--color-input-bg);
   color: var(--color-text-primary);
@@ -1364,9 +1385,9 @@ fieldset input[type="checkbox"]:not(fieldset[role="group"] input[type="checkbox"
 fieldset[role="radiogroup"] label,
 fieldset[role="radiogroup"] label:has(input[type="radio"]),
 label:has(input[type="radio"]),
-label:has(input[type="checkbox"]):not(fieldset[role="group"] label),
+label:has(input[type="checkbox"]):not(fieldset[role="group"] label):not(label[data-toggle]),
 input[type="radio"] + label,
-input[type="checkbox"] + label:not(fieldset[role="group"] label) {
+input[type="checkbox"] + label:not(fieldset[role="group"] label):not(label[data-toggle]) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1374,9 +1395,9 @@ input[type="checkbox"] + label:not(fieldset[role="group"] label) {
   padding: calc(var(--spacing-1) * ${buttonPaddingValue}) var(--spacing-4);
   border: ${borderWidth}px solid var(--color-primary-600);
   border-radius: var(--radius-md);
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-base);
-  font-weight: var(--font-fontWeight-medium);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
   line-height: 1;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -1402,9 +1423,9 @@ fieldset[role="radiogroup"] label:has(input[type="radio"]) {
 /* Hover states */
 fieldset[role="radiogroup"] label:hover,
 label:has(input[type="radio"]:not(:disabled)):hover,
-label:has(input[type="checkbox"]:not(:disabled)):hover:not(fieldset[role="group"] label),
+label:has(input[type="checkbox"]:not(:disabled)):hover:not(fieldset[role="group"] label):not(label[data-toggle]),
 input[type="radio"]:not(:disabled) + label:hover,
-input[type="checkbox"]:not(:disabled) + label:hover:not(fieldset[role="group"] label) {
+input[type="checkbox"]:not(:disabled) + label:hover:not(fieldset[role="group"] label):not(label[data-toggle]) {
   background-color: var(--color-primary-50);
   border-color: var(--color-primary-700);
 }
@@ -1412,9 +1433,9 @@ input[type="checkbox"]:not(:disabled) + label:hover:not(fieldset[role="group"] l
 /* Checked state = primary button */
 fieldset[role="radiogroup"] label:has(input[type="radio"]:checked),
 label:has(input[type="radio"]:checked),
-label:has(input[type="checkbox"]:checked):not(fieldset[role="group"] label),
+label:has(input[type="checkbox"]:checked):not(fieldset[role="group"] label):not(label[data-toggle]),
 input[type="radio"]:checked + label,
-input[type="checkbox"]:checked + label:not(fieldset[role="group"] label) {
+input[type="checkbox"]:checked + label:not(fieldset[role="group"] label):not(label[data-toggle]) {
   background-color: var(--color-primary-600);
   color: white;
   border-color: var(--color-primary-600);
@@ -1422,9 +1443,9 @@ input[type="checkbox"]:checked + label:not(fieldset[role="group"] label) {
 
 fieldset[role="radiogroup"] label:has(input[type="radio"]:checked):hover,
 label:has(input[type="radio"]:checked:not(:disabled)):hover,
-label:has(input[type="checkbox"]:checked:not(:disabled)):hover:not(fieldset[role="group"] label),
+label:has(input[type="checkbox"]:checked:not(:disabled)):hover:not(fieldset[role="group"] label):not(label[data-toggle]),
 input[type="radio"]:checked:not(:disabled) + label:hover,
-input[type="checkbox"]:checked:not(:disabled) + label:hover:not(fieldset[role="group"] label) {
+input[type="checkbox"]:checked:not(:disabled) + label:hover:not(fieldset[role="group"] label):not(label[data-toggle]) {
   background-color: var(--color-primary-700);
   border-color: var(--color-primary-700);
 }
@@ -1432,18 +1453,18 @@ input[type="checkbox"]:checked:not(:disabled) + label:hover:not(fieldset[role="g
 /* Focus states */
 fieldset[role="radiogroup"] label:has(input[type="radio"]:focus),
 label:has(input[type="radio"]:focus),
-label:has(input[type="checkbox"]:focus):not(fieldset[role="group"] label),
+label:has(input[type="checkbox"]:focus):not(fieldset[role="group"] label):not(label[data-toggle]),
 input[type="radio"]:focus + label,
-input[type="checkbox"]:focus + label:not(fieldset[role="group"] label) {
+input[type="checkbox"]:focus + label:not(fieldset[role="group"] label):not(label[data-toggle]) {
   outline: none;
   box-shadow: 0 0 0 ${focusWidth}px var(--color-primary-500)${focusOpacity};
 }
 
 /* Disabled states */
 label:has(input[type="radio"]:disabled),
-label:has(input[type="checkbox"]:disabled):not(fieldset[role="group"] label),
+label:has(input[type="checkbox"]:disabled):not(fieldset[role="group"] label):not(label[data-toggle]),
 input[type="radio"]:disabled + label,
-input[type="checkbox"]:disabled + label:not(fieldset[role="group"] label) {
+input[type="checkbox"]:disabled + label:not(fieldset[role="group"] label):not(label[data-toggle]) {
   background-color: var(--color-input-disabled-bg);
   color: var(--color-input-disabled-text);
   border-color: var(--color-border);
@@ -1452,9 +1473,9 @@ input[type="checkbox"]:disabled + label:not(fieldset[role="group"] label) {
 }
 
 label:has(input[type="radio"]:checked:disabled),
-label:has(input[type="checkbox"]:checked:disabled):not(fieldset[role="group"] label),
+label:has(input[type="checkbox"]:checked:disabled):not(fieldset[role="group"] label):not(label[data-toggle]),
 input[type="radio"]:checked:disabled + label,
-input[type="checkbox"]:checked:disabled + label:not(fieldset[role="group"] label) {
+input[type="checkbox"]:checked:disabled + label:not(fieldset[role="group"] label):not(label[data-toggle]) {
   background-color: var(--color-input-disabled-bg);
   color: var(--color-input-disabled-text);
   border-color: var(--color-border);
@@ -1528,6 +1549,84 @@ fieldset[role="group"] input[type="checkbox"]:focus {
   outline-offset: 2px;
 }
 
+/* Toggle switches - enhanced checkboxes with data-toggle attribute */
+label[data-toggle] {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--spacing-3);
+  cursor: pointer;
+  user-select: none;
+  padding: 0;
+  background: transparent;
+  border: none;
+  min-height: auto;
+  font-weight: var(--font-fontWeight-normal);
+}
+
+/* Hide the original checkbox in toggle switches */
+label[data-toggle] input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+/* Toggle switch container */
+label[data-toggle] .toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  background-color: var(--color-gray-300);
+  border-radius: 12px;
+  transition: background-color 200ms ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Toggle switch when checked - using :has() selector */
+label[data-toggle]:has(input[type="checkbox"]:checked) .toggle-switch {
+  background-color: var(--color-success-600);
+}
+
+/* Toggle switch knob */
+label[data-toggle] .toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  transition: left 200ms ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Toggle knob when checked */
+label[data-toggle]:has(input[type="checkbox"]:checked) .toggle-knob {
+  left: 22px;
+}
+
+/* Focus state for toggle switch */
+label[data-toggle]:has(input[type="checkbox"]:focus) .toggle-switch {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+/* Disabled state */
+label[data-toggle]:has(input[type="checkbox"]:disabled) {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+label[data-toggle]:has(input[type="checkbox"]:disabled) .toggle-switch {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 input[type="file"] {
   padding: var(--spacing-2) var(--spacing-4);
   cursor: pointer;
@@ -1560,9 +1659,9 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   padding: calc(var(--spacing-1) * ${buttonPaddingValue}) var(--spacing-6);
   border: ${borderWidth}px solid transparent;
   border-radius: var(--radius-md);
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-base);
-  font-weight: var(--font-fontWeight-medium);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
   line-height: 1;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -1931,7 +2030,6 @@ button:disabled, .btn:disabled, input[type="submit"]:disabled, input[type="butto
   padding-top: var(--spacing-3);
 }
 
-/* Dialog/Modal Styles for Auto-Form */
 .design-config-form {
   /* Mobile: Full screen */
   position: fixed;
@@ -2001,6 +2099,7 @@ auto-form::before {
 
 /* Dark mode adjustments */
 @media (prefers-color-scheme: dark) {
+
   fieldset {
     background-color: var(--color-surface-elevated);
     border: none;
@@ -2564,6 +2663,197 @@ app-toaster aside.toast.alert-error .toast-progress {
 `;
   }
 
+  generateTabStripStyles() {
+    const { layout = {} } = this.options;
+    const breakpoints = layout.breakpoints || { sm: 640, md: 768, lg: 1024, xl: 1280 };
+
+    return /*css*/`/* Tab Strip Component */
+
+/* Tab navigation */
+tab-strip > nav {
+  display: flex;
+  gap: var(--spacing-1);
+  border-bottom: 2px solid var(--color-border);
+  margin-bottom: var(--spacing-6);
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+tab-strip > nav::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Tab links */
+tab-strip > nav > a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-4);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  white-space: nowrap;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px; /* Overlap the nav border */
+}
+
+tab-strip > nav > a:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-hover);
+}
+
+tab-strip > nav > a:focus-visible {
+  outline: var(--focus-ring-width, 2px) solid var(--color-primary-500);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
+  z-index: 1;
+}
+
+/* Active tab */
+tab-strip > nav > a[aria-current="page"] {
+  color: var(--color-primary-600);
+  font-weight: var(--font-weight-semibold);
+  border-bottom-color: var(--color-primary-600);
+}
+
+tab-strip > nav > a[aria-current="page"]:hover {
+  color: var(--color-primary-700);
+  border-bottom-color: var(--color-primary-700);
+  background-color: var(--color-primary-50);
+}
+
+/* Tab panel */
+tab-strip > tab-panel {
+  display: block;
+}
+
+tab-strip > tab-panel[data-tabpanel] {
+  animation: tabFadeIn var(--transition-normal) ease-out;
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+tab-strip > tab-panel[data-tabpanel][hidden] {
+  display: none;
+}
+
+/* Tab content styling */
+tab-strip > tab-panel[data-tabpanel] {
+  padding: var(--spacing-4) 0;
+}
+
+/* Mobile responsive */
+@media (max-width: ${breakpoints.sm - 1}px) {
+  tab-strip > nav {
+    gap: var(--spacing-1);
+  }
+
+  tab-strip > nav > a {
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+  }
+
+  tab-strip > tab-panel[data-tabpanel] {
+    padding: var(--spacing-3) 0;
+  }
+}
+
+`;
+  }
+
+  generateScrollbarStyles() {
+    return /*css*/`/* Custom Scrollbars */
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-secondary-300);
+  border-radius: var(--radius-full);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  transition: background-color var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary-400);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--color-secondary-500);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-secondary-600);
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-secondary-500);
+  }
+  
+  ::-webkit-scrollbar-thumb:active {
+    background: var(--color-secondary-400);
+  }
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-secondary-300) transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  * {
+    scrollbar-color: var(--color-secondary-600) transparent;
+  }
+}
+
+/* Hover effect for scrollable containers */
+*:hover {
+  scrollbar-color: var(--color-secondary-400) transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  *:hover {
+    scrollbar-color: var(--color-secondary-500) transparent;
+  }
+}
+
+`;
+  }
+
   generateIconStyles() {
     const { a11y = {} } = this.options;
     const minTouchTarget = a11y.minTouchTarget || AutoDesigner.TouchTargetSizes.standard;
@@ -3105,29 +3395,17 @@ body:not([class*="surface-"]) fieldset,
   // Static utility method for applying styles to document
   // The host application decides when/how to apply styles
   static applyStyles(css, elementId = "auto-designer-styles") {
-    // Remove existing design system styles
-    const existingLink = document.getElementById(elementId);
-    if (existingLink) {
-      // Revoke the old blob URL to free memory
-      if (existingLink.href && existingLink.href.startsWith('blob:')) {
-        URL.revokeObjectURL(existingLink.href);
-      }
-      existingLink.remove();
+    // Get or create style element
+    let styleElement = document.getElementById(elementId);
+    
+    if (!styleElement) {
+      styleElement = document.createElement('style');
+      styleElement.id = elementId;
+      document.head.appendChild(styleElement);
     }
-
-    // 1. Create a Blob from the CSS string
-    const blob = new Blob([css], { type: 'text/css' });
-
-    // 2. Create an object URL for that Blob
-    const url = URL.createObjectURL(blob);
-
-    // 3. Create a <link> element pointing to it
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = url;
-    link.id = elementId;
-
-    document.head.appendChild(link);
+    
+    // Inject CSS directly into style element
+    styleElement.textContent = css;
   }
 
   // Utility methods for color manipulation
