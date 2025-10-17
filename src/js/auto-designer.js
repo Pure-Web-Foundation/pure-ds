@@ -104,6 +104,7 @@ export class AutoDesigner {
       console.log('Generated tokens:', this.tokens);
     }
     this.css = this.generateCSS();
+    
     if (this.options.debug) {
       console.log('Generated CSS length:', this.css.length);
       console.log('CSS preview:', this.css.substring(0, 500));
@@ -240,11 +241,11 @@ export class AutoDesigner {
   generateFieldsetAdaptiveColors(backgroundShades) {
     // Generate fieldset backgrounds that are subtly different from each surface
     return {
-      onBase: backgroundShades.subtle, // Subtle darker than base
-      onSubtle: backgroundShades.elevated, // Elevated from subtle
-      onElevated: backgroundShades.sunken, // Sunken from elevated (creates contrast)
-      onSunken: this.darkenColor(backgroundShades.sunken, 0.05), // Slightly darker than sunken
-      onOverlay: backgroundShades.elevated, // Elevated from overlay
+      base: backgroundShades.subtle, // Subtle darker than base
+      subtle: backgroundShades.elevated, // Elevated from subtle
+      elevated: backgroundShades.sunken, // Sunken from elevated (creates contrast)
+      sunken: this.darkenColor(backgroundShades.sunken, 0.05), // Slightly darker than sunken
+      overlay: backgroundShades.elevated, // Elevated from overlay
     };
   }
 
@@ -313,11 +314,11 @@ export class AutoDesigner {
   generateDarkModeFieldsetColors(darkSurface) {
     // In dark mode, fieldsets should be slightly lighter for contrast
     return {
-      onBase: darkSurface.elevated, // Elevated from dark base
-      onSubtle: darkSurface.overlay, // Overlay from dark subtle
-      onElevated: this.lightenColor(darkSurface.elevated, 0.08), // Slightly lighter than elevated
-      onSunken: darkSurface.elevated, // Elevated from sunken
-      onOverlay: this.lightenColor(darkSurface.overlay, 0.05), // Slightly lighter than overlay
+      base: darkSurface.elevated, // Elevated from dark base
+      subtle: darkSurface.overlay, // Overlay from dark subtle
+      elevated: this.lightenColor(darkSurface.elevated, 0.08), // Slightly lighter than elevated
+      sunken: darkSurface.elevated, // Elevated from sunken
+      overlay: this.lightenColor(darkSurface.overlay, 0.05), // Slightly lighter than overlay
     };
   }
 
@@ -538,9 +539,10 @@ export class AutoDesigner {
       sticky: (baseZIndex + zIndexStep * 2).toString(),
       fixed: (baseZIndex + zIndexStep * 3).toString(),
       modal: (baseZIndex + zIndexStep * 4).toString(),
-      popover: (baseZIndex + zIndexStep * 5).toString(),
-      tooltip: (baseZIndex + zIndexStep * 6).toString(),
-      notification: (baseZIndex + zIndexStep * 7).toString(),
+      drawer: (baseZIndex + zIndexStep * 5).toString(), // Added drawer token
+      popover: (baseZIndex + zIndexStep * 6).toString(),
+      tooltip: (baseZIndex + zIndexStep * 7).toString(),
+      notification: (baseZIndex + zIndexStep * 8).toString(),
     };
   }
 
@@ -659,7 +661,7 @@ export class AutoDesigner {
     if (components.modals !== false) {
       css += this.generateModalStyles();
     }
-
+    
     if (components.tabStrip !== false) {
       css += this.generateTabStripStyles();
     }
@@ -1026,7 +1028,7 @@ figure {
 
 figcaption {
   margin-top: var(--spacing-3);
-  font-size: var(--font-fontSize-sm);
+  font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   text-align: left;
   line-height: var(--font-lineHeight-relaxed);
@@ -1035,7 +1037,7 @@ figcaption {
 
 @media (min-width: ${breakpoints.sm}px) {
   figcaption {
-    font-size: var(--font-fontSize-base);
+    font-size: var(--font-size-base);
   }
 }
 
@@ -1066,7 +1068,7 @@ blockquote p:last-child {
 blockquote cite {
   display: block;
   margin-top: var(--spacing-2);
-  font-size: var(--font-fontSize-sm);
+  font-size: var(--font-size-sm);
   font-style: normal;
   color: var(--color-text-tertiary);
 }
@@ -1089,7 +1091,7 @@ dl {
 }
 
 dt {
-  font-weight: var(--font-fontWeight-semibold);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-top: var(--spacing-3);
 }
@@ -1170,7 +1172,7 @@ details {
 summary {
   padding: var(--spacing-3) var(--spacing-4);
   cursor: pointer;
-  font-weight: var(--font-fontWeight-medium);
+  font-weight: var(--font-weight-medium);
   user-select: none;
   list-style: none;
   display: flex;
@@ -1188,8 +1190,8 @@ summary::after {
   display: inline-block;
   transform: rotate(90deg);
   transition: transform var(--transition-fast);
-  font-size: var(--font-fontSize-xl);
-  font-weight: var(--font-fontWeight-bold);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
   color: var(--color-text-secondary);
 }
 
@@ -1260,13 +1262,13 @@ fieldset[role="radiogroup"] {
 }
 
 legend {
-  font-weight: var(--font-fontWeight-semibold);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0 0 var(--spacing-3) 0;
   border: none;
   line-height: var(--font-lineHeight-tight);
   padding: 0 var(--spacing-2);
-  font-size: var(--font-fontSize-base);
+  font-size: var(--font-size-base);
 }
 
 /* Form layout utilities */
@@ -1285,22 +1287,22 @@ legend {
 label {
   display: block;
   margin-bottom: var(--spacing-2);
-  font-weight: var(--font-fontWeight-medium);
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
-  font-size: var(--font-fontSize-sm);
+  font-size: var(--font-size-sm);
   line-height: var(--font-lineHeight-normal);
 }
 
 [data-label] {
   display: block;
-  font-weight: var(--font-fontWeight-medium);
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
-  font-size: var(--font-fontSize-sm);
+  font-size: var(--font-size-sm);
   margin-bottom: var(--spacing-2);
 }
 
 .field-description {
-  font-size: var(--font-fontSize-xs);
+  font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   margin-top: var(--spacing-1);
   line-height: var(--font-lineHeight-relaxed);
@@ -1521,7 +1523,7 @@ fieldset[role="group"] label {
   min-height: auto;
   border: none;
   background: none;
-  font-weight: var(--font-fontWeight-normal);
+  font-weight: var(--font-weight-normal);
 }
 
 fieldset[role="group"] label:hover {
@@ -1561,18 +1563,20 @@ label[data-toggle] {
   background: transparent;
   border: none;
   min-height: auto;
-  font-weight: var(--font-fontWeight-normal);
+  font-weight: var(--font-weight-normal);
 }
 
+label[data-toggle] {
+  display: inline-flex;
+  justify-content: flex-end;
+  flex-flow: row-reverse;
+}
 /* Hide the original checkbox in toggle switches */
 label[data-toggle] input[type="checkbox"] {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-  width: 0;
-  height: 0;
-  margin: 0;
+  display: none;
 }
+
+
 
 /* Toggle switch container */
 label[data-toggle] .toggle-switch {
@@ -1591,6 +1595,7 @@ label[data-toggle] .toggle-switch {
 label[data-toggle]:has(input[type="checkbox"]:checked) .toggle-switch {
   background-color: var(--color-success-600);
 }
+
 
 /* Toggle switch knob */
 label[data-toggle] .toggle-knob {
@@ -1736,13 +1741,13 @@ button:disabled, .btn:disabled, input[type="submit"]:disabled, input[type="butto
 /* Button sizes */
 .btn-sm {
   padding: var(--spacing-2) var(--spacing-4);
-  font-size: var(--font-fontSize-sm);
+  font-size: var(--font-size-sm);
   min-height: calc(${minButtonHeight}px * 0.8);
 }
 
 .btn-lg {
   padding: var(--spacing-4) var(--spacing-8);
-  font-size: var(--font-fontSize-lg);
+  font-size: var(--font-size-lg);
   min-height: calc(${minButtonHeight}px * 1.2);
 }
 
@@ -1793,15 +1798,15 @@ button:disabled, .btn:disabled, input[type="submit"]:disabled, input[type="butto
 
 .array-controls button {
   padding: var(--spacing-2) var(--spacing-3);
-  font-size: var(--font-fontSize-sm);
+  font-size: var(--font-size-sm);
   min-height: auto;
 }
 
 .range-value {
   min-width: var(--spacing-16);
   text-align: right;
-  font-weight: var(--font-fontWeight-medium);
-  font-size: var(--font-fontSize-sm);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
   color: var(--color-text-primary);
 }
 
@@ -1913,14 +1918,14 @@ button:disabled, .btn:disabled, input[type="submit"]:disabled, input[type="butto
 }
 
 .category-title {
-  font-size: var(--font-fontSize-lg);
-  font-weight: var(--font-fontWeight-semibold);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   line-height: var(--font-lineHeight-tight);
 }
 
 .category-description {
-  font-size: var(--font-fontSize-sm);
+  font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   line-height: var(--font-lineHeight-normal);
 }
@@ -1959,8 +1964,8 @@ button:disabled, .btn:disabled, input[type="submit"]:disabled, input[type="butto
 }
 
 .basic-fields legend {
-  font-size: var(--font-fontSize-base);
-  font-weight: var(--font-fontWeight-semibold);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-3);
   padding: 0;
@@ -1976,7 +1981,7 @@ button:disabled, .btn:disabled, input[type="submit"]:disabled, input[type="butto
 
 .advanced-fields summary {
   padding: var(--spacing-3) var(--spacing-4);
-  font-weight: var(--font-fontWeight-medium);
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-secondary);
   cursor: pointer;
   border-radius: var(--radius-md);
@@ -2046,8 +2051,8 @@ button:disabled, .btn:disabled, input[type="submit"]:disabled, input[type="butto
 
 .design-config-form h2 {
   margin: 0 0 var(--spacing-6) 0;
-  font-size: var(--font-fontSize-2xl);
-  font-weight: var(--font-fontWeight-bold);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   text-align: center;
   border-bottom: 1px solid var(--color-border);
@@ -2073,7 +2078,7 @@ button:disabled, .btn:disabled, input[type="submit"]:disabled, input[type="butto
   
   .design-config-form h2 {
     text-align: left;
-    font-size: var(--font-fontSize-xl);
+    font-size: var(--font-size-xl);
   }
 }
 
@@ -2108,10 +2113,10 @@ auto-form::before {
   legend {
     color: white;
     background-color: var(--color-surface-elevated);
-    padding: var(--spacing-2) var(--spacing-3);
+    padding: var(--spacing-2) 0;
     border-radius: var(--radius-sm);
     border: none;
-    font-weight: var(--font-fontWeight-semibold);
+    font-weight: var(--font-weight-semibold);
   }
 
   .config-category {
@@ -2152,7 +2157,7 @@ table {
   background-color: var(--color-surface-base);
   border-radius: var(--radius-md);
   overflow: hidden;
-  font-size: var(--font-fontSize-sm);
+  font-size: var(--font-size-sm);
 }
 
 /* Mobile: Stack table or horizontal scroll */
@@ -2176,7 +2181,7 @@ thead {
 th {
   padding: var(--spacing-3) var(--spacing-4);
   text-align: left;
-  font-weight: var(--font-fontWeight-semibold);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   border-bottom: 2px solid var(--color-border);
 }
@@ -2220,7 +2225,7 @@ tbody tr:last-child td {
 
 @media (min-width: ${breakpoints.sm}px) {
   table {
-    font-size: var(--font-fontSize-base);
+    font-size: var(--font-size-base);
   }
 }
 
@@ -2238,7 +2243,7 @@ tbody tr:last-child td {
   display: flex;
   align-items: flex-start;
   gap: var(--spacing-3);
-  font-size: var(--font-fontSize-sm);
+  font-size: var(--font-size-sm);
   line-height: var(--font-lineHeight-relaxed);
 }
 
@@ -2272,9 +2277,9 @@ tbody tr:last-child td {
 }
 
 .alert-title {
-  font-weight: var(--font-fontWeight-semibold);
+  font-weight: var(--font-weight-semibold);
   margin: 0 0 var(--spacing-2) 0;
-  font-size: var(--font-fontSize-base);
+  font-size: var(--font-size-base);
 }
 
 .alert-icon {
@@ -2299,7 +2304,7 @@ tbody tr:last-child td {
   right: var(--spacing-3);
   background: none;
   border: none;
-  font-size: var(--font-fontSize-xl);
+  font-size: var(--font-size-xl);
   line-height: 1;
   opacity: 0.6;
   cursor: pointer;
@@ -2418,8 +2423,8 @@ app-toaster aside.toast.alert-error .toast-progress {
   align-items: center;
   justify-content: center;
   padding: var(--spacing-1) var(--spacing-2);
-  font-size: var(--font-fontSize-xs);
-  font-weight: var(--font-fontWeight-semibold);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
   line-height: 1;
   border-radius: var(--radius-full);
   white-space: nowrap;
@@ -2501,7 +2506,7 @@ app-toaster aside.toast.alert-error .toast-progress {
 
 .badge-lg {
   padding: var(--spacing-2) var(--spacing-3);
-  font-size: var(--font-fontSize-sm);
+  font-size: var(--font-size-sm);
 }
 
 /* Pill variant (more padding, fully rounded) */
@@ -2586,8 +2591,8 @@ app-toaster aside.toast.alert-error .toast-progress {
 }
 
 .modal-title {
-  font-size: var(--font-fontSize-xl);
-  font-weight: var(--font-fontWeight-semibold);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
   margin: 0;
   color: var(--color-text-primary);
 }
@@ -2595,7 +2600,7 @@ app-toaster aside.toast.alert-error .toast-progress {
 .modal-close {
   background: none;
   border: none;
-  font-size: var(--font-fontSize-2xl);
+  font-size: var(--font-size-2xl);
   line-height: 1;
   opacity: 0.6;
   cursor: pointer;
@@ -2670,6 +2675,11 @@ app-toaster aside.toast.alert-error .toast-progress {
     return /*css*/`/* Tab Strip Component */
 
 /* Tab navigation */
+
+tab-strip {
+  margin-top: var(--spacing-6);
+}
+
 tab-strip > nav {
   display: flex;
   gap: var(--spacing-1);
@@ -2735,6 +2745,7 @@ tab-strip > nav > a[aria-current="page"]:hover {
 /* Tab panel */
 tab-strip > tab-panel {
   display: block;
+  margin-top: var(--spacing-4);
 }
 
 tab-strip > tab-panel[data-tabpanel] {
@@ -3218,9 +3229,9 @@ body:not([class*="surface-"]) fieldset,
 .text-left { text-align: left; }
 .text-right { text-align: right; }
 
-.text-sm { font-size: var(--font-fontSize-sm); }
-.text-base { font-size: var(--font-fontSize-base); }
-.text-lg { font-size: var(--font-fontSize-lg); }
+.text-sm { font-size: var(--font-size-sm); }
+.text-base { font-size: var(--font-size-base); }
+.text-lg { font-size: var(--font-size-lg); }
 
 /* Hide/show utilities */
 .hidden { display: none; }
@@ -3297,7 +3308,7 @@ body:not([class*="surface-"]) fieldset,
 @media (min-width: ${breakpoints.sm}px) {
   .sm\\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
   .sm\\:flex-row { flex-direction: row; }
-  .sm\\:text-sm { font-size: var(--font-fontSize-sm); }
+  .sm\\:text-sm { font-size: var(--font-size-sm); }
   .sm\\:p-6 { padding: var(--spacing-6); }
   .sm\\:gap-6 { gap: var(--spacing-6); }
   .sm\\:hidden { display: none; }
@@ -3307,7 +3318,7 @@ body:not([class*="surface-"]) fieldset,
 /* Medium devices (${breakpoints.md}px and up) */
 @media (min-width: ${breakpoints.md}px) {
   .md\\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
-  .md\\:text-lg { font-size: var(--font-fontSize-lg); }
+  .md\\:text-lg { font-size: var(--font-size-lg); }
   .md\\:p-8 { padding: var(--spacing-8); }
   .md\\:gap-8 { gap: var(--spacing-8); }
   .md\\:flex-row { flex-direction: row; }
@@ -3320,7 +3331,7 @@ body:not([class*="surface-"]) fieldset,
 /* Large devices (${breakpoints.lg}px and up) */
 @media (min-width: ${breakpoints.lg}px) {
   .lg\\:grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
-  .lg\\:text-xl { font-size: var(--font-fontSize-xl); }
+  .lg\\:text-xl { font-size: var(--font-size-xl); }
   .lg\\:p-12 { padding: var(--spacing-12); }
   .lg\\:gap-12 { gap: var(--spacing-12); }
   .lg\\:w-1\\/4 { width: 25%; }
@@ -3401,7 +3412,11 @@ body:not([class*="surface-"]) fieldset,
     if (!styleElement) {
       styleElement = document.createElement('style');
       styleElement.id = elementId;
-      document.head.appendChild(styleElement);
+      const firstStyle = document.head.querySelector("link[rel='stylesheet']");
+      if (firstStyle) {
+        document.head.insertBefore(styleElement, firstStyle);
+      } else 
+        document.head.appendChild(styleElement);
     }
     
     // Inject CSS directly into style element

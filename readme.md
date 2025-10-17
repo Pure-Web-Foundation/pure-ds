@@ -133,7 +133,7 @@ colors: {
 --color-secondary-50 through --color-secondary-900
 --color-success-600, --color-danger-600, etc.
 --color-text-primary, --color-text-secondary, --color-text-muted
---color-surface-base, --color-surface-raised, --color-surface-overlay
+--color-surface-base, --color-surface-elevated, --color-surface-overlay
 --color-border, --color-border-subtle, --color-focus
 ```
 
@@ -171,9 +171,9 @@ typography: {
 
 **Generated tokens:**
 ```css
---font-fontFamily-sans, --font-fontFamily-mono
---font-fontSize-xs through --font-fontSize-4xl
---font-fontWeight-light through --font-fontWeight-bold
+--font-family-sans, --font-family-mono
+--font-size-xs through --font-size-4xl
+--font-weight-light through --font-weight-bold
 --font-lineHeight-tight, --font-lineHeight-normal, --font-lineHeight-relaxed
 ```
 

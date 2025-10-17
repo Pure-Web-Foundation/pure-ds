@@ -5,7 +5,6 @@ export { html, LitElement, css };
 import { config } from "./config";
 import { ask } from "./ask";
 import "./app-toaster";
-import "./schema-form";
 import "./svg-icon"
 
 // Initialize the design system

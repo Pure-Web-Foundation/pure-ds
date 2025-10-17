@@ -1,27 +1,19 @@
+import { LitElement, html } from "./lit";
+import { config } from "./config";
+import { AutoDesigner } from "./auto-designer";
+import "./svg-icon";
+import { deepMerge } from "./common";
 
-
-import { LitElement, html } from './lit';
-import { config } from './config';
-import { designToSchema } from './config-to-schema';
-import { AutoDesigner } from './auto-designer';
-import './schema-form';
-import './svg-icon';
-import { deepMerge } from './common';
-
-const STORAGE_KEY = 'pure-ds-config';
+const STORAGE_KEY = "pure-ds-config";
 
 export class DsDesigner extends LitElement {
+  #tmr;
+
   static properties = {
     config: { type: Object, state: true },
-    schema: { type: Object, state: true }
+    schema: { type: Object, state: true },
+    mode: { type: String },
   };
-
-  constructor() {
-    super();
-    this.config = this.loadConfig();
-    this.schema = designToSchema(this.config);
-    this.designer = null;
-  }
 
   createRenderRoot() {
     return this; // Disable shadow DOM
@@ -29,7 +21,23 @@ export class DsDesigner extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this.applyStyles();
+
+    this.mode = "simple";
+
+  
+    this.config = this.loadConfig();
+  
+    this.updateForm()
+  }
+
+  updateForm() {
+    this.schema = null; // Reset schema to show loading state
+    fetch(`/assets/data/auto-design-${this.mode}.json`)
+      .then((response) => response.json())
+      .then((data) => {
+        this.schema = data;
+        
+      });
   }
 
   loadConfig() {
@@ -40,7 +48,7 @@ export class DsDesigner extends LitElement {
         // Merge with defaults to ensure all properties exist
         return deepMerge(config.design, parsed);
       } catch (e) {
-        console.warn('Failed to parse stored config, using defaults', e);
+        console.warn("Failed to parse stored config, using defaults", e);
       }
     }
     return JSON.parse(JSON.stringify(config.design)); // Deep clone
@@ -50,24 +58,35 @@ export class DsDesigner extends LitElement {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(this.config));
   }
 
+  updated(changedProps) {
+    if (changedProps.has("schema")) {
+      this.applyStyles();
+    }
+  }
+
   applyStyles() {
     this.designer = new AutoDesigner(this.config);
     const css = this.designer.css;
     AutoDesigner.applyStyles(css);
-    
+
+    clearTimeout(this.#tmr);
+    this.#tmr = setTimeout(() => {
+      this.dispatchEvent(
+        new CustomEvent("design-updated", {
+          bubbles: true,
+          detail: { config: this.config, designer: this.designer },
+        })
+      );
+    }, 500);
     // Dispatch event for showcase to update
-    this.dispatchEvent(new CustomEvent('design-updated', {
-      bubbles: true,
-      detail: { config: this.config, designer: this.designer }
-    }));
   }
 
   // Flatten nested config to dot-notation for schema-form
-  flattenConfig(obj, prefix = '') {
+  flattenConfig(obj, prefix = "") {
     const flattened = {};
     for (const [key, value] of Object.entries(obj)) {
       const newKey = prefix ? `${prefix}.${key}` : key;
-      if (value && typeof value === 'object' && !Array.isArray(value)) {
+      if (value && typeof value === "object" && !Array.isArray(value)) {
         Object.assign(flattened, this.flattenConfig(value, newKey));
       } else {
         flattened[newKey] = value;
@@ -80,34 +99,34 @@ export class DsDesigner extends LitElement {
     // Get values from the schema-form's serialize method or from event detail
     let values;
     let changedField = null;
-    
+
     // Capture which field changed for smart scrolling
-    if (event.type === 'pw:value-change' && event.detail) {
+    if (event.type === "pw:value-change" && event.detail) {
       changedField = event.detail.name;
     }
-    
+
     if (event.detail && event.detail.json) {
       // pw:serialize event provides { json, formData, valid, issues }
       values = event.detail.json;
     } else {
       // Fallback: get values directly from the form element
-      const form = event.target.closest('schema-form') || event.target;
+      const form = event.target.closest("schema-form") || event.target;
       if (form && form.values) {
         values = form.values;
       } else {
-        console.warn('No values found in form change event', event);
+        console.warn("No values found in form change event", event);
         return;
       }
     }
-    
-    console.log('Form values received:', values);
-    
+
+    console.log("Form values received:", values);
+
     // Convert flattened dot-notation to nested structure
     // e.g., { "colors.primary": "#123" } => { colors: { primary: "#123" } }
     const nestedValues = {};
     for (const [key, value] of Object.entries(values)) {
-      if (key.includes('.')) {
-        const parts = key.split('.');
+      if (key.includes(".")) {
+        const parts = key.split(".");
         let current = nestedValues;
         for (let i = 0; i < parts.length - 1; i++) {
           if (!current[parts[i]]) current[parts[i]] = {};
@@ -118,51 +137,62 @@ export class DsDesigner extends LitElement {
         nestedValues[key] = value;
       }
     }
-    
-    console.log('Nested values:', nestedValues);
-    
+
+    console.log("Nested values:", nestedValues);
+
     // Deep merge the nested values into config
     this.config = deepMerge(this.config, nestedValues);
-    console.log('Updated config:', this.config);
-    this.schema = designToSchema(this.config);
+    console.log("Updated config:", this.config);
+    //this.schema = designToSchema(this.config);
+    
     this.saveConfig();
     this.applyStyles();
-    
+
     // Emit event for showcase to scroll to relevant section
     if (changedField) {
-      console.log('🔔 Emitting design-field-changed event for field:', changedField);
-      this.dispatchEvent(new CustomEvent('design-field-changed', {
-        bubbles: true,
-        composed: true,
-        detail: { 
-          field: changedField, 
-          config: this.config 
-        }
-      }));
+      console.log(
+        "🔔 Emitting design-field-changed event for field:",
+        changedField
+      );
+      this.dispatchEvent(
+        new CustomEvent("design-field-changed", {
+          bubbles: true,
+          composed: true,
+          detail: {
+            field: changedField,
+            config: this.config,
+          },
+        })
+      );
     }
-  }
+  };
 
   handleReset = () => {
-    if (confirm('Reset to default configuration? This will clear your saved settings.')) {
+    if (
+      confirm(
+        "Reset to default configuration? This will clear your saved settings."
+      )
+    ) {
       localStorage.removeItem(STORAGE_KEY);
       this.config = JSON.parse(JSON.stringify(config.design));
-      this.schema = designToSchema(this.config);
+      //this.schema = designToSchema(this.config);
       this.saveConfig();
       this.applyStyles();
     }
-  }
+  };
 
   handleDownload = (format) => {
+    debugger;
     let content, filename, mimeType;
 
-    switch(format) {
-      case 'css':
+    switch (format) {
+      case "css":
         content = this.designer.css;
-        filename = 'pure-ds.css';
-        mimeType = 'text/css';
+        filename = "pure-ds.css";
+        mimeType = "text/css";
         break;
-      
-      case 'config':
+
+      case "config":
         content = `// Pure Design System Configuration
 // Generated: ${new Date().toISOString()}
 
@@ -170,87 +200,124 @@ import { AutoDesigner } from './auto-designer.js';
 
 export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
 `;
-        filename = 'auto-designer.config.js';
-        mimeType = 'text/javascript';
+        filename = "auto-designer.config.js";
+        mimeType = "text/javascript";
         break;
-      
-      case 'tokens':
+
+      case "tokens":
         const tokens = this.designer.generateColorTokens(this.config.colors);
         content = JSON.stringify(tokens, null, 2);
-        filename = 'design-tokens.json';
-        mimeType = 'application/json';
+        filename = "design-tokens.json";
+        mimeType = "application/json";
         break;
     }
 
     const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
-  }
+  };
 
   render() {
+    if (!this.schema) {
+      return html`<p class="abs-center">Loading schema...</p>`;
+    }
     return html`
       <div class="designer-container">
-        <div class="designer-header">
-          <h2>Pure Design System</h2>
-          <p>Configure your design system in real-time</p>
-        </div>
+        <label data-toggle id="mode-toggle">
+          <input
+            type="checkbox"
+            .checked=${this.mode === "advanced"}
+            @change=${(e) => {
+              this.mode = e.target.checked ? "advanced" : "simple";
+              this.updateForm()              
+            }}
+          /><span
+            >${this.mode === "advanced"
+              ? "Switch to Basic Mode"
+              : "Switch to Advanced Mode"}</span
+          >
+        </label>
 
         <div class="designer-form-container">
-          <schema-form 
+          <schema-form
             .jsonSchema=${this.schema}
             .values=${this.flattenConfig(this.config)}
-            hideActions
+            hide-reset
+            hide-submit
             @pw:value-change=${this.handleFormChange}
             @pw:serialize=${this.handleFormChange}
             @change=${this.handleFormChange}
             @input=${this.handleFormChange}
-          ></schema-form>
+          >
+          </schema-form>
         </div>
 
         <div class="designer-actions">
-          <button @click=${this.handleReset} class="btn-secondary" style="width: 100%;">
+          <button
+            @click=${this.handleReset}
+            class="btn-secondary"
+            style="width: 100%;"
+          >
             <svg-icon icon="arrow-counter-clockwise" size="sm"></svg-icon>
             <span>Reset to Defaults</span>
           </button>
 
-          <div data-dropdown>
+          <nav data-dropdown>
             <button class="btn-primary" style="width: 100%;">
               <svg-icon icon="download" size="sm"></svg-icon>
               <span>Download</span>
               <svg-icon icon="caret-down" size="sm"></svg-icon>
             </button>
-            
+
             <menu>
               <li>
-                <a href="#" @click=${(e) => { e.preventDefault(); this.handleDownload('css'); }}>
+                <a
+                  href="#"
+                  @click=${(e) => {
+                    e.preventDefault();
+                    this.handleDownload("css");
+                  }}
+                >
                   <svg-icon icon="file-css" size="sm"></svg-icon>
                   <span>CSS File</span>
                 </a>
               </li>
-              
+
               <li>
-                <a href="#" @click=${(e) => { e.preventDefault(); this.handleDownload('config'); }}>
+                <a
+                  href="#"
+                  @click=${(e) => {
+                    e.preventDefault();
+                    this.handleDownload("config");
+                  }}
+                >
                   <svg-icon icon="file-js" size="sm"></svg-icon>
                   <span>Config File</span>
                 </a>
               </li>
-              
+
               <li>
-                <a href="#" @click=${(e) => { e.preventDefault(); this.handleDownload('tokens'); }}>
+                <a
+                  href="#"
+                  @click=${(e) => {
+                    e.preventDefault();
+                    this.handleDownload("tokens");
+                  }}
+                >
                   <svg-icon icon="brackets-curly" size="sm"></svg-icon>
                   <span>Design Tokens (JSON)</span>
                 </a>
               </li>
             </menu>
-          </div>
+          </nav>
         </div>
       </div>
     `;
   }
 }
 
-customElements.define('ds-designer', DsDesigner);
+customElements.define("ds-designer", DsDesigner);

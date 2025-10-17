@@ -123,6 +123,7 @@ export const config = {
       forms: true,
       tabStrip: true,
       customScrollbars: true,
+      drawer: true,
     },
     
     icons: {
@@ -187,16 +188,16 @@ export const config = {
     
     debug: false,
     
-    output: {
-      file: 'public/assets/css/auto-designer.css',
-      minify: false,
-      sourceMap: false,
-    }
+    // output: {
+    //   file: 'public/assets/css/auto-designer.css',
+    //   minify: false,
+    //   sourceMap: false,
+    // }
   },
 
   // Auto-define configuration for web components
   autoDefine: {
-    baseURL: "/assets/late/",
+    baseURL: "/auto-define/",
     mapper: (tag) => {
       switch(tag) {
         case 'tab-panel':
@@ -207,7 +208,7 @@ export const config = {
     },
     enhancers: [
       {
-        selector: "data-dropdown",
+        selector: "nav[data-dropdown]",
         run: (elem) => {
           //console.log("Enhance dropdown", elem);
 
@@ -226,7 +227,7 @@ export const config = {
         },
       },
       {
-        selector: "data-toggle",
+        selector: "label[data-toggle]",
         run: (elem) => {
           const checkbox = elem.querySelector('input[type="checkbox"]');
           if (!checkbox) {

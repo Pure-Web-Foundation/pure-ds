@@ -55,7 +55,14 @@
       properties: {
         name: { type: "string", title: "Name", default: "John Doe" },
         email: { type: "string", title: "Email", format: "email", default: "john@example.com" },
-        message: { type: "string", title: "Message" }
+        message: { type: "string", title: "Message" },
+        pets: {
+          type: "array",
+          title: "Pets",
+          items: { type: "string", enum: ["Dog", "Cat", "Fish", "Bird"] },
+          uniqueItems: true,
+          default: ["Dog"]
+        }
       }
     };
 

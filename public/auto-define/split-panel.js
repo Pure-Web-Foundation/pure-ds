@@ -10,7 +10,7 @@ class SplitPanel extends LitElement {
   constructor() {
     super();
     this.layout = "horizontal";
-    this.defaultSplit = "300px";
+    this.defaultSplit = "400px";
     this.breakpoint = 1024;
     this.isDragging = false;
   }
@@ -145,6 +145,7 @@ class SplitPanel extends LitElement {
     this.isDragging = true;
     document.body.style.cursor =
       this.layout === "horizontal" ? "col-resize" : "row-resize";
+    event.preventDefault(); // Prevent text selection during dragging
   }
 
   drag(event) {
@@ -193,8 +194,10 @@ class SplitPanel extends LitElement {
     } else {
       this.setAttribute("left-open", "true");
       this.leftPanel.style.display = "block"; // Ensure visibility
-      this.leftPanel.style.transform = "translateX(0)"; // Slide in
-      this.leftPanel.style.transition = "transform var(--transition-fast) ease-in-out"; // Ensure transition
+      setTimeout(() => {
+        this.leftPanel.style.transform = "translateX(0)"; // Slide in
+        this.leftPanel.style.transition = "transform var(--transition-fast) ease-in-out"; // Ensure transition
+      }, 10); // Delay to ensure display:block is applied
       this.leftPanel.style.position = "fixed"; // Ensure fixed positioning
       this.leftPanel.style.top = "0";
       this.leftPanel.style.left = "0";

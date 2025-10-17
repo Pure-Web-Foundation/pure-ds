@@ -1,0 +1,766 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Advanced Configuration",
+  "description": "Configuration for the design system including theme colors, typography, spacing, etc. This drives generation of CSS variables and styling.",
+  "type": "object",
+  "properties": {
+    "colors": {
+      "type": "object",
+      "title": "Colors",
+      "description": "Base theme colors and semantic color overrides.",
+      "properties": {
+        "primary": {
+          "type": "string",
+          "title": "Primary",
+          "description": "Primary brand color (hex code). Used as the main accent and to derive related colors.",
+          "format": "color",
+          "default": "#2d9dc9"
+        },
+        "secondary": {
+          "type": "string",
+          "title": "Secondary",
+          "description": "Secondary or neutral color (hex code). Used for secondary accents, grayscales, etc.",
+          "format": "color",
+          "default": "#a99b95"
+        },
+        "accent": {
+          "type": "string",
+          "title": "Accent",
+          "description": "Accent color (hex code) for highlights or contrast (e.g., a vibrant color like pink or red).",
+          "format": "color",
+          "default": "#e54271"
+        },
+        "background": {
+          "type": "string",
+          "title": "Background",
+          "description": "Base background color for light mode (hex code). Used as the default page background.",
+          "format": "color",
+          "default": "#e7e6de"
+        },
+        "darkMode": {
+          "type": "object",
+          "title": "Dark Mode Overrides",
+          "description": "Custom color overrides for dark mode. If not provided, dark mode colors are auto-generated from light mode values.",
+          "properties": {
+            "background": {
+              "type": "string",
+              "title": "Background",
+              "description": "Background color for dark mode (hex code). Overrides the light mode background with a darker color.",
+              "format": "color",
+              "default": "#16171a"
+            },
+            "secondary": {
+              "type": "string",
+              "title": "Secondary",
+              "description": "Secondary color for dark mode (hex code), e.g. for dark mode borders or inputs. Provides a neutral gray in dark theme.",
+              "format": "color",
+              "default": "#8b9199"
+            }
+          },
+          "required": []
+        },
+        "success": {
+          "type": ["string", "null"],
+          "title": "Success",
+          "description": "Semantic success color (hex code). If null, a green-toned color will be derived automatically from the primary color.",
+          "format": "color",
+          "placeholder": "#28a745",
+          "default": null
+        },
+        "warning": {
+          "type": ["string", "null"],
+          "title": "Warning",
+          "description": "Semantic warning color (hex code). If null, defaults to the accent color.",
+          "format": "color",
+          "default": null
+        },
+        "danger": {
+          "type": ["string", "null"],
+          "title": "Danger",
+          "description": "Semantic danger/error color (hex code). If null, a red-toned color will be derived from the primary color.",
+          "format": "color",
+          "default": null
+        },
+        "info": {
+          "type": ["string", "null"],
+          "title": "Info",
+          "description": "Semantic info color (hex code). If null, defaults to the primary color.",
+          "format": "color",
+          "default": null
+        },
+        "gradientStops": {
+          "type": "integer",
+          "title": "Gradient Stops",
+          "description": "Number of color stops to generate in gradients. Controls how many shades are produced for color gradients.",
+          "default": 3,
+          "minimum": 2
+        },
+        "elevationOpacity": {
+          "type": "number",
+          "title": "Elevation Opacity",
+          "description": "Opacity for elevated surfaces/shadows (0 to 1). A low number gives subtle shadows for elevation.",
+          "default": 0.05,
+          "minimum": 0,
+          "maximum": 1,
+          "multipleOf": 0.05
+        }
+      },
+      "required": []
+    },
+    "typography": {
+      "type": "object",
+      "title": "Typography",
+      "description": "Font families, sizes, and text spacing settings.",
+      "properties": {
+        "fontFamilyHeadings": {
+          "type": "string",
+          "title": "Headings Font Family",
+          "description": "Font family stack for headings (e.g., page titles). Use a CSS font-family string.",
+          "default": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        },
+        "fontFamilyBody": {
+          "type": "string",
+          "title": "Body Font Family",
+          "description": "Font family stack for body text. Use a CSS font-family string.",
+          "default": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        },
+        "fontFamilyMono": {
+          "type": "string",
+          "title": "Monospace Font Family",
+          "description": "Font family for monospaced text (e.g., code blocks). Use a CSS font-family string.",
+          "default": "ui-monospace, \"Cascadia Code\", \"Source Code Pro\", Menlo, Consolas, monospace"
+        },
+        "baseFontSize": {
+          "type": "integer",
+          "title": "Base Font Size",
+          "description": "Base font size in pixels. This is the root text size for the design (e.g., 16px).",
+          "default": 16,
+          "minimum": 8,
+          "maximum": 32
+        },
+        "fontWeightLight": {
+          "type": "string",
+          "title": "Font Weight (Light)",
+          "description": "Label for light font weight. Choose from preset weight options (light, normal, medium, semibold, bold).",
+          "default": "light",
+          "enum": ["light", "normal", "medium", "semibold", "bold"]
+        },
+        "fontWeightNormal": {
+          "type": "string",
+          "title": "Font Weight (Normal)",
+          "description": "Label for normal font weight. Choose from preset weight options (light, normal, medium, semibold, bold).",
+          "default": "normal",
+          "enum": ["light", "normal", "medium", "semibold", "bold"]
+        },
+        "fontWeightMedium": {
+          "type": "string",
+          "title": "Font Weight (Medium)",
+          "description": "Label for medium font weight. Choose from preset weight options (light, normal, medium, semibold, bold).",
+          "default": "medium",
+          "enum": ["light", "normal", "medium", "semibold", "bold"]
+        },
+        "fontWeightSemibold": {
+          "type": "string",
+          "title": "Font Weight (Semibold)",
+          "description": "Label for semibold font weight. Choose from preset weight options (light, normal, medium, semibold, bold).",
+          "default": "semibold",
+          "enum": ["light", "normal", "medium", "semibold", "bold"]
+        },
+        "fontWeightBold": {
+          "type": "string",
+          "title": "Font Weight (Bold)",
+          "description": "Label for bold font weight. Choose from preset weight options (light, normal, medium, semibold, bold).",
+          "default": "bold",
+          "enum": ["light", "normal", "medium", "semibold", "bold"]
+        },
+        "lineHeightTight": {
+          "type": "string",
+          "title": "Line Height (Tight)",
+          "description": "Label for tight line height. Options: tight, normal, relaxed.",
+          "default": "tight",
+          "enum": ["tight", "normal", "relaxed"]
+        },
+        "lineHeightNormal": {
+          "type": "string",
+          "title": "Line Height (Normal)",
+          "description": "Label for normal line height. Options: tight, normal, relaxed.",
+          "default": "normal",
+          "enum": ["tight", "normal", "relaxed"]
+        },
+        "lineHeightRelaxed": {
+          "type": "string",
+          "title": "Line Height (Relaxed)",
+          "description": "Label for relaxed line height. Options: tight, normal, relaxed.",
+          "default": "relaxed",
+          "enum": ["tight", "normal", "relaxed"]
+        },
+        "letterSpacingTight": {
+          "type": "number",
+          "title": "Letter Spacing (Tight)",
+          "description": "Tight letter-spacing (tracking) for text. A negative value reduces spacing (e.g., -0.025 for -2.5%).",
+          "default": -0.025,
+          "minimum": -0.1,
+          "maximum": 0.1,
+          "multipleOf": 0.005
+        },
+        "letterSpacingNormal": {
+          "type": "number",
+          "title": "Letter Spacing (Normal)",
+          "description": "Normal letter-spacing (tracking) for text. 0 means no extra spacing.",
+          "default": 0,
+          "minimum": -0.1,
+          "maximum": 0.1,
+          "multipleOf": 0.005
+        },
+        "letterSpacingWide": {
+          "type": "number",
+          "title": "Letter Spacing (Wide)",
+          "description": "Wide letter-spacing (tracking) for text. A positive value increases spacing (e.g., 0.025 for +2.5%).",
+          "default": 0.025,
+          "minimum": -0.1,
+          "maximum": 0.1,
+          "multipleOf": 0.005
+        }
+      },
+      "required": []
+    },
+    "spatialRhythm": {
+      "type": "object",
+      "title": "Spatial Rhythm",
+      "description": "Spacing system settings for consistent layout rhythm.",
+      "properties": {
+        "baseUnit": {
+          "type": "integer",
+          "title": "Base Spacing Unit",
+          "description": "Base spatial unit in pixels for spacing (e.g., margin/padding).",
+          "default": 16,
+          "minimum": 1
+        },
+        "scaleRatio": {
+          "type": "number",
+          "title": "Scale Ratio",
+          "description": "Scale factor for spacing increments. Each subsequent spacing size is this multiple of the previous one.",
+          "default": 1.25,
+          "minimum": 1,
+          "maximum": 3
+        },
+        "maxSpacingSteps": {
+          "type": "integer",
+          "title": "Max Spacing Steps",
+          "description": "Maximum number of spacing increments to generate (defines the largest spacing scale).",
+          "default": 32,
+          "minimum": 1,
+          "maximum": 100
+        },
+        "containerMaxWidth": {
+          "type": "integer",
+          "title": "Container Max Width",
+          "description": "Maximum content container width in pixels. Defines the max width for layout containers.",
+          "default": 1200,
+          "minimum": 0
+        },
+        "containerPadding": {
+          "type": "number",
+          "title": "Container Padding (units)",
+          "description": "Padding inside containers, as a multiple of the base unit.",
+          "default": 1.0,
+          "minimum": 0
+        },
+        "inputPadding": {
+          "type": "number",
+          "title": "Input Padding (units)",
+          "description": "Padding inside input fields, as a multiple of the base unit.",
+          "default": 0.75,
+          "minimum": 0
+        },
+        "buttonPadding": {
+          "type": "number",
+          "title": "Button Padding (units)",
+          "description": "Padding inside buttons, as a multiple of the base unit.",
+          "default": 1.0,
+          "minimum": 0
+        },
+        "sectionSpacing": {
+          "type": "number",
+          "title": "Section Spacing (units)",
+          "description": "Spacing between sections/components, in multiples of the base unit.",
+          "default": 2.0,
+          "minimum": 0
+        }
+      },
+      "required": []
+    },
+    "layers": {
+      "type": "object",
+      "title": "Layers & Elevation",
+      "description": "Shadow depth, blur effects, and z-index layering.",
+      "properties": {
+        "shadowDepth": {
+          "type": "string",
+          "title": "Shadow Depth",
+          "description": "Default shadow depth level for components. Options: none, light, medium, deep, extreme.",
+          "default": "medium",
+          "enum": ["none", "light", "medium", "deep", "extreme"]
+        },
+        "blurLight": {
+          "type": "number",
+          "title": "Light Blur Radius",
+          "description": "Blur radius for light blur effects (px). Used for subtle background blurring or small shadow blur.",
+          "default": 4,
+          "minimum": 0
+        },
+        "blurMedium": {
+          "type": "number",
+          "title": "Medium Blur Radius",
+          "description": "Blur radius for medium blur effects (px).",
+          "default": 8,
+          "minimum": 0
+        },
+        "blurHeavy": {
+          "type": "number",
+          "title": "Heavy Blur Radius",
+          "description": "Blur radius for heavy blur effects (px).",
+          "default": 16,
+          "minimum": 0
+        },
+        "zIndexBase": {
+          "type": "integer",
+          "title": "z-index Base",
+          "description": "Base z-index for default layer (usually 0).",
+          "default": 0
+        },
+        "zIndexDropdown": {
+          "type": "integer",
+          "title": "z-index Dropdown",
+          "description": "z-index for dropdown menus and similar overlays.",
+          "default": 1000
+        },
+        "zIndexSticky": {
+          "type": "integer",
+          "title": "z-index Sticky",
+          "description": "z-index for sticky (fixed-in-scroll) elements.",
+          "default": 1020
+        },
+        "zIndexFixed": {
+          "type": "integer",
+          "title": "z-index Fixed",
+          "description": "z-index for fixed-position elements.",
+          "default": 1030
+        },
+        "zIndexModal": {
+          "type": "integer",
+          "title": "z-index Modal",
+          "description": "z-index for modal dialogs.",
+          "default": 1040
+        },
+        "zIndexPopover": {
+          "type": "integer",
+          "title": "z-index Popover",
+          "description": "z-index for popovers (small overlay elements).",
+          "default": 1050
+        },
+        "zIndexTooltip": {
+          "type": "integer",
+          "title": "z-index Tooltip",
+          "description": "z-index for tooltips.",
+          "default": 1060
+        },
+        "zIndexNotification": {
+          "type": "integer",
+          "title": "z-index Notification",
+          "description": "z-index for notifications (toasts).",
+          "default": 1070
+        }
+      },
+      "required": []
+    },
+    "shape": {
+      "type": "object",
+      "title": "Shape & Corners",
+      "description": "Border radius and related shape settings.",
+      "properties": {
+        "radiusSize": {
+          "type": "string",
+          "title": "Base Border Radius",
+          "description": "Base border radius size for components. Options: none (0px), small (4px), medium (8px), large (16px), full (9999px for pill shape).",
+          "default": "large",
+          "enum": ["none", "small", "medium", "large", "full"]
+        },
+        "borderWidth": {
+          "type": "string",
+          "title": "Base Border Width",
+          "description": "Base border width for components. Options: hairline (0.5px), thin (1px), medium (2px), thick (3px).",
+          "default": "thin",
+          "enum": ["hairline", "thin", "medium", "thick"]
+        },
+        "customRadius": {
+          "type": ["string", "null"],
+          "title": "Custom Border Radius",
+          "description": "Custom border radius value (CSS length, e.g., '10px' or '50%'). Overrides radiusSize if set. Null means use standard radius.",
+          "default": null
+        }
+      },
+      "required": []
+    },
+    "behavior": {
+      "type": "object",
+      "title": "Behavior & Animations",
+      "description": "Global behavior settings like transitions and hover effects.",
+      "properties": {
+        "transitionSpeed": {
+          "type": "string",
+          "title": "Transition Speed",
+          "description": "Standard transition animation speed. Options: fast (~150ms), normal (~250ms), slow (~350ms).",
+          "default": "normal",
+          "enum": ["fast", "normal", "slow"]
+        },
+        "animationEasing": {
+          "type": "string",
+          "title": "Animation Easing",
+          "description": "Default easing function for animations. Options: linear, ease, ease-in, ease-out, ease-in-out, bounce.",
+          "default": "ease-out",
+          "enum": ["linear", "ease", "ease-in", "ease-out", "ease-in-out", "bounce"]
+        },
+        "customTransitionSpeed": {
+          "type": ["number", "null"],
+          "title": "Custom Transition Speed",
+          "description": "Custom transition duration in milliseconds. If provided, overrides the preset transitionSpeed.",
+          "default": null,
+          "minimum": 0
+        },
+        "customEasing": {
+          "type": ["string", "null"],
+          "title": "Custom Easing Function",
+          "description": "Custom CSS easing function (e.g., a cubic-bezier string). Overrides the preset animationEasing if set.",
+          "default": null
+        },
+        "focusRingWidth": {
+          "type": "integer",
+          "title": "Focus Ring Width",
+          "description": "Width of the focus outline/ring in pixels.",
+          "default": 3,
+          "minimum": 0
+        },
+        "focusRingOpacity": {
+          "type": "number",
+          "title": "Focus Ring Opacity",
+          "description": "Opacity of the focus ring (0 to 1). Controls transparency of the focus highlight.",
+          "default": 0.3,
+          "minimum": 0,
+          "maximum": 1,
+          "multipleOf": 0.05
+        },
+        "hoverOpacity": {
+          "type": "number",
+          "title": "Hover Opacity",
+          "description": "Opacity of hover state overlay (0 to 1). A semi-transparent overlay applied on hover.",
+          "default": 0.8,
+          "minimum": 0,
+          "maximum": 1,
+          "multipleOf": 0.05
+        }
+      },
+      "required": []
+    },
+    "layout": {
+      "type": "object",
+      "title": "Layout & Grid",
+      "description": "Grid system and layout density settings.",
+      "properties": {
+        "gridColumns": {
+          "type": "integer",
+          "title": "Grid Columns",
+          "description": "Number of columns in the grid system.",
+          "default": 12,
+          "minimum": 1,
+          "maximum": 24
+        },
+        "gridGutter": {
+          "type": "number",
+          "title": "Grid Gutter Width",
+          "description": "Gutter width between grid columns, as a multiple of the base unit.",
+          "default": 1.0,
+          "minimum": 0
+        },
+        "breakpoints": {
+          "type": "object",
+          "title": "Breakpoints",
+          "description": "Responsive breakpoints (min-width in pixels for various screen sizes).",
+          "properties": {
+            "sm": {
+              "type": "integer",
+              "title": "Small (sm) Breakpoint",
+              "description": "Minimum width (px) for small screens (e.g., mobile).",
+              "default": 640,
+              "minimum": 0
+            },
+            "md": {
+              "type": "integer",
+              "title": "Medium (md) Breakpoint",
+              "description": "Minimum width (px) for medium screens (e.g., tablets).",
+              "default": 768,
+              "minimum": 0
+            },
+            "lg": {
+              "type": "integer",
+              "title": "Large (lg) Breakpoint",
+              "description": "Minimum width (px) for large screens (e.g., laptops).",
+              "default": 1024,
+              "minimum": 0
+            },
+            "xl": {
+              "type": "integer",
+              "title": "Extra Large (xl) Breakpoint",
+              "description": "Minimum width (px) for extra-large screens (e.g., desktops).",
+              "default": 1280,
+              "minimum": 0
+            }
+          },
+          "required": []
+        },
+        "densityCompact": {
+          "type": "number",
+          "title": "Density - Compact",
+          "description": "UI density scale factor for compact mode. A multiplier less than 1 for tighter spacing (e.g., 0.8).",
+          "default": 0.8,
+          "minimum": 0.5,
+          "maximum": 2
+        },
+        "densityNormal": {
+          "type": "number",
+          "title": "Density - Normal",
+          "description": "UI density scale factor for normal mode (default 1.0).",
+          "default": 1.0,
+          "minimum": 0.5,
+          "maximum": 2
+        },
+        "densityComfortable": {
+          "type": "number",
+          "title": "Density - Comfortable",
+          "description": "UI density scale factor for comfortable mode. A multiplier greater than 1 for more spacing (e.g., 1.2).",
+          "default": 1.2,
+          "minimum": 0.5,
+          "maximum": 2
+        },
+        "buttonMinHeight": {
+          "type": "integer",
+          "title": "Button Min Height",
+          "description": "Minimum height for buttons in pixels. Ensures touch targets meet accessibility guidelines (e.g., 44px).",
+          "default": 44,
+          "minimum": 1
+        },
+        "inputMinHeight": {
+          "type": "integer",
+          "title": "Input Min Height",
+          "description": "Minimum height for input fields in pixels.",
+          "default": 40,
+          "minimum": 1
+        }
+      },
+      "required": []
+    },
+    "advanced": {
+      "type": "object",
+      "title": "Advanced Settings",
+      "description": "Advanced design options.",
+      "properties": {
+        "linkStyle": {
+          "type": "string",
+          "title": "Link Style",
+          "description": "Default display style for hyperlinks. Options: inline (standard inline text link), block (block-level link), button (styled like a button).",
+          "default": "inline",
+          "enum": ["inline", "block", "button"]
+        },
+        "colorDerivation": {
+          "type": "string",
+          "title": "Color Derivation Method",
+          "description": "Method for deriving color variations (success/warning/etc) from base colors. e.g., 'hsl' uses HSL color shifts.",
+          "default": "hsl"
+        }
+      },
+      "required": []
+    },
+    "a11y": {
+      "type": "object",
+      "title": "Accessibility (A11y)",
+      "description": "Accessibility-related settings.",
+      "properties": {
+        "minTouchTarget": {
+          "type": "integer",
+          "title": "Min Touch Target",
+          "description": "Minimum touch target size in pixels. Ensures interactive elements are at least this size (44px is standard).",
+          "default": 44,
+          "minimum": 1
+        },
+        "prefersReducedMotion": {
+          "type": "boolean",
+          "title": "Prefers Reduced Motion",
+          "description": "Whether to respect users' reduced motion preference. If true, reduces or disables non-essential animations.",
+          "default": true
+        },
+        "focusStyle": {
+          "type": "string",
+          "title": "Focus Style",
+          "description": "Style for focus outlines. Options: ring (default outline ring), outline (browser default outline), border (change border style), glow (subtle glow).",
+          "default": "ring",
+          "enum": ["ring", "outline", "border", "glow"]
+        }
+      },
+      "required": []
+    },
+    "components": {
+      "type": "object",
+      "title": "Component Toggles",
+      "description": "Enable or disable built-in component styling.",
+      "properties": {
+        "tables": {
+          "type": "boolean",
+          "title": "Tables",
+          "description": "Include styling for table components.",
+          "default": true
+        },
+        "alerts": {
+          "type": "boolean",
+          "title": "Alerts",
+          "description": "Include styling for alert components.",
+          "default": true
+        },
+        "toasts": {
+          "type": "boolean",
+          "title": "Toasts",
+          "description": "Include styling for toast notification components.",
+          "default": true
+        },
+        "badges": {
+          "type": "boolean",
+          "title": "Badges",
+          "description": "Include styling for badge components.",
+          "default": true
+        },
+        "modals": {
+          "type": "boolean",
+          "title": "Modals",
+          "description": "Include styling for modal dialog components.",
+          "default": true
+        },
+        "forms": {
+          "type": "boolean",
+          "title": "Forms",
+          "description": "Include styling for form elements (inputs, buttons, etc.).",
+          "default": true
+        },
+        "tabStrip": {
+          "type": "boolean",
+          "title": "Tab Strip",
+          "description": "Include styling for tab strip (tabs) components.",
+          "default": true
+        },
+        "customScrollbars": {
+          "type": "boolean",
+          "title": "Custom Scrollbars",
+          "description": "Include custom styling for scrollbars.",
+          "default": true
+        },
+        "drawer": {
+          "type": "boolean",
+          "title": "Drawer",
+          "description": "Include styling for drawer (off-canvas panel) components.",
+          "default": true
+        }
+      },
+      "required": []
+    },
+    "icons": {
+      "type": "object",
+      "title": "Icons",
+      "description": "Icon library configuration and selection.",
+      "properties": {
+        "set": {
+          "type": "string",
+          "title": "Icon Set",
+          "description": "Icon set or library to use (e.g., 'phosphor'). Ensure the icon set is available in the project.",
+          "default": "phosphor"
+        },
+        "weight": {
+          "type": "string",
+          "title": "Icon Weight",
+          "description": "Default icon weight/style (if applicable for the icon set). For Phosphor icons: thin, light, regular, bold, fill, duotone.",
+          "default": "regular",
+          "enum": ["thin", "light", "regular", "bold", "fill", "duotone"]
+        },
+        "defaultSize": {
+          "type": "integer",
+          "title": "Default Icon Size",
+          "description": "Default icon size in pixels.",
+          "default": 24,
+          "minimum": 1
+        },
+        "sizes": {
+          "type": "object",
+          "title": "Icon Sizes",
+          "description": "Named icon sizes (in pixels) for various contexts.",
+          "properties": {
+            "xs": {
+              "type": "integer",
+              "title": "Extra Small Icon (xs)",
+              "description": "Pixel size for extra small icons.",
+              "default": 16,
+              "minimum": 1
+            },
+            "sm": {
+              "type": "integer",
+              "title": "Small Icon (sm)",
+              "description": "Pixel size for small icons.",
+              "default": 20,
+              "minimum": 1
+            },
+            "md": {
+              "type": "integer",
+              "title": "Medium Icon (md)",
+              "description": "Pixel size for medium icons.",
+              "default": 24,
+              "minimum": 1
+            },
+            "lg": {
+              "type": "integer",
+              "title": "Large Icon (lg)",
+              "description": "Pixel size for large icons.",
+              "default": 32,
+              "minimum": 1
+            },
+            "xl": {
+              "type": "integer",
+              "title": "Extra Large Icon (xl)",
+              "description": "Pixel size for extra large icons.",
+              "default": 48,
+              "minimum": 1
+            },
+            "2xl": {
+              "type": "integer",
+              "title": "2x Large Icon (2xl)",
+              "description": "Pixel size for double extra large icons.",
+              "default": 64,
+              "minimum": 1
+            }
+          },
+          "required": []
+        },
+        
+        "spritePath": {
+          "type": "string",
+          "title": "Sprite Path",
+          "description": "File path or URL to the icon sprite (if using an SVG sprite sheet).",
+          "default": "public/assets/img/icons.svg"
+        }
+      },
+      "required": []
+    },
+    "debug": {
+      "type": "boolean",
+      "title": "Debug Mode",
+      "description": "Enable debug mode. If true, the design system will log verbose debug information to the console.",
+      "default": false
+    }
+  },
+  "required": []
+}

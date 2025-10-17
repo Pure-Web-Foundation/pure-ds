@@ -24,7 +24,7 @@ customElements.define(
     </button>
 
     <!-- Mobile overlay -->
-    <div class="mobile-overlay" id="mobileOverlay"></div>
+    
 
     `;
     }

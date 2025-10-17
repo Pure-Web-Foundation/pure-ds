@@ -21,6 +21,8 @@ export { str } from "@lit/localize";
 export { until } from "lit/directives/until.js";
 export { unsafeHTML } from "lit/directives/unsafe-html.js";
 
+export { unsafeSVG } from 'lit/directives/unsafe-svg.js';
+
 export { msg } from "@qogni-technologies/pwa-utils-library/utils/msg.js";
 
 /**

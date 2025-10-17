@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Configuration",
+  "type": "object",
+  "properties": {
+    "colors": {
+      "type": "object",
+      "title": "Colors",
+      "properties": {
+        "primary": {
+          "type": "string",
+          "format": "color",
+          "title": "Primary",
+          "default": "#2d9dc9"
+        },
+        "secondary": {
+          "type": "string",
+          "format": "color",
+          "title": "Secondary",
+          "default": "#a99b95"
+        },
+        "accent": {
+          "type": "string",
+          "format": "color",
+          "title": "Accent",
+          "default": "#e54271"
+        },
+        "background": {
+          "type": "string",
+          "format": "color",
+          "title": "Background",
+          "default": "#e7e6de"
+        }
+      }
+    },
+    "typography": {
+      "type": "object",
+      "title": "Typography",
+      "properties": {
+        "fontFamilyHeadings": {
+          "type": "string",
+          "title": "Headings Font Family",
+          "default": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        },
+        "fontFamilyBody": {
+          "type": "string",
+          "title": "Body Font Family",
+          "default": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+        },
+        "baseFontSize": {
+          "type": "integer",
+          "title": "Base Font Size (px)",
+          "default": 16,
+          "minimum": 8,
+          "maximum": 32
+        }
+      }
+    },
+    "spatialRhythm": {
+      "type": "object",
+      "title": "Spacing",
+      "properties": {
+        "baseUnit": {
+          "type": "integer",
+          "title": "Base Unit (px)",
+          "default": 16,
+          "minimum": 1
+        }
+      }
+    },
+    "shape": {
+      "type": "object",
+      "title": "Shape",
+      "properties": {
+        "radiusSize": {
+          "type": "string",
+          "title": "Border Radius",
+          "enum": ["none", "small", "medium", "large", "full"],
+          "default": "large"
+        }
+      }
+    }
+  }
+}

@@ -337,7 +337,7 @@ customElements.define(
 
         <div style="margin-top: var(--spacing-6); padding: var(--spacing-4); background: var(--color-surface-elevated); border-radius: var(--radius-md);">
           <strong>Current Values:</strong>
-          <pre id="form-output" style="font-family: var(--font-fontFamily-mono); font-size: var(--font-fontSize-sm); margin-top: var(--spacing-2); overflow-x: auto;">{}</pre>
+          <pre id="form-output" style="font-family: var(--font-fontFamily-mono); font-size: var(--font-size-sm); margin-top: var(--spacing-2); overflow-x: auto;">{}</pre>
         </div>
       </section>
       
