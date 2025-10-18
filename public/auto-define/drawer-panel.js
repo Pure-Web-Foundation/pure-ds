@@ -28,26 +28,39 @@ export class DrawerPanel extends LitElement {
       --_max-h: var(--drawer-max-height, 70vh);
       --_easing: var(--drawer-easing, cubic-bezier(0.25, 1, 0.5, 1));
       --_dur: var(--drawer-duration, 280ms);
-      --_backdrop-bg: var(--drawer-backdrop-bg, rgba(0,0,0,.2));
+      --_backdrop-bg: var(--drawer-backdrop-bg, rgba(0, 0, 0, 0.2));
       --_backdrop-blur: var(--drawer-backdrop-blur, 5px);
-      --_backdrop-brightness: var(--drawer-backdrop-brightness, .8);
+      --_backdrop-brightness: var(--drawer-backdrop-brightness, 0.8);
       --_handle-w: var(--drawer-handle-width, 36px);
       --_handle-h: var(--drawer-handle-height, 4px);
       --_handle-r: var(--drawer-handle-radius, 999px);
-      --_handle-bg: var(--drawer-handle-bg, color-mix(in oklab, CanvasText 20%, Canvas 80%));
+      --_handle-bg: var(
+        --drawer-handle-bg,
+        color-mix(in oklab, CanvasText 20%, Canvas 80%)
+      );
       --_panel-radius: var(--drawer-radius, 16px);
-      --_shadow: var(--drawer-shadow, 0 10px 40px rgba(0,0,0,.25));
+      --_shadow: var(--drawer-shadow, 0 10px 40px rgba(0, 0, 0, 0.25));
       --_panel-bg: var(--drawer-bg, var(--color-surface-overlay, Canvas));
       --_header-min-hit: 40px;
-      --_backdrop-z: var(--z-modal, 1040); /* Use AutoDesigner z-index for modal */
-      --_drawer-z: var(--z-drawer, 1050);  /* Use AutoDesigner z-index for drawer */
+      --_backdrop-z: var(
+        --z-modal,
+        1040
+      ); /* Use AutoDesigner z-index for modal */
+      --_drawer-z: var(
+        --z-drawer,
+        1050
+      ); /* Use AutoDesigner z-index for drawer */
       contain: layout style size;
     }
     .backdrop {
       position: fixed;
       inset: 0;
-      background: var(--_backdrop-bg);
-      backdrop-filter: blur(var(--_backdrop-blur)) brightness(var(--_backdrop-brightness));
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.2),
+        rgba(255, 255, 255, 0.1)
+      );
+      backdrop-filter: blur(10px) saturate(150%) brightness(0.9);
       opacity: 0;
       pointer-events: none;
       transition: opacity var(--_dur) var(--_easing);
@@ -68,12 +81,16 @@ export class DrawerPanel extends LitElement {
       transform: translateY(var(--_y, 100%));
       z-index: var(--_drawer-z);
     }
-    :host([position="bottom"]) .layer { bottom: 0; }
-    :host([position="top"]) .layer { top: 0; }
+    :host([position="bottom"]) .layer {
+      bottom: 0;
+    }
+    :host([position="top"]) .layer {
+      top: 0;
+    }
 
     aside {
       display: grid;
-      grid-template-rows: auto minmax(0,1fr);
+      grid-template-rows: auto minmax(0, 1fr);
       background: var(--_panel-bg);
       box-shadow: var(--_shadow);
       max-height: var(--_max-h);
@@ -105,7 +122,7 @@ export class DrawerPanel extends LitElement {
       block-size: var(--_handle-h);
       border-radius: var(--_handle-r);
       background: var(--_handle-bg);
-      opacity: .9;
+      opacity: 0.9;
       pointer-events: none;
       user-select: none;
     }
@@ -119,9 +136,15 @@ export class DrawerPanel extends LitElement {
       -webkit-overflow-scrolling: touch;
       contain: layout paint style;
     }
-    :host([open]) .layer { transform: translateY(0); }
-    :host(:not([open])) .layer { transform: translateY(100%); }
-    :host aside { outline: none; }
+    :host([open]) .layer {
+      transform: translateY(0);
+    }
+    :host(:not([open])) .layer {
+      transform: translateY(100%);
+    }
+    :host aside {
+      outline: none;
+    }
 
     @media (min-width: 800px) {
       aside {
@@ -144,7 +167,11 @@ export class DrawerPanel extends LitElement {
 
   render() {
     return html`
-      <div class="backdrop" @click=${this.#onBackdropClick} part="backdrop"></div>
+      <div
+        class="backdrop"
+        @click=${this.#onBackdropClick}
+        part="backdrop"
+      ></div>
       <div class="layer" id="layer" aria-hidden=${!this.open}>
         <aside
           role=${ifDefined(this.open ? "dialog" : undefined)}
@@ -155,7 +182,11 @@ export class DrawerPanel extends LitElement {
           @pointerdown=${this.drag !== "none" ? this.#onPointerDown : null}
         >
           <header part="header">
-            <div class="grab-handle" part="grab-handle" aria-hidden="true"></div>
+            <div
+              class="grab-handle"
+              part="grab-handle"
+              aria-hidden="true"
+            ></div>
             <slot name="drawer-header"></slot>
           </header>
           <main part="content">
@@ -171,7 +202,9 @@ export class DrawerPanel extends LitElement {
     this.#applyFraction(this.open ? 0 : 1, false);
 
     // Pointer listeners
-    window.addEventListener("pointermove", this.#onPointerMove, { passive: false });
+    window.addEventListener("pointermove", this.#onPointerMove, {
+      passive: false,
+    });
     window.addEventListener("pointerup", this.#onPointerUp, { passive: true });
     window.addEventListener("keydown", this.#onKeyDown);
 
@@ -180,7 +213,9 @@ export class DrawerPanel extends LitElement {
     this.#resizeObs.observe(this.#aside);
     window.addEventListener("resize", this.#recalc, { passive: true });
     if (window.visualViewport)
-      window.visualViewport.addEventListener("resize", this.#recalc, { passive: true });
+      window.visualViewport.addEventListener("resize", this.#recalc, {
+        passive: true,
+      });
 
     this.#recalc();
   }
@@ -204,15 +239,24 @@ export class DrawerPanel extends LitElement {
       this.dispatchEvent(new Event("toggle"));
     }
     if (changed.has("maxHeight") && this.#aside) {
-      this.#aside.style.setProperty("--drawer-max-height", this.maxHeight || "70vh");
+      this.#aside.style.setProperty(
+        "--drawer-max-height",
+        this.maxHeight || "70vh"
+      );
       this.#recalc();
     }
   }
 
   // Public API
-  openDrawer() { this.open = true; }
-  closeDrawer() { this.open = false; }
-  toggleDrawer() { this.open = !this.open; }
+  openDrawer() {
+    this.open = true;
+  }
+  closeDrawer() {
+    this.open = false;
+  }
+  toggleDrawer() {
+    this.open = !this.open;
+  }
 
   // Events
   #onBackdropClick = () => this.closeDrawer();
@@ -238,13 +282,17 @@ export class DrawerPanel extends LitElement {
 
     // Capture pointer so dragging continues outside the element
     if (e.target?.setPointerCapture && e.pointerId != null) {
-      try { e.target.setPointerCapture(e.pointerId); } catch {}
+      try {
+        e.target.setPointerCapture(e.pointerId);
+      } catch {}
     }
 
     cancelAnimationFrame(this.#raf);
     this.style.userSelect = "none";
     document.documentElement.style.cursor = "grabbing";
-    this.renderRoot.querySelector("main")?.style.setProperty("overflow", "hidden");
+    this.renderRoot
+      .querySelector("main")
+      ?.style.setProperty("overflow", "hidden");
   };
 
   #onPointerMove = (e) => {
@@ -254,7 +302,12 @@ export class DrawerPanel extends LitElement {
 
     // Compute fraction based on displacement since drag start (not cumulative updates)
     const deltaFromStart = p.y - this.#startY; // positive when moving down
-    const next = this.#clamp(this.#startFraction + (dir * deltaFromStart) / Math.max(1, this.#drawerHeight), 0, 1);
+    const next = this.#clamp(
+      this.#startFraction +
+        (dir * deltaFromStart) / Math.max(1, this.#drawerHeight),
+      0,
+      1
+    );
     this.#applyFraction(next, false);
 
     // Velocity (px/ms), positive when moving down in screen coords
@@ -275,11 +328,11 @@ export class DrawerPanel extends LitElement {
     this.renderRoot.querySelector("main")?.style.removeProperty("overflow");
 
     const dir = this.position === "bottom" ? 1 : -1;
-    const throwCloseThreshold = 1.0 / 1000 * 1000; // keep var for clarity; we use 1.0 px/ms below
+    const throwCloseThreshold = (1.0 / 1000) * 1000; // keep var for clarity; we use 1.0 px/ms below
 
     // Decide based on velocity first (throw down closes), else position threshold
-    const fastDown = (this.#velocityY * dir) > 1.0; // > ~1000 px/s downward relative to panel
-    const fastUp   = (this.#velocityY * dir) < -1.0; // fast upward
+    const fastDown = this.#velocityY * dir > 1.0; // > ~1000 px/s downward relative to panel
+    const fastUp = this.#velocityY * dir < -1.0; // fast upward
 
     if (fastDown) {
       this.#animateTo(1); // close
@@ -292,7 +345,9 @@ export class DrawerPanel extends LitElement {
 
     // Release pointer capture
     if (e.target?.releasePointerCapture && e.pointerId != null) {
-      try { e.target.releasePointerCapture(e.pointerId); } catch {}
+      try {
+        e.target.releasePointerCapture(e.pointerId);
+      } catch {}
     }
   };
 
@@ -305,10 +360,13 @@ export class DrawerPanel extends LitElement {
 
   // Helpers
   #getPoint(e) {
-    if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    if (e.touches && e.touches[0])
+      return { x: e.touches[0].clientX, y: e.touches[0].clientY };
     return { x: e.clientX ?? 0, y: e.clientY ?? 0 };
   }
-  #clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+  #clamp(v, lo, hi) {
+    return Math.min(hi, Math.max(lo, v));
+  }
 
   #applyFraction(f, withTransition) {
     this.#currentFraction = this.#clamp(f, 0, 1);
@@ -316,9 +374,10 @@ export class DrawerPanel extends LitElement {
     const layer = this.renderRoot.getElementById("layer");
     if (!layer) return;
     layer.style.transition = t;
-    const yPct = this.position === "bottom"
-      ? this.#currentFraction * 100
-      : -this.#currentFraction * 100;
+    const yPct =
+      this.position === "bottom"
+        ? this.#currentFraction * 100
+        : -this.#currentFraction * 100;
     layer.style.transform = `translateY(${yPct}%)`;
   }
 

@@ -1,10 +1,14 @@
-import { LitElement, html } from "./lit";
+import { LitElement, html, nothing } from "./lit";
 import { config } from "./config";
 import { AutoDesigner } from "./auto-designer";
 import "./svg-icon";
 import { deepMerge } from "./common";
 
 const STORAGE_KEY = "pure-ds-config";
+
+function toast(message, options = {}) {
+  document.querySelector("pure-app").toast(message, options);
+}
 
 export class DsDesigner extends LitElement {
   #tmr;
@@ -223,7 +227,8 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
 
   render() {
     if (!this.schema) {
-      return html`<p class="abs-center">Loading schema...</p>`;
+      toast("Loading schema...", { duration: 1000 });
+      return nothing
     }
     return html`
       <div class="designer-container">

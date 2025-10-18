@@ -1172,6 +1172,7 @@ details {
 summary {
   padding: var(--spacing-3) var(--spacing-4);
   cursor: pointer;
+  border-radius: var(--radius-md);
   font-weight: var(--font-weight-medium);
   user-select: none;
   list-style: none;
@@ -1658,6 +1659,7 @@ select {
 /* Button styling */
 button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   display: inline-flex;
+  gap: var(--spacing-1);
   align-items: center;
   justify-content: center;
   min-height: ${minButtonHeight}px;
