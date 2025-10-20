@@ -7,6 +7,13 @@ customElements.define(
     constructor() {
       super();
       this.innerHTML = this.render();
+      
+      // Load showcase.css AFTER design tokens are available
+      // This ensures all CSS custom properties referenced in showcase.css exist
+      const showcaseLink = document.createElement('link');
+      showcaseLink.rel = 'stylesheet';
+      showcaseLink.href = '/assets/css/showcase.css';
+      document.head.appendChild(showcaseLink);
     }
 
     render() {
