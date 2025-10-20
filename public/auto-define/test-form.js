@@ -313,7 +313,7 @@ customElements.define(
       this.addEventListener('pw:value-change', (e) => {
         const output = this.querySelector('#form-output');
         if (output) {
-          const form = this.querySelector('schema-form');
+          const form = this.querySelector('pds-jsonform');
           output.textContent = JSON.stringify(form?.values || {}, null, 2);
         }
       });
@@ -333,7 +333,7 @@ customElements.define(
         <h2>Comprehensive Schema Form Test</h2>
         <p>This form tests all default renderers in SchemaForm</p>
         
-        <schema-form .jsonSchema=${schema} submit-label="Submit Form"></schema-form>
+        <pds-jsonform .jsonSchema=${schema} submit-label="Submit Form"></pds-jsonform>
 
         <div style="margin-top: var(--spacing-6); padding: var(--spacing-4); background: var(--color-surface-elevated); border-radius: var(--radius-md);">
           <strong>Current Values:</strong>

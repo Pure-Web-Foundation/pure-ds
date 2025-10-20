@@ -9,7 +9,7 @@ function getStep(value) {
 }
 
 /**
- * <schema-form>
+ * <pds-jsonform>
  * Light DOM, JSON-Schema–aware form generator.
  * - Renderers return ONLY controls; wrapper (label/fieldset) is centralized.
  * - ES2022 #privates throughout.
@@ -20,26 +20,26 @@ function getStep(value) {
  *
  * Usage options:
  * 1. Default buttons:
- *    <schema-form .jsonSchema=${schema}></schema-form>
+ *    <pds-jsonform .jsonSchema=${schema}></pds-jsonform>
  *
  * 2. Customize labels:
- *    <schema-form .jsonSchema=${schema} submit-label="Save" reset-label="Clear"></schema-form>
+ *    <pds-jsonform .jsonSchema=${schema} submit-label="Save" reset-label="Clear"></pds-jsonform>
  *
  * 3. Hide reset button:
- *    <schema-form .jsonSchema=${schema} hide-reset></schema-form>
+ *    <pds-jsonform .jsonSchema=${schema} hide-reset></pds-jsonform>
  *
  * 4. Add extra buttons (slot):
- *    <schema-form .jsonSchema=${schema}>
+ *    <pds-jsonform .jsonSchema=${schema}>
  *      <button type="button" slot="actions" @click=${...}>Cancel</button>
- *    </schema-form>
+ *    </pds-jsonform>
  *
  * 5. Completely custom actions (hides default buttons):
- *    <schema-form .jsonSchema=${schema} hide-actions>
+ *    <pds-jsonform .jsonSchema=${schema} hide-actions>
  *      <div slot="actions" style="display: flex; gap: 1rem;">
  *        <button type="submit" class="btn btn-primary">Custom Submit</button>
  *        <button type="button" class="btn">Custom Action</button>
  *      </div>
- *    </schema-form>
+ *    </pds-jsonform>
  */
 export class SchemaForm extends LitElement {
   static properties = {
@@ -268,7 +268,7 @@ export class SchemaForm extends LitElement {
     const tree = this.#compiled;
     if (!tree)
       return html`<div
-        class="schema-form-error"
+        class="pds-jsonform-error"
         style="color: red; padding: 1rem; border: 1px solid red; background: #fee;"
       >
         <p>Failed to generate form schema.</p>
@@ -1051,4 +1051,4 @@ export class SchemaForm extends LitElement {
   }
 }
 
-customElements.define("schema-form", SchemaForm);
+customElements.define("pds-jsonform", SchemaForm);

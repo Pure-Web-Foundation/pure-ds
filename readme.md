@@ -25,7 +25,7 @@ A JavaScript-config-first design system that generates complete, production-read
 - [Web Components](#web-components)
   - [PureApp](#pure-app)
   - [SvgIcon](#svg-icon)
-  - [AppToaster](#app-toaster)
+  - [AppToaster](#pds-toaster)
   - [TabStrip](#tabstrip)
 - [Features](#features)
 - [API Reference](#api-reference)
@@ -666,9 +666,9 @@ Toast notification system (auto-injected by PureApp):
 
 **Direct usage (if not using PureApp):**
 ```javascript
-import './src/js/app-toaster.js';
+import './src/js/pds-toaster.js';
 
-const toaster = document.querySelector('app-toaster');
+const toaster = document.querySelector('pds-toaster');
 toaster.toast('Message', 'success', 3000);
 ```
 
@@ -677,7 +677,7 @@ toaster.toast('Message', 'success', 3000);
 Accessible tab navigation with hash-based routing and keyboard support:
 
 ```html
-<tab-strip label="Product Details">
+<pds-tabstrip label="Product Details">
   <tab-panel id="overview" label="Overview">
     <h2>Product Overview</h2>
     <p>Main product information...</p>
@@ -695,7 +695,7 @@ Accessible tab navigation with hash-based routing and keyboard support:
     <h2>Customer Reviews</h2>
     <p>See what customers are saying...</p>
   </tab-panel>
-</tab-strip>
+</pds-tabstrip>
 ```
 
 **Features:**
@@ -710,22 +710,22 @@ Accessible tab navigation with hash-based routing and keyboard support:
 
 ```html
 <!-- Default: Underline style -->
-<tab-strip>...</tab-strip>
+<pds-tabstrip>...</pds-tabstrip>
 
 <!-- Pill style tabs -->
-<tab-strip class="tabs-pills">...</tab-strip>
+<pds-tabstrip class="tabs-pills">...</pds-tabstrip>
 
 <!-- Boxed style tabs -->
-<tab-strip class="tabs-boxed">...</tab-strip>
+<pds-tabstrip class="tabs-boxed">...</pds-tabstrip>
 
 <!-- Vertical tabs -->
-<tab-strip class="tabs-vertical">...</tab-strip>
+<pds-tabstrip class="tabs-vertical">...</pds-tabstrip>
 ```
 
 **API:**
 
 ```javascript
-const tabStrip = document.querySelector('tab-strip');
+const tabStrip = document.querySelector('pds-tabstrip');
 
 // Programmatically select tab
 window.location.hash = '#specs';
@@ -985,17 +985,6 @@ See `auto-designer.config.js` for full example with all options.
       </button>
     </div>
   </pure-app>
-
-  <script type="module">
-    import './src/js/pure-app.js';
-    import './src/js/svg-icon.js';
-    
-    const app = document.querySelector('pure-app');
-    app.configure({
-      colors: { primary: '#2563eb' },
-      icons: { set: 'phosphor', weight: 'regular' }
-    });
-  </script>
 </body>
 </html>
 ```
@@ -1036,7 +1025,7 @@ See `auto-designer.config.js` for full example with all options.
 
 - **`index.html`** - AutoForm and dialog system demonstrations
 - **`public/demo.html`** - Complete design system showcase with live controls
-- **`public/schema-form-actions-demo.html`** - Advanced form examples
+- **`public/pds-jsonform-actions-demo.html`** - Advanced form examples
 
 ---
 

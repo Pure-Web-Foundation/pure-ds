@@ -1,7 +1,7 @@
 {
-  "name": "test-app",
+  "name": "pure-ds",
   "version": "1.0.0",
-  "description": "Test app",
+  "description": "Pure Design System - DS component library built with Lit and Pure Web",
   "type": "module",
   "main": "app.js",
   "scripts": {

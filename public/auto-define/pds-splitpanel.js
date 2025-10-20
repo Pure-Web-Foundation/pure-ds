@@ -245,4 +245,4 @@ class SplitPanel extends LitElement {
   }
 }
 
-customElements.define("split-panel", SplitPanel);
+customElements.define("pds-splitpanel", SplitPanel);

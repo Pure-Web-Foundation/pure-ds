@@ -11,10 +11,10 @@ customElements.define(
 
     render() {
       return /* html */ `
-    <split-panel class="app-layout" layout="horizontal" default-split="300px">
+    <pds-splitpanel class="app-layout" layout="horizontal" default-split="300px">
       <ds-designer slot="left"></ds-designer>
       <ds-showcase slot="right"></ds-showcase>
-    </split-panel>
+    </pds-splitpanel>
 
     <!-- Mobile toggle button -->
     <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle designer panel">

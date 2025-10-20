@@ -201,7 +201,7 @@ export const config = {
     mapper: (tag) => {
       switch(tag) {
         case 'tab-panel':
-          return 'tab-strip.js';
+          return 'pds-tabstrip.js';
         default:
           return `${tag}.js`;
       }

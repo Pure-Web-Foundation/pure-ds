@@ -2325,7 +2325,7 @@ tbody tr:last-child td {
     return /*css*/`/* Toast Notification Styles - Updated */
 
 /* Toast container positioning */
-app-toaster {
+pds-toaster {
   position: fixed;
   top: var(--spacing-4);
   right: var(--spacing-4);
@@ -2338,7 +2338,7 @@ app-toaster {
 }
 
 /* Toast animations and transitions */
-app-toaster aside.toast {
+pds-toaster aside.toast {
   transform: translateX(100%);
   opacity: 0;
   margin-bottom: var(--spacing-3);
@@ -2349,21 +2349,21 @@ app-toaster aside.toast {
 }
 
 /* Apply transition to both states for bidirectional animation */
-app-toaster aside.toast,
-app-toaster aside.toast.show {
+pds-toaster aside.toast,
+pds-toaster aside.toast.show {
   transition: transform var(--transition-normal) cubic-bezier(0.175, 0.885, 0.32, 1.275),
               opacity var(--transition-normal) ease-out,
               margin-bottom var(--transition-normal) ease-out,
               max-height var(--transition-normal) ease-out;
 }
 
-app-toaster aside.toast.show {
+pds-toaster aside.toast.show {
   transform: translateX(0);
   opacity: 1;
 }
 
 /* Toast progress bar */
-app-toaster aside.toast .toast-progress {
+pds-toaster aside.toast .toast-progress {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -2372,20 +2372,20 @@ app-toaster aside.toast .toast-progress {
   transition: width linear;
 }
 
-app-toaster aside.toast.alert-info .toast-progress { 
+pds-toaster aside.toast.alert-info .toast-progress { 
   background: var(--color-info-600);
 }
 
-app-toaster aside.toast.alert-success .toast-progress { 
+pds-toaster aside.toast.alert-success .toast-progress { 
   background: var(--color-success-600);
 }
 
-app-toaster aside.toast.alert-warning .toast-progress { 
+pds-toaster aside.toast.alert-warning .toast-progress { 
   background: var(--color-warning-600);
 }
 
-app-toaster aside.toast.alert-danger .toast-progress,
-app-toaster aside.toast.alert-error .toast-progress { 
+pds-toaster aside.toast.alert-danger .toast-progress,
+pds-toaster aside.toast.alert-error .toast-progress { 
   background: var(--color-danger-600);
 }
 
@@ -2397,7 +2397,7 @@ app-toaster aside.toast.alert-error .toast-progress {
 
 /* Mobile responsive toast positioning */
 @media (max-width: 640px) {
-  app-toaster {
+  pds-toaster {
     top: auto;
     bottom: var(--spacing-4);
     left: var(--spacing-4);
@@ -2405,11 +2405,11 @@ app-toaster aside.toast.alert-error .toast-progress {
     max-width: none;
   }
 
-  app-toaster aside.toast {
+  pds-toaster aside.toast {
     transform: translateY(100%);
   }
 
-  app-toaster aside.toast.show {
+  pds-toaster aside.toast.show {
     transform: translateY(0);
   }
 }
@@ -2678,11 +2678,11 @@ app-toaster aside.toast.alert-error .toast-progress {
 
 /* Tab navigation */
 
-tab-strip {
+pds-tabstrip {
   margin-top: var(--spacing-6);
 }
 
-tab-strip > nav {
+pds-tabstrip > nav {
   display: flex;
   gap: var(--spacing-1);
   border-bottom: 2px solid var(--color-border);
@@ -2694,12 +2694,12 @@ tab-strip > nav {
   -ms-overflow-style: none; /* IE/Edge */
 }
 
-tab-strip > nav::-webkit-scrollbar {
+pds-tabstrip > nav::-webkit-scrollbar {
   display: none; /* Chrome/Safari */
 }
 
 /* Tab links */
-tab-strip > nav > a {
+pds-tabstrip > nav > a {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -2719,12 +2719,12 @@ tab-strip > nav > a {
   margin-bottom: -2px; /* Overlap the nav border */
 }
 
-tab-strip > nav > a:hover {
+pds-tabstrip > nav > a:hover {
   color: var(--color-text-primary);
   background-color: var(--color-surface-hover);
 }
 
-tab-strip > nav > a:focus-visible {
+pds-tabstrip > nav > a:focus-visible {
   outline: var(--focus-ring-width, 2px) solid var(--color-primary-500);
   outline-offset: -2px;
   border-radius: var(--radius-sm);
@@ -2732,25 +2732,25 @@ tab-strip > nav > a:focus-visible {
 }
 
 /* Active tab */
-tab-strip > nav > a[aria-current="page"] {
+pds-tabstrip > nav > a[aria-current="page"] {
   color: var(--color-primary-600);
   font-weight: var(--font-weight-semibold);
   border-bottom-color: var(--color-primary-600);
 }
 
-tab-strip > nav > a[aria-current="page"]:hover {
+pds-tabstrip > nav > a[aria-current="page"]:hover {
   color: var(--color-primary-700);
   border-bottom-color: var(--color-primary-700);
   background-color: var(--color-primary-50);
 }
 
 /* Tab panel */
-tab-strip > tab-panel {
+pds-tabstrip > tab-panel {
   display: block;
   margin-top: var(--spacing-4);
 }
 
-tab-strip > tab-panel[data-tabpanel] {
+pds-tabstrip > tab-panel[data-tabpanel] {
   animation: tabFadeIn var(--transition-normal) ease-out;
 }
 
@@ -2765,27 +2765,27 @@ tab-strip > tab-panel[data-tabpanel] {
   }
 }
 
-tab-strip > tab-panel[data-tabpanel][hidden] {
+pds-tabstrip > tab-panel[data-tabpanel][hidden] {
   display: none;
 }
 
 /* Tab content styling */
-tab-strip > tab-panel[data-tabpanel] {
+pds-tabstrip > tab-panel[data-tabpanel] {
   padding: var(--spacing-4) 0;
 }
 
 /* Mobile responsive */
 @media (max-width: ${breakpoints.sm - 1}px) {
-  tab-strip > nav {
+  pds-tabstrip > nav {
     gap: var(--spacing-1);
   }
 
-  tab-strip > nav > a {
+  pds-tabstrip > nav > a {
     padding: var(--spacing-2) var(--spacing-3);
     font-size: var(--font-size-sm);
   }
 
-  tab-strip > tab-panel[data-tabpanel] {
+  pds-tabstrip > tab-panel[data-tabpanel] {
     padding: var(--spacing-3) 0;
   }
 }

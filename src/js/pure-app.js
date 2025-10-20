@@ -4,7 +4,6 @@ import { html, LitElement, css } from "lit";
 export { html, LitElement, css };
 import { config } from "./config";
 import { ask } from "./ask";
-import "./app-toaster";
 import "./svg-icon"
 
 // Initialize the design system
@@ -41,15 +40,15 @@ export class PureApp extends HTMLElement {
 
   ensureToasterExists() {
     // Check if toaster already exists
-    if (!document.querySelector("app-toaster")) {
-      const toaster = document.createElement("app-toaster");
+    if (!document.querySelector("pds-toaster")) {
+      const toaster = document.createElement("pds-toaster");
       document.body.appendChild(toaster);
 
       // Store reference for easy access
       this._toaster = toaster;
     } else {
       // Get existing toaster reference
-      this._toaster = document.querySelector("app-toaster");
+      this._toaster = document.querySelector("pds-toaster");
     }
   }
 

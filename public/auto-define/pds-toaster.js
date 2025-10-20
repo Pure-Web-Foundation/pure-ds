@@ -1,5 +1,3 @@
-import './svg-icon.js';
-
 export class AppToaster extends HTMLElement {
   constructor() {
     super();
@@ -221,4 +219,4 @@ export class AppToaster extends HTMLElement {
   }
 }
 
-customElements.define('app-toaster', AppToaster);
+customElements.define('pds-toaster', AppToaster);

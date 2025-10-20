@@ -37,7 +37,7 @@ export class DsShowcase extends LitElement {
   scrollToRelevantSection(fieldPath) {
     console.log("🎯 Scrolling to section for field:", fieldPath);
 
-    // Remove leading slash if present (schema-form sends "/behavior.transitionSpeed")
+    // Remove leading slash if present (pds-jsonform sends "/behavior.transitionSpeed")
     const normalizedPath = fieldPath.startsWith("/")
       ? fieldPath.slice(1)
       : fieldPath;
@@ -1321,7 +1321,7 @@ export class DsShowcase extends LitElement {
                   </p>
 
                   <div style="margin-top: var(--spacing-6);">
-                    <tab-strip label="Example Tabs">
+                    <pds-tabstrip label="Example Tabs">
                       <tab-panel id="overview" label="Overview">
                         <h3>Overview</h3>
                         <p>
@@ -1359,14 +1359,14 @@ export class DsShowcase extends LitElement {
                       <tab-panel id="usage" label="Usage">
                         <h3>Usage</h3>
                         <p>Simple markup example:</p>
-                        <pre><code>&lt;tab-strip label="My Tabs"&gt;
+                        <pre><code>&lt;pds-tabstrip label="My Tabs"&gt;
   &lt;tab-panel id="tab1" label="First Tab"&gt;
     Content for first tab
   &lt;/tab-panel&gt;
   &lt;tab-panel id="tab2" label="Second Tab"&gt;
     Content for second tab
   &lt;/tab-panel&gt;
-&lt;/tab-strip&gt;</code></pre>
+&lt;/pds-tabstrip&gt;</code></pre>
                       </tab-panel>
 
                       <tab-panel id="accessibility" label="Accessibility">
@@ -1383,7 +1383,7 @@ export class DsShowcase extends LitElement {
                           <li>Focus management</li>
                         </ul>
                       </tab-panel>
-                    </tab-strip>
+                    </pds-tabstrip>
                   </div>
                 </section>
               `
@@ -1396,14 +1396,14 @@ export class DsShowcase extends LitElement {
                 <section class="showcase-section">
                   <h2>Drawer Example</h2>
                   <button @click=${this.openDrawer}>Open Drawer</button>
-                  <drawer-panel position="bottom" id="exampleDrawer">
+                  <pds-drawer position="bottom" id="exampleDrawer">
                     <div class="surface-overlay" slot="drawer-header">
                       <h3>Example Drawer</h3>
                     </div>
                     <div class="surface-overlay" slot="drawer-content">
                       Drawer content goes here.
                     </div>
-                  </drawer-panel>
+                  </pds-drawer>
                 </section>
               `
             : ""

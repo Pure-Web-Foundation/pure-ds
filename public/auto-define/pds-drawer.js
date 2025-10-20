@@ -395,4 +395,4 @@ export class DrawerPanel extends LitElement {
   }
 }
 
-customElements.define("drawer-panel", DrawerPanel);
+customElements.define("pds-drawer", DrawerPanel);

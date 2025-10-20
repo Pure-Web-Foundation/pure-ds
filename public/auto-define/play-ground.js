@@ -12,16 +12,16 @@ customElements.define(
         <div class="app-layout">
           <button @click=${this.openDrawer}>Open Drawer</button>
 
-          <drawer-panel position="bottom" id="exampleDrawer">
+          <pds-drawer position="bottom" id="exampleDrawer">
             <div class="surface-overlay" slot="drawer-header">
               <h3>Example Drawer</h3>
             </div>
             <div class="surface-overlay" slot="drawer-content">
               Drawer content goes here.
             </div>
-          </drawer-panel>
+          </pds-drawer>
 
-          <tab-strip label="Example tabs">
+          <pds-tabstrip label="Example tabs">
             <tab-panel id="intro" label="Intro">
               <p>
                 This is the <strong>intro</strong> tab content. It is visible by
@@ -43,7 +43,7 @@ customElements.define(
                 frameworks, just standards.
               </p>
             </tab-panel>
-          </tab-strip>
+          </pds-tabstrip>
         </div>
       `;
     }

@@ -85,7 +85,7 @@ export class DsDesigner extends LitElement {
     // Dispatch event for showcase to update
   }
 
-  // Flatten nested config to dot-notation for schema-form
+  // Flatten nested config to dot-notation for pds-jsonform
   flattenConfig(obj, prefix = "") {
     const flattened = {};
     for (const [key, value] of Object.entries(obj)) {
@@ -100,7 +100,7 @@ export class DsDesigner extends LitElement {
   }
 
   handleFormChange = (event) => {
-    // Get values from the schema-form's serialize method or from event detail
+    // Get values from the pds-jsonform's serialize method or from event detail
     let values;
     let changedField = null;
 
@@ -114,7 +114,7 @@ export class DsDesigner extends LitElement {
       values = event.detail.json;
     } else {
       // Fallback: get values directly from the form element
-      const form = event.target.closest("schema-form") || event.target;
+      const form = event.target.closest("pds-jsonform") || event.target;
       if (form && form.values) {
         values = form.values;
       } else {
@@ -248,7 +248,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
         </label>
 
         <div class="designer-form-container">
-          <schema-form
+          <pds-jsonform
             .jsonSchema=${this.schema}
             .values=${this.flattenConfig(this.config)}
             hide-reset
@@ -258,7 +258,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
             @change=${this.handleFormChange}
             @input=${this.handleFormChange}
           >
-          </schema-form>
+          </pds-jsonform>
         </div>
 
         <div class="designer-actions">
