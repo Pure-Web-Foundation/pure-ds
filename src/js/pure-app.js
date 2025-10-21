@@ -1,4 +1,4 @@
-import { AutoDesigner, pdsRegistry } from "./auto-designer.js";
+import { AutoDesigner, pdsRegistry } from "./auto-designer";
 import { html, LitElement, css, nothing } from "lit";
 export { html, LitElement, css, nothing };
 import { config } from "./config";

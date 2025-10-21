@@ -1,4 +1,9 @@
-import { LitElement, html, nothing } from "./lit.js";
+import { LitElement, html, nothing } from "./lit";
+import {
+  PDS_ONTOLOGY,
+  findComponentForElement,
+  getAllSelectors,
+} from "./pds-ontology";
 
 export class DsShowcase extends LitElement {
   #shiki = null;
@@ -50,6 +55,36 @@ export class DsShowcase extends LitElement {
       this.extractSections();
       this.handleInitialHash();
     }, 100);
+
+    // Capture-phase handler to prevent interactive actions when inspector is active
+    this._inspectorCaptureHandler = (e) => {
+      if (!this.inspectorActive) return;
+      const target = e.target;
+
+      // Prevent link navigation
+      const anchor = target.closest && target.closest('a[href]');
+      if (anchor) {
+        e.preventDefault();
+        return;
+      }
+
+      // Prevent button activation
+      const button = target.closest && target.closest('button');
+      if (button) {
+        e.preventDefault();
+        return;
+      }
+    };
+
+    this.addEventListener('click', this._inspectorCaptureHandler, true);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._inspectorCaptureHandler) {
+      this.removeEventListener('click', this._inspectorCaptureHandler, true);
+      this._inspectorCaptureHandler = null;
+    }
   }
 
   extractSections() {
@@ -94,7 +129,10 @@ export class DsShowcase extends LitElement {
     }
 
     // Never select showcase-section - find component within it
-    if (element.classList.contains("showcase-section") || element.closest(".showcase-section") === element) {
+    if (
+      element.classList.contains("showcase-section") ||
+      element.closest(".showcase-section") === element
+    ) {
       return null;
     }
 
@@ -125,7 +163,9 @@ export class DsShowcase extends LitElement {
     }
 
     // Check if clicked element is inside a fieldset with role
-    const fieldsetParent = element.closest('fieldset[role="group"], fieldset[role="radiogroup"]');
+    const fieldsetParent = element.closest(
+      'fieldset[role="group"], fieldset[role="radiogroup"]'
+    );
     if (fieldsetParent) {
       const role = fieldsetParent.getAttribute("role");
       return {
@@ -137,7 +177,8 @@ export class DsShowcase extends LitElement {
 
     // Label with ANY input is always a component
     if (element.tagName === "LABEL" || element.closest("label")) {
-      const label = element.tagName === "LABEL" ? element : element.closest("label");
+      const label =
+        element.tagName === "LABEL" ? element : element.closest("label");
       const input = label.querySelector("input, select, textarea");
       if (input) {
         componentType = "form-control";
@@ -180,7 +221,8 @@ export class DsShowcase extends LitElement {
 
     // Buttons with icons
     if (element.tagName === "BUTTON" || element.closest("button")) {
-      element = element.tagName === "BUTTON" ? element : element.closest("button");
+      element =
+        element.tagName === "BUTTON" ? element : element.closest("button");
       componentType = "button";
       const hasIcon = element.querySelector("svg-icon");
       displayName = hasIcon ? "button with icon" : "button";
@@ -189,7 +231,8 @@ export class DsShowcase extends LitElement {
 
     // SVG icons
     if (element.tagName === "svg-icon" || element.closest("svg-icon")) {
-      element = element.tagName === "svg-icon" ? element : element.closest("svg-icon");
+      element =
+        element.tagName === "svg-icon" ? element : element.closest("svg-icon");
       componentType = "icon";
       displayName = `svg-icon (${element.getAttribute("icon") || "unknown"})`;
       return { element, componentType, displayName };
@@ -211,7 +254,7 @@ export class DsShowcase extends LitElement {
       "flex-wrap",
       "btn-group",
     ];
-    
+
     for (const cls of interestingClasses) {
       if (element.classList.contains(cls)) {
         componentType = "container";
@@ -240,101 +283,16 @@ export class DsShowcase extends LitElement {
    * Find PDS-styled elements (primitives styled by PDS classes or semantic HTML)
    */
   findPDSStyledElement(element) {
-    // PDS component/primitive classes - comprehensive list of anything styled by PDS
-    const pdsClasses = [
-      // Cards & Containers
-      'card', 'card-basic', 'card-elevated', 'card-outlined',
-      
-      // Surfaces
-      'surface', 'surface-base', 'surface-raised', 'surface-overlay', 'surface-subtle',
-      
-      // Badges, Tags, Pills
-      'tag', 'badge', 'pill', 'chip', 'label-tag',
-      
-      // Alerts & Messages
-      'alert', 'alert-info', 'alert-success', 'alert-warning', 'alert-danger',
-      'toast', 'notification', 'message',
-      
-      // Accordions & Expandables
-      'accordion', 'accordion-item', 'collapse', 'expandable',
-      
-      // Lists & Groups
-      'list-group', 'list-group-item', 'menu-list', 'nav-list',
-      
-      // Navigation
-      'breadcrumb', 'breadcrumb-item', 'pagination', 'tabs', 'tab-item',
-      
-      // Progress & Loading
-      'progress', 'progress-bar', 'spinner', 'loader', 'skeleton',
-      
-      // Utilities & Decorations
-      'divider', 'separator', 'avatar', 'thumbnail',
-      
-      // Form Components
-      'form-group', 'input-group', 'checkbox-group', 'radio-group',
-      
-      // Buttons (styled variants)
-      'btn-primary', 'btn-secondary', 'btn-outline', 'btn-ghost', 'btn-link',
-      'btn-success', 'btn-warning', 'btn-danger', 'btn-info',
-      'btn-sm', 'btn-lg', 'icon-only',
-      
-      // Interactive Components
-      'dropdown', 'popover', 'tooltip', 'modal', 'dialog',
-      
-      // Data Display
-      'table-responsive', 'data-table', 'card-grid', 'media-object',
-      
-      // Status & Indicators
-      'status', 'indicator', 'dot-indicator', 'pulse',
-    ];
-
-    // Check if element has any PDS class
-    for (const cls of pdsClasses) {
-      if (element.classList.contains(cls)) {
-        return {
-          element,
-          componentType: "pds-primitive",
-          displayName: cls.replace(/-/g, " "),
-        };
-      }
-    }
-
-    // Check parent for PDS classes (but not beyond ds-showcase)
-    for (const cls of pdsClasses) {
-      const parent = element.closest(`.${cls}`);
-      if (parent && parent.tagName !== "DS-SHOWCASE") {
-        return {
-          element: parent,
-          componentType: "pds-primitive",
-          displayName: cls.replace(/-/g, " "),
-        };
-      }
-    }
-
-    // Semantic HTML elements styled by PDS (table, figure, blockquote, etc.)
-    const semanticElements = ['TABLE', 'FIGURE', 'BLOCKQUOTE', 'ARTICLE', 'ASIDE', 'DETAILS', 'SUMMARY'];
-    
-    if (semanticElements.includes(element.tagName)) {
-      return {
-        element,
-        componentType: "pds-primitive",
-        displayName: element.tagName.toLowerCase(),
-      };
-    }
-
-    // Check if inside semantic element (but not beyond ds-showcase)
-    for (const tag of semanticElements) {
-      const parent = element.closest(tag.toLowerCase());
-      if (parent && parent.tagName !== "DS-SHOWCASE") {
-        return {
-          element: parent,
-          componentType: "pds-primitive",
-          displayName: tag.toLowerCase(),
-        };
-      }
-    }
-
-    return null;
+    // Delegate to ontology-driven lookup
+    const res = findComponentForElement(element, { maxDepth: 5 });
+    if (!res) return null;
+    if (res.element && res.element.tagName === "DS-SHOWCASE") return null;
+    return {
+      element: res.element,
+      componentType: res.componentType || "pds-primitive",
+      displayName:
+        res.displayName || (res.element?.tagName || "element").toLowerCase(),
+    };
   }
 
   /**
@@ -343,12 +301,12 @@ export class DsShowcase extends LitElement {
   findEnhancedElement(element) {
     // Check common enhancement patterns
     const enhancementSelectors = [
-      'nav[data-dropdown]',
-      'label[data-toggle]',
-      '[data-tabs]',
-      '[data-accordion]',
-      '[data-modal]',
-      '[data-tooltip]',
+      "nav[data-dropdown]",
+      "label[data-toggle]",
+      "[data-tabs]",
+      "[data-accordion]",
+      "[data-modal]",
+      "[data-tooltip]",
     ];
 
     for (const selector of enhancementSelectors) {
@@ -368,19 +326,21 @@ export class DsShowcase extends LitElement {
    * Get descriptive name for enhanced element
    */
   getEnhancedElementName(element) {
-    if (element.matches('nav[data-dropdown]')) return "dropdown menu";
-    if (element.matches('label[data-toggle]')) return "toggle switch";
-    if (element.matches('[data-tabs]')) return "tab component";
-    if (element.matches('[data-accordion]')) return "accordion";
-    if (element.matches('[data-modal]')) return "modal dialog";
-    if (element.matches('[data-tooltip]')) return "tooltip";
-    
+    if (element.matches("nav[data-dropdown]")) return "dropdown menu";
+    if (element.matches("label[data-toggle]")) return "toggle switch";
+    if (element.matches("[data-tabs]")) return "tab component";
+    if (element.matches("[data-accordion]")) return "accordion";
+    if (element.matches("[data-modal]")) return "modal dialog";
+    if (element.matches("[data-tooltip]")) return "tooltip";
+
     // Fallback
     const dataAttrs = Array.from(element.attributes)
-      .filter(attr => attr.name.startsWith('data-'))
-      .map(attr => attr.name.replace('data-', ''));
-    
-    return dataAttrs[0] ? `${dataAttrs[0]} component` : element.tagName.toLowerCase();
+      .filter((attr) => attr.name.startsWith("data-"))
+      .map((attr) => attr.name.replace("data-", ""));
+
+    return dataAttrs[0]
+      ? `${dataAttrs[0]} component`
+      : element.tagName.toLowerCase();
   }
 
   /**
@@ -391,7 +351,7 @@ export class DsShowcase extends LitElement {
     let current = element.parentElement;
     let level = 0;
     const maxLevels = 5;
-    
+
     while (current && level < maxLevels) {
       level++;
 
@@ -436,22 +396,57 @@ export class DsShowcase extends LitElement {
    */
   hasPDSClass(element) {
     const pdsClassPrefixes = [
-      'card', 'surface', 'tag', 'badge', 'pill', 'chip',
-      'alert', 'toast', 'notification', 'message',
-      'accordion', 'collapse', 'expandable',
-      'list-group', 'menu-list', 'nav-list',
-      'breadcrumb', 'pagination', 'tabs', 'tab',
-      'progress', 'spinner', 'loader', 'skeleton',
-      'divider', 'separator', 'avatar', 'thumbnail',
-      'form-group', 'input-group', 'checkbox-group', 'radio-group',
-      'btn-', 'icon-only',
-      'dropdown', 'popover', 'tooltip', 'modal', 'dialog',
-      'table-responsive', 'data-table', 'card-grid', 'media-object',
-      'status', 'indicator', 'dot-indicator', 'pulse',
+      "card",
+      "surface",
+      "tag",
+      "badge",
+      "pill",
+      "chip",
+      "alert",
+      "toast",
+      "notification",
+      "message",
+      "accordion",
+      "collapse",
+      "expandable",
+      "list-group",
+      "menu-list",
+      "nav-list",
+      "breadcrumb",
+      "pagination",
+      "tabs",
+      "tab",
+      "progress",
+      "spinner",
+      "loader",
+      "skeleton",
+      "divider",
+      "separator",
+      "avatar",
+      "thumbnail",
+      "form-group",
+      "input-group",
+      "checkbox-group",
+      "radio-group",
+      "btn-",
+      "icon-only",
+      "dropdown",
+      "popover",
+      "tooltip",
+      "modal",
+      "dialog",
+      "table-responsive",
+      "data-table",
+      "card-grid",
+      "media-object",
+      "status",
+      "indicator",
+      "dot-indicator",
+      "pulse",
     ];
 
-    return Array.from(element.classList).some(cls => 
-      pdsClassPrefixes.some(prefix => cls.startsWith(prefix))
+    return Array.from(element.classList).some((cls) =>
+      pdsClassPrefixes.some((prefix) => cls.startsWith(prefix))
     );
   }
 
@@ -471,10 +466,8 @@ export class DsShowcase extends LitElement {
       }
     });
 
-    let html = clone.outerHTML;
-
-    // Pretty print HTML
-    html = this.formatHTML(html);
+  // Pretty print HTML using DOM-aware formatter
+  let html = this.formatHTMLElement(clone);
 
     // Extract Lit properties (attributes starting with .)
     const litProps = this.extractLitProperties(element);
@@ -487,13 +480,16 @@ export class DsShowcase extends LitElement {
    */
   extractLitProperties(element) {
     const props = [];
-    
+
     // Check for common Lit property patterns
     if (element.checked !== undefined && element.type === "checkbox") {
       props.push({ name: ".checked", value: element.checked });
     }
-    
-    if (element.value !== undefined && ["INPUT", "SELECT", "TEXTAREA"].includes(element.tagName)) {
+
+    if (
+      element.value !== undefined &&
+      ["INPUT", "SELECT", "TEXTAREA"].includes(element.tagName)
+    ) {
       props.push({ name: ".value", value: element.value });
     }
 
@@ -502,7 +498,10 @@ export class DsShowcase extends LitElement {
       const constructor = customElements.get(element.tagName.toLowerCase());
       if (constructor && constructor.properties) {
         Object.keys(constructor.properties).forEach((prop) => {
-          if (element[prop] !== undefined && typeof element[prop] !== "function") {
+          if (
+            element[prop] !== undefined &&
+            typeof element[prop] !== "function"
+          ) {
             props.push({ name: `.${prop}`, value: element[prop] });
           }
         });
@@ -515,36 +514,92 @@ export class DsShowcase extends LitElement {
   /**
    * Format HTML with indentation
    */
-  formatHTML(html) {
-    let formatted = "";
-    let indent = 0;
-    const tab = "  ";
+  formatHTMLElement(node, level = 0) {
+    const indent = (n) => "  ".repeat(n);
+    let out = "";
 
-    html.split(/>\s*</).forEach((node, index, array) => {
-      // Add back the angle brackets
-      if (index === 0) {
-        node = node + ">";
-      } else if (index === array.length - 1) {
-        node = "<" + node;
-      } else {
-        node = "<" + node + ">";
+    const escapeText = (s) =>
+      s
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    const isVoid = (tag) =>
+      [
+        "area",
+        "base",
+        "br",
+        "col",
+        "embed",
+        "hr",
+        "img",
+        "input",
+        "link",
+        "meta",
+        "param",
+        "source",
+        "track",
+        "wbr",
+      ].includes(tag);
+
+    if (node.nodeType === Node.TEXT_NODE) {
+      const t = node.textContent.replace(/\s+/g, " ").trim();
+      if (t.length === 0) return "";
+      return indent(level) + escapeText(t) + "\n";
+    }
+
+    if (node.nodeType === Node.COMMENT_NODE) {
+      return indent(level) + `<!-- ${escapeText(node.textContent)} -->\n`;
+    }
+
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const tag = node.tagName.toLowerCase();
+      const attrs = [];
+      const booleanDataAttrs = new Set(["data-label", "data-toggle"]);
+      for (const a of node.attributes) {
+        const name = a.name;
+        const val = a.value;
+
+        // Special-case certain data-* attributes as boolean markers
+        if (booleanDataAttrs.has(name)) {
+          // Render as bare boolean attribute (e.g., data-toggle)
+          attrs.push(name);
+          continue;
+        }
+
+        if (val === "") {
+          // Render empty data-* attributes explicitly as data-xxx=""
+          if (name.startsWith("data-")) {
+            attrs.push(`${name}=""`);
+          } else {
+            // For other boolean-ish attributes, render bare attribute
+            attrs.push(name);
+          }
+        } else {
+          attrs.push(`${name}="${escapeText(val)}"`);
+        }
+      }
+      const attrString = attrs.length ? " " + attrs.join(" ") : "";
+
+      // Start tag
+      out += indent(level) + `<${tag}${attrString}>` + "\n";
+
+      // Children
+      for (const child of Array.from(node.childNodes)) {
+        out += this.formatHTMLElement(child, level + 1);
       }
 
-      // Decrease indent for closing tags
-      if (node.match(/^<\/\w/)) {
-        indent--;
+      // End tag (void elements don't need explicit closing)
+      if (!isVoid(tag)) {
+        out += indent(level) + `</${tag}>` + "\n";
       }
 
-      // Add the indented node
-      formatted += tab.repeat(Math.max(0, indent)) + node.trim() + "\n";
+      return out;
+    }
 
-      // Increase indent for opening tags (but not self-closing)
-      if (node.match(/^<\w[^>]*[^\/]>$/)) {
-        indent++;
-      }
-    });
-
-    return formatted.trim();
+    return "";
   }
 
   /**
@@ -560,7 +615,63 @@ export class DsShowcase extends LitElement {
     if (!detected) return;
 
     const { element, componentType, displayName } = detected;
-    const { html, litProps } = this.extractHTML(element);
+    // Check if an enhancer provides a demo HTML to display (clean template)
+    let demoHtml = null;
+    let enhancer = null;
+    try {
+      // Prefer the runtime config dispatched from ds-designer; fall back to
+      // any global appConfig or the pure-app element if present.
+      const enhancers =
+        this.config?.autoDefine?.enhancers ||
+        (typeof appConfig !== "undefined" ? appConfig?.autoDefine?.enhancers : null) ||
+        (typeof window !== "undefined" ? window?.appConfig?.autoDefine?.enhancers : null) ||
+        (document.querySelector && document.querySelector("pure-app")?.config?.autoDefine?.enhancers) ||
+        [];
+      enhancer = enhancers.find((en) => {
+        try {
+          return element.matches && element.matches(en.selector) || (element.closest && element.closest(en.selector));
+        } catch (ex) {
+          return false;
+        }
+      });
+    } catch (ex) {
+      enhancer = null;
+    }
+
+    let litProps = [];
+    let html = null;
+    if (enhancer && enhancer.demoHtml) {
+      demoHtml = typeof enhancer.demoHtml === "function" ? enhancer.demoHtml(element) : enhancer.demoHtml;
+      // If demoHtml is a string, parse it into a DOM node and pretty-print it
+      if (typeof demoHtml === "string") {
+        try {
+          const wrapper = document.createElement('div');
+          wrapper.innerHTML = demoHtml.trim();
+          // If there are multiple top-level nodes, format them all
+          let combined = '';
+          for (const child of Array.from(wrapper.childNodes)) {
+            combined += this.formatHTMLElement(child);
+          }
+          html = combined;
+        } catch (ex) {
+          // Fallback to raw string if parsing fails
+          html = demoHtml;
+        }
+      } else {
+        // If the enhancer returned a DOM node or other structure, try to format it
+        if (demoHtml instanceof Node) {
+          html = this.formatHTMLElement(demoHtml);
+        } else {
+          html = String(demoHtml);
+        }
+      }
+      // still extract lit props from real element if useful
+      litProps = this.extractLitProperties(element);
+    } else {
+      const res = this.extractHTML(element);
+      html = res.html;
+      litProps = res.litProps;
+    }
 
     // Show code in drawer
     this.showCodeDrawer(html, litProps, displayName, componentType);
@@ -658,7 +769,9 @@ export class DsShowcase extends LitElement {
           if (litProps.length > 0) {
             textToCopy =
               "<!-- Lit Properties:\n" +
-              litProps.map((p) => `  ${p.name}=${JSON.stringify(p.value)}`).join("\n") +
+              litProps
+                .map((p) => `  ${p.name}=${JSON.stringify(p.value)}`)
+                .join("\n") +
               "\n-->\n\n" +
               html;
           }
@@ -877,7 +990,9 @@ export class DsShowcase extends LitElement {
 
     return html`
       <div 
-        class="showcase-container ${this.inspectorActive ? "inspector-active" : ""}"
+        class="showcase-container ${
+          this.inspectorActive ? "inspector-active" : ""
+        }"
         @click=${this.handleInspectorClick}
       >
         <!-- Table of Contents Navigation -->
@@ -1133,7 +1248,11 @@ export class DsShowcase extends LitElement {
 
                       <label>
                         <span>Password</span>
-                        <input type="password" placeholder="Enter password" autocomplete="current-password" />
+                        <input
+                          type="password"
+                          placeholder="Enter password"
+                          autocomplete="current-password"
+                        />
                       </label>
 
                       <label>
@@ -2148,7 +2267,7 @@ export class DsShowcase extends LitElement {
                       <h3>Example Drawer</h3>
                     </div>
                     <div class="surface-overlay" slot="drawer-content">
-                      Drawer content goes here.
+                      ${this.renderDrawerContent()}
                     </div>
                   </pds-drawer>
                 </section>
@@ -2159,13 +2278,29 @@ export class DsShowcase extends LitElement {
     `;
   }
 
+  renderDrawerContent() {
+    return html`
+      <figure class="media-figure">
+        <img
+          class="media-image"
+          src="https://picsum.photos/800/600?random=1"
+          alt="Random landscape"
+        />
+        <figcaption class="media-caption">
+          <strong>Figure 1:</strong> A beautiful landscape demonstrating image
+          handling in the design system.
+        </figcaption>
+      </figure>
+    `;
+  }
+
   readDocs(e) {
     document
       .querySelector("pure-app")
-      .toast(
-        "Documentation will soon be available.",
-        { type: "info", persistent: true }
-      );
+      .toast("Documentation will soon be available.", {
+        type: "info",
+        persistent: true,
+      });
   }
 
   openDrawer() {

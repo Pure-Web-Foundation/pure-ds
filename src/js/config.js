@@ -16,6 +16,7 @@ export const config = {
         secondary: "#8b9199",   // Cool gray for dark mode inputs/borders
       },
       
+      
       // Semantic colors (will use intelligent defaults if not specified)
       success: null,    // Auto-generated from primary if null
       warning: null,    // Uses accent color if null
@@ -150,7 +151,7 @@ export const config = {
           'plus', 'minus', 'check', 'trash', 'pencil', 'floppy-disk',
           'copy', 'download', 'upload', 'share', 'link',
           'eye', 'eye-slash', 'heart', 'star', 'bookmark',
-          'note-pencil', 'cursor-click',
+          'note-pencil', 'cursor-click', "clipboard"
         ],
         communication: [
           'envelope', 'bell', 'bell-ringing', 'chat-circle', 'phone',
@@ -210,7 +211,6 @@ export const config = {
     },
 
     onError: (tag, err) => {
-      debugger;
       console.error(`Auto-define error for <${tag}>:`, err);
     },
     
@@ -222,6 +222,14 @@ export const config = {
     enhancers: [
       {
         selector: "nav[data-dropdown]",
+        demoHtml: () => /*html*/`
+          <nav data-dropdown>
+            <button class="btn-primary">Menu</button>
+            <menu style="display:none">
+              <li><a href="#">Item 1</a></li>
+              <li><a href="#">Item 2</a></li>
+            </menu>
+        </nav>`,
         run: (elem) => {
           //console.log("Enhance dropdown", elem);
 
@@ -242,6 +250,10 @@ export const config = {
       },
       {
         selector: "label[data-toggle]",
+        demoHtml: () => /*html*/`<label data-toggle>
+          <span data-label>Enable notifications</span>
+          <input type="checkbox">
+        </label>`,
         run: (elem) => {
           const checkbox = elem.querySelector('input[type="checkbox"]');
           if (!checkbox) {
@@ -279,6 +291,61 @@ export const config = {
             // Dispatch change event so form handlers work
             checkbox.dispatchEvent(new Event('change', { bubbles: true }));
           });
+        },
+      },
+      {
+        selector: "input[type=\"range\"]",
+        demoHtml: (elem) => {
+          const min = elem.getAttribute('min') || 0;
+          const max = elem.getAttribute('max') || 100;
+          const value = elem.getAttribute('value') || elem.value || 0;
+          return /*html*/`<input type="range" min="${min}" max="${max}" value="${value}">`;
+        },
+        run: (elem) => {
+          if (elem.dataset.enhancedRange) return;
+
+          // Wrap the input in a range-container if not already
+          let container = elem.closest('.range-container');
+          if (!container) {
+            container = document.createElement('div');
+            container.className = 'range-container';
+            elem.parentNode.insertBefore(container, elem);
+            container.appendChild(elem);
+          }
+
+          container.style.position = 'relative';
+
+          // Create the floating bubble
+          const bubble = document.createElement('div');
+          bubble.className = 'range-bubble';
+          bubble.setAttribute('aria-hidden', 'true');
+          container.appendChild(bubble);
+
+          const updateBubble = () => {
+            const min = parseFloat(elem.min) || 0;
+            const max = parseFloat(elem.max) || 100;
+            const value = parseFloat(elem.value);
+            const pct = (value - min) / (max - min);
+            // Position bubble horizontally over thumb
+            bubble.style.left = `calc(${pct * 100}% )`;
+            bubble.textContent = String(value);
+          };
+
+          // Show/hide on interaction
+          const show = () => bubble.classList.add('visible');
+          const hide = () => bubble.classList.remove('visible');
+
+          elem.addEventListener('input', updateBubble);
+          elem.addEventListener('pointerdown', show);
+          elem.addEventListener('pointerup', hide);
+          elem.addEventListener('pointerleave', hide);
+          elem.addEventListener('focus', show);
+          elem.addEventListener('blur', hide);
+
+          // Initialize
+          updateBubble();
+
+          elem.dataset.enhancedRange = '1';
         },
       },
     ],

@@ -1497,6 +1497,82 @@ input[type="range"] {
   min-height: auto;
 }
 
+/* Make range visually match other inputs */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: var(--input-min-height, 40px); /* align control height with inputs */
+  width: 100%;
+}
+
+/* Track and thumb styling for WebKit */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: var(--range-track-height, 8px);
+  background: var(--color-input-bg);
+  border-radius: var(--radius-full);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: var(--range-thumb-size, 28px);
+  height: var(--range-thumb-size, 28px);
+  margin-top: calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2);
+  background: var(--color-surface-base);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+  cursor: grab;
+  border: 1px solid var(--color-border);
+}
+
+/* Track and thumb styling for Firefox */
+input[type="range"]::-moz-range-track {
+  height: var(--range-track-height, 8px);
+  background: var(--color-input-bg);
+  border-radius: var(--radius-full);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: var(--range-thumb-size, 28px);
+  height: var(--range-thumb-size, 28px);
+  background: var(--color-surface-base);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  transform: translateY(calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2));
+}
+
+/* Hover and active states */
+input[type="range"]:hover::-webkit-slider-thumb,
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  cursor: grabbing;
+  background: var(--color-primary-500);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  border-color: var(--color-primary-600);
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  background: var(--color-primary-600);
+}
+
+input[type="range"]:hover::-moz-range-thumb,
+input[type="range"]:focus-visible::-moz-range-thumb {
+  background: var(--color-primary-500);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  border-color: var(--color-primary-600);
+  cursor: grabbing;
+}
+
+/* Focus style for container to match input focus */
+.range-container:focus-within {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-500)30;
+}
+
+input[type="range"]:active::-moz-range-thumb {
+  background: var(--color-primary-600);
+}
+
 input[type="color"] {
   width: var(--spacing-16);
   height: var(--spacing-12);
@@ -1895,7 +1971,43 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   display: flex;
   align-items: center;
   gap: var(--spacing-3);
+  width: 100%;
+  padding: 0 var(--spacing-3);
+  background: var(--color-input-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  min-height: var(--input-min-height, 40px);
+  align-items: center;
+  position: relative;
+
+  input[type="range"] {
+    border: none
+  }
 }
+
+.range-bubble {
+  position: absolute;
+  top: calc(-1 * (var(--range-thumb-size, 28px) + var(--spacing-2)));
+  transform: translateX(-50%);
+  min-width: calc(var(--range-thumb-size, 28px) * 0.8);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-base);
+  color: var(--color-text-primary);
+  text-align: center;
+  font-size: var(--font-size-sm);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.range-bubble.visible {
+  opacity: 1;
+}
+
+/* Anchor bubble to the thumb position using left (set by enhancer)
+   and center with translateX(-50%). */
 
 /* Array field styling */
 .array-list {
