@@ -4299,7 +4299,7 @@ export async function adoptLayers(
     const validStylesheets = stylesheets.filter((sheet) => sheet !== null);
 
     // Adopt all layers + additional sheets
-    shadowRoot.adoptedStylesheets = [...validStylesheets, ...additionalSheets];
+    shadowRoot.adoptedStyleSheets = [...validStylesheets, ...additionalSheets];
 
     if (pdsRegistry.isLive) {
       const componentName = shadowRoot.host?.tagName?.toLowerCase() || 'unknown';
@@ -4309,7 +4309,7 @@ export async function adoptLayers(
     const componentName = shadowRoot.host?.tagName?.toLowerCase() || 'unknown';
     console.error(`[PDS Adopter] <${componentName}> failed to adopt layers:`, error);
     // Continue with just additional sheets as fallback
-    shadowRoot.adoptedStylesheets = additionalSheets;
+    shadowRoot.adoptedStyleSheets = additionalSheets;
   }
 }
 

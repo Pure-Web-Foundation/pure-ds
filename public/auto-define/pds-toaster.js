@@ -111,7 +111,6 @@ export class AppToaster extends HTMLElement {
 
   // Main toast method
   toast(message, options = {}) {
-    debugger;
     const defaults = {
       type: "information", // information, success, warning, error
       duration: null, // auto-calculated based on reading time
