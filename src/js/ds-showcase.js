@@ -1,15 +1,22 @@
-import { LitElement, html } from "./lit.js";
+import { LitElement, html, nothing } from "./lit.js";
 
 export class DsShowcase extends LitElement {
+  #shiki = null;
+  #shikiLoading = false;
+
   static properties = {
     config: { type: Object },
     designer: { type: Object },
+    sections: { type: Array, state: true },
+    inspectorActive: { type: Boolean, state: true },
   };
 
   constructor() {
     super();
     this.config = null;
     this.designer = null;
+    this.sections = [];
+    this.inspectorActive = false;
   }
 
   // Disable shadow DOM to use global styles
@@ -32,6 +39,706 @@ export class DsShowcase extends LitElement {
         this.scrollToRelevantSection(e.detail.field);
       }, 1000);
     });
+
+    // Listen for inspector mode changes
+    document.addEventListener("inspector-mode-changed", (e) => {
+      this.inspectorActive = e.detail.active;
+    });
+
+    // Extract sections after initial render
+    setTimeout(() => {
+      this.extractSections();
+      this.handleInitialHash();
+    }, 100);
+  }
+
+  extractSections() {
+    const sectionElements = this.querySelectorAll("[data-section]");
+    this.sections = Array.from(sectionElements).map((el) => {
+      const id = el.getAttribute("data-section");
+      const heading = el.querySelector("h2");
+      const title = heading?.textContent?.trim() || id;
+      return { id, title };
+    });
+  }
+
+  handleInitialHash() {
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+      const section = this.querySelector(`[data-section="${hash}"]`);
+      if (section) {
+        setTimeout(() => {
+          section.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 300);
+      }
+    }
+  }
+
+  /**
+   * Smart element detection for code inspector
+   * Returns the appropriate element and metadata to display
+   */
+  detectComponentElement(clickedElement) {
+    let element = clickedElement;
+    let componentType = "element";
+    let displayName = element.tagName.toLowerCase();
+
+    // Skip if clicked on TOC
+    if (element.closest(".showcase-toc")) {
+      return null;
+    }
+
+    // Never select ds-showcase itself
+    if (element.tagName === "DS-SHOWCASE") {
+      return null;
+    }
+
+    // Never select showcase-section - find component within it
+    if (element.classList.contains("showcase-section") || element.closest(".showcase-section") === element) {
+      return null;
+    }
+
+    // Check for progressive enhancements (nav[data-dropdown], label[data-toggle], etc.)
+    const enhancedElement = this.findEnhancedElement(element);
+    if (enhancedElement) {
+      return {
+        element: enhancedElement,
+        componentType: "enhanced-component",
+        displayName: this.getEnhancedElementName(enhancedElement),
+      };
+    }
+
+    // Check for PDS-styled primitives (elements styled by PDS classes)
+    const pdsStyledElement = this.findPDSStyledElement(element);
+    if (pdsStyledElement) {
+      return pdsStyledElement;
+    }
+
+    // Fieldset with role="group" or role="radiogroup" is a component
+    if (element.tagName === "FIELDSET") {
+      const role = element.getAttribute("role");
+      if (role === "group" || role === "radiogroup") {
+        componentType = "form-group";
+        displayName = role === "radiogroup" ? "radio group" : "form group";
+        return { element, componentType, displayName };
+      }
+    }
+
+    // Check if clicked element is inside a fieldset with role
+    const fieldsetParent = element.closest('fieldset[role="group"], fieldset[role="radiogroup"]');
+    if (fieldsetParent) {
+      const role = fieldsetParent.getAttribute("role");
+      return {
+        element: fieldsetParent,
+        componentType: "form-group",
+        displayName: role === "radiogroup" ? "radio group" : "form group",
+      };
+    }
+
+    // Label with ANY input is always a component
+    if (element.tagName === "LABEL" || element.closest("label")) {
+      const label = element.tagName === "LABEL" ? element : element.closest("label");
+      const input = label.querySelector("input, select, textarea");
+      if (input) {
+        componentType = "form-control";
+        displayName = `${input.tagName.toLowerCase()} field`;
+        return { element: label, componentType, displayName };
+      }
+    }
+
+    // Form elements - get the label container (if exists)
+    if (["INPUT", "SELECT", "TEXTAREA"].includes(element.tagName)) {
+      const label = element.closest("label");
+      if (label) {
+        element = label;
+        componentType = "form-control";
+        displayName = `${clickedElement.tagName.toLowerCase()} field`;
+        return { element, componentType, displayName };
+      }
+      // If no label, return the form element itself
+      componentType = "form-control";
+      displayName = `${element.tagName.toLowerCase()}`;
+      return { element, componentType, displayName };
+    }
+
+    // Custom web components (pds-* or other custom elements with hyphen)
+    if (element.tagName.includes("-")) {
+      componentType = "web-component";
+      displayName = element.tagName.toLowerCase();
+      return { element, componentType, displayName };
+    }
+
+    // Check if inside a custom web component
+    const customParent = element.closest("[tagName*='-']");
+    if (customParent && customParent.tagName.includes("-")) {
+      return {
+        element: customParent,
+        componentType: "web-component",
+        displayName: customParent.tagName.toLowerCase(),
+      };
+    }
+
+    // Buttons with icons
+    if (element.tagName === "BUTTON" || element.closest("button")) {
+      element = element.tagName === "BUTTON" ? element : element.closest("button");
+      componentType = "button";
+      const hasIcon = element.querySelector("svg-icon");
+      displayName = hasIcon ? "button with icon" : "button";
+      return { element, componentType, displayName };
+    }
+
+    // SVG icons
+    if (element.tagName === "svg-icon" || element.closest("svg-icon")) {
+      element = element.tagName === "svg-icon" ? element : element.closest("svg-icon");
+      componentType = "icon";
+      displayName = `svg-icon (${element.getAttribute("icon") || "unknown"})`;
+      return { element, componentType, displayName };
+    }
+
+    // Navigation elements
+    if (element.tagName === "NAV" || element.closest("nav[data-dropdown]")) {
+      element = element.closest("nav[data-dropdown]") || element;
+      componentType = "navigation";
+      displayName = "dropdown menu";
+      return { element, componentType, displayName };
+    }
+
+    // Generic container with interesting classes (but not showcase-section)
+    const interestingClasses = [
+      "color-card",
+      "color-scale",
+      "demo-grid",
+      "flex-wrap",
+      "btn-group",
+    ];
+    
+    for (const cls of interestingClasses) {
+      if (element.classList.contains(cls)) {
+        componentType = "container";
+        displayName = cls.replace(/-/g, " ");
+        return { element, componentType, displayName };
+      }
+      const container = element.closest(`.${cls}`);
+      if (container) {
+        element = container;
+        componentType = "container";
+        displayName = cls.replace(/-/g, " ");
+        return { element, componentType, displayName };
+      }
+    }
+
+    // Find nearest meaningful parent (not showcase-section)
+    const meaningfulParent = this.findNearestComponent(element);
+    if (meaningfulParent && meaningfulParent !== element) {
+      return this.detectComponentElement(meaningfulParent);
+    }
+
+    return { element, componentType, displayName };
+  }
+
+  /**
+   * Find PDS-styled elements (primitives styled by PDS classes or semantic HTML)
+   */
+  findPDSStyledElement(element) {
+    // PDS component/primitive classes - comprehensive list of anything styled by PDS
+    const pdsClasses = [
+      // Cards & Containers
+      'card', 'card-basic', 'card-elevated', 'card-outlined',
+      
+      // Surfaces
+      'surface', 'surface-base', 'surface-raised', 'surface-overlay', 'surface-subtle',
+      
+      // Badges, Tags, Pills
+      'tag', 'badge', 'pill', 'chip', 'label-tag',
+      
+      // Alerts & Messages
+      'alert', 'alert-info', 'alert-success', 'alert-warning', 'alert-danger',
+      'toast', 'notification', 'message',
+      
+      // Accordions & Expandables
+      'accordion', 'accordion-item', 'collapse', 'expandable',
+      
+      // Lists & Groups
+      'list-group', 'list-group-item', 'menu-list', 'nav-list',
+      
+      // Navigation
+      'breadcrumb', 'breadcrumb-item', 'pagination', 'tabs', 'tab-item',
+      
+      // Progress & Loading
+      'progress', 'progress-bar', 'spinner', 'loader', 'skeleton',
+      
+      // Utilities & Decorations
+      'divider', 'separator', 'avatar', 'thumbnail',
+      
+      // Form Components
+      'form-group', 'input-group', 'checkbox-group', 'radio-group',
+      
+      // Buttons (styled variants)
+      'btn-primary', 'btn-secondary', 'btn-outline', 'btn-ghost', 'btn-link',
+      'btn-success', 'btn-warning', 'btn-danger', 'btn-info',
+      'btn-sm', 'btn-lg', 'icon-only',
+      
+      // Interactive Components
+      'dropdown', 'popover', 'tooltip', 'modal', 'dialog',
+      
+      // Data Display
+      'table-responsive', 'data-table', 'card-grid', 'media-object',
+      
+      // Status & Indicators
+      'status', 'indicator', 'dot-indicator', 'pulse',
+    ];
+
+    // Check if element has any PDS class
+    for (const cls of pdsClasses) {
+      if (element.classList.contains(cls)) {
+        return {
+          element,
+          componentType: "pds-primitive",
+          displayName: cls.replace(/-/g, " "),
+        };
+      }
+    }
+
+    // Check parent for PDS classes (but not beyond ds-showcase)
+    for (const cls of pdsClasses) {
+      const parent = element.closest(`.${cls}`);
+      if (parent && parent.tagName !== "DS-SHOWCASE") {
+        return {
+          element: parent,
+          componentType: "pds-primitive",
+          displayName: cls.replace(/-/g, " "),
+        };
+      }
+    }
+
+    // Semantic HTML elements styled by PDS (table, figure, blockquote, etc.)
+    const semanticElements = ['TABLE', 'FIGURE', 'BLOCKQUOTE', 'ARTICLE', 'ASIDE', 'DETAILS', 'SUMMARY'];
+    
+    if (semanticElements.includes(element.tagName)) {
+      return {
+        element,
+        componentType: "pds-primitive",
+        displayName: element.tagName.toLowerCase(),
+      };
+    }
+
+    // Check if inside semantic element (but not beyond ds-showcase)
+    for (const tag of semanticElements) {
+      const parent = element.closest(tag.toLowerCase());
+      if (parent && parent.tagName !== "DS-SHOWCASE") {
+        return {
+          element: parent,
+          componentType: "pds-primitive",
+          displayName: tag.toLowerCase(),
+        };
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Find enhanced elements (progressive enhancements from config)
+   */
+  findEnhancedElement(element) {
+    // Check common enhancement patterns
+    const enhancementSelectors = [
+      'nav[data-dropdown]',
+      'label[data-toggle]',
+      '[data-tabs]',
+      '[data-accordion]',
+      '[data-modal]',
+      '[data-tooltip]',
+    ];
+
+    for (const selector of enhancementSelectors) {
+      if (element.matches && element.matches(selector)) {
+        return element;
+      }
+      const enhanced = element.closest(selector);
+      if (enhanced) {
+        return enhanced;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Get descriptive name for enhanced element
+   */
+  getEnhancedElementName(element) {
+    if (element.matches('nav[data-dropdown]')) return "dropdown menu";
+    if (element.matches('label[data-toggle]')) return "toggle switch";
+    if (element.matches('[data-tabs]')) return "tab component";
+    if (element.matches('[data-accordion]')) return "accordion";
+    if (element.matches('[data-modal]')) return "modal dialog";
+    if (element.matches('[data-tooltip]')) return "tooltip";
+    
+    // Fallback
+    const dataAttrs = Array.from(element.attributes)
+      .filter(attr => attr.name.startsWith('data-'))
+      .map(attr => attr.name.replace('data-', ''));
+    
+    return dataAttrs[0] ? `${dataAttrs[0]} component` : element.tagName.toLowerCase();
+  }
+
+  /**
+   * Find nearest meaningful component (not showcase-section, ds-showcase, or generic divs)
+   * Maximum 5 levels up to prevent going too high
+   */
+  findNearestComponent(element) {
+    let current = element.parentElement;
+    let level = 0;
+    const maxLevels = 5;
+    
+    while (current && level < maxLevels) {
+      level++;
+
+      // Never traverse beyond ds-showcase - it's too high, return null
+      if (current.tagName === "DS-SHOWCASE") {
+        return null;
+      }
+
+      // Skip showcase-section but continue traversing
+      if (current.classList.contains("showcase-section")) {
+        current = current.parentElement;
+        continue;
+      }
+
+      // Check if this is a meaningful component
+      if (
+        current.tagName.includes("-") || // Custom element
+        current.tagName === "BUTTON" ||
+        current.tagName === "NAV" ||
+        current.tagName === "FIELDSET" ||
+        current.tagName === "LABEL" ||
+        current.tagName === "TABLE" ||
+        current.tagName === "FIGURE" ||
+        current.tagName === "BLOCKQUOTE" ||
+        current.tagName === "ARTICLE" ||
+        current.hasAttribute("role") ||
+        current.hasAttribute("data-dropdown") ||
+        current.hasAttribute("data-toggle") ||
+        this.hasPDSClass(current)
+      ) {
+        return current;
+      }
+
+      current = current.parentElement;
+    }
+
+    return null;
+  }
+
+  /**
+   * Check if element has any PDS component/primitive class
+   */
+  hasPDSClass(element) {
+    const pdsClassPrefixes = [
+      'card', 'surface', 'tag', 'badge', 'pill', 'chip',
+      'alert', 'toast', 'notification', 'message',
+      'accordion', 'collapse', 'expandable',
+      'list-group', 'menu-list', 'nav-list',
+      'breadcrumb', 'pagination', 'tabs', 'tab',
+      'progress', 'spinner', 'loader', 'skeleton',
+      'divider', 'separator', 'avatar', 'thumbnail',
+      'form-group', 'input-group', 'checkbox-group', 'radio-group',
+      'btn-', 'icon-only',
+      'dropdown', 'popover', 'tooltip', 'modal', 'dialog',
+      'table-responsive', 'data-table', 'card-grid', 'media-object',
+      'status', 'indicator', 'dot-indicator', 'pulse',
+    ];
+
+    return Array.from(element.classList).some(cls => 
+      pdsClassPrefixes.some(prefix => cls.startsWith(prefix))
+    );
+  }
+
+  /**
+   * Extract HTML with smart formatting
+   */
+  extractHTML(element) {
+    const clone = element.cloneNode(true);
+
+    // Remove event listeners and internal state
+    const allElements = [clone, ...clone.querySelectorAll("*")];
+    allElements.forEach((el) => {
+      // Remove Lit internal attributes
+      if (el.removeAttribute) {
+        el.removeAttribute("_$litPart$");
+        el.removeAttribute("_$litElement$");
+      }
+    });
+
+    let html = clone.outerHTML;
+
+    // Pretty print HTML
+    html = this.formatHTML(html);
+
+    // Extract Lit properties (attributes starting with .)
+    const litProps = this.extractLitProperties(element);
+
+    return { html, litProps };
+  }
+
+  /**
+   * Extract Lit property bindings from element
+   */
+  extractLitProperties(element) {
+    const props = [];
+    
+    // Check for common Lit property patterns
+    if (element.checked !== undefined && element.type === "checkbox") {
+      props.push({ name: ".checked", value: element.checked });
+    }
+    
+    if (element.value !== undefined && ["INPUT", "SELECT", "TEXTAREA"].includes(element.tagName)) {
+      props.push({ name: ".value", value: element.value });
+    }
+
+    // Check for custom element properties
+    if (element.tagName.includes("-")) {
+      const constructor = customElements.get(element.tagName.toLowerCase());
+      if (constructor && constructor.properties) {
+        Object.keys(constructor.properties).forEach((prop) => {
+          if (element[prop] !== undefined && typeof element[prop] !== "function") {
+            props.push({ name: `.${prop}`, value: element[prop] });
+          }
+        });
+      }
+    }
+
+    return props;
+  }
+
+  /**
+   * Format HTML with indentation
+   */
+  formatHTML(html) {
+    let formatted = "";
+    let indent = 0;
+    const tab = "  ";
+
+    html.split(/>\s*</).forEach((node, index, array) => {
+      // Add back the angle brackets
+      if (index === 0) {
+        node = node + ">";
+      } else if (index === array.length - 1) {
+        node = "<" + node;
+      } else {
+        node = "<" + node + ">";
+      }
+
+      // Decrease indent for closing tags
+      if (node.match(/^<\/\w/)) {
+        indent--;
+      }
+
+      // Add the indented node
+      formatted += tab.repeat(Math.max(0, indent)) + node.trim() + "\n";
+
+      // Increase indent for opening tags (but not self-closing)
+      if (node.match(/^<\w[^>]*[^\/]>$/)) {
+        indent++;
+      }
+    });
+
+    return formatted.trim();
+  }
+
+  /**
+   * Handle click in inspector mode
+   */
+  handleInspectorClick(e) {
+    if (!this.inspectorActive) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const detected = this.detectComponentElement(e.target);
+    if (!detected) return;
+
+    const { element, componentType, displayName } = detected;
+    const { html, litProps } = this.extractHTML(element);
+
+    // Show code in drawer
+    this.showCodeDrawer(html, litProps, displayName, componentType);
+  }
+
+  /**
+   * Show code in pds-drawer
+   */
+  async showCodeDrawer(html, litProps, displayName, componentType) {
+    // Create or get drawer
+    let drawer = document.querySelector("pds-drawer#code-inspector-drawer");
+    if (!drawer) {
+      drawer = document.createElement("pds-drawer");
+      drawer.id = "code-inspector-drawer";
+      drawer.setAttribute("position", "bottom");
+      drawer.setAttribute("max-height", "80vh");
+      document.body.appendChild(drawer);
+    }
+
+    // Create content with copy button
+    const litPropsHTML =
+      litProps.length > 0
+        ? `
+      <div class="lit-properties">
+        <h4>Lit Properties</h4>
+        <div class="lit-props-list">
+          ${litProps
+            .map(
+              (prop) => `
+            <div class="lit-prop">
+              <code class="prop-name">${prop.name}</code>
+              <code class="prop-value">${JSON.stringify(prop.value)}</code>
+            </div>
+          `
+            )
+            .join("")}
+        </div>
+      </div>
+    `
+        : "";
+
+    // Show drawer with loading state first
+    drawer.innerHTML = `
+      <div slot="drawer-header" class="code-drawer-header">
+        <div class="code-drawer-title">
+          <svg-icon icon="code" size="sm"></svg-icon>
+          <span>${displayName}</span>
+          <span class="component-type-badge">${componentType}</span>
+        </div>
+        <button class="copy-code-btn" id="copyCodeBtn">
+          <svg-icon icon="clipboard" size="sm"></svg-icon>
+          Copy HTML
+        </button>
+      </div>
+      <div slot="drawer-content" class="code-drawer-content">
+        ${litPropsHTML}
+        <div class="code-block-wrapper">
+          <pre class="code-block"><code class="language-html">Loading syntax highlighting...</code></pre>
+        </div>
+      </div>
+    `;
+
+    drawer.open = true;
+
+    // Highlight code asynchronously
+    const highlightedCode = await this.highlightWithShiki(html);
+
+    // Update with highlighted code
+    drawer.innerHTML = `
+      <div slot="drawer-header" class="code-drawer-header">
+        <div class="code-drawer-title">
+          <svg-icon icon="code" size="sm"></svg-icon>
+          <span>${displayName}</span>
+          <span class="component-type-badge">${componentType}</span>
+        </div>
+        <button class="copy-code-btn" id="copyCodeBtn">
+          <svg-icon icon="clipboard" size="sm"></svg-icon>
+          Copy HTML
+        </button>
+      </div>
+      <div slot="drawer-content" class="code-drawer-content">
+        ${litPropsHTML}
+        <div class="code-block-wrapper">
+          <pre class="code-block"><code class="language-html">${highlightedCode}</code></pre>
+        </div>
+      </div>
+    `;
+
+    // Add copy functionality
+    setTimeout(() => {
+      const copyBtn = drawer.querySelector("#copyCodeBtn");
+      if (copyBtn) {
+        copyBtn.onclick = () => {
+          let textToCopy = html;
+          if (litProps.length > 0) {
+            textToCopy =
+              "<!-- Lit Properties:\n" +
+              litProps.map((p) => `  ${p.name}=${JSON.stringify(p.value)}`).join("\n") +
+              "\n-->\n\n" +
+              html;
+          }
+
+          navigator.clipboard.writeText(textToCopy).then(() => {
+            copyBtn.innerHTML = `
+              <svg-icon icon="check" size="sm"></svg-icon>
+              Copied!
+            `;
+            setTimeout(() => {
+              copyBtn.innerHTML = `
+                <svg-icon icon="clipboard" size="sm"></svg-icon>
+                Copy HTML
+              `;
+            }, 2000);
+          });
+        };
+      }
+    }, 100);
+  }
+
+  /**
+   * Load Shiki syntax highlighter dynamically
+   */
+  async loadShiki() {
+    if (this.#shiki) return this.#shiki;
+    if (this.#shikiLoading) {
+      // Wait for the loading to complete
+      while (this.#shikiLoading) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+      return this.#shiki;
+    }
+
+    this.#shikiLoading = true;
+    try {
+      const shiki = await import("https://esm.sh/shiki@1.0.0");
+      this.#shiki = await shiki.getHighlighter({
+        themes: ["dark-plus"],
+        langs: ["html"],
+      });
+      return this.#shiki;
+    } catch (error) {
+      console.error("Failed to load Shiki:", error);
+      return null;
+    } finally {
+      this.#shikiLoading = false;
+    }
+  }
+
+  /**
+   * Highlight code with Shiki
+   */
+  async highlightWithShiki(code) {
+    const highlighter = await this.loadShiki();
+    if (!highlighter) {
+      // Fallback to escaped HTML without highlighting
+      return this.escapeHTML(code);
+    }
+
+    try {
+      const html = highlighter.codeToHtml(code, {
+        lang: "html",
+        theme: "dark-plus",
+      });
+      // Extract just the code content from the generated HTML
+      const match = html.match(/<code[^>]*>([\s\S]*)<\/code>/);
+      return match ? match[1] : this.escapeHTML(code);
+    } catch (error) {
+      console.error("Shiki highlighting failed:", error);
+      return this.escapeHTML(code);
+    }
+  }
+  escapeHTML(html) {
+    return html
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
   scrollToRelevantSection(fieldPath) {
@@ -132,11 +839,50 @@ export class DsShowcase extends LitElement {
     `;
   }
 
+  renderTOC() {
+    if (!this.sections || this.sections.length === 0) return nothing;
+
+    return html`
+      <nav class="showcase-toc" aria-label="Table of Contents">
+        <div class="toc-wrapper">
+          <svg-icon icon="list" size="sm" class="toc-icon"></svg-icon>
+          ${this.sections.map(
+            (section) => html`
+              <a
+                href="#${section.id}"
+                class="toc-link"
+                @click=${(e) => this.handleTOCClick(e, section.id)}
+              >
+                ${section.title}
+              </a>
+            `
+          )}
+        </div>
+      </nav>
+    `;
+  }
+
+  handleTOCClick(e, sectionId) {
+    e.preventDefault();
+    const section = this.querySelector(`[data-section="${sectionId}"]`);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+      // Update URL hash
+      history.pushState(null, "", `#${sectionId}`);
+    }
+  }
+
   render() {
     const components = this.config?.components || {};
 
     return html`
-      <div class="showcase-container">
+      <div 
+        class="showcase-container ${this.inspectorActive ? "inspector-active" : ""}"
+        @click=${this.handleInspectorClick}
+      >
+        <!-- Table of Contents Navigation -->
+        ${this.renderTOC()}
+
         <!-- Hero Section -->
         <section class="showcase-hero">
           <h1>Pure Design System</h1>

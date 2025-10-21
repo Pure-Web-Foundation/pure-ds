@@ -21,6 +21,7 @@ export class DsDesigner extends LitElement {
     config: { type: Object, state: true },
     schema: { type: Object, state: true },
     mode: { type: String },
+    inspectorMode: { type: Boolean, state: true },
   };
 
   createRenderRoot() {
@@ -32,6 +33,7 @@ export class DsDesigner extends LitElement {
     super.connectedCallback();
 
     this.mode = "simple";
+    this.inspectorMode = false;
 
     this.config = this.loadConfig();
 
@@ -85,6 +87,26 @@ export class DsDesigner extends LitElement {
       );
     }, 500);
     // Dispatch event for showcase to update
+  }
+
+  toggleInspectorMode() {
+    this.inspectorMode = !this.inspectorMode;
+    
+    // Dispatch event to notify showcase
+    this.dispatchEvent(
+      new CustomEvent("inspector-mode-changed", {
+        bubbles: true,
+        composed: true,
+        detail: { active: this.inspectorMode },
+      })
+    );
+
+    toast(
+      this.inspectorMode 
+        ? "Code Inspector active - click any element in the showcase to view its code" 
+        : "Code Inspector deactivated",
+      { type: "info", duration: 3000 }
+    );
   }
 
   // Flatten nested config to dot-notation for pds-jsonform
@@ -237,20 +259,34 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
     }
     return html`
       <div class="designer-container">
-        <label data-toggle id="mode-toggle">
-          <input
-            type="checkbox"
-            .checked=${this.mode === "advanced"}
-            @change=${(e) => {
-              this.mode = e.target.checked ? "advanced" : "simple";
-              this.updateForm();
-            }}
-          /><span
-            >${this.mode === "advanced"
-              ? "Switch to Basic Mode"
-              : "Switch to Advanced Mode"}</span
+        <div class="designer-toolbar">
+          <label data-toggle id="mode-toggle">
+            <input
+              type="checkbox"
+              .checked=${this.mode === "advanced"}
+              @change=${(e) => {
+                this.mode = e.target.checked ? "advanced" : "simple";
+                this.updateForm();
+              }}
+            /><span
+              >${this.mode === "advanced"
+                ? "Switch to Basic Mode"
+                : "Switch to Advanced Mode"}</span
+            >
+          </label>
+
+          <button
+            class="inspector-toggle ${this.inspectorMode ? "active" : ""}"
+            @click=${this.toggleInspectorMode}
+            title="${this.inspectorMode ? "Deactivate" : "Activate"} Code Inspector"
           >
-        </label>
+            <svg-icon 
+              icon="${this.inspectorMode ? "eye-slash" : "code"}" 
+              size="sm"
+            ></svg-icon>
+            <span>${this.inspectorMode ? "Inspector Active" : "Code Inspector"}</span>
+          </button>
+        </div>
 
         <div class="designer-form-container">
           <pds-jsonform
