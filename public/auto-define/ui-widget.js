@@ -1,116 +1,124 @@
 import { LitElement, html, css } from "/assets/js/lit.js";
+import { pdsRegistry } from "/assets/js/app.js";
+
+// Get PDS stylesheets
+const primitives = await pdsRegistry.getStylesheet("primitives");
+const components = await pdsRegistry.getStylesheet("components");
 
 customElements.define(
   "ui-widget",
   class extends LitElement {
-    static get styles() {
-      return [
-        css`
-          :host([data-dialog]) h3 {
-              background-color: var(--color-primary-100);
-              border-bottom: 1px solid var(--color-primary-400);
-          }
 
-          .widget {
-            display: block;
-            position: relative;
-            overflow: var(--ui-widget-overflow, hidden);
-            overflow-y: var(--ui-widget-overflow, auto);
-            margin-bottom: 1rem;
-            --widget-padding-default: 0.8rem 1.3rem 0.7rem;
-          }
+    static styles = [
+      primitives,
+      components,
+      css`
+        :host([data-dialog]) h3 {
+          background-color: var(--color-primary-100);
+          border-bottom: 1px solid var(--color-primary-400);
+        }
 
-          h3 {
-            display: block;
-            padding: var(--widget-header-padding, var(--widget-padding-default));
-            margin: 0;
-            border: 2px solid var(--color-widget-border, white);
-            border-bottom: none;
-            border-radius: 1rem 1rem 0 0;
-            background-color: var(--label-color, #eae6e6);
-            color: var(--label-text-color, black);
-            font-size: 1rem;
-            --icon-fill-color: var(--color-primary-200);
-            --icon-size: 17px;
-            line-height: 1.1rem;
-          }
+        .widget {
+          display: block;
+          position: relative;
+          overflow: var(--ui-widget-overflow, hidden);
+          overflow-y: var(--ui-widget-overflow, auto);
+          margin-bottom: var(--spacing-4);
+          --widget-padding-default: var(--spacing-3) var(--spacing-4) var(--spacing-3);
+        }
 
-          .label {
-            display: block;
-          }
+        h3 {
+          display: block;
+          padding: var(--widget-header-padding, var(--widget-padding-default));
+          margin: 0;
+          border: 2px solid var(--color-border, var(--color-widget-border, white));
+          border-bottom: none;
+          border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+          background-color: var(--label-color, var(--color-surface-subtle));
+          color: var(--label-text-color, var(--color-text-primary));
+          font-size: var(--font-size-base);
+          --icon-fill-color: var(--color-primary-200);
+          --icon-size: 17px;
+          line-height: 1.1;
+        }
 
-          .sublabel {
-            display: block;
-            font-size: small;
-            opacity: 0.7;
-          }
+        .label {
+          display: block;
+        }
 
-          .widget-body {
-            min-height: var(--min-widget-height, 120px);
-            min-width: 250px;
-            padding: var(--widget-body-padding, var(--widget-padding-default));
-            border: 2px solid var(--color-widget-border, white);
-            border-top: none;
-            border-radius: 0 0 1rem 1rem;
-            background: var(--widget-body-background, var(--color-panel));
+        .sublabel {
+          display: block;
+          font-size: var(--font-size-sm);
+          opacity: 0.7;
+        }
 
-            &.__video {
-              background-color: rgba(0, 0, 0, 0.8);
-            }
-          }
+        .widget-body {
+          min-height: var(--min-widget-height, 120px);
+          min-width: 250px;
+          padding: var(--widget-body-padding, var(--widget-padding-default));
+          border: 2px solid var(--color-border, var(--color-widget-border, white));
+          border-top: none;
+          border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+          background: var(--widget-body-background, var(--color-surface-base));
+        }
 
-          :host([body-class="video"]) {
-            position: relative;
-            --label-color: transparent;
+        .widget-body.__video {
+          background-color: rgba(0, 0, 0, 0.8);
+        }
 
-            h3 {
-              position: absolute;
-              width: 99%;
-              width: -webkit-fill-available;
-              background-color: rgba(0, 0, 0, 0.5);
-              border-radius: 1rem 1rem 0 0;
-              border: 0;
-              color: white;
-              font-weight: 200;
-            }
-            video {
-              margin-bottom: 0;
-            }
+        :host([body-class="video"]) {
+          position: relative;
+          --label-color: transparent;
+        }
 
-            .widget-body {
-              border-radius: 1rem;
-              border: 0;
-              background-color: rgba(0, 0, 0, 0.5);
-            }
-            .widget {
-              margin-bottom: 0;
-            }
-          }
+        :host([body-class="video"]) h3 {
+          position: absolute;
+          width: 99%;
+          width: -webkit-fill-available;
+          background-color: rgba(0, 0, 0, 0.5);
+          border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+          border: 0;
+          color: white;
+          font-weight: var(--font-fontWeight-light, 200);
+        }
 
-          .widget.no-padding .widget-body {
-            padding: 0;
+        :host([body-class="video"]) video {
+          margin-bottom: 0;
+        }
 
-            &::slotted {
-              border-radius: 0 0 1rem 1rem;
-            }
-          }
+        :host([body-class="video"]) .widget-body {
+          border-radius: var(--radius-lg);
+          border: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+        }
 
-          .widget.no-margin {
-            margin: 0;
+        :host([body-class="video"]) .widget {
+          margin-bottom: 0;
+        }
 
-            &::slotted {
-              border-radius: 0 0 1rem 1rem;
-            }
-          }
+        .widget.no-padding .widget-body {
+          padding: 0;
+        }
 
-          ::slotted(ui-widget) {
-            --label-color: white;
-            --min-widget-height: 0;
-            --widget-padding: 0.4rem 0;
-          }
-        `,
-      ];
-    }
+        .widget.no-padding .widget-body::slotted(*) {
+          border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        }
+
+        .widget.no-margin {
+          margin: 0;
+        }
+
+        .widget.no-margin::slotted(*) {
+          border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        }
+
+        ::slotted(ui-widget) {
+          --label-color: white;
+          --min-widget-height: 0;
+          --widget-padding: var(--spacing-2) 0;
+        }
+      `
+    ];
 
     static get properties() {
       return {

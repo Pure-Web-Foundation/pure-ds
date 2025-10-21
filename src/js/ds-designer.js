@@ -10,6 +10,10 @@ function toast(message, options = {}) {
   document.querySelector("pure-app").toast(message, options);
 }
 
+async function ask(message, options = {}) {
+  return await document.querySelector("pure-app").ask(...arguments);
+}
+
 export class DsDesigner extends LitElement {
   #tmr;
   
@@ -171,7 +175,7 @@ export class DsDesigner extends LitElement {
 
   handleReset = () => {
     if (
-      confirm(
+      ask(
         "Reset to default configuration? This will clear your saved settings."
       )
     ) {

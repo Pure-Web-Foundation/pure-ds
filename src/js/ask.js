@@ -1,5 +1,13 @@
 import { render } from "lit";
-import { config } from "./config.js";
+
+/**
+ * Get the current page title for dialogs
+ */
+function getPageTitle() {
+  return document.title || 
+         document.querySelector('h1')?.textContent || 
+         'Application';
+}
 
 export async function ask(message, options = {}) {
   
@@ -83,7 +91,7 @@ export async function ask(message, options = {}) {
 
 export async function alert(message) {
   const defaults = {
-    title: "Qogni",
+    title: getPageTitle(),
     buttons: {
       ok: { name: "OK" },
     },

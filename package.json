@@ -1,7 +1,8 @@
 {
-  "name": "pure-ds",
+  "name": "pure-design-system",
+  "shortname": "pds",
   "version": "1.0.0",
-  "description": "Pure Design System - DS component library built with Lit and Pure Web",
+  "description": "Pure Design System - Why develop a Design System when you can generate one?",
   "type": "module",
   "main": "app.js",
   "scripts": {
@@ -10,8 +11,7 @@
     "update-styles": "node scripts/update-styles.mjs",
     "config-server": "node scripts/config-server.mjs",
     "export-config": "node scripts/export-config-json.mjs",
-    "build-icons": "node scripts/build-icons.mjs",
-    "export": "node scripts/export-pds.mjs"
+    "build-icons": "node scripts/build-icons.mjs"
   },
   "author": "",
   "license": "ISC",

@@ -3627,7 +3627,7 @@ body:not([class*="surface-"]) fieldset,
 
     // Primitives = baseline UA-reset + token-driven styles for native elements
     // No component classes, only element selectors with :where() for zero specificity
-    return `@layer primitives {
+    return /*css*/`@layer primitives {
   /* Base HTML reset */
   *, *::before, *::after {
     box-sizing: border-box;
@@ -3644,6 +3644,11 @@ body:not([class*="surface-"]) fieldset,
     -moz-osx-font-smoothing: grayscale;
     tab-size: ${tabSize};
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  }
+
+  :where(dialog){
+    background-color: transparent;
+    border: none;
   }
 
   :where(body) {

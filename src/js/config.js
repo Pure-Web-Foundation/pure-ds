@@ -225,6 +225,7 @@ export const config = {
         run: (elem) => {
           //console.log("Enhance dropdown", elem);
 
+          elem.style.position = "relative";
           const menu = elem.querySelector("menu");
 
           const toggle = () => {

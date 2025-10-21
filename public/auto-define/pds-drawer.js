@@ -115,7 +115,6 @@ export class DrawerPanel extends LitElement {
       display: grid;
       align-items: center;
       justify-items: center;
-      padding-inline: 16px;
     }
     .grab-handle {
       inline-size: var(--_handle-w);
