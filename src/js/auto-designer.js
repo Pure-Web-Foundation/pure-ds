@@ -3431,23 +3431,6 @@ body:not([class*="surface-"]) fieldset,
 
   // DEPRECATED: Old static method for backward compatibility
   // Use the new layer-based applyStyles(designer) method instead
-  static applyStylesLegacy(css, elementId = "auto-designer-styles") {
-    // Get or create style element
-    let styleElement = document.getElementById(elementId);
-
-    if (!styleElement) {
-      styleElement = document.createElement("style");
-      styleElement.id = elementId;
-      const firstStyle = document.head.querySelector("link[rel='stylesheet']");
-      if (firstStyle) {
-        document.head.insertBefore(styleElement, firstStyle);
-      } else document.head.appendChild(styleElement);
-    }
-
-    // Inject CSS directly into style element
-    styleElement.textContent = css;
-  }
-
   // Utility methods for color manipulation
   hexToHsl(hex) {
     const r = parseInt(hex.slice(1, 3), 16) / 255;
@@ -4081,20 +4064,20 @@ export const ${name}CSS = \`${escapedCSS}\`;
   /**
    * Static method to apply styles to document
    * Creates a link element with BLOB URL
+   * @param {AutoDesigner} designer - The AutoDesigner instance with generated styles
    */
   static applyStyles(designer) {
+    // Validate parameter
+    if (!designer || typeof designer !== 'object') {
+      console.error("[AutoDesigner] applyStyles requires a designer object");
+      return;
+    }
+
     // Check if BLOB URL is available
     if (!designer.stylesBlobURL) {
       console.error(
-        "[AutoDesigner] BLOB URL not available. BLOB URLs:",
-        designer._blobURLs
-      );
-      console.error("[AutoDesigner] Falling back to legacy inline styles");
-
-      // Fallback to legacy method
-      AutoDesigner.applyStylesLegacy(
-        designer.layeredCSS || designer.css,
-        "auto-designer-styles"
+        "[AutoDesigner] BLOB URL not available. Designer may not be fully initialized.",
+        { designer, blobURLs: designer._blobURLs }
       );
       return;
     }
@@ -4281,10 +4264,12 @@ export async function adoptPrimitives(shadowRoot, additionalSheets = []) {
     shadowRoot.adoptedStyleSheets = [primitives, ...additionalSheets];
 
     if (pdsRegistry.isLive) {
-      console.log("[PDS Adopter] Adopted LIVE primitives");
+      const componentName = shadowRoot.host?.tagName?.toLowerCase() || 'unknown';
+      console.log(`[PDS Adopter] <${componentName}> adopted LIVE primitives`);
     }
   } catch (error) {
-    console.error("[PDS Adopter] Failed to adopt primitives:", error);
+    const componentName = shadowRoot.host?.tagName?.toLowerCase() || 'unknown';
+    console.error(`[PDS Adopter] <${componentName}> failed to adopt primitives:`, error);
     // Continue with just additional sheets as fallback
     shadowRoot.adoptedStyleSheets = additionalSheets;
   }
@@ -4317,10 +4302,12 @@ export async function adoptLayers(
     shadowRoot.adoptedStylesheets = [...validStylesheets, ...additionalSheets];
 
     if (pdsRegistry.isLive) {
-      console.log("[PDS Adopter] Adopted LIVE layers:", layers);
+      const componentName = shadowRoot.host?.tagName?.toLowerCase() || 'unknown';
+      console.log(`[PDS Adopter] <${componentName}> adopted LIVE layers:`, layers);
     }
   } catch (error) {
-    console.error("[PDS Adopter] Failed to adopt layers:", error);
+    const componentName = shadowRoot.host?.tagName?.toLowerCase() || 'unknown';
+    console.error(`[PDS Adopter] <${componentName}> failed to adopt layers:`, error);
     // Continue with just additional sheets as fallback
     shadowRoot.adoptedStylesheets = additionalSheets;
   }

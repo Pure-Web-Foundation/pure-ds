@@ -19,8 +19,7 @@ if (typeof window !== 'undefined') {
 }
 
 // Apply the generated CSS to the document using BLOB URLs
-// FIX: Use designer.css to pass the CSS string, not the designer object
-AutoDesigner.applyStyles(designer.css);
+AutoDesigner.applyStyles(designer);
 
 // Export designer instance and registry for programmatic access
 export { designer, pdsRegistry };
