@@ -1322,15 +1322,15 @@ export class DsShowcase extends LitElement {
 
                   <div style="margin-top: var(--spacing-6);">
                     <pds-tabstrip label="Example Tabs">
-                      <tab-panel id="overview" label="Overview">
+                      <pds-tabpanel id="overview" label="Overview">
                         <h3>Overview</h3>
                         <p>
                           This is the overview tab. Tab strips provide organized
                           navigation between related content.
                         </p>
-                      </tab-panel>
+                      </pds-tabpanel>
 
-                      <tab-panel id="features" label="Features">
+                      <pds-tabpanel id="features" label="Features">
                         <h3>Features</h3>
                         <p>
                           Tab strips are built with modern web components and
@@ -1354,22 +1354,22 @@ export class DsShowcase extends LitElement {
                             variables
                           </li>
                         </ul>
-                      </tab-panel>
+                      </pds-tabpanel>
 
-                      <tab-panel id="usage" label="Usage">
+                      <pds-tabpanel id="usage" label="Usage">
                         <h3>Usage</h3>
                         <p>Simple markup example:</p>
                         <pre><code>&lt;pds-tabstrip label="My Tabs"&gt;
-  &lt;tab-panel id="tab1" label="First Tab"&gt;
+  &lt;pds-tabpanel id="tab1" label="First Tab"&gt;
     Content for first tab
-  &lt;/tab-panel&gt;
-  &lt;tab-panel id="tab2" label="Second Tab"&gt;
+  &lt;/pds-tabpanel&gt;
+  &lt;pds-tabpanel id="tab2" label="Second Tab"&gt;
     Content for second tab
-  &lt;/tab-panel&gt;
+  &lt;/pds-tabpanel&gt;
 &lt;/pds-tabstrip&gt;</code></pre>
-                      </tab-panel>
+                      </pds-tabpanel>
 
-                      <tab-panel id="accessibility" label="Accessibility">
+                      <pds-tabpanel id="accessibility" label="Accessibility">
                         <h3>Accessibility</h3>
                         <p>Built with accessibility in mind:</p>
                         <ul>
@@ -1382,7 +1382,7 @@ export class DsShowcase extends LitElement {
                           <li>Keyboard navigation with arrow keys</li>
                           <li>Focus management</li>
                         </ul>
-                      </tab-panel>
+                      </pds-tabpanel>
                     </pds-tabstrip>
                   </div>
                 </section>

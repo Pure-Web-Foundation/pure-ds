@@ -10,7 +10,7 @@ class SplitPanel extends LitElement {
   constructor() {
     super();
     this.layout = "horizontal";
-    this.defaultSplit = "400px";
+    this.defaultSplit = "450px";
     this.breakpoint = 1024;
     this.isDragging = false;
   }

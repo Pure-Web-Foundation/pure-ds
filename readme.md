@@ -678,23 +678,23 @@ Accessible tab navigation with hash-based routing and keyboard support:
 
 ```html
 <pds-tabstrip label="Product Details">
-  <tab-panel id="overview" label="Overview">
+  <pds-tabpanel id="overview" label="Overview">
     <h2>Product Overview</h2>
     <p>Main product information...</p>
-  </tab-panel>
+  </pds-tabpanel>
   
-  <tab-panel id="specs" label="Specifications">
+  <pds-tabpanel id="specs" label="Specifications">
     <h2>Technical Specs</h2>
     <ul>
       <li>Processor: Intel i7</li>
       <li>RAM: 16GB</li>
     </ul>
-  </tab-panel>
+  </pds-tabpanel>
   
-  <tab-panel id="reviews" label="Reviews">
+  <pds-tabpanel id="reviews" label="Reviews">
     <h2>Customer Reviews</h2>
     <p>See what customers are saying...</p>
-  </tab-panel>
+  </pds-tabpanel>
 </pds-tabstrip>
 ```
 

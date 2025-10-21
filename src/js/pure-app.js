@@ -7,19 +7,7 @@ import "./svg-icon"
 
 import { AutoDefiner } from "pure-web/auto-definer";
 
-const definer = new AutoDefiner(config.autoDefine);
-
-// Make definer globally available so it doesn't get garbage collected
-if (typeof window !== 'undefined') {
-  window.__pdsAutoDefiner = definer;
-  console.log('[AutoDefiner] Instance created and stored globally');
-}
-
-
-// Pre-define critical components
-//await AutoDefiner.define(["pds-toaster", "pds-jsonform"]);
-
-// Initialize the design system
+// Initialize the design system FIRST
 const designer = new AutoDesigner(config.design);
 
 // Register designer globally for component access (enables live mode)
@@ -31,10 +19,23 @@ if (typeof window !== 'undefined') {
 }
 
 // Apply the generated CSS to the document using BLOB URLs
-AutoDesigner.applyStyles(designer);
+// FIX: Use designer.css to pass the CSS string, not the designer object
+AutoDesigner.applyStyles(designer.css);
 
 // Export designer instance and registry for programmatic access
 export { designer, pdsRegistry };
+
+// Create AutoDefiner instance AFTER designer is initialized
+const definer = new AutoDefiner(config.autoDefine);
+
+// // Make definer globally available so it doesn't get garbage collected
+// if (typeof window !== 'undefined') {
+//   window.__pdsAutoDefiner = definer;
+//   console.log('[AutoDefiner] Instance created and stored globally');
+// }
+
+// Pre-define critical components
+//await AutoDefiner.define(["pds-toaster", "pds-jsonform"]);
 
 export class PureApp extends HTMLElement {
   constructor() {

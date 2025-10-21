@@ -105,8 +105,8 @@ class TabStrip extends HTMLElement {
 
   // --- helpers ---
   #collectPanels() {
-    // Direct children <tab-panel> only (your structure)
-    this.#panels = Array.from(this.querySelectorAll(":scope > tab-panel"));
+    // Direct children <pds-tabpanel> only (your structure)
+    this.#panels = Array.from(this.querySelectorAll(":scope > pds-tabpanel"));
     // Ensure each has an id + section
     this.#panels.forEach((p, i) => {
       if (!p.id) p.id = `tab-${i + 1}`;

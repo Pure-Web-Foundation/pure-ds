@@ -199,7 +199,7 @@ export const config = {
   autoDefine: {
     baseURL: "/auto-define/",
     mapper: (tag) => {
-      console.log(tag)
+      //console.log(tag)
 
       switch(tag) {
         case 'pds-tabpanel':
@@ -210,6 +210,7 @@ export const config = {
     },
 
     onError: (tag, err) => {
+      debugger;
       console.error(`Auto-define error for <${tag}>:`, err);
     },
     

@@ -34,11 +34,12 @@ export class AutoDesigner {
   };
 
   static ShadowDepths = {
-    none: 'none',
-    light: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-    medium: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-    deep: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-    extreme: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+    none: "none",
+    light: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+    medium:
+      "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+    deep: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+    extreme: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
   };
 
   static TransitionSpeeds = {
@@ -48,32 +49,32 @@ export class AutoDesigner {
   };
 
   static AnimationEasings = {
-    linear: 'linear',
-    ease: 'ease',
-    'ease-in': 'ease-in',
-    'ease-out': 'ease-out',
-    'ease-in-out': 'ease-in-out',
-    bounce: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+    linear: "linear",
+    ease: "ease",
+    "ease-in": "ease-in",
+    "ease-out": "ease-out",
+    "ease-in-out": "ease-in-out",
+    bounce: "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
   };
 
   static TouchTargetSizes = {
     compact: 36,
-    standard: 44,  // iOS/Android accessibility standard
+    standard: 44, // iOS/Android accessibility standard
     comfortable: 48,
     spacious: 56,
   };
 
   static LinkStyles = {
-    inline: 'inline',        // Normal inline text links
-    block: 'block',          // Block-level links
-    button: 'button',        // Button-like links (flex with touch target)
+    inline: "inline", // Normal inline text links
+    block: "block", // Block-level links
+    button: "button", // Button-like links (flex with touch target)
   };
 
   static FocusStyles = {
-    ring: 'ring',            // Box-shadow ring (default)
-    outline: 'outline',      // Browser outline
-    border: 'border',        // Border change
-    glow: 'glow',           // Subtle glow effect
+    ring: "ring", // Box-shadow ring (default)
+    outline: "outline", // Browser outline
+    border: "border", // Border change
+    glow: "glow", // Subtle glow effect
   };
 
   static TabSizes = {
@@ -83,10 +84,10 @@ export class AutoDesigner {
   };
 
   static SelectIcons = {
-    chevron: 'chevron',      // Standard chevron down
-    arrow: 'arrow',          // Simple arrow
-    caret: 'caret',          // Triangle caret
-    none: 'none',            // No icon
+    chevron: "chevron", // Standard chevron down
+    arrow: "arrow", // Simple arrow
+    caret: "caret", // Triangle caret
+    none: "none", // No icon
   };
 
   constructor(options = {}) {
@@ -97,36 +98,38 @@ export class AutoDesigner {
     };
 
     if (this.options.debug) {
-      console.log('AutoDesigner options:', this.options);
+      console.log("AutoDesigner options:", this.options);
     }
     this.tokens = this.generateTokens();
     if (this.options.debug) {
-      console.log('Generated tokens:', this.tokens);
+      console.log("Generated tokens:", this.tokens);
     }
     this.css = this.generateCSS();
-    
+
     if (this.options.debug) {
-      console.log('Generated CSS length:', this.css.length);
-      console.log('CSS preview:', this.css.substring(0, 500));
+      console.log("Generated CSS length:", this.css.length);
+      console.log("CSS preview:", this.css.substring(0, 500));
     }
 
     // NEW: Generate separate layers for modern architecture
     this._generateLayers();
-    
+
     // Only create browser-specific features if in browser environment
-    if (typeof CSSStyleSheet !== 'undefined') {
+    if (typeof CSSStyleSheet !== "undefined") {
       this._createConstructableStylesheets();
       this._createBlobURLs();
-      
+
       if (this.options.debug) {
-        console.log('[AutoDesigner] Created BLOB URLs:', {
+        console.log("[AutoDesigner] Created BLOB URLs:", {
           styles: this._blobURLs?.styles,
-          primitives: this._blobURLs?.primitives
+          primitives: this._blobURLs?.primitives,
         });
       }
     } else {
       if (this.options.debug) {
-        console.log('[AutoDesigner] Skipping browser features (CSSStyleSheet not available)');
+        console.log(
+          "[AutoDesigner] Skipping browser features (CSSStyleSheet not available)"
+        );
       }
     }
   }
@@ -150,7 +153,7 @@ export class AutoDesigner {
   generateColorTokens(colorConfig) {
     const {
       primary = "#3b82f6",
-      secondary = "#64748b", 
+      secondary = "#64748b",
       accent = "#ec4899",
       background = "#ffffff",
       success = null,
@@ -166,9 +169,13 @@ export class AutoDesigner {
       accent: this.generateColorScale(accent),
 
       // Semantic colors - use provided or derive from primary/accent
-      success: this.generateColorScale(success || this.deriveSuccessColor(primary)),
+      success: this.generateColorScale(
+        success || this.deriveSuccessColor(primary)
+      ),
       warning: this.generateColorScale(warning || accent),
-      danger: this.generateColorScale(danger || this.deriveDangerColor(primary)),
+      danger: this.generateColorScale(
+        danger || this.deriveDangerColor(primary)
+      ),
       info: this.generateColorScale(info || primary),
 
       // Neutral grays derived from secondary color
@@ -179,11 +186,17 @@ export class AutoDesigner {
     };
 
     // Add adaptive fieldset colors to surface
-    colors.surface.fieldset = this.generateFieldsetAdaptiveColors(colors.surface);
+    colors.surface.fieldset = this.generateFieldsetAdaptiveColors(
+      colors.surface
+    );
 
     // Generate dark mode variants (with optional overrides)
     const darkModeOverrides = this.options.colors?.darkMode || {};
-    colors.dark = this.generateDarkModeColors(colors, background, darkModeOverrides);
+    colors.dark = this.generateDarkModeColors(
+      colors,
+      background,
+      darkModeOverrides
+    );
 
     return colors;
   }
@@ -229,7 +242,7 @@ export class AutoDesigner {
     const hsl = this.hexToHsl(supportingColor);
     const baseHue = hsl.h;
     const baseSat = Math.min(hsl.s, 10); // Keep it subtle
-    
+
     return {
       50: this.hslToHex(baseHue, baseSat, 98),
       100: this.hslToHex(baseHue, baseSat, 95),
@@ -246,14 +259,22 @@ export class AutoDesigner {
 
   generateBackgroundShades(backgroundBase) {
     const hsl = this.hexToHsl(backgroundBase);
-    
+
     // Generate subtle variations of the background
     return {
       base: backgroundBase,
       subtle: this.hslToHex(hsl.h, Math.max(hsl.s, 2), Math.max(hsl.l - 2, 2)), // Very subtle darker
-      elevated: this.hslToHex(hsl.h, Math.max(hsl.s, 3), Math.max(hsl.l - 4, 5)), // Slightly darker for elevated surfaces
+      elevated: this.hslToHex(
+        hsl.h,
+        Math.max(hsl.s, 3),
+        Math.max(hsl.l - 4, 5)
+      ), // Slightly darker for elevated surfaces
       sunken: this.hslToHex(hsl.h, Math.max(hsl.s, 4), Math.max(hsl.l - 6, 8)), // For input fields, subtle depth
-      overlay: this.hslToHex(hsl.h, Math.max(hsl.s, 2), Math.min(hsl.l + 2, 98)), // Slightly lighter for overlays
+      overlay: this.hslToHex(
+        hsl.h,
+        Math.max(hsl.s, 2),
+        Math.min(hsl.l + 2, 98)
+      ), // Slightly lighter for overlays
       inverse: this.generateSmartDarkBackground(backgroundBase), // Smart dark background
     };
   }
@@ -271,57 +292,61 @@ export class AutoDesigner {
 
   darkenColor(hexColor, factor = 0.05) {
     const hsl = this.hexToHsl(hexColor);
-    const darkerLightness = Math.max(hsl.l - (hsl.l * factor), 5);
+    const darkerLightness = Math.max(hsl.l - hsl.l * factor, 5);
     return this.hslToHex(hsl.h, hsl.s, darkerLightness);
   }
 
   generateSmartDarkBackground(lightBackground) {
     const hsl = this.hexToHsl(lightBackground);
-    
+
     // If it's already a light color, create a smart dark version
     if (hsl.l > 50) {
       // Keep the same hue and saturation characteristics but make it dark
       // Increase saturation slightly for richness in dark mode
       const darkSaturation = Math.min(hsl.s + 5, 25);
       const darkLightness = Math.max(12 - (hsl.l - 50) * 0.1, 8); // Darker for lighter source colors
-      
+
       return this.hslToHex(hsl.h, darkSaturation, darkLightness);
     } else {
       // If the source is already dark, create a lighter version
       const lightSaturation = Math.max(hsl.s - 10, 5);
       const lightLightness = Math.min(85 + (50 - hsl.l) * 0.3, 95);
-      
+
       return this.hslToHex(hsl.h, lightSaturation, lightLightness);
     }
   }
 
-  generateDarkModeColors(lightColors, backgroundBase = "#ffffff", overrides = {}) {
+  generateDarkModeColors(
+    lightColors,
+    backgroundBase = "#ffffff",
+    overrides = {}
+  ) {
     // Use custom dark background if provided, otherwise auto-generate
-    const darkBackgroundBase = overrides.background 
-      ? overrides.background 
+    const darkBackgroundBase = overrides.background
+      ? overrides.background
       : this.generateSmartDarkBackground(backgroundBase);
-    
+
     const darkSurface = this.generateBackgroundShades(darkBackgroundBase);
-    
+
     return {
       surface: {
         ...darkSurface,
         fieldset: this.generateDarkModeFieldsetColors(darkSurface),
       },
       // For primary colors, use override, or adjust light colors for dark mode (dimmed for accessibility)
-      primary: overrides.primary 
-        ? this.generateColorScale(overrides.primary) 
+      primary: overrides.primary
+        ? this.generateColorScale(overrides.primary)
         : this.adjustColorsForDarkMode(lightColors.primary),
       // Adjust other colors for dark mode, with optional overrides
-      secondary: overrides.secondary 
-        ? this.generateColorScale(overrides.secondary) 
+      secondary: overrides.secondary
+        ? this.generateColorScale(overrides.secondary)
         : this.adjustColorsForDarkMode(lightColors.secondary),
-      accent: overrides.accent 
-        ? this.generateColorScale(overrides.accent) 
+      accent: overrides.accent
+        ? this.generateColorScale(overrides.accent)
         : this.adjustColorsForDarkMode(lightColors.accent),
       // Regenerate grays if secondary override is provided (grays are derived from secondary)
-      gray: overrides.secondary 
-        ? this.generateGrayScale(overrides.secondary) 
+      gray: overrides.secondary
+        ? this.generateGrayScale(overrides.secondary)
         : lightColors.gray,
       // IMPORTANT: Also adjust semantic colors for dark mode!
       success: this.adjustColorsForDarkMode(lightColors.success),
@@ -351,37 +376,40 @@ export class AutoDesigner {
   adjustColorsForDarkMode(colorScale) {
     // Create dimmed and inverted colors for dark mode
     const dimmedScale = {};
-    
+
     // Invert the scale and apply dimming for better dark mode appearance
     // For accessibility, mid-range colors (used for buttons/interactive elements) are more heavily dimmed
     const mapping = {
-      50: { source: '900', dimFactor: 0.8 },
-      100: { source: '800', dimFactor: 0.8 },
-      200: { source: '700', dimFactor: 0.8 },   // Increased dimming
-      300: { source: '600', dimFactor: 0.8 },   // Increased dimming
-      400: { source: '500', dimFactor: 0.85 },  // Increased dimming
-      500: { source: '400', dimFactor: 0.85 },  // Increased dimming
-      600: { source: '300', dimFactor: 0.85 },  // Increased dimming (buttons use this!)
-      700: { source: '200', dimFactor: 0.85 },  // Increased dimming (button hover)
-      800: { source: '100', dimFactor: 0.95 },  // Less dimming for text
-      900: { source: '50', dimFactor: 0.95 },   // Less dimming for text
+      50: { source: "900", dimFactor: 0.8 },
+      100: { source: "800", dimFactor: 0.8 },
+      200: { source: "700", dimFactor: 0.8 }, // Increased dimming
+      300: { source: "600", dimFactor: 0.8 }, // Increased dimming
+      400: { source: "500", dimFactor: 0.85 }, // Increased dimming
+      500: { source: "400", dimFactor: 0.85 }, // Increased dimming
+      600: { source: "300", dimFactor: 0.85 }, // Increased dimming (buttons use this!)
+      700: { source: "200", dimFactor: 0.85 }, // Increased dimming (button hover)
+      800: { source: "100", dimFactor: 0.95 }, // Less dimming for text
+      900: { source: "50", dimFactor: 0.95 }, // Less dimming for text
     };
-    
+
     Object.entries(mapping).forEach(([key, config]) => {
       const sourceColor = colorScale[config.source];
-      dimmedScale[key] = this.dimColorForDarkMode(sourceColor, config.dimFactor);
+      dimmedScale[key] = this.dimColorForDarkMode(
+        sourceColor,
+        config.dimFactor
+      );
     });
-    
+
     return dimmedScale;
   }
 
   dimColorForDarkMode(hexColor, dimFactor = 0.8) {
     const hsl = this.hexToHsl(hexColor);
-    
+
     // Reduce saturation and lightness for dark mode, similar to image dimming
     const dimmedSaturation = Math.max(hsl.s * dimFactor, 5);
     const dimmedLightness = Math.max(hsl.l * dimFactor, 5);
-    
+
     return this.hslToHex(hsl.h, dimmedSaturation, dimmedLightness);
   }
 
@@ -389,35 +417,38 @@ export class AutoDesigner {
     const {
       baseUnit = 16,
       scaleRatio = 1.25,
-      maxSpacingSteps = 32
+      maxSpacingSteps = 32,
     } = spatialConfig;
 
     const spacing = { 0: "0" };
-    
+
     // Generate standard spacing scale
-    const standardSteps = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3, 4, 5, 6, 8];
+    const standardSteps = [
+      0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3, 4, 5, 6, 8,
+    ];
     standardSteps.forEach((multiplier, index) => {
       const step = index + 1;
       spacing[step] = `${Math.round(baseUnit * multiplier)}px`;
     });
-    
+
     // Generate additional steps up to maxSpacingSteps using scale ratio
     for (let i = standardSteps.length + 1; i <= maxSpacingSteps; i++) {
       const multiplier = Math.pow(scaleRatio, i - 8); // Start scaling from step 8
       spacing[i] = `${Math.round(baseUnit * multiplier)}px`;
     }
-    
+
     return spacing;
   }
 
   generateRadiusTokens(shapeConfig) {
-    const {
-      radiusSize = 'medium',
-      customRadius = null,
-    } = shapeConfig;
+    const { radiusSize = "medium", customRadius = null } = shapeConfig;
 
     // Use custom radius if provided, otherwise use the enum
-    const baseRadius = customRadius !== null ? customRadius : AutoDesigner.RadiusSizes[radiusSize] || AutoDesigner.RadiusSizes.medium;
+    const baseRadius =
+      customRadius !== null
+        ? customRadius
+        : AutoDesigner.RadiusSizes[radiusSize] ||
+          AutoDesigner.RadiusSizes.medium;
 
     return {
       none: "0",
@@ -431,9 +462,9 @@ export class AutoDesigner {
   }
 
   generateTypographyTokens(typographyConfig) {
-    const { 
-      fontFamilyHeadings = 'system-ui, -apple-system, sans-serif',
-      fontFamilyBody = 'system-ui, -apple-system, sans-serif',
+    const {
+      fontFamilyHeadings = "system-ui, -apple-system, sans-serif",
+      fontFamilyBody = "system-ui, -apple-system, sans-serif",
       fontFamilyMono = 'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace',
       baseFontSize = 16,
       fontScale = 1.2,
@@ -444,9 +475,9 @@ export class AutoDesigner {
       fontWeightBold = AutoDesigner.FontWeights.bold,
       lineHeightTight = AutoDesigner.LineHeights.tight,
       lineHeightNormal = AutoDesigner.LineHeights.normal,
-      lineHeightRelaxed = AutoDesigner.LineHeights.relaxed
+      lineHeightRelaxed = AutoDesigner.LineHeights.relaxed,
     } = typographyConfig;
-    
+
     return {
       fontFamily: {
         headings: fontFamilyHeadings,
@@ -482,19 +513,39 @@ export class AutoDesigner {
     const {
       baseShadowOpacity = 0.1,
       shadowBlurMultiplier = 1,
-      shadowOffsetMultiplier = 1
+      shadowOffsetMultiplier = 1,
     } = layersConfig;
 
     const shadowColor = `rgba(0, 0, 0, ${baseShadowOpacity})`;
     const lightShadowColor = `rgba(0, 0, 0, ${baseShadowOpacity * 0.5})`;
 
     return {
-      sm: `0 ${1 * shadowOffsetMultiplier}px ${2 * shadowBlurMultiplier}px 0 ${lightShadowColor}`,
-      base: `0 ${1 * shadowOffsetMultiplier}px ${3 * shadowBlurMultiplier}px 0 ${shadowColor}, 0 ${1 * shadowOffsetMultiplier}px ${2 * shadowBlurMultiplier}px 0 ${lightShadowColor}`,
-      md: `0 ${4 * shadowOffsetMultiplier}px ${6 * shadowBlurMultiplier}px ${-1 * shadowOffsetMultiplier}px ${shadowColor}, 0 ${2 * shadowOffsetMultiplier}px ${4 * shadowBlurMultiplier}px ${-1 * shadowOffsetMultiplier}px ${lightShadowColor}`,
-      lg: `0 ${10 * shadowOffsetMultiplier}px ${15 * shadowBlurMultiplier}px ${-3 * shadowOffsetMultiplier}px ${shadowColor}, 0 ${4 * shadowOffsetMultiplier}px ${6 * shadowBlurMultiplier}px ${-2 * shadowOffsetMultiplier}px ${lightShadowColor}`,
-      xl: `0 ${20 * shadowOffsetMultiplier}px ${25 * shadowBlurMultiplier}px ${-5 * shadowOffsetMultiplier}px ${shadowColor}, 0 ${10 * shadowOffsetMultiplier}px ${10 * shadowBlurMultiplier}px ${-5 * shadowOffsetMultiplier}px ${lightShadowColor}`,
-      inner: `inset 0 ${2 * shadowOffsetMultiplier}px ${4 * shadowBlurMultiplier}px 0 ${lightShadowColor}`,
+      sm: `0 ${1 * shadowOffsetMultiplier}px ${
+        2 * shadowBlurMultiplier
+      }px 0 ${lightShadowColor}`,
+      base: `0 ${1 * shadowOffsetMultiplier}px ${
+        3 * shadowBlurMultiplier
+      }px 0 ${shadowColor}, 0 ${1 * shadowOffsetMultiplier}px ${
+        2 * shadowBlurMultiplier
+      }px 0 ${lightShadowColor}`,
+      md: `0 ${4 * shadowOffsetMultiplier}px ${6 * shadowBlurMultiplier}px ${
+        -1 * shadowOffsetMultiplier
+      }px ${shadowColor}, 0 ${2 * shadowOffsetMultiplier}px ${
+        4 * shadowBlurMultiplier
+      }px ${-1 * shadowOffsetMultiplier}px ${lightShadowColor}`,
+      lg: `0 ${10 * shadowOffsetMultiplier}px ${15 * shadowBlurMultiplier}px ${
+        -3 * shadowOffsetMultiplier
+      }px ${shadowColor}, 0 ${4 * shadowOffsetMultiplier}px ${
+        6 * shadowBlurMultiplier
+      }px ${-2 * shadowOffsetMultiplier}px ${lightShadowColor}`,
+      xl: `0 ${20 * shadowOffsetMultiplier}px ${25 * shadowBlurMultiplier}px ${
+        -5 * shadowOffsetMultiplier
+      }px ${shadowColor}, 0 ${10 * shadowOffsetMultiplier}px ${
+        10 * shadowBlurMultiplier
+      }px ${-5 * shadowOffsetMultiplier}px ${lightShadowColor}`,
+      inner: `inset 0 ${2 * shadowOffsetMultiplier}px ${
+        4 * shadowBlurMultiplier
+      }px 0 ${lightShadowColor}`,
     };
   }
 
@@ -506,8 +557,8 @@ export class AutoDesigner {
         sm: 640,
         md: 768,
         lg: 1024,
-        xl: 1280
-      }
+        xl: 1280,
+      },
     } = layoutConfig;
 
     return {
@@ -516,29 +567,32 @@ export class AutoDesigner {
       containerPadding: `${containerPadding}px`,
       breakpoints: {
         sm: `${breakpoints.sm}px`,
-        md: `${breakpoints.md}px`, 
+        md: `${breakpoints.md}px`,
         lg: `${breakpoints.lg}px`,
         xl: `${breakpoints.xl}px`,
-      }
+      },
     };
   }
 
   generateTransitionTokens(behaviorConfig) {
-    const { 
+    const {
       transitionSpeed = AutoDesigner.TransitionSpeeds.normal,
-      animationEasing = AutoDesigner.AnimationEasings['ease-out']
+      animationEasing = AutoDesigner.AnimationEasings["ease-out"],
     } = behaviorConfig;
-    
+
     // Handle both number values and string keys
     let baseSpeed;
-    if (typeof transitionSpeed === 'number') {
+    if (typeof transitionSpeed === "number") {
       baseSpeed = transitionSpeed;
-    } else if (typeof transitionSpeed === 'string' && AutoDesigner.TransitionSpeeds[transitionSpeed]) {
+    } else if (
+      typeof transitionSpeed === "string" &&
+      AutoDesigner.TransitionSpeeds[transitionSpeed]
+    ) {
       baseSpeed = AutoDesigner.TransitionSpeeds[transitionSpeed];
     } else {
       baseSpeed = AutoDesigner.TransitionSpeeds.normal;
     }
-    
+
     // Transition variables should only contain duration, not easing
     // This allows specific easing functions to be applied per property
     return {
@@ -549,13 +603,10 @@ export class AutoDesigner {
   }
 
   generateZIndexTokens(layersConfig) {
-    const {
-      baseZIndex = 1000,
-      zIndexStep = 10
-    } = layersConfig;
+    const { baseZIndex = 1000, zIndexStep = 10 } = layersConfig;
 
     return {
-      dropdown: (baseZIndex).toString(),
+      dropdown: baseZIndex.toString(),
       sticky: (baseZIndex + zIndexStep * 2).toString(),
       fixed: (baseZIndex + zIndexStep * 3).toString(),
       modal: (baseZIndex + zIndexStep * 4).toString(),
@@ -568,8 +619,8 @@ export class AutoDesigner {
 
   generateIconTokens(iconConfig) {
     const {
-      set = 'phosphor',
-      weight = 'regular',
+      set = "phosphor",
+      weight = "regular",
       defaultSize = 24,
       sizes = {
         xs: 16,
@@ -577,9 +628,9 @@ export class AutoDesigner {
         md: 24,
         lg: 32,
         xl: 48,
-        '2xl': 64,
+        "2xl": 64,
       },
-      spritePath = '/assets/img/icons.svg',
+      spritePath = "/assets/img/icons.svg",
     } = iconConfig;
 
     return {
@@ -609,8 +660,8 @@ export class AutoDesigner {
     const { components = {} } = this.options;
 
     if (this.options.debug) {
-      console.log('Components config:', components);
-      console.log('toasts enabled:', components.toasts !== false);
+      console.log("Components config:", components);
+      console.log("toasts enabled:", components.toasts !== false);
     }
 
     let css = ":root {\n";
@@ -666,7 +717,7 @@ export class AutoDesigner {
     }
 
     if (components.toasts !== false) {
-      const toastCSS = this.generateToastStyles();      
+      const toastCSS = this.generateToastStyles();
       css += toastCSS;
     }
 
@@ -677,7 +728,7 @@ export class AutoDesigner {
     if (components.modals !== false) {
       css += this.generateModalStyles();
     }
-    
+
     if (components.tabStrip !== false) {
       css += this.generateTabStripStyles();
     }
@@ -758,7 +809,9 @@ export class AutoDesigner {
     let css = "  /* Typography */\n";
     Object.entries(typography).forEach(([category, values]) => {
       // Remove "font" prefix from category names (fontFamily -> family, fontSize -> size, etc.)
-      const cleanCategory = category.replace(/^font/, '').replace(/^(.)/, (m) => m.toLowerCase());
+      const cleanCategory = category
+        .replace(/^font/, "")
+        .replace(/^(.)/, (m) => m.toLowerCase());
       Object.entries(values).forEach(([key, value]) => {
         css += `  --font-${cleanCategory}-${key}: ${value};\n`;
       });
@@ -804,12 +857,12 @@ export class AutoDesigner {
     css += `  --icon-weight: ${icons.weight};\n`;
     css += `  --icon-size: ${icons.defaultSize};\n`;
     css += `  --icon-sprite-path: ${icons.spritePath};\n`;
-    
+
     // Icon size scale
     Object.entries(icons.sizes).forEach(([key, value]) => {
       css += `  --icon-size-${key}: ${value};\n`;
     });
-    
+
     return css + "\n";
   }
 
@@ -890,17 +943,24 @@ export class AutoDesigner {
     const { advanced = {}, a11y = {}, layout = {} } = this.options;
     const tabSize = advanced.tabSize || AutoDesigner.TabSizes.standard;
     const linkStyle = advanced.linkStyle || AutoDesigner.LinkStyles.inline;
-    const minTouchTarget = a11y.minTouchTarget || AutoDesigner.TouchTargetSizes.standard;
-    const breakpoints = layout.breakpoints || { sm: 640, md: 768, lg: 1024, xl: 1280 };
+    const minTouchTarget =
+      a11y.minTouchTarget || AutoDesigner.TouchTargetSizes.standard;
+    const breakpoints = layout.breakpoints || {
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+    };
 
     // Link styles based on configuration
-    const linkDisplayStyles = linkStyle === AutoDesigner.LinkStyles.button 
-      ? `display: inline-flex;
+    const linkDisplayStyles =
+      linkStyle === AutoDesigner.LinkStyles.button
+        ? `display: inline-flex;
   align-items: center;
   min-height: ${minTouchTarget}px;`
-      : linkStyle === AutoDesigner.LinkStyles.block
-      ? `display: block;`
-      : `display: inline;`;
+        : linkStyle === AutoDesigner.LinkStyles.block
+        ? `display: block;`
+        : `display: inline;`;
 
     return /*css*/ `/* Mobile-First Base Styles */
 *, *::before, *::after {
@@ -1062,9 +1122,14 @@ figcaption {
 
   generateSemanticHTMLStyles() {
     const { layout = {} } = this.options;
-    const breakpoints = layout.breakpoints || { sm: 640, md: 768, lg: 1024, xl: 1280 };
+    const breakpoints = layout.breakpoints || {
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+    };
 
-    return /*css*/`/* Semantic HTML Elements */
+    return /*css*/ `/* Semantic HTML Elements */
 
 /* Blockquote */
 blockquote {
@@ -1233,28 +1298,30 @@ details > *:not(summary) {
   }
 
   generateFormStyles() {
-    const { 
-      gap, 
-      inputPadding, 
-      buttonPadding, 
-      focusRingWidth, 
+    const {
+      gap,
+      inputPadding,
+      buttonPadding,
+      focusRingWidth,
       focusRingOpacity,
       borderWidthThin,
       sectionSpacing,
       buttonMinHeight,
-      inputMinHeight
+      inputMinHeight,
     } = this.options;
-    
+
     const inputPaddingValue = inputPadding || 0.75;
     const buttonPaddingValue = buttonPadding || 1.0;
     const focusWidth = focusRingWidth || 3;
-    const focusOpacity = Math.round((focusRingOpacity || 0.3) * 255).toString(16).padStart(2, '0');
+    const focusOpacity = Math.round((focusRingOpacity || 0.3) * 255)
+      .toString(16)
+      .padStart(2, "0");
     const borderWidth = borderWidthThin || 1;
     const sectionSpacingValue = sectionSpacing || 2.0;
     const minButtonHeight = buttonMinHeight || 44;
     const minInputHeight = inputMinHeight || 40;
-    
-    return /*css*/`/* Mobile-First Form Styles - Generated from Design Config */
+
+    return /*css*/ `/* Mobile-First Form Styles - Generated from Design Config */
 form {
   margin: 0;
   width: 100%;
@@ -1262,7 +1329,7 @@ form {
 
 /* Form sections and fieldsets */
 fieldset {
-  margin: 0 0 var(--spacing-${Math.round(gap * sectionSpacingValue / 4)}) 0;
+  margin: 0 0 var(--spacing-${Math.round((gap * sectionSpacingValue) / 4)}) 0;
   padding: var(--spacing-4);
   border: none;
   border-radius: var(--radius-md);
@@ -1433,7 +1500,9 @@ input[type="checkbox"] + label:not(fieldset[role="group"] label):not(label[data-
 /* Radio group labels - reduced padding to distinguish from regular buttons */
 fieldset[role="radiogroup"] label,
 fieldset[role="radiogroup"] label:has(input[type="radio"]) {
-  padding: calc(var(--spacing-1) * ${buttonPaddingValue * 0.5}) calc(var(--spacing-4) * 0.75);
+  padding: calc(var(--spacing-1) * ${
+    buttonPaddingValue * 0.5
+  }) calc(var(--spacing-4) * 0.75);
   min-height: calc(${minButtonHeight}px * 0.85);
   flex: 0 1 auto;
   white-space: nowrap;
@@ -2164,9 +2233,14 @@ auto-form::before {
 
   generateTableStyles() {
     const { layout = {} } = this.options;
-    const breakpoints = layout.breakpoints || { sm: 640, md: 768, lg: 1024, xl: 1280 };
+    const breakpoints = layout.breakpoints || {
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+    };
 
-    return /*css*/`/* Table Styles - Mobile First */
+    return /*css*/ `/* Table Styles - Mobile First */
 
 table {
   width: 100%;
@@ -2251,7 +2325,7 @@ tbody tr:last-child td {
   }
 
   generateAlertStyles() {
-    return /*css*/`/* Alert/Notification Styles */
+    return /*css*/ `/* Alert/Notification Styles */
 
 .alert {
   padding: var(--spacing-4);
@@ -2338,7 +2412,7 @@ tbody tr:last-child td {
   }
 
   generateToastStyles() {
-    return /*css*/`/* Toast Notification Styles - Updated */
+    return /*css*/ `/* Toast Notification Styles - Updated */
 
 /
 
@@ -2346,7 +2420,7 @@ tbody tr:last-child td {
   }
 
   generateBadgeStyles() {
-    return /*css*/`/* Badge/Pill Styles */
+    return /*css*/ `/* Badge/Pill Styles */
 
 .badge {
   display: inline-flex;
@@ -2450,9 +2524,14 @@ tbody tr:last-child td {
 
   generateModalStyles() {
     const { layout = {}, a11y = {} } = this.options;
-    const breakpoints = layout.breakpoints || { sm: 640, md: 768, lg: 1024, xl: 1280 };
-    
-    return /*css*/`/* Modal/Dialog Styles */
+    const breakpoints = layout.breakpoints || {
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+    };
+
+    return /*css*/ `/* Modal/Dialog Styles */
 
 .modal {
   position: fixed;
@@ -2600,9 +2679,14 @@ tbody tr:last-child td {
 
   generateTabStripStyles() {
     const { layout = {} } = this.options;
-    const breakpoints = layout.breakpoints || { sm: 640, md: 768, lg: 1024, xl: 1280 };
+    const breakpoints = layout.breakpoints || {
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+    };
 
-    return /*css*/`/* Tab Strip Component */
+    return /*css*/ `/* Tab Strip Component */
 
 /* Tab navigation */
 
@@ -2673,12 +2757,12 @@ pds-tabstrip > nav > a[aria-current="page"]:hover {
 }
 
 /* Tab panel */
-pds-tabstrip > tab-panel {
+pds-tabstrip > pds-tabpanel {
   display: block;
   margin-top: var(--spacing-4);
 }
 
-pds-tabstrip > tab-panel[data-tabpanel] {
+pds-tabstrip > pds-tabpanel[data-tabpanel] {
   animation: tabFadeIn var(--transition-normal) ease-out;
 }
 
@@ -2693,12 +2777,12 @@ pds-tabstrip > tab-panel[data-tabpanel] {
   }
 }
 
-pds-tabstrip > tab-panel[data-tabpanel][hidden] {
+pds-tabstrip > pds-tabpanel[data-tabpanel][hidden] {
   display: none;
 }
 
 /* Tab content styling */
-pds-tabstrip > tab-panel[data-tabpanel] {
+pds-tabstrip > pds-tabpanel[data-tabpanel] {
   padding: var(--spacing-4) 0;
 }
 
@@ -2713,7 +2797,7 @@ pds-tabstrip > tab-panel[data-tabpanel] {
     font-size: var(--font-size-sm);
   }
 
-  pds-tabstrip > tab-panel[data-tabpanel] {
+  pds-tabstrip > pds-tabpanel[data-tabpanel] {
     padding: var(--spacing-3) 0;
   }
 }
@@ -2722,7 +2806,7 @@ pds-tabstrip > tab-panel[data-tabpanel] {
   }
 
   generateScrollbarStyles() {
-    return /*css*/`/* Custom Scrollbars */
+    return /*css*/ `/* Custom Scrollbars */
 
 /* Webkit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
@@ -2797,9 +2881,10 @@ pds-tabstrip > tab-panel[data-tabpanel] {
 
   generateIconStyles() {
     const { a11y = {} } = this.options;
-    const minTouchTarget = a11y.minTouchTarget || AutoDesigner.TouchTargetSizes.standard;
-    
-    return /*css*/`/* Icon System */
+    const minTouchTarget =
+      a11y.minTouchTarget || AutoDesigner.TouchTargetSizes.standard;
+
+    return /*css*/ `/* Icon System */
 
 svg-icon {
   display: inline-flex;
@@ -2957,9 +3042,14 @@ a.icon-only {
 
   generateLayoutUtilities() {
     const { layout = {} } = this.options;
-    const breakpoints = layout.breakpoints || { sm: 640, md: 768, lg: 1024, xl: 1280 };
+    const breakpoints = layout.breakpoints || {
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+    };
 
-    return /*css*/`/* Mobile-First Layout Utilities */
+    return /*css*/ `/* Mobile-First Layout Utilities */
 .container {
   display: block;
   width: 100%;
@@ -3182,7 +3272,7 @@ body:not([class*="surface-"]) fieldset,
   }
 
   generateMediaUtilities() {
-    return /*css*/`/* Media Element Utilities */
+    return /*css*/ `/* Media Element Utilities */
 
 /* Gallery images */
 .img-gallery {
@@ -3229,10 +3319,16 @@ body:not([class*="surface-"]) fieldset,
 
   generateMediaQueries() {
     const { layout = {}, a11y = {} } = this.options;
-    const breakpoints = layout.breakpoints || { sm: 640, md: 768, lg: 1024, xl: 1280 };
-    const minTouchTarget = a11y.minTouchTarget || AutoDesigner.TouchTargetSizes.standard;
+    const breakpoints = layout.breakpoints || {
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+    };
+    const minTouchTarget =
+      a11y.minTouchTarget || AutoDesigner.TouchTargetSizes.standard;
 
-    return /*css*/`/* Mobile-First Responsive Design */
+    return /*css*/ `/* Mobile-First Responsive Design */
 
 /* Small devices (${breakpoints.sm}px and up) */
 @media (min-width: ${breakpoints.sm}px) {
@@ -3338,17 +3434,16 @@ body:not([class*="surface-"]) fieldset,
   static applyStylesLegacy(css, elementId = "auto-designer-styles") {
     // Get or create style element
     let styleElement = document.getElementById(elementId);
-    
+
     if (!styleElement) {
-      styleElement = document.createElement('style');
+      styleElement = document.createElement("style");
       styleElement.id = elementId;
       const firstStyle = document.head.querySelector("link[rel='stylesheet']");
       if (firstStyle) {
         document.head.insertBefore(styleElement, firstStyle);
-      } else 
-        document.head.appendChild(styleElement);
+      } else document.head.appendChild(styleElement);
     }
-    
+
     // Inject CSS directly into style element
     styleElement.textContent = css;
   }
@@ -3426,12 +3521,12 @@ body:not([class*="surface-"]) fieldset,
     this.options = { ...this.options, ...newOptions };
     this.tokens = this.generateTokens();
     this.css = this.generateCSS();
-    
+
     // Regenerate layers
     this._generateLayers();
-    
+
     // Only update browser-specific features if in browser environment
-    if (typeof CSSStyleSheet !== 'undefined') {
+    if (typeof CSSStyleSheet !== "undefined") {
       this._updateConstructableStylesheets();
       this._recreateBlobURLs();
     }
@@ -3460,15 +3555,15 @@ body:not([class*="surface-"]) fieldset,
       tokens: this._generateTokensLayer(),
       primitives: this._generatePrimitivesLayer(),
       components: this._generateComponentsLayer(),
-      utilities: this._generateUtilitiesLayer()
+      utilities: this._generateUtilitiesLayer(),
     };
-    
+
     if (this.options.debug) {
-      console.log('[AutoDesigner] Layer sizes:', {
+      console.log("[AutoDesigner] Layer sizes:", {
         tokens: `${(this._layers.tokens.length / 1024).toFixed(2)} KB`,
         primitives: `${(this._layers.primitives.length / 1024).toFixed(2)} KB`,
         components: `${(this._layers.components.length / 1024).toFixed(2)} KB`,
-        utilities: `${(this._layers.utilities.length / 1024).toFixed(2)} KB`
+        utilities: `${(this._layers.utilities.length / 1024).toFixed(2)} KB`,
       });
     }
   }
@@ -3499,15 +3594,21 @@ body:not([class*="surface-"]) fieldset,
     css += "  }\n\n";
     css += this.generateDarkModeCSS(colors);
     css += "}\n";
-    
+
     return css;
   }
 
   _generatePrimitivesLayer() {
     const { advanced = {}, a11y = {}, layout = {} } = this.options;
     const tabSize = advanced.tabSize || AutoDesigner.TabSizes.standard;
-    const minTouchTarget = a11y.minTouchTarget || AutoDesigner.TouchTargetSizes.standard;
-    const breakpoints = layout.breakpoints || { sm: 640, md: 768, lg: 1024, xl: 1280 };
+    const minTouchTarget =
+      a11y.minTouchTarget || AutoDesigner.TouchTargetSizes.standard;
+    const breakpoints = layout.breakpoints || {
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+    };
 
     // Primitives = baseline UA-reset + token-driven styles for native elements
     // No component classes, only element selectors with :where() for zero specificity
@@ -3796,19 +3897,19 @@ body:not([class*="surface-"]) fieldset,
 
   _generateUtilitiesLayer() {
     let css = `@layer utilities {\n`;
-    
+
     // Icon utilities
     css += this.generateIconStyles();
-    
+
     // Layout utilities
     css += this.generateLayoutUtilities();
-    
+
     // Media utilities
     css += this.generateMediaUtilities();
-    
+
     // Responsive media queries with utility classes
     css += this.generateMediaQueries();
-    
+
     css += "}\n";
     return css;
   }
@@ -3821,7 +3922,7 @@ body:not([class*="surface-"]) fieldset,
       tokens: new CSSStyleSheet(),
       primitives: new CSSStyleSheet(),
       components: new CSSStyleSheet(),
-      utilities: new CSSStyleSheet()
+      utilities: new CSSStyleSheet(),
     };
     this._updateConstructableStylesheets();
   }
@@ -3844,13 +3945,15 @@ body:not([class*="surface-"]) fieldset,
   _recreateBlobURLs() {
     // Safety check
     if (!this._layers) {
-      console.error('[AutoDesigner] Cannot create BLOB URLs: layers not generated');
+      console.error(
+        "[AutoDesigner] Cannot create BLOB URLs: layers not generated"
+      );
       return;
     }
-    
+
     // Revoke old URLs
     if (this._blobURLs) {
-      Object.values(this._blobURLs).forEach(url => {
+      Object.values(this._blobURLs).forEach((url) => {
         if (url) URL.revokeObjectURL(url);
       });
     }
@@ -3860,18 +3963,21 @@ body:not([class*="surface-"]) fieldset,
     this._blobURLs.primitives = this._createBlobURL(this._layers.primitives);
     this._blobURLs.components = this._createBlobURL(this._layers.components);
     this._blobURLs.utilities = this._createBlobURL(this._layers.utilities);
-    
+
     // Combined styles (layers already have @layer wrappers, just concatenate)
     const combined = `${this._layers.tokens}\n${this._layers.primitives}\n${this._layers.components}\n${this._layers.utilities}`;
     this._blobURLs.styles = this._createBlobURL(combined);
-    
+
     if (this.options.debug) {
-      console.log('[AutoDesigner] Created BLOB URL for combined styles:', this._blobURLs.styles);
+      console.log(
+        "[AutoDesigner] Created BLOB URL for combined styles:",
+        this._blobURLs.styles
+      );
     }
   }
 
   _createBlobURL(css) {
-    const blob = new Blob([css], { type: 'text/css' });
+    const blob = new Blob([css], { type: "text/css" });
     return URL.createObjectURL(blob);
   }
 
@@ -3880,28 +3986,54 @@ body:not([class*="surface-"]) fieldset,
   // ========================================================================
 
   // CSS strings (raw)
-  get tokensCSS() { return this._layers?.tokens || ''; }
-  get primitivesCSS() { return this._layers?.primitives || ''; }
-  get componentsCSS() { return this._layers?.components || ''; }
-  get utilitiesCSS() { return this._layers?.utilities || ''; }
+  get tokensCSS() {
+    return this._layers?.tokens || "";
+  }
+  get primitivesCSS() {
+    return this._layers?.primitives || "";
+  }
+  get componentsCSS() {
+    return this._layers?.components || "";
+  }
+  get utilitiesCSS() {
+    return this._layers?.utilities || "";
+  }
   get layeredCSS() {
-    if (!this._layers) return '';
+    if (!this._layers) return "";
     // Each layer already has @layer wrapper, just concatenate
     return `${this._layers.tokens}\n${this._layers.primitives}\n${this._layers.components}\n${this._layers.utilities}`;
   }
 
   // Constructable stylesheets (browser only)
-  get tokensStylesheet() { return this._stylesheets?.tokens; }
-  get primitivesStylesheet() { return this._stylesheets?.primitives; }
-  get componentsStylesheet() { return this._stylesheets?.components; }
-  get utilitiesStylesheet() { return this._stylesheets?.utilities; }
+  get tokensStylesheet() {
+    return this._stylesheets?.tokens;
+  }
+  get primitivesStylesheet() {
+    return this._stylesheets?.primitives;
+  }
+  get componentsStylesheet() {
+    return this._stylesheets?.components;
+  }
+  get utilitiesStylesheet() {
+    return this._stylesheets?.utilities;
+  }
 
   // BLOB URLs (browser only)
-  get tokensBlobURL() { return this._blobURLs?.tokens; }
-  get primitivesBlobURL() { return this._blobURLs?.primitives; }
-  get componentsBlobURL() { return this._blobURLs?.components; }
-  get utilitiesBlobURL() { return this._blobURLs?.utilities; }
-  get stylesBlobURL() { return this._blobURLs?.styles; }
+  get tokensBlobURL() {
+    return this._blobURLs?.tokens;
+  }
+  get primitivesBlobURL() {
+    return this._blobURLs?.primitives;
+  }
+  get componentsBlobURL() {
+    return this._blobURLs?.components;
+  }
+  get utilitiesBlobURL() {
+    return this._blobURLs?.utilities;
+  }
+  get stylesBlobURL() {
+    return this._blobURLs?.styles;
+  }
 
   /**
    * Generate CSS module files for export
@@ -3909,18 +4041,33 @@ body:not([class*="surface-"]) fieldset,
    */
   getCSSModules() {
     return {
-      'pds-tokens.css.js': this._generateCSSModule('tokens', this._layers.tokens),
-      'pds-primitives.css.js': this._generateCSSModule('primitives', this._layers.primitives),
-      'pds-components.css.js': this._generateCSSModule('components', this._layers.components),
-      'pds-utilities.css.js': this._generateCSSModule('utilities', this._layers.utilities),
-      'pds-styles.css.js': this._generateCSSModule('styles', this.layeredCSS)
+      "pds-tokens.css.js": this._generateCSSModule(
+        "tokens",
+        this._layers.tokens
+      ),
+      "pds-primitives.css.js": this._generateCSSModule(
+        "primitives",
+        this._layers.primitives
+      ),
+      "pds-components.css.js": this._generateCSSModule(
+        "components",
+        this._layers.components
+      ),
+      "pds-utilities.css.js": this._generateCSSModule(
+        "utilities",
+        this._layers.utilities
+      ),
+      "pds-styles.css.js": this._generateCSSModule("styles", this.layeredCSS),
     };
   }
 
   _generateCSSModule(name, css) {
     // Escape backticks and backslashes in CSS
-    const escapedCSS = css.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
-    
+    const escapedCSS = css
+      .replace(/\\/g, "\\\\")
+      .replace(/`/g, "\\`")
+      .replace(/\$/g, "\\$");
+
     return `// Pure Design System - ${name}
 // Auto-generated - do not edit directly
 
@@ -3938,26 +4085,32 @@ export const ${name}CSS = \`${escapedCSS}\`;
   static applyStyles(designer) {
     // Check if BLOB URL is available
     if (!designer.stylesBlobURL) {
-      console.error('[AutoDesigner] BLOB URL not available. BLOB URLs:', designer._blobURLs);
-      console.error('[AutoDesigner] Falling back to legacy inline styles');
-      
+      console.error(
+        "[AutoDesigner] BLOB URL not available. BLOB URLs:",
+        designer._blobURLs
+      );
+      console.error("[AutoDesigner] Falling back to legacy inline styles");
+
       // Fallback to legacy method
-      AutoDesigner.applyStylesLegacy(designer.layeredCSS || designer.css, 'auto-designer-styles');
+      AutoDesigner.applyStylesLegacy(
+        designer.layeredCSS || designer.css,
+        "auto-designer-styles"
+      );
       return;
     }
-    
+
     // Create link element pointing to combined BLOB URL
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
     link.href = designer.stylesBlobURL;
-    link.setAttribute('data-pds', 'live');
-    
+    link.setAttribute("data-pds", "live");
+
     // Remove old PDS link if exists
     const oldLink = document.querySelector('link[data-pds="live"]');
     if (oldLink) {
       oldLink.remove();
     }
-    
+
     // Insert BEFORE first existing stylesheet so it has lower cascade priority
     const firstStylesheet = document.querySelector('link[rel="stylesheet"]');
     if (firstStylesheet) {
@@ -3965,8 +4118,11 @@ export const ${name}CSS = \`${escapedCSS}\`;
     } else {
       document.head.appendChild(link);
     }
-    
-    console.log('[AutoDesigner] Applied live styles via BLOB URL:', designer.stylesBlobURL);
+
+    console.log(
+      "[AutoDesigner] Applied live styles via BLOB URL:",
+      designer.stylesBlobURL
+    );
   }
 }
 
@@ -3976,14 +4132,14 @@ export const ${name}CSS = \`${escapedCSS}\`;
 
 class PDSRegistry {
   constructor() {
-    this._mode = 'static'; // Default to static mode
+    this._mode = "static"; // Default to static mode
     this._designer = null;
     this._staticPaths = {
-      tokens: '/css/pds-tokens.css.js',
-      primitives: '/css/pds-primitives.css.js',
-      components: '/css/pds-components.css.js',
-      utilities: '/css/pds-utilities.css.js',
-      styles: '/css/pds-styles.css.js'
+      tokens: "/css/pds-tokens.css.js",
+      primitives: "/css/pds-primitives.css.js",
+      components: "/css/pds-components.css.js",
+      utilities: "/css/pds-utilities.css.js",
+      styles: "/css/pds-styles.css.js",
     };
   }
 
@@ -3993,8 +4149,8 @@ class PDSRegistry {
    */
   setDesigner(designer) {
     this._designer = designer;
-    this._mode = 'live';
-    console.log('[PDS Registry] Switched to LIVE mode with designer instance');
+    this._mode = "live";
+    console.log("[PDS Registry] Switched to LIVE mode with designer instance");
   }
 
   /**
@@ -4002,9 +4158,9 @@ class PDSRegistry {
    * Called by consumers who want to use static CSS files
    */
   setStaticMode(paths = {}) {
-    this._mode = 'static';
+    this._mode = "static";
     this._staticPaths = { ...this._staticPaths, ...paths };
-    console.log('[PDS Registry] Switched to STATIC mode', this._staticPaths);
+    console.log("[PDS Registry] Switched to STATIC mode", this._staticPaths);
   }
 
   /**
@@ -4012,18 +4168,18 @@ class PDSRegistry {
    * Returns CSSStyleSheet object (constructable stylesheet)
    */
   async getStylesheet(layer) {
-    if (this._mode === 'live' && this._designer) {
+    if (this._mode === "live" && this._designer) {
       // Return constructable stylesheet from live designer
-      switch(layer) {
-        case 'tokens': 
+      switch (layer) {
+        case "tokens":
           return this._designer.tokensStylesheet;
-        case 'primitives': 
+        case "primitives":
           return this._designer.primitivesStylesheet;
-        case 'components': 
+        case "components":
           return this._designer.componentsStylesheet;
-        case 'utilities': 
+        case "utilities":
           return this._designer.utilitiesStylesheet;
-        default: 
+        default:
           console.warn(`[PDS Registry] Unknown layer: ${layer}`);
           return null;
       }
@@ -4036,7 +4192,7 @@ class PDSRegistry {
         console.error(`[PDS Registry] Failed to load static ${layer}:`, error);
         // Return empty stylesheet as fallback
         const fallback = new CSSStyleSheet();
-        fallback.replaceSync('/* Failed to load ' + layer + ' */');
+        fallback.replaceSync("/* Failed to load " + layer + " */");
         return fallback;
       }
     }
@@ -4047,14 +4203,20 @@ class PDSRegistry {
    * Used for @import statements in CSS
    */
   getBlobURL(layer) {
-    if (this._mode === 'live' && this._designer) {
-      switch(layer) {
-        case 'tokens': return this._designer.tokensBlobURL;
-        case 'primitives': return this._designer.primitivesBlobURL;
-        case 'components': return this._designer.componentsBlobURL;
-        case 'utilities': return this._designer.utilitiesBlobURL;
-        case 'styles': return this._designer.stylesBlobURL;
-        default: return null;
+    if (this._mode === "live" && this._designer) {
+      switch (layer) {
+        case "tokens":
+          return this._designer.tokensBlobURL;
+        case "primitives":
+          return this._designer.primitivesBlobURL;
+        case "components":
+          return this._designer.componentsBlobURL;
+        case "utilities":
+          return this._designer.utilitiesBlobURL;
+        case "styles":
+          return this._designer.stylesBlobURL;
+        default:
+          return null;
       }
     }
     return null;
@@ -4071,7 +4233,7 @@ class PDSRegistry {
    * Check if in live mode
    */
   get isLive() {
-    return this._mode === 'live' && this._designer !== null;
+    return this._mode === "live" && this._designer !== null;
   }
 
   /**
@@ -4092,37 +4254,37 @@ export const pdsRegistry = new PDSRegistry();
 /**
  * Adopt primitives stylesheet into a shadow root
  * This is the primary method components should use
- * 
+ *
  * @param {ShadowRoot} shadowRoot - The shadow root to adopt into
  * @param {CSSStyleSheet[]} additionalSheets - Additional component-specific stylesheets
  * @returns {Promise<void>}
- * 
+ *
  * @example
  * // In your web component:
  * import { adoptPrimitives } from './auto-designer.js';
- * 
+ *
  * async connectedCallback() {
  *   this.attachShadow({ mode: 'open' });
- *   
+ *
  *   const componentStyles = new CSSStyleSheet();
  *   componentStyles.replaceSync(`...your styles...`);
- *   
+ *
  *   await adoptPrimitives(this.shadowRoot, [componentStyles]);
  * }
  */
 export async function adoptPrimitives(shadowRoot, additionalSheets = []) {
   try {
     // Get primitives stylesheet (live or static)
-    const primitives = await pdsRegistry.getStylesheet('primitives');
-    
+    const primitives = await pdsRegistry.getStylesheet("primitives");
+
     // Adopt primitives + additional sheets
     shadowRoot.adoptedStyleSheets = [primitives, ...additionalSheets];
-    
+
     if (pdsRegistry.isLive) {
-      console.log('[PDS Adopter] Adopted LIVE primitives');
+      console.log("[PDS Adopter] Adopted LIVE primitives");
     }
   } catch (error) {
-    console.error('[PDS Adopter] Failed to adopt primitives:', error);
+    console.error("[PDS Adopter] Failed to adopt primitives:", error);
     // Continue with just additional sheets as fallback
     shadowRoot.adoptedStyleSheets = additionalSheets;
   }
@@ -4131,30 +4293,34 @@ export async function adoptPrimitives(shadowRoot, additionalSheets = []) {
 /**
  * Adopt multiple layers into a shadow root
  * For complex components that need more than just primitives
- * 
+ *
  * @param {ShadowRoot} shadowRoot - The shadow root to adopt into
  * @param {string[]} layers - Array of layer names to adopt (e.g., ['tokens', 'primitives', 'components'])
  * @param {CSSStyleSheet[]} additionalSheets - Additional component-specific stylesheets
  * @returns {Promise<void>}
  */
-export async function adoptLayers(shadowRoot, layers = ['primitives'], additionalSheets = []) {
+export async function adoptLayers(
+  shadowRoot,
+  layers = ["primitives"],
+  additionalSheets = []
+) {
   try {
     // Get all requested stylesheets
     const stylesheets = await Promise.all(
-      layers.map(layer => pdsRegistry.getStylesheet(layer))
+      layers.map((layer) => pdsRegistry.getStylesheet(layer))
     );
-    
+
     // Filter out any null results
-    const validStylesheets = stylesheets.filter(sheet => sheet !== null);
-    
+    const validStylesheets = stylesheets.filter((sheet) => sheet !== null);
+
     // Adopt all layers + additional sheets
     shadowRoot.adoptedStylesheets = [...validStylesheets, ...additionalSheets];
-    
+
     if (pdsRegistry.isLive) {
-      console.log('[PDS Adopter] Adopted LIVE layers:', layers);
+      console.log("[PDS Adopter] Adopted LIVE layers:", layers);
     }
   } catch (error) {
-    console.error('[PDS Adopter] Failed to adopt layers:', error);
+    console.error("[PDS Adopter] Failed to adopt layers:", error);
     // Continue with just additional sheets as fallback
     shadowRoot.adoptedStylesheets = additionalSheets;
   }
@@ -4163,7 +4329,7 @@ export async function adoptLayers(shadowRoot, layers = ['primitives'], additiona
 /**
  * Create a component-specific stylesheet from CSS string
  * Helper to create constructable stylesheets
- * 
+ *
  * @param {string} css - CSS string
  * @returns {CSSStyleSheet}
  */
@@ -4176,7 +4342,7 @@ export function createStylesheet(css) {
 /**
  * Check if running in live design system context
  * Useful for conditional behavior
- * 
+ *
  * @returns {boolean}
  */
 export function isLiveMode() {
