@@ -365,6 +365,7 @@ export class DsShowcase extends LitElement {
                         <input
                           type="email"
                           placeholder="you@example.com"
+                          autocomplete="username"
                           required
                         />
                       </label>
@@ -386,7 +387,7 @@ export class DsShowcase extends LitElement {
 
                       <label>
                         <span>Password</span>
-                        <input type="password" placeholder="Enter password" />
+                        <input type="password" placeholder="Enter password" autocomplete="current-password" />
                       </label>
 
                       <label>

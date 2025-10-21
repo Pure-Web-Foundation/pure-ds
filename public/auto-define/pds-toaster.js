@@ -1,6 +1,6 @@
 // Import PDS helpers from bundled app
 // These are exported from auto-designer.js which is bundled into app.js
-import { adoptLayers, createStylesheet } from '/assets/js/app.js';
+import { adoptLayers, createStylesheet } from "/assets/js/app.js";
 
 export class AppToaster extends HTMLElement {
   constructor() {
@@ -102,11 +102,16 @@ export class AppToaster extends HTMLElement {
     `);
 
     // Adopt primitives (buttons), components (.alert classes), and toaster-specific styles
-    await adoptLayers(this.shadowRoot, ['primitives', 'components'], [componentStyles]);
+    await adoptLayers(
+      this.shadowRoot,
+      ["primitives", "components"],
+      [componentStyles]
+    );
   }
 
   // Main toast method
   toast(message, options = {}) {
+    debugger;
     const defaults = {
       type: "information", // information, success, warning, error
       duration: null, // auto-calculated based on reading time
@@ -213,7 +218,9 @@ export class AppToaster extends HTMLElement {
   }
 
   dismissToast(toastId) {
-    const toastElement = this.shadowRoot.querySelector(`[data-toast-id="${toastId}"]`);
+    const toastElement = this.shadowRoot.querySelector(
+      `[data-toast-id="${toastId}"]`
+    );
     if (!toastElement) return;
 
     // Remove show class to trigger fly-out animation

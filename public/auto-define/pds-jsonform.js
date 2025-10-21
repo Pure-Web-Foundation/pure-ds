@@ -214,6 +214,8 @@ export class SchemaForm extends LitElement {
       switch (schema.format) {
         case "email":
           return "input-email";
+        case "password":
+          return "input-password";
         case "uri":
         case "url":
           return "input-url";
@@ -646,6 +648,29 @@ export class SchemaForm extends LitElement {
           @input=${(e) => set(e.target.value)}
         />
       `
+    );
+
+    this.defineRenderer(
+      "input-password",
+      ({ id, value, attrs, set, ui }) => {
+        // Determine autocomplete value based on UI hints or use "current-password" as default
+        const autocomplete = ui?.["ui:autocomplete"] || attrs.autocomplete || "current-password";
+        
+        return html`
+          <input
+            id=${id}
+            placeholder=${ifDefined(attrs.placeholder)}
+            type="password"
+            .value=${value ?? ""}
+            minlength=${ifDefined(attrs.minLength)}
+            maxlength=${ifDefined(attrs.maxLength)}
+            ?readonly=${!!attrs.readOnly}
+            ?required=${!!attrs.required}
+            autocomplete=${autocomplete}
+            @input=${(e) => set(e.target.value)}
+          />
+        `;
+      }
     );
 
     this.defineRenderer(

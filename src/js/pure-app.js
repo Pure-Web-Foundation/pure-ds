@@ -3,7 +3,7 @@ import { html, LitElement, css, nothing } from "lit";
 export { html, LitElement, css, nothing };
 import { config } from "./config";
 import { ask } from "./ask";
-import "./svg-icon"
+import "./svg-icon";
 
 import { AutoDefiner } from "pure-web/auto-definer";
 
@@ -14,7 +14,7 @@ const designer = new AutoDesigner(config.design);
 pdsRegistry.setDesigner(designer);
 
 // Make registry globally available for late-loaded components
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   window.pdsRegistry = pdsRegistry;
 }
 
@@ -27,51 +27,26 @@ export { designer, pdsRegistry };
 // Create AutoDefiner instance AFTER designer is initialized
 const definer = new AutoDefiner(config.autoDefine);
 
-// // Make definer globally available so it doesn't get garbage collected
-// if (typeof window !== 'undefined') {
-//   window.__pdsAutoDefiner = definer;
-//   console.log('[AutoDefiner] Instance created and stored globally');
-// }
-
 // Pre-define critical components
-//await AutoDefiner.define(["pds-toaster", "pds-jsonform"]);
+await AutoDefiner.define(["pds-toaster", "pds-jsonform"]);
 
 export class PureApp extends HTMLElement {
   constructor() {
     super();
-    this.init()
-  }
-
-  ensureToasterExists() {
-    // Check if toaster already exists
-    if (!document.querySelector("pds-toaster")) {
-      const toaster = document.createElement("pds-toaster");
-      document.body.appendChild(toaster);
-
-      // Store reference for easy access
-      this._toaster = toaster;
-    } else {
-      // Get existing toaster reference
-      this._toaster = document.querySelector("pds-toaster");
-    }
+    this.init();
   }
 
   get toaster() {
-    // Ensure toaster exists and return reference
-    if (!this._toaster || !document.body.contains(this._toaster)) {
-      this.ensureToasterExists();
-    }
-    return this._toaster;
+    return document.querySelector("pds-toaster");
   }
 
-  async init(){
-    
-    // Automatically inject the toaster component into the document body
-    this.ensureToasterExists();
-
+  async init() {
     this.attachShadow({ mode: "open" });
 
     this.shadowRoot.innerHTML = this.render();
+
+    const toaster = document.createElement("pds-toaster");
+    document.body.appendChild(toaster);
   }
 
   render() {
@@ -83,7 +58,7 @@ export class PureApp extends HTMLElement {
     return designer;
   }
 
-  get definer(){
+  get definer() {
     return definer;
   }
 
@@ -93,9 +68,7 @@ export class PureApp extends HTMLElement {
 
   // Toast method - duration is auto-calculated based on message length
   toast(message, options = {}) {
-    //if (this.toaster) {
-      return this.toaster.toast(message, options);
-    //}
+    return this.toaster.toast(message, options);
   }
 
   // Event handlers for AutoForm
