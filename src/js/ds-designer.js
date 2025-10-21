@@ -226,7 +226,9 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
   render() {
     
     if (!this.schema) {
-      //toast("Loading schema...", { duration: 1000 });
+      setTimeout(() => {
+        toast("Loading schema...", { duration: 1000 });
+      }, 500); 
       return nothing;
     }
     return html`

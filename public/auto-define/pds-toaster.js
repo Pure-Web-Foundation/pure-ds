@@ -47,6 +47,16 @@ export class AppToaster extends HTMLElement {
           opacity: 1;
         }
 
+        /* Toast dismiss animation */
+        aside.toast.dismissing {
+          margin-bottom: 0;
+          max-height: 0;
+          opacity: 0;
+          transition: margin-bottom var(--transition-fast, 0.2s) ease-out,
+                      max-height var(--transition-fast, 0.2s) ease-out,
+                      opacity var(--transition-fast, 0.2s) ease-out;
+        }
+
         /* Toast progress bar */
         aside.toast .toast-progress {
           position: absolute;
@@ -222,34 +232,31 @@ export class AppToaster extends HTMLElement {
     );
     if (!toastElement) return;
 
-    // Remove show class to trigger fly-out animation
+    // Remove show class and add dismissing class for smooth collapse
     toastElement.classList.remove("show");
+    toastElement.classList.add("dismissing");
 
-    // After fly-out animation, collapse the element so others slide up
+    // Remove from DOM after animation completes
     setTimeout(() => {
-      toastElement.style.marginBottom = "0";
-      toastElement.style.maxHeight = "0";
-      toastElement.style.overflow = "hidden";
-
-      // Remove from DOM after collapse animation completes
-      setTimeout(() => {
-        if (toastElement.parentNode === this) {
-          this.removeChild(toastElement);
-        }
-      }, 250);
-    }, 250);
+      if (toastElement.parentNode === this.shadowRoot) {
+        this.shadowRoot.removeChild(toastElement);
+      }
+    }, 300);
   }
 
   dismissAll() {
     const toastElements = this.shadowRoot.querySelectorAll(".toast");
     toastElements.forEach((toast) => {
       toast.classList.remove("show");
+      toast.classList.add("dismissing");
     });
 
     // Clear all toasts after animation completes
     setTimeout(() => {
-      this.innerHTML = "";
-    }, 250);
+      while (this.shadowRoot.firstChild) {
+        this.shadowRoot.removeChild(this.shadowRoot.firstChild);
+      }
+    }, 300);
   }
 
   handleCloseClick(toastId) {
