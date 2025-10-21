@@ -6,6 +6,10 @@
 // - Attributes: accept, multiple, disabled, max-files
 // - Methods: getFiles(), clear()
 // - Events: "files-changed" (detail: FileList-like array)
+
+// Import PDS helpers from bundled app
+import { adoptPrimitives, createStylesheet } from '/assets/js/app.js';
+
 class UploadArea extends HTMLElement {
   static get observedAttributes() {
     return ["accept", "multiple", "disabled", "max-files"];
@@ -31,27 +35,51 @@ class UploadArea extends HTMLElement {
     // Attach element internals for form participation
     this.#internals = this.attachInternals();
 
+    // Render structure first
+    this._renderStructure();
+    
+    // Adopt primitives stylesheet asynchronously
+    this._adoptStyles();
+
+    this.#container = this.#root.querySelector(".container");
+    this.#btnSelect = this.#root.querySelector(".btn-select");
+    this.#tiles = this.#root.querySelector(".tiles");
+    this.#input = this.#root.querySelector('input[type="file"]');
+  }
+
+  _renderStructure() {
     this.#root.innerHTML = `
-      <style>
+      <div class="container" role="button" tabindex="0" aria-disabled="false">
+        <div class="instructions">
+          <div class="headline">Drop files here or</div>
+          <div class="sub">Click to browse, or drag & drop files to upload.</div>
+        </div>
+        <button type="button" class="btn-select">Select</button>
+      </div>
+
+      <div class="tiles" aria-live="polite" aria-relevant="additions removals"></div>
+
+      <input type="file" multiple />
+    `;
+  }
+
+  async _adoptStyles() {
+    // Component-specific styles (button styles come from primitives)
+    const componentStyles = createStylesheet(`
+      @layer components {
         :host {
           display: block;
-          font-family: var(--font-family, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial);
-          --border-color: var(--color-border, #d1d5db);
-          --accent: var(--color-accent, #2563eb);
-          --bg: var(--color-bg, #fff);
-          --tile-bg: var(--color-tile-bg, #f9fafb);
-          --tile-border: var(--color-tile-border, #e5e7eb);
-          --danger: var(--color-danger, #ef4444);
+          font-family: var(--font-family-body, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial);
         }
 
         .container {
           position: relative;
-          border: 2px dashed var(--border-color);
-          border-radius: var(--border-radius, 8px);
-          padding: var(--spacing-md, 12px);
+          border: 2px dashed var(--color-border, #d1d5db);
+          border-radius: var(--radius-md, 8px);
+          padding: var(--spacing-3, 12px);
           background: var(--color-input-bg);
           display: flex;
-          gap: var(--spacing-md, 12px);
+          gap: var(--spacing-3, 12px);
           align-items: center;
           cursor: pointer;
           transition: border-color .15s ease, background .15s ease, box-shadow .12s ease;
@@ -63,8 +91,8 @@ class UploadArea extends HTMLElement {
         }
 
         .container.dragover {
-          border-color: var(--accent);
-          box-shadow: 0 2px 8px rgba(37,99,235,.12);
+          border-color: var(--color-primary-500);
+          box-shadow: 0 2px 8px var(--color-primary-500)20;
         }
 
         .instructions {
@@ -73,43 +101,33 @@ class UploadArea extends HTMLElement {
         }
 
         .headline {
-          font-weight: var(--font-weight-bold, 600);
-          color: var(--color-text-primary, #111827);
-          margin: 0 0 var(--spacing-xs, 6px) 0;
+          font-weight: var(--font-weight-semibold, 600);
+          color: var(--color-text-primary);
+          margin: 0 0 var(--spacing-1, 6px) 0;
           font-size: var(--font-size-sm, 14px);
         }
 
         .sub {
           font-size: var(--font-size-xs, 13px);
-          color: var(--color-text-secondary, #6b7280);
+          color: var(--color-text-secondary);
           margin: 0;
-        }
-
-        .btn-select {
-          background: var(--color-primary-600);
-          color: var(--color-btn-text, white);
-          border: none;
-          padding: var(--spacing-sm, 8px) var(--spacing-md, 10px);
-          border-radius: var(--radius-md, 6px);
-          font-size: var(--font-size-xs, 13px);
-          cursor: pointer;
         }
 
         .tiles {
           display: flex;
-          gap: var(--spacing-sm, 8px);
+          gap: var(--spacing-2, 8px);
           flex-wrap: wrap;
-          margin-top: var(--spacing-md, 12px);
+          margin-top: var(--spacing-3, 12px);
         }
 
         .tile {
           display: inline-flex;
           align-items: center;
-          gap: var(--spacing-sm, 8px);
+          gap: var(--spacing-2, 8px);
           background: var(--color-surface-subtle);
-          border: 1px solid var(--tile-border);
-          padding: var(--spacing-xs, 6px);
-          border-radius: var(--border-radius, 6px);
+          border: 1px solid var(--color-border);
+          padding: var(--spacing-1, 6px);
+          border-radius: var(--radius-md, 6px);
           min-width: 120px;
           max-width: 220px;
         }
@@ -118,9 +136,9 @@ class UploadArea extends HTMLElement {
           width: 40px;
           height: 40px;
           flex: 0 0 40px;
-          border-radius: var(--border-radius-sm, 4px);
-          background: var(--color-bg, #fff);
-          border: 1px solid var(--color-gray-300);;
+          border-radius: var(--radius-sm, 4px);
+          background: var(--color-surface-base, #fff);
+          border: 1px solid var(--color-border);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -137,56 +155,49 @@ class UploadArea extends HTMLElement {
           flex: 1;
           min-width: 0;
           font-size: var(--font-size-xs, 12px);
-          color: var(--color-text-primary, #111827);
+          color: var(--color-text-primary);
         }
 
         .meta .name {
-          font-weight: var(--font-weight-bold, 600);
+          font-weight: var(--font-weight-semibold, 600);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
 
         .meta .size {
-          color: var(--color-text-secondary, #6b7280);
-          font-size: var(--font-size-xxs, 11px);
+          color: var(--color-text-secondary);
+          font-size: var(--font-size-xs, 11px);
         }
 
         .remove {
           background: transparent;
           border: none;
-          color: var(--danger);
+          color: var(--color-danger-600);
           cursor: pointer;
-          padding: var(--spacing-xxs, 4px);
+          padding: var(--spacing-1, 4px);
           font-size: var(--font-size-sm, 14px);
+          line-height: 1;
         }
 
-        input[type="file"] { display: none; }
+        .remove:hover {
+          color: var(--color-danger-700);
+        }
+
+        input[type="file"] { 
+          display: none; 
+        }
 
         /* Focus styles */
         .container:focus {
           outline: none;
-          box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+          box-shadow: 0 0 0 3px var(--color-primary-500)20;
         }
-      </style>
+      }
+    `);
 
-      <div class="container" role="button" tabindex="0" aria-disabled="false">
-        <div class="instructions">
-          <div class="headline">Drop files here or</div>
-          <div class="sub">Click to browse, or drag & drop files to upload.</div>
-        </div>
-        <button type="button" class="btn-select">Select</button>
-      </div>
-
-      <div class="tiles" aria-live="polite" aria-relevant="additions removals"></div>
-
-      <input type="file" multiple />
-    `;
-
-    this.#container = this.#root.querySelector(".container");
-    this.#btnSelect = this.#root.querySelector(".btn-select");
-    this.#tiles = this.#root.querySelector(".tiles");
-    this.#input = this.#root.querySelector('input[type="file"]');
+    // Adopt primitives (for button) + component styles
+    await adoptPrimitives(this.#root, [componentStyles]);
   }
 
   // Form-associated lifecycle callbacks
@@ -594,8 +605,8 @@ class UploadArea extends HTMLElement {
   }
 }
 
-if (!customElements.get("upload-area")) {
-  customElements.define("upload-area", UploadArea);
+if (!customElements.get("pds-upload")) {
+  customElements.define("pds-upload", UploadArea);
 }
 
 export default UploadArea;

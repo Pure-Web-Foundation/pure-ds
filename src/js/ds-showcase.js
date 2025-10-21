@@ -428,7 +428,7 @@ export class DsShowcase extends LitElement {
 
                       <label>
                         <span>File Upload</span>
-                        <upload-area name="file"></upload-area>
+                        <pds-upload name="file"></pds-upload>
                       </label>
 
                       <label>

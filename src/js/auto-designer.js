@@ -109,6 +109,26 @@ export class AutoDesigner {
       console.log('Generated CSS length:', this.css.length);
       console.log('CSS preview:', this.css.substring(0, 500));
     }
+
+    // NEW: Generate separate layers for modern architecture
+    this._generateLayers();
+    
+    // Only create browser-specific features if in browser environment
+    if (typeof CSSStyleSheet !== 'undefined') {
+      this._createConstructableStylesheets();
+      this._createBlobURLs();
+      
+      if (this.options.debug) {
+        console.log('[AutoDesigner] Created BLOB URLs:', {
+          styles: this._blobURLs?.styles,
+          primitives: this._blobURLs?.primitives
+        });
+      }
+    } else {
+      if (this.options.debug) {
+        console.log('[AutoDesigner] Skipping browser features (CSSStyleSheet not available)');
+      }
+    }
   }
 
   generateTokens() {
@@ -646,11 +666,7 @@ export class AutoDesigner {
     }
 
     if (components.toasts !== false) {
-      const toastCSS = this.generateToastStyles();
-      if (this.options.debug) {
-        console.log('Toast CSS length:', toastCSS.length);
-        console.log('Toast CSS preview:', toastCSS.substring(0, 100));
-      }
+      const toastCSS = this.generateToastStyles();      
       css += toastCSS;
     }
 
@@ -3317,9 +3333,9 @@ body:not([class*="surface-"]) fieldset,
 `;
   }
 
-  // Static utility method for applying styles to document
-  // The host application decides when/how to apply styles
-  static applyStyles(css, elementId = "auto-designer-styles") {
+  // DEPRECATED: Old static method for backward compatibility
+  // Use the new layer-based applyStyles(designer) method instead
+  static applyStylesLegacy(css, elementId = "auto-designer-styles") {
     // Get or create style element
     let styleElement = document.getElementById(elementId);
     
@@ -3410,6 +3426,15 @@ body:not([class*="surface-"]) fieldset,
     this.options = { ...this.options, ...newOptions };
     this.tokens = this.generateTokens();
     this.css = this.generateCSS();
+    
+    // Regenerate layers
+    this._generateLayers();
+    
+    // Only update browser-specific features if in browser environment
+    if (typeof CSSStyleSheet !== 'undefined') {
+      this._updateConstructableStylesheets();
+      this._recreateBlobURLs();
+    }
   }
 
   // Method to get current tokens (useful for debugging)
@@ -3421,4 +3446,739 @@ body:not([class*="surface-"]) fieldset,
   exportCSS() {
     return this.css;
   }
+
+  // ========================================================================
+  // LAYER SEPARATION ARCHITECTURE (Best Practices 2025)
+  // ========================================================================
+
+  /**
+   * Generate separate CSS layers: tokens, primitives, components, utilities
+   * Following the cascade layers pattern from the best practices document
+   */
+  _generateLayers() {
+    this._layers = {
+      tokens: this._generateTokensLayer(),
+      primitives: this._generatePrimitivesLayer(),
+      components: this._generateComponentsLayer(),
+      utilities: this._generateUtilitiesLayer()
+    };
+    
+    if (this.options.debug) {
+      console.log('[AutoDesigner] Layer sizes:', {
+        tokens: `${(this._layers.tokens.length / 1024).toFixed(2)} KB`,
+        primitives: `${(this._layers.primitives.length / 1024).toFixed(2)} KB`,
+        components: `${(this._layers.components.length / 1024).toFixed(2)} KB`,
+        utilities: `${(this._layers.utilities.length / 1024).toFixed(2)} KB`
+      });
+    }
+  }
+
+  _generateTokensLayer() {
+    const {
+      colors,
+      spacing,
+      radius,
+      typography,
+      shadows,
+      layout,
+      transitions,
+      zIndex,
+      icons,
+    } = this.tokens;
+
+    let css = `@layer tokens {\n  :root {\n`;
+    css += this.generateColorVariables(colors);
+    css += this.generateSpacingVariables(spacing);
+    css += this.generateRadiusVariables(radius);
+    css += this.generateTypographyVariables(typography);
+    css += this.generateShadowVariables(shadows);
+    css += this.generateLayoutVariables(layout);
+    css += this.generateTransitionVariables(transitions);
+    css += this.generateZIndexVariables(zIndex);
+    css += this.generateIconVariables(icons);
+    css += "  }\n\n";
+    css += this.generateDarkModeCSS(colors);
+    css += "}\n";
+    
+    return css;
+  }
+
+  _generatePrimitivesLayer() {
+    const { advanced = {}, a11y = {}, layout = {} } = this.options;
+    const tabSize = advanced.tabSize || AutoDesigner.TabSizes.standard;
+    const minTouchTarget = a11y.minTouchTarget || AutoDesigner.TouchTargetSizes.standard;
+    const breakpoints = layout.breakpoints || { sm: 640, md: 768, lg: 1024, xl: 1280 };
+
+    // Primitives = baseline UA-reset + token-driven styles for native elements
+    // No component classes, only element selectors with :where() for zero specificity
+    return `@layer primitives {
+  /* Base HTML reset */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  :where(html) {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-base);
+    line-height: var(--font-lineHeight-normal);
+    color: var(--color-text-primary);
+    background-color: var(--color-surface-base);
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    tab-size: ${tabSize};
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  }
+
+  :where(body) {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    min-height: var(--layout-minHeight, 100vh);
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Button primitives */
+  :where(button) {
+    all: unset;
+    box-sizing: border-box;
+    font: inherit;
+    color: var(--color-primary-contrast, white);
+    background: var(--color-primary-600);
+    padding: var(--spacing-2) var(--spacing-4);
+    border: 0;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: opacity var(--transition-fast), background-color var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    min-height: ${minTouchTarget}px;
+    touch-action: manipulation;
+    user-select: none;
+  }
+
+  :where(button):hover:not(:disabled) {
+    opacity: 0.9;
+    background-color: var(--color-primary-700);
+  }
+
+  :where(button):focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+
+  :where(button):disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  :where(button):active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  /* Input primitives */
+  :where(input:not([type="radio"]):not([type="checkbox"]):not([type="range"]):not([type="color"])),
+  :where(select),
+  :where(textarea) {
+    font: inherit;
+    color: var(--color-text-primary);
+    background: var(--color-input-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-2) var(--spacing-3);
+    min-height: 40px;
+    width: 100%;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    appearance: none;
+  }
+
+  :where(input):focus-visible,
+  :where(select):focus-visible,
+  :where(textarea):focus-visible {
+    outline: none;
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px var(--color-primary-500)30;
+  }
+
+  :where(input):disabled,
+  :where(select):disabled,
+  :where(textarea):disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: var(--color-input-disabled-bg);
+  }
+
+  :where(textarea) {
+    min-height: 80px;
+    resize: vertical;
+  }
+
+  /* Link primitives */
+  :where(a) {
+    color: var(--color-primary-600);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    transition: opacity var(--transition-fast);
+  }
+
+  :where(a):hover {
+    opacity: 0.8;
+  }
+
+  :where(a):focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Form primitives */
+  :where(label) {
+    display: block;
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--spacing-2);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+  }
+
+  :where(fieldset) {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-4);
+    margin: 0 0 var(--spacing-4) 0;
+    background-color: var(--color-surface-subtle);
+  }
+
+  :where(legend) {
+    font-weight: var(--font-weight-semibold);
+    padding: 0 var(--spacing-2);
+    color: var(--color-text-primary);
+  }
+
+  /* List primitives */
+  :where(ul, ol) {
+    padding-left: var(--spacing-6);
+    margin: var(--spacing-3) 0;
+  }
+
+  :where(li) {
+    margin: var(--spacing-1) 0;
+  }
+
+  /* Typography primitives */
+  :where(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-family-headings);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--font-lineHeight-tight);
+    margin: var(--spacing-4) 0 var(--spacing-3) 0;
+    color: var(--color-text-primary);
+    word-wrap: break-word;
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+
+  /* Mobile-first heading sizes */
+  :where(h1) { font-size: var(--font-size-2xl); }
+  :where(h2) { font-size: var(--font-size-xl); }
+  :where(h3) { font-size: var(--font-size-lg); }
+  :where(h4) { font-size: var(--font-size-base); }
+  :where(h5) { font-size: var(--font-size-sm); }
+  :where(h6) { font-size: var(--font-size-xs); }
+
+  /* Scale up on larger screens */
+  @media (min-width: ${breakpoints.sm}px) {
+    :where(h1) { font-size: var(--font-size-3xl); }
+    :where(h2) { font-size: var(--font-size-2xl); }
+    :where(h3) { font-size: var(--font-size-xl); }
+    :where(h4) { font-size: var(--font-size-lg); }
+    :where(h5) { font-size: var(--font-size-base); }
+    :where(h6) { font-size: var(--font-size-sm); }
+  }
+
+  :where(p) {
+    margin: var(--spacing-3) 0;
+    line-height: var(--font-lineHeight-relaxed);
+    color: var(--color-text-primary);
+  }
+
+  /* Code primitives */
+  :where(code) {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.9em;
+    background: var(--color-surface-muted);
+    padding: 0.2em 0.4em;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+  }
+
+  :where(pre) {
+    font-family: var(--font-family-mono, monospace);
+    background: var(--color-surface-muted);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin: var(--spacing-4) 0;
+  }
+
+  :where(pre code) {
+    background: none;
+    padding: 0;
+  }
+
+  /* Media primitives */
+  :where(img, video) {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-sm);
+  }
+
+  :where(figure) {
+    margin: 0 0 var(--spacing-6) 0;
+  }
+
+  :where(figcaption) {
+    margin-top: var(--spacing-3);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--font-lineHeight-relaxed);
+  }
+}
+`;
+  }
+
+  _generateComponentsLayer() {
+    const { components = {} } = this.options;
+    let css = `@layer components {\n`;
+
+    // Semantic HTML element styles (blockquote, hr, details, etc.)
+    css += this.generateSemanticHTMLStyles();
+
+    // Form component styles (buttons, inputs, checkboxes, radio buttons, toggles, etc.)
+    css += this.generateFormStyles();
+
+    // Alert component styles
+    if (components.alerts !== false) {
+      css += this.generateAlertStyles();
+    }
+
+    // Badge component styles
+    if (components.badges !== false) {
+      css += this.generateBadgeStyles();
+    }
+
+    // Modal component styles
+    if (components.modals !== false) {
+      css += this.generateModalStyles();
+    }
+
+    // TabStrip component styles
+    if (components.tabStrip !== false) {
+      css += this.generateTabStripStyles();
+    }
+
+    // Table component styles
+    if (components.tables !== false) {
+      css += this.generateTableStyles();
+    }
+
+    // Custom scrollbar styles
+    if (components.customScrollbars !== false) {
+      css += this.generateScrollbarStyles();
+    }
+
+    css += "}\n";
+    return css;
+  }
+
+  _generateUtilitiesLayer() {
+    let css = `@layer utilities {\n`;
+    
+    // Icon utilities
+    css += this.generateIconStyles();
+    
+    // Layout utilities
+    css += this.generateLayoutUtilities();
+    
+    // Media utilities
+    css += this.generateMediaUtilities();
+    
+    // Responsive media queries with utility classes
+    css += this.generateMediaQueries();
+    
+    css += "}\n";
+    return css;
+  }
+
+  /**
+   * Create constructable stylesheets for each layer
+   */
+  _createConstructableStylesheets() {
+    this._stylesheets = {
+      tokens: new CSSStyleSheet(),
+      primitives: new CSSStyleSheet(),
+      components: new CSSStyleSheet(),
+      utilities: new CSSStyleSheet()
+    };
+    this._updateConstructableStylesheets();
+  }
+
+  _updateConstructableStylesheets() {
+    this._stylesheets.tokens.replaceSync(this._layers.tokens);
+    this._stylesheets.primitives.replaceSync(this._layers.primitives);
+    this._stylesheets.components.replaceSync(this._layers.components);
+    this._stylesheets.utilities.replaceSync(this._layers.utilities);
+  }
+
+  /**
+   * Create BLOB URLs for live injection
+   */
+  _createBlobURLs() {
+    this._blobURLs = {};
+    this._recreateBlobURLs();
+  }
+
+  _recreateBlobURLs() {
+    // Safety check
+    if (!this._layers) {
+      console.error('[AutoDesigner] Cannot create BLOB URLs: layers not generated');
+      return;
+    }
+    
+    // Revoke old URLs
+    if (this._blobURLs) {
+      Object.values(this._blobURLs).forEach(url => {
+        if (url) URL.revokeObjectURL(url);
+      });
+    }
+
+    // Create new BLOB URLs for each layer
+    this._blobURLs.tokens = this._createBlobURL(this._layers.tokens);
+    this._blobURLs.primitives = this._createBlobURL(this._layers.primitives);
+    this._blobURLs.components = this._createBlobURL(this._layers.components);
+    this._blobURLs.utilities = this._createBlobURL(this._layers.utilities);
+    
+    // Combined styles (layers already have @layer wrappers, just concatenate)
+    const combined = `${this._layers.tokens}\n${this._layers.primitives}\n${this._layers.components}\n${this._layers.utilities}`;
+    this._blobURLs.styles = this._createBlobURL(combined);
+    
+    if (this.options.debug) {
+      console.log('[AutoDesigner] Created BLOB URL for combined styles:', this._blobURLs.styles);
+    }
+  }
+
+  _createBlobURL(css) {
+    const blob = new Blob([css], { type: 'text/css' });
+    return URL.createObjectURL(blob);
+  }
+
+  // ========================================================================
+  // PUBLIC GETTERS FOR LAYER ACCESS
+  // ========================================================================
+
+  // CSS strings (raw)
+  get tokensCSS() { return this._layers?.tokens || ''; }
+  get primitivesCSS() { return this._layers?.primitives || ''; }
+  get componentsCSS() { return this._layers?.components || ''; }
+  get utilitiesCSS() { return this._layers?.utilities || ''; }
+  get layeredCSS() {
+    if (!this._layers) return '';
+    // Each layer already has @layer wrapper, just concatenate
+    return `${this._layers.tokens}\n${this._layers.primitives}\n${this._layers.components}\n${this._layers.utilities}`;
+  }
+
+  // Constructable stylesheets (browser only)
+  get tokensStylesheet() { return this._stylesheets?.tokens; }
+  get primitivesStylesheet() { return this._stylesheets?.primitives; }
+  get componentsStylesheet() { return this._stylesheets?.components; }
+  get utilitiesStylesheet() { return this._stylesheets?.utilities; }
+
+  // BLOB URLs (browser only)
+  get tokensBlobURL() { return this._blobURLs?.tokens; }
+  get primitivesBlobURL() { return this._blobURLs?.primitives; }
+  get componentsBlobURL() { return this._blobURLs?.components; }
+  get utilitiesBlobURL() { return this._blobURLs?.utilities; }
+  get stylesBlobURL() { return this._blobURLs?.styles; }
+
+  /**
+   * Generate CSS module files for export
+   * Returns object with filename => content
+   */
+  getCSSModules() {
+    return {
+      'pds-tokens.css.js': this._generateCSSModule('tokens', this._layers.tokens),
+      'pds-primitives.css.js': this._generateCSSModule('primitives', this._layers.primitives),
+      'pds-components.css.js': this._generateCSSModule('components', this._layers.components),
+      'pds-utilities.css.js': this._generateCSSModule('utilities', this._layers.utilities),
+      'pds-styles.css.js': this._generateCSSModule('styles', this.layeredCSS)
+    };
+  }
+
+  _generateCSSModule(name, css) {
+    // Escape backticks and backslashes in CSS
+    const escapedCSS = css.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+    
+    return `// Pure Design System - ${name}
+// Auto-generated - do not edit directly
+
+export const ${name} = new CSSStyleSheet();
+${name}.replaceSync(\`${escapedCSS}\`);
+
+export const ${name}CSS = \`${escapedCSS}\`;
+`;
+  }
+
+  /**
+   * Static method to apply styles to document
+   * Creates a link element with BLOB URL
+   */
+  static applyStyles(designer) {
+    // Check if BLOB URL is available
+    if (!designer.stylesBlobURL) {
+      console.error('[AutoDesigner] BLOB URL not available. BLOB URLs:', designer._blobURLs);
+      console.error('[AutoDesigner] Falling back to legacy inline styles');
+      
+      // Fallback to legacy method
+      AutoDesigner.applyStylesLegacy(designer.layeredCSS || designer.css, 'auto-designer-styles');
+      return;
+    }
+    
+    // Create link element pointing to combined BLOB URL
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = designer.stylesBlobURL;
+    link.setAttribute('data-pds', 'live');
+    
+    // Remove old PDS link if exists
+    const oldLink = document.querySelector('link[data-pds="live"]');
+    if (oldLink) {
+      oldLink.remove();
+    }
+    
+    // Insert BEFORE first existing stylesheet so it has lower cascade priority
+    const firstStylesheet = document.querySelector('link[rel="stylesheet"]');
+    if (firstStylesheet) {
+      document.head.insertBefore(link, firstStylesheet);
+    } else {
+      document.head.appendChild(link);
+    }
+    
+    console.log('[AutoDesigner] Applied live styles via BLOB URL:', designer.stylesBlobURL);
+  }
+}
+
+// ============================================================================
+// PDS REGISTRY - Global mode manager for live vs static mode
+// ============================================================================
+
+class PDSRegistry {
+  constructor() {
+    this._mode = 'static'; // Default to static mode
+    this._designer = null;
+    this._staticPaths = {
+      tokens: '/css/pds-tokens.css.js',
+      primitives: '/css/pds-primitives.css.js',
+      components: '/css/pds-components.css.js',
+      utilities: '/css/pds-utilities.css.js',
+      styles: '/css/pds-styles.css.js'
+    };
+  }
+
+  /**
+   * Set the designer instance and switch to live mode
+   * Called by pure-app.js when design system is initialized
+   */
+  setDesigner(designer) {
+    this._designer = designer;
+    this._mode = 'live';
+    console.log('[PDS Registry] Switched to LIVE mode with designer instance');
+  }
+
+  /**
+   * Switch to static mode with custom paths
+   * Called by consumers who want to use static CSS files
+   */
+  setStaticMode(paths = {}) {
+    this._mode = 'static';
+    this._staticPaths = { ...this._staticPaths, ...paths };
+    console.log('[PDS Registry] Switched to STATIC mode', this._staticPaths);
+  }
+
+  /**
+   * Get stylesheet for adoption in shadow DOM
+   * Returns CSSStyleSheet object (constructable stylesheet)
+   */
+  async getStylesheet(layer) {
+    if (this._mode === 'live' && this._designer) {
+      // Return constructable stylesheet from live designer
+      switch(layer) {
+        case 'tokens': 
+          return this._designer.tokensStylesheet;
+        case 'primitives': 
+          return this._designer.primitivesStylesheet;
+        case 'components': 
+          return this._designer.componentsStylesheet;
+        case 'utilities': 
+          return this._designer.utilitiesStylesheet;
+        default: 
+          console.warn(`[PDS Registry] Unknown layer: ${layer}`);
+          return null;
+      }
+    } else {
+      // Import from static path
+      try {
+        const module = await import(this._staticPaths[layer]);
+        return module[layer]; // Return exported stylesheet
+      } catch (error) {
+        console.error(`[PDS Registry] Failed to load static ${layer}:`, error);
+        // Return empty stylesheet as fallback
+        const fallback = new CSSStyleSheet();
+        fallback.replaceSync('/* Failed to load ' + layer + ' */');
+        return fallback;
+      }
+    }
+  }
+
+  /**
+   * Get BLOB URL for a layer (live mode only)
+   * Used for @import statements in CSS
+   */
+  getBlobURL(layer) {
+    if (this._mode === 'live' && this._designer) {
+      switch(layer) {
+        case 'tokens': return this._designer.tokensBlobURL;
+        case 'primitives': return this._designer.primitivesBlobURL;
+        case 'components': return this._designer.componentsBlobURL;
+        case 'utilities': return this._designer.utilitiesBlobURL;
+        case 'styles': return this._designer.stylesBlobURL;
+        default: return null;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get current mode
+   */
+  get mode() {
+    return this._mode;
+  }
+
+  /**
+   * Check if in live mode
+   */
+  get isLive() {
+    return this._mode === 'live' && this._designer !== null;
+  }
+
+  /**
+   * Check if designer is available
+   */
+  get hasDesigner() {
+    return this._designer !== null;
+  }
+}
+
+// Export singleton instance
+export const pdsRegistry = new PDSRegistry();
+
+// ============================================================================
+// PDS ADOPTER - Helper for web components
+// ============================================================================
+
+/**
+ * Adopt primitives stylesheet into a shadow root
+ * This is the primary method components should use
+ * 
+ * @param {ShadowRoot} shadowRoot - The shadow root to adopt into
+ * @param {CSSStyleSheet[]} additionalSheets - Additional component-specific stylesheets
+ * @returns {Promise<void>}
+ * 
+ * @example
+ * // In your web component:
+ * import { adoptPrimitives } from './auto-designer.js';
+ * 
+ * async connectedCallback() {
+ *   this.attachShadow({ mode: 'open' });
+ *   
+ *   const componentStyles = new CSSStyleSheet();
+ *   componentStyles.replaceSync(`...your styles...`);
+ *   
+ *   await adoptPrimitives(this.shadowRoot, [componentStyles]);
+ * }
+ */
+export async function adoptPrimitives(shadowRoot, additionalSheets = []) {
+  try {
+    // Get primitives stylesheet (live or static)
+    const primitives = await pdsRegistry.getStylesheet('primitives');
+    
+    // Adopt primitives + additional sheets
+    shadowRoot.adoptedStyleSheets = [primitives, ...additionalSheets];
+    
+    if (pdsRegistry.isLive) {
+      console.log('[PDS Adopter] Adopted LIVE primitives');
+    }
+  } catch (error) {
+    console.error('[PDS Adopter] Failed to adopt primitives:', error);
+    // Continue with just additional sheets as fallback
+    shadowRoot.adoptedStyleSheets = additionalSheets;
+  }
+}
+
+/**
+ * Adopt multiple layers into a shadow root
+ * For complex components that need more than just primitives
+ * 
+ * @param {ShadowRoot} shadowRoot - The shadow root to adopt into
+ * @param {string[]} layers - Array of layer names to adopt (e.g., ['tokens', 'primitives', 'components'])
+ * @param {CSSStyleSheet[]} additionalSheets - Additional component-specific stylesheets
+ * @returns {Promise<void>}
+ */
+export async function adoptLayers(shadowRoot, layers = ['primitives'], additionalSheets = []) {
+  try {
+    // Get all requested stylesheets
+    const stylesheets = await Promise.all(
+      layers.map(layer => pdsRegistry.getStylesheet(layer))
+    );
+    
+    // Filter out any null results
+    const validStylesheets = stylesheets.filter(sheet => sheet !== null);
+    
+    // Adopt all layers + additional sheets
+    shadowRoot.adoptedStylesheets = [...validStylesheets, ...additionalSheets];
+    
+    if (pdsRegistry.isLive) {
+      console.log('[PDS Adopter] Adopted LIVE layers:', layers);
+    }
+  } catch (error) {
+    console.error('[PDS Adopter] Failed to adopt layers:', error);
+    // Continue with just additional sheets as fallback
+    shadowRoot.adoptedStylesheets = additionalSheets;
+  }
+}
+
+/**
+ * Create a component-specific stylesheet from CSS string
+ * Helper to create constructable stylesheets
+ * 
+ * @param {string} css - CSS string
+ * @returns {CSSStyleSheet}
+ */
+export function createStylesheet(css) {
+  const sheet = new CSSStyleSheet();
+  sheet.replaceSync(css);
+  return sheet;
+}
+
+/**
+ * Check if running in live design system context
+ * Useful for conditional behavior
+ * 
+ * @returns {boolean}
+ */
+export function isLiveMode() {
+  return pdsRegistry.isLive;
 }

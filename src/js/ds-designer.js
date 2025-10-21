@@ -12,7 +12,7 @@ function toast(message, options = {}) {
 
 export class DsDesigner extends LitElement {
   #tmr;
-
+  
   static properties = {
     config: { type: Object, state: true },
     schema: { type: Object, state: true },
@@ -23,15 +23,15 @@ export class DsDesigner extends LitElement {
     return this; // Disable shadow DOM
   }
 
+  
   connectedCallback() {
     super.connectedCallback();
 
     this.mode = "simple";
 
-  
     this.config = this.loadConfig();
-  
-    this.updateForm()
+
+    this.updateForm();
   }
 
   updateForm() {
@@ -40,7 +40,6 @@ export class DsDesigner extends LitElement {
       .then((response) => response.json())
       .then((data) => {
         this.schema = data;
-        
       });
   }
 
@@ -70,8 +69,7 @@ export class DsDesigner extends LitElement {
 
   applyStyles() {
     this.designer = new AutoDesigner(this.config);
-    const css = this.designer.css;
-    AutoDesigner.applyStyles(css);
+    AutoDesigner.applyStyles(this.designer);
 
     clearTimeout(this.#tmr);
     this.#tmr = setTimeout(() => {
@@ -148,7 +146,7 @@ export class DsDesigner extends LitElement {
     this.config = deepMerge(this.config, nestedValues);
     console.log("Updated config:", this.config);
     //this.schema = designToSchema(this.config);
-    
+
     this.saveConfig();
     this.applyStyles();
 
@@ -226,9 +224,10 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
   };
 
   render() {
+    
     if (!this.schema) {
-      toast("Loading schema...", { duration: 1000 });
-      return nothing
+      //toast("Loading schema...", { duration: 1000 });
+      return nothing;
     }
     return html`
       <div class="designer-container">
@@ -238,7 +237,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
             .checked=${this.mode === "advanced"}
             @change=${(e) => {
               this.mode = e.target.checked ? "advanced" : "simple";
-              this.updateForm()              
+              this.updateForm();
             }}
           /><span
             >${this.mode === "advanced"

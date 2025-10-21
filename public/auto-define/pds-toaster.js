@@ -1,108 +1,108 @@
+// Import PDS helpers from bundled app
+// These are exported from auto-designer.js which is bundled into app.js
+import { adoptLayers, createStylesheet } from '/assets/js/app.js';
+
 export class AppToaster extends HTMLElement {
   constructor() {
     super();
     this.toasts = [];
   }
 
-  connectedCallback() {
-    // Component is just a container, no style injection needed
-    // All styles come from AutoDesigner CSS
-
+  async connectedCallback() {
+    // Attach shadow DOM
     this.attachShadow({ mode: "open" });
-    const style = document.createElement("style");
-    style.textContent = /*css*/ `
-    
-      :host {
-        position: fixed;
-        top: var(--spacing-4);
-        right: var(--spacing-4);
-        z-index: var(--z-notification);
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-3);
-        pointer-events: none;
-        max-width: 400px;
-      }
 
-      /* Toast animations and transitions */
-      aside.toast {
-        transform: translateX(100%);
-        opacity: 0;
-        margin-bottom: var(--spacing-3);
-        position: relative;
-        pointer-events: auto;
-        max-height: 200px;
-        overflow: hidden;
-      }
-
-      /* Apply transition to both states for bidirectional animation */
-      aside.toast,
-      aside.toast.show {
-        transition: transform var(--transition-normal) cubic-bezier(0.175, 0.885, 0.32, 1.275),
-                    opacity var(--transition-normal) ease-out,
-                    margin-bottom var(--transition-normal) ease-out,
-                    max-height var(--transition-normal) ease-out;
-      }
-
-      aside.toast.show {
-        transform: translateX(0);
-        opacity: 1;
-      }
-
-      /* Toast progress bar */
-      aside.toast .toast-progress {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        height: 2px;
-        opacity: 0.7;
-        transition: width linear;
-      }
-
-      aside.toast.alert-info .toast-progress { 
-        background: var(--color-info-600);
-      }
-
-      aside.toast.alert-success .toast-progress { 
-        background: var(--color-success-600);
-      }
-
-      aside.toast.alert-warning .toast-progress { 
-        background: var(--color-warning-600);
-      }
-
-      aside.toast.alert-danger .toast-progress,
-      aside.toast.alert-error .toast-progress { 
-        background: var(--color-danger-600);
-      }
-
-      /* Toast shrink animation */
-      @keyframes toast-shrink {
-        from { width: 100%; }
-        to { width: 0%; }
-      }
-
-      /* Mobile responsive toast positioning */
-      @media (max-width: 640px) {
+    // Component-specific styles (toaster layer for animations/positioning)
+    const componentStyles = createStylesheet(/*css*/ `
+      @layer toaster {
         :host {
-          top: auto;
-          bottom: var(--spacing-4);
-          left: var(--spacing-4);
+          position: fixed;
+          top: var(--spacing-4);
           right: var(--spacing-4);
-          max-width: none;
+          z-index: var(--z-notification, 9999);
+          display: flex;
+          flex-direction: column;
+          gap: var(--spacing-3);
+          pointer-events: none;
+          max-width: 400px;
         }
 
+        /* Toast animations and transitions */
         aside.toast {
-          transform: translateY(100%);
+          transform: translateX(100%);
+          opacity: 0;
+          margin-bottom: var(--spacing-3);
+          position: relative;
+          pointer-events: auto;
+          max-height: 200px;
+          overflow: hidden;
+          transition: transform var(--transition-normal, 0.3s) cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                      opacity var(--transition-normal, 0.3s) ease-out,
+                      margin-bottom var(--transition-normal, 0.3s) ease-out,
+                      max-height var(--transition-normal, 0.3s) ease-out;
         }
 
         aside.toast.show {
-          transform: translateY(0);
+          transform: translateX(0);
+          opacity: 1;
+        }
+
+        /* Toast progress bar */
+        aside.toast .toast-progress {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          height: 2px;
+          opacity: 0.7;
+          transition: width linear;
+        }
+
+        aside.toast.alert-info .toast-progress { 
+          background: var(--color-info-600);
+        }
+
+        aside.toast.alert-success .toast-progress { 
+          background: var(--color-success-600);
+        }
+
+        aside.toast.alert-warning .toast-progress { 
+          background: var(--color-warning-600);
+        }
+
+        aside.toast.alert-danger .toast-progress,
+        aside.toast.alert-error .toast-progress { 
+          background: var(--color-danger-600);
+        }
+
+        /* Toast shrink animation */
+        @keyframes toast-shrink {
+          from { width: 100%; }
+          to { width: 0%; }
+        }
+
+        /* Mobile responsive toast positioning */
+        @media (max-width: 640px) {
+          :host {
+            top: auto;
+            bottom: var(--spacing-4);
+            left: var(--spacing-4);
+            right: var(--spacing-4);
+            max-width: none;
+          }
+
+          aside.toast {
+            transform: translateY(100%);
+          }
+
+          aside.toast.show {
+            transform: translateY(0);
+          }
         }
       }
-    `;
+    `);
 
-    this.shadowRoot.appendChild(style);
+    // Adopt primitives (buttons), components (.alert classes), and toaster-specific styles
+    await adoptLayers(this.shadowRoot, ['primitives', 'components'], [componentStyles]);
   }
 
   // Main toast method

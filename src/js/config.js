@@ -199,13 +199,25 @@ export const config = {
   autoDefine: {
     baseURL: "/auto-define/",
     mapper: (tag) => {
+      console.log(tag)
+
       switch(tag) {
-        case 'tab-panel':
+        case 'pds-tabpanel':
           return 'pds-tabstrip.js';
         default:
           return `${tag}.js`;
       }
     },
+
+    onError: (tag, err) => {
+      console.error(`Auto-define error for <${tag}>:`, err);
+    },
+    
+    // Critical options for observing dynamically added components
+    scanExisting: true,           // Scan DOM on initialization
+    observeShadows: true,          // Observe inside shadow DOMs (for Lit components)
+    patchAttachShadow: true,       // Intercept attachShadow to observe new shadow roots
+    debounceMs: 16,                // Debounce for performance
     enhancers: [
       {
         selector: "nav[data-dropdown]",

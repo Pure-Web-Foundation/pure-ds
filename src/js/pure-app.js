@@ -1,35 +1,45 @@
-import { AutoDefiner } from "pure-web/auto-definer";
-import { AutoDesigner } from "./auto-designer.js";
-import { html, LitElement, css } from "lit";
-export { html, LitElement, css };
+import { AutoDesigner, pdsRegistry } from "./auto-designer.js";
+import { html, LitElement, css, nothing } from "lit";
+export { html, LitElement, css, nothing };
 import { config } from "./config";
 import { ask } from "./ask";
 import "./svg-icon"
 
+import { AutoDefiner } from "pure-web/auto-definer";
+
+const definer = new AutoDefiner(config.autoDefine);
+
+// Make definer globally available so it doesn't get garbage collected
+if (typeof window !== 'undefined') {
+  window.__pdsAutoDefiner = definer;
+  console.log('[AutoDefiner] Instance created and stored globally');
+}
+
+
+// Pre-define critical components
+//await AutoDefiner.define(["pds-toaster", "pds-jsonform"]);
+
 // Initialize the design system
 const designer = new AutoDesigner(config.design);
 
-// Apply the generated CSS to the document
-// The host application controls when/how styles are applied
-AutoDesigner.applyStyles(designer.css);
+// Register designer globally for component access (enables live mode)
+pdsRegistry.setDesigner(designer);
 
+// Make registry globally available for late-loaded components
+if (typeof window !== 'undefined') {
+  window.pdsRegistry = pdsRegistry;
+}
 
-// Export designer instance for programmatic access
-export { designer };
+// Apply the generated CSS to the document using BLOB URLs
+AutoDesigner.applyStyles(designer);
 
-// Create a single AutoDefiner instance for the whole application
-// This prevents multiple instances from applying the same enhancers
-const definer = new AutoDefiner(config.autoDefine);
+// Export designer instance and registry for programmatic access
+export { designer, pdsRegistry };
 
 export class PureApp extends HTMLElement {
   constructor() {
     super();
-
-    this.attachShadow({ mode: "open" });
-    this.shadowRoot.innerHTML = this.render();
-
-    // Automatically inject the toaster component into the document body
-    this.ensureToasterExists();
+    this.init()
   }
 
   ensureToasterExists() {
@@ -54,6 +64,16 @@ export class PureApp extends HTMLElement {
     return this._toaster;
   }
 
+  async init(){
+    
+    // Automatically inject the toaster component into the document body
+    this.ensureToasterExists();
+
+    this.attachShadow({ mode: "open" });
+
+    this.shadowRoot.innerHTML = this.render();
+  }
+
   render() {
     return /* html */ `<slot></slot>`;
   }
@@ -63,7 +83,7 @@ export class PureApp extends HTMLElement {
     return designer;
   }
 
-  get definer() {
+  get definer(){
     return definer;
   }
 
@@ -73,9 +93,9 @@ export class PureApp extends HTMLElement {
 
   // Toast method - duration is auto-calculated based on message length
   toast(message, options = {}) {
-    if (this.toaster) {
+    //if (this.toaster) {
       return this.toaster.toast(message, options);
-    }
+    //}
   }
 
   // Event handlers for AutoForm

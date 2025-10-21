@@ -23,7 +23,7 @@ class TabPanel extends HTMLElement {
     return this.querySelector("[data-tabpanel]");
   }
 }
-customElements.define("tab-panel", TabPanel);
+customElements.define("pds-tabpanel", TabPanel);
 
 class TabStrip extends HTMLElement {
   #shadow = this.attachShadow({ mode: "open" });
