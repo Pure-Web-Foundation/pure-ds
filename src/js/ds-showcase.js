@@ -1,4 +1,5 @@
 import { LitElement, html, nothing } from "./lit";
+import showdown from "showdown";
 import {
   PDS_ONTOLOGY,
   findComponentForElement,
@@ -992,27 +993,29 @@ export class DsShowcase extends LitElement {
       categories: {
         Sections: {
           action: (options) => {
-            document.querySelector(`[data-section="${options.id}"]`).scrollIntoView({ behavior: "smooth", block: "start" });
+            document
+              .querySelector(`[data-section="${options.id}"]`)
+              .scrollIntoView({ behavior: "smooth", block: "start" });
           },
           trigger: (options) => options.search.length === 0,
           getItems: (options) => {
-            return this.sections.map(section => {
+            return this.sections.map((section) => {
               return {
                 text: section.title,
                 id: section.id,
-                icon: "folder-simple"
-              }
-            })
-          }
+                icon: "folder-simple",
+              };
+            });
+          },
         },
         Search: {
           action: (options) => {
             // When a user selects an item, try to resolve it to a showcase section
-            const rawId = options.id || '';
-            const query = (options.search || '').toLowerCase();
+            const rawId = options.id || "";
+            const query = (options.search || "").toLowerCase();
 
             // id is encoded as `type|key` (see getItems)
-            const [type, key] = rawId.split('|');
+            const [type, key] = rawId.split("|");
 
             // 1) try to find a section with id exactly matching key
             let section = this.sections.find((s) => s.id === key);
@@ -1021,8 +1024,8 @@ export class DsShowcase extends LitElement {
             if (!section) {
               section = this.sections.find(
                 (s) =>
-                  s.title?.toLowerCase().includes(key?.toLowerCase?.() || '') ||
-                  s.id?.toLowerCase().includes(key?.toLowerCase?.() || '') ||
+                  s.title?.toLowerCase().includes(key?.toLowerCase?.() || "") ||
+                  s.id?.toLowerCase().includes(key?.toLowerCase?.() || "") ||
                   s.title?.toLowerCase().includes(query) ||
                   s.id?.toLowerCase().includes(query)
               );
@@ -1033,8 +1036,11 @@ export class DsShowcase extends LitElement {
               for (const s of this.sections) {
                 const el = this.querySelector(`[data-section="${s.id}"]`);
                 if (!el) continue;
-                const text = (el.innerText || '').toLowerCase();
-                if (text.includes(query) || s.title.toLowerCase().includes(query)) {
+                const text = (el.innerText || "").toLowerCase();
+                if (
+                  text.includes(query) ||
+                  s.title.toLowerCase().includes(query)
+                ) {
                   section = s;
                   break;
                 }
@@ -1043,18 +1049,18 @@ export class DsShowcase extends LitElement {
 
             if (section) {
               const el = this.querySelector(`[data-section="${section.id}"]`);
-              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
             } else {
               // no section found - try a global text search and show first match
-              const allText = (this.innerText || '').toLowerCase();
+              const allText = (this.innerText || "").toLowerCase();
               const idx = allText.indexOf(query);
               if (idx !== -1) {
                 // find first section that contains the query
                 for (const s of this.sections) {
                   const el = this.querySelector(`[data-section="${s.id}"]`);
                   if (!el) continue;
-                  if ((el.innerText || '').toLowerCase().includes(query)) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  if ((el.innerText || "").toLowerCase().includes(query)) {
+                    el.scrollIntoView({ behavior: "smooth", block: "start" });
                     break;
                   }
                 }
@@ -1063,41 +1069,61 @@ export class DsShowcase extends LitElement {
           },
           trigger: (options) => options.search.length > 1,
           getItems: (options) => {
-            const q = (options.search || '').trim().toLowerCase();
+            const q = (options.search || "").trim().toLowerCase();
             if (!q) return [];
 
             const candidates = [];
 
             // primitives
             for (const p of PDS_ONTOLOGY.primitives || []) {
-              const name = (p.name || p.id || '').toString();
-              const id = p.id || name.replace(/\s+/g, '-').toLowerCase();
-              const score = (name.toLowerCase().includes(q) ? 30 : 0) + (id.includes(q) ? 20 : 0);
+              const name = (p.name || p.id || "").toString();
+              const id = p.id || name.replace(/\s+/g, "-").toLowerCase();
+              const score =
+                (name.toLowerCase().includes(q) ? 30 : 0) +
+                (id.includes(q) ? 20 : 0);
               // selectors
-              const selMatch = (p.selectors || []).some((s) => String(s).toLowerCase().includes(q));
+              const selMatch = (p.selectors || []).some((s) =>
+                String(s).toLowerCase().includes(q)
+              );
               const total = score + (selMatch ? 10 : 0);
-              candidates.push({ type: 'primitive', key: id, name, score: total });
+              candidates.push({
+                type: "primitive",
+                key: id,
+                name,
+                score: total,
+              });
             }
 
             // components
             for (const c of PDS_ONTOLOGY.components || []) {
-              const name = (c.name || c.id || '').toString();
-              const id = c.id || name.replace(/\s+/g, '-').toLowerCase();
-              const score = (name.toLowerCase().includes(q) ? 40 : 0) + (id.includes(q) ? 25 : 0);
-              const selMatch = (c.selectors || []).some((s) => String(s).toLowerCase().includes(q));
+              const name = (c.name || c.id || "").toString();
+              const id = c.id || name.replace(/\s+/g, "-").toLowerCase();
+              const score =
+                (name.toLowerCase().includes(q) ? 40 : 0) +
+                (id.includes(q) ? 25 : 0);
+              const selMatch = (c.selectors || []).some((s) =>
+                String(s).toLowerCase().includes(q)
+              );
               const total = score + (selMatch ? 10 : 0);
-              candidates.push({ type: 'component', key: id, name, score: total });
+              candidates.push({
+                type: "component",
+                key: id,
+                name,
+                score: total,
+              });
             }
 
             // tokens (flatten groups)
             if (PDS_ONTOLOGY.tokens) {
-              for (const [group, items] of Object.entries(PDS_ONTOLOGY.tokens)) {
+              for (const [group, items] of Object.entries(
+                PDS_ONTOLOGY.tokens
+              )) {
                 if (Array.isArray(items)) {
                   for (const t of items) {
                     const name = `${group}/${t}`;
                     const id = `${group}-${t}`;
                     const score = name.toLowerCase().includes(q) ? 35 : 0;
-                    candidates.push({ type: 'token', key: id, name, score });
+                    candidates.push({ type: "token", key: id, name, score });
                   }
                 }
               }
@@ -1106,17 +1132,23 @@ export class DsShowcase extends LitElement {
             // enhancements
             for (const enh of PDS_ONTOLOGY.enhancements || []) {
               const name = String(enh);
-              const key = `enh-${name.replace(/[^a-z0-9]+/gi, '-')}`.toLowerCase();
+              const key = `enh-${name.replace(
+                /[^a-z0-9]+/gi,
+                "-"
+              )}`.toLowerCase();
               const score = name.toLowerCase().includes(q) ? 25 : 0;
-              candidates.push({ type: 'enhancement', key, name, score });
+              candidates.push({ type: "enhancement", key, name, score });
             }
 
             // utilities
             for (const util of PDS_ONTOLOGY.utilities || []) {
               const name = String(util);
-              const key = `util-${name.replace(/[^a-z0-9]+/gi, '-')}`.toLowerCase();
+              const key = `util-${name.replace(
+                /[^a-z0-9]+/gi,
+                "-"
+              )}`.toLowerCase();
               const score = name.toLowerCase().includes(q) ? 20 : 0;
-              candidates.push({ type: 'utility', key, name, score });
+              candidates.push({ type: "utility", key, name, score });
             }
 
             // styles (flat)
@@ -1125,14 +1157,14 @@ export class DsShowcase extends LitElement {
                 const name = k;
                 const key = `style-${k}`;
                 const score = name.toLowerCase().includes(q) ? 10 : 0;
-                candidates.push({ type: 'style', key, name, score });
+                candidates.push({ type: "style", key, name, score });
               }
             }
 
             // Basic fuzzy/substring scoring boost for any candidate containing q in name/key
             for (const c of candidates) {
-              const lname = (c.name || '').toLowerCase();
-              const lkey = (c.key || '').toLowerCase();
+              const lname = (c.name || "").toLowerCase();
+              const lkey = (c.key || "").toLowerCase();
               if (lname.includes(q)) c.score += 50;
               if (lkey.includes(q)) c.score += 20;
             }
@@ -1145,13 +1177,20 @@ export class DsShowcase extends LitElement {
               .map((c) => ({
                 text: c.name,
                 id: `${c.type}|${c.key}`,
-                icon: c.type === 'component' ? 'brackets-curly' : c.type === 'primitive' ? 'tag' : c.type === 'token' ? 'palette' : 'folder-simple'
+                icon:
+                  c.type === "component"
+                    ? "brackets-curly"
+                    : c.type === "primitive"
+                    ? "tag"
+                    : c.type === "token"
+                    ? "palette"
+                    : "folder-simple",
               }));
 
             return results;
-          }
-        }
-      }
+          },
+        },
+      },
     };
   }
 
@@ -1181,10 +1220,10 @@ export class DsShowcase extends LitElement {
     const components = this.config?.components || {};
 
     return html`
-      <div 
-        class="showcase-container ${
-          this.inspectorActive ? "inspector-active" : ""
-        }"
+      <div
+        class="showcase-container ${this.inspectorActive
+          ? "inspector-active"
+          : ""}"
         @click=${this.handleInspectorClick}
       >
         <!-- Table of Contents Navigation -->
@@ -1199,7 +1238,7 @@ export class DsShowcase extends LitElement {
               <svg-icon icon="download"></svg-icon>
               Get Started
             </button>
-            <button class="btn-secondary btn-lg" @click=${this.readDocs}
+            <button class="btn-secondary btn-lg" @click=${this.readDocs}>
               <svg-icon icon="book-open"></svg-icon>
               View Docs
             </button>
@@ -1384,314 +1423,302 @@ export class DsShowcase extends LitElement {
         </section>
 
         <!-- Forms Section -->
-        ${
-          components.forms
-            ? html`
-                <section class="showcase-section alt-bg" data-section="forms">
-                  <h2>
-                    <svg-icon
-                      icon="note-pencil"
-                      size="lg"
-                      class="icon-primary"
-                    ></svg-icon>
-                    Form Controls
-                  </h2>
+        ${components.forms
+          ? html`
+              <section class="showcase-section alt-bg" data-section="forms">
+                <h2>
+                  <svg-icon
+                    icon="note-pencil"
+                    size="lg"
+                    class="icon-primary"
+                  ></svg-icon>
+                  Form Controls
+                </h2>
 
-                  <form
-                    class="form-demo"
-                    onsubmit="event.preventDefault(); console.log('Form submitted (prevented)'); return false;"
-                  >
-                    <fieldset>
-                      <legend>Personal Information</legend>
+                <form
+                  class="form-demo"
+                  onsubmit="event.preventDefault(); console.log('Form submitted (prevented)'); return false;"
+                >
+                  <fieldset>
+                    <legend>Personal Information</legend>
 
-                      <label>
-                        <span>Full Name</span>
-                        <input
-                          type="text"
-                          placeholder="Enter your name"
-                          required
-                        />
-                      </label>
+                    <label>
+                      <span>Full Name</span>
+                      <input
+                        type="text"
+                        placeholder="Enter your name"
+                        required
+                      />
+                    </label>
 
-                      <label>
-                        <span>Email</span>
-                        <input
-                          type="email"
-                          placeholder="you@example.com"
-                          autocomplete="username"
-                          required
-                        />
-                      </label>
+                    <label>
+                      <span>Email</span>
+                      <input
+                        type="email"
+                        placeholder="you@example.com"
+                        autocomplete="username"
+                        required
+                      />
+                    </label>
 
-                      <label>
-                        <span>Phone</span>
-                        <input type="tel" placeholder="+1 (555) 000-0000" />
-                      </label>
+                    <label>
+                      <span>Phone</span>
+                      <input type="tel" placeholder="+1 (555) 000-0000" />
+                    </label>
 
-                      <label>
-                        <span>Date of Birth</span>
-                        <input type="date" />
-                      </label>
+                    <label>
+                      <span>Date of Birth</span>
+                      <input type="date" />
+                    </label>
 
-                      <label>
-                        <span>Time</span>
-                        <input type="time" />
-                      </label>
+                    <label>
+                      <span>Time</span>
+                      <input type="time" />
+                    </label>
 
-                      <label>
-                        <span>Password</span>
-                        <input
-                          type="password"
-                          placeholder="Enter password"
-                          autocomplete="current-password"
-                        />
-                      </label>
+                    <label>
+                      <span>Password</span>
+                      <input
+                        type="password"
+                        placeholder="Enter password"
+                        autocomplete="current-password"
+                      />
+                    </label>
 
-                      <label>
-                        <span>Country</span>
-                        <select>
-                          <option>United States</option>
-                          <option>Canada</option>
-                          <option>United Kingdom</option>
-                          <option>Germany</option>
-                          <option>France</option>
-                          <option>Other</option>
-                        </select>
-                      </label>
+                    <label>
+                      <span>Country</span>
+                      <select>
+                        <option>United States</option>
+                        <option>Canada</option>
+                        <option>United Kingdom</option>
+                        <option>Germany</option>
+                        <option>France</option>
+                        <option>Other</option>
+                      </select>
+                    </label>
 
-                      <label>
-                        <span>Number</span>
-                        <input type="number" min="0" max="100" value="50" />
-                      </label>
+                    <label>
+                      <span>Number</span>
+                      <input type="number" min="0" max="100" value="50" />
+                    </label>
 
-                      <label>
-                        <span>Range</span>
-                        <input type="range" min="0" max="100" value="50" />
-                      </label>
+                    <label>
+                      <span>Range</span>
+                      <input type="range" min="0" max="100" value="50" />
+                    </label>
 
-                      <label>
-                        <span>Color</span>
-                        <input type="color" value="#2d9dc9" />
-                      </label>
+                    <label>
+                      <span>Color</span>
+                      <input type="color" value="#2d9dc9" />
+                    </label>
 
-                      <label>
-                        <span>Search</span>
-                        <input type="search" placeholder="Search..." />
-                      </label>
+                    <label>
+                      <span>Search</span>
+                      <input type="search" placeholder="Search..." />
+                    </label>
 
-                      <label>
-                        <span>URL</span>
-                        <input type="url" placeholder="https://example.com" />
-                      </label>
+                    <label>
+                      <span>URL</span>
+                      <input type="url" placeholder="https://example.com" />
+                    </label>
 
-                      <label>
-                        <span>File Upload</span>
-                        <pds-upload name="file"></pds-upload>
-                      </label>
+                    <label>
+                      <span>File Upload</span>
+                      <pds-upload name="file"></pds-upload>
+                    </label>
 
-                      <label>
-                        <span>Message</span>
-                        <textarea
-                          rows="4"
-                          placeholder="Your message here..."
-                        ></textarea>
-                      </label>
-                    </fieldset>
+                    <label>
+                      <span>Message</span>
+                      <textarea
+                        rows="4"
+                        placeholder="Your message here..."
+                      ></textarea>
+                    </label>
+                  </fieldset>
 
-                    <fieldset>
-                      <legend>Preferences</legend>
+                  <fieldset>
+                    <legend>Preferences</legend>
 
-                      <label data-toggle>
-                        <input type="checkbox" checked />
-                        Subscribe to newsletter
-                      </label>
+                    <label data-toggle>
+                      <input type="checkbox" checked />
+                      Subscribe to newsletter
+                    </label>
 
-                      <label data-toggle>
-                        <input type="checkbox" />
-                        Receive marketing emails
-                      </label>
-                    </fieldset>
+                    <label data-toggle>
+                      <input type="checkbox" />
+                      Receive marketing emails
+                    </label>
+                  </fieldset>
 
-                    <fieldset>
-                      <legend>Toggle Switches (Progressive Enhancement)</legend>
+                  <fieldset>
+                    <legend>Toggle Switches (Progressive Enhancement)</legend>
 
-                      <label data-toggle>
-                        <input type="checkbox" checked />
-                        Enable notifications
-                      </label>
+                    <label data-toggle>
+                      <input type="checkbox" checked />
+                      Enable notifications
+                    </label>
 
-                      <label data-toggle>
-                        <input type="checkbox" />
-                        Dark mode
-                      </label>
+                    <label data-toggle>
+                      <input type="checkbox" />
+                      Dark mode
+                    </label>
 
-                      <label data-toggle>
-                        <input type="checkbox" checked />
-                        Auto-save
-                      </label>
-                    </fieldset>
+                    <label data-toggle>
+                      <input type="checkbox" checked />
+                      Auto-save
+                    </label>
+                  </fieldset>
 
-                    <div class="form-demo-actions">
-                      <button type="submit" class="btn-primary">
-                        Submit Form
-                      </button>
-                      <button type="reset" class="btn-secondary">Reset</button>
-                      <button type="button" class="btn-outline">Cancel</button>
-                    </div>
-                  </form>
-                </section>
-              `
-            : this.renderDisabledSection(
-                "Form Controls",
-                "Form styles are disabled. Enable in the designer panel."
-              )
-        }
+                  <div class="form-demo-actions">
+                    <button type="submit" class="btn-primary">
+                      Submit Form
+                    </button>
+                    <button type="reset" class="btn-secondary">Reset</button>
+                    <button type="button" class="btn-outline">Cancel</button>
+                  </div>
+                </form>
+              </section>
+            `
+          : this.renderDisabledSection(
+              "Form Controls",
+              "Form styles are disabled. Enable in the designer panel."
+            )}
 
         <!-- Alerts Section -->
-        ${
-          components.alerts
-            ? html`
-                <section class="showcase-section" data-section="alerts">
-                  <h2>
-                    <svg-icon
-                      icon="bell-ringing"
-                      size="lg"
-                      class="icon-primary"
-                    ></svg-icon>
-                    Alerts & Feedback
-                  </h2>
+        ${components.alerts
+          ? html`
+              <section class="showcase-section" data-section="alerts">
+                <h2>
+                  <svg-icon
+                    icon="bell-ringing"
+                    size="lg"
+                    class="icon-primary"
+                  ></svg-icon>
+                  Alerts & Feedback
+                </h2>
 
-                  <div class="demo-grid cols-1">
-                    <div class="alert alert-success">
-                      <div class="alert-icon">
-                        <svg-icon
-                          icon="check-circle"
-                          class="icon-success"
-                          size="lg"
-                        ></svg-icon>
-                      </div>
-                      <div>
-                        <div class="alert-title">Success!</div>
-                        <p>Your operation completed successfully.</p>
-                      </div>
+                <div class="demo-grid cols-1">
+                  <div class="alert alert-success">
+                    <div class="alert-icon">
+                      <svg-icon
+                        icon="check-circle"
+                        class="icon-success"
+                        size="lg"
+                      ></svg-icon>
                     </div>
-
-                    <div class="alert alert-info">
-                      <div class="alert-icon">
-                        <svg-icon
-                          icon="info"
-                          class="icon-info"
-                          size="lg"
-                        ></svg-icon>
-                      </div>
-                      <div>
-                        <div class="alert-title">Information</div>
-                        <p>This is an informational message.</p>
-                      </div>
-                    </div>
-
-                    <div class="alert alert-warning">
-                      <div class="alert-icon">
-                        <svg-icon
-                          icon="warning"
-                          class="icon-warning"
-                          size="lg"
-                        ></svg-icon>
-                      </div>
-                      <div>
-                        <div class="alert-title">Warning</div>
-                        <p>Please review this warning.</p>
-                      </div>
-                    </div>
-
-                    <div class="alert alert-danger">
-                      <div class="alert-icon">
-                        <svg-icon
-                          icon="x-circle"
-                          class="icon-danger"
-                          size="lg"
-                        ></svg-icon>
-                      </div>
-                      <div>
-                        <div class="alert-title">Error</div>
-                        <p>An error occurred.</p>
-                      </div>
+                    <div>
+                      <div class="alert-title">Success!</div>
+                      <p>Your operation completed successfully.</p>
                     </div>
                   </div>
-                </section>
-              `
-            : this.renderDisabledSection(
-                "Alerts & Feedback",
-                "Alert styles are disabled. Enable in the designer panel."
-              )
-        }
+
+                  <div class="alert alert-info">
+                    <div class="alert-icon">
+                      <svg-icon
+                        icon="info"
+                        class="icon-info"
+                        size="lg"
+                      ></svg-icon>
+                    </div>
+                    <div>
+                      <div class="alert-title">Information</div>
+                      <p>This is an informational message.</p>
+                    </div>
+                  </div>
+
+                  <div class="alert alert-warning">
+                    <div class="alert-icon">
+                      <svg-icon
+                        icon="warning"
+                        class="icon-warning"
+                        size="lg"
+                      ></svg-icon>
+                    </div>
+                    <div>
+                      <div class="alert-title">Warning</div>
+                      <p>Please review this warning.</p>
+                    </div>
+                  </div>
+
+                  <div class="alert alert-danger">
+                    <div class="alert-icon">
+                      <svg-icon
+                        icon="x-circle"
+                        class="icon-danger"
+                        size="lg"
+                      ></svg-icon>
+                    </div>
+                    <div>
+                      <div class="alert-title">Error</div>
+                      <p>An error occurred.</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            `
+          : this.renderDisabledSection(
+              "Alerts & Feedback",
+              "Alert styles are disabled. Enable in the designer panel."
+            )}
 
         <!-- Badges Section -->
-        ${
-          components.badges
-            ? html`
-                <section class="showcase-section alt-bg">
-                  <h2>
-                    <svg-icon
-                      icon="tag"
-                      size="lg"
-                      class="icon-primary"
-                    ></svg-icon>
-                    Badges & Pills
-                  </h2>
+        ${components.badges
+          ? html`
+              <section class="showcase-section alt-bg">
+                <h2>
+                  <svg-icon
+                    icon="tag"
+                    size="lg"
+                    class="icon-primary"
+                  ></svg-icon>
+                  Badges & Pills
+                </h2>
 
-                  <h3>Default Badges</h3>
-                  <div class="badge-grid">
-                    <span class="badge">Default</span>
-                    <span class="badge badge-primary">Primary</span>
-                    <span class="badge badge-secondary">Secondary</span>
-                    <span class="badge badge-success">Success</span>
-                    <span class="badge badge-warning">Warning</span>
-                    <span class="badge badge-danger">Danger</span>
-                    <span class="badge badge-info">Info</span>
-                  </div>
+                <h3>Default Badges</h3>
+                <div class="badge-grid">
+                  <span class="badge">Default</span>
+                  <span class="badge badge-primary">Primary</span>
+                  <span class="badge badge-secondary">Secondary</span>
+                  <span class="badge badge-success">Success</span>
+                  <span class="badge badge-warning">Warning</span>
+                  <span class="badge badge-danger">Danger</span>
+                  <span class="badge badge-info">Info</span>
+                </div>
 
-                  <h3>Outlined Badges</h3>
-                  <div class="badge-grid">
-                    <span class="badge badge-outline badge-primary"
-                      >Primary</span
-                    >
-                    <span class="badge badge-outline badge-secondary"
-                      >Secondary</span
-                    >
-                    <span class="badge badge-outline badge-success"
-                      >Success</span
-                    >
-                    <span class="badge badge-outline badge-info">Info</span>
-                    <span class="badge badge-outline badge-warning"
-                      >Warning</span
-                    >
-                    <span class="badge badge-outline badge-danger">Danger</span>
-                  </div>
+                <h3>Outlined Badges</h3>
+                <div class="badge-grid">
+                  <span class="badge badge-outline badge-primary">Primary</span>
+                  <span class="badge badge-outline badge-secondary"
+                    >Secondary</span
+                  >
+                  <span class="badge badge-outline badge-success">Success</span>
+                  <span class="badge badge-outline badge-info">Info</span>
+                  <span class="badge badge-outline badge-warning">Warning</span>
+                  <span class="badge badge-outline badge-danger">Danger</span>
+                </div>
 
-                  <h3>Badge Sizes</h3>
-                  <div class="size-demo">
-                    <span class="badge badge-primary badge-sm">Small</span>
-                    <span class="badge badge-primary">Default</span>
-                    <span class="badge badge-primary badge-lg">Large</span>
-                  </div>
+                <h3>Badge Sizes</h3>
+                <div class="size-demo">
+                  <span class="badge badge-primary badge-sm">Small</span>
+                  <span class="badge badge-primary">Default</span>
+                  <span class="badge badge-primary badge-lg">Large</span>
+                </div>
 
-                  <h3>Pills</h3>
-                  <div class="badge-grid">
-                    <span class="pill badge-primary">React</span>
-                    <span class="pill badge-secondary">Vue</span>
-                    <span class="pill badge-success">Node.js</span>
-                    <span class="pill badge-info">TypeScript</span>
-                    <span class="pill badge-warning">JavaScript</span>
-                    <span class="pill badge-danger">Critical</span>
-                  </div>
-                </section>
-              `
-            : this.renderDisabledSection(
-                "Badges & Pills",
-                "Badge styles are disabled. Enable in the designer panel."
-              )
-        }
+                <h3>Pills</h3>
+                <div class="badge-grid">
+                  <span class="pill badge-primary">React</span>
+                  <span class="pill badge-secondary">Vue</span>
+                  <span class="pill badge-success">Node.js</span>
+                  <span class="pill badge-info">TypeScript</span>
+                  <span class="pill badge-warning">JavaScript</span>
+                  <span class="pill badge-danger">Critical</span>
+                </div>
+              </section>
+            `
+          : this.renderDisabledSection(
+              "Badges & Pills",
+              "Badge styles are disabled. Enable in the designer panel."
+            )}
 
         <!-- Media Elements Section -->
         <section class="showcase-section">
@@ -1974,7 +2001,6 @@ export class DsShowcase extends LitElement {
             </div>
           </div>
 
-
           <h3>Accordion Component</h3>
           <section class="accordion" aria-label="FAQ">
             <details>
@@ -1998,138 +2024,134 @@ export class DsShowcase extends LitElement {
               </div>
             </details>
           </section>
-
-
         </section>
 
         <!-- Tables Section -->
-        ${
-          components.tables
-            ? html`
-                <section class="showcase-section">
-                  <h2>
-                    <svg-icon
-                      icon="list"
-                      size="lg"
-                      class="icon-primary"
-                    ></svg-icon>
-                    Tables
-                  </h2>
+        ${components.tables
+          ? html`
+              <section class="showcase-section">
+                <h2>
+                  <svg-icon
+                    icon="list"
+                    size="lg"
+                    class="icon-primary"
+                  ></svg-icon>
+                  Tables
+                </h2>
 
-                  <h3>Default Table</h3>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Role</th>
-                        <th>Department</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>Alice Johnson</td>
-                        <td>Senior Developer</td>
-                        <td>Engineering</td>
-                        <td><span class="badge badge-success">Active</span></td>
-                      </tr>
-                      <tr>
-                        <td>Bob Smith</td>
-                        <td>Product Manager</td>
-                        <td>Product</td>
-                        <td><span class="badge badge-success">Active</span></td>
-                      </tr>
-                      <tr>
-                        <td>Carol Williams</td>
-                        <td>UX Designer</td>
-                        <td>Design</td>
-                        <td><span class="badge badge-warning">Away</span></td>
-                      </tr>
-                      <tr>
-                        <td>David Brown</td>
-                        <td>DevOps Engineer</td>
-                        <td>Engineering</td>
-                        <td><span class="badge badge-danger">Offline</span></td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <h3>Default Table</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Role</th>
+                      <th>Department</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Alice Johnson</td>
+                      <td>Senior Developer</td>
+                      <td>Engineering</td>
+                      <td><span class="badge badge-success">Active</span></td>
+                    </tr>
+                    <tr>
+                      <td>Bob Smith</td>
+                      <td>Product Manager</td>
+                      <td>Product</td>
+                      <td><span class="badge badge-success">Active</span></td>
+                    </tr>
+                    <tr>
+                      <td>Carol Williams</td>
+                      <td>UX Designer</td>
+                      <td>Design</td>
+                      <td><span class="badge badge-warning">Away</span></td>
+                    </tr>
+                    <tr>
+                      <td>David Brown</td>
+                      <td>DevOps Engineer</td>
+                      <td>Engineering</td>
+                      <td><span class="badge badge-danger">Offline</span></td>
+                    </tr>
+                  </tbody>
+                </table>
 
-                  <h3>Striped Table</h3>
-                  <table class="table-striped">
-                    <thead>
-                      <tr>
-                        <th>Product</th>
-                        <th>Price</th>
-                        <th>Stock</th>
-                        <th>Category</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>Laptop Pro</td>
-                        <td>$1,299</td>
-                        <td>45</td>
-                        <td>Electronics</td>
-                      </tr>
-                      <tr>
-                        <td>Wireless Mouse</td>
-                        <td>$29</td>
-                        <td>128</td>
-                        <td>Accessories</td>
-                      </tr>
-                      <tr>
-                        <td>USB-C Hub</td>
-                        <td>$59</td>
-                        <td>76</td>
-                        <td>Accessories</td>
-                      </tr>
-                      <tr>
-                        <td>Monitor 27"</td>
-                        <td>$449</td>
-                        <td>23</td>
-                        <td>Electronics</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <h3>Striped Table</h3>
+                <table class="table-striped">
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>Price</th>
+                      <th>Stock</th>
+                      <th>Category</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Laptop Pro</td>
+                      <td>$1,299</td>
+                      <td>45</td>
+                      <td>Electronics</td>
+                    </tr>
+                    <tr>
+                      <td>Wireless Mouse</td>
+                      <td>$29</td>
+                      <td>128</td>
+                      <td>Accessories</td>
+                    </tr>
+                    <tr>
+                      <td>USB-C Hub</td>
+                      <td>$59</td>
+                      <td>76</td>
+                      <td>Accessories</td>
+                    </tr>
+                    <tr>
+                      <td>Monitor 27"</td>
+                      <td>$449</td>
+                      <td>23</td>
+                      <td>Electronics</td>
+                    </tr>
+                  </tbody>
+                </table>
 
-                  <h3>Bordered Compact Table</h3>
-                  <table class="table-bordered table-compact">
-                    <thead>
-                      <tr>
-                        <th>ID</th>
-                        <th>Task</th>
-                        <th>Priority</th>
-                        <th>Due Date</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>#101</td>
-                        <td>Fix navigation bug</td>
-                        <td><span class="badge badge-danger">High</span></td>
-                        <td>Oct 15, 2025</td>
-                      </tr>
-                      <tr>
-                        <td>#102</td>
-                        <td>Update documentation</td>
-                        <td><span class="badge badge-warning">Medium</span></td>
-                        <td>Oct 18, 2025</td>
-                      </tr>
-                      <tr>
-                        <td>#103</td>
-                        <td>Refactor CSS</td>
-                        <td><span class="badge badge-info">Low</span></td>
-                        <td>Oct 25, 2025</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </section>
-              `
-            : this.renderDisabledSection(
-                "Tables",
-                "Table styles are disabled. Enable in the designer panel."
-              )
-        }
+                <h3>Bordered Compact Table</h3>
+                <table class="table-bordered table-compact">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Task</th>
+                      <th>Priority</th>
+                      <th>Due Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>#101</td>
+                      <td>Fix navigation bug</td>
+                      <td><span class="badge badge-danger">High</span></td>
+                      <td>Oct 15, 2025</td>
+                    </tr>
+                    <tr>
+                      <td>#102</td>
+                      <td>Update documentation</td>
+                      <td><span class="badge badge-warning">Medium</span></td>
+                      <td>Oct 18, 2025</td>
+                    </tr>
+                    <tr>
+                      <td>#103</td>
+                      <td>Refactor CSS</td>
+                      <td><span class="badge badge-info">Low</span></td>
+                      <td>Oct 25, 2025</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+            `
+          : this.renderDisabledSection(
+              "Tables",
+              "Table styles are disabled. Enable in the designer panel."
+            )}
 
         <!-- Form Groups Section -->
         <section class="showcase-section alt-bg">
@@ -2295,129 +2317,112 @@ export class DsShowcase extends LitElement {
         </section>
 
         <!-- Toast Notifications Section -->
-        ${
-          components.toasts
-            ? html`
-                <section class="showcase-section">
-                  <h2>
-                    <svg-icon
-                      icon="bell-ringing"
-                      size="lg"
-                      class="icon-primary"
-                    ></svg-icon>
-                    Toast Notifications
-                  </h2>
+        ${components.toasts
+          ? html`
+              <section class="showcase-section">
+                <h2>
+                  <svg-icon
+                    icon="bell-ringing"
+                    size="lg"
+                    class="icon-primary"
+                  ></svg-icon>
+                  Toast Notifications
+                </h2>
 
-                  <p class="toast-demo-description">
-                    Toast notifications appear in the top-right corner and
-                    auto-dismiss after a few seconds. Click the buttons below to
-                    see them in action:
-                  </p>
+                <p class="toast-demo-description">
+                  Toast notifications appear in the top-right corner and
+                  auto-dismiss after a few seconds. Click the buttons below to
+                  see them in action:
+                </p>
 
-                  <div class="demo-grid cols-2">
-                    <button
-                      class="btn-primary"
-                      @click="${this.showSuccessToast}"
-                    >
-                      <svg-icon icon="check-circle" size="sm"></svg-icon>
-                      Success Toast
-                    </button>
-                    <button
-                      class="btn-secondary"
-                      @click="${this.showInfoToast}"
-                    >
-                      <svg-icon icon="info" size="sm"></svg-icon>
-                      Info Toast
-                    </button>
-                    <button
-                      class="btn-warning"
-                      @click="${this.showWarningToast}"
-                    >
-                      <svg-icon icon="warning" size="sm"></svg-icon>
-                      Warning Toast
-                    </button>
-                    <button class="btn-danger" @click="${this.showErrorToast}">
-                      <svg-icon icon="x-circle" size="sm"></svg-icon>
-                      Error Toast
-                    </button>
-                    <button class="btn-outline" @click="${this.showLongToast}">
-                      <svg-icon icon="clock" size="sm"></svg-icon>
-                      Long Message
-                    </button>
-                    <button
-                      class="btn-outline"
-                      @click="${this.showPersistentToast}"
-                    >
-                      <svg-icon icon="bell" size="sm"></svg-icon>
-                      Persistent Toast
-                    </button>
-                  </div>
-                </section>
-              `
-            : this.renderDisabledSection(
-                "Toast Notifications",
-                "Toast notifications are disabled. Enable in the designer panel."
-              )
-        }
+                <div class="demo-grid cols-2">
+                  <button class="btn-primary" @click="${this.showSuccessToast}">
+                    <svg-icon icon="check-circle" size="sm"></svg-icon>
+                    Success Toast
+                  </button>
+                  <button class="btn-secondary" @click="${this.showInfoToast}">
+                    <svg-icon icon="info" size="sm"></svg-icon>
+                    Info Toast
+                  </button>
+                  <button class="btn-warning" @click="${this.showWarningToast}">
+                    <svg-icon icon="warning" size="sm"></svg-icon>
+                    Warning Toast
+                  </button>
+                  <button class="btn-danger" @click="${this.showErrorToast}">
+                    <svg-icon icon="x-circle" size="sm"></svg-icon>
+                    Error Toast
+                  </button>
+                  <button class="btn-outline" @click="${this.showLongToast}">
+                    <svg-icon icon="clock" size="sm"></svg-icon>
+                    Long Message
+                  </button>
+                  <button
+                    class="btn-outline"
+                    @click="${this.showPersistentToast}"
+                  >
+                    <svg-icon icon="bell" size="sm"></svg-icon>
+                    Persistent Toast
+                  </button>
+                </div>
+              </section>
+            `
+          : this.renderDisabledSection(
+              "Toast Notifications",
+              "Toast notifications are disabled. Enable in the designer panel."
+            )}
+        ${this.config?.components?.tabStrip
+          ? html`
+              <!-- Tab Strip Section -->
+              <section class="showcase-section alt-bg" data-section="tabs">
+                <h2>
+                  <svg-icon icon="tabs"></svg-icon>
+                  Tab Strip
+                </h2>
+                <p>
+                  Accessible tab navigation with hash-based routing and keyboard
+                  support.
+                </p>
 
+                <div style="margin-top: var(--spacing-6);">
+                  <pds-tabstrip label="Example Tabs">
+                    <pds-tabpanel id="overview" label="Overview">
+                      <h3>Overview</h3>
+                      <p>
+                        This is the overview tab. Tab strips provide organized
+                        navigation between related content.
+                      </p>
+                    </pds-tabpanel>
 
-            
+                    <pds-tabpanel id="features" label="Features">
+                      <h3>Features</h3>
+                      <p>
+                        Tab strips are built with modern web components and
+                        include:
+                      </p>
+                      <ul>
+                        <li>
+                          <strong>Deep linking:</strong> Each tab has a unique
+                          URL hash
+                        </li>
+                        <li>
+                          <strong>Progressive enhancement:</strong> Works
+                          without JavaScript
+                        </li>
+                        <li>
+                          <strong>Responsive:</strong> Adapts to mobile and
+                          desktop
+                        </li>
+                        <li>
+                          <strong>Customizable:</strong> Style with CSS
+                          variables
+                        </li>
+                      </ul>
+                    </pds-tabpanel>
 
-
-        ${
-          this.config?.components?.tabStrip
-            ? html`
-                <!-- Tab Strip Section -->
-                <section class="showcase-section alt-bg" data-section="tabs">
-                  <h2>
-                    <svg-icon icon="tabs"></svg-icon>
-                    Tab Strip
-                  </h2>
-                  <p>
-                    Accessible tab navigation with hash-based routing and
-                    keyboard support.
-                  </p>
-
-                  <div style="margin-top: var(--spacing-6);">
-                    <pds-tabstrip label="Example Tabs">
-                      <pds-tabpanel id="overview" label="Overview">
-                        <h3>Overview</h3>
-                        <p>
-                          This is the overview tab. Tab strips provide organized
-                          navigation between related content.
-                        </p>
-                      </pds-tabpanel>
-
-                      <pds-tabpanel id="features" label="Features">
-                        <h3>Features</h3>
-                        <p>
-                          Tab strips are built with modern web components and
-                          include:
-                        </p>
-                        <ul>
-                          <li>
-                            <strong>Deep linking:</strong> Each tab has a unique
-                            URL hash
-                          </li>
-                          <li>
-                            <strong>Progressive enhancement:</strong> Works
-                            without JavaScript
-                          </li>
-                          <li>
-                            <strong>Responsive:</strong> Adapts to mobile and
-                            desktop
-                          </li>
-                          <li>
-                            <strong>Customizable:</strong> Style with CSS
-                            variables
-                          </li>
-                        </ul>
-                      </pds-tabpanel>
-
-                      <pds-tabpanel id="usage" label="Usage">
-                        <h3>Usage</h3>
-                        <p>Simple markup example:</p>
-                        <pre><code>&lt;pds-tabstrip label="My Tabs"&gt;
+                    <pds-tabpanel id="usage" label="Usage">
+                      <h3>Usage</h3>
+                      <p>Simple markup example:</p>
+                      <pre><code>&lt;pds-tabstrip label="My Tabs"&gt;
   &lt;pds-tabpanel id="tab1" label="First Tab"&gt;
     Content for first tab
   &lt;/pds-tabpanel&gt;
@@ -2425,47 +2430,44 @@ export class DsShowcase extends LitElement {
     Content for second tab
   &lt;/pds-tabpanel&gt;
 &lt;/pds-tabstrip&gt;</code></pre>
-                      </pds-tabpanel>
+                    </pds-tabpanel>
 
-                      <pds-tabpanel id="accessibility" label="Accessibility">
-                        <h3>Accessibility</h3>
-                        <p>Built with accessibility in mind:</p>
-                        <ul>
-                          <li><code>aria-label</code> on navigation</li>
-                          <li><code>aria-current</code> on active tab</li>
-                          <li>
-                            <code>aria-controls</code> linking tabs to panels
-                          </li>
-                          <li><code>role="region"</code> on tab panels</li>
-                          <li>Keyboard navigation with arrow keys</li>
-                          <li>Focus management</li>
-                        </ul>
-                      </pds-tabpanel>
-                    </pds-tabstrip>
+                    <pds-tabpanel id="accessibility" label="Accessibility">
+                      <h3>Accessibility</h3>
+                      <p>Built with accessibility in mind:</p>
+                      <ul>
+                        <li><code>aria-label</code> on navigation</li>
+                        <li><code>aria-current</code> on active tab</li>
+                        <li>
+                          <code>aria-controls</code> linking tabs to panels
+                        </li>
+                        <li><code>role="region"</code> on tab panels</li>
+                        <li>Keyboard navigation with arrow keys</li>
+                        <li>Focus management</li>
+                      </ul>
+                    </pds-tabpanel>
+                  </pds-tabstrip>
+                </div>
+              </section>
+            `
+          : ""}
+        ${components.drawer
+          ? html`
+              <!-- Drawer Section -->
+              <section class="showcase-section">
+                <h2>Drawer Example</h2>
+                <button @click=${this.openDrawer}>Open Drawer</button>
+                <pds-drawer position="bottom" id="exampleDrawer">
+                  <div class="surface-overlay" slot="drawer-header">
+                    <h3>Example Drawer</h3>
                   </div>
-                </section>
-              `
-            : ""
-        }
-        ${
-          components.drawer
-            ? html`
-                <!-- Drawer Section -->
-                <section class="showcase-section">
-                  <h2>Drawer Example</h2>
-                  <button @click=${this.openDrawer}>Open Drawer</button>
-                  <pds-drawer position="bottom" id="exampleDrawer">
-                    <div class="surface-overlay" slot="drawer-header">
-                      <h3>Example Drawer</h3>
-                    </div>
-                    <div class="surface-overlay" slot="drawer-content">
-                      ${this.renderDrawerContent()}
-                    </div>
-                  </pds-drawer>
-                </section>
-              `
-            : ""
-        }
+                  <div class="surface-overlay" slot="drawer-content">
+                    ${this.renderDrawerContent()}
+                  </div>
+                </pds-drawer>
+              </section>
+            `
+          : ""}
       </div>
     `;
   }
@@ -2486,13 +2488,53 @@ export class DsShowcase extends LitElement {
     `;
   }
 
-  readDocs(e) {
-    document
-      .querySelector("pure-app")
-      .toast("Documentation will soon be available.", {
-        type: "info",
-        persistent: true,
-      });
+  async readDocs(e) {
+    const url = "/readme.md";
+    try {
+      const res = await fetch(url, { cache: "no-store" });
+      const text = await res.text();
+
+      // If server returned HTML (SPA fallback), show an error message
+      const trimmed = text.trim();
+      let htmlContent;
+      if (trimmed.startsWith("<")) {
+        htmlContent = `<div class="docs-error">Failed to load README at ${url}. Ensure readme.md exists under public/</div>`;
+      } else {
+        try {
+          const conv = new showdown.Converter();
+          htmlContent = conv.makeHtml(trimmed);
+        } catch (err) {
+          htmlContent = `<pre>${this._escapeHtml(trimmed)}</pre>`;
+        }
+      }
+
+      const drawer = document.querySelector("#global-drawer");
+      if (drawer) {
+        drawer.innerHTML = `<div class="surface-overlay" slot="drawer-header">
+                      <h3>PDS Documentation</h3>
+                    </div>
+                    <div class="surface-overlay" slot="drawer-content">
+                      ${htmlContent}
+                    </div>
+    `;
+
+        drawer.open = true;
+      } else {
+        // fallback: show toast if available
+        const app = document.querySelector("pure-app");
+        if (app?.toast) {
+          app.toast("Docs drawer not found. See console for details.", {
+            type: "warning",
+          });
+        }
+        console.warn("#global-drawer not found; docs HTML:\n", htmlContent);
+      }
+    } catch (err) {
+      console.error("Error fetching README:", err);
+      const app = document.querySelector("pure-app");
+      if (app?.toast)
+        app.toast("Error loading docs. See console.", { type: "danger" });
+    }
   }
 
   openDrawer() {
