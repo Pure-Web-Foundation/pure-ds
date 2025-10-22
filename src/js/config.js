@@ -187,13 +187,7 @@ export const config = {
       spritePath: 'public/assets/img/icons.svg',
     },
     
-    debug: false,
-    
-    // output: {
-    //   file: 'public/assets/css/auto-designer.css',
-    //   minify: false,
-    //   sourceMap: false,
-    // }
+    debug: false
   },
 
   // Auto-define configuration for web components

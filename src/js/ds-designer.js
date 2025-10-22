@@ -291,6 +291,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
         <div class="designer-form-container">
           <pds-jsonform
             .jsonSchema=${this.schema}
+            .uiSchema=${this._designerUiSchema()}
             .values=${this.flattenConfig(this.config)}
             hide-reset
             hide-submit
@@ -363,6 +364,40 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
         </div>
       </div>
     `;
+  }
+
+  // Provide a uiSchema to customize widgets for designer UX (datalists for fonts, ranges for numeric values)
+  _designerUiSchema() {
+    // Common font-family suggestions (similar to dev console suggestions)
+    const fontSuggestions = [
+      "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
+      "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      "Roboto, 'Helvetica Neue', Arial, sans-serif",
+      "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+      "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+    ];
+
+    // UI schema (paths use the pds-jsonform path notation, e.g. /typography/fontFamilyHeadings)
+    const ui = {};
+
+    // Font family fields: use datalist via ui.datalist
+    ui["/typography/fontFamilyHeadings"] = { "ui:datalist": fontSuggestions };
+    ui["/typography/fontFamilyBody"] = { "ui:datalist": fontSuggestions };
+    ui["/typography/fontFamilyMono"] = { "ui:datalist": [
+      "ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace",
+      "Consolas, 'Liberation Mono', Menlo, monospace",
+      "'Fira Code', 'Cascadia Code', 'Source Code Pro', monospace"
+    ] };
+
+    // Numeric fields that are better as ranges (baseFontSize, baseUnit, etc.)
+    ui["/typography/baseFontSize"] = { "ui:widget": "input-range", "ui:min": 8, "ui:max": 32 };
+    ui["/spatialRhythm/baseUnit"] = { "ui:widget": "input-range", "ui:min": 4, "ui:max": 48 };
+
+    // Add any other numeric fields you'd like to surface as ranges
+    ui["/spatialRhythm/containerPadding"] = { "ui:widget": "input-range", "ui:min": 0, "ui:max": 4 };
+
+    return ui;
   }
 }
 

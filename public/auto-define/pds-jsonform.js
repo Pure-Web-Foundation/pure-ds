@@ -208,6 +208,8 @@ export class SchemaForm extends LitElement {
       widget: null,
     });
     if (picked?.widget) return picked.widget;
+    // Honor explicit uiSchema widget hints
+    if (ui?.["ui:widget"]) return ui["ui:widget"];
     if (schema.enum) return schema.enum.length <= 5 ? "radio" : "select";
     if (schema.const !== undefined) return "const";
     if (schema.type === "string") {
@@ -231,7 +233,7 @@ export class SchemaForm extends LitElement {
           return "input-datetime";
         default:
           if (
-            (schema.maxLength ?? Infinity) > 160 ||
+            (schema.maxLength ?? 0) > 160 ||
             ui?.["ui:widget"] === "textarea"
           )
             return "textarea";
@@ -559,7 +561,7 @@ export class SchemaForm extends LitElement {
 
     this.defineRenderer(
       "input-text",
-      ({ id, value, attrs, set }) => html`
+      ({ id, value, attrs, set, ui }) => html`
         <input
           id=${id}
           placeholder=${ifDefined(attrs.placeholder)}
@@ -571,8 +573,18 @@ export class SchemaForm extends LitElement {
           ?readonly=${!!attrs.readOnly}
           ?required=${!!attrs.required}
           autocomplete=${ifDefined(attrs.autocomplete)}
+          list=${ifDefined(ui?.["ui:datalist"] ? `${id}-datalist` : attrs.list)}
           @input=${(e) => set(e.target.value)}
         />
+        ${ui?.["ui:datalist"]
+          ? html`
+              <datalist id="${id}-datalist">
+                ${ui["ui:datalist"].map(
+                  (opt) => html`<option value="${opt}"></option>`
+                )}
+              </datalist>
+            `
+          : nothing}
       `
     );
 
@@ -633,6 +645,30 @@ export class SchemaForm extends LitElement {
     />
       `;
     });
+
+    // Range input renderer for ui:widget = 'input-range'
+    this.defineRenderer(
+      "input-range",
+      ({ id, value, attrs, set, ui }) => {
+        const min = ui?.["ui:min"] ?? attrs.min ?? 0;
+        const max = ui?.["ui:max"] ?? attrs.max ?? 100;
+        const step = attrs.step || 1;
+        return html`
+          <div class="range-container">
+            <input
+              id=${id}
+              type="range"
+              min=${min}
+              max=${max}
+              step=${step}
+              .value=${value ?? min}
+              @input=${(e) => set(Number(e.target.value))}
+            />
+            <div class="range-bubble" aria-hidden="true">${value ?? min}</div>
+          </div>
+        `;
+      }
+    );
 
     this.defineRenderer(
       "input-email",
