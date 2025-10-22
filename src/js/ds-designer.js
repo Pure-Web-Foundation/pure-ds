@@ -16,6 +16,10 @@ async function ask(message, options = {}) {
 
 export class DsDesigner extends LitElement {
   #tmr;
+  #lastDesignEmit = 0;
+  #scheduledDesignEmit = null;
+  #scheduledApply = null;
+  #designEmitDelay = 500; // ms throttle
   
   static properties = {
     config: { type: Object, state: true },
@@ -38,6 +42,65 @@ export class DsDesigner extends LitElement {
     this.config = this.loadConfig();
 
     this.updateForm();
+    // Apply host-level CSS variable overrides from the default design config
+    // so the designer UI doesn't visually change when user edits are applied
+    // elsewhere (these variables remain fixed for the designer element).
+    this.applyDefaultHostVariables();
+  }
+
+  /**
+   * Apply CSS custom properties to the designer host derived from
+   * AutoDesigner.defaultConfig. This locks spacing and typography
+   * variables for the designer's UI so they don't change during form edits.
+   */
+  applyDefaultHostVariables() {
+    try {
+      const baseConfig = structuredClone(AutoDesigner.defaultConfig);
+      const tmpDesigner = new AutoDesigner(baseConfig);
+
+      // Spacing tokens (keys are numeric strings 1..N)
+      const spacing = tmpDesigner.generateSpacingTokens(
+        baseConfig.spatialRhythm || {}
+      );
+      Object.entries(spacing).forEach(([key, val]) => {
+        try {
+          this.style.setProperty(`--spacing-${key}`, val);
+        } catch (e) {
+          /* ignore per-property failures */
+        }
+      });
+
+      // Also expose base unit explicitly (px) so consumers can read it directly
+      const baseUnitValue = (baseConfig.spatialRhythm && baseConfig.spatialRhythm.baseUnit) || 16;
+      this.style.setProperty("--base-unit", `${baseUnitValue}px`);
+
+      // Typography tokens
+      const typography = tmpDesigner.generateTypographyTokens(
+        baseConfig.typography || {}
+      );
+      if (typography.fontSize) {
+        Object.entries(typography.fontSize).forEach(([k, v]) => {
+          this.style.setProperty(`--font-size-${k}`, v);
+        });
+      }
+      // Also expose the numeric baseFontSize explicitly
+      const baseFontSizeValue = (baseConfig.typography && baseConfig.typography.baseFontSize) || 16;
+      this.style.setProperty("--base-font-size", `${baseFontSizeValue}px`);
+      if (typography.fontFamily) {
+        Object.entries(typography.fontFamily).forEach(([k, v]) => {
+          this.style.setProperty(`--font-family-${k}`, v);
+        });
+      }
+      if (typography.lineHeight) {
+        Object.entries(typography.lineHeight).forEach(([k, v]) => {
+          this.style.setProperty(`--font-lineHeight-${k}`, v);
+        });
+      }
+
+      console.debug("ds-designer: applied default host CSS variables");
+    } catch (ex) {
+      console.warn("ds-designer: failed to apply default host variables", ex);
+    }
   }
 
   updateForm() {
@@ -73,20 +136,85 @@ export class DsDesigner extends LitElement {
     }
   }
 
-  applyStyles() {
-    this.designer = new AutoDesigner(this.config);
+  applyStyles(useUserConfig = false) {
+    // By default, use AutoDesigner.defaultConfig (non-designer callers)
+    // If useUserConfig is true (ds-designer wants to apply user edits),
+    // merge the persisted user config into the default to generate runtime styles.
+    let baseConfig = structuredClone(AutoDesigner.defaultConfig);
+    if (useUserConfig && this.config) {
+      // Deep-merge user edits on top of defaults to ensure all keys exist
+      baseConfig = deepMerge(baseConfig, this.config);
+    }
+
+    this.designer = new AutoDesigner(baseConfig);
     AutoDesigner.applyStyles(this.designer);
 
-    clearTimeout(this.#tmr);
-    this.#tmr = setTimeout(() => {
+    // Debug: log that we're applying styles and whether user config was used
+    try {
+      console.debug(
+        "ds-designer: applyStyles called",
+        { useUserConfig: !!useUserConfig, designerPresent: !!this.designer }
+      );
+    } catch (e) {
+      /* ignore logging errors */
+    }
+
+    // Emit design-updated in a throttled manner with the actual designer
+    this.scheduleDesignUpdatedEmit({ config: baseConfig, designer: this.designer });
+  }
+
+  /**
+   * Centralized throttled emitter for the `design-updated` event.
+   * Accepts an object with { config, designer } to include in the event detail.
+   */
+  scheduleDesignUpdatedEmit(detail) {
+    const now = Date.now();
+
+    const emitNow = () => {
+      this.#lastDesignEmit = Date.now();
+      // Clear any scheduled timer
+      if (this.#scheduledDesignEmit) {
+        clearTimeout(this.#scheduledDesignEmit);
+        this.#scheduledDesignEmit = null;
+      }
+      // Debug: announce emit and what's in the payload
+      try {
+        console.debug("ds-designer: emitting design-updated", {
+          hasDesigner: !!detail?.designer,
+          detailSummary: {
+            // don't log full config to avoid noise; show a couple keys if present
+            hasConfig: !!detail?.config,
+            sample: detail?.config?.typography
+              ? { baseFontSize: detail.config.typography.baseFontSize }
+              : null,
+          },
+        });
+      } catch (e) {
+        /* ignore logging errors */
+      }
       this.dispatchEvent(
         new CustomEvent("design-updated", {
           bubbles: true,
-          detail: { config: this.config, designer: this.designer },
+          composed: true,
+          detail,
         })
       );
-    }, 500);
-    // Dispatch event for showcase to update
+    };
+
+    if (now - this.#lastDesignEmit >= this.#designEmitDelay) {
+      // Enough time has passed — emit immediately
+      emitNow();
+      return;
+    }
+
+    // Otherwise schedule a trailing emit (only one scheduled at a time)
+    if (!this.#scheduledDesignEmit) {
+      const delay = this.#designEmitDelay - (now - this.#lastDesignEmit);
+      this.#scheduledDesignEmit = setTimeout(() => {
+        this.#scheduledDesignEmit = null;
+        emitNow();
+      }, delay);
+    }
   }
 
   toggleInspectorMode() {
@@ -169,12 +297,11 @@ export class DsDesigner extends LitElement {
     console.log("Nested values:", nestedValues);
 
     // Deep merge the nested values into config
-    this.config = deepMerge(this.config, nestedValues);
-    console.log("Updated config:", this.config);
-    //this.schema = designToSchema(this.config);
-
-    this.saveConfig();
-    this.applyStyles();
+  // Persist user changes locally, but do NOT apply them to the runtime designer
+  // (ds-designer should use AutoDesigner.defaultConfig for styling)
+  this.config = deepMerge(this.config, nestedValues);
+  console.log("Updated (persisted) config (not applied):", this.config);
+  this.saveConfig();
 
     // Emit event for showcase to scroll to relevant section
     if (changedField) {
@@ -193,6 +320,22 @@ export class DsDesigner extends LitElement {
         })
       );
     }
+      // Debounce applying styles using the user-edited config so the showcase
+      // receives the actual runtime CSS generated from user edits. We still
+      // persist immediately, but only apply (and emit) the styles at most once
+      // per #designEmitDelay to avoid excessive recalculation.
+      try {
+        if (this.#scheduledApply) {
+          clearTimeout(this.#scheduledApply);
+          this.#scheduledApply = null;
+        }
+        this.#scheduledApply = setTimeout(() => {
+          this.#scheduledApply = null;
+          this.applyStyles(true); // apply with user config and emit
+        }, this.#designEmitDelay);
+      } catch (ex) {
+        console.warn("Failed to schedule applyStyles with user config:", ex);
+      }
   };
 
   handleReset = () => {

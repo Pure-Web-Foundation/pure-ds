@@ -38,6 +38,9 @@ export class DsShowcase extends LitElement {
     // Listen for design updates from ds-designer
     document.addEventListener("design-updated", (e) => {
       this.config = e.detail.config;
+      
+      console.log("Showcase received updated design config:", this.config);
+
       this.designer = e.detail.designer;
     });
 
