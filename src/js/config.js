@@ -73,7 +73,7 @@ export const config = {
     },
     
     shape: {
-      radiusSize: AutoDesigner.RadiusSizes.large,
+      radiusSize: AutoDesigner.RadiusSizes.none,
       borderWidth: AutoDesigner.BorderWidths.thin,
       customRadius: null,
     },

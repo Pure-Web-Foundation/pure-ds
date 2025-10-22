@@ -447,7 +447,7 @@ export class AutoDesigner {
     const baseRadius =
       customRadius !== null
         ? customRadius
-        : AutoDesigner.RadiusSizes[radiusSize] ||
+        : AutoDesigner.RadiusSizes[radiusSize] ??
           AutoDesigner.RadiusSizes.medium;
 
     return {
