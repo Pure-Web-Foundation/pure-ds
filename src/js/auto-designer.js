@@ -4406,44 +4406,69 @@ export const ${name}CSS = \`${escapedCSS}\`;
    */
   static applyStyles(designer) {
     // Validate parameter
-    if (!designer || typeof designer !== 'object') {
+    if (!designer || typeof designer !== "object") {
       console.error("[AutoDesigner] applyStyles requires a designer object");
       return;
     }
 
-    // Check if BLOB URL is available
-    if (!designer.stylesBlobURL) {
-      console.error(
-        "[AutoDesigner] BLOB URL not available. Designer may not be fully initialized.",
-        { designer, blobURLs: designer._blobURLs }
-      );
+    // Preferred: use the in-memory css text produced by the designer for atomic updates
+    const cssText = designer.css || designer.layeredCSS || "";
+    if (!cssText) {
+      console.warn("[AutoDesigner] No CSS available on designer to apply");
       return;
     }
 
-    // Create link element pointing to combined BLOB URL
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = designer.stylesBlobURL;
-    link.setAttribute("data-pds", "live");
-
-    // Remove old PDS link if exists
-    const oldLink = document.querySelector('link[data-pds="live"]');
-    if (oldLink) {
-      oldLink.remove();
+    // Install/update runtime styles atomically to avoid flicker caused by
+    // creating/removing <link> or swapping blob URLs.
+    AutoDesigner.installRuntimeStyles(cssText);
+    if (designer && designer._blobURLs && this.options?.debug) {
+      console.log("[AutoDesigner] Applied live styles via in-place stylesheet");
     }
+  }
 
-    // Insert BEFORE first existing stylesheet so it has lower cascade priority
-    const firstStylesheet = document.querySelector('link[rel="stylesheet"]');
-    if (firstStylesheet) {
-      document.head.insertBefore(link, firstStylesheet);
-    } else {
-      document.head.appendChild(link);
+  /**
+   * Install runtime styles for PDS using constructable stylesheets when
+   * available, otherwise update a single <style id="pds-runtime-stylesheet">.
+   * This approach reduces flicker and avoids link/blob swapping.
+   */
+  static installRuntimeStyles(cssText) {
+    try {
+      if (typeof document === "undefined") return; // server-side guard
+
+      // Preferred: constructable stylesheet (fast, atomic)
+      if (typeof CSSStyleSheet !== "undefined" && "adoptedStyleSheets" in Document.prototype) {
+        const sheet = new CSSStyleSheet();
+        // replaceSync is synchronous and atomic for the stylesheet
+        sheet.replaceSync(cssText);
+
+        // Tag it so we can keep existing non-PDS sheets
+        sheet._pds = true;
+
+        const others = (document.adoptedStyleSheets || []).filter((s) => s._pds !== true);
+        document.adoptedStyleSheets = [...others, sheet];
+
+        // Keep a reference
+        AutoDesigner.__pdsRuntimeSheet = sheet;
+        return;
+      }
+
+      // Fallback: single <style> element in the document head
+      const styleId = "pds-runtime-stylesheet";
+      let el = document.getElementById(styleId);
+      if (!el) {
+        el = document.createElement("style");
+        el.id = styleId;
+        el.type = "text/css";
+        const head = document.head || document.getElementsByTagName("head")[0];
+        if (head) head.appendChild(el);
+        else document.documentElement.appendChild(el);
+      }
+
+      // Update the stylesheet content in place
+      el.textContent = cssText;
+    } catch (err) {
+      console.warn("AutoDesigner.installRuntimeStyles failed:", err);
     }
-
-    console.log(
-      "[AutoDesigner] Applied live styles via BLOB URL:",
-      designer.stylesBlobURL
-    );
   }
 }
 
