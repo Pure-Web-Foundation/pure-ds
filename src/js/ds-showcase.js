@@ -5,6 +5,8 @@ import {
   getAllSelectors,
 } from "./pds-ontology";
 
+import { AutoComplete } from "pure-web/ac";
+
 export class DsShowcase extends LitElement {
   #shiki = null;
   #shikiLoading = false;
@@ -62,27 +64,27 @@ export class DsShowcase extends LitElement {
       const target = e.target;
 
       // Prevent link navigation
-      const anchor = target.closest && target.closest('a[href]');
+      const anchor = target.closest && target.closest("a[href]");
       if (anchor) {
         e.preventDefault();
         return;
       }
 
       // Prevent button activation
-      const button = target.closest && target.closest('button');
+      const button = target.closest && target.closest("button");
       if (button) {
         e.preventDefault();
         return;
       }
     };
 
-    this.addEventListener('click', this._inspectorCaptureHandler, true);
+    this.addEventListener("click", this._inspectorCaptureHandler, true);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     if (this._inspectorCaptureHandler) {
-      this.removeEventListener('click', this._inspectorCaptureHandler, true);
+      this.removeEventListener("click", this._inspectorCaptureHandler, true);
       this._inspectorCaptureHandler = null;
     }
   }
@@ -466,8 +468,8 @@ export class DsShowcase extends LitElement {
       }
     });
 
-  // Pretty print HTML using DOM-aware formatter
-  let html = this.formatHTMLElement(clone);
+    // Pretty print HTML using DOM-aware formatter
+    let html = this.formatHTMLElement(clone);
 
     // Extract Lit properties (attributes starting with .)
     const litProps = this.extractLitProperties(element);
@@ -623,13 +625,21 @@ export class DsShowcase extends LitElement {
       // any global appConfig or the pure-app element if present.
       const enhancers =
         this.config?.autoDefine?.enhancers ||
-        (typeof appConfig !== "undefined" ? appConfig?.autoDefine?.enhancers : null) ||
-        (typeof window !== "undefined" ? window?.appConfig?.autoDefine?.enhancers : null) ||
-        (document.querySelector && document.querySelector("pure-app")?.config?.autoDefine?.enhancers) ||
+        (typeof appConfig !== "undefined"
+          ? appConfig?.autoDefine?.enhancers
+          : null) ||
+        (typeof window !== "undefined"
+          ? window?.appConfig?.autoDefine?.enhancers
+          : null) ||
+        (document.querySelector &&
+          document.querySelector("pure-app")?.config?.autoDefine?.enhancers) ||
         [];
       enhancer = enhancers.find((en) => {
         try {
-          return element.matches && element.matches(en.selector) || (element.closest && element.closest(en.selector));
+          return (
+            (element.matches && element.matches(en.selector)) ||
+            (element.closest && element.closest(en.selector))
+          );
         } catch (ex) {
           return false;
         }
@@ -641,14 +651,17 @@ export class DsShowcase extends LitElement {
     let litProps = [];
     let html = null;
     if (enhancer && enhancer.demoHtml) {
-      demoHtml = typeof enhancer.demoHtml === "function" ? enhancer.demoHtml(element) : enhancer.demoHtml;
+      demoHtml =
+        typeof enhancer.demoHtml === "function"
+          ? enhancer.demoHtml(element)
+          : enhancer.demoHtml;
       // If demoHtml is a string, parse it into a DOM node and pretty-print it
       if (typeof demoHtml === "string") {
         try {
-          const wrapper = document.createElement('div');
+          const wrapper = document.createElement("div");
           wrapper.innerHTML = demoHtml.trim();
           // If there are multiple top-level nodes, format them all
-          let combined = '';
+          let combined = "";
           for (const child of Array.from(wrapper.childNodes)) {
             combined += this.formatHTMLElement(child);
           }
@@ -958,32 +971,211 @@ export class DsShowcase extends LitElement {
     return html`
       <nav class="showcase-toc" aria-label="Table of Contents">
         <div class="toc-wrapper">
-          <svg-icon icon="list" size="sm" class="toc-icon"></svg-icon>
-          ${this.sections.map(
-            (section) => html`
-              <a
-                href="#${section.id}"
-                class="toc-link"
-                @click=${(e) => this.handleTOCClick(e, section.id)}
-              >
-                ${section.title}
-              </a>
-            `
-          )}
+          <div class="input-icon">
+            <svg-icon icon="magnifying-glass"></svg-icon>
+            <input
+              id="pds-search"
+              @focus=${(e) =>
+                AutoComplete.connect(e, this.autoCompleteSettings)}
+              type="search"
+              placeholder="Search design system..."
+            />
+          </div>
         </div>
       </nav>
     `;
   }
 
-  handleTOCClick(e, sectionId) {
-    e.preventDefault();
-    const section = this.querySelector(`[data-section="${sectionId}"]`);
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth", block: "start" });
-      // Update URL hash
-      history.pushState(null, "", `#${sectionId}`);
-    }
+  get autoCompleteSettings() {
+    return {
+      //debug: true,
+      categories: {
+        Sections: {
+          action: (options) => {
+            document.querySelector(`[data-section="${options.id}"]`).scrollIntoView({ behavior: "smooth", block: "start" });
+          },
+          trigger: (options) => options.search.length === 0,
+          getItems: (options) => {
+            return this.sections.map(section => {
+              return {
+                text: section.title,
+                id: section.id,
+                icon: "folder-simple"
+              }
+            })
+          }
+        },
+        Search: {
+          action: (options) => {
+            // When a user selects an item, try to resolve it to a showcase section
+            const rawId = options.id || '';
+            const query = (options.search || '').toLowerCase();
+
+            // id is encoded as `type|key` (see getItems)
+            const [type, key] = rawId.split('|');
+
+            // 1) try to find a section with id exactly matching key
+            let section = this.sections.find((s) => s.id === key);
+
+            // 2) try to match against title or id containing the key or query
+            if (!section) {
+              section = this.sections.find(
+                (s) =>
+                  s.title?.toLowerCase().includes(key?.toLowerCase?.() || '') ||
+                  s.id?.toLowerCase().includes(key?.toLowerCase?.() || '') ||
+                  s.title?.toLowerCase().includes(query) ||
+                  s.id?.toLowerCase().includes(query)
+              );
+            }
+
+            // 3) fallback: search inside each section element for the query text
+            if (!section && query) {
+              for (const s of this.sections) {
+                const el = this.querySelector(`[data-section="${s.id}"]`);
+                if (!el) continue;
+                const text = (el.innerText || '').toLowerCase();
+                if (text.includes(query) || s.title.toLowerCase().includes(query)) {
+                  section = s;
+                  break;
+                }
+              }
+            }
+
+            if (section) {
+              const el = this.querySelector(`[data-section="${section.id}"]`);
+              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+              // no section found - try a global text search and show first match
+              const allText = (this.innerText || '').toLowerCase();
+              const idx = allText.indexOf(query);
+              if (idx !== -1) {
+                // find first section that contains the query
+                for (const s of this.sections) {
+                  const el = this.querySelector(`[data-section="${s.id}"]`);
+                  if (!el) continue;
+                  if ((el.innerText || '').toLowerCase().includes(query)) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    break;
+                  }
+                }
+              }
+            }
+          },
+          trigger: (options) => options.search.length > 1,
+          getItems: (options) => {
+            const q = (options.search || '').trim().toLowerCase();
+            if (!q) return [];
+
+            const candidates = [];
+
+            // primitives
+            for (const p of PDS_ONTOLOGY.primitives || []) {
+              const name = (p.name || p.id || '').toString();
+              const id = p.id || name.replace(/\s+/g, '-').toLowerCase();
+              const score = (name.toLowerCase().includes(q) ? 30 : 0) + (id.includes(q) ? 20 : 0);
+              // selectors
+              const selMatch = (p.selectors || []).some((s) => String(s).toLowerCase().includes(q));
+              const total = score + (selMatch ? 10 : 0);
+              candidates.push({ type: 'primitive', key: id, name, score: total });
+            }
+
+            // components
+            for (const c of PDS_ONTOLOGY.components || []) {
+              const name = (c.name || c.id || '').toString();
+              const id = c.id || name.replace(/\s+/g, '-').toLowerCase();
+              const score = (name.toLowerCase().includes(q) ? 40 : 0) + (id.includes(q) ? 25 : 0);
+              const selMatch = (c.selectors || []).some((s) => String(s).toLowerCase().includes(q));
+              const total = score + (selMatch ? 10 : 0);
+              candidates.push({ type: 'component', key: id, name, score: total });
+            }
+
+            // tokens (flatten groups)
+            if (PDS_ONTOLOGY.tokens) {
+              for (const [group, items] of Object.entries(PDS_ONTOLOGY.tokens)) {
+                if (Array.isArray(items)) {
+                  for (const t of items) {
+                    const name = `${group}/${t}`;
+                    const id = `${group}-${t}`;
+                    const score = name.toLowerCase().includes(q) ? 35 : 0;
+                    candidates.push({ type: 'token', key: id, name, score });
+                  }
+                }
+              }
+            }
+
+            // enhancements
+            for (const enh of PDS_ONTOLOGY.enhancements || []) {
+              const name = String(enh);
+              const key = `enh-${name.replace(/[^a-z0-9]+/gi, '-')}`.toLowerCase();
+              const score = name.toLowerCase().includes(q) ? 25 : 0;
+              candidates.push({ type: 'enhancement', key, name, score });
+            }
+
+            // utilities
+            for (const util of PDS_ONTOLOGY.utilities || []) {
+              const name = String(util);
+              const key = `util-${name.replace(/[^a-z0-9]+/gi, '-')}`.toLowerCase();
+              const score = name.toLowerCase().includes(q) ? 20 : 0;
+              candidates.push({ type: 'utility', key, name, score });
+            }
+
+            // styles (flat)
+            if (PDS_ONTOLOGY.styles) {
+              for (const [k, v] of Object.entries(PDS_ONTOLOGY.styles)) {
+                const name = k;
+                const key = `style-${k}`;
+                const score = name.toLowerCase().includes(q) ? 10 : 0;
+                candidates.push({ type: 'style', key, name, score });
+              }
+            }
+
+            // Basic fuzzy/substring scoring boost for any candidate containing q in name/key
+            for (const c of candidates) {
+              const lname = (c.name || '').toLowerCase();
+              const lkey = (c.key || '').toLowerCase();
+              if (lname.includes(q)) c.score += 50;
+              if (lkey.includes(q)) c.score += 20;
+            }
+
+            // Filter and sort
+            const results = candidates
+              .filter((c) => c.score > 0)
+              .sort((a, b) => b.score - a.score)
+              .slice(0, 30)
+              .map((c) => ({
+                text: c.name,
+                id: `${c.type}|${c.key}`,
+                icon: c.type === 'component' ? 'brackets-curly' : c.type === 'primitive' ? 'tag' : c.type === 'token' ? 'palette' : 'folder-simple'
+              }));
+
+            return results;
+          }
+        }
+      }
+    };
   }
+
+  // ${this.sections.map(
+  //             (section) => html`
+  //               <a
+  //                 href="#${section.id}"
+  //                 class="toc-link"
+  //                 @click=${(e) => this.handleTOCClick(e, section.id)}
+  //               >
+  //                 ${section.title}
+  //               </a>
+  //             `
+  //           )}
+
+  // handleTOCClick(e, sectionId) {
+  //   e.preventDefault();
+  //   const section = this.querySelector(`[data-section="${sectionId}"]`);
+  //   if (section) {
+  //     section.scrollIntoView({ behavior: "smooth", block: "start" });
+  //     // Update URL hash
+  //     history.pushState(null, "", `#${sectionId}`);
+  //   }
+  // }
 
   render() {
     const components = this.config?.components || {};

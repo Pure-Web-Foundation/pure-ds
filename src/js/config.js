@@ -161,7 +161,7 @@ export const config = {
           'image', 'file', 'file-text', 'file-css', 'file-js',
           'folder', 'folder-open', 'book-open',
           'camera', 'video-camera', 'play', 'pause', 'microphone',
-          'brackets-curly',
+          'brackets-curly', "code", "folder-simple"
         ],
         status: [
           'info', 'warning', 'check-circle', 'x-circle',

@@ -16,7 +16,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "esbuild": "^0.19.0"
+    "esbuild": "^0.19.0",
+    "fs-extra": "^11.1.1"
   },
   "dependencies": {
     "lit": "^3.3.1",
