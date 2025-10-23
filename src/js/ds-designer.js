@@ -353,7 +353,6 @@ export class DsDesigner extends LitElement {
   };
 
   handleDownload = (format) => {
-    debugger;
     let content, filename, mimeType;
 
     switch (format) {

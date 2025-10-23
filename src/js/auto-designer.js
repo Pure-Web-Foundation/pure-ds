@@ -211,7 +211,7 @@ export class AutoDesigner {
     },
     
     icons: {
-      set: 'phosphor',
+      set: 'phosphor', // https://phosphoricons.com/
       weight: 'regular',
       defaultSize: 24,
       sizes: {
@@ -2818,9 +2818,6 @@ tbody {
 
   generateToastStyles() {
     return /*css*/ `/* Toast Notification Styles - Updated */
-
-/
-
 `;
   }
 

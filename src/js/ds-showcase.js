@@ -38,7 +38,7 @@ export class DsShowcase extends LitElement {
     // Listen for design updates from ds-designer
     document.addEventListener("design-updated", (e) => {
       this.config = e.detail.config;
-      
+
       console.log("Showcase received updated design config:", this.config);
 
       this.designer = e.detail.designer;
@@ -1425,303 +1425,265 @@ export class DsShowcase extends LitElement {
           </div>
         </section>
 
-        <!-- Forms Section -->
-        ${components.forms
-          ? html`
-              <section class="showcase-section alt-bg" data-section="forms">
-                <h2>
-                  <svg-icon
-                    icon="note-pencil"
-                    size="lg"
-                    class="icon-primary"
-                  ></svg-icon>
-                  Form Controls
-                </h2>
+        <section class="showcase-section alt-bg" data-section="forms">
+          <h2>
+            <svg-icon
+              icon="note-pencil"
+              size="lg"
+              class="icon-primary"
+            ></svg-icon>
+            Form Controls
+          </h2>
 
-                <form
-                  class="form-demo"
-                  onsubmit="event.preventDefault(); console.log('Form submitted (prevented)'); return false;"
-                >
-                  <fieldset>
-                    <legend>Personal Information</legend>
+          <form
+            class="form-demo"
+            onsubmit="event.preventDefault(); console.log('Form submitted (prevented)'); return false;"
+          >
+            <fieldset>
+              <legend>Personal Information</legend>
 
-                    <label>
-                      <span>Full Name</span>
-                      <input
-                        type="text"
-                        placeholder="Enter your name"
-                        required
-                      />
-                    </label>
+              <label>
+                <span>Full Name</span>
+                <input type="text" placeholder="Enter your name" required />
+              </label>
 
-                    <label>
-                      <span>Email</span>
-                      <input
-                        type="email"
-                        placeholder="you@example.com"
-                        autocomplete="username"
-                        required
-                      />
-                    </label>
+              <label>
+                <span>Email</span>
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  autocomplete="username"
+                  required
+                />
+              </label>
 
-                    <label>
-                      <span>Phone</span>
-                      <input type="tel" placeholder="+1 (555) 000-0000" />
-                    </label>
+              <label>
+                <span>Phone</span>
+                <input type="tel" placeholder="+1 (555) 000-0000" />
+              </label>
 
-                    <label>
-                      <span>Date of Birth</span>
-                      <input type="date" />
-                    </label>
+              <label>
+                <span>Date of Birth</span>
+                <input type="date" />
+              </label>
 
-                    <label>
-                      <span>Time</span>
-                      <input type="time" />
-                    </label>
+              <label>
+                <span>Time</span>
+                <input type="time" />
+              </label>
 
-                    <label>
-                      <span>Password</span>
-                      <input
-                        type="password"
-                        placeholder="Enter password"
-                        autocomplete="current-password"
-                      />
-                    </label>
+              <label>
+                <span>Password</span>
+                <input
+                  type="password"
+                  placeholder="Enter password"
+                  autocomplete="current-password"
+                />
+              </label>
 
-                    <label>
-                      <span>Country</span>
-                      <select>
-                        <option>United States</option>
-                        <option>Canada</option>
-                        <option>United Kingdom</option>
-                        <option>Germany</option>
-                        <option>France</option>
-                        <option>Other</option>
-                      </select>
-                    </label>
+              <label>
+                <span>Country</span>
+                <select>
+                  <option>United States</option>
+                  <option>Canada</option>
+                  <option>United Kingdom</option>
+                  <option>Germany</option>
+                  <option>France</option>
+                  <option>Other</option>
+                </select>
+              </label>
 
-                    <label>
-                      <span>Number</span>
-                      <input type="number" min="0" max="100" value="50" />
-                    </label>
+              <label>
+                <span>Number</span>
+                <input type="number" min="0" max="100" value="50" />
+              </label>
 
-                    <label>
-                      <span>Range</span>
-                      <input type="range" min="0" max="100" value="50" />
-                    </label>
+              <label>
+                <span>Range</span>
+                <input type="range" min="0" max="100" value="50" />
+              </label>
 
-                    <label>
-                      <span>Color</span>
-                      <input type="color" value="#2d9dc9" />
-                    </label>
+              <label>
+                <span>Color</span>
+                <input type="color" value="#2d9dc9" />
+              </label>
 
-                    <label>
-                      <span>Search</span>
-                      <input type="search" placeholder="Search..." />
-                    </label>
+              <label>
+                <span>Search</span>
+                <input type="search" placeholder="Search..." />
+              </label>
 
-                    <label>
-                      <span>URL</span>
-                      <input type="url" placeholder="https://example.com" />
-                    </label>
+              <label>
+                <span>URL</span>
+                <input type="url" placeholder="https://example.com" />
+              </label>
 
-                    <label>
-                      <span>File Upload</span>
-                      <pds-upload name="file"></pds-upload>
-                    </label>
+              <label>
+                <span>File Upload</span>
+                <pds-upload name="file"></pds-upload>
+              </label>
 
-                    <label>
-                      <span>Message</span>
-                      <textarea
-                        rows="4"
-                        placeholder="Your message here..."
-                      ></textarea>
-                    </label>
-                  </fieldset>
+              <label>
+                <span>Message</span>
+                <textarea
+                  rows="4"
+                  placeholder="Your message here..."
+                ></textarea>
+              </label>
+            </fieldset>
 
-                  <fieldset>
-                    <legend>Preferences</legend>
+            <fieldset>
+              <legend>Preferences</legend>
 
-                    <label data-toggle>
-                      <input type="checkbox" checked />
-                      Subscribe to newsletter
-                    </label>
+              <label data-toggle>
+                <input type="checkbox" checked />
+                Subscribe to newsletter
+              </label>
 
-                    <label data-toggle>
-                      <input type="checkbox" />
-                      Receive marketing emails
-                    </label>
-                  </fieldset>
+              <label data-toggle>
+                <input type="checkbox" />
+                Receive marketing emails
+              </label>
+            </fieldset>
 
-                  <fieldset>
-                    <legend>Toggle Switches (Progressive Enhancement)</legend>
+            <fieldset>
+              <legend>Toggle Switches (Progressive Enhancement)</legend>
 
-                    <label data-toggle>
-                      <input type="checkbox" checked />
-                      Enable notifications
-                    </label>
+              <label data-toggle>
+                <input type="checkbox" checked />
+                Enable notifications
+              </label>
 
-                    <label data-toggle>
-                      <input type="checkbox" />
-                      Dark mode
-                    </label>
+              <label data-toggle>
+                <input type="checkbox" />
+                Dark mode
+              </label>
 
-                    <label data-toggle>
-                      <input type="checkbox" checked />
-                      Auto-save
-                    </label>
-                  </fieldset>
+              <label data-toggle>
+                <input type="checkbox" checked />
+                Auto-save
+              </label>
+            </fieldset>
 
-                  <div class="form-demo-actions">
-                    <button type="submit" class="btn-primary">
-                      Submit Form
-                    </button>
-                    <button type="reset" class="btn-secondary">Reset</button>
-                    <button type="button" class="btn-outline">Cancel</button>
-                  </div>
-                </form>
-              </section>
-            `
-          : this.renderDisabledSection(
-              "Form Controls",
-              "Form styles are disabled. Enable in the designer panel."
-            )}
+            <div class="form-demo-actions">
+              <button type="submit" class="btn-primary">Submit Form</button>
+              <button type="reset" class="btn-secondary">Reset</button>
+              <button type="button" class="btn-outline">Cancel</button>
+            </div>
+          </form>
+        </section>
 
-        <!-- Alerts Section -->
-        ${components.alerts
-          ? html`
-              <section class="showcase-section" data-section="alerts">
-                <h2>
-                  <svg-icon
-                    icon="bell-ringing"
-                    size="lg"
-                    class="icon-primary"
-                  ></svg-icon>
-                  Alerts & Feedback
-                </h2>
+        <section class="showcase-section" data-section="alerts">
+          <h2>
+            <svg-icon
+              icon="bell-ringing"
+              size="lg"
+              class="icon-primary"
+            ></svg-icon>
+            Alerts & Feedback
+          </h2>
 
-                <div class="demo-grid cols-1">
-                  <div class="alert alert-success">
-                    <div class="alert-icon">
-                      <svg-icon
-                        icon="check-circle"
-                        class="icon-success"
-                        size="lg"
-                      ></svg-icon>
-                    </div>
-                    <div>
-                      <div class="alert-title">Success!</div>
-                      <p>Your operation completed successfully.</p>
-                    </div>
-                  </div>
+          <div class="demo-grid cols-1">
+            <div class="alert alert-success">
+              <div class="alert-icon">
+                <svg-icon
+                  icon="check-circle"
+                  class="icon-success"
+                  size="lg"
+                ></svg-icon>
+              </div>
+              <div>
+                <div class="alert-title">Success!</div>
+                <p>Your operation completed successfully.</p>
+              </div>
+            </div>
 
-                  <div class="alert alert-info">
-                    <div class="alert-icon">
-                      <svg-icon
-                        icon="info"
-                        class="icon-info"
-                        size="lg"
-                      ></svg-icon>
-                    </div>
-                    <div>
-                      <div class="alert-title">Information</div>
-                      <p>This is an informational message.</p>
-                    </div>
-                  </div>
+            <div class="alert alert-info">
+              <div class="alert-icon">
+                <svg-icon icon="info" class="icon-info" size="lg"></svg-icon>
+              </div>
+              <div>
+                <div class="alert-title">Information</div>
+                <p>This is an informational message.</p>
+              </div>
+            </div>
 
-                  <div class="alert alert-warning">
-                    <div class="alert-icon">
-                      <svg-icon
-                        icon="warning"
-                        class="icon-warning"
-                        size="lg"
-                      ></svg-icon>
-                    </div>
-                    <div>
-                      <div class="alert-title">Warning</div>
-                      <p>Please review this warning.</p>
-                    </div>
-                  </div>
+            <div class="alert alert-warning">
+              <div class="alert-icon">
+                <svg-icon
+                  icon="warning"
+                  class="icon-warning"
+                  size="lg"
+                ></svg-icon>
+              </div>
+              <div>
+                <div class="alert-title">Warning</div>
+                <p>Please review this warning.</p>
+              </div>
+            </div>
 
-                  <div class="alert alert-danger">
-                    <div class="alert-icon">
-                      <svg-icon
-                        icon="x-circle"
-                        class="icon-danger"
-                        size="lg"
-                      ></svg-icon>
-                    </div>
-                    <div>
-                      <div class="alert-title">Error</div>
-                      <p>An error occurred.</p>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            `
-          : this.renderDisabledSection(
-              "Alerts & Feedback",
-              "Alert styles are disabled. Enable in the designer panel."
-            )}
+            <div class="alert alert-danger">
+              <div class="alert-icon">
+                <svg-icon
+                  icon="x-circle"
+                  class="icon-danger"
+                  size="lg"
+                ></svg-icon>
+              </div>
+              <div>
+                <div class="alert-title">Error</div>
+                <p>An error occurred.</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <!-- Badges Section -->
-        ${components.badges
-          ? html`
-              <section class="showcase-section alt-bg">
-                <h2>
-                  <svg-icon
-                    icon="tag"
-                    size="lg"
-                    class="icon-primary"
-                  ></svg-icon>
-                  Badges & Pills
-                </h2>
 
-                <h3>Default Badges</h3>
-                <div class="badge-grid">
-                  <span class="badge">Default</span>
-                  <span class="badge badge-primary">Primary</span>
-                  <span class="badge badge-secondary">Secondary</span>
-                  <span class="badge badge-success">Success</span>
-                  <span class="badge badge-warning">Warning</span>
-                  <span class="badge badge-danger">Danger</span>
-                  <span class="badge badge-info">Info</span>
-                </div>
+        <section class="showcase-section alt-bg">
+          <h2>
+            <svg-icon icon="tag" size="lg" class="icon-primary"></svg-icon>
+            Badges & Pills
+          </h2>
 
-                <h3>Outlined Badges</h3>
-                <div class="badge-grid">
-                  <span class="badge badge-outline badge-primary">Primary</span>
-                  <span class="badge badge-outline badge-secondary"
-                    >Secondary</span
-                  >
-                  <span class="badge badge-outline badge-success">Success</span>
-                  <span class="badge badge-outline badge-info">Info</span>
-                  <span class="badge badge-outline badge-warning">Warning</span>
-                  <span class="badge badge-outline badge-danger">Danger</span>
-                </div>
+          <h3>Default Badges</h3>
+          <div class="badge-grid">
+            <span class="badge">Default</span>
+            <span class="badge badge-primary">Primary</span>
+            <span class="badge badge-secondary">Secondary</span>
+            <span class="badge badge-success">Success</span>
+            <span class="badge badge-warning">Warning</span>
+            <span class="badge badge-danger">Danger</span>
+            <span class="badge badge-info">Info</span>
+          </div>
 
-                <h3>Badge Sizes</h3>
-                <div class="size-demo">
-                  <span class="badge badge-primary badge-sm">Small</span>
-                  <span class="badge badge-primary">Default</span>
-                  <span class="badge badge-primary badge-lg">Large</span>
-                </div>
+          <h3>Outlined Badges</h3>
+          <div class="badge-grid">
+            <span class="badge badge-outline badge-primary">Primary</span>
+            <span class="badge badge-outline badge-secondary">Secondary</span>
+            <span class="badge badge-outline badge-success">Success</span>
+            <span class="badge badge-outline badge-info">Info</span>
+            <span class="badge badge-outline badge-warning">Warning</span>
+            <span class="badge badge-outline badge-danger">Danger</span>
+          </div>
 
-                <h3>Pills</h3>
-                <div class="badge-grid">
-                  <span class="pill badge-primary">React</span>
-                  <span class="pill badge-secondary">Vue</span>
-                  <span class="pill badge-success">Node.js</span>
-                  <span class="pill badge-info">TypeScript</span>
-                  <span class="pill badge-warning">JavaScript</span>
-                  <span class="pill badge-danger">Critical</span>
-                </div>
-              </section>
-            `
-          : this.renderDisabledSection(
-              "Badges & Pills",
-              "Badge styles are disabled. Enable in the designer panel."
-            )}
+          <h3>Badge Sizes</h3>
+          <div class="size-demo">
+            <span class="badge badge-primary badge-sm">Small</span>
+            <span class="badge badge-primary">Default</span>
+            <span class="badge badge-primary badge-lg">Large</span>
+          </div>
+
+          <h3>Pills</h3>
+          <div class="badge-grid">
+            <span class="pill badge-primary">React</span>
+            <span class="pill badge-secondary">Vue</span>
+            <span class="pill badge-success">Node.js</span>
+            <span class="pill badge-info">TypeScript</span>
+            <span class="pill badge-warning">JavaScript</span>
+            <span class="pill badge-danger">Critical</span>
+          </div>
+        </section>
 
         <!-- Media Elements Section -->
         <section class="showcase-section">
@@ -2029,132 +1991,120 @@ export class DsShowcase extends LitElement {
           </section>
         </section>
 
-        <!-- Tables Section -->
-        ${components.tables
-          ? html`
-              <section class="showcase-section">
-                <h2>
-                  <svg-icon
-                    icon="list"
-                    size="lg"
-                    class="icon-primary"
-                  ></svg-icon>
-                  Tables
-                </h2>
+        <section class="showcase-section">
+          <h2>
+            <svg-icon icon="list" size="lg" class="icon-primary"></svg-icon>
+            Tables
+          </h2>
 
-                <h3>Default Table</h3>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Role</th>
-                      <th>Department</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Alice Johnson</td>
-                      <td>Senior Developer</td>
-                      <td>Engineering</td>
-                      <td><span class="badge badge-success">Active</span></td>
-                    </tr>
-                    <tr>
-                      <td>Bob Smith</td>
-                      <td>Product Manager</td>
-                      <td>Product</td>
-                      <td><span class="badge badge-success">Active</span></td>
-                    </tr>
-                    <tr>
-                      <td>Carol Williams</td>
-                      <td>UX Designer</td>
-                      <td>Design</td>
-                      <td><span class="badge badge-warning">Away</span></td>
-                    </tr>
-                    <tr>
-                      <td>David Brown</td>
-                      <td>DevOps Engineer</td>
-                      <td>Engineering</td>
-                      <td><span class="badge badge-danger">Offline</span></td>
-                    </tr>
-                  </tbody>
-                </table>
+          <h3>Default Table</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Department</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Alice Johnson</td>
+                <td>Senior Developer</td>
+                <td>Engineering</td>
+                <td><span class="badge badge-success">Active</span></td>
+              </tr>
+              <tr>
+                <td>Bob Smith</td>
+                <td>Product Manager</td>
+                <td>Product</td>
+                <td><span class="badge badge-success">Active</span></td>
+              </tr>
+              <tr>
+                <td>Carol Williams</td>
+                <td>UX Designer</td>
+                <td>Design</td>
+                <td><span class="badge badge-warning">Away</span></td>
+              </tr>
+              <tr>
+                <td>David Brown</td>
+                <td>DevOps Engineer</td>
+                <td>Engineering</td>
+                <td><span class="badge badge-danger">Offline</span></td>
+              </tr>
+            </tbody>
+          </table>
 
-                <h3>Striped Table</h3>
-                <table class="table-striped">
-                  <thead>
-                    <tr>
-                      <th>Product</th>
-                      <th>Price</th>
-                      <th>Stock</th>
-                      <th>Category</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Laptop Pro</td>
-                      <td>$1,299</td>
-                      <td>45</td>
-                      <td>Electronics</td>
-                    </tr>
-                    <tr>
-                      <td>Wireless Mouse</td>
-                      <td>$29</td>
-                      <td>128</td>
-                      <td>Accessories</td>
-                    </tr>
-                    <tr>
-                      <td>USB-C Hub</td>
-                      <td>$59</td>
-                      <td>76</td>
-                      <td>Accessories</td>
-                    </tr>
-                    <tr>
-                      <td>Monitor 27"</td>
-                      <td>$449</td>
-                      <td>23</td>
-                      <td>Electronics</td>
-                    </tr>
-                  </tbody>
-                </table>
+          <h3>Striped Table</h3>
+          <table class="table-striped">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Category</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Laptop Pro</td>
+                <td>$1,299</td>
+                <td>45</td>
+                <td>Electronics</td>
+              </tr>
+              <tr>
+                <td>Wireless Mouse</td>
+                <td>$29</td>
+                <td>128</td>
+                <td>Accessories</td>
+              </tr>
+              <tr>
+                <td>USB-C Hub</td>
+                <td>$59</td>
+                <td>76</td>
+                <td>Accessories</td>
+              </tr>
+              <tr>
+                <td>Monitor 27"</td>
+                <td>$449</td>
+                <td>23</td>
+                <td>Electronics</td>
+              </tr>
+            </tbody>
+          </table>
 
-                <h3>Bordered Compact Table</h3>
-                <table class="table-bordered table-compact">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Task</th>
-                      <th>Priority</th>
-                      <th>Due Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>#101</td>
-                      <td>Fix navigation bug</td>
-                      <td><span class="badge badge-danger">High</span></td>
-                      <td>Oct 15, 2025</td>
-                    </tr>
-                    <tr>
-                      <td>#102</td>
-                      <td>Update documentation</td>
-                      <td><span class="badge badge-warning">Medium</span></td>
-                      <td>Oct 18, 2025</td>
-                    </tr>
-                    <tr>
-                      <td>#103</td>
-                      <td>Refactor CSS</td>
-                      <td><span class="badge badge-info">Low</span></td>
-                      <td>Oct 25, 2025</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </section>
-            `
-          : this.renderDisabledSection(
-              "Tables",
-              "Table styles are disabled. Enable in the designer panel."
-            )}
+          <h3>Bordered Compact Table</h3>
+          <table class="table-bordered table-compact">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Task</th>
+                <th>Priority</th>
+                <th>Due Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>#101</td>
+                <td>Fix navigation bug</td>
+                <td><span class="badge badge-danger">High</span></td>
+                <td>Oct 15, 2025</td>
+              </tr>
+              <tr>
+                <td>#102</td>
+                <td>Update documentation</td>
+                <td><span class="badge badge-warning">Medium</span></td>
+                <td>Oct 18, 2025</td>
+              </tr>
+              <tr>
+                <td>#103</td>
+                <td>Refactor CSS</td>
+                <td><span class="badge badge-info">Low</span></td>
+                <td>Oct 25, 2025</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
 
         <!-- Form Groups Section -->
         <section class="showcase-section alt-bg">
