@@ -233,7 +233,7 @@ export class AutoDesigner {
           'arrow-counter-clockwise',
           'caret-left', 'caret-right', 'caret-down', 'caret-up',
           'x', 'list', 'dots-three-vertical', 'dots-three',
-          'house', 'gear', 'magnifying-glass', 'funnel',
+          'house', 'gear', 'magnifying-glass', 'funnel'
         ],
         actions: [
           'plus', 'minus', 'check', 'trash', 'pencil', 'floppy-disk',
@@ -249,7 +249,7 @@ export class AutoDesigner {
           'image', 'file', 'file-text', 'file-css', 'file-js',
           'folder', 'folder-open', 'book-open',
           'camera', 'video-camera', 'play', 'pause', 'microphone',
-          'brackets-curly', "code", "folder-simple"
+          'brackets-curly', "code", "folder-simple", "grid-four"
         ],
         status: [
           'info', 'warning', 'check-circle', 'x-circle',
@@ -1326,6 +1326,59 @@ figcaption {
   }
 }
 
+dialog {
+  background-color: transparent;
+  border: none;
+  color: currentColor;
+}
+
+/* Dialog transition: fade + subtle zoom (best-practice) */
+dialog {
+  display: none; /* keep native behavior, show via [open] */
+  opacity: 0;
+  transform: translateY(6px) scale(0.985);
+  transition: opacity var(--transition-fast) ease, transform var(--transition-fast) ease;
+  will-change: opacity, transform;
+}
+
+dialog[open], dialog.is-open {
+  display: block;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Backdrop styling and transition where supported */
+dialog::backdrop {
+  background: rgba(0,0,0,0.45);
+  transition: background-color var(--transition-fast) ease;
+}
+
+/* Fallback: if ::backdrop unsupported, use a utility .dialog-backdrop element */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  opacity: 0;
+  transition: opacity var(--transition-fast) ease;
+  pointer-events: none;
+}
+.dialog-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Respect user's preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  dialog,
+  dialog[open],
+  dialog.is-open,
+  dialog::backdrop,
+  .dialog-backdrop {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
 `;
   }
 
@@ -1493,6 +1546,12 @@ summary {
   &:hover {
     background-color: var(--color-surface-subtle);
   }
+}
+
+dialog{
+  padding: 0;
+  border: none;
+  background-color: transparent;
 }
 
 `;
@@ -2786,6 +2845,7 @@ tbody {
   vertical-align: middle;
   background-color: var(--color-gray-200);
   color: var(--color-gray-800);
+  border-radius: var(--radius-full);
 }
 
 .badge-primary {
@@ -3584,6 +3644,33 @@ body:not([class*="surface-"]) fieldset,
 
 .text-sm { font-size: var(--font-size-sm); }
 .text-base { font-size: var(--font-size-base); }
+
+/* Generic container helpers (form-group, stack) */
+.form-group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
+}
+
+.form-group > * {
+  margin: 0;
+}
+
+.form-group .form-actions {
+  margin-left: auto; /* push actions to the right */
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.stack-sm { gap: var(--spacing-1); }
+.stack-lg { gap: var(--spacing-6); }
 .text-lg { font-size: var(--font-size-lg); }
 
 /* Hide/show utilities */

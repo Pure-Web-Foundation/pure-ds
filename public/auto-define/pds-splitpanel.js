@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "/assets/js/lit.js";
+import { adoptLayers } from "/assets/js/app.js";
 
-class SplitPanel extends LitElement {
+customElements.define("pds-splitpanel", class extends LitElement {
   static properties = {
     layout: { type: String },
     defaultSplit: { type: String },
@@ -15,7 +16,9 @@ class SplitPanel extends LitElement {
     this.isDragging = false;
   }
 
-  static styles = css`
+  static styles = [
+    
+    css`
     :host {
       display: flex;
       position: relative;
@@ -88,14 +91,15 @@ class SplitPanel extends LitElement {
     :host([mobile]) .mobile-toggle {
       display: block;
     }
-  `;
+  `];
 
   firstUpdated() {
     this.leftPanel = this.querySelector('[slot="left"]');
     this.rightPanel = this.querySelector('[slot="right"]');
     this.splitter = this.shadowRoot.querySelector(".splitter");
-    this.mobileToggle = this.shadowRoot.querySelector(".mobile-toggle");
-    this.mobileOverlay = this.shadowRoot.querySelector(".mobile-overlay");
+    this.mobileToggle = this.shadowRoot.getElementById("mobile-toggle");
+
+    //this.mobileOverlay = this.shadowRoot.querySelector(".mobile-overlay");
 
     this.updateLayout();
 
@@ -104,9 +108,6 @@ class SplitPanel extends LitElement {
     this.splitter.addEventListener("mousedown", (e) => this.startDragging(e));
     document.addEventListener("mousemove", (e) => this.drag(e));
     document.addEventListener("mouseup", () => this.stopDragging());
-
-    this.mobileToggle.addEventListener("click", () => this.toggleMobileView());
-    this.mobileOverlay.addEventListener("click", () => this.closeMobileView());
   }
 
   updateLayout() {
@@ -173,30 +174,24 @@ class SplitPanel extends LitElement {
 
   toggleMobileView() {
     const isOpen = this.hasAttribute("left-open");
+
     if (isOpen) {
       this.removeAttribute("left-open");
       this.leftPanel.style.transform = "translateX(-100%)"; // Slide out
-      this.leftPanel.style.transition = "transform var(--transition-fast) ease-in-out"; // Ensure transition
+      this.leftPanel.style.transition =
+        "transform var(--transition-fast) ease-in-out"; // Ensure transition
       setTimeout(() => {
         this.leftPanel.style.display = "none"; // Hide after transition
       }, 300); // Match transition duration
       this.splitter.style.display = "none"; // Ensure splitter is hidden
-      this.mobileToggle.innerHTML = `<svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <path d="M4 6h16M4 12h16M4 18h16"></path>
-      </svg>`; // Restore menu icon
+      this.mobileToggle.innerHTML = `<svg-icon name="list" width="24" height="24" ></svg-icon>`; // Restore menu icon
     } else {
       this.setAttribute("left-open", "true");
       this.leftPanel.style.display = "block"; // Ensure visibility
       setTimeout(() => {
         this.leftPanel.style.transform = "translateX(0)"; // Slide in
-        this.leftPanel.style.transition = "transform var(--transition-fast) ease-in-out"; // Ensure transition
+        this.leftPanel.style.transition =
+          "transform var(--transition-fast) ease-in-out"; // Ensure transition
       }, 10); // Delay to ensure display:block is applied
       this.leftPanel.style.position = "fixed"; // Ensure fixed positioning
       this.leftPanel.style.top = "0";
@@ -204,16 +199,7 @@ class SplitPanel extends LitElement {
       this.leftPanel.style.height = "100%";
       this.leftPanel.style.width = "100%"; // Full screen
       this.splitter.style.display = "none"; // Ensure splitter is hidden
-      this.mobileToggle.innerHTML = `<svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <path d="M6 6L18 18M6 18L18 6"></path>
-      </svg>`; // Show close icon
+      this.mobileToggle.innerHTML = `<svg-icon name="x" width="24" height="24" ></svg-icon>`; // Show close icon
     }
   }
 
@@ -228,21 +214,15 @@ class SplitPanel extends LitElement {
       <slot name="left"></slot>
       <div class="splitter"></div>
       <slot name="right"></slot>
-      <button class="mobile-toggle" aria-label="Toggle panel">
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
+      <button
+        @click="${this.toggleMobileView}"
+        id="mobile-toggle"
+        class="mobile-toggle"
+        aria-label="Toggle panel"
+      >
+        <svg-icon name="list" width="24" height="24"></svg-icon>
       </button>
       <div class="mobile-overlay"></div>
     `;
   }
-}
-
-customElements.define("pds-splitpanel", SplitPanel);
+})
