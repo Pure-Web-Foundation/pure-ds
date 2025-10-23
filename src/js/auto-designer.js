@@ -204,12 +204,7 @@ export class AutoDesigner {
     },
     
     components: {
-      tables: true,
-      alerts: true,
       toasts: true,
-      badges: true,
-      modals: true,
-      forms: true,
       tabStrip: true,
       customScrollbars: true,
       drawer: true,
@@ -4270,19 +4265,16 @@ body:not([class*="surface-"]) fieldset,
     css += this.generateFormStyles();
 
     // Alert component styles
-    if (components.alerts !== false) {
-      css += this.generateAlertStyles();
-    }
+    
+    css += this.generateAlertStyles();
 
     // Badge component styles
-    if (components.badges !== false) {
-      css += this.generateBadgeStyles();
-    }
+    
+    css += this.generateBadgeStyles();
 
     // Modal component styles
-    if (components.modals !== false) {
-      css += this.generateModalStyles();
-    }
+    css += this.generateModalStyles();
+  
 
     // TabStrip component styles
     if (components.tabStrip !== false) {
