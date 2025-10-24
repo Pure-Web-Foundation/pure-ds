@@ -127,14 +127,14 @@ export class Generator {
       fontFamilyMono:
         'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace',
       baseFontSize: 16,
-      fontWeightLight: "light",
-      fontWeightNormal: "normal",
-      fontWeightMedium: "medium",
-      fontWeightSemibold: "semibold",
-      fontWeightBold: "bold",
-      lineHeightTight: "tight",
-      lineHeightNormal: "normal",
-      lineHeightRelaxed: "relaxed",
+      fontWeightLight: Generator.FontWeights.light,
+      fontWeightNormal: Generator.FontWeights.normal,
+      fontWeightMedium: Generator.FontWeights.medium,
+      fontWeightSemibold: Generator.FontWeights.semibold,
+      fontWeightBold: Generator.FontWeights.bold,
+      lineHeightTight: Generator.LineHeights.tight,
+      lineHeightNormal: Generator.LineHeights.normal,
+      lineHeightRelaxed: Generator.LineHeights.relaxed,
       letterSpacingTight: -0.025,
       letterSpacingNormal: 0,
       letterSpacingWide: 0.025,
@@ -194,19 +194,19 @@ export class Generator {
       densityCompact: 0.8,
       densityNormal: 1.0,
       densityComfortable: 1.2,
-      buttonMinHeight: 44,
+      buttonMinHeight: Generator.TouchTargetSizes.standard,
       inputMinHeight: 40,
     },
 
     advanced: {
-      linkStyle: "inline",
+      linkStyle: Generator.LinkStyles.inline,
       colorDerivation: "hsl",
     },
 
     a11y: {
-      minTouchTarget: 44,
+      minTouchTarget: Generator.TouchTargetSizes.standard,
       prefersReducedMotion: true,
-      focusStyle: "ring",
+      focusStyle: Generator.FocusStyles.ring,
     },
 
     components: {
