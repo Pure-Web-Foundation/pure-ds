@@ -1,0 +1,9 @@
+{
+  "name": "@pds/pds-cli",
+  "version": "0.0.0-dev",
+  "type": "module",
+  "bin": {
+    "pds-cli": "bin/pds.js"
+  },
+  "dependencies": {}
+}

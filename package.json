@@ -5,9 +5,14 @@
   "description": "Pure Design System - Why develop a Design System when you can generate one?",
   "type": "module",
   "main": "app.js",
+  "exports": {
+    "/pds-core": "./src/js/pds.js",
+    "/pds-configurator": "./src/js/pds-configurator/pds-configurator.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node esbuild-dev.js",
+    "build": "node esbuild-build.js",
     "update-styles": "node scripts/update-styles.mjs",
     "config-server": "node scripts/config-server.mjs",
     "export-config": "node scripts/export-config-json.mjs",
@@ -25,4 +30,6 @@
     "@qogni-technologies/pwa-utils-library": "^1.3.2",
     "showdown": "^2.1.0"
   }
+  ,
+  "types": "dist/types/pds.d.ts"
 }
