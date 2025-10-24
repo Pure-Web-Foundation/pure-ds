@@ -360,11 +360,11 @@ export class Generator {
     if (this.options.debug) {
       console.log("Generator options:", this.options);
     }
-    this.tokens = this.generateTokens();
+    this.tokens = this.#generateTokens();
     if (this.options.debug) {
       console.log("Generated tokens:", this.tokens);
     }
-    this.css = this.generateCSS();
+    this.css = this.#generateCSS();
 
     if (this.options.debug) {
       console.log("Generated CSS length:", this.css.length);
@@ -394,23 +394,23 @@ export class Generator {
     }
   }
 
-  generateTokens() {
+  #generateTokens() {
     const config = this.options;
 
     return {
-      colors: this.generateColorTokens(config.colors || {}),
+      colors: this.#generateColorTokens(config.colors || {}),
       spacing: this.generateSpacingTokens(config.spatialRhythm || {}),
-      radius: this.generateRadiusTokens(config.shape || {}),
+      radius: this.#generateRadiusTokens(config.shape || {}),
       typography: this.generateTypographyTokens(config.typography || {}),
-      shadows: this.generateShadowTokens(config.layers || {}),
-      layout: this.generateLayoutTokens(config.layout || {}),
-      transitions: this.generateTransitionTokens(config.behavior || {}),
-      zIndex: this.generateZIndexTokens(config.layers || {}),
-      icons: this.generateIconTokens(config.icons || {}),
+      shadows: this.#generateShadowTokens(config.layers || {}),
+      layout: this.#generateLayoutTokens(config.layout || {}),
+      transitions: this.#generateTransitionTokens(config.behavior || {}),
+      zIndex: this.#generateZIndexTokens(config.layers || {}),
+      icons: this.#generateIconTokens(config.icons || {}),
     };
   }
 
-  generateColorTokens(colorConfig) {
+  #generateColorTokens(colorConfig) {
     const {
       primary = "#3b82f6",
       secondary = "#64748b",
@@ -452,7 +452,7 @@ export class Generator {
 
     // Generate dark mode variants (with optional overrides)
     const darkModeOverrides = this.options.colors?.darkMode || {};
-    colors.dark = this.generateDarkModeColors(
+    colors.dark = this.#generateDarkModeColors(
       colors,
       background,
       darkModeOverrides
@@ -535,7 +535,7 @@ export class Generator {
         Math.max(hsl.s, 2),
         Math.min(hsl.l + 2, 98)
       ), // Slightly lighter for overlays
-      inverse: this.generateSmartDarkBackground(backgroundBase), // Smart dark background
+      inverse: this.#generateSmartDarkBackground(backgroundBase), // Smart dark background
     };
   }
 
@@ -545,18 +545,18 @@ export class Generator {
       base: backgroundShades.subtle, // Subtle darker than base
       subtle: backgroundShades.elevated, // Elevated from subtle
       elevated: backgroundShades.sunken, // Sunken from elevated (creates contrast)
-      sunken: this.darkenColor(backgroundShades.sunken, 0.05), // Slightly darker than sunken
+      sunken: this.#darkenColor(backgroundShades.sunken, 0.05), // Slightly darker than sunken
       overlay: backgroundShades.elevated, // Elevated from overlay
     };
   }
 
-  darkenColor(hexColor, factor = 0.05) {
+  #darkenColor(hexColor, factor = 0.05) {
     const hsl = this.#hexToHsl(hexColor);
     const darkerLightness = Math.max(hsl.l - hsl.l * factor, 5);
     return this.#hslToHex(hsl.h, hsl.s, darkerLightness);
   }
 
-  generateSmartDarkBackground(lightBackground) {
+  #generateSmartDarkBackground(lightBackground) {
     const hsl = this.#hexToHsl(lightBackground);
 
     // If it's already a light color, create a smart dark version
@@ -576,7 +576,7 @@ export class Generator {
     }
   }
 
-  generateDarkModeColors(
+  #generateDarkModeColors(
     lightColors,
     backgroundBase = "#ffffff",
     overrides = {}
@@ -584,56 +584,56 @@ export class Generator {
     // Use custom dark background if provided, otherwise auto-generate
     const darkBackgroundBase = overrides.background
       ? overrides.background
-      : this.generateSmartDarkBackground(backgroundBase);
+      : this.#generateSmartDarkBackground(backgroundBase);
 
     const darkSurface = this.generateBackgroundShades(darkBackgroundBase);
 
     return {
       surface: {
         ...darkSurface,
-        fieldset: this.generateDarkModeFieldsetColors(darkSurface),
+        fieldset: this.#generateDarkModeFieldsetColors(darkSurface),
       },
       // For primary colors, use override, or adjust light colors for dark mode (dimmed for accessibility)
       primary: overrides.primary
         ? this.generateColorScale(overrides.primary)
-        : this.adjustColorsForDarkMode(lightColors.primary),
+        : this.#adjustColorsForDarkMode(lightColors.primary),
       // Adjust other colors for dark mode, with optional overrides
       secondary: overrides.secondary
         ? this.generateColorScale(overrides.secondary)
-        : this.adjustColorsForDarkMode(lightColors.secondary),
+        : this.#adjustColorsForDarkMode(lightColors.secondary),
       accent: overrides.accent
         ? this.generateColorScale(overrides.accent)
-        : this.adjustColorsForDarkMode(lightColors.accent),
+        : this.#adjustColorsForDarkMode(lightColors.accent),
       // Regenerate grays if secondary override is provided (grays are derived from secondary)
       gray: overrides.secondary
         ? this.generateGrayScale(overrides.secondary)
         : lightColors.gray,
       // IMPORTANT: Also adjust semantic colors for dark mode!
-      success: this.adjustColorsForDarkMode(lightColors.success),
-      info: this.adjustColorsForDarkMode(lightColors.info),
-      warning: this.adjustColorsForDarkMode(lightColors.warning),
-      danger: this.adjustColorsForDarkMode(lightColors.danger),
+      success: this.#adjustColorsForDarkMode(lightColors.success),
+      info: this.#adjustColorsForDarkMode(lightColors.info),
+      warning: this.#adjustColorsForDarkMode(lightColors.warning),
+      danger: this.#adjustColorsForDarkMode(lightColors.danger),
     };
   }
 
-  generateDarkModeFieldsetColors(darkSurface) {
+  #generateDarkModeFieldsetColors(darkSurface) {
     // In dark mode, fieldsets should be slightly lighter for contrast
     return {
       base: darkSurface.elevated, // Elevated from dark base
       subtle: darkSurface.overlay, // Overlay from dark subtle
-      elevated: this.lightenColor(darkSurface.elevated, 0.08), // Slightly lighter than elevated
+      elevated: this.#lightenColor(darkSurface.elevated, 0.08), // Slightly lighter than elevated
       sunken: darkSurface.elevated, // Elevated from sunken
-      overlay: this.lightenColor(darkSurface.overlay, 0.05), // Slightly lighter than overlay
+      overlay: this.#lightenColor(darkSurface.overlay, 0.05), // Slightly lighter than overlay
     };
   }
 
-  lightenColor(hexColor, factor = 0.05) {
+  #lightenColor(hexColor, factor = 0.05) {
     const hsl = this.#hexToHsl(hexColor);
     const lighterLightness = Math.min(hsl.l + (100 - hsl.l) * factor, 95);
     return this.#hslToHex(hsl.h, hsl.s, lighterLightness);
   }
 
-  adjustColorsForDarkMode(colorScale) {
+  #adjustColorsForDarkMode(colorScale) {
     // Create dimmed and inverted colors for dark mode
     const dimmedScale = {};
 
@@ -654,7 +654,7 @@ export class Generator {
 
     Object.entries(mapping).forEach(([key, config]) => {
       const sourceColor = colorScale[config.source];
-      dimmedScale[key] = this.dimColorForDarkMode(
+      dimmedScale[key] = this.#dimColorForDarkMode(
         sourceColor,
         config.dimFactor
       );
@@ -663,7 +663,7 @@ export class Generator {
     return dimmedScale;
   }
 
-  dimColorForDarkMode(hexColor, dimFactor = 0.8) {
+  #dimColorForDarkMode(hexColor, dimFactor = 0.8) {
     const hsl = this.#hexToHsl(hexColor);
 
     // Reduce saturation and lightness for dark mode, similar to image dimming
@@ -673,6 +673,11 @@ export class Generator {
     return this.#hslToHex(hsl.h, dimmedSaturation, dimmedLightness);
   }
 
+  /**
+   * Generate spacing tokens based on the provided configuration.
+   * @param {Object} spatialConfig 
+   * @returns { String } CSS spacing tokens
+   */
   generateSpacingTokens(spatialConfig) {
     const {
       baseUnit = 16,
@@ -700,7 +705,7 @@ export class Generator {
     return spacing;
   }
 
-  generateRadiusTokens(shapeConfig) {
+  #generateRadiusTokens(shapeConfig) {
     const { radiusSize = "medium", customRadius = null } = shapeConfig;
 
     // Use custom radius if provided, otherwise use the enum
@@ -768,7 +773,7 @@ export class Generator {
     };
   }
 
-  generateShadowTokens(layersConfig) {
+  #generateShadowTokens(layersConfig) {
     const {
       baseShadowOpacity = 0.1,
       shadowBlurMultiplier = 1,
@@ -808,7 +813,7 @@ export class Generator {
     };
   }
 
-  generateLayoutTokens(layoutConfig) {
+  #generateLayoutTokens(layoutConfig) {
     const {
       maxWidth = 1200,
       containerPadding = 16,
@@ -833,7 +838,7 @@ export class Generator {
     };
   }
 
-  generateTransitionTokens(behaviorConfig) {
+  #generateTransitionTokens(behaviorConfig) {
     const {
       transitionSpeed = Generator.TransitionSpeeds.normal,
       animationEasing = Generator.AnimationEasings["ease-out"],
@@ -861,7 +866,7 @@ export class Generator {
     };
   }
 
-  generateZIndexTokens(layersConfig) {
+  #generateZIndexTokens(layersConfig) {
     const { baseZIndex = 1000, zIndexStep = 10 } = layersConfig;
 
     return {
@@ -876,7 +881,7 @@ export class Generator {
     };
   }
 
-  generateIconTokens(iconConfig) {
+  #generateIconTokens(iconConfig) {
     const {
       set = "phosphor",
       weight = "regular",
@@ -903,7 +908,7 @@ export class Generator {
     };
   }
 
-  generateCSS() {
+  #generateCSS() {
     const {
       colors,
       spacing,
@@ -3937,21 +3942,21 @@ body:not([class*="surface-"]) fieldset,
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
   }
 
-  // Method to update design system
-  updateDesign(newOptions) {
-    this.options = { ...this.options, ...newOptions };
-    this.tokens = this.generateTokens();
-    this.css = this.generateCSS();
+  // // Method to update design system
+  // updateDesign(newOptions) {
+  //   this.options = { ...this.options, ...newOptions };
+  //   this.tokens = this.#generateTokens();
+  //   this.css = this.#generateCSS();
 
-    // Regenerate layers
-    this.#generateLayers();
+  //   // Regenerate layers
+  //   this.#generateLayers();
 
-    // Only update browser-specific features if in browser environment
-    if (typeof CSSStyleSheet !== "undefined") {
-      this.#updateConstructableStylesheets();
-      this.#recreateBlobURLs();
-    }
-  }
+  //   // Only update browser-specific features if in browser environment
+  //   if (typeof CSSStyleSheet !== "undefined") {
+  //     this.#updateConstructableStylesheets();
+  //     this.#recreateBlobURLs();
+  //   }
+  // }
 
   // Method to get current tokens (useful for debugging)
   getTokens() {
@@ -4002,19 +4007,20 @@ body:not([class*="surface-"]) fieldset,
       icons,
     } = this.tokens;
 
-    let css = `@layer tokens {\n  :root {\n`;
-    css += this.#generateColorVariables(colors);
-    css += this.#generateSpacingVariables(spacing);
-    css += this.#generateRadiusVariables(radius);
-    css += this.#generateTypographyVariables(typography);
-    css += this.#generateShadowVariables(shadows);
-    css += this.#generateLayoutVariables(layout);
-    css += this.#generateTransitionVariables(transitions);
-    css += this.#generateZIndexVariables(zIndex);
-    css += this.#generateIconVariables(icons);
-    css += "  }\n\n";
-    css += this.#generateDarkModeCSS(colors);
-    css += "}\n";
+    let css = /*css*/ `@layer tokens {
+       :root {
+          ${this.#generateColorVariables(colors)}
+          ${this.#generateSpacingVariables(spacing)}
+          ${this.#generateRadiusVariables(radius)}
+          ${this.#generateTypographyVariables(typography)}
+          ${this.#generateShadowVariables(shadows)}
+          ${this.#generateLayoutVariables(layout)}
+          ${this.#generateTransitionVariables(transitions)}
+          ${this.#generateZIndexVariables(zIndex)}
+          ${this.#generateIconVariables(icons)}
+       };
+       ${this.#generateDarkModeCSS(colors)}
+    }`;
 
     return css;
   }
@@ -4618,7 +4624,7 @@ export async function adoptPrimitives(shadowRoot, additionalSheets = []) {
     if (PDS.registry.isLive) {
       const componentName =
         shadowRoot.host?.tagName?.toLowerCase() || "unknown";
-      console.log(`[PDS Adopter] <${componentName}> adopted LIVE primitives`);
+      
     }
   } catch (error) {
     const componentName = shadowRoot.host?.tagName?.toLowerCase() || "unknown";
@@ -4660,10 +4666,7 @@ export async function adoptLayers(
     if (PDS.registry.isLive) {
       const componentName =
         shadowRoot.host?.tagName?.toLowerCase() || "unknown";
-      console.log(
-        `[PDS Adopter] <${componentName}> adopted LIVE layers:`,
-        layers
-      );
+      
     }
   } catch (error) {
     const componentName = shadowRoot.host?.tagName?.toLowerCase() || "unknown";

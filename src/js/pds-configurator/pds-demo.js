@@ -36,9 +36,6 @@ customElements.define(
       // Listen for design updates from pds-config-form
       document.addEventListener("design-updated", (e) => {
         this.config = e.detail.config;
-
-        console.log("Showcase received updated design config:", this.config);
-
         this.designer = e.detail.designer;
       });
 

@@ -149,16 +149,6 @@ customElements.define("pds-config-form", class extends LitElement {
     this.designer = new Generator(baseConfig);
     Generator.applyStyles(this.designer);
 
-    // Debug: log that we're applying styles and whether user config was used
-    try {
-      console.debug(
-        "pds-config-form: applyStyles called",
-        { useUserConfig: !!useUserConfig, designerPresent: !!this.designer }
-      );
-    } catch (e) {
-      /* ignore logging errors */
-    }
-
     // Emit design-updated in a throttled manner with the actual designer
     this.scheduleDesignUpdatedEmit({ config: baseConfig, designer: this.designer });
   }
@@ -177,21 +167,7 @@ customElements.define("pds-config-form", class extends LitElement {
         clearTimeout(this.#scheduledDesignEmit);
         this.#scheduledDesignEmit = null;
       }
-      // Debug: announce emit and what's in the payload
-      try {
-        console.debug("pds-config-form: emitting design-updated", {
-          hasDesigner: !!detail?.designer,
-          detailSummary: {
-            // don't log full config to avoid noise; show a couple keys if present
-            hasConfig: !!detail?.config,
-            sample: detail?.config?.typography
-              ? { baseFontSize: detail.config.typography.baseFontSize }
-              : null,
-          },
-        });
-      } catch (e) {
-        /* ignore logging errors */
-      }
+      
       this.dispatchEvent(
         new CustomEvent("design-updated", {
           bubbles: true,
