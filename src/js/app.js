@@ -1,11 +1,3 @@
-console.log("Start app");
+console.log("Start PDS");
 import "./pure-app";
-export {
-  AutoDesigner,
-  pdsRegistry,
-  adoptPrimitives,
-  createStylesheet,
-  adoptLayers,
-} from "./auto-designer";
-import "./ds-app";
-
+import "./pds-configurator/pds-configurator";

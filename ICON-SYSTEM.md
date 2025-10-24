@@ -115,7 +115,7 @@ This script:
 
 ## Generated CSS
 
-AutoDesigner now generates:
+Generator now generates:
 
 ### CSS Custom Properties
 ```css
@@ -178,7 +178,7 @@ Icons use `currentColor` by default, inheriting from parent text color. Can be o
 - **Formatting** (8) - Text alignment, bold, italic
 - **System** (10) - Cloud, device, network, theme
 
-## Integration with AutoDesigner
+## Integration with Generator
 
 The icon system seamlessly integrates with the design system:
 - Uses same color tokens (`--color-primary-600`, etc.)
@@ -231,7 +231,7 @@ Visit `/public/icons-demo.html` to see:
 ## Conclusion
 
 The Pure Design System now has a **world-class icon system** that:
-- ✅ Integrates naturally with AutoDesigner
+- ✅ Integrates naturally with Generator
 - ✅ Uses industry-leading Phosphor Icons
 - ✅ Provides comprehensive utilities
 - ✅ Maintains accessibility standards

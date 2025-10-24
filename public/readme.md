@@ -36,9 +36,9 @@ A JavaScript-config-first design system that generates complete, production-read
 ## Quick Start
 
 ```javascript
-import { AutoDesigner } from './src/js/auto-designer.js';
+import { Generator } from './src/js/auto-designer.js';
 
-const designer = new AutoDesigner({
+const designer = new Generator({
   colors: {
     primary: '#2563eb',     // Your brand color
     accent: '#f59e0b',      // Accent highlights
@@ -66,12 +66,12 @@ This generates **500+ CSS variables** and comprehensive styles for:
 
 ## Core Concepts
 
-### 🎨 AutoDesigner
+### 🎨 Generator
 
 The heart of the system. Transforms minimal configuration into a complete design language:
 
 ```javascript
-const designer = new AutoDesigner(config);
+const designer = new Generator(config);
 designer.injectStyles(); // Injects into document
 const css = designer.css; // Or get as string
 ```
@@ -481,7 +481,7 @@ Icons inherit `currentColor` by default:
 
 #### Generated CSS Tokens
 
-AutoDesigner generates these CSS variables:
+Generator generates these CSS variables:
 
 ```css
 /* Icon configuration */
@@ -853,12 +853,12 @@ Optional components (enable/disable in config):
 
 ## API Reference
 
-### AutoDesigner Class
+### Generator Class
 
 ```javascript
-import { AutoDesigner } from './src/js/auto-designer.js';
+import { Generator } from './src/js/auto-designer.js';
 
-const designer = new AutoDesigner(config);
+const designer = new Generator(config);
 ```
 
 **Methods:**
@@ -881,13 +881,13 @@ designer.configure(newConfig);
 **Static Enums:**
 
 ```javascript
-AutoDesigner.RadiusSizes     // none, small, medium, large, full
-AutoDesigner.BorderWidths    // hairline, thin, medium, thick
-AutoDesigner.FontWeights     // light, normal, medium, semibold, bold
-AutoDesigner.LineHeights     // tight, normal, relaxed
-AutoDesigner.ShadowDepths    // none, light, medium, deep, extreme
-AutoDesigner.TransitionSpeeds // fast, normal, slow
-AutoDesigner.AnimationEasings // linear, ease, ease-in, ease-out, ...
+Generator.RadiusSizes     // none, small, medium, large, full
+Generator.BorderWidths    // hairline, thin, medium, thick
+Generator.FontWeights     // light, normal, medium, semibold, bold
+Generator.LineHeights     // tight, normal, relaxed
+Generator.ShadowDepths    // none, light, medium, deep, extreme
+Generator.TransitionSpeeds // fast, normal, slow
+Generator.AnimationEasings // linear, ease, ease-in, ease-out, ...
 ```
 
 ### PureApp Component
@@ -897,7 +897,7 @@ const app = document.querySelector('pure-app');
 
 // Configuration
 app.configure(config);
-app.designer;  // Access AutoDesigner instance
+app.designer;  // Access Generator instance
 app.definer;   // Access SchemaFormDefiner instance
 
 // Notifications
@@ -1049,7 +1049,7 @@ See `auto-designer.config.js` for full example with all options.
 
 ### Design Token System
 
-1. **Configuration** → AutoDesigner config object
+1. **Configuration** → Generator config object
 2. **Token Generation** → Semantic design tokens
 3. **CSS Variables** → Runtime-modifiable properties
 4. **Component Styles** → Tokens applied to components

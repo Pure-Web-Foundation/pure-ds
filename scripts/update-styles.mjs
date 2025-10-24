@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * AutoDesigner Node.js Script
+ * Generator Node.js Script
  * Generates CSS from auto-designer.config.js and writes to file
  */
 
@@ -14,12 +14,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const rootDir = resolve(__dirname, '..');
 
-// Import AutoDesigner class
-import { AutoDesigner } from '../src/js/auto-designer.js';
+// Import Generator class
+import { Generator } from '../src/js/auto-designer.js';
 
 async function main() {
   try {
-    console.log('🎨 AutoDesigner - Generating CSS...\n');
+    console.log('🎨 Generator - Generating CSS...\n');
     
     // Load configuration
     console.log('📋 Loading configuration from config.js...');
@@ -32,10 +32,10 @@ async function main() {
     const { config } = await import(`file://${configPath}`);
     console.log('✓ Configuration loaded\n');
     
-    // Create AutoDesigner instance
-    console.log('🔧 Initializing AutoDesigner...');
-    const designer = new AutoDesigner(config.design);
-    console.log('✓ AutoDesigner initialized\n');
+    // Create Generator instance
+    console.log('🔧 Initializing Generator...');
+    const designer = new Generator(config.design);
+    console.log('✓ Generator initialized\n');
     
     // Get generated CSS
     const css = designer.exportCSS();

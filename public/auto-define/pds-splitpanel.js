@@ -1,5 +1,5 @@
 import { LitElement, html, css } from "/assets/js/lit.js";
-import { adoptLayers, createStylesheet } from "/assets/js/app.js";
+import { PDS } from "/assets/js/pds.js";
 
 customElements.define(
   "pds-splitpanel",
@@ -22,7 +22,7 @@ customElements.define(
 
     async firstUpdated() {
       // create a small component stylesheet for local tweaks
-      const componentStyles = createStylesheet(/*css*/ `
+      const componentStyles = PDS.createStylesheet(/*css*/ `
       :host {
         display: flex;
         position: relative;
@@ -154,7 +154,7 @@ customElements.define(
       // Adopt primitives + our component stylesheet early so primitives' button styles
       // are available inside the shadow root before render interactions.
       try {
-        await adoptLayers(
+        await PDS.adoptLayers(
           this.shadowRoot,
           ["primitives", "components"],
           [componentStyles]

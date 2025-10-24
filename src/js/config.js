@@ -1,9 +1,9 @@
-import { AutoDesigner } from "./auto-designer.js";
+import { Generator } from "./pds-core/pds-generator.js";
 
 export const config = {
   // Design system configuration
   design: {
-    ...AutoDesigner.defaultConfig,
+    ...Generator.defaultConfig,
 
   },
 

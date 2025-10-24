@@ -14,7 +14,7 @@ Everything is now part of `src/js/auto-designer.js`:
 
 #### `pdsRegistry` (exported singleton)
 - Global singleton for managing live vs static mode
-- Auto-detects if components are running inside `<ds-app>` (live mode) or standalone (static mode)
+- Auto-detects if components are running inside `<pds-configurator>` (live mode) or standalone (static mode)
 - Provides `getStylesheet(layer)` API for components to adopt stylesheets
 - Supports custom static paths for production deployment
 
@@ -24,10 +24,10 @@ Everything is now part of `src/js/auto-designer.js`:
 - `createStylesheet(css)` - Helper to create constructable stylesheets
 - `isLiveMode()` - Check if running in live design system context
 
-### 2. **AutoDesigner Enhancements**
+### 2. **Generator Enhancements**
 
 #### Layer Separation
-The AutoDesigner now generates **4 distinct CSS layers**:
+The Generator now generates **4 distinct CSS layers**:
 
 1. **Tokens** (`@layer tokens`)
    - Pure CSS custom properties only
@@ -97,17 +97,16 @@ Generates **11 files** for distribution:
 ### 5. **pure-app.js Integration**
 
 ```javascript
-import { AutoDesigner } from "./auto-designer.js";
-import { pdsRegistry } from "./pds-registry.js";
+import { PDS } from "./pds-core";
 
 // Initialize design system
-const designer = new AutoDesigner(config.design);
+const designer = new PDS.Generator(config.design);
 
 // Register for live mode
 pdsRegistry.setDesigner(designer);
 
 // Apply styles via BLOB URL
-AutoDesigner.applyStyles(designer);
+Generator.applyStyles(designer);
 ```
 
 ## 🏗️ Architecture Benefits
@@ -169,7 +168,7 @@ class MyComponent extends HTMLElement {
   async connectedCallback() {
     this.attachShadow({ mode: 'open' });
     
-    const componentStyles = createStylesheet(`
+    const componentStyles = PDS.createStylesheet(`
       @layer components {
         :host { /* ... */ }
       }

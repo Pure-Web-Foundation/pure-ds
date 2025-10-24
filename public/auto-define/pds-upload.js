@@ -8,7 +8,7 @@
 // - Events: "files-changed" (detail: FileList-like array)
 
 // Import PDS helpers from bundled app
-import { adoptPrimitives, createStylesheet } from '/assets/js/app.js';
+import { PDS } from '/assets/js/pds.js';
 
 class UploadArea extends HTMLElement {
   static get observedAttributes() {
@@ -65,7 +65,7 @@ class UploadArea extends HTMLElement {
 
   async _adoptStyles() {
     // Component-specific styles (button styles come from primitives)
-    const componentStyles = createStylesheet(`
+    const componentStyles = PDS.createStylesheet(`
       @layer components {
         :host {
           display: block;
@@ -197,7 +197,7 @@ class UploadArea extends HTMLElement {
     `);
 
     // Adopt primitives (for button) + component styles
-    await adoptPrimitives(this.#root, [componentStyles]);
+    await PDS.adoptPrimitives(this.#root, [componentStyles]);
   }
 
   // Form-associated lifecycle callbacks

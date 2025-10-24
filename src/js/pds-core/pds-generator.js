@@ -1,8 +1,8 @@
 /**
- * AutoDesigner - A JS-config-first design system
+ * Generator - A JS-config-first design system
  * Generates comprehensive CSS variables and styles from a minimal configuration
  */
-export class AutoDesigner {
+export class Generator {
   // Static enums for design system values
   static FontWeights = {
     light: 300,
@@ -161,14 +161,14 @@ export class AutoDesigner {
     },
     
     shape: {
-      radiusSize: AutoDesigner.RadiusSizes.none,
-      borderWidth: AutoDesigner.BorderWidths.thin,
+      radiusSize: Generator.RadiusSizes.none,
+      borderWidth: Generator.BorderWidths.thin,
       customRadius: null,
     },
     
     behavior: {
-      transitionSpeed: AutoDesigner.TransitionSpeeds.normal,
-      animationEasing: AutoDesigner.AnimationEasings['ease-out'],
+      transitionSpeed: Generator.TransitionSpeeds.normal,
+      animationEasing: Generator.AnimationEasings['ease-out'],
       customTransitionSpeed: null,
       customEasing: null,
       focusRingWidth: 3,
@@ -282,7 +282,7 @@ export class AutoDesigner {
     };
 
     if (this.options.debug) {
-      console.log("AutoDesigner options:", this.options);
+      console.log("Generator options:", this.options);
     }
     this.tokens = this.generateTokens();
     if (this.options.debug) {
@@ -304,7 +304,7 @@ export class AutoDesigner {
       this._createBlobURLs();
 
       if (this.options.debug) {
-        console.log("[AutoDesigner] Created BLOB URLs:", {
+        console.log("[Generator] Created BLOB URLs:", {
           styles: this._blobURLs?.styles,
           primitives: this._blobURLs?.primitives,
         });
@@ -312,7 +312,7 @@ export class AutoDesigner {
     } else {
       if (this.options.debug) {
         console.log(
-          "[AutoDesigner] Skipping browser features (CSSStyleSheet not available)"
+          "[Generator] Skipping browser features (CSSStyleSheet not available)"
         );
       }
     }
@@ -631,8 +631,8 @@ export class AutoDesigner {
     const baseRadius =
       customRadius !== null
         ? customRadius
-        : AutoDesigner.RadiusSizes[radiusSize] ??
-          AutoDesigner.RadiusSizes.medium;
+        : Generator.RadiusSizes[radiusSize] ??
+          Generator.RadiusSizes.medium;
 
     return {
       none: "0",
@@ -652,14 +652,14 @@ export class AutoDesigner {
       fontFamilyMono = 'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace',
       baseFontSize = 16,
       fontScale = 1.2,
-      fontWeightLight = AutoDesigner.FontWeights.light,
-      fontWeightNormal = AutoDesigner.FontWeights.normal,
-      fontWeightMedium = AutoDesigner.FontWeights.medium,
-      fontWeightSemibold = AutoDesigner.FontWeights.semibold,
-      fontWeightBold = AutoDesigner.FontWeights.bold,
-      lineHeightTight = AutoDesigner.LineHeights.tight,
-      lineHeightNormal = AutoDesigner.LineHeights.normal,
-      lineHeightRelaxed = AutoDesigner.LineHeights.relaxed,
+      fontWeightLight = Generator.FontWeights.light,
+      fontWeightNormal = Generator.FontWeights.normal,
+      fontWeightMedium = Generator.FontWeights.medium,
+      fontWeightSemibold = Generator.FontWeights.semibold,
+      fontWeightBold = Generator.FontWeights.bold,
+      lineHeightTight = Generator.LineHeights.tight,
+      lineHeightNormal = Generator.LineHeights.normal,
+      lineHeightRelaxed = Generator.LineHeights.relaxed,
     } = typographyConfig;
 
     return {
@@ -760,8 +760,8 @@ export class AutoDesigner {
 
   generateTransitionTokens(behaviorConfig) {
     const {
-      transitionSpeed = AutoDesigner.TransitionSpeeds.normal,
-      animationEasing = AutoDesigner.AnimationEasings["ease-out"],
+      transitionSpeed = Generator.TransitionSpeeds.normal,
+      animationEasing = Generator.AnimationEasings["ease-out"],
     } = behaviorConfig;
 
     // Handle both number values and string keys
@@ -770,11 +770,11 @@ export class AutoDesigner {
       baseSpeed = transitionSpeed;
     } else if (
       typeof transitionSpeed === "string" &&
-      AutoDesigner.TransitionSpeeds[transitionSpeed]
+      Generator.TransitionSpeeds[transitionSpeed]
     ) {
-      baseSpeed = AutoDesigner.TransitionSpeeds[transitionSpeed];
+      baseSpeed = Generator.TransitionSpeeds[transitionSpeed];
     } else {
-      baseSpeed = AutoDesigner.TransitionSpeeds.normal;
+      baseSpeed = Generator.TransitionSpeeds.normal;
     }
 
     // Transition variables should only contain duration, not easing
@@ -1125,10 +1125,10 @@ export class AutoDesigner {
 
   generateBaseStyles() {
     const { advanced = {}, a11y = {}, layout = {} } = this.options;
-    const tabSize = advanced.tabSize || AutoDesigner.TabSizes.standard;
-    const linkStyle = advanced.linkStyle || AutoDesigner.LinkStyles.inline;
+    const tabSize = advanced.tabSize || Generator.TabSizes.standard;
+    const linkStyle = advanced.linkStyle || Generator.LinkStyles.inline;
     const minTouchTarget =
-      a11y.minTouchTarget || AutoDesigner.TouchTargetSizes.standard;
+      a11y.minTouchTarget || Generator.TouchTargetSizes.standard;
     const breakpoints = layout.breakpoints || {
       sm: 640,
       md: 768,
@@ -1138,11 +1138,11 @@ export class AutoDesigner {
 
     // Link styles based on configuration
     const linkDisplayStyles =
-      linkStyle === AutoDesigner.LinkStyles.button
+      linkStyle === Generator.LinkStyles.button
         ? `display: inline-flex;
   align-items: center;
   min-height: ${minTouchTarget}px;`
-        : linkStyle === AutoDesigner.LinkStyles.block
+        : linkStyle === Generator.LinkStyles.block
         ? `display: block;`
         : `display: inline;`;
 
@@ -3267,7 +3267,7 @@ pds-tabstrip > pds-tabpanel[data-tabpanel] {
   generateIconStyles() {
     const { a11y = {} } = this.options;
     const minTouchTarget =
-      a11y.minTouchTarget || AutoDesigner.TouchTargetSizes.standard;
+      a11y.minTouchTarget || Generator.TouchTargetSizes.standard;
 
     return /*css*/ `/* Icon System */
 
@@ -3738,7 +3738,7 @@ body:not([class*="surface-"]) fieldset,
       xl: 1280,
     };
     const minTouchTarget =
-      a11y.minTouchTarget || AutoDesigner.TouchTargetSizes.standard;
+      a11y.minTouchTarget || Generator.TouchTargetSizes.standard;
 
     return /*css*/ `/* Mobile-First Responsive Design */
 
@@ -3954,7 +3954,7 @@ body:not([class*="surface-"]) fieldset,
     };
 
     if (this.options.debug) {
-      console.log("[AutoDesigner] Layer sizes:", {
+      console.log("[Generator] Layer sizes:", {
         tokens: `${(this._layers.tokens.length / 1024).toFixed(2)} KB`,
         primitives: `${(this._layers.primitives.length / 1024).toFixed(2)} KB`,
         components: `${(this._layers.components.length / 1024).toFixed(2)} KB`,
@@ -3995,9 +3995,9 @@ body:not([class*="surface-"]) fieldset,
 
   _generatePrimitivesLayer() {
     const { advanced = {}, a11y = {}, layout = {} } = this.options;
-    const tabSize = advanced.tabSize || AutoDesigner.TabSizes.standard;
+    const tabSize = advanced.tabSize || Generator.TabSizes.standard;
     const minTouchTarget =
-      a11y.minTouchTarget || AutoDesigner.TouchTargetSizes.standard;
+      a11y.minTouchTarget || Generator.TouchTargetSizes.standard;
     const breakpoints = layout.breakpoints || {
       sm: 640,
       md: 768,
@@ -4343,7 +4343,7 @@ body:not([class*="surface-"]) fieldset,
     // Safety check
     if (!this._layers) {
       console.error(
-        "[AutoDesigner] Cannot create BLOB URLs: layers not generated"
+        "[Generator] Cannot create BLOB URLs: layers not generated"
       );
       return;
     }
@@ -4367,7 +4367,7 @@ body:not([class*="surface-"]) fieldset,
 
     if (this.options.debug) {
       console.log(
-        "[AutoDesigner] Created BLOB URL for combined styles:",
+        "[Generator] Created BLOB URL for combined styles:",
         this._blobURLs.styles
       );
     }
@@ -4478,27 +4478,27 @@ export const ${name}CSS = \`${escapedCSS}\`;
   /**
    * Static method to apply styles to document
    * Creates a link element with BLOB URL
-   * @param {AutoDesigner} designer - The AutoDesigner instance with generated styles
+   * @param {Generator} designer - The Generator instance with generated styles
    */
   static applyStyles(designer) {
     // Validate parameter
     if (!designer || typeof designer !== "object") {
-      console.error("[AutoDesigner] applyStyles requires a designer object");
+      console.error("[Generator] applyStyles requires a designer object");
       return;
     }
 
     // Preferred: use the in-memory css text produced by the designer for atomic updates
     const cssText = designer.css || designer.layeredCSS || "";
     if (!cssText) {
-      console.warn("[AutoDesigner] No CSS available on designer to apply");
+      console.warn("[Generator] No CSS available on designer to apply");
       return;
     }
 
     // Install/update runtime styles atomically to avoid flicker caused by
     // creating/removing <link> or swapping blob URLs.
-    AutoDesigner.installRuntimeStyles(cssText);
+    Generator.installRuntimeStyles(cssText);
     if (designer && designer._blobURLs && this.options?.debug) {
-      console.log("[AutoDesigner] Applied live styles via in-place stylesheet");
+      console.log("[Generator] Applied live styles via in-place stylesheet");
     }
   }
 
@@ -4524,7 +4524,7 @@ export const ${name}CSS = \`${escapedCSS}\`;
         document.adoptedStyleSheets = [...others, sheet];
 
         // Keep a reference
-        AutoDesigner.__pdsRuntimeSheet = sheet;
+        Generator.__pdsRuntimeSheet = sheet;
         return;
       }
 
@@ -4543,131 +4543,10 @@ export const ${name}CSS = \`${escapedCSS}\`;
       // Update the stylesheet content in place
       el.textContent = cssText;
     } catch (err) {
-      console.warn("AutoDesigner.installRuntimeStyles failed:", err);
+      console.warn("Generator.installRuntimeStyles failed:", err);
     }
   }
 }
-
-// ============================================================================
-// PDS REGISTRY - Global mode manager for live vs static mode
-// ============================================================================
-
-class PDSRegistry {
-  constructor() {
-    this._mode = "static"; // Default to static mode
-    this._designer = null;
-    this._staticPaths = {
-      tokens: "/css/pds-tokens.css.js",
-      primitives: "/css/pds-primitives.css.js",
-      components: "/css/pds-components.css.js",
-      utilities: "/css/pds-utilities.css.js",
-      styles: "/css/pds-styles.css.js",
-    };
-  }
-
-  /**
-   * Set the designer instance and switch to live mode
-   * Called by pure-app.js when design system is initialized
-   */
-  setDesigner(designer) {
-    this._designer = designer;
-    this._mode = "live";
-    console.log("[PDS Registry] Switched to LIVE mode with designer instance");
-  }
-
-  /**
-   * Switch to static mode with custom paths
-   * Called by consumers who want to use static CSS files
-   */
-  setStaticMode(paths = {}) {
-    this._mode = "static";
-    this._staticPaths = { ...this._staticPaths, ...paths };
-    console.log("[PDS Registry] Switched to STATIC mode", this._staticPaths);
-  }
-
-  /**
-   * Get stylesheet for adoption in shadow DOM
-   * Returns CSSStyleSheet object (constructable stylesheet)
-   */
-  async getStylesheet(layer) {
-    if (this._mode === "live" && this._designer) {
-      // Return constructable stylesheet from live designer
-      switch (layer) {
-        case "tokens":
-          return this._designer.tokensStylesheet;
-        case "primitives":
-          return this._designer.primitivesStylesheet;
-        case "components":
-          return this._designer.componentsStylesheet;
-        case "utilities":
-          return this._designer.utilitiesStylesheet;
-        default:
-          console.warn(`[PDS Registry] Unknown layer: ${layer}`);
-          return null;
-      }
-    } else {
-      // Import from static path
-      try {
-        const module = await import(this._staticPaths[layer]);
-        return module[layer]; // Return exported stylesheet
-      } catch (error) {
-        console.error(`[PDS Registry] Failed to load static ${layer}:`, error);
-        // Return empty stylesheet as fallback
-        const fallback = new CSSStyleSheet();
-        fallback.replaceSync("/* Failed to load " + layer + " */");
-        return fallback;
-      }
-    }
-  }
-
-  /**
-   * Get BLOB URL for a layer (live mode only)
-   * Used for @import statements in CSS
-   */
-  getBlobURL(layer) {
-    if (this._mode === "live" && this._designer) {
-      switch (layer) {
-        case "tokens":
-          return this._designer.tokensBlobURL;
-        case "primitives":
-          return this._designer.primitivesBlobURL;
-        case "components":
-          return this._designer.componentsBlobURL;
-        case "utilities":
-          return this._designer.utilitiesBlobURL;
-        case "styles":
-          return this._designer.stylesBlobURL;
-        default:
-          return null;
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Get current mode
-   */
-  get mode() {
-    return this._mode;
-  }
-
-  /**
-   * Check if in live mode
-   */
-  get isLive() {
-    return this._mode === "live" && this._designer !== null;
-  }
-
-  /**
-   * Check if designer is available
-   */
-  get hasDesigner() {
-    return this._designer !== null;
-  }
-}
-
-// Export singleton instance
-export const pdsRegistry = new PDSRegistry();
 
 // ============================================================================
 // PDS ADOPTER - Helper for web components
@@ -4697,12 +4576,12 @@ export const pdsRegistry = new PDSRegistry();
 export async function adoptPrimitives(shadowRoot, additionalSheets = []) {
   try {
     // Get primitives stylesheet (live or static)
-    const primitives = await pdsRegistry.getStylesheet("primitives");
+    const primitives = await PDS.registry.getStylesheet("primitives");
 
     // Adopt primitives + additional sheets
     shadowRoot.adoptedStyleSheets = [primitives, ...additionalSheets];
 
-    if (pdsRegistry.isLive) {
+    if (PDS.registry.isLive) {
       const componentName = shadowRoot.host?.tagName?.toLowerCase() || 'unknown';
       console.log(`[PDS Adopter] <${componentName}> adopted LIVE primitives`);
     }
@@ -4731,7 +4610,7 @@ export async function adoptLayers(
   try {
     // Get all requested stylesheets
     const stylesheets = await Promise.all(
-      layers.map((layer) => pdsRegistry.getStylesheet(layer))
+      layers.map((layer) => PDS.registry.getStylesheet(layer))
     );
 
     // Filter out any null results
@@ -4740,7 +4619,7 @@ export async function adoptLayers(
     // Adopt all layers + additional sheets
     shadowRoot.adoptedStyleSheets = [...validStylesheets, ...additionalSheets];
 
-    if (pdsRegistry.isLive) {
+    if (PDS.registry.isLive) {
       const componentName = shadowRoot.host?.tagName?.toLowerCase() || 'unknown';
       console.log(`[PDS Adopter] <${componentName}> adopted LIVE layers:`, layers);
     }

@@ -1,6 +1,6 @@
-import { AutoDesigner } from './src/js/auto-designer.js';
+import { Generator } from './src/js/auto-designer.js';
 
-console.log('AutoDesigner.RadiusSizes.large =', AutoDesigner.RadiusSizes.large);
-console.log('AutoDesigner.RadiusSizes.medium =', AutoDesigner.RadiusSizes.medium);
-console.log('AutoDesigner.TransitionSpeeds.normal =', AutoDesigner.TransitionSpeeds.normal);
-console.log('AutoDesigner.AnimationEasings.easeOut =', AutoDesigner.AnimationEasings.easeOut);
+console.log('Generator.RadiusSizes.large =', Generator.RadiusSizes.large);
+console.log('Generator.RadiusSizes.medium =', Generator.RadiusSizes.medium);
+console.log('Generator.TransitionSpeeds.normal =', Generator.TransitionSpeeds.normal);
+console.log('Generator.AnimationEasings.easeOut =', Generator.AnimationEasings.easeOut);

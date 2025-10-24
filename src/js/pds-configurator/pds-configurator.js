@@ -1,8 +1,8 @@
-import "./ds-designer";
-import "./ds-showcase";
+import "./pds-config-form";
+import "./pds-demo";
 
 customElements.define(
-  "ds-app",
+  "pds-configurator",
   class extends HTMLElement {
     constructor() {
       super();
@@ -19,8 +19,8 @@ customElements.define(
     render() {
       return /* html */ `
         <pds-splitpanel class="app-layout" layout="horizontal" default-split="300px">
-          <ds-designer slot="left"></ds-designer>
-          <ds-showcase slot="right"></ds-showcase>
+          <pds-config-form slot="left"></pds-config-form>
+          <pds-demo slot="right"></pds-demo>
         </pds-splitpanel>
     `;
     }

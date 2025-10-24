@@ -1,7 +1,7 @@
 // Pure Design System Ontology (PDS)
 // This file is the single source-of-truth metadata for primitives, components, tokens, themes and enhancements.
 
-export const PDS_ONTOLOGY = {
+export const ontology = {
   meta: { name: "Pure Design System Ontology", version: "0.1" },
 
   tokens: {
@@ -88,7 +88,7 @@ export function findComponentForElement(startEl, { maxDepth = 5 } = {}) {
     }
 
     // 1) progressive enhancements
-    for (const sel of PDS_ONTOLOGY.enhancements) {
+    for (const sel of PDS.ontology.enhancements) {
       if (tryMatches(current, sel)) {
         return { element: current, componentType: 'enhanced-component', displayName: sel };
       }
@@ -114,7 +114,7 @@ export function findComponentForElement(startEl, { maxDepth = 5 } = {}) {
     }
 
     // 4) primitives
-    for (const prim of PDS_ONTOLOGY.primitives) {
+    for (const prim of PDS.ontology.primitives) {
       // handle each selector safely, support wildcard class prefix like .icon-*
       for (const sel of prim.selectors || []) {
         const s = String(sel || '').trim();
@@ -197,9 +197,9 @@ export function findComponentForElement(startEl, { maxDepth = 5 } = {}) {
 
 export function getAllSelectors() {
   const s = [];
-  for (const p of PDS_ONTOLOGY.primitives) s.push(...(p.selectors || []));
-  for (const c of PDS_ONTOLOGY.components) s.push(...(c.selectors || []));
+  for (const p of PDS.ontology.primitives) s.push(...(p.selectors || []));
+  for (const c of PDS.ontology.components) s.push(...(c.selectors || []));
   return Array.from(new Set(s));
 }
 
-export default PDS_ONTOLOGY;
+export default ontology;

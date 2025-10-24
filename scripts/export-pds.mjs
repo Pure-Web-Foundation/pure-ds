@@ -20,7 +20,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Import the design system
-// Note: We need to load config and AutoDesigner
+// Note: We need to load config and Generator
 const projectRoot = path.join(__dirname, '..');
 const srcPath = path.join(projectRoot, 'src', 'js');
 
@@ -29,17 +29,17 @@ async function generatePDSExports() {
   console.log('🎨 Pure Design System - Export Generator\n');
 
   try {
-    // Import config and AutoDesigner (convert Windows paths to file:// URLs)
+    // Import config and Generator (convert Windows paths to file:// URLs)
     const configModule = await import(pathToFileURL(path.join(srcPath, 'config.js')).href);
     const autoDesignerModule = await import(pathToFileURL(path.join(srcPath, 'auto-designer.js')).href);
     
     const { config } = configModule;
-    const { AutoDesigner } = autoDesignerModule;
+    const { Generator } = autoDesignerModule;
 
     console.log('✓ Loaded design system configuration');
 
     // Create designer instance
-    const designer = new AutoDesigner(config.design);
+    const designer = new Generator(config.design);
     console.log('✓ Generated design system tokens and styles');
 
     // Create exports directory

@@ -1,6 +1,6 @@
 // Import PDS helpers from bundled app
 // These are exported from auto-designer.js which is bundled into app.js
-import { adoptLayers, createStylesheet } from "/assets/js/app.js";
+import { PDS } from "/assets/js/pds.js";
 
 export class AppToaster extends HTMLElement {
   constructor() {
@@ -13,7 +13,7 @@ export class AppToaster extends HTMLElement {
     this.attachShadow({ mode: "open" });
 
     // Component-specific styles (toaster layer for animations/positioning)
-    const componentStyles = createStylesheet(/*css*/ `
+    const componentStyles = PDS.createStylesheet(/*css*/ `
       @layer toaster {
         :host {
           position: fixed;
@@ -112,7 +112,7 @@ export class AppToaster extends HTMLElement {
     `);
 
     // Adopt primitives (buttons), components (.alert classes), and toaster-specific styles
-    await adoptLayers(
+    await PDS.adoptLayers(
       this.shadowRoot,
       ["primitives", "components"],
       [componentStyles]

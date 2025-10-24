@@ -51,7 +51,7 @@ const server = createServer(async (req, res) => {
         const config = JSON.parse(body);
         
         // Format the config as a JS module
-        const jsContent = `// AutoDesigner Configuration
+        const jsContent = `// Generator Configuration
 // This file is used by the Node.js script to generate CSS
 
 export const autoDesignerConfig = ${JSON.stringify(config, null, 2)};
@@ -82,7 +82,7 @@ export const autoDesignerConfig = ${JSON.stringify(config, null, 2)};
 });
 
 server.listen(PORT, () => {
-  console.log('\n🎨 AutoDesigner Config Server');
+  console.log('\n🎨 Generator Config Server');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log(`📡 Server running at: http://localhost:${PORT}`);
   console.log(`📝 Config file: ${CONFIG_FILE}`);

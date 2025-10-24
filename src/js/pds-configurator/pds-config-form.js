@@ -1,8 +1,8 @@
-import { LitElement, html, nothing } from "./lit";
-import { config } from "./config";
-import { AutoDesigner } from "./auto-designer";
-import "./svg-icon";
-import { deepMerge } from "./common";
+import { LitElement, html, nothing } from "../lit";
+import { config } from "../config";
+import { Generator } from "../pds-core/pds-generator";
+import "../svg-icon";
+import { deepMerge } from "../common/common";
 
 const STORAGE_KEY = "pure-ds-config";
 
@@ -14,7 +14,7 @@ async function ask(message, options = {}) {
   return await document.querySelector("pure-app").ask(...arguments);
 }
 
-export class DsDesigner extends LitElement {
+customElements.define("pds-config-form", class extends LitElement {
   #tmr;
   #lastDesignEmit = 0;
   #scheduledDesignEmit = null;
@@ -50,13 +50,13 @@ export class DsDesigner extends LitElement {
 
   /**
    * Apply CSS custom properties to the designer host derived from
-   * AutoDesigner.defaultConfig. This locks spacing and typography
+   * Generator.defaultConfig. This locks spacing and typography
    * variables for the designer's UI so they don't change during form edits.
    */
   applyDefaultHostVariables() {
     try {
-      const baseConfig = structuredClone(AutoDesigner.defaultConfig);
-      const tmpDesigner = new AutoDesigner(baseConfig);
+      const baseConfig = structuredClone(Generator.defaultConfig);
+      const tmpDesigner = new Generator(baseConfig);
 
       // Spacing tokens (keys are numeric strings 1..N)
       const spacing = tmpDesigner.generateSpacingTokens(
@@ -97,9 +97,9 @@ export class DsDesigner extends LitElement {
         });
       }
 
-      console.debug("ds-designer: applied default host CSS variables");
+      console.debug("pds-config-form: applied default host CSS variables");
     } catch (ex) {
-      console.warn("ds-designer: failed to apply default host variables", ex);
+      console.warn("pds-config-form: failed to apply default host variables", ex);
     }
   }
 
@@ -137,22 +137,22 @@ export class DsDesigner extends LitElement {
   }
 
   applyStyles(useUserConfig = false) {
-    // By default, use AutoDesigner.defaultConfig (non-designer callers)
-    // If useUserConfig is true (ds-designer wants to apply user edits),
+    // By default, use Generator.defaultConfig (non-designer callers)
+    // If useUserConfig is true (pds-config-form wants to apply user edits),
     // merge the persisted user config into the default to generate runtime styles.
-    let baseConfig = structuredClone(AutoDesigner.defaultConfig);
+    let baseConfig = structuredClone(Generator.defaultConfig);
     if (useUserConfig && this.config) {
       // Deep-merge user edits on top of defaults to ensure all keys exist
       baseConfig = deepMerge(baseConfig, this.config);
     }
 
-    this.designer = new AutoDesigner(baseConfig);
-    AutoDesigner.applyStyles(this.designer);
+    this.designer = new Generator(baseConfig);
+    Generator.applyStyles(this.designer);
 
     // Debug: log that we're applying styles and whether user config was used
     try {
       console.debug(
-        "ds-designer: applyStyles called",
+        "pds-config-form: applyStyles called",
         { useUserConfig: !!useUserConfig, designerPresent: !!this.designer }
       );
     } catch (e) {
@@ -179,7 +179,7 @@ export class DsDesigner extends LitElement {
       }
       // Debug: announce emit and what's in the payload
       try {
-        console.debug("ds-designer: emitting design-updated", {
+        console.debug("pds-config-form: emitting design-updated", {
           hasDesigner: !!detail?.designer,
           detailSummary: {
             // don't log full config to avoid noise; show a couple keys if present
@@ -298,7 +298,7 @@ export class DsDesigner extends LitElement {
 
     // Deep merge the nested values into config
   // Persist user changes locally, but do NOT apply them to the runtime designer
-  // (ds-designer should use AutoDesigner.defaultConfig for styling)
+  // (pds-config-form should use Generator.defaultConfig for styling)
   this.config = deepMerge(this.config, nestedValues);
   console.log("Updated (persisted) config (not applied):", this.config);
   this.saveConfig();
@@ -366,7 +366,7 @@ export class DsDesigner extends LitElement {
         content = `// Pure Design System Configuration
 // Generated: ${new Date().toISOString()}
 
-import { AutoDesigner } from './auto-designer.js';
+import { Generator } from './auto-designer.js';
 
 export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
 `;
@@ -541,6 +541,6 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
 
     return ui;
   }
-}
+})
 
-customElements.define("ds-designer", DsDesigner);
+

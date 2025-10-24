@@ -1,28 +1,28 @@
-import { AutoDesigner, pdsRegistry } from "./auto-designer";
+import { PDS } from "./pds";
 import { html, LitElement, css, nothing } from "lit";
 export { html, LitElement, css, nothing };
 import { config } from "./config";
-import { ask } from "./ask";
+import { ask } from "./common/ask";
 import "./svg-icon";
 
 import { AutoDefiner } from "pure-web/auto-definer";
 
 // Initialize the design system FIRST
-const designer = new AutoDesigner(config.design);
+const designer = new PDS.Generator(config.design);
 
 // Register designer globally for component access (enables live mode)
-pdsRegistry.setDesigner(designer);
+PDS.registry.setDesigner(designer);
 
 // Make registry globally available for late-loaded components
 if (typeof window !== "undefined") {
-  window.pdsRegistry = pdsRegistry;
+  window.PDS = PDS;
 }
 
 // Apply the generated CSS to the document using BLOB URLs
-AutoDesigner.applyStyles(designer);
+PDS.Generator.applyStyles(designer);
 
 // Export designer instance and registry for programmatic access
-export { designer, pdsRegistry };
+export { PDS };
 
 // Create AutoDefiner instance AFTER designer is initialized
 const definer = new AutoDefiner(config.autoDefine);

@@ -4,7 +4,7 @@
  * Verify that browser and Node.js configs generate identical CSS
  */
 
-import { AutoDesigner } from '../src/js/auto-designer.js';
+import { Generator } from '../src/js/auto-designer.js';
 
 async function main() {
   console.log('🔍 Verifying config synchronization...\n');
@@ -14,8 +14,8 @@ async function main() {
   const { config } = await import('../src/js/config.js');
 
   // Generate CSS from both
-  const nodeDesigner = new AutoDesigner(autoDesignerConfig);
-  const browserDesigner = new AutoDesigner(config.design);
+  const nodeDesigner = new Generator(autoDesignerConfig);
+  const browserDesigner = new Generator(config.design);
 
   const nodeCSS = nodeDesigner.exportCSS();
   const browserCSS = browserDesigner.exportCSS();
