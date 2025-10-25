@@ -110,7 +110,7 @@ export class Generator {
 
       // Semantic colors (will use intelligent defaults if not specified)
       success: null, // Auto-generated from primary if null
-      warning: null, // Uses accent color if null
+      warning: "#B38600", // Uses accent color if null
       danger: null, // Auto-generated from primary if null
       info: null, // Uses primary color if null
 
@@ -247,6 +247,7 @@ export class Generator {
           "gear",
           "magnifying-glass",
           "funnel",
+          "tabs",
         ],
         actions: [
           "plus",
@@ -347,6 +348,8 @@ export class Generator {
       spritePath: "public/assets/img/icons.svg",
     },
 
+    gap: 4,
+
     debug: false,
   };
 
@@ -365,6 +368,7 @@ export class Generator {
       console.log("Generated tokens:", this.tokens);
     }
     this.css = this.#generateCSS();
+    console.log(this.css);
 
     if (this.options.debug) {
       console.log("Generated CSS length:", this.css.length);
@@ -417,7 +421,7 @@ export class Generator {
       accent = "#ec4899",
       background = "#ffffff",
       success = null,
-      warning = null,
+      warning = "#FFBF00",
       danger = null,
       info = null,
     } = colorConfig;
@@ -536,6 +540,7 @@ export class Generator {
         Math.min(hsl.l + 2, 98)
       ), // Slightly lighter for overlays
       inverse: this.#generateSmartDarkBackground(backgroundBase), // Smart dark background
+      hover: `color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%);`
     };
   }
 
@@ -675,7 +680,7 @@ export class Generator {
 
   /**
    * Generate spacing tokens based on the provided configuration.
-   * @param {Object} spatialConfig 
+   * @param {Object} spatialConfig
    * @returns { String } CSS spacing tokens
    */
   generateSpacingTokens(spatialConfig) {
@@ -829,12 +834,12 @@ export class Generator {
       maxWidth: `${maxWidth}px`,
       minHeight: "100vh",
       containerPadding: `${containerPadding}px`,
-      breakpoints: {
-        sm: `${breakpoints.sm}px`,
-        md: `${breakpoints.md}px`,
-        lg: `${breakpoints.lg}px`,
-        xl: `${breakpoints.xl}px`,
-      },
+      breakpoints: `{
+        sm: ${breakpoints.sm}px,
+        md: ${breakpoints.md}px,
+        lg: ${breakpoints.lg}px,
+        xl: ${breakpoints.xl}px,
+      }`,
     };
   }
 
@@ -930,6 +935,11 @@ export class Generator {
 
     const css = `
 :root {
+
+  --focus-ring-width: 3px;
+  --focus-ring-color: color-mix(in oklab, var(--color-primary-500) 35%, transparent);
+  --focus-ring-danger: color-mix(in oklab, var(--color-danger-500) 35%, transparent);
+
   ${this.#generateColorVariables(colors)}
   ${this.#generateSpacingVariables(spacing)}
   ${this.#generateRadiusVariables(radius)}
@@ -1003,6 +1013,17 @@ ${this.#generateMediaQueries()}
     css += `  --color-input-disabled-text: var(--color-gray-500);\n`;
     css += `  --color-code-bg: var(--color-gray-100);\n`;
 
+    css += `   /* other color tokens*/
+    
+    --backdrop-background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.2),
+        rgba(255, 255, 255, 0.1)
+      );
+
+    --backdrop-filter: blur(10px) saturate(150%) brightness(0.9);
+    `;
+
     return css + "\n";
   }
 
@@ -1069,11 +1090,11 @@ ${this.#generateMediaQueries()}
   }
 
   #generateIconVariables(icons) {
-    let css = "  /* Icon System */\n";
-    css += `  --icon-set: ${icons.set};\n`;
-    css += `  --icon-weight: ${icons.weight};\n`;
-    css += `  --icon-size: ${icons.defaultSize};\n`;
-    css += `  --icon-sprite-path: ${icons.spritePath};\n`;
+    let css = `1  /* Icon System */;
+      --icon-set: ${icons.set};
+      --icon-weight: ${icons.weight};
+      --icon-size: ${icons.defaultSize};
+    `;
 
     // Icon size scale
     Object.entries(icons.sizes).forEach(([key, value]) => {
@@ -1377,8 +1398,9 @@ dialog[open], dialog.is-open {
 
 /* Backdrop styling and transition where supported */
 dialog::backdrop {
-  background: rgba(0,0,0,0.45);
-  transition: background-color var(--transition-fast) ease;
+  background: var(--backdrop-background);
+  backdrop-filter: var(--backdrop-filter);
+  transition: all var(--transition-fast) ease;
 }
 
 /* Fallback: if ::backdrop unsupported, use a utility .dialog-backdrop element */
@@ -1841,8 +1863,8 @@ input[type="range"]:focus-visible::-moz-range-thumb {
 
 /* Focus style for container to match input focus */
 .range-container:focus-within {
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px var(--color-primary-500)30;
+  border-color: var(--color-primary-500);  
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500) 30%, transparent);
 }
 
 input[type="range"]:active::-moz-range-thumb {
@@ -2977,7 +2999,7 @@ tbody {
   }
 }
 
-.modal {
+dialog {
   position: fixed;
   top: 0;
   left: 0;
@@ -2998,14 +3020,14 @@ tbody {
   }
 }
 
-.modal-backdrop {
+.dialog::backdrop {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  background: var(--backdrop-background);
+  backdrop-filter: var(--backdrop-filter);
   z-index: -1;
   animation: fadeIn var(--transition-fast);
 }
@@ -4135,7 +4157,7 @@ body:not([class*="surface-"]) fieldset,
   :where(textarea):focus-visible {
     outline: none;
     border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px var(--color-primary-500)30;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500) 30%, transparent);
   }
 
   :where(input):disabled,
@@ -4624,7 +4646,6 @@ export async function adoptPrimitives(shadowRoot, additionalSheets = []) {
     if (PDS.registry.isLive) {
       const componentName =
         shadowRoot.host?.tagName?.toLowerCase() || "unknown";
-      
     }
   } catch (error) {
     const componentName = shadowRoot.host?.tagName?.toLowerCase() || "unknown";
@@ -4666,7 +4687,6 @@ export async function adoptLayers(
     if (PDS.registry.isLive) {
       const componentName =
         shadowRoot.host?.tagName?.toLowerCase() || "unknown";
-      
     }
   } catch (error) {
     const componentName = shadowRoot.host?.tagName?.toLowerCase() || "unknown";

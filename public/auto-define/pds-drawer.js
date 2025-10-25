@@ -55,12 +55,8 @@ export class DrawerPanel extends LitElement {
     .backdrop {
       position: fixed;
       inset: 0;
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.2),
-        rgba(255, 255, 255, 0.1)
-      );
-      backdrop-filter: blur(10px) saturate(150%) brightness(0.9);
+      background: var(--backdrop-background);
+      backdrop-filter: var(--backdrop-filter);
       opacity: 0;
       pointer-events: none;
       transition: opacity var(--_dur) var(--_easing);
