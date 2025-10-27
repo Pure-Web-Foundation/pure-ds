@@ -698,6 +698,7 @@ export class Generator {
   ${this.#generateIconVariables(icons)}
 }
 
+${this.#generateLightModeCSS(colors)}
 ${this.#generateDarkModeCSS(colors)}
 
 ${this.#generateBaseStyles()}
@@ -892,17 +893,19 @@ ${this.#generateMediaQueries()}
     css += `html[data-theme="dark"] {\n${vars}${semanticVars}}\n\n`;
     css += prefixRules('html[data-theme="dark"] ');
 
-    // Also support an explicit 'system' attribute: when the document uses
-    // html[data-theme="system"], prefer the user's OS preference via a
-    // prefers-color-scheme media query. This makes 'system' reliable even
-    // if JS evaluation of matchMedia is not available or returns unexpected
-    // results in some environments.
-    css += `\n@media (prefers-color-scheme: dark) {\n`;
-    css += `html[data-theme="system"] {\n${vars}${semanticVars}}\n\n`;
-    css += prefixRules('html[data-theme="system"] ');
-    css += `}\n`;
-
     return css;
+  }
+
+  #generateLightModeCSS(colors) {
+    // Emit an explicit light theme block scoped to html[data-theme="light"].
+    // We reuse the same color variable generation used for :root so consumers
+    // can rely on attribute-scoped tokens for both themes.
+    try {
+      const colorBlock = this.#generateColorVariables(colors || {});
+      return `html[data-theme="light"] {\n${colorBlock}}\n\n`;
+    } catch (ex) {
+      return "";
+    }
   }
 
   #generateBaseStyles() {
@@ -2376,45 +2379,6 @@ auto-form::before {
 @media (max-width: 767px) {
   auto-form::before {
     display: none;
-  }
-}
-
-/* Dark mode adjustments */
-@media (prefers-color-scheme: dark) {
-
-  fieldset {
-    background-color: var(--color-surface-elevated);
-    border: none;
-  }
-
-  legend {
-    color: white;
-    background-color: var(--color-surface-elevated);
-    padding: var(--spacing-2) 0;
-    border-radius: var(--radius-sm);
-    border: none;
-    font-weight: var(--font-weight-semibold);
-  }
-
-  .config-category {
-    background-color: var(--color-surface-elevated);
-    border-color: var(--color-border);
-  }
-
-  .config-category[open] .category-header {
-    background-color: var(--color-primary-900);
-  }
-
-  .category-header {
-    background-color: var(--color-surface-subtle);
-  }
-
-  .advanced-fields {
-    background-color: var(--color-surface-base);
-  }
-
-  .advanced-fields[open] summary {
-    background-color: var(--color-surface-elevated);
   }
 }
 

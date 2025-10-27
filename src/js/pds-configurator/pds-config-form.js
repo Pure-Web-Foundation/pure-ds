@@ -48,14 +48,28 @@ customElements.define(
         const storedTheme = localStorage.getItem("pure-ds-theme");
         if (storedTheme) {
           if (storedTheme === "system") {
-            // Use an explicit 'system' attribute so CSS can respond via media queries
-            document.documentElement.setAttribute("data-theme", "system");
+            // Resolve system to an explicit value so the attribute is always 'light' or 'dark'
+            const prefersDark =
+              typeof window !== "undefined" &&
+              window.matchMedia &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches;
+            document.documentElement.setAttribute(
+              "data-theme",
+              prefersDark ? "dark" : "light"
+            );
           } else {
             document.documentElement.setAttribute("data-theme", storedTheme);
           }
         } else {
-          // No stored preference — default to 'system' so media queries can pick the correct mode
-          document.documentElement.setAttribute("data-theme", "system");
+          // No stored preference — choose from OS preference and do not persist
+          const prefersDark =
+            typeof window !== "undefined" &&
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches;
+          document.documentElement.setAttribute(
+            "data-theme",
+            prefersDark ? "dark" : "light"
+          );
         }
       } catch (ex) {
         /* ignore if document not available or other errors */
@@ -195,7 +209,14 @@ customElements.define(
         if (storedTheme) {
           // Honor stored preference (system/light/dark)
           if (storedTheme === "system") {
-            document.documentElement.setAttribute("data-theme", "system");
+            const prefersDark =
+              typeof window !== "undefined" &&
+              window.matchMedia &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches;
+            document.documentElement.setAttribute(
+              "data-theme",
+              prefersDark ? "dark" : "light"
+            );
           } else {
             document.documentElement.setAttribute("data-theme", storedTheme);
           }
@@ -404,11 +425,18 @@ customElements.define(
           /* ignore localstorage failures */
         }
 
-        // Update document attribute so generated CSS scoped to data-theme applies
+        // Update document attribute so generated CSS scoped to data-theme applies.
+        // Always set an explicit 'light' or 'dark' attribute. If the user
+        // selected 'system', resolve the current OS value via matchMedia.
         if (value === "system") {
-          // Keep an explicit 'system' attribute — the generated CSS includes
-          // a prefers-color-scheme media query targeting html[data-theme="system"].
-          document.documentElement.setAttribute("data-theme", "system");
+          const prefersDark =
+            typeof window !== "undefined" &&
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches;
+          document.documentElement.setAttribute(
+            "data-theme",
+            prefersDark ? "dark" : "light"
+          );
         } else {
           document.documentElement.setAttribute("data-theme", value);
         }

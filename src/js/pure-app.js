@@ -31,15 +31,30 @@ export class PureApp extends HTMLElement {
         typeof window !== "undefined" && localStorage.getItem("pure-ds-theme");
       if (storedTheme) {
         // If user explicitly stored 'light' or 'dark', use that. If they stored 'system',
-        // set attribute to 'system' and let CSS media queries handle actual rendering.
+        // resolve current OS preference and set the attribute to an explicit value
+        // ('dark'|'light') so the attribute is always concrete.
         if (storedTheme === "system") {
-          document.documentElement.setAttribute("data-theme", "system");
+          const prefersDark =
+            typeof window !== "undefined" &&
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches;
+          document.documentElement.setAttribute(
+            "data-theme",
+            prefersDark ? "dark" : "light"
+          );
         } else {
           document.documentElement.setAttribute("data-theme", storedTheme);
         }
       } else {
-        // No persisted preference: default to 'system' so CSS can adapt via media queries
-        document.documentElement.setAttribute("data-theme", "system");
+        // No persisted preference: choose from OS preference and do not persist
+        const prefersDark =
+          typeof window !== "undefined" &&
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.setAttribute(
+          "data-theme",
+          prefersDark ? "dark" : "light"
+        );
       }
 
       // 2) Initialize the design system (designer + registry + styles)
@@ -53,7 +68,7 @@ export class PureApp extends HTMLElement {
       }
       PDS.Generator.applyStyles(designer);
 
-      // 3) Initialize AutoDefiner and predefine critical components
+  // 3) Initialize AutoDefiner and predefine critical components
       definer = new AutoDefiner(config.autoDefine);
       await AutoDefiner.define(["pds-toaster", "pds-jsonform"]);
 
@@ -62,13 +77,33 @@ export class PureApp extends HTMLElement {
       this.shadowRoot.innerHTML = this.render();
       const toaster = document.createElement("pds-toaster");
       document.body.appendChild(toaster);
+      // 5) If the user preference is 'system' we need to keep the html[data-theme]
+      // attribute in sync with the OS. When localStorage contains 'system' we
+      // register a matchMedia listener that updates the attribute to either
+      // 'dark' or 'light' on changes. If the user stored an explicit 'light' or
+      // 'dark', we do not override it.
+      try {
+        if (storedTheme === 'system' && typeof window !== 'undefined' && window.matchMedia) {
+          const mq = window.matchMedia('(prefers-color-scheme: dark)');
+          const listener = (e) => {
+            const isDark = e.matches === undefined ? mq.matches : e.matches;
+            try {
+              document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            } catch (ex) {
+              /* ignore */
+            }
+          };
 
-      // 5) We intentionally do NOT programmatically toggle html[data-theme] here for
-      // 'system' mode. The generated CSS includes a prefers-color-scheme media query
-      // targeting html[data-theme="system"] so the browser will apply the correct
-      // dark/light rules automatically. Avoiding JS-driven toggling prevents
-      // mismatches and flicker if matchMedia evaluates differently at different
-      // times in some environments.
+          // Attach listener using modern API where available
+          if (typeof mq.addEventListener === 'function') {
+            mq.addEventListener('change', listener);
+          } else if (typeof mq.addListener === 'function') {
+            mq.addListener(listener);
+          }
+        }
+      } catch (ex) {
+        /* ignore matchMedia wiring errors */
+      }
     } catch (ex) {
       console.error("pure-app.init failed:", ex);
       // Best-effort render even on failure
