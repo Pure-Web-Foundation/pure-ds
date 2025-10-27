@@ -43,6 +43,24 @@ customElements.define(
 
       this.config = this.loadConfig();
 
+      // Initialize document theme attribute: prefer localStorage, otherwise use OS preference
+      try {
+        const storedTheme = localStorage.getItem("pure-ds-theme");
+        if (storedTheme) {
+          if (storedTheme === "system") {
+            // Use an explicit 'system' attribute so CSS can respond via media queries
+            document.documentElement.setAttribute("data-theme", "system");
+          } else {
+            document.documentElement.setAttribute("data-theme", storedTheme);
+          }
+        } else {
+          // No stored preference — default to 'system' so media queries can pick the correct mode
+          document.documentElement.setAttribute("data-theme", "system");
+        }
+      } catch (ex) {
+        /* ignore if document not available or other errors */
+      }
+
       this.updateForm();
       // Apply host-level CSS variable overrides from the default design config
       // so the designer UI doesn't visually change when user edits are applied
@@ -57,7 +75,7 @@ customElements.define(
      */
     applyDefaultHostVariables() {
       try {
-        const baseConfig = structuredClone(defaultConfig);
+        const baseConfig = structuredClone(PDS.defaultConfig);
         const tmpDesigner = new PDS.Generator(baseConfig);
 
         // Spacing tokens (keys are numeric strings 1..N)
@@ -154,8 +172,44 @@ customElements.define(
         baseConfig = deepMerge(baseConfig, this.config);
       }
 
-      this.designer = new PDS.Generator(baseConfig);
+      // Pass explicit theme option (from dedicated localStorage) separately so
+      // configs remain theme-agnostic while Generator can emit the correct
+      // scoping (html[data-theme] vs prefers-color-scheme).
+      let storedTheme = null;
+      try {
+        storedTheme = (typeof window !== 'undefined' && localStorage.getItem('pure-ds-theme')) || null;
+      } catch (ex) {
+        storedTheme = null;
+      }
+
+      const generatorOptions = structuredClone(baseConfig);
+      if (storedTheme) generatorOptions.theme = storedTheme;
+
+      this.designer = new PDS.Generator(generatorOptions);
       PDS.Generator.applyStyles(this.designer);
+
+      // Ensure document html[data-theme] respects persisted theme if present.
+      // Priority: localStorage 'pure-ds-theme' > explicit baseConfig seed (if non-system) > leave existing attribute.
+      try {
+        const storedTheme = localStorage.getItem("pure-ds-theme");
+        if (storedTheme) {
+          // Honor stored preference (system/light/dark)
+          if (storedTheme === "system") {
+            document.documentElement.setAttribute("data-theme", "system");
+          } else {
+            document.documentElement.setAttribute("data-theme", storedTheme);
+          }
+        } else {
+          // No stored preference: if config explicitly requests a non-system theme, apply it.
+          const seedTheme = baseConfig && baseConfig.seeds && baseConfig.seeds.theme;
+          if (seedTheme && seedTheme !== "system") {
+            document.documentElement.setAttribute("data-theme", seedTheme);
+          }
+          // Otherwise leave the current attribute (often set at startup from OS preference)
+        }
+      } catch (ex) {
+        /* ignore in non-browser environments */
+      }
 
       // Emit design-updated in a throttled manner with the actual designer
       this.scheduleDesignUpdatedEmit({
@@ -340,6 +394,34 @@ customElements.define(
       }
     };
 
+    handleThemeChange(e) {
+      try {
+        const value = e.target.value;
+        // Persist only to dedicated localStorage key (theme is not part of config)
+        try {
+          localStorage.setItem("pure-ds-theme", value);
+        } catch (ex) {
+          /* ignore localstorage failures */
+        }
+
+        // Update document attribute so generated CSS scoped to data-theme applies
+        if (value === "system") {
+          // Keep an explicit 'system' attribute — the generated CSS includes
+          // a prefers-color-scheme media query targeting html[data-theme="system"].
+          document.documentElement.setAttribute("data-theme", "system");
+        } else {
+          document.documentElement.setAttribute("data-theme", value);
+        }
+
+        // Apply immediately and emit styles using the user config (keep config separate)
+        this.applyStyles(true);
+
+        toast(`Theme set to ${value}`, { type: "info", duration: 1200 });
+      } catch (ex) {
+        console.warn("Failed to change theme:", ex);
+      }
+    }
+
     handleDownload = (format) => {
       let content, filename, mimeType;
 
@@ -400,8 +482,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
               /><span
                 >${this.mode === "advanced"
                   ? "Switch to Basic Mode"
-                  : "Switch to Advanced Mode"}</span
-              >
+                  : "Switch to Advanced Mode"}</span>
             </label>
 
             <button
@@ -418,9 +499,30 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
               <span
                 >${this.inspectorMode
                   ? "Inspector Active"
-                  : "Code Inspector"}</span
-              >
+                  : "Code Inspector"}</span>
             </button>
+            
+            <fieldset role="radiogroup" aria-label="Theme" class="theme-select">
+              <legend>Theme</legend>
+              ${(() => {
+                const stored = (typeof window !== 'undefined' && localStorage.getItem('pure-ds-theme')) || null;
+                const selected = stored || 'system';
+                return html`
+                  <label>
+                    <input type="radio" name="theme" value="system" @change=${this.handleThemeChange} .checked=${selected === 'system'} />
+                    <span>System</span>
+                  </label>
+                  <label>
+                    <input type="radio" name="theme" value="light" @change=${this.handleThemeChange} .checked=${selected === 'light'} />
+                    <span>Light</span>
+                  </label>
+                  <label>
+                    <input type="radio" name="theme" value="dark" @change=${this.handleThemeChange} .checked=${selected === 'dark'} />
+                    <span>Dark</span>
+                  </label>
+                `;
+              })()}
+            </fieldset>
           </div>
 
           <div class="designer-form-container">

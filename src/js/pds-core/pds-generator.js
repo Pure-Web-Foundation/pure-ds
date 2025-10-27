@@ -55,7 +55,9 @@ export class Generator {
   }
 
   #generateTokens() {
-    const config = this.options;
+    // Normalize options using 'seeds' when available. This keeps the
+    // config surface small while allowing full explicit overrides.
+    const config = this.#applySeedsToOptions(this.options || {});
 
     return {
       colors: this.#generateColorTokens(config.colors || {}),
@@ -68,6 +70,43 @@ export class Generator {
       zIndex: this.#generateZIndexTokens(config.layers || {}),
       icons: this.#generateIconTokens(config.icons || {}),
     };
+  }
+
+  // Apply compact seeds to the full options object. Seeds are minimal
+  // values the user can edit (primary/background/baseFontSize/baseUnit)
+  // and we map them onto the detailed config shape if detailed values
+  // are not already provided. This keeps backward compatibility.
+  #applySeedsToOptions(options) {
+    const out = structuredClone(options || {});
+    const seeds = out.seeds || {};
+
+    if (!seeds) return out;
+
+    // Colors
+    out.colors = out.colors || {};
+    if (seeds.primary && !out.colors.primary) out.colors.primary = seeds.primary;
+    if (seeds.accent && !out.colors.accent) out.colors.accent = seeds.accent;
+    if (seeds.background && !out.colors.background)
+      out.colors.background = seeds.background;
+
+    // Typography
+    out.typography = out.typography || {};
+    if (typeof seeds.baseFontSize !== "undefined" && !out.typography.baseFontSize)
+      out.typography.baseFontSize = seeds.baseFontSize;
+    if (typeof seeds.fontScale !== "undefined" && !out.typography.fontScale)
+      out.typography.fontScale = seeds.fontScale;
+
+    // Spatial rhythm
+    out.spatialRhythm = out.spatialRhythm || {};
+    if (typeof seeds.baseUnit !== "undefined" && !out.spatialRhythm.baseUnit)
+      out.spatialRhythm.baseUnit = seeds.baseUnit;
+
+    // Layers / elevation
+    out.layers = out.layers || {};
+    if (typeof seeds.elevationIntensity !== "undefined" && !out.layers.elevationIntensity)
+      out.layers.elevationIntensity = seeds.elevationIntensity;
+
+    return out;
   }
 
   #generateColorTokens(colorConfig) {
@@ -104,6 +143,18 @@ export class Generator {
       // Background-based surface colors for tasteful variations
       surface: this.#generateBackgroundShades(background),
     };
+
+    // Semantic tokens: compute onPrimary/onSurface/onBackground if not provided
+    colors.semantic = colors.semantic || {};
+    colors.semantic.primary = colors.semantic.primary || primary;
+    colors.semantic.onPrimary =
+      colors.semantic.onPrimary || this.#findReadableOnColor(colors.semantic.primary);
+    colors.semantic.surface = colors.semantic.surface || colors.surface.base;
+    colors.semantic.onSurface =
+      colors.semantic.onSurface || this.#findReadableOnColor(colors.semantic.surface);
+    colors.semantic.background = colors.semantic.background || background;
+    colors.semantic.onBackground =
+      colors.semantic.onBackground || this.#findReadableOnColor(colors.semantic.background);
 
     // Add adaptive fieldset colors to surface
     colors.surface.fieldset = this.#generateFieldsetAdaptiveColors(
@@ -275,6 +326,46 @@ export class Generator {
       warning: this.#adjustColorsForDarkMode(lightColors.warning),
       danger: this.#adjustColorsForDarkMode(lightColors.danger),
     };
+  }
+
+  // -------------------------
+  // Color contrast helpers
+  // -------------------------
+  #hexToRgb(hex) {
+    const h = String(hex || "").replace("#", "");
+    const full = h.length === 3 ? h.split("").map((c) => c + c).join("") : h;
+    const num = parseInt(full, 16);
+    return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+  }
+
+  #luminance(hex) {
+    const { r, g, b } = this.#hexToRgb(hex);
+    const srgb = [r / 255, g / 255, b / 255].map((v) =>
+      v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
+    );
+    return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
+  }
+
+  #contrastRatio(aHex, bHex) {
+    const L1 = this.#luminance(aHex);
+    const L2 = this.#luminance(bHex);
+    const lighter = Math.max(L1, L2);
+    const darker = Math.min(L1, L2);
+    return (lighter + 0.05) / (darker + 0.05);
+  }
+
+  // Choose a readable 'on' color for a background: prefer white or black if they meet contrast target
+  #findReadableOnColor(bgHex, target = 4.5) {
+    if (!bgHex) return "#000000";
+    const white = "#ffffff";
+    const black = "#000000";
+    const cw = this.#contrastRatio(bgHex, white);
+    if (cw >= target) return white;
+    const cb = this.#contrastRatio(bgHex, black);
+    if (cb >= target) return black;
+
+    // Neither black nor white meets the target — pick the one with higher ratio
+    return cb > cw ? black : white;
   }
 
   #generateDarkModeFieldsetColors(darkSurface) {
@@ -763,16 +854,16 @@ ${this.#generateMediaQueries()}
   #generateDarkModeCSS(colors) {
     if (!colors.dark) return "";
 
-    let css = "@media (prefers-color-scheme: dark) {\n  :root {\n";
-
+    // Always emit dark-mode variables and rules scoped to html[data-theme="dark"].
+    // We avoid relying on prefers-color-scheme media queries so the runtime
+    // can simply toggle the attribute on <html> to switch modes.
+    let vars = "";
     const generateNestedDarkColors = (obj, prefix = "") => {
       Object.entries(obj).forEach(([key, value]) => {
         if (typeof value === "object" && value !== null) {
-          // Handle nested objects like surface.fieldset
           generateNestedDarkColors(value, `${prefix}${key}-`);
         } else if (typeof value === "string") {
-          // Handle color values (hex, rgb, hsl, etc.)
-          css += `    --color-${prefix}${key}: ${value};\n`;
+          vars += `  --color-${prefix}${key}: ${value};\n`;
         }
       });
     };
@@ -783,52 +874,33 @@ ${this.#generateMediaQueries()}
       }
     });
 
-    // Dark mode specific adjustments
-    css += /*css*/ `    --color-text-primary: var(--color-gray-100);
-    --color-text-secondary: var(--color-gray-300);
-    --color-text-muted: var(--color-gray-400);
-    --color-border: var(--color-gray-700);
-    --color-input-bg: var(--color-gray-800);
-    --color-input-disabled-bg: var(--color-gray-900);
-    --color-input-disabled-text: var(--color-gray-600);
-    --color-code-bg: var(--color-gray-800);
-  }
+    const semanticVars = `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n`;
 
-  /* Alert dark mode adjustments */
-  .alert-success {
-    background-color: var(--color-success-50);
-    border-color: var(--color-success-500);
-    color: var(--color-success-900);
-  }
+    const rules = `/* Alert dark mode adjustments */\n.alert-success {\n  background-color: var(--color-success-50);\n  border-color: var(--color-success-500);\n  color: var(--color-success-900);\n}\n\n.alert-info {\n  background-color: var(--color-info-50);\n  border-color: var(--color-info-500);\n  color: var(--color-info-900);\n}\n\n.alert-warning {\n  background-color: var(--color-warning-50);\n  border-color: var(--color-warning-500);\n  color: var(--color-warning-900);\n}\n\n.alert-danger,\n.alert-error {\n  background-color: var(--color-danger-50);\n  border-color: var(--color-danger-500);\n  color: var(--color-danger-900);\n}\n\n/* Dim images in dark mode */\nimg, video {\n  opacity: 0.8;\n  transition: opacity var(--transition-normal);\n}\nimg:hover, video:hover {\n  opacity: 1;\n}\n`;
 
-  .alert-info {
-    background-color: var(--color-info-50);
-    border-color: var(--color-info-500);
-    color: var(--color-info-900);
-  }
+    // Prefix selectors with html[data-theme="dark"] so rules are applied only in dark mode
+    const prefixRules = (selPrefix) => {
+      return rules.replace(/(^|\n)(\.?[a-zA-Z0-9-_., ]+)/g, (m, p1, p2) => {
+        if (!p2.trim()) return m;
+        return `${p1}${selPrefix}${p2}`;
+      });
+    };
 
-  .alert-warning {
-    background-color: var(--color-warning-50);
-    border-color: var(--color-warning-500);
-    color: var(--color-warning-900);
-  }
+    let css = "";
 
-  .alert-danger,
-  .alert-error {
-    background-color: var(--color-danger-50);
-    border-color: var(--color-danger-500);
-    color: var(--color-danger-900);
-  }
+    // Dark variables scoped to html[data-theme="dark"]
+    css += `html[data-theme="dark"] {\n${vars}${semanticVars}}\n\n`;
+    css += prefixRules('html[data-theme="dark"] ');
 
-  /* Dim images in dark mode */
-  img, video {
-    opacity: 0.8;
-    transition: opacity var(--transition-normal);
-  }
-  img:hover, video:hover {
-    opacity: 1;
-  }
-}`;
+    // Also support an explicit 'system' attribute: when the document uses
+    // html[data-theme="system"], prefer the user's OS preference via a
+    // prefers-color-scheme media query. This makes 'system' reliable even
+    // if JS evaluation of matchMedia is not available or returns unexpected
+    // results in some environments.
+    css += `\n@media (prefers-color-scheme: dark) {\n`;
+    css += `html[data-theme="system"] {\n${vars}${semanticVars}}\n\n`;
+    css += prefixRules('html[data-theme="system"] ');
+    css += `}\n`;
 
     return css;
   }

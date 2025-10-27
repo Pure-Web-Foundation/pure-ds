@@ -30,6 +30,26 @@ export const defaultConfig = {
     elevationOpacity: 0.05,
   },
 
+  // Compact seeds for quick theming. Prefer editing these when creating
+  // simple presets — the Generator will derive full token sets from these
+  // seeds when present. Existing detailed keys remain for backward
+  // compatibility and explicit overrides.
+  seeds: {
+    // Minimal color seeds
+    primary: "#2d9dc9",
+    accent: "#e54271",
+    background: "#e7e6de",
+
+    // Minimal typography/spatial seeds
+    baseFontSize: 16,
+    fontScale: 1.2,
+    baseUnit: 16,
+
+    // Elevation intensity (0.5..2) - controls shadow scale generation
+    elevationIntensity: 1.0,
+    // Theme preference removed from config — theme is a separate UI preference stored in localStorage
+  },
+
   typography: {
     fontFamilyHeadings:
       'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
