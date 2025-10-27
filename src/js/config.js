@@ -1,10 +1,10 @@
-import { Generator } from "./pds-core/pds-generator.js";
 
+import { PDS } from "./pds";
+  
 export const config = {
   // Design system configuration
   design: {
-    ...Generator.defaultConfig,
-
+    ...PDS.defaultConfig,
   },
 
   // Auto-define configuration for web components
@@ -13,9 +13,9 @@ export const config = {
     mapper: (tag) => {
       //console.log(tag)
 
-      switch(tag) {
-        case 'pds-tabpanel':
-          return 'pds-tabstrip.js';
+      switch (tag) {
+        case "pds-tabpanel":
+          return "pds-tabstrip.js";
         default:
           return `${tag}.js`;
       }
@@ -24,16 +24,16 @@ export const config = {
     onError: (tag, err) => {
       console.error(`Auto-define error for <${tag}>:`, err);
     },
-    
+
     // Critical options for observing dynamically added components
-    scanExisting: true,           // Scan DOM on initialization
-    observeShadows: true,          // Observe inside shadow DOMs (for Lit components)
-    patchAttachShadow: true,       // Intercept attachShadow to observe new shadow roots
-    debounceMs: 16,                // Debounce for performance
+    scanExisting: true, // Scan DOM on initialization
+    observeShadows: true, // Observe inside shadow DOMs (for Lit components)
+    patchAttachShadow: true, // Intercept attachShadow to observe new shadow roots
+    debounceMs: 16, // Debounce for performance
     enhancers: [
       {
         selector: "nav[data-dropdown]",
-        demoHtml: () => /*html*/`
+        demoHtml: () => /*html*/ `
           <nav data-dropdown>
             <button class="btn-primary">Menu</button>
             <menu style="display:none">
@@ -61,30 +61,33 @@ export const config = {
       },
       {
         selector: "label[data-toggle]",
-        demoHtml: () => /*html*/`<label data-toggle>
+        demoHtml: () => /*html*/ `<label data-toggle>
           <span data-label>Enable notifications</span>
           <input type="checkbox">
         </label>`,
         run: (elem) => {
           const checkbox = elem.querySelector('input[type="checkbox"]');
           if (!checkbox) {
-            console.warn('Toggle enhancer: no checkbox found inside label[data-toggle]', elem);
+            console.warn(
+              "Toggle enhancer: no checkbox found inside label[data-toggle]",
+              elem
+            );
             return;
           }
 
           // Create toggle switch UI with proper semantic structure
-          const toggleSwitch = document.createElement('span');
-          toggleSwitch.className = 'toggle-switch';
-          toggleSwitch.setAttribute('role', 'presentation');
-          toggleSwitch.setAttribute('aria-hidden', 'true');
+          const toggleSwitch = document.createElement("span");
+          toggleSwitch.className = "toggle-switch";
+          toggleSwitch.setAttribute("role", "presentation");
+          toggleSwitch.setAttribute("aria-hidden", "true");
 
           // Create the toggle knob
-          const knob = document.createElement('span');
-          knob.className = 'toggle-knob';
+          const knob = document.createElement("span");
+          knob.className = "toggle-knob";
           toggleSwitch.appendChild(knob);
-          
+
           // Find the label text span and insert toggle before it
-          const labelSpan = elem.querySelector('span[data-label]');
+          const labelSpan = elem.querySelector("span[data-label]");
           if (labelSpan) {
             elem.insertBefore(toggleSwitch, labelSpan);
           } else {
@@ -92,44 +95,44 @@ export const config = {
           }
 
           // Handle label clicks to toggle the checkbox
-          elem.addEventListener('click', (e) => {
+          elem.addEventListener("click", (e) => {
             if (checkbox.disabled) return;
-            
+
             // Prevent default label behavior
             e.preventDefault();
             // Toggle the checkbox programmatically
             checkbox.checked = !checkbox.checked;
             // Dispatch change event so form handlers work
-            checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+            checkbox.dispatchEvent(new Event("change", { bubbles: true }));
           });
         },
       },
       {
-        selector: "input[type=\"range\"]",
+        selector: 'input[type="range"]',
         demoHtml: (elem) => {
-          const min = elem.getAttribute('min') || 0;
-          const max = elem.getAttribute('max') || 100;
-          const value = elem.getAttribute('value') || elem.value || 0;
-          return /*html*/`<input type="range" min="${min}" max="${max}" value="${value}">`;
+          const min = elem.getAttribute("min") || 0;
+          const max = elem.getAttribute("max") || 100;
+          const value = elem.getAttribute("value") || elem.value || 0;
+          return /*html*/ `<input type="range" min="${min}" max="${max}" value="${value}">`;
         },
         run: (elem) => {
           if (elem.dataset.enhancedRange) return;
 
           // Wrap the input in a range-container if not already
-          let container = elem.closest('.range-container');
+          let container = elem.closest(".range-container");
           if (!container) {
-            container = document.createElement('div');
-            container.className = 'range-container';
+            container = document.createElement("div");
+            container.className = "range-container";
             elem.parentNode.insertBefore(container, elem);
             container.appendChild(elem);
           }
 
-          container.style.position = 'relative';
+          container.style.position = "relative";
 
           // Create the floating bubble
-          const bubble = document.createElement('div');
-          bubble.className = 'range-bubble';
-          bubble.setAttribute('aria-hidden', 'true');
+          const bubble = document.createElement("div");
+          bubble.className = "range-bubble";
+          bubble.setAttribute("aria-hidden", "true");
           container.appendChild(bubble);
 
           const updateBubble = () => {
@@ -143,20 +146,20 @@ export const config = {
           };
 
           // Show/hide on interaction
-          const show = () => bubble.classList.add('visible');
-          const hide = () => bubble.classList.remove('visible');
+          const show = () => bubble.classList.add("visible");
+          const hide = () => bubble.classList.remove("visible");
 
-          elem.addEventListener('input', updateBubble);
-          elem.addEventListener('pointerdown', show);
-          elem.addEventListener('pointerup', hide);
-          elem.addEventListener('pointerleave', hide);
-          elem.addEventListener('focus', show);
-          elem.addEventListener('blur', hide);
+          elem.addEventListener("input", updateBubble);
+          elem.addEventListener("pointerdown", show);
+          elem.addEventListener("pointerup", hide);
+          elem.addEventListener("pointerleave", hide);
+          elem.addEventListener("focus", show);
+          elem.addEventListener("blur", hide);
 
           // Initialize
           updateBubble();
 
-          elem.dataset.enhancedRange = '1';
+          elem.dataset.enhancedRange = "1";
         },
       },
     ],

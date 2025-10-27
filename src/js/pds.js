@@ -46,6 +46,8 @@ import {
 import { registry } from "./pds-core/pds-registry";
 import ontology from "./pds-core/pds-ontology";
 import { findComponentForElement } from "./pds-core/pds-ontology.js";
+import { defaultConfig } from "./pds-core/pds-config.js";
+import { enums } from "./pds-core/pds-enums.js";
 
 /** Generator class — use to programmatically create design system assets from a config */
 PDS.Generator = Generator;
@@ -67,6 +69,10 @@ PDS.createStylesheet = createStylesheet;
 
 /** Return true when running inside a live/designer-backed environment */
 PDS.isLiveMode = isLiveMode;
+
+PDS.enums = enums;
+
+PDS.defaultConfig = defaultConfig;
 
 /** Find a component definition (ontology) for a given DOM element */
 PDS.findComponentForElement = findComponentForElement;

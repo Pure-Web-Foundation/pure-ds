@@ -878,16 +878,16 @@ console.log(tokens.colors.primary);
 designer.configure(newConfig);
 ```
 
-**Static Enums:**
+**Enums:**
 
 ```javascript
-Generator.RadiusSizes     // none, small, medium, large, full
-Generator.BorderWidths    // hairline, thin, medium, thick
-Generator.FontWeights     // light, normal, medium, semibold, bold
-Generator.LineHeights     // tight, normal, relaxed
-Generator.ShadowDepths    // none, light, medium, deep, extreme
-Generator.TransitionSpeeds // fast, normal, slow
-Generator.AnimationEasings // linear, ease, ease-in, ease-out, ...
+enums.RadiusSizes     // none, small, medium, large, full
+enums.BorderWidths    // hairline, thin, medium, thick
+enums.FontWeights     // light, normal, medium, semibold, bold
+enums.LineHeights     // tight, normal, relaxed
+enums.ShadowDepths    // none, light, medium, deep, extreme
+enums.TransitionSpeeds // fast, normal, slow
+enums.AnimationEasings // linear, ease, ease-in, ease-out, ...
 ```
 
 ### PureApp Component

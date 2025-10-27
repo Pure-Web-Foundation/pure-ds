@@ -1,3 +1,4 @@
+import { enums } from "./pds-enums";
 /**
  * Generator - A JS-config-first design system
  * Generates comprehensive CSS variables and styles from a minimal configuration
@@ -7,351 +8,6 @@ export class Generator {
   #layers;
   #stylesheets;
   #blobURLs;
-  // Static enums for design system values
-  static FontWeights = {
-    light: 300,
-    normal: 400,
-    medium: 500,
-    semibold: 600,
-    bold: 700,
-  };
-
-  static LineHeights = {
-    tight: 1.25,
-    normal: 1.5,
-    relaxed: 1.75,
-  };
-
-  static BorderWidths = {
-    hairline: 0.5,
-    thin: 1,
-    medium: 2,
-    thick: 3,
-  };
-
-  static RadiusSizes = {
-    none: 0,
-    small: 4,
-    medium: 8,
-    large: 16,
-    full: 9999,
-  };
-
-  static ShadowDepths = {
-    none: "none",
-    light: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-    medium:
-      "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-    deep: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-    extreme: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-  };
-
-  static TransitionSpeeds = {
-    fast: 150,
-    normal: 250,
-    slow: 350,
-  };
-
-  static AnimationEasings = {
-    linear: "linear",
-    ease: "ease",
-    "ease-in": "ease-in",
-    "ease-out": "ease-out",
-    "ease-in-out": "ease-in-out",
-    bounce: "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
-  };
-
-  static TouchTargetSizes = {
-    compact: 36,
-    standard: 44, // iOS/Android accessibility standard
-    comfortable: 48,
-    spacious: 56,
-  };
-
-  static LinkStyles = {
-    inline: "inline", // Normal inline text links
-    block: "block", // Block-level links
-    button: "button", // Button-like links (flex with touch target)
-  };
-
-  static FocusStyles = {
-    ring: "ring", // Box-shadow ring (default)
-    outline: "outline", // Browser outline
-    border: "border", // Border change
-    glow: "glow", // Subtle glow effect
-  };
-
-  static TabSizes = {
-    compact: 2,
-    standard: 4,
-    wide: 8,
-  };
-
-  static SelectIcons = {
-    chevron: "chevron", // Standard chevron down
-    arrow: "arrow", // Simple arrow
-    caret: "caret", // Triangle caret
-    none: "none", // No icon
-  };
-
-  static defaultConfig = {
-    colors: {
-      // Palette - base colors that generate entire color palettes
-      primary: "#2d9dc9", // Primary brand color
-      secondary: "#a99b95", // Secondary/neutral color
-      accent: "#e54271", // Accent color (pink red)
-      background: "#e7e6de", // Base background color for light mode
-
-      // Dark mode overrides (optional - if not set, auto-generated from light mode)
-      darkMode: {
-        background: "#16171a", // Custom dark mode background (cool blue-gray)
-        secondary: "#8b9199", // Cool gray for dark mode inputs/borders
-      },
-
-      // Semantic colors (will use intelligent defaults if not specified)
-      success: null, // Auto-generated from primary if null
-      warning: "#B38600", // Uses accent color if null
-      danger: null, // Auto-generated from primary if null
-      info: null, // Uses primary color if null
-
-      // Gradients and overlays
-      gradientStops: 3,
-      elevationOpacity: 0.05,
-    },
-
-    typography: {
-      fontFamilyHeadings:
-        'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
-      fontFamilyBody:
-        'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
-      fontFamilyMono:
-        'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace',
-      baseFontSize: 16,
-      fontWeightLight: Generator.FontWeights.light,
-      fontWeightNormal: Generator.FontWeights.normal,
-      fontWeightMedium: Generator.FontWeights.medium,
-      fontWeightSemibold: Generator.FontWeights.semibold,
-      fontWeightBold: Generator.FontWeights.bold,
-      lineHeightTight: Generator.LineHeights.tight,
-      lineHeightNormal: Generator.LineHeights.normal,
-      lineHeightRelaxed: Generator.LineHeights.relaxed,
-      letterSpacingTight: -0.025,
-      letterSpacingNormal: 0,
-      letterSpacingWide: 0.025,
-    },
-
-    spatialRhythm: {
-      baseUnit: 16,
-      scaleRatio: 1.25,
-      maxSpacingSteps: 32,
-      containerMaxWidth: 1200,
-      containerPadding: 1.0,
-      inputPadding: 0.75,
-      buttonPadding: 1.0,
-      sectionSpacing: 2.0,
-    },
-
-    layers: {
-      shadowDepth: "medium",
-      blurLight: 4,
-      blurMedium: 8,
-      blurHeavy: 16,
-      zIndexBase: 0,
-      zIndexDropdown: 1000,
-      zIndexSticky: 1020,
-      zIndexFixed: 1030,
-      zIndexModal: 1040,
-      zIndexPopover: 1050,
-      zIndexTooltip: 1060,
-      zIndexNotification: 1070,
-    },
-
-    shape: {
-      radiusSize: Generator.RadiusSizes.none,
-      borderWidth: Generator.BorderWidths.thin,
-      customRadius: null,
-    },
-
-    behavior: {
-      transitionSpeed: Generator.TransitionSpeeds.normal,
-      animationEasing: Generator.AnimationEasings["ease-out"],
-      customTransitionSpeed: null,
-      customEasing: null,
-      focusRingWidth: 3,
-      focusRingOpacity: 0.3,
-      hoverOpacity: 0.8,
-    },
-
-    layout: {
-      gridColumns: 12,
-      gridGutter: 1.0,
-      breakpoints: {
-        sm: 640,
-        md: 768,
-        lg: 1024,
-        xl: 1280,
-      },
-      densityCompact: 0.8,
-      densityNormal: 1.0,
-      densityComfortable: 1.2,
-      buttonMinHeight: Generator.TouchTargetSizes.standard,
-      inputMinHeight: 40,
-    },
-
-    advanced: {
-      linkStyle: Generator.LinkStyles.inline,
-      colorDerivation: "hsl",
-    },
-
-    a11y: {
-      minTouchTarget: Generator.TouchTargetSizes.standard,
-      prefersReducedMotion: true,
-      focusStyle: Generator.FocusStyles.ring,
-    },
-
-    components: {
-      toasts: true,
-      tabStrip: true,
-      customScrollbars: true,
-      drawer: true,
-    },
-
-    icons: {
-      set: "phosphor", // https://phosphoricons.com/
-      weight: "regular",
-      defaultSize: 24,
-      sizes: {
-        xs: 16,
-        sm: 20,
-        md: 24,
-        lg: 32,
-        xl: 48,
-        "2xl": 64,
-      },
-      include: {
-        navigation: [
-          "arrow-left",
-          "arrow-right",
-          "arrow-up",
-          "arrow-down",
-          "arrow-counter-clockwise",
-          "caret-left",
-          "caret-right",
-          "caret-down",
-          "caret-up",
-          "x",
-          "list",
-          "dots-three-vertical",
-          "dots-three",
-          "house",
-          "gear",
-          "magnifying-glass",
-          "funnel",
-          "tabs",
-        ],
-        actions: [
-          "plus",
-          "minus",
-          "check",
-          "trash",
-          "pencil",
-          "floppy-disk",
-          "copy",
-          "download",
-          "upload",
-          "share",
-          "link",
-          "eye",
-          "eye-slash",
-          "heart",
-          "star",
-          "bookmark",
-          "note-pencil",
-          "cursor-click",
-          "clipboard",
-        ],
-        communication: [
-          "envelope",
-          "bell",
-          "bell-ringing",
-          "chat-circle",
-          "phone",
-          "paper-plane-tilt",
-          "user",
-          "users",
-          "at",
-        ],
-        content: [
-          "image",
-          "file",
-          "file-text",
-          "file-css",
-          "file-js",
-          "folder",
-          "folder-open",
-          "book-open",
-          "camera",
-          "video-camera",
-          "play",
-          "pause",
-          "microphone",
-          "brackets-curly",
-          "code",
-          "folder-simple",
-          "grid-four",
-        ],
-        status: [
-          "info",
-          "warning",
-          "check-circle",
-          "x-circle",
-          "question",
-          "shield-check",
-          "shield-warning",
-          "lock",
-          "lock-open",
-        ],
-        time: ["calendar", "clock", "timer", "hourglass"],
-        commerce: [
-          "shopping-cart",
-          "credit-card",
-          "currency-dollar",
-          "tag",
-          "receipt",
-          "storefront",
-        ],
-        formatting: [
-          "text-align-left",
-          "text-align-center",
-          "text-align-right",
-          "text-b",
-          "text-italic",
-          "text-underline",
-          "list-bullets",
-          "list-numbers",
-          "text-aa",
-        ],
-        system: [
-          "cloud",
-          "cloud-arrow-up",
-          "cloud-arrow-down",
-          "desktop",
-          "device-mobile",
-          "globe",
-          "wifi-high",
-          "battery-charging",
-          "sun",
-          "moon",
-          "palette",
-        ],
-      },
-      spritePath: "public/assets/img/icons.svg",
-    },
-
-    gap: 4,
-
-    debug: false,
-  };
 
   constructor(options = {}) {
     this.options = {
@@ -540,7 +196,7 @@ export class Generator {
         Math.min(hsl.l + 2, 98)
       ), // Slightly lighter for overlays
       inverse: this.#generateSmartDarkBackground(backgroundBase), // Smart dark background
-      hover: `color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%);`
+      hover: `color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%);`,
     };
   }
 
@@ -717,7 +373,7 @@ export class Generator {
     const baseRadius =
       customRadius !== null
         ? customRadius
-        : Generator.RadiusSizes[radiusSize] ?? Generator.RadiusSizes.medium;
+        : enums.RadiusSizes[radiusSize] ?? enums.RadiusSizes.medium;
 
     return {
       none: "0",
@@ -737,14 +393,14 @@ export class Generator {
       fontFamilyMono = 'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace',
       baseFontSize = 16,
       fontScale = 1.2,
-      fontWeightLight = Generator.FontWeights.light,
-      fontWeightNormal = Generator.FontWeights.normal,
-      fontWeightMedium = Generator.FontWeights.medium,
-      fontWeightSemibold = Generator.FontWeights.semibold,
-      fontWeightBold = Generator.FontWeights.bold,
-      lineHeightTight = Generator.LineHeights.tight,
-      lineHeightNormal = Generator.LineHeights.normal,
-      lineHeightRelaxed = Generator.LineHeights.relaxed,
+      fontWeightLight = enums.FontWeights.light,
+      fontWeightNormal = enums.FontWeights.normal,
+      fontWeightMedium = enums.FontWeights.medium,
+      fontWeightSemibold = enums.FontWeights.semibold,
+      fontWeightBold = enums.FontWeights.bold,
+      lineHeightTight = enums.LineHeights.tight,
+      lineHeightNormal = enums.LineHeights.normal,
+      lineHeightRelaxed = enums.LineHeights.relaxed,
     } = typographyConfig;
 
     return {
@@ -845,8 +501,8 @@ export class Generator {
 
   #generateTransitionTokens(behaviorConfig) {
     const {
-      transitionSpeed = Generator.TransitionSpeeds.normal,
-      animationEasing = Generator.AnimationEasings["ease-out"],
+      transitionSpeed = enums.TransitionSpeeds.normal,
+      animationEasing = enums.AnimationEasings["ease-out"],
     } = behaviorConfig;
 
     // Handle both number values and string keys
@@ -855,11 +511,11 @@ export class Generator {
       baseSpeed = transitionSpeed;
     } else if (
       typeof transitionSpeed === "string" &&
-      Generator.TransitionSpeeds[transitionSpeed]
+      enums.TransitionSpeeds[transitionSpeed]
     ) {
-      baseSpeed = Generator.TransitionSpeeds[transitionSpeed];
+      baseSpeed = enums.TransitionSpeeds[transitionSpeed];
     } else {
-      baseSpeed = Generator.TransitionSpeeds.normal;
+      baseSpeed = enums.TransitionSpeeds.normal;
     }
 
     // Transition variables should only contain duration, not easing
@@ -1179,10 +835,10 @@ ${this.#generateMediaQueries()}
 
   #generateBaseStyles() {
     const { advanced = {}, a11y = {}, layout = {} } = this.options;
-    const tabSize = advanced.tabSize || Generator.TabSizes.standard;
-    const linkStyle = advanced.linkStyle || Generator.LinkStyles.inline;
+    const tabSize = advanced.tabSize || enums.TabSizes.standard;
+    const linkStyle = advanced.linkStyle || enums.LinkStyles.inline;
     const minTouchTarget =
-      a11y.minTouchTarget || Generator.TouchTargetSizes.standard;
+      a11y.minTouchTarget || enums.TouchTargetSizes.standard;
     const breakpoints = layout.breakpoints || {
       sm: 640,
       md: 768,
@@ -1192,11 +848,11 @@ ${this.#generateMediaQueries()}
 
     // Link styles based on configuration
     const linkDisplayStyles =
-      linkStyle === Generator.LinkStyles.button
+      linkStyle === enums.LinkStyles.button
         ? `display: inline-flex;
   align-items: center;
   min-height: ${minTouchTarget}px;`
-        : linkStyle === Generator.LinkStyles.block
+        : linkStyle === enums.LinkStyles.block
         ? `display: block;`
         : `display: inline;`;
 
@@ -3322,7 +2978,7 @@ pds-tabstrip > pds-tabpanel[data-tabpanel] {
   #generateIconStyles() {
     const { a11y = {} } = this.options;
     const minTouchTarget =
-      a11y.minTouchTarget || Generator.TouchTargetSizes.standard;
+      a11y.minTouchTarget || enums.TouchTargetSizes.standard;
 
     return /*css*/ `/* Icon System */
 
@@ -3793,7 +3449,7 @@ body:not([class*="surface-"]) fieldset,
       xl: 1280,
     };
     const minTouchTarget =
-      a11y.minTouchTarget || Generator.TouchTargetSizes.standard;
+      a11y.minTouchTarget || enums.TouchTargetSizes.standard;
 
     return /*css*/ `/* Mobile-First Responsive Design */
 
@@ -4049,9 +3705,9 @@ body:not([class*="surface-"]) fieldset,
 
   #generatePrimitivesLayer() {
     const { advanced = {}, a11y = {}, layout = {} } = this.options;
-    const tabSize = advanced.tabSize || Generator.TabSizes.standard;
+    const tabSize = advanced.tabSize || enums.TabSizes.standard;
     const minTouchTarget =
-      a11y.minTouchTarget || Generator.TouchTargetSizes.standard;
+      a11y.minTouchTarget || enums.TouchTargetSizes.standard;
     const breakpoints = layout.breakpoints || {
       sm: 640,
       md: 768,
