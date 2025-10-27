@@ -697,14 +697,14 @@ customElements.define(
      */
     async showCodeDrawer(html, litProps, displayName, componentType) {
       // Create or get drawer
-      let drawer = document.querySelector("pds-drawer#code-inspector-drawer");
-      if (!drawer) {
-        drawer = document.createElement("pds-drawer");
-        drawer.id = "code-inspector-drawer";
-        drawer.setAttribute("position", "bottom");
-        drawer.setAttribute("max-height", "80vh");
-        document.body.appendChild(drawer);
-      }
+      let drawer = document.querySelector("pds-drawer");
+      // if (!drawer) {
+      //   drawer = document.createElement("pds-drawer");
+      //   drawer.id = "code-inspector-drawer";
+      //   drawer.setAttribute("position", "bottom");
+      //   drawer.setAttribute("max-height", "80vh");
+      //   document.body.appendChild(drawer);
+      // }
 
       // Create content with copy button
       const litPropsHTML =

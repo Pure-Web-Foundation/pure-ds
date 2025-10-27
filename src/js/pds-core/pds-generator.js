@@ -84,29 +84,29 @@ export class Generator {
 
     const colors = {
       // Generate color scales
-      primary: this.generateColorScale(primary),
-      secondary: this.generateColorScale(secondary),
-      accent: this.generateColorScale(accent),
+      primary: this.#generateColorScale(primary),
+      secondary: this.#generateColorScale(secondary),
+      accent: this.#generateColorScale(accent),
 
       // Semantic colors - use provided or derive from primary/accent
-      success: this.generateColorScale(
-        success || this.deriveSuccessColor(primary)
+      success: this.#generateColorScale(
+        success || this.#deriveSuccessColor(primary)
       ),
-      warning: this.generateColorScale(warning || accent),
-      danger: this.generateColorScale(
-        danger || this.deriveDangerColor(primary)
+      warning: this.#generateColorScale(warning || accent),
+      danger: this.#generateColorScale(
+        danger || this.#deriveDangerColor(primary)
       ),
-      info: this.generateColorScale(info || primary),
+      info: this.#generateColorScale(info || primary),
 
       // Neutral grays derived from secondary color
-      gray: this.generateGrayScale(secondary),
+      gray: this.#generateGrayScale(secondary),
 
       // Background-based surface colors for tasteful variations
-      surface: this.generateBackgroundShades(background),
+      surface: this.#generateBackgroundShades(background),
     };
 
     // Add adaptive fieldset colors to surface
-    colors.surface.fieldset = this.generateFieldsetAdaptiveColors(
+    colors.surface.fieldset = this.#generateFieldsetAdaptiveColors(
       colors.surface
     );
 
@@ -121,7 +121,7 @@ export class Generator {
     return colors;
   }
 
-  generateColorScale(baseColor) {
+  #generateColorScale(baseColor) {
     const hsl = this.#hexToHsl(baseColor);
     return {
       50: this.#hslToHex(
@@ -145,19 +145,19 @@ export class Generator {
     };
   }
 
-  deriveSuccessColor(mainColor) {
+  #deriveSuccessColor(mainColor) {
     // Generate a green success color by rotating the hue of the main color
     const hsl = this.#hexToHsl(mainColor);
     return this.#hslToHex(120, Math.max(hsl.s, 60), 45); // Green-ish success
   }
 
-  deriveDangerColor(mainColor) {
+  #deriveDangerColor(mainColor) {
     // Generate a red danger color by rotating the hue of the main color
     const hsl = this.#hexToHsl(mainColor);
     return this.#hslToHex(0, Math.max(hsl.s, 70), 50); // Red-ish danger
   }
 
-  generateGrayScale(supportingColor) {
+  #generateGrayScale(supportingColor) {
     // Generate gray scale based on supporting color for brand consistency
     const hsl = this.#hexToHsl(supportingColor);
     const baseHue = hsl.h;
@@ -177,7 +177,7 @@ export class Generator {
     };
   }
 
-  generateBackgroundShades(backgroundBase) {
+  #generateBackgroundShades(backgroundBase) {
     const hsl = this.#hexToHsl(backgroundBase);
 
     // Generate subtle variations of the background
@@ -200,7 +200,7 @@ export class Generator {
     };
   }
 
-  generateFieldsetAdaptiveColors(backgroundShades) {
+  #generateFieldsetAdaptiveColors(backgroundShades) {
     // Generate fieldset backgrounds that are subtly different from each surface
     return {
       base: backgroundShades.subtle, // Subtle darker than base
@@ -247,7 +247,7 @@ export class Generator {
       ? overrides.background
       : this.#generateSmartDarkBackground(backgroundBase);
 
-    const darkSurface = this.generateBackgroundShades(darkBackgroundBase);
+    const darkSurface = this.#generateBackgroundShades(darkBackgroundBase);
 
     return {
       surface: {
@@ -256,18 +256,18 @@ export class Generator {
       },
       // For primary colors, use override, or adjust light colors for dark mode (dimmed for accessibility)
       primary: overrides.primary
-        ? this.generateColorScale(overrides.primary)
+        ? this.#generateColorScale(overrides.primary)
         : this.#adjustColorsForDarkMode(lightColors.primary),
       // Adjust other colors for dark mode, with optional overrides
       secondary: overrides.secondary
-        ? this.generateColorScale(overrides.secondary)
+        ? this.#generateColorScale(overrides.secondary)
         : this.#adjustColorsForDarkMode(lightColors.secondary),
       accent: overrides.accent
-        ? this.generateColorScale(overrides.accent)
+        ? this.#generateColorScale(overrides.accent)
         : this.#adjustColorsForDarkMode(lightColors.accent),
       // Regenerate grays if secondary override is provided (grays are derived from secondary)
       gray: overrides.secondary
-        ? this.generateGrayScale(overrides.secondary)
+        ? this.#generateGrayScale(overrides.secondary)
         : lightColors.gray,
       // IMPORTANT: Also adjust semantic colors for dark mode!
       success: this.#adjustColorsForDarkMode(lightColors.success),
@@ -3619,22 +3619,6 @@ body:not([class*="surface-"]) fieldset,
 
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
   }
-
-  // // Method to update design system
-  // updateDesign(newOptions) {
-  //   this.options = { ...this.options, ...newOptions };
-  //   this.tokens = this.#generateTokens();
-  //   this.css = this.#generateCSS();
-
-  //   // Regenerate layers
-  //   this.#generateLayers();
-
-  //   // Only update browser-specific features if in browser environment
-  //   if (typeof CSSStyleSheet !== "undefined") {
-  //     this.#updateConstructableStylesheets();
-  //     this.#recreateBlobURLs();
-  //   }
-  // }
 
   // Method to get current tokens (useful for debugging)
   getTokens() {
