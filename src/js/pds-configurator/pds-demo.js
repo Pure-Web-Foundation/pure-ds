@@ -2193,50 +2193,286 @@ customElements.define(
             </div>
           </section>
 
-          <!-- Surfaces Section -->
-          <section class="showcase-section">
+          <!-- Smart Surfaces Section -->
+          <section class="showcase-section" data-section="smart-surfaces">
             <h2>
               <svg-icon
                 icon="palette"
                 size="lg"
                 class="icon-primary"
               ></svg-icon>
-              Surface Variants & Elevation
+              Smart Surface System
             </h2>
 
-            <h3>Surface Types</h3>
+            <p>
+              The smart surface system automatically adapts text, icon, shadow,
+              and border colors based on surface backgrounds. All colors maintain
+              WCAG AA contrast ratios automatically.
+            </p>
+
+            <h3>Surface Variants</h3>
             <div class="surface-demo-grid">
-              <div class="surface-base">
-                <strong class="surface-title">Base Surface</strong>
-                <p class="surface-description">Default background color</p>
+              <div class="surface-base" style="padding: var(--spacing-6);">
+                <strong class="surface-title">
+                  <svg-icon icon="square"></svg-icon>
+                  Base Surface
+                </strong>
+                <p class="surface-description">
+                  Default background with auto-adjusted text and icons
+                </p>
+                <button class="btn-primary" style="margin-top: var(--spacing-3);">
+                  Button
+                </button>
               </div>
-              <div class="surface-subtle">
-                <strong class="surface-title">Subtle Surface</strong>
-                <p class="surface-description">Slightly different tone</p>
+              <div class="surface-subtle" style="padding: var(--spacing-6);">
+                <strong class="surface-title">
+                  <svg-icon icon="square"></svg-icon>
+                  Subtle Surface
+                </strong>
+                <p class="surface-description">
+                  Slightly different tone for visual hierarchy
+                </p>
+                <button class="btn-secondary" style="margin-top: var(--spacing-3);">
+                  Button
+                </button>
               </div>
-              <div class="surface-elevated">
-                <strong class="surface-title">Elevated Surface</strong>
-                <p class="surface-description">Raised with shadow</p>
+              <div class="surface-elevated" style="padding: var(--spacing-6);">
+                <strong class="surface-title">
+                  <svg-icon icon="arrow-up"></svg-icon>
+                  Elevated Surface
+                </strong>
+                <p class="surface-description">
+                  Raised with smart shadows that adapt in dark mode
+                </p>
+                <button class="btn-primary" style="margin-top: var(--spacing-3);">
+                  Button
+                </button>
               </div>
-              <div class="surface-overlay">
-                <strong class="surface-title">Overlay Surface</strong>
-                <p class="surface-description">Modal/dropdown backgrounds</p>
+              <div class="surface-overlay" style="padding: var(--spacing-6);">
+                <strong class="surface-title">
+                  <svg-icon icon="desktop"></svg-icon>
+                  Overlay Surface
+                </strong>
+                <p class="surface-description">
+                  Modal/dropdown backgrounds with stronger shadows
+                </p>
+                <button class="btn-outline" style="margin-top: var(--spacing-3);">
+                  Button
+                </button>
               </div>
             </div>
 
-            <h3>Shadow Elevation</h3>
+            <h3>Context-Aware Shadows</h3>
+            <p>
+              Shadows automatically invert in dark mode: dark shadows on light
+              surfaces, light shadows on dark surfaces.
+            </p>
             <div class="shadow-demo-grid">
               <div class="shadow-demo-item shadow-sm">
+                <svg-icon icon="feather" size="lg"></svg-icon>
                 <strong>Small</strong>
                 <p>--shadow-sm</p>
               </div>
               <div class="shadow-demo-item shadow-md">
+                <svg-icon icon="grid-four" size="lg"></svg-icon>
                 <strong>Medium</strong>
                 <p>--shadow-md</p>
               </div>
               <div class="shadow-demo-item shadow-lg">
+                <svg-icon icon="rocket" size="lg"></svg-icon>
                 <strong>Large</strong>
                 <p>--shadow-lg</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Nested Surfaces Section -->
+          <section class="showcase-section alt-bg" data-section="nested-surfaces">
+            <h2>
+              <svg-icon icon="grid-four" size="lg" class="icon-primary"></svg-icon>
+              Nested Surfaces
+            </h2>
+
+            <p>
+              Surfaces can be nested infinitely. Each level maintains proper
+              contrast and visual hierarchy automatically.
+            </p>
+
+            <div class="surface-base" style="padding: var(--spacing-6);">
+              <h4>
+                <svg-icon icon="circle"></svg-icon>
+                Level 1: Base Surface
+              </h4>
+              <p>
+                Notice how icons and text adapt at each nesting level to maintain
+                readability.
+              </p>
+
+              <div
+                class="surface-elevated"
+                style="padding: var(--spacing-6); margin-top: var(--spacing-4);"
+              >
+                <h5>
+                  <svg-icon icon="arrow-right"></svg-icon>
+                  Level 2: Elevated Surface
+                </h5>
+                <p>Shadows and text colors automatically adjust</p>
+
+                <div class="demo-grid cols-2" style="margin-top: var(--spacing-4);">
+                  <div class="card">
+                    <h6>
+                      <svg-icon icon="check"></svg-icon>
+                      Level 3: Card
+                    </h6>
+                    <p>Perfect contrast maintained</p>
+
+                    <div
+                      class="surface-sunken"
+                      style="padding: var(--spacing-4); margin-top: var(--spacing-3);"
+                    >
+                      <small>
+                        <svg-icon icon="info" size="sm"></svg-icon>
+                        Level 4: Sunken surface inside card
+                      </small>
+                    </div>
+                  </div>
+
+                  <div class="card">
+                    <h6>
+                      <svg-icon icon="star"></svg-icon>
+                      Another Card
+                    </h6>
+                    <p>All elements adapt automatically</p>
+                    <button class="btn-primary btn-sm" style="margin-top: var(--spacing-2);">
+                      <svg-icon icon="heart" size="sm"></svg-icon>
+                      Action
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <h3>Card Grids</h3>
+            <p>Cards automatically adapt when nested or grouped</p>
+            <div class="demo-grid cols-3">
+              <div class="card">
+                <h5>
+                  <svg-icon icon="palette"></svg-icon>
+                  Design
+                </h5>
+                <p>Smart surfaces handle theming automatically</p>
+              </div>
+              <div class="card">
+                <h5>
+                  <svg-icon icon="code"></svg-icon>
+                  Development
+                </h5>
+                <p>Zero manual color overrides needed</p>
+              </div>
+              <div class="card">
+                <h5>
+                  <svg-icon icon="rocket"></svg-icon>
+                  Performance
+                </h5>
+                <p>CSS custom properties are fast</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Surface Inversion Section -->
+          <section class="showcase-section" data-section="surface-inversion">
+            <h2>
+              <svg-icon icon="moon" size="lg" class="icon-primary"></svg-icon>
+              Surface Inversion
+            </h2>
+
+            <p>
+              The smart surface system automatically inverts text and icon colors
+              when you use a dark surface in light mode (or vice versa). Toggle
+              dark mode to see the magic!
+            </p>
+
+            <h3>Dark Surfaces in Light Mode</h3>
+            <div class="demo-grid cols-2">
+              <div
+                class="demo-inversion-box"
+                style="background-color: #1a1a1a; padding: var(--spacing-6); border-radius: var(--radius-lg);"
+              >
+                <h4 style="color: white;">
+                  <svg-icon icon="moon" style="color: white;"></svg-icon>
+                  Automatic Inversion
+                </h4>
+                <p style="color: #e5e5e5;">
+                  This dark surface automatically uses light text and icons for
+                  perfect readability
+                </p>
+                <button class="btn-primary" style="margin-top: var(--spacing-3);">
+                  Primary Button
+                </button>
+              </div>
+
+              <div
+                class="demo-inversion-box"
+                style="background-color: #1e4a6f; padding: var(--spacing-6); border-radius: var(--radius-lg);"
+              >
+                <h4 style="color: white;">
+                  <svg-icon icon="palette" style="color: white;"></svg-icon>
+                  Primary 800
+                </h4>
+                <p style="color: #dbeafe;">
+                  Text and icons auto-adapt to maintain WCAG AA contrast
+                </p>
+                <button class="btn-secondary" style="margin-top: var(--spacing-3);">
+                  Secondary Button
+                </button>
+              </div>
+            </div>
+
+            <h3>Semantic Surfaces with Auto-Contrast</h3>
+            <div class="demo-grid cols-3">
+              <div
+                class="demo-inversion-box"
+                style="background-color: #16a34a; padding: var(--spacing-5); border-radius: var(--radius-md); text-align: center;"
+              >
+                <svg-icon
+                  icon="check-circle"
+                  size="xl"
+                  style="color: white;"
+                ></svg-icon>
+                <h5 style="color: white; margin-top: var(--spacing-2);">
+                  Success
+                </h5>
+                <p style="color: #dcfce7;">Icons remain visible</p>
+              </div>
+
+              <div
+                class="demo-inversion-box"
+                style="background-color: #ca8a04; padding: var(--spacing-5); border-radius: var(--radius-md); text-align: center;"
+              >
+                <svg-icon
+                  icon="warning"
+                  size="xl"
+                  style="color: white;"
+                ></svg-icon>
+                <h5 style="color: white; margin-top: var(--spacing-2);">
+                  Warning
+                </h5>
+                <p style="color: #fef9c3;">
+                  Perfect contrast maintained
+                </p>
+              </div>
+
+              <div
+                class="demo-inversion-box"
+                style="background-color: #be185d; padding: var(--spacing-5); border-radius: var(--radius-md); text-align: center;"
+              >
+                <svg-icon
+                  icon="heart"
+                  size="xl"
+                  style="color: white;"
+                ></svg-icon>
+                <h5 style="color: white; margin-top: var(--spacing-2);">Accent</h5>
+                <p style="color: #fce7f3;">Automatic adjustment</p>
               </div>
             </div>
           </section>

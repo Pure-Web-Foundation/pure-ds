@@ -128,10 +128,10 @@ async function buildIconSprite() {
   log('\n🎨 Building Icon Sprite...', 'bright');
   
   // Load configuration
-  const configPath = resolve(projectRoot, 'src/js/config.js');
-  const { config } = await import(`file://${configPath}`);
+  const configPath = resolve(projectRoot, 'src/js/pds-core/pds-config.js');
+  const { defaultConfig } = await import(`file://${configPath}`);
   
-  const iconConfig = config.design.icons;
+  const iconConfig = defaultConfig.icons;
   
   if (!iconConfig || !iconConfig.include) {
     log('❌ No icon configuration found in config.js', 'red');

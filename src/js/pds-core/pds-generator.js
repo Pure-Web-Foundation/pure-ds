@@ -402,8 +402,9 @@ export class Generator {
       const iconSubtle = textMuted;
       
       // Context-aware shadows: light shadows on dark surfaces, dark shadows on light
+      // Light shadows need higher opacity to be visible on dark backgrounds
       const shadowBase = isDark ? '#ffffff' : '#000000';
-      const shadowOpacity = isDark ? 0.15 : 0.1;
+      const shadowOpacity = isDark ? 0.25 : 0.1;
       const shadowColor = this.#rgbaFromHex(shadowBase, shadowOpacity);
       
       // Semi-transparent borders that work on any surface
