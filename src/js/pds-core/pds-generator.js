@@ -827,15 +827,21 @@ ${this.#generateMediaQueries()}
     css += `  --color-input-disabled-text: var(--color-gray-500);\n`;
     css += `  --color-code-bg: var(--color-gray-100);\n`;
 
-    css += `   /* other color tokens*/
+    css += `   /* Backdrop tokens - used for modal dialogs, drawers, overlays */
     
-    --backdrop-background: linear-gradient(
+    --backdrop-bg: linear-gradient(
         135deg,
         rgba(255, 255, 255, 0.2),
         rgba(255, 255, 255, 0.1)
       );
-
-    --backdrop-filter: blur(10px) saturate(150%) brightness(0.9);
+    --backdrop-blur: 10px;
+    --backdrop-saturate: 150%;
+    --backdrop-brightness: 0.9;
+    --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));
+    --backdrop-opacity: 1;
+    
+    /* Legacy alias for backwards compatibility */
+    --backdrop-background: var(--backdrop-bg);
     `;
 
     // Generate mesh gradient backgrounds
@@ -852,30 +858,30 @@ ${this.#generateMediaQueries()}
     
     return `
   /* Mesh Gradient Backgrounds */
-  --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 15%, transparent) 0px, transparent 50%),
-    radial-gradient(at 97% 21%, color-mix(in oklab, ${secondary} 12%, transparent) 0px, transparent 50%),
-    radial-gradient(at 52% 99%, color-mix(in oklab, ${accent} 10%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 29%, color-mix(in oklab, ${primary} 8%, transparent) 0px, transparent 50%);
+  --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 25%, transparent) 0px, transparent 50%),
+    radial-gradient(at 97% 21%, color-mix(in oklab, ${secondary} 22%, transparent) 0px, transparent 50%),
+    radial-gradient(at 52% 99%, color-mix(in oklab, ${accent} 18%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 29%, color-mix(in oklab, ${primary} 15%, transparent) 0px, transparent 50%);
   
-  --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, ${secondary} 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, color-mix(in oklab, ${primary} 10%, transparent) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, color-mix(in oklab, ${accent} 9%, transparent) 0px, transparent 50%),
-    radial-gradient(at 80% 100%, color-mix(in oklab, ${secondary} 8%, transparent) 0px, transparent 50%);
+  --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, ${secondary} 24%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, color-mix(in oklab, ${primary} 20%, transparent) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, color-mix(in oklab, ${accent} 17%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, color-mix(in oklab, ${secondary} 15%, transparent) 0px, transparent 50%);
   
-  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, ${accent} 11%, transparent) 0px, transparent 50%),
-    radial-gradient(at 85% 30%, color-mix(in oklab, ${primary} 12%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 80%, color-mix(in oklab, ${secondary} 9%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 90%, color-mix(in oklab, ${accent} 7%, transparent) 0px, transparent 50%);
+  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, ${accent} 21%, transparent) 0px, transparent 50%),
+    radial-gradient(at 85% 30%, color-mix(in oklab, ${primary} 23%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, color-mix(in oklab, ${secondary} 18%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, color-mix(in oklab, ${accent} 16%, transparent) 0px, transparent 50%);
   
-  --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, ${primary} 10%, transparent) 0px, transparent 50%),
-    radial-gradient(at 20% 80%, color-mix(in oklab, ${secondary} 11%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 60%, color-mix(in oklab, ${accent} 8%, transparent) 0px, transparent 50%),
-    radial-gradient(at 30% 40%, color-mix(in oklab, ${primary} 9%, transparent) 0px, transparent 50%);
+  --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, ${primary} 19%, transparent) 0px, transparent 50%),
+    radial-gradient(at 20% 80%, color-mix(in oklab, ${secondary} 22%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 60%, color-mix(in oklab, ${accent} 17%, transparent) 0px, transparent 50%),
+    radial-gradient(at 30% 40%, color-mix(in oklab, ${primary} 16%, transparent) 0px, transparent 50%);
   
-  --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, ${primary} 12%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 10%, color-mix(in oklab, ${accent} 10%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 10%, color-mix(in oklab, ${secondary} 9%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 90%, color-mix(in oklab, ${accent} 8%, transparent) 0px, transparent 50%);
+  --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, ${primary} 23%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 10%, color-mix(in oklab, ${accent} 20%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, color-mix(in oklab, ${secondary} 18%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, color-mix(in oklab, ${accent} 15%, transparent) 0px, transparent 50%);
     `;
   }
 
@@ -999,6 +1005,23 @@ ${this.#generateMediaQueries()}
 
     const semanticVars = `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n`;
 
+    // Backdrop tokens for dark mode
+    const backdropVars = `  /* Backdrop tokens - used for modal dialogs, drawers, overlays (dark mode) */
+  --backdrop-bg: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.6),
+      rgba(0, 0, 0, 0.4)
+    );
+  --backdrop-blur: 10px;
+  --backdrop-saturate: 120%;
+  --backdrop-brightness: 0.7;
+  --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));
+  --backdrop-opacity: 1;
+  
+  /* Legacy alias for backwards compatibility */
+  --backdrop-background: var(--backdrop-bg);
+`;
+
     // Generate dark mode mesh gradients
     const meshVars = this.#generateMeshGradientsDark(colors);
 
@@ -1015,7 +1038,7 @@ ${this.#generateMediaQueries()}
     let css = "";
 
     // Dark variables scoped to html[data-theme="dark"]
-    css += `html[data-theme="dark"] {\n${vars}${smartSurfaceVars}${semanticVars}${meshVars}}\n\n`;
+    css += `html[data-theme="dark"] {\n${vars}${smartSurfaceVars}${semanticVars}${backdropVars}${meshVars}}\n\n`;
     css += prefixRules('html[data-theme="dark"] ');
 
     return css;
@@ -1030,30 +1053,30 @@ ${this.#generateMediaQueries()}
     
     return `
   /* Mesh Gradient Backgrounds (Dark Mode) */
-  --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 8%, transparent) 0px, transparent 50%),
-    radial-gradient(at 97% 21%, color-mix(in oklab, ${secondary} 6%, transparent) 0px, transparent 50%),
-    radial-gradient(at 52% 99%, color-mix(in oklab, ${accent} 5%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 29%, color-mix(in oklab, ${primary} 4%, transparent) 0px, transparent 50%);
+  --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 20%, transparent) 0px, transparent 50%),
+    radial-gradient(at 97% 21%, color-mix(in oklab, ${secondary} 16%, transparent) 0px, transparent 50%),
+    radial-gradient(at 52% 99%, color-mix(in oklab, ${accent} 13%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 29%, color-mix(in oklab, ${primary} 10%, transparent) 0px, transparent 50%);
   
-  --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, ${secondary} 7%, transparent) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, color-mix(in oklab, ${primary} 5%, transparent) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, color-mix(in oklab, ${accent} 4%, transparent) 0px, transparent 50%),
-    radial-gradient(at 80% 100%, color-mix(in oklab, ${secondary} 4%, transparent) 0px, transparent 50%);
+  --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, ${secondary} 18%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, color-mix(in oklab, ${primary} 14%, transparent) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, color-mix(in oklab, ${accent} 12%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, color-mix(in oklab, ${secondary} 10%, transparent) 0px, transparent 50%);
   
-  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, ${accent} 6%, transparent) 0px, transparent 50%),
-    radial-gradient(at 85% 30%, color-mix(in oklab, ${primary} 6%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 80%, color-mix(in oklab, ${secondary} 5%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 90%, color-mix(in oklab, ${accent} 3%, transparent) 0px, transparent 50%);
+  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, ${accent} 15%, transparent) 0px, transparent 50%),
+    radial-gradient(at 85% 30%, color-mix(in oklab, ${primary} 17%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, color-mix(in oklab, ${secondary} 13%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, color-mix(in oklab, ${accent} 11%, transparent) 0px, transparent 50%);
   
-  --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, ${primary} 5%, transparent) 0px, transparent 50%),
-    radial-gradient(at 20% 80%, color-mix(in oklab, ${secondary} 6%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 60%, color-mix(in oklab, ${accent} 4%, transparent) 0px, transparent 50%),
-    radial-gradient(at 30% 40%, color-mix(in oklab, ${primary} 4%, transparent) 0px, transparent 50%);
+  --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, ${primary} 14%, transparent) 0px, transparent 50%),
+    radial-gradient(at 20% 80%, color-mix(in oklab, ${secondary} 16%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 60%, color-mix(in oklab, ${accent} 12%, transparent) 0px, transparent 50%),
+    radial-gradient(at 30% 40%, color-mix(in oklab, ${primary} 11%, transparent) 0px, transparent 50%);
   
-  --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, ${primary} 6%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 10%, color-mix(in oklab, ${accent} 5%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 10%, color-mix(in oklab, ${secondary} 5%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 90%, color-mix(in oklab, ${accent} 4%, transparent) 0px, transparent 50%);
+  --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, ${primary} 17%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 10%, color-mix(in oklab, ${accent} 14%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, color-mix(in oklab, ${secondary} 13%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, color-mix(in oklab, ${accent} 10%, transparent) 0px, transparent 50%);
     `;
   }
 
@@ -2475,9 +2498,10 @@ auto-form::before {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: var(--backdrop-bg);
+  backdrop-filter: var(--backdrop-filter);
   z-index: calc(var(--z-modal) - 1);
-  backdrop-filter: blur(4px);
+  opacity: var(--backdrop-opacity, 1);
 }
 
 /* Hide backdrop on mobile (full screen) */
@@ -2828,8 +2852,8 @@ dialog[open] {
 
 /* Backdrop styling */
 dialog::backdrop {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  background: var(--backdrop-bg);
+  backdrop-filter: var(--backdrop-filter);
   opacity: 0;
   transition: 
     opacity 0.2s ease,
@@ -2838,7 +2862,7 @@ dialog::backdrop {
 }
 
 dialog[open]::backdrop {
-  opacity: 1;
+  opacity: var(--backdrop-opacity, 1);
 }
 
 @starting-style {
@@ -3432,6 +3456,51 @@ a.icon-only {
 @media (max-width: ${breakpoints.md - 1}px) {
   .mobile-stack { flex-direction: column; }
   .mobile-stack > * { width: 100%; }
+}
+
+/* ============================================================================
+   Backdrop Utilities
+   Reusable backdrop layer for modal components (dialogs, drawers, overlays)
+   ============================================================================ */
+
+/* Base backdrop class for modal overlays */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--backdrop-bg);
+  backdrop-filter: var(--backdrop-filter);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: var(--z-modal, 1040);
+}
+
+.backdrop.active {
+  opacity: var(--backdrop-opacity, 1);
+  pointer-events: auto;
+}
+
+/* Backdrop variants */
+.backdrop-light {
+  --backdrop-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+  --backdrop-brightness: 1.1;
+}
+
+.backdrop-dark {
+  --backdrop-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+  --backdrop-brightness: 0.6;
+}
+
+.backdrop-blur-sm {
+  --backdrop-blur: 5px;
+}
+
+.backdrop-blur-md {
+  --backdrop-blur: 10px;
+}
+
+.backdrop-blur-lg {
+  --backdrop-blur: 20px;
 }
 `;
 

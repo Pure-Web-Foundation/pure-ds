@@ -31,9 +31,6 @@ export class DrawerPanel extends LitElement {
       --_min-h: var(--drawer-min-height, auto);
       --_easing: var(--drawer-easing, cubic-bezier(0.25, 1, 0.5, 1));
       --_dur: var(--drawer-duration, 280ms);
-      --_backdrop-bg: var(--drawer-backdrop-bg, rgba(0, 0, 0, 0.2));
-      --_backdrop-blur: var(--drawer-backdrop-blur, 5px);
-      --_backdrop-brightness: var(--drawer-backdrop-brightness, 0.8);
       --_handle-w: var(--drawer-handle-width, 36px);
       --_handle-h: var(--drawer-handle-height, 4px);
       --_handle-r: var(--drawer-handle-radius, 999px);
@@ -58,7 +55,7 @@ export class DrawerPanel extends LitElement {
     .backdrop {
       position: fixed;
       inset: 0;
-      background: var(--backdrop-background);
+      background: var(--backdrop-bg);
       backdrop-filter: var(--backdrop-filter);
       opacity: 0;
       pointer-events: none;
@@ -66,7 +63,7 @@ export class DrawerPanel extends LitElement {
       z-index: var(--_backdrop-z);
     }
     :host([open]) .backdrop {
-      opacity: 1;
+      opacity: var(--backdrop-opacity, 1);
       pointer-events: auto;
     }
     .layer {
