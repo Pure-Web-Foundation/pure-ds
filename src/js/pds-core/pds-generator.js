@@ -3206,6 +3206,7 @@ svg-icon {
   justify-content: center;
   flex-shrink: 0;
   vertical-align: middle;
+  pointer-events: none;
 }
 
 /* Icon size utilities */
