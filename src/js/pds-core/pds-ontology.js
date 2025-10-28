@@ -25,6 +25,7 @@ export const ontology = {
     { id: "card", name: "Card", selectors: [".card", ".card-basic", ".card-elevated", ".card-outlined", ".card-interactive"] },
     { id: "surface", name: "Surface", selectors: [".surface", ".surface-base", ".surface-raised", ".surface-overlay", ".surface-subtle", ".surface-elevated", ".surface-sunken"] },
     { id: "alert", name: "Alert", selectors: [".alert", ".alert-info", ".alert-success", ".alert-warning", ".alert-danger"] },
+    { id: "dialog", name: "Dialog", selectors: ["dialog", ".dialog"] },
     { id: "table", name: "Table", selectors: ["table", ".table-responsive", ".data-table"] },
     { id: "button", name: "Button", selectors: ["button", "[class^='btn-']", ".icon-only"] },
     { id: "fieldset", name: "Fieldset Group", selectors: ["fieldset[role='group']", "fieldset[role='radiogroup']"] },

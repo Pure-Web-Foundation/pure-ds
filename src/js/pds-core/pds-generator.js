@@ -760,7 +760,7 @@ ${components.tables !== false ? this.#generateTableStyles() : ""}
 ${components.alerts !== false ? this.#generateAlertStyles() : ""}
 ${components.toasts !== false ? this.#generateToastStyles() : ""}
 ${components.badges !== false ? this.#generateBadgeStyles() : ""}
-${components.modals !== false ? this.#generateModalStyles() : ""}
+${this.#generateDialogStyles()}
 ${components.tabStrip !== false ? this.#generateTabStripStyles() : ""}
 ${components.customScrollbars !== false ? this.#generateScrollbarStyles() : ""}
 
@@ -1190,59 +1190,7 @@ figcaption {
   }
 }
 
-dialog {
-  background-color: transparent;
-  border: none;
-  color: currentColor;
-}
-
-/* Dialog transition: fade + subtle zoom (best-practice) */
-dialog {
-  display: none; /* keep native behavior, show via [open] */
-  opacity: 0;
-  transform: translateY(6px) scale(0.985);
-  transition: opacity var(--transition-fast) ease, transform var(--transition-fast) ease;
-  will-change: opacity, transform;
-}
-
-dialog[open], dialog.is-open {
-  display: block;
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-/* Backdrop styling and transition where supported */
-dialog::backdrop {
-  background: var(--backdrop-background);
-  backdrop-filter: var(--backdrop-filter);
-  transition: all var(--transition-fast) ease;
-}
-
-/* Fallback: if ::backdrop unsupported, use a utility .dialog-backdrop element */
-.dialog-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  opacity: 0;
-  transition: opacity var(--transition-fast) ease;
-  pointer-events: none;
-}
-.dialog-backdrop.is-open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* Respect user's preference for reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  dialog,
-  dialog[open],
-  dialog.is-open,
-  dialog::backdrop,
-  .dialog-backdrop {
-    transition: none !important;
-    transform: none !important;
-  }
-}
+/* Dialog styles moved to #generateDialogStyles() */
 
 `;
   }
@@ -1413,11 +1361,7 @@ summary {
   }
 }
 
-dialog{
-  padding: 0;
-  border: none;
-  background-color: transparent;
-}
+/* Dialog styles moved to #generateDialogStyles() */
 
 `;
   }
@@ -2748,8 +2692,8 @@ tbody {
 `;
   }
 
-  #generateModalStyles() {
-    const { layout = {}, a11y = {} } = this.options;
+  #generateDialogStyles() {
+    const { layout = {}, behavior = {} } = this.options;
     const breakpoints = layout.breakpoints || {
       sm: 640,
       md: 768,
@@ -2757,143 +2701,196 @@ tbody {
       xl: 1280,
     };
 
-    return /*css*/ `/* Modal/Dialog Styles */
+    return /*css*/ `/* ============================================================================
+   Dialog Primitive
+   Native <dialog> element with PDS integration
+   ============================================================================ */
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* Dialog base styles */
 dialog {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: var(--z-modal);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-4);
-  
-  &[open], &.is-open {
-    display: flex;
-  }
-  
-  @media (max-width: ${breakpoints.sm - 1}px) {
-    padding: 0;
-  }
-}
-
-.dialog::backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--backdrop-background);
-  backdrop-filter: var(--backdrop-filter);
-  z-index: -1;
-  animation: fadeIn var(--transition-fast);
-}
-
-.modal-content {
-  position: relative;
-  background-color: var(--color-surface-base);
+  inset: 0;
+  max-width: min(600px, calc(100vw - var(--spacing-8)));
+  max-height: calc(100vh - var(--spacing-8)));
+  margin: auto;
+  padding: 0;
+  border: none;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xl);
-  max-width: 600px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  animation: slideUp var(--transition-normal);
+  
+  /* Surface styling - elevated overlay */
+  background-color: var(--surface-overlay-bg);
+  color: var(--surface-overlay-text);
+  box-shadow: 0 8px 32px var(--surface-overlay-shadow);
+  
+  /* Smooth transitions */
+  opacity: 0;
+  scale: 0.95;
+  transition: 
+    opacity 0.2s ease,
+    scale 0.2s ease,
+    overlay 0.2s ease allow-discrete,
+    display 0.2s ease allow-discrete;
+  
+  /* Overflow handling */
+  overflow: hidden;
 }
 
-.modal-header {
+/* Open state */
+dialog[open] {
+  opacity: 1;
+  scale: 1;
+}
+
+/* Starting style for smooth open animation */
+@starting-style {
+  dialog[open] {
+    opacity: 0;
+    scale: 0.95;
+  }
+}
+
+/* Backdrop styling */
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: 
+    opacity 0.2s ease,
+    overlay 0.2s ease allow-discrete,
+    display 0.2s ease allow-discrete;
+}
+
+dialog[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  dialog[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+/* Form structure - use flexbox instead of contents */
+dialog form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+}
+
+/* Dialog header */
+dialog header,
+dialog form > header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--spacing-4);
   padding: var(--spacing-6);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--surface-overlay-border);
+  flex-shrink: 0;
 }
 
-.modal-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
+dialog header h2,
+dialog header h3,
+dialog form > header h2,
+dialog form > header h3 {
   margin: 0;
-  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--surface-overlay-text);
+  flex: 1;
 }
 
-.modal-close {
+/* Close button in header */
+dialog header button[value="cancel"],
+dialog header .dialog-close {
   background: none;
   border: none;
-  font-size: var(--font-size-2xl);
-  line-height: 1;
-  opacity: 0.6;
-  cursor: pointer;
   padding: var(--spacing-2);
-  transition: opacity var(--transition-fast);
   border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--surface-overlay-icon);
+  transition: background-color var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   
   &:hover {
-    opacity: 1;
     background-color: var(--color-surface-subtle);
   }
+  
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
 }
 
-.modal-body {
+/* Dialog body - scrollable content */
+dialog article,
+dialog form > article,
+dialog .dialog-body {
+  flex: 1;
   padding: var(--spacing-6);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.modal-footer {
+/* Dialog footer - actions */
+dialog footer,
+dialog form > footer {
   display: flex;
+  flex-direction: row;
   gap: var(--spacing-3);
   justify-content: flex-end;
+  align-items: center;
   padding: var(--spacing-6);
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--surface-overlay-border);
+  flex-shrink: 0;
 }
 
-.modal-sm .modal-content {
-  max-width: 400px;
+/* Dialog size modifiers */
+dialog.dialog-sm {
+  max-width: min(400px, calc(100vw - var(--spacing-8)));
 }
 
-.modal-lg .modal-content {
-  max-width: 800px;
+dialog.dialog-lg {
+  max-width: min(800px, calc(100vw - var(--spacing-8)));
 }
 
-.modal-xl .modal-content {
-  max-width: 1200px;
+dialog.dialog-xl {
+  max-width: min(1200px, calc(100vw - var(--spacing-8)));
 }
 
+dialog.dialog-full {
+  max-width: calc(100vw - var(--spacing-8));
+  max-height: calc(100vh - var(--spacing-8));
+}
+
+/* Mobile responsiveness */
 @media (max-width: ${breakpoints.sm - 1}px) {
-  .modal-content {
-    max-width: 100%;
+  dialog {
+    max-width: 100vw;
     max-height: 100vh;
     border-radius: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
+    margin: 0;
   }
   
-  .modal-backdrop {
-    display: none;
+  dialog header,
+  dialog form > header,
+  dialog article,
+  dialog form > article,
+  dialog footer,
+  dialog form > footer {
+    padding: var(--spacing-4);
   }
 }
 
-@media (min-width: ${breakpoints.md}px) {
-  .modal-fullscreen .modal-content {
-    max-width: 90vw;
-    max-height: 90vh;
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  dialog,
+  dialog::backdrop {
+    transition-duration: 0.01s !important;
   }
 }
 
@@ -3933,8 +3930,8 @@ a.icon-only {
 
     css += this.#generateBadgeStyles();
 
-    // Modal component styles
-    css += this.#generateModalStyles();
+    // Dialog primitive styles
+    css += this.#generateDialogStyles();
 
     // TabStrip component styles
     if (components.tabStrip !== false) {
