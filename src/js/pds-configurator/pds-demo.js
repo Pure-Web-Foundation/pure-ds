@@ -88,6 +88,16 @@ customElements.define(
       }
     }
 
+    deactivateInspector() {
+      // Dispatch event to pds-config-form to toggle inspector mode off
+      document.dispatchEvent(
+        new CustomEvent("inspector-deactivate", {
+          bubbles: true,
+          composed: true,
+        })
+      );
+    }
+
     extractSections() {
       const sectionElements = this.querySelectorAll("[data-section]");
       this.sections = Array.from(sectionElements).map((el) => {
@@ -618,6 +628,10 @@ customElements.define(
       if (!detected) return;
 
       const { element, componentType, displayName } = detected;
+      
+      // Turn off inspector mode after selecting an element (like a color picker)
+      this.deactivateInspector();
+      
       // Check if an enhancer provides a demo HTML to display (clean template)
       let demoHtml = null;
       let enhancer = null;

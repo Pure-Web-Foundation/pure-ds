@@ -43,6 +43,15 @@ customElements.define(
 
       this.config = this.loadConfig();
 
+      // Listen for inspector deactivation requests from pds-demo
+      this._inspectorDeactivateHandler = () => {
+        if (this.inspectorMode) {
+          this.inspectorMode = false;
+          this.dispatchInspectorModeChange();
+        }
+      };
+      document.addEventListener("inspector-deactivate", this._inspectorDeactivateHandler);
+
       // Initialize document theme attribute: prefer localStorage, otherwise use OS preference
       try {
         const storedTheme = localStorage.getItem("pure-ds-theme");
@@ -80,6 +89,14 @@ customElements.define(
       // so the designer UI doesn't visually change when user edits are applied
       // elsewhere (these variables remain fixed for the designer element).
       this.applyDefaultHostVariables();
+    }
+
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      if (this._inspectorDeactivateHandler) {
+        document.removeEventListener("inspector-deactivate", this._inspectorDeactivateHandler);
+        this._inspectorDeactivateHandler = null;
+      }
     }
 
     /**
@@ -275,7 +292,17 @@ customElements.define(
 
     toggleInspectorMode() {
       this.inspectorMode = !this.inspectorMode;
+      this.dispatchInspectorModeChange();
 
+      toast(
+        this.inspectorMode
+          ? "Code Inspector active - click any element in the showcase to view its code"
+          : "Code Inspector deactivated",
+        { type: "info", duration: 3000 }
+      );
+    }
+
+    dispatchInspectorModeChange() {
       // Dispatch event to notify showcase
       this.dispatchEvent(
         new CustomEvent("inspector-mode-changed", {
@@ -283,13 +310,6 @@ customElements.define(
           composed: true,
           detail: { active: this.inspectorMode },
         })
-      );
-
-      toast(
-        this.inspectorMode
-          ? "Code Inspector active - click any element in the showcase to view its code"
-          : "Code Inspector deactivated",
-        { type: "info", duration: 3000 }
       );
     }
 
