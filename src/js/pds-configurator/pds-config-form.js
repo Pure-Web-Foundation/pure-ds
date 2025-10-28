@@ -203,7 +203,7 @@ customElements.define(
       PDS.Generator.applyStyles(this.designer);
 
       // Ensure document html[data-theme] respects persisted theme if present.
-      // Priority: localStorage 'pure-ds-theme' > explicit baseConfig seed (if non-system) > leave existing attribute.
+      // Priority: localStorage 'pure-ds-theme' > leave existing attribute (set at startup from OS preference).
       try {
         const storedTheme = localStorage.getItem("pure-ds-theme");
         if (storedTheme) {
@@ -220,14 +220,8 @@ customElements.define(
           } else {
             document.documentElement.setAttribute("data-theme", storedTheme);
           }
-        } else {
-          // No stored preference: if config explicitly requests a non-system theme, apply it.
-          const seedTheme = baseConfig && baseConfig.seeds && baseConfig.seeds.theme;
-          if (seedTheme && seedTheme !== "system") {
-            document.documentElement.setAttribute("data-theme", seedTheme);
-          }
-          // Otherwise leave the current attribute (often set at startup from OS preference)
         }
+        // No else needed: if no stored theme, leave the current attribute (set at startup from OS preference)
       } catch (ex) {
         /* ignore in non-browser environments */
       }
@@ -339,15 +333,31 @@ customElements.define(
 
       console.log("Form values received:", values);
 
-      // Convert flattened dot-notation to nested structure
+      // Convert flattened dot-notation or JSON-pointer keys to nested structure
       // e.g., { "colors.primary": "#123" } => { colors: { primary: "#123" } }
+      // and { "/colors/primary": "#123" } => { colors: { primary: "#123" } }
       const nestedValues = {};
+      const unescapePointer = (seg) => seg.replace(/~1/g, "/").replace(/~0/g, "~");
+
       for (const [key, value] of Object.entries(values)) {
-        if (key.includes(".")) {
+        if (!key) continue;
+
+        if (key.startsWith("/")) {
+          // JSON Pointer style
+          const raw = key.replace(/^\//, "");
+          const parts = raw.split("/").map(unescapePointer);
+          let current = nestedValues;
+          for (let i = 0; i < parts.length - 1; i++) {
+            const p = parts[i];
+            if (!current[p] || typeof current[p] !== "object") current[p] = {};
+            current = current[p];
+          }
+          current[parts[parts.length - 1]] = value;
+        } else if (key.includes(".")) {
           const parts = key.split(".");
           let current = nestedValues;
           for (let i = 0; i < parts.length - 1; i++) {
-            if (!current[parts[i]]) current[parts[i]] = {};
+            if (!current[parts[i]] || typeof current[parts[i]] !== "object") current[parts[i]] = {};
             current = current[parts[i]];
           }
           current[parts[parts.length - 1]] = value;
@@ -657,19 +667,29 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
         ],
       };
 
-      // Numeric fields that are better as ranges (baseFontSize, baseUnit, etc.)
+      // Numeric fields rendered as ranges for better UX
       ui["/typography/baseFontSize"] = {
         "ui:widget": "input-range",
-        "ui:min": 8,
-        "ui:max": 32,
+        "ui:min": 12,
+        "ui:max": 24,
+      };
+      ui["/typography/fontScale"] = {
+        "ui:widget": "input-number",
+        "ui:min": 1.1,
+        "ui:max": 1.618,
+        "ui:step": 0.01
       };
       ui["/spatialRhythm/baseUnit"] = {
         "ui:widget": "input-range",
         "ui:min": 4,
-        "ui:max": 48,
+        "ui:max": 32,
       };
 
-      // Add any other numeric fields you'd like to surface as ranges
+      // Dark mode color overrides
+      ui["/colors/darkMode/background"] = { "ui:widget": "input-color" };
+      ui["/colors/darkMode/secondary"] = { "ui:widget": "input-color" };
+
+      // Advanced: container padding
       ui["/spatialRhythm/containerPadding"] = {
         "ui:widget": "input-range",
         "ui:min": 0,

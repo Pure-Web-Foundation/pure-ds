@@ -1,96 +1,116 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Configuration",
+  "title": "Design System Configuration",
   "type": "object",
+  "description": "Configure your design system with essential parameters. The system intelligently derives full token sets from these values.",
   "properties": {
-    "seeds": {
-      "type": "object",
-      "title": "Quick Seeds",
-      "properties": {
-        "primary": { "type": "string", "format": "color", "title": "Primary", "default": "#2d9dc9" },
-        "accent": { "type": "string", "format": "color", "title": "Accent", "default": "#e54271" },
-        "background": { "type": "string", "format": "color", "title": "Background", "default": "#e7e6de" },
-        "baseFontSize": { "type": "integer", "title": "Base Font Size (px)", "default": 16, "minimum": 8, "maximum": 32 },
-        "baseUnit": { "type": "integer", "title": "Base Unit (px)", "default": 16, "minimum": 1 },
-  "elevationIntensity": { "type": "number", "title": "Elevation Intensity", "default": 1.0, "minimum": 0.2, "maximum": 2.0 }
-      }
-    },
     "colors": {
       "type": "object",
       "title": "Colors",
+      "description": "Essential color settings. The system automatically generates color scales, semantic colors, and dark mode variants.",
       "properties": {
         "primary": {
           "type": "string",
           "format": "color",
           "title": "Primary",
+          "description": "Main brand color for buttons, links, and primary UI elements.",
           "default": "#2d9dc9"
         },
         "secondary": {
           "type": "string",
           "format": "color",
           "title": "Secondary",
+          "description": "Supporting color used to generate the neutral gray scale.",
           "default": "#a99b95"
         },
         "accent": {
           "type": "string",
           "format": "color",
           "title": "Accent",
+          "description": "Accent color for highlights and call-to-action elements.",
           "default": "#e54271"
         },
         "background": {
           "type": "string",
           "format": "color",
-          "title": "Background",
+          "title": "Background (Light)",
+          "description": "Base background color for light mode.",
           "default": "#e7e6de"
+        },
+        "darkMode": {
+          "type": "object",
+          "title": "Dark Mode",
+          "description": "Dark theme overrides for quality dark mode.",
+          "properties": {
+            "background": {
+              "type": "string",
+              "format": "color",
+              "title": "Dark Background",
+              "description": "Background color for dark mode.",
+              "default": "#16171a"
+            },
+            "secondary": {
+              "type": "string",
+              "format": "color",
+              "title": "Dark Secondary (Optional)",
+              "description": "Optional: custom secondary/gray tone for dark mode.",
+              "default": "#8b9199"
+            }
+          }
         }
       }
     },
     "typography": {
       "type": "object",
       "title": "Typography",
+      "description": "Font settings. The system generates a fluid typographic scale automatically.",
       "properties": {
+        "baseFontSize": {
+          "type": "integer",
+          "title": "Base Font Size (px)",
+          "description": "Root font size in pixels (typically 16px = 1rem).",
+          "default": 16,
+          "minimum": 12,
+          "maximum": 24
+        },
+        "fontScale": {
+          "type": "number",
+          "title": "Font Scale Ratio",
+          "description": "Multiplier for heading sizes (1.2 = minor third, 1.333 = perfect fourth, 1.5 = perfect fifth).",
+          "default": 1.2,
+          "minimum": 1.1,
+          "maximum": 1.618,
+          "multipleOf": 0.01
+        },
         "fontFamilyHeadings": {
           "type": "string",
-          "title": "Headings Font Family",
+          "title": "Headings Font",
+          "description": "Font stack for headings.",
           "default": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
         },
         "fontFamilyBody": {
           "type": "string",
-          "title": "Body Font Family",
+          "title": "Body Font",
+          "description": "Font stack for body text.",
           "default": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
-        },
-        "baseFontSize": {
-          "type": "integer",
-          "title": "Base Font Size (px)",
-          "default": 16,
-          "minimum": 8,
-          "maximum": 32
         }
       }
     },
     "spatialRhythm": {
       "type": "object",
       "title": "Spacing",
+      "description": "Spacing system settings. The system generates a spacing scale automatically.",
       "properties": {
         "baseUnit": {
           "type": "integer",
           "title": "Base Unit (px)",
+          "description": "Base spacing unit in pixels (typically 16 = 1rem).",
           "default": 16,
-          "minimum": 1
-        }
-      }
-    },
-    "shape": {
-      "type": "object",
-      "title": "Shape",
-      "properties": {
-        "radiusSize": {
-          "type": "string",
-          "title": "Border Radius",
-          "enum": ["none", "small", "medium", "large", "full"],
-          "default": "large"
+          "minimum": 4,
+          "maximum": 32
         }
       }
     }
-  }
+  },
+  "required": ["colors", "typography", "spatialRhythm"]
 }

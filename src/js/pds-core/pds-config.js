@@ -9,54 +9,40 @@ export const defaultConfig = {
   colors: {
     // Palette - base colors that generate entire color palettes
     primary: "#2d9dc9", // Primary brand color
-    secondary: "#a99b95", // Secondary/neutral color
+    secondary: "#a99b95", // REQUIRED: Secondary/neutral color for gray scale generation
     accent: "#e54271", // Accent color (pink red)
     background: "#e7e6de", // Base background color for light mode
 
-    // Dark mode overrides (optional - if not set, auto-generated from light mode)
+    // Dark mode overrides - specify custom dark theme colors
     darkMode: {
       background: "#16171a", // Custom dark mode background (cool blue-gray)
-      secondary: "#8b9199", // Cool gray for dark mode inputs/borders
+      secondary: "#8b9199", // Optional: custom dark grays (uses light secondary if omitted)
+      // primary: null,      // Optional: override primary color for dark mode
+      // accent: null,       // Optional: override accent color for dark mode
     },
 
-    // Semantic colors (will use intelligent defaults if not specified)
-    success: null, // Auto-generated from primary if null
-    warning: "#B38600", // Uses accent color if null
-    danger: null, // Auto-generated from primary if null
-    info: null, // Uses primary color if null
+    // Semantic colors (auto-generated from primary if not specified)
+    success: null, // Auto-generated green from primary if null
+    warning: "#B38600", // Warning color (defaults to accent if null)
+    danger: null, // Auto-generated red from primary if null
+    info: null, // Defaults to primary color if null
 
-    // Gradients and overlays
+    // Advanced color options
     gradientStops: 3,
     elevationOpacity: 0.05,
   },
 
-  // Compact seeds for quick theming. Prefer editing these when creating
-  // simple presets — the Generator will derive full token sets from these
-  // seeds when present. Existing detailed keys remain for backward
-  // compatibility and explicit overrides.
-  seeds: {
-    // Minimal color seeds
-    primary: "#2d9dc9",
-    accent: "#e54271",
-    background: "#e7e6de",
-
-    // Minimal typography/spatial seeds
-    baseFontSize: 16,
-    fontScale: 1.2,
-    baseUnit: 16,
-
-    // Elevation intensity (0.5..2) - controls shadow scale generation
-    elevationIntensity: 1.0,
-    // Theme preference removed from config — theme is a separate UI preference stored in localStorage
-  },
-
   typography: {
+    // Essential typography settings (exposed in simple form)
+    baseFontSize: 16,
+    fontScale: 1.2, // Multiplier for heading size generation (1.2 = minor third)
     fontFamilyHeadings:
       'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
     fontFamilyBody: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
     fontFamilyMono:
       'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace',
-    baseFontSize: 16,
+    
+    // Advanced typography options (exposed in advanced form)
     fontWeightLight: enums.FontWeights.light,
     fontWeightNormal: enums.FontWeights.normal,
     fontWeightMedium: enums.FontWeights.medium,
@@ -71,7 +57,10 @@ export const defaultConfig = {
   },
 
   spatialRhythm: {
-    baseUnit: 16,
+    // Essential spacing setting (exposed in simple form)
+    baseUnit: 16, // Base spacing unit in pixels (typically 16 = 1rem)
+    
+    // Advanced spacing options
     scaleRatio: 1.25,
     maxSpacingSteps: 32,
     containerMaxWidth: 1200,

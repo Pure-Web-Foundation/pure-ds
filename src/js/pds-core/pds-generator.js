@@ -24,7 +24,7 @@ export class Generator {
       console.log("Generated tokens:", this.tokens);
     }
     this.css = this.#generateCSS();
-    console.log(this.css);
+    //console.log(this.css);
 
     if (this.options.debug) {
       console.log("Generated CSS length:", this.css.length);
@@ -55,9 +55,8 @@ export class Generator {
   }
 
   #generateTokens() {
-    // Normalize options using 'seeds' when available. This keeps the
-    // config surface small while allowing full explicit overrides.
-    const config = this.#applySeedsToOptions(this.options || {});
+    // Use config directly - no more seeds normalization layer
+    const config = this.options || {};
 
     return {
       colors: this.#generateColorTokens(config.colors || {}),
@@ -72,53 +71,17 @@ export class Generator {
     };
   }
 
-  // Apply compact seeds to the full options object. Seeds are minimal
-  // values the user can edit (primary/background/baseFontSize/baseUnit)
-  // and we map them onto the detailed config shape if detailed values
-  // are not already provided. This keeps backward compatibility.
-  #applySeedsToOptions(options) {
-    const out = structuredClone(options || {});
-    const seeds = out.seeds || {};
-
-    if (!seeds) return out;
-
-    // Colors
-    out.colors = out.colors || {};
-    if (seeds.primary && !out.colors.primary) out.colors.primary = seeds.primary;
-    if (seeds.accent && !out.colors.accent) out.colors.accent = seeds.accent;
-    if (seeds.background && !out.colors.background)
-      out.colors.background = seeds.background;
-
-    // Typography
-    out.typography = out.typography || {};
-    if (typeof seeds.baseFontSize !== "undefined" && !out.typography.baseFontSize)
-      out.typography.baseFontSize = seeds.baseFontSize;
-    if (typeof seeds.fontScale !== "undefined" && !out.typography.fontScale)
-      out.typography.fontScale = seeds.fontScale;
-
-    // Spatial rhythm
-    out.spatialRhythm = out.spatialRhythm || {};
-    if (typeof seeds.baseUnit !== "undefined" && !out.spatialRhythm.baseUnit)
-      out.spatialRhythm.baseUnit = seeds.baseUnit;
-
-    // Layers / elevation
-    out.layers = out.layers || {};
-    if (typeof seeds.elevationIntensity !== "undefined" && !out.layers.elevationIntensity)
-      out.layers.elevationIntensity = seeds.elevationIntensity;
-
-    return out;
-  }
-
   #generateColorTokens(colorConfig) {
     const {
       primary = "#3b82f6",
-      secondary = "#64748b",
+      secondary = "#64748b",      // REQUIRED for gray scale generation
       accent = "#ec4899",
       background = "#ffffff",
       success = null,
       warning = "#FFBF00",
       danger = null,
       info = null,
+      darkMode = {}                // Extract dark mode overrides
     } = colorConfig;
 
     const colors = {
@@ -161,12 +124,11 @@ export class Generator {
       colors.surface
     );
 
-    // Generate dark mode variants (with optional overrides)
-    const darkModeOverrides = this.options.colors?.darkMode || {};
+    // Generate dark mode variants using darkMode overrides from config
     colors.dark = this.#generateDarkModeColors(
       colors,
       background,
-      darkModeOverrides
+      darkMode  // Pass the darkMode object directly
     );
 
     return colors;
