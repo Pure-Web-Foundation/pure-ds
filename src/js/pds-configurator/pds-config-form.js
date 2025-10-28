@@ -4,6 +4,7 @@ import { PDS } from "../pds";
 //import { Generator } from "../pds-core/pds-generator";
 import "../svg-icon";
 import { deepMerge } from "../common/common";
+import { presets } from "../pds-core/pds-config";
 
 const STORAGE_KEY = "pure-ds-config";
 
@@ -445,6 +446,30 @@ customElements.define(
       }
     };
 
+    applyPreset = async (preset) => {
+      const result = await ask(
+        `Load "${preset.name}" preset? This will replace your current settings.`
+      );
+
+      if (result) {
+        // Merge preset config on top of default config
+        const presetConfig = deepMerge(
+          JSON.parse(JSON.stringify(PDS.defaultConfig)),
+          preset
+        );
+        
+        this.config = presetConfig;
+        this.saveConfig();
+        this.requestUpdate(); // Force LitElement to re-render
+        this.applyStyles(true);
+        
+        toast(`"${preset.name}" preset loaded successfully!`, { 
+          type: "success", 
+          duration: 3000 
+        });
+      }
+    };
+
     handleThemeChange(e) {
       try {
         const value = e.target.value;
@@ -599,6 +624,40 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
           </div>
 
           <div class="designer-actions">
+            <nav data-dropdown>
+              <button class="btn-secondary" style="width: 100%;">
+                <svg-icon icon="palette" size="sm"></svg-icon>
+                <span>Load Preset</span>
+                <svg-icon icon="caret-down" size="sm"></svg-icon>
+              </button>
+
+              <menu>
+                ${presets.map(
+                  (preset) => html`
+                    <li>
+                      <a
+                        href="#"
+                        @click=${(e) => {
+                          e.preventDefault();
+                          this.applyPreset(preset);
+                        }}
+                      >
+                        <span class="preset-colors">
+                          <span style="background-color: ${preset.colors.primary}"></span>
+                          <span style="background-color: ${preset.colors.secondary}"></span>
+                          <span style="background-color: ${preset.colors.accent}"></span>
+                        </span>
+                        <span class="preset-info">
+                          <strong>${preset.name}</strong>
+                          <small>${preset.description}</small>
+                        </span>
+                      </a>
+                    </li>
+                  `
+                )}
+              </menu>
+            </nav>
+
             <button
               @click=${this.handleReset}
               class="btn-secondary"

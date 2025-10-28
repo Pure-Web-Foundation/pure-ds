@@ -1,4 +1,195 @@
 import { enums } from "./pds-enums.js";
+
+/**
+ * Design system presets - pre-configured themes for quick starts
+ */
+export const presets = [
+  {
+    name: "Ocean Breeze",
+    description: "Fresh and calming ocean-inspired palette with professional undertones",
+    colors: {
+      primary: "#0891b2",
+      secondary: "#64748b",
+      accent: "#06b6d4",
+      background: "#f0f9ff",
+      darkMode: {
+        background: "#0c1821",
+        secondary: "#94a3b8"
+      }
+    },
+    typography: {
+      baseFontSize: 16,
+      fontScale: 1.25,
+      fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+      fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+    },
+    spatialRhythm: {
+      baseUnit: 16
+    }
+  },
+  {
+    name: "Midnight Steel",
+    description: "Bold industrial aesthetic with sharp contrasts and urban edge",
+    colors: {
+      primary: "#3b82f6",
+      secondary: "#52525b",
+      accent: "#f59e0b",
+      background: "#fafaf9",
+      darkMode: {
+        background: "#18181b",
+        secondary: "#71717a"
+      }
+    },
+    typography: {
+      baseFontSize: 16,
+      fontScale: 1.333,
+      fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+      fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+    },
+    spatialRhythm: {
+      baseUnit: 16
+    }
+  },
+  {
+    name: "Neural Glow",
+    description: "AI-inspired with vibrant purple-blue gradients and futuristic vibes",
+    colors: {
+      primary: "#8b5cf6",
+      secondary: "#6366f1",
+      accent: "#ec4899",
+      background: "#faf5ff",
+      darkMode: {
+        background: "#0f0a1a",
+        secondary: "#818cf8"
+      }
+    },
+    typography: {
+      baseFontSize: 16,
+      fontScale: 1.2,
+      fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+      fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+    },
+    spatialRhythm: {
+      baseUnit: 16
+    }
+  },
+  {
+    name: "Paper & Ink",
+    description: "Ultra-minimal design with focus on typography and whitespace",
+    colors: {
+      primary: "#171717",
+      secondary: "#737373",
+      accent: "#525252",
+      background: "#ffffff",
+      darkMode: {
+        background: "#0a0a0a",
+        secondary: "#a3a3a3"
+      }
+    },
+    typography: {
+      baseFontSize: 18,
+      fontScale: 1.414,
+      fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+      fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+    },
+    spatialRhythm: {
+      baseUnit: 24
+    }
+  },
+  {
+    name: "Sunset Paradise",
+    description: "Warm tropical colors evoking golden hour by the beach",
+    colors: {
+      primary: "#f97316",
+      secondary: "#d4a373",
+      accent: "#fb923c",
+      background: "#fffbeb",
+      darkMode: {
+        background: "#1a0f0a",
+        secondary: "#c9a482"
+      }
+    },
+    typography: {
+      baseFontSize: 16,
+      fontScale: 1.25,
+      fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+      fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+    },
+    spatialRhythm: {
+      baseUnit: 16
+    }
+  },
+  {
+    name: "Retro Wave",
+    description: "Nostalgic 80s-inspired palette with neon undertones",
+    colors: {
+      primary: "#d946ef",
+      secondary: "#a78bfa",
+      accent: "#22d3ee",
+      background: "#fef3ff",
+      darkMode: {
+        background: "#1a0a1f",
+        secondary: "#c4b5fd"
+      }
+    },
+    typography: {
+      baseFontSize: 16,
+      fontScale: 1.3,
+      fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+      fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+    },
+    spatialRhythm: {
+      baseUnit: 16
+    }
+  },
+  {
+    name: "Forest Canopy",
+    description: "Natural earth tones with organic, calming green hues",
+    colors: {
+      primary: "#059669",
+      secondary: "#78716c",
+      accent: "#84cc16",
+      background: "#f0fdf4",
+      darkMode: {
+        background: "#0a1410",
+        secondary: "#a8a29e"
+      }
+    },
+    typography: {
+      baseFontSize: 16,
+      fontScale: 1.2,
+      fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+      fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+    },
+    spatialRhythm: {
+      baseUnit: 16
+    }
+  },
+  {
+    name: "Ruby Elegance",
+    description: "Sophisticated palette with rich ruby reds and warm accents",
+    colors: {
+      primary: "#dc2626",
+      secondary: "#9ca3af",
+      accent: "#be123c",
+      background: "#fef2f2",
+      darkMode: {
+        background: "#1a0a0a",
+        secondary: "#d1d5db"
+      }
+    },
+    typography: {
+      baseFontSize: 16,
+      fontScale: 1.333,
+      fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+      fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+    },
+    spatialRhythm: {
+      baseUnit: 16
+    }
+  }
+];
+
 /**
  * Default configuration for the Pure Design System.
  * This file defines the default settings for colors, typography,
