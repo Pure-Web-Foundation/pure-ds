@@ -1,4 +1,5 @@
 import { LitElement, html, css, ifDefined } from "/assets/js/lit.js";
+import { render } from "/assets/js/lit.js";
 
 export class DrawerPanel extends LitElement {
   #isDragging = false;
@@ -18,6 +19,7 @@ export class DrawerPanel extends LitElement {
     position: { type: String, reflect: true },
     drag: { type: String, reflect: true },
     maxHeight: { type: String, attribute: "max-height" },
+    minHeight: { type: String, attribute: "min-height" },
   };
 
   static styles = css`
@@ -26,6 +28,7 @@ export class DrawerPanel extends LitElement {
       inset: 0;
       display: contents;
       --_max-h: var(--drawer-max-height, 70vh);
+      --_min-h: var(--drawer-min-height, auto);
       --_easing: var(--drawer-easing, cubic-bezier(0.25, 1, 0.5, 1));
       --_dur: var(--drawer-duration, 280ms);
       --_backdrop-bg: var(--drawer-backdrop-bg, rgba(0, 0, 0, 0.2));
@@ -90,7 +93,8 @@ export class DrawerPanel extends LitElement {
       background: var(--_panel-bg);
       box-shadow: var(--_shadow);
       max-height: var(--_max-h);
-      width: 100vw;
+      min-height: var(--_min-h);
+      width: 100%;
       max-width: 100%;
       border-top-left-radius: var(--_panel-radius);
       border-top-right-radius: var(--_panel-radius);
@@ -130,6 +134,7 @@ export class DrawerPanel extends LitElement {
       overflow: auto;
       -webkit-overflow-scrolling: touch;
       contain: layout paint style;
+      transition: height var(--_dur) var(--_easing);
     }
     :host([open]) .layer {
       transform: translateY(0);
@@ -158,6 +163,7 @@ export class DrawerPanel extends LitElement {
     this.position = "bottom";
     this.drag = "header";
     this.maxHeight = "";
+    this.minHeight = "";
   }
 
   render() {
@@ -173,7 +179,9 @@ export class DrawerPanel extends LitElement {
           aria-modal=${ifDefined(this.open ? "true" : undefined)}
           part="panel"
           tabindex="-1"
-          style=${this.maxHeight ? `--drawer-max-height:${this.maxHeight}` : ""}
+          style=${this.maxHeight || this.minHeight 
+            ? `${this.maxHeight ? `--drawer-max-height:${this.maxHeight};` : ''}${this.minHeight ? `--drawer-min-height:${this.minHeight};` : ''}`
+            : ""}
           @pointerdown=${this.drag !== "none" ? this.#onPointerDown : null}
         >
           <header part="header">
@@ -240,6 +248,13 @@ export class DrawerPanel extends LitElement {
       );
       this.#recalc();
     }
+    if (changed.has("minHeight") && this.#aside) {
+      this.#aside.style.setProperty(
+        "--drawer-min-height",
+        this.minHeight || "auto"
+      );
+      this.#recalc();
+    }
   }
 
   // Public API
@@ -251,6 +266,65 @@ export class DrawerPanel extends LitElement {
   }
   toggleDrawer() {
     this.open = !this.open;
+  }
+
+  /**
+   * Set drawer content using slots
+   * @param {TemplateResult|HTMLElement|string} bodyContent - Content for drawer body (Lit template, HTML element, or string)
+   * @param {TemplateResult|HTMLElement|string} headerContent - Optional content for drawer header
+   */
+  setContent(bodyContent, headerContent = null) {
+    // Clear existing slotted content
+    this.querySelectorAll('[slot="drawer-content"], [slot="drawer-header"]').forEach(el => el.remove());
+    
+    // Add new body content
+    if (bodyContent) {
+      const bodyWrapper = document.createElement('div');
+      bodyWrapper.setAttribute('slot', 'drawer-content');
+      bodyWrapper.className = 'surface-overlay';
+      
+      // Check if it's a Lit TemplateResult (has _$litType$ property)
+      if (bodyContent._$litType$) {
+        render(bodyContent, bodyWrapper);
+      } else if (typeof bodyContent === 'string') {
+        bodyWrapper.innerHTML = bodyContent;
+      } else {
+        bodyWrapper.appendChild(bodyContent);
+      }
+      this.appendChild(bodyWrapper);
+    }
+    
+    // Add new header content
+    if (headerContent) {
+      const headerWrapper = document.createElement('div');
+      headerWrapper.setAttribute('slot', 'drawer-header');
+      headerWrapper.className = 'surface-overlay';
+      
+      // Check if it's a Lit TemplateResult
+      if (headerContent._$litType$) {
+        render(headerContent, headerWrapper);
+      } else if (typeof headerContent === 'string') {
+        headerWrapper.innerHTML = headerContent;
+      } else {
+        headerWrapper.appendChild(headerContent);
+      }
+      this.appendChild(headerWrapper);
+    }
+    
+    // Recalculate height after content is rendered
+    // Use double RAF to ensure slots are fully processed
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.#recalc();
+      });
+    });
+  }
+
+  /**
+   * Clear drawer content (removes all slotted content)
+   */
+  clearContent() {
+    this.querySelectorAll('[slot="drawer-content"], [slot="drawer-header"]').forEach(el => el.remove());
   }
 
   // Events

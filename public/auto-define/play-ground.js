@@ -49,9 +49,22 @@ customElements.define(
     }
 
     openDrawer() {
-      const drawer = this.querySelector("#exampleDrawer");
-      if (drawer) {
-        drawer.open = !drawer.open;
+      const app = document.querySelector("pure-app");
+      if (app?.showDrawer) {
+        app.showDrawer(html`
+          <figure class="media-figure">
+            <img
+              class="media-image"
+              src="https://picsum.photos/800/600?random=1"
+              alt="Random landscape"
+            />
+            <figcaption class="media-caption">
+              <strong>Figure 1:</strong> A beautiful landscape demonstrating image handling.
+            </figcaption>
+          </figure>
+        `, {
+          header: html`<h3>Example Drawer</h3>`
+        });
       }
     }
   }

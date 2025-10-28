@@ -1,4 +1,4 @@
-import { LitElement, html, nothing } from "../lit";
+import { LitElement, html, nothing, render } from "../lit";
 import showdown from "showdown";
 import { PDS } from "../pds";
 
@@ -731,92 +731,75 @@ customElements.define(
     /**
      * Show code in pds-drawer
      */
-    async showCodeDrawer(html, litProps, displayName, componentType) {
-      // Create or get drawer
-      let drawer = document.querySelector("pds-drawer");
-      // if (!drawer) {
-      //   drawer = document.createElement("pds-drawer");
-      //   drawer.id = "code-inspector-drawer";
-      //   drawer.setAttribute("position", "bottom");
-      //   drawer.setAttribute("max-height", "80vh");
-      //   document.body.appendChild(drawer);
-      // }
+    async showCodeDrawer(htmlCode, litProps, displayName, componentType) {
+      const app = document.querySelector("pure-app");
+      if (!app?.showDrawer) return;
+      
+      const { unsafeHTML } = await import("../lit");
 
-      // Create content with copy button
-      const litPropsHTML =
-        litProps.length > 0
-          ? `
-      <div class="lit-properties">
-        <h4>Lit Properties</h4>
-        <div class="lit-props-list">
-          ${litProps
-            .map(
-              (prop) => `
-            <div class="lit-prop">
-              <code class="prop-name">${prop.name}</code>
-              <code class="prop-value">${JSON.stringify(prop.value)}</code>
+      // Create header template
+      const headerTemplate = html`
+        <div class="code-drawer-header">
+          <div class="code-drawer-title">
+            <svg-icon icon="code" size="sm"></svg-icon>
+            <span>${displayName}</span>
+            <span class="component-type-badge">${componentType}</span>
+          </div>
+          <button class="copy-code-btn" id="copyCodeBtn">
+            <svg-icon icon="clipboard" size="sm"></svg-icon>
+            Copy HTML
+          </button>
+        </div>
+      `;
+
+      // Create content template with loading state
+      const litPropsTemplate = litProps.length > 0 
+        ? html`
+          <div class="lit-properties">
+            <h4>Lit Properties</h4>
+            <div class="lit-props-list">
+              ${litProps.map(prop => html`
+                <div class="lit-prop">
+                  <code class="prop-name">${prop.name}</code>
+                  <code class="prop-value">${JSON.stringify(prop.value)}</code>
+                </div>
+              `)}
             </div>
-          `
-            )
-            .join("")}
-        </div>
-      </div>
-    `
-          : "";
+          </div>
+        `
+        : nothing;
 
-      // Show drawer with loading state first
-      drawer.innerHTML = `
-      <div slot="drawer-header" class="code-drawer-header">
-        <div class="code-drawer-title">
-          <svg-icon icon="code" size="sm"></svg-icon>
-          <span>${displayName}</span>
-          <span class="component-type-badge">${componentType}</span>
-        </div>
-        <button class="copy-code-btn" id="copyCodeBtn">
-          <svg-icon icon="clipboard" size="sm"></svg-icon>
-          Copy HTML
-        </button>
-      </div>
-      <div slot="drawer-content" class="code-drawer-content">
-        ${litPropsHTML}
+      const loadingTemplate = html`
+        ${litPropsTemplate}
         <div class="code-block-wrapper">
           <pre class="code-block"><code class="language-html">Loading syntax highlighting...</code></pre>
         </div>
-      </div>
-    `;
+      `;
 
-      drawer.open = true;
+      // Show drawer with loading content
+      await app.showDrawer(loadingTemplate, { header: headerTemplate });
 
       // Highlight code asynchronously
-      const highlightedCode = await this.highlightWithShiki(html);
+      const highlightedCode = await this.highlightWithShiki(htmlCode);
 
       // Update with highlighted code
-      drawer.innerHTML = `
-      <div slot="drawer-header" class="code-drawer-header">
-        <div class="code-drawer-title">
-          <svg-icon icon="code" size="sm"></svg-icon>
-          <span>${displayName}</span>
-          <span class="component-type-badge">${componentType}</span>
-        </div>
-        <button class="copy-code-btn" id="copyCodeBtn">
-          <svg-icon icon="clipboard" size="sm"></svg-icon>
-          Copy HTML
-        </button>
-      </div>
-      <div slot="drawer-content" class="code-drawer-content">
-        ${litPropsHTML}
+      const finalTemplate = html`
+        ${litPropsTemplate}
         <div class="code-block-wrapper">
-          <pre class="code-block"><code class="language-html">${highlightedCode}</code></pre>
+          <pre class="code-block"><code class="language-html">${unsafeHTML(highlightedCode)}</code></pre>
         </div>
-      </div>
-    `;
+      `;
+
+      // Re-render with highlighted code
+      await app.showDrawer(finalTemplate, { header: headerTemplate });
 
       // Add copy functionality
       setTimeout(() => {
-        const copyBtn = drawer.querySelector("#copyCodeBtn");
+        const drawer = document.getElementById('global-drawer');
+        const copyBtn = drawer?.querySelector("#copyCodeBtn");
         if (copyBtn) {
           copyBtn.onclick = () => {
-            let textToCopy = html;
+            let textToCopy = htmlCode;
             if (litProps.length > 0) {
               textToCopy =
                 "<!-- Lit Properties:\n" +
@@ -824,7 +807,7 @@ customElements.define(
                   .map((p) => `  ${p.name}=${JSON.stringify(p.value)}`)
                   .join("\n") +
                 "\n-->\n\n" +
-                html;
+                htmlCode;
             }
 
             navigator.clipboard.writeText(textToCopy).then(() => {
@@ -2874,16 +2857,15 @@ customElements.define(
             ? html`
                 <!-- Drawer Section -->
                 <section class="showcase-section">
-                  <h2>Drawer Example</h2>
-                  <button @click=${this.openDrawer}>Open Drawer</button>
-                  <pds-drawer position="bottom" id="exampleDrawer">
-                    <div class="surface-overlay" slot="drawer-header">
-                      <h3>Example Drawer</h3>
-                    </div>
-                    <div class="surface-overlay" slot="drawer-content">
-                      ${this.renderDrawerContent()}
-                    </div>
-                  </pds-drawer>
+                  <h2>
+                    <svg-icon icon="squares-four" size="lg" class="icon-primary"></svg-icon>
+                    Drawer Example
+                  </h2>
+                  <p>Click the button to open the global drawer:</p>
+                  <button class="btn-primary" @click=${this.openDrawer}>
+                    <svg-icon icon="sidebar" size="sm"></svg-icon>
+                    Open Drawer
+                  </button>
                 </section>
               `
             : ""}
@@ -2927,17 +2909,17 @@ customElements.define(
           }
         }
 
-        const drawer = document.querySelector("#global-drawer");
-        if (drawer) {
-          drawer.innerHTML = `<div class="surface-overlay" slot="drawer-header">
-                      <h3>PDS Documentation</h3>
-                    </div>
-                    <div class="surface-overlay" slot="drawer-content">
-                      ${htmlContent}
-                    </div>
-    `;
-
-          drawer.open = true;
+        const app = document.querySelector("pure-app");
+        if (app?.showDrawer) {
+          // Use unsafeHTML to render the markdown HTML
+          const { unsafeHTML } = await import("../lit");
+          
+          app.showDrawer(
+            html`${unsafeHTML(htmlContent)}`,
+            { 
+              header: html`<h3>PDS Documentation</h3>` 
+            }
+          );
         } else {
           // fallback: show toast if available
           const app = document.querySelector("pure-app");
@@ -2957,9 +2939,27 @@ customElements.define(
     }
 
     openDrawer() {
-      const drawer = this.querySelector("#exampleDrawer");
-      if (drawer) {
-        drawer.open = !drawer.open;
+      const app = document.querySelector("pure-app");
+      if (app?.showDrawer) {
+        app.showDrawer(
+          html`
+            <figure class="media-figure">
+              <img
+                class="media-image"
+                src="https://picsum.photos/800/600?random=1"
+                alt="Random landscape"
+              />
+              <figcaption class="media-caption">
+                <strong>Figure 1:</strong> A beautiful landscape demonstrating image
+                handling in the design system.
+              </figcaption>
+            </figure>
+          `,
+          { 
+            header: html`<h3>Example Drawer</h3>`, 
+            minHeight: "300px"
+          }
+        );
       }
     }
 

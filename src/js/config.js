@@ -42,6 +42,10 @@ export const config = {
             </menu>
         </nav>`,
         run: (elem) => {
+          // Prevent duplicate enhancement
+          if (elem.dataset.enhancedDropdown) return;
+          elem.dataset.enhancedDropdown = "true";
+
           //console.log("Enhance dropdown", elem);
 
           elem.style.position = "relative";
@@ -66,6 +70,10 @@ export const config = {
           <input type="checkbox">
         </label>`,
         run: (elem) => {
+          // Prevent duplicate enhancement
+          if (elem.dataset.enhancedToggle) return;
+          elem.dataset.enhancedToggle = "true";
+
           const checkbox = elem.querySelector('input[type="checkbox"]');
           if (!checkbox) {
             console.warn(
