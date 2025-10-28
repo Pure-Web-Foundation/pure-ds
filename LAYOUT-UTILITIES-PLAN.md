@@ -1,0 +1,293 @@
+# Layout & Component Utilities Architecture Plan
+
+## Problem Statement
+Currently, many useful layout patterns and component styles exist only in `showcase.css` rather than being part of the generated design system. This creates:
+- Inconsistency between demo and production usage
+- Inability for Code Inspector to understand these patterns
+- Lack of discoverability for design system users
+- Duplication and maintenance issues
+
+## Proposed Solution: Utility-First Layout System
+
+### 1. Core Layout Utilities (to be generated)
+
+#### Grid System
+```css
+/* Responsive Grid Utilities */
+.grid {
+  display: grid;
+  gap: var(--spacing-4);
+}
+
+.grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* Auto-fit grids (responsive) */
+.grid-auto-sm { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.grid-auto-md { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.grid-auto-lg { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
+
+/* Grid gaps */
+.gap-0 { gap: 0; }
+.gap-xs { gap: var(--spacing-1); }
+.gap-sm { gap: var(--spacing-2); }
+.gap-md { gap: var(--spacing-4); }
+.gap-lg { gap: var(--spacing-6); }
+.gap-xl { gap: var(--spacing-8); }
+```
+
+#### Flex System
+```css
+/* Flex Utilities */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-end { justify-content: flex-end; }
+```
+
+### 2. Component Patterns (to be generated)
+
+#### Card Variants
+```css
+/* Base Card */
+.card {
+  padding: var(--spacing-4);
+  background: var(--surface-base-bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--surface-base-border);
+}
+
+/* Card Variants */
+.card-elevated {
+  background: var(--surface-elevated-bg);
+  box-shadow: 0 2px 8px var(--surface-elevated-shadow);
+  border: none;
+}
+
+.card-interactive {
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--surface-elevated-shadow);
+}
+```
+
+#### Media Patterns
+```css
+/* Figure/Media Component */
+figure.media {
+  margin: 0;
+}
+
+figure.media > img,
+figure.media > video {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  display: block;
+}
+
+figure.media > figcaption {
+  margin-top: var(--spacing-2);
+  color: var(--surface-base-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* Gallery Grid */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-4);
+}
+
+.gallery > img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+```
+
+### 3. Configuration Schema
+
+Add to `pds-config.js`:
+
+```javascript
+layout: {
+  utilities: {
+    grid: true,
+    flex: true,
+    spacing: true,
+    container: true,
+  },
+  
+  gridSystem: {
+    columns: [1, 2, 3, 4, 6, 12],
+    autoFitBreakpoints: {
+      sm: '150px',
+      md: '250px',
+      lg: '350px',
+      xl: '450px',
+    },
+    gap: true, // Generate gap utilities
+  },
+  
+  containerMaxWidth: '1400px',
+},
+
+components: {
+  card: {
+    enabled: true,
+    variants: ['base', 'elevated', 'interactive', 'outlined'],
+  },
+  
+  media: {
+    enabled: true,
+    responsiveImages: true,
+    gallery: true,
+  },
+  
+  // ... other components
+},
+```
+
+### 4. Generator Integration
+
+Update `pds-generator.js` to include:
+
+```javascript
+#generateLayoutUtilities() {
+  const { layout = {} } = this.options;
+  let css = '';
+  
+  if (layout.utilities?.grid) {
+    css += this.#generateGridUtilities();
+  }
+  
+  if (layout.utilities?.flex) {
+    css += this.#generateFlexUtilities();
+  }
+  
+  if (layout.utilities?.spacing) {
+    css += this.#generateSpacingUtilities();
+  }
+  
+  return css;
+}
+
+#generateComponentStyles() {
+  const { components = {} } = this.options;
+  let css = '';
+  
+  if (components.card?.enabled) {
+    css += this.#generateCardStyles();
+  }
+  
+  if (components.media?.enabled) {
+    css += this.#generateMediaStyles();
+  }
+  
+  return css;
+}
+```
+
+### 5. Ontology Updates
+
+Add to `pds-ontology.js`:
+
+```javascript
+const layoutPatterns = {
+  '.grid': {
+    componentType: 'layout',
+    displayName: 'grid container',
+    description: 'CSS Grid layout container',
+  },
+  '.flex': {
+    componentType: 'layout',
+    displayName: 'flex container',
+    description: 'Flexbox layout container',
+  },
+  '.card': {
+    componentType: 'component',
+    displayName: 'card',
+    description: 'Card component with padding and border',
+  },
+  'figure.media': {
+    componentType: 'component',
+    displayName: 'media figure',
+    description: 'Figure element with responsive image/video',
+  },
+};
+```
+
+### 6. Migration Strategy
+
+1. **Phase 1: Define & Generate**
+   - Add layout config to `pds-config.js`
+   - Implement generators for layout utilities
+   - Implement generators for component patterns
+
+2. **Phase 2: Update Demo**
+   - Replace `.demo-grid` → `.grid .grid-auto-md`
+   - Replace `.flex-wrap` → `.flex .flex-wrap .gap-md`
+   - Replace `.card-basic` → `.card`
+   - Replace `.media-grid` → `.grid .grid-auto-md`
+
+3. **Phase 3: Update Inspector**
+   - Add layout patterns to ontology
+   - Update detection rules in `pds-demo.js`
+   - Ensure proper selection of grid/flex containers
+
+4. **Phase 4: Documentation**
+   - Auto-generate layout utility docs
+   - Create component pattern examples
+   - Update storybook/demo sections
+
+### 7. Benefits
+
+✅ **Consistency**: Same classes in demo and production
+✅ **Discoverability**: Generated docs show all available utilities
+✅ **Inspector Support**: Proper detection and code extraction
+✅ **Maintainability**: Single source of truth
+✅ **Extensibility**: Easy to add new patterns
+✅ **Performance**: Generated CSS is optimized
+✅ **Best Practices**: Follows modern utility-first patterns
+
+### 8. Implementation Priority
+
+1. **High Priority**:
+   - Grid system (.grid, .grid-cols-*, .grid-auto-*)
+   - Flex utilities (.flex, .flex-wrap, .items-*, .justify-*)
+   - Gap utilities (.gap-*)
+   - Card component (.card, .card-elevated)
+
+2. **Medium Priority**:
+   - Spacing utilities (.p-*, .m-*, .px-*, .py-*)
+   - Container (.container)
+   - Media patterns (figure.media, .gallery)
+
+3. **Low Priority**:
+   - Advanced grid features (grid-areas, grid-flow)
+   - Animation utilities
+   - Advanced flex features (flex-grow, flex-shrink)
+
+## Next Steps
+
+1. Update `pds-config.js` with layout configuration
+2. Create `#generateLayoutUtilities()` in generator
+3. Create `#generateComponentStyles()` in generator
+4. Update ontology with new patterns
+5. Migrate showcase.css to use generated utilities
+6. Update demo to use new class names
+7. Test Inspector with new patterns
+8. Generate documentation

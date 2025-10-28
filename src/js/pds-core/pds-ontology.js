@@ -22,8 +22,8 @@ export const ontology = {
 
   primitives: [
     { id: "badge", name: "Badge / Pill", selectors: [".badge", ".pill", ".tag", ".chip"] },
-    { id: "card", name: "Card", selectors: [".card", ".card-basic", ".card-elevated", ".card-outlined"] },
-    { id: "surface", name: "Surface", selectors: [".surface", ".surface-base", ".surface-raised", ".surface-overlay", ".surface-subtle"] },
+    { id: "card", name: "Card", selectors: [".card", ".card-basic", ".card-elevated", ".card-outlined", ".card-interactive"] },
+    { id: "surface", name: "Surface", selectors: [".surface", ".surface-base", ".surface-raised", ".surface-overlay", ".surface-subtle", ".surface-elevated", ".surface-sunken"] },
     { id: "alert", name: "Alert", selectors: [".alert", ".alert-info", ".alert-success", ".alert-warning", ".alert-danger"] },
     { id: "table", name: "Table", selectors: ["table", ".table-responsive", ".data-table"] },
     { id: "button", name: "Button", selectors: ["button", "[class^='btn-']", ".icon-only"] },
@@ -31,6 +31,8 @@ export const ontology = {
     { id: "label-field", name: "Label+Input", selectors: ["label"] },
     { id: "accordion", name: "Accordion", selectors: [".accordion", ".accordion-item", "details"] },
     { id: "icon", name: "Icon", selectors: ["svg-icon", ".icon", ".icon-*"] },
+    { id: "figure", name: "Figure/Media", selectors: ["figure", "figure.media"] },
+    { id: "gallery", name: "Gallery", selectors: [".gallery", ".gallery-grid"] },
   ],
 
   components: [
@@ -39,7 +41,17 @@ export const ontology = {
     { id: "pds-upload", name: "Upload", selectors: ["pds-upload"] },
   ],
 
-  utilities: [".btn-group", ".demo-grid", ".color-scale"],
+  // Layout utilities - patterns for structuring content
+  layoutPatterns: [
+    { id: "grid", name: "Grid Container", selectors: [".grid", ".demo-grid"], description: "CSS Grid layout container" },
+    { id: "grid-auto", name: "Auto-fit Grid", selectors: [".grid-auto-sm", ".grid-auto-md", ".grid-auto-lg", ".grid-auto-xl"], description: "Responsive auto-fit grid" },
+    { id: "grid-cols", name: "Grid Columns", selectors: [".grid-cols-1", ".grid-cols-2", ".grid-cols-3", ".grid-cols-4", ".grid-cols-6"], description: "Fixed column grid" },
+    { id: "flex", name: "Flex Container", selectors: [".flex", ".flex-wrap"], description: "Flexbox layout container" },
+    { id: "container", name: "Container", selectors: [".container"], description: "Centered max-width container" },
+    { id: "media-grid", name: "Media Grid", selectors: [".media-grid"], description: "Grid for media elements" },
+  ],
+
+  utilities: [".btn-group", ".demo-grid", ".color-scale", ".gap-*", ".items-*", ".justify-*"],
 
   styles: {
     typography: ["headings", "body", "code"],
@@ -163,6 +175,33 @@ export function findComponentForElement(startEl, { maxDepth = 5 } = {}) {
               return { element: current, componentType: 'pds-primitive', displayName: prim.name || prim.id };
             }
           }
+        }
+      }
+    }
+
+    // 4.5) layout patterns - check before going higher in tree
+    for (const layout of PDS.ontology.layoutPatterns || []) {
+      for (const sel of layout.selectors || []) {
+        const s = String(sel || '').trim();
+        
+        // Wildcard handling for gap-*, items-*, etc.
+        if (s.includes('*')) {
+          if (s.startsWith('.')) {
+            const prefix = s.slice(1).replace(/\*/g, '');
+            if (current.classList && Array.from(current.classList).some((c) => c.startsWith(prefix))) {
+              return { element: current, componentType: 'layout-pattern', displayName: layout.name || layout.id };
+            }
+          }
+          continue;
+        }
+        
+        // Normal selector
+        if (tryMatches(current, s)) {
+          return { element: current, componentType: 'layout-pattern', displayName: layout.name || layout.id };
+        }
+        const ancestor = safeClosest(current, s);
+        if (ancestor && ancestor.tagName !== 'DS-SHOWCASE') {
+          return { element: ancestor, componentType: 'layout-pattern', displayName: layout.name || layout.id };
         }
       }
     }

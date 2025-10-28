@@ -115,6 +115,28 @@ export const defaultConfig = {
     densityComfortable: 1.2,
     buttonMinHeight: enums.TouchTargetSizes.standard,
     inputMinHeight: 40,
+    
+    // Layout utility system
+    utilities: {
+      grid: true,
+      flex: true,
+      spacing: true,
+      container: true,
+    },
+    
+    gridSystem: {
+      columns: [1, 2, 3, 4, 6],
+      autoFitBreakpoints: {
+        sm: '150px',
+        md: '250px',
+        lg: '350px',
+        xl: '450px',
+      },
+      enableGapUtilities: true,
+    },
+    
+    containerMaxWidth: '1400px',
+    containerPadding: 'var(--spacing-6)',
   },
 
   advanced: {
@@ -133,6 +155,16 @@ export const defaultConfig = {
     tabStrip: true,
     customScrollbars: true,
     drawer: true,
+    
+    // Component patterns
+    card: {
+      enabled: true,
+      variants: ['base', 'elevated', 'interactive', 'outlined'],
+    },
+    media: {
+      enabled: true,
+      gallery: true,
+    },
   },
 
   icons: {
@@ -266,6 +298,7 @@ export const defaultConfig = {
         "feather",
         "square",
         "circle",
+        "squares-four",
       ],
     },
     spritePath: "public/assets/img/icons.svg",

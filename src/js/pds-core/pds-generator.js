@@ -3265,37 +3265,71 @@ a.icon-only {
       xl: 1280,
     };
 
-    return /*css*/ `/* Mobile-First Layout Utilities */
+    const gridSystem = layout.gridSystem || {};
+    const columns = gridSystem.columns || [1, 2, 3, 4, 6];
+    const autoFitBreakpoints = gridSystem.autoFitBreakpoints || {
+      sm: '150px',
+      md: '250px',
+      lg: '350px',
+      xl: '450px',
+    };
+
+    let css = /*css*/ `
+/* ============================================================================
+   Layout Utilities
+   Modern grid and flex system for building responsive layouts
+   ============================================================================ */
+
+/* Container */
 .container {
   display: block;
   width: 100%;
+  max-width: ${layout.containerMaxWidth || '1400px'};
   margin: 0 auto;
-  padding: 0 var(--spacing-4); /* Mobile padding */
-  overflow-x: hidden; /* Prevent horizontal scroll */
+  padding: ${layout.containerPadding || 'var(--spacing-6)'};
 }
 
-/* Responsive container padding and max-width */
-@media (min-width: ${breakpoints.sm}px) {
-  .container {
-    padding: 0 var(--spacing-6);
-  }
+/* Grid System */
+.grid {
+  display: grid;
+  gap: var(--spacing-4);
 }
 
-@media (min-width: ${breakpoints.md}px) {
-  .container {
-    max-width: var(--layout-maxWidth);
-    padding: 0 var(--layout-containerPadding);
-  }
-}
+`;
 
-/* Mobile-first Flexbox */
+    // Generate fixed column grids
+    for (const col of columns) {
+      css += `.grid-cols-${col} { grid-template-columns: repeat(${col}, 1fr); }\n`;
+    }
+
+    css += '\n/* Auto-fit grids (responsive) */\n';
+    // Generate auto-fit responsive grids
+    for (const [name, minWidth] of Object.entries(autoFitBreakpoints)) {
+      css += `.grid-auto-${name} { grid-template-columns: repeat(auto-fit, minmax(${minWidth}, 1fr)); }\n`;
+    }
+
+    // Generate gap utilities
+    if (gridSystem.enableGapUtilities) {
+      css += `
+/* Gap utilities */
+.gap-0 { gap: 0; }
+.gap-xs { gap: var(--spacing-1); }
+.gap-sm { gap: var(--spacing-2); }
+.gap-md { gap: var(--spacing-4); }
+.gap-lg { gap: var(--spacing-6); }
+.gap-xl { gap: var(--spacing-8); }
+
+`;
+    }
+
+    css += /*css*/ `
+/* Flexbox System */
 .flex {
   display: flex;
-  flex-wrap: wrap; /* Allow wrapping on mobile */
 }
 
-.flex > * {
-  min-width: 0; /* Prevent flex children from overflowing */
+.flex-wrap {
+  flex-wrap: wrap;
 }
 
 .flex-col {
@@ -3306,256 +3340,28 @@ a.icon-only {
   flex-direction: row;
 }
 
-/* Mobile: stack by default, row on larger screens */
-.flex-mobile-col {
-  flex-direction: column;
+/* Flex alignment */
+.items-start { align-items: flex-start; }
+.items-center { align-items: center; }
+.items-end { align-items: flex-end; }
+.items-stretch { align-items: stretch; }
+.items-baseline { align-items: baseline; }
+
+.justify-start { justify-content: flex-start; }
+.justify-center { justify-content: center; }
+.justify-end { justify-content: flex-end; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.justify-evenly { justify-content: space-evenly; }
+
+/* Responsive helpers */
+@media (max-width: ${breakpoints.md - 1}px) {
+  .mobile-stack { flex-direction: column; }
+  .mobile-stack > * { width: 100%; }
 }
-
-@media (min-width: ${breakpoints.sm}px) {
-  .flex-mobile-col {
-    flex-direction: row;
-  }
-}
-
-.items-center {
-  align-items: center;
-}
-
-.items-start {
-  align-items: flex-start;
-}
-
-.items-stretch {
-  align-items: stretch;
-}
-
-.justify-center {
-  justify-content: center;
-}
-
-.justify-between {
-  justify-content: space-between;
-}
-
-.justify-start {
-  justify-content: flex-start;
-}
-
-/* Mobile-first spacing */
-.gap-1 { gap: var(--spacing-1); }
-.gap-2 { gap: var(--spacing-2); }
-.gap-3 { gap: var(--spacing-3); }
-.gap-4 { gap: var(--spacing-4); }
-.gap-6 { gap: var(--spacing-6); }
-.gap-8 { gap: var(--spacing-8); }
-
-/* Mobile-first Grid */
-.grid {
-  display: grid;
-  width: 100%;
-  gap: var(--spacing-4);
-}
-
-.grid > * {
-  min-width: 0; /* Prevent grid children from overflowing */
-}
-
-/* Mobile: single column by default */
-.grid-cols-1 { grid-template-columns: 1fr; }
-.grid-cols-2 { grid-template-columns: 1fr; } /* Single column on mobile */
-.grid-cols-3 { grid-template-columns: 1fr; } /* Single column on mobile */
-.grid-cols-4 { grid-template-columns: 1fr; } /* Single column on mobile */
-
-/* Responsive grid columns */
-@media (min-width: ${breakpoints.sm}px) {
-  .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (min-width: ${breakpoints.md}px) {
-  .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
-}
-
-@media (min-width: ${breakpoints.lg}px) {
-  .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
-}
-
-/* Surface backgrounds for nesting */
-.surface-base {
-  background-color: var(--color-surface-base);
-  /* Apply smart surface tokens automatically */
-  background-color: var(--surface-base-bg);
-  color: var(--surface-base-text);
-  box-shadow: 0 1px 3px var(--surface-base-shadow);
-}
-
-.surface-base fieldset {
-  background-color: var(--color-surface-subtle);
-}
-
-.surface-subtle {
-  background-color: var(--surface-subtle-bg);
-  color: var(--surface-subtle-text);
-}
-
-.surface-elevated {
-  background-color: var(--color-surface-elevated);
-  /* Apply smart surface tokens automatically */
-  background-color: var(--surface-elevated-bg);
-  color: var(--surface-elevated-text);
-  box-shadow: 0 2px 8px var(--surface-elevated-shadow);
-}
-
-.surface-elevated fieldset {
-  background-color: var(--color-surface-sunken);
-}
-
-.surface-sunken {
-  background-color: var(--surface-sunken-bg);
-  color: var(--surface-sunken-text);
-  border: 1px solid var(--surface-sunken-border);
-}
-
-.surface-overlay {
-  background-color: var(--color-surface-overlay);
-  /* Apply smart surface tokens automatically */
-  background-color: var(--surface-overlay-bg);
-  color: var(--surface-overlay-text);
-  box-shadow: 0 4px 16px var(--surface-overlay-shadow);
-}
-
-.surface-overlay fieldset {
-  background-color: var(--color-surface-elevated);
-}
-
-/* Utility: apply smart icon colors to any surface */
-.surface-base svg-icon,
-.surface-base .icon {
-  color: var(--surface-base-icon);
-}
-
-.surface-elevated svg-icon,
-.surface-elevated .icon {
-  color: var(--surface-elevated-icon);
-}
-
-.surface-overlay svg-icon,
-.surface-overlay .icon {
-  color: var(--surface-overlay-icon);
-}
-
-/* Default behavior when no surface class is present */
-body:not([class*="surface-"]) fieldset,
-.container fieldset {
-  background-color: var(--color-surface-subtle);
-}
-
-/* Mobile-first Cards with smart surface tokens */
-.card {
-  background-color: var(--surface-elevated-bg);
-  color: var(--surface-elevated-text);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-4); /* Smaller padding on mobile */
-  box-shadow: 0 2px 8px var(--surface-elevated-shadow);
-  border: 1px solid var(--surface-elevated-border);
-  transition: box-shadow var(--transition-normal);
-  width: 100%;
-  margin-bottom: var(--spacing-4);
-}
-
-.card svg-icon,
-.card .icon {
-  color: var(--surface-elevated-icon);
-}
-
-@media (min-width: ${breakpoints.sm}px) {
-  .card {
-    padding: var(--spacing-6); /* Larger padding on desktop */
-  }
-}
-
-.card:hover {
-  box-shadow: 0 4px 16px var(--surface-elevated-shadow);
-}
-
-/* Mobile-first spacing utilities */
-.p-0 { padding: var(--spacing-0); }
-.p-1 { padding: var(--spacing-1); }
-.p-2 { padding: var(--spacing-2); }
-.p-3 { padding: var(--spacing-3); }
-.p-4 { padding: var(--spacing-4); }
-.p-6 { padding: var(--spacing-6); }
-.p-8 { padding: var(--spacing-8); }
-
-.px-4 { padding-left: var(--spacing-4); padding-right: var(--spacing-4); }
-.py-4 { padding-top: var(--spacing-4); padding-bottom: var(--spacing-4); }
-
-.m-0 { margin: var(--spacing-0); }
-.m-1 { margin: var(--spacing-1); }
-.m-2 { margin: var(--spacing-2); }
-.m-3 { margin: var(--spacing-3); }
-.m-4 { margin: var(--spacing-4); }
-.m-6 { margin: var(--spacing-6); }
-.m-8 { margin: var(--spacing-8); }
-
-.mx-auto { margin-left: auto; margin-right: auto; }
-
-.mb-4 { margin-bottom: var(--spacing-4); }
-.mt-4 { margin-top: var(--spacing-4); }
-.mr-4 { margin-right: var(--spacing-4); }
-.ml-4 { margin-left: var(--spacing-4); }
-
-/* Mobile-first text utilities */
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
-
-.text-sm { font-size: var(--font-size-sm); }
-.text-base { font-size: var(--font-size-base); }
-
-/* Generic container helpers (form-group, stack) */
-.form-group {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-3);
-  flex-wrap: wrap;
-}
-
-.form-group > * {
-  margin: 0;
-}
-
-.form-group .form-actions {
-  margin-left: auto; /* push actions to the right */
-  display: flex;
-  gap: var(--spacing-2);
-}
-
-.stack {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-3);
-}
-
-.stack-sm { gap: var(--spacing-1); }
-.stack-lg { gap: var(--spacing-6); }
-.text-lg { font-size: var(--font-size-lg); }
-
-/* Hide/show utilities */
-.hidden { display: none; }
-.block { display: block; }
-.inline { display: inline; }
-.inline-block { display: inline-block; }
-
-/* Mobile-specific utilities */
-.mobile-hidden { display: none; }
-.desktop-hidden { display: block; }
-
-@media (min-width: ${breakpoints.sm}px) {
-  .mobile-hidden { display: block; }
-  .desktop-hidden { display: none; }
-}
-
 `;
+
+    return css;
   }
 
   #generateMediaUtilities() {

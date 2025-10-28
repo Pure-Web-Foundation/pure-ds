@@ -157,6 +157,28 @@ customElements.define(
         };
       }
 
+      // Prioritize semantic HTML primitives (figure, table, details, etc.)
+      const semanticElements = ['FIGURE', 'TABLE', 'DETAILS', 'VIDEO', 'AUDIO', 'PICTURE', 'BLOCKQUOTE', 'PRE', 'CODE'];
+      if (semanticElements.includes(element.tagName)) {
+        return {
+          element: element,
+          componentType: "html-primitive",
+          displayName: element.tagName.toLowerCase(),
+        };
+      }
+
+      // Check if inside a semantic HTML element
+      for (const tag of semanticElements) {
+        const semanticParent = element.closest(tag.toLowerCase());
+        if (semanticParent) {
+          return {
+            element: semanticParent,
+            componentType: "html-primitive",
+            displayName: tag.toLowerCase(),
+          };
+        }
+      }
+
       // Check for PDS-styled primitives (elements styled by PDS classes)
       const pdsStyledElement = this.findPDSStyledElement(element);
       if (pdsStyledElement) {
@@ -2489,6 +2511,158 @@ customElements.define(
                 <p style="color: #fce7f3;">Automatic adjustment</p>
               </div>
             </div>
+          </section>
+
+          <!-- Grid Utilities Section -->
+          <section class="showcase-section" data-section="grid-utilities">
+            <h2>
+              <svg-icon
+                icon="squares-four"
+                size="lg"
+                class="icon-primary"
+              ></svg-icon>
+              Grid Utilities
+            </h2>
+            <p>
+              Modern, config-driven grid system with auto-fit responsive layouts.
+              All utilities are generated from <code>layout.gridSystem</code> configuration.
+            </p>
+
+            <h3>Fixed Column Grids</h3>
+            <p>Use <code>.grid-cols-{n}</code> classes for fixed column layouts:</p>
+            
+            <div class="grid grid-cols-2 gap-md" style="margin-bottom: var(--spacing-4);">
+              <div class="card">
+                <svg-icon icon="square" size="lg" class="icon-primary"></svg-icon>
+                <h4>Grid Column 1</h4>
+                <p>Two column layout</p>
+              </div>
+              <div class="card">
+                <svg-icon icon="square" size="lg" class="icon-secondary"></svg-icon>
+                <h4>Grid Column 2</h4>
+                <p>Equal width columns</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-sm" style="margin-bottom: var(--spacing-4);">
+              <div class="card">
+                <svg-icon icon="circle" size="md" class="icon-success"></svg-icon>
+                <p>Column 1</p>
+              </div>
+              <div class="card">
+                <svg-icon icon="circle" size="md" class="icon-warning"></svg-icon>
+                <p>Column 2</p>
+              </div>
+              <div class="card">
+                <svg-icon icon="circle" size="md" class="icon-error"></svg-icon>
+                <p>Column 3</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-4 gap-xs">
+              <div class="card"><p>1</p></div>
+              <div class="card"><p>2</p></div>
+              <div class="card"><p>3</p></div>
+              <div class="card"><p>4</p></div>
+            </div>
+
+            <h3>Auto-Fit Responsive Grids</h3>
+            <p>
+              Use <code>.grid-auto-{size}</code> for responsive layouts that automatically
+              adjust columns based on available space:
+            </p>
+            
+            <h4><code>.grid-auto-sm</code> (min 150px)</h4>
+            <div class="grid grid-auto-sm gap-md" style="margin-bottom: var(--spacing-4);">
+              <div class="card">
+                <svg-icon icon="desktop" size="lg" class="icon-info"></svg-icon>
+                <h5>Responsive</h5>
+                <p>Automatically wraps</p>
+              </div>
+              <div class="card">
+                <svg-icon icon="device-mobile" size="lg" class="icon-info"></svg-icon>
+                <h5>Adaptive</h5>
+                <p>Based on space</p>
+              </div>
+              <div class="card">
+                <svg-icon icon="globe" size="lg" class="icon-info"></svg-icon>
+                <h5>Flexible</h5>
+                <p>Resize the window</p>
+              </div>
+              <div class="card">
+                <svg-icon icon="feather" size="lg" class="icon-info"></svg-icon>
+                <h5>Dynamic</h5>
+                <p>No breakpoints needed</p>
+              </div>
+            </div>
+
+            <h4><code>.grid-auto-md</code> (min 250px)</h4>
+            <div class="grid grid-auto-md gap-lg" style="margin-bottom: var(--spacing-4);">
+              <div class="card surface-elevated">
+                <svg-icon icon="rocket" size="xl" class="icon-accent"></svg-icon>
+                <h5>Card 1</h5>
+                <p>Larger minimum width means fewer columns on small screens</p>
+              </div>
+              <div class="card surface-elevated">
+                <svg-icon icon="palette" size="xl" class="icon-accent"></svg-icon>
+                <h5>Card 2</h5>
+                <p>Smart surface tokens apply automatically</p>
+              </div>
+              <div class="card surface-elevated">
+                <svg-icon icon="heart" size="xl" class="icon-accent"></svg-icon>
+                <h5>Card 3</h5>
+                <p>Consistent spacing with gap utilities</p>
+              </div>
+            </div>
+
+            <h3>Gap Utilities</h3>
+            <p>Control spacing between grid items with <code>.gap-{size}</code> classes:</p>
+            
+            <div style="display: grid; gap: var(--spacing-4); grid-template-columns: 1fr 1fr;">
+              <div>
+                <p><strong>.gap-xs</strong> (spacing-1)</p>
+                <div class="grid grid-cols-3 gap-xs">
+                  <div class="card"><p>A</p></div>
+                  <div class="card"><p>B</p></div>
+                  <div class="card"><p>C</p></div>
+                </div>
+              </div>
+              
+              <div>
+                <p><strong>.gap-sm</strong> (spacing-2)</p>
+                <div class="grid grid-cols-3 gap-sm">
+                  <div class="card"><p>A</p></div>
+                  <div class="card"><p>B</p></div>
+                  <div class="card"><p>C</p></div>
+                </div>
+              </div>
+              
+              <div>
+                <p><strong>.gap-md</strong> (spacing-4)</p>
+                <div class="grid grid-cols-3 gap-md">
+                  <div class="card"><p>A</p></div>
+                  <div class="card"><p>B</p></div>
+                  <div class="card"><p>C</p></div>
+                </div>
+              </div>
+              
+              <div>
+                <p><strong>.gap-lg</strong> (spacing-6)</p>
+                <div class="grid grid-cols-3 gap-lg">
+                  <div class="card"><p>A</p></div>
+                  <div class="card"><p>B</p></div>
+                  <div class="card"><p>C</p></div>
+                </div>
+              </div>
+            </div>
+
+            <h3>Code Inspector Support</h3>
+            <p class="interactive-demo">
+              <svg-icon icon="cursor-click" size="sm" class="icon-primary"></svg-icon>
+              Enable the <strong>Code Inspector</strong> and click on any grid container above.
+              The ontology now recognizes layout patterns like <code>grid</code>, <code>grid-cols</code>,
+              and <code>grid-auto</code> for intelligent component detection.
+            </p>
           </section>
 
           <!-- Interactive States Section -->
