@@ -4,21 +4,6 @@
   "description": "Configuration for the design system including theme colors, typography, spacing, etc. This drives generation of CSS variables and styling.",
   "type": "object",
   "properties": {
-    "seeds": {
-      "type": "object",
-      "title": "Quick Seeds",
-      "description": "Minimal theme seeds — preferred for quick edits; detailed overrides remain available below.",
-      "properties": {
-        "primary": { "type": "string", "format": "color", "title": "Primary", "default": "#2d9dc9" },
-        "accent": { "type": "string", "format": "color", "title": "Accent", "default": "#e54271" },
-        "background": { "type": "string", "format": "color", "title": "Background", "default": "#e7e6de" },
-        "baseFontSize": { "type": "integer", "title": "Base Font Size (px)", "default": 16, "minimum": 8, "maximum": 32 },
-        "fontScale": { "type": "number", "title": "Font Scale", "default": 1.2, "minimum": 1.0, "maximum": 2.0 },
-        "baseUnit": { "type": "integer", "title": "Base Unit (px)", "default": 16, "minimum": 1 },
-        "elevationIntensity": { "type": "number", "title": "Elevation Intensity", "default": 1.0, "minimum": 0.2, "maximum": 2.0 }
-        
-      }
-    },
     "colors": {
       "type": "object",
       "title": "Colors",
