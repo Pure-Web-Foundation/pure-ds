@@ -838,7 +838,45 @@ ${this.#generateMediaQueries()}
     --backdrop-filter: blur(10px) saturate(150%) brightness(0.9);
     `;
 
+    // Generate mesh gradient backgrounds
+    css += this.#generateMeshGradients(colors);
+
     return css + "\n";
+  }
+
+  #generateMeshGradients(colors) {
+    // Create subtle mesh gradients using color palette
+    const primary = colors.primary?.[500] || '#3b82f6';
+    const secondary = colors.secondary?.[500] || '#8b5cf6';
+    const accent = colors.accent?.[500] || '#f59e0b';
+    
+    return `
+  /* Mesh Gradient Backgrounds */
+  --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 15%, transparent) 0px, transparent 50%),
+    radial-gradient(at 97% 21%, color-mix(in oklab, ${secondary} 12%, transparent) 0px, transparent 50%),
+    radial-gradient(at 52% 99%, color-mix(in oklab, ${accent} 10%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 29%, color-mix(in oklab, ${primary} 8%, transparent) 0px, transparent 50%);
+  
+  --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, ${secondary} 13%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, color-mix(in oklab, ${primary} 10%, transparent) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, color-mix(in oklab, ${accent} 9%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, color-mix(in oklab, ${secondary} 8%, transparent) 0px, transparent 50%);
+  
+  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, ${accent} 11%, transparent) 0px, transparent 50%),
+    radial-gradient(at 85% 30%, color-mix(in oklab, ${primary} 12%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, color-mix(in oklab, ${secondary} 9%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, color-mix(in oklab, ${accent} 7%, transparent) 0px, transparent 50%);
+  
+  --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, ${primary} 10%, transparent) 0px, transparent 50%),
+    radial-gradient(at 20% 80%, color-mix(in oklab, ${secondary} 11%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 60%, color-mix(in oklab, ${accent} 8%, transparent) 0px, transparent 50%),
+    radial-gradient(at 30% 40%, color-mix(in oklab, ${primary} 9%, transparent) 0px, transparent 50%);
+  
+  --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, ${primary} 12%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 10%, color-mix(in oklab, ${accent} 10%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, color-mix(in oklab, ${secondary} 9%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, color-mix(in oklab, ${accent} 8%, transparent) 0px, transparent 50%);
+    `;
   }
 
   #generateSpacingVariables(spacing) {
@@ -961,6 +999,9 @@ ${this.#generateMediaQueries()}
 
     const semanticVars = `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n`;
 
+    // Generate dark mode mesh gradients
+    const meshVars = this.#generateMeshGradientsDark(colors);
+
     const rules = `/* Alert dark mode adjustments */\n.alert-success {\n  background-color: var(--color-success-50);\n  border-color: var(--color-success-500);\n  color: var(--color-success-900);\n}\n\n.alert-info {\n  background-color: var(--color-info-50);\n  border-color: var(--color-info-500);\n  color: var(--color-info-900);\n}\n\n.alert-warning {\n  background-color: var(--color-warning-50);\n  border-color: var(--color-warning-500);\n  color: var(--color-warning-900);\n}\n\n.alert-danger,\n.alert-error {\n  background-color: var(--color-danger-50);\n  border-color: var(--color-danger-500);\n  color: var(--color-danger-900);\n}\n\n/* Dim images in dark mode */\nimg, video {\n  opacity: 0.8;\n  transition: opacity var(--transition-normal);\n}\nimg:hover, video:hover {\n  opacity: 1;\n}\n`;
 
     // Prefix selectors with html[data-theme="dark"] so rules are applied only in dark mode
@@ -974,10 +1015,46 @@ ${this.#generateMediaQueries()}
     let css = "";
 
     // Dark variables scoped to html[data-theme="dark"]
-    css += `html[data-theme="dark"] {\n${vars}${smartSurfaceVars}${semanticVars}}\n\n`;
+    css += `html[data-theme="dark"] {\n${vars}${smartSurfaceVars}${semanticVars}${meshVars}}\n\n`;
     css += prefixRules('html[data-theme="dark"] ');
 
     return css;
+  }
+
+  #generateMeshGradientsDark(colors) {
+    // Create darker, more subtle mesh gradients for dark mode
+    const dark = colors.dark || colors;
+    const primary = dark.primary?.[400] || '#60a5fa';
+    const secondary = dark.secondary?.[400] || '#a78bfa';
+    const accent = dark.accent?.[400] || '#fbbf24';
+    
+    return `
+  /* Mesh Gradient Backgrounds (Dark Mode) */
+  --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 8%, transparent) 0px, transparent 50%),
+    radial-gradient(at 97% 21%, color-mix(in oklab, ${secondary} 6%, transparent) 0px, transparent 50%),
+    radial-gradient(at 52% 99%, color-mix(in oklab, ${accent} 5%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 29%, color-mix(in oklab, ${primary} 4%, transparent) 0px, transparent 50%);
+  
+  --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, ${secondary} 7%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, color-mix(in oklab, ${primary} 5%, transparent) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, color-mix(in oklab, ${accent} 4%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, color-mix(in oklab, ${secondary} 4%, transparent) 0px, transparent 50%);
+  
+  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, ${accent} 6%, transparent) 0px, transparent 50%),
+    radial-gradient(at 85% 30%, color-mix(in oklab, ${primary} 6%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, color-mix(in oklab, ${secondary} 5%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, color-mix(in oklab, ${accent} 3%, transparent) 0px, transparent 50%);
+  
+  --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, ${primary} 5%, transparent) 0px, transparent 50%),
+    radial-gradient(at 20% 80%, color-mix(in oklab, ${secondary} 6%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 60%, color-mix(in oklab, ${accent} 4%, transparent) 0px, transparent 50%),
+    radial-gradient(at 30% 40%, color-mix(in oklab, ${primary} 4%, transparent) 0px, transparent 50%);
+  
+  --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, ${primary} 6%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 10%, color-mix(in oklab, ${accent} 5%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, color-mix(in oklab, ${secondary} 5%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, color-mix(in oklab, ${accent} 4%, transparent) 0px, transparent 50%);
+    `;
   }
 
   #generateLightModeCSS(colors) {

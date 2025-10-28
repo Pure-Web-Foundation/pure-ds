@@ -2648,6 +2648,124 @@ customElements.define(
             </p>
           </section>
 
+          <!-- Mesh Gradients Section -->
+          <section class="showcase-section" data-section="mesh-gradients">
+            <h2>
+              <svg-icon icon="palette" size="lg" class="icon-primary"></svg-icon>
+              Mesh Gradients
+            </h2>
+            <p>
+              Subtle, beautiful mesh gradient backgrounds generated from your color palette.
+              Using <code>--background-mesh-01</code> through <code>--background-mesh-05</code> custom properties.
+              Automatically adapts to light and dark modes.
+            </p>
+
+            <div class="grid grid-cols-2 gap-lg" style="margin-bottom: var(--spacing-6);">
+              <div style="position: relative; background: var(--background-mesh-01); padding: var(--spacing-6); border-radius: var(--radius-lg); min-height: 200px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-border);">
+                <button 
+                  class="btn-primary btn-xs" 
+                  style="position: absolute; top: var(--spacing-2); right: var(--spacing-2);"
+                  @pointerdown=${() => this.previewMesh('01')}
+                  @pointerup=${this.clearMeshPreview}
+                  @pointerleave=${this.clearMeshPreview}
+                  title="Press and hold to preview on page background"
+                >
+                  <svg-icon icon="eye" size="sm"></svg-icon>
+                  Preview
+                </button>
+                <div style="background: var(--color-surface-base); padding: var(--spacing-4); border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+                  <h4 style="margin: 0;">Mesh 01</h4>
+                  <p style="margin: var(--spacing-2) 0 0 0; opacity: 0.7;">Subtle radial blend</p>
+                </div>
+              </div>
+              <div style="position: relative; background: var(--background-mesh-02); padding: var(--spacing-6); border-radius: var(--radius-lg); min-height: 200px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-border);">
+                <button 
+                  class="btn-primary btn-xs" 
+                  style="position: absolute; top: var(--spacing-2); right: var(--spacing-2);"
+                  @pointerdown=${() => this.previewMesh('02')}
+                  @pointerup=${this.clearMeshPreview}
+                  @pointerleave=${this.clearMeshPreview}
+                  title="Press and hold to preview on page background"
+                >
+                  <svg-icon icon="eye" size="sm"></svg-icon>
+                  Preview
+                </button>
+                <div style="background: var(--color-surface-base); padding: var(--spacing-4); border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+                  <h4 style="margin: 0;">Mesh 02</h4>
+                  <p style="margin: var(--spacing-2) 0 0 0; opacity: 0.7;">Corner accents</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-md">
+              <div style="position: relative; background: var(--background-mesh-03); padding: var(--spacing-5); border-radius: var(--radius-md); min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px solid var(--color-border);">
+                <button 
+                  class="btn-primary btn-xs" 
+                  style="position: absolute; top: var(--spacing-2); right: var(--spacing-2);"
+                  @pointerdown=${() => this.previewMesh('03')}
+                  @pointerup=${this.clearMeshPreview}
+                  @pointerleave=${this.clearMeshPreview}
+                  title="Press and hold to preview on page background"
+                >
+                  <svg-icon icon="eye" size="sm"></svg-icon>
+                </button>
+                <svg-icon icon="sparkle" size="xl" style="opacity: 0.9; margin-bottom: var(--spacing-2);"></svg-icon>
+                <code style="font-size: 0.75rem;">mesh-03</code>
+              </div>
+              <div style="position: relative; background: var(--background-mesh-04); padding: var(--spacing-5); border-radius: var(--radius-md); min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px solid var(--color-border);">
+                <button 
+                  class="btn-primary btn-xs" 
+                  style="position: absolute; top: var(--spacing-2); right: var(--spacing-2);"
+                  @pointerdown=${() => this.previewMesh('04')}
+                  @pointerup=${this.clearMeshPreview}
+                  @pointerleave=${this.clearMeshPreview}
+                  title="Press and hold to preview on page background"
+                >
+                  <svg-icon icon="eye" size="sm"></svg-icon>
+                </button>
+                <svg-icon icon="sparkle" size="xl" style="opacity: 0.9; margin-bottom: var(--spacing-2);"></svg-icon>
+                <code style="font-size: 0.75rem;">mesh-04</code>
+              </div>
+              <div style="position: relative; background: var(--background-mesh-05); padding: var(--spacing-5); border-radius: var(--radius-md); min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px solid var(--color-border);">
+                <button 
+                  class="btn-primary btn-xs" 
+                  style="position: absolute; top: var(--spacing-2); right: var(--spacing-2);"
+                  @pointerdown=${() => this.previewMesh('05')}
+                  @pointerup=${this.clearMeshPreview}
+                  @pointerleave=${this.clearMeshPreview}
+                  title="Press and hold to preview on page background"
+                >
+                  <svg-icon icon="eye" size="sm"></svg-icon>
+                </button>
+                <svg-icon icon="sparkle" size="xl" style="opacity: 0.9; margin-bottom: var(--spacing-2);"></svg-icon>
+                <code style="font-size: 0.75rem;">mesh-05</code>
+              </div>
+            </div>
+
+            <h3>Usage</h3>
+            <pre class="code-block" style="margin-top: var(--spacing-4);"><code class="language-css">/* Apply as background */
+.hero-section {
+  background: var(--background-mesh-01);
+}
+
+/* Combine with surface colors */
+.card {
+  background: var(--background-mesh-03);
+  backdrop-filter: blur(10px);
+}
+
+/* Layer over solid colors */
+.container {
+  background-color: var(--color-surface-base);
+  background-image: var(--background-mesh-02);
+}</code></pre>
+
+            <p class="interactive-demo" style="margin-top: var(--spacing-4);">
+              <svg-icon icon="moon-stars" size="sm" class="icon-primary"></svg-icon>
+              Toggle between light and dark modes to see how mesh gradients automatically adapt with reduced opacity in dark mode for subtle, non-interfering backgrounds.
+            </p>
+          </section>
+
           <!-- Interactive States Section -->
           <section
             class="showcase-section alt-bg"
@@ -2960,6 +3078,20 @@ customElements.define(
             minHeight: "300px"
           }
         );
+      }
+    }
+
+    // Mesh gradient preview methods
+    previewMesh(meshNumber) {
+      const originalBg = document.body.style.backgroundImage;
+      this._originalBodyBg = originalBg;
+      document.body.style.backgroundImage = `var(--background-mesh-${meshNumber})`;
+    }
+
+    clearMeshPreview() {
+      if (this._originalBodyBg !== undefined) {
+        document.body.style.backgroundImage = this._originalBodyBg;
+        this._originalBodyBg = undefined;
       }
     }
 
