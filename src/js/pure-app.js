@@ -75,8 +75,12 @@ export class PureApp extends HTMLElement {
       // 4) Now render and attach runtime UI elements
       this.attachShadow({ mode: "open" });
       this.shadowRoot.innerHTML = this.render();
-      const toaster = document.createElement("pds-toaster");
-      document.body.appendChild(toaster);
+      
+      // Ensure there's only ever one toaster in the DOM
+      if (!document.querySelector("pds-toaster")) {
+        const toaster = document.createElement("pds-toaster");
+        document.body.appendChild(toaster);
+      }
       // 5) If the user preference is 'system' we need to keep the html[data-theme]
       // attribute in sync with the OS. When localStorage contains 'system' we
       // register a matchMedia listener that updates the attribute to either
