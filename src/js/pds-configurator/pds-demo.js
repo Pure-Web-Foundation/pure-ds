@@ -2846,42 +2846,42 @@ customElements.define(
                     see them in action:
                   </p>
 
-                  <div class="demo-grid cols-2">
+                  <div class="flex flex-wrap gap-md">
                     <button
-                      class="btn-primary"
+                      class="btn-primary btn-sm"
                       @click="${this.showSuccessToast}"
                     >
                       <svg-icon icon="check-circle" size="sm"></svg-icon>
-                      Success Toast
+                      Success
                     </button>
                     <button
-                      class="btn-secondary"
+                      class="btn-secondary btn-sm"
                       @click="${this.showInfoToast}"
                     >
                       <svg-icon icon="info" size="sm"></svg-icon>
-                      Info Toast
+                      Info
                     </button>
                     <button
-                      class="btn-warning"
+                      class="btn-warning btn-sm"
                       @click="${this.showWarningToast}"
                     >
                       <svg-icon icon="warning" size="sm"></svg-icon>
-                      Warning Toast
+                      Warning
                     </button>
-                    <button class="btn-danger" @click="${this.showErrorToast}">
+                    <button class="btn-danger btn-sm" @click="${this.showErrorToast}">
                       <svg-icon icon="x-circle" size="sm"></svg-icon>
-                      Error Toast
+                      Error
                     </button>
-                    <button class="btn-outline" @click="${this.showLongToast}">
+                    <button class="btn-outline btn-sm" @click="${this.showLongToast}">
                       <svg-icon icon="clock" size="sm"></svg-icon>
-                      Long Message
+                      Long
                     </button>
                     <button
-                      class="btn-outline"
+                      class="btn-outline btn-sm"
                       @click="${this.showPersistentToast}"
                     >
                       <svg-icon icon="bell" size="sm"></svg-icon>
-                      Persistent Toast
+                      Persistent
                     </button>
                   </div>
                 </section>
@@ -3086,12 +3086,33 @@ customElements.define(
       const originalBg = document.body.style.backgroundImage;
       this._originalBodyBg = originalBg;
       document.body.style.backgroundImage = `var(--background-mesh-${meshNumber})`;
+      
+      // Dim all content to make the mesh background more visible
+      const mainContent = document.querySelector('pds-demo');
+      if (mainContent && !this._originalOpacity) {
+        this._originalOpacity = mainContent.style.opacity;
+        mainContent.style.transition = 'opacity 200ms ease-out';
+        mainContent.style.opacity = '0.1';
+      }
     }
 
     clearMeshPreview() {
       if (this._originalBodyBg !== undefined) {
         document.body.style.backgroundImage = this._originalBodyBg;
         this._originalBodyBg = undefined;
+      }
+      
+      // Restore content opacity
+      const mainContent = document.querySelector('pds-demo');
+      if (mainContent && this._originalOpacity !== undefined) {
+        mainContent.style.opacity = this._originalOpacity || '1';
+        this._originalOpacity = undefined;
+        // Remove transition after animation completes
+        setTimeout(() => {
+          if (mainContent.style.opacity !== '0.1') {
+            mainContent.style.transition = '';
+          }
+        }, 200);
       }
     }
 
