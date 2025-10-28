@@ -990,7 +990,7 @@ customElements.define(
 
     get autoCompleteSettings() {
       return {
-        //debug: true,
+        debug: true,
         categories: {
           Sections: {
             action: (options) => {

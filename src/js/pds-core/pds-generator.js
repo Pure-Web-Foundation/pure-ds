@@ -124,12 +124,20 @@ export class Generator {
       colors.surface
     );
 
+    // Generate smart surface tokens with context-aware text, icons, shadows, and borders
+    colors.surfaceSmart = this.#generateSmartSurfaceTokens(colors.surface);
+
     // Generate dark mode variants using darkMode overrides from config
     colors.dark = this.#generateDarkModeColors(
       colors,
       background,
       darkMode  // Pass the darkMode object directly
     );
+
+    // Generate smart tokens for dark mode surfaces too
+    if (colors.dark && colors.dark.surface) {
+      colors.dark.surfaceSmart = this.#generateSmartSurfaceTokens(colors.dark.surface);
+    }
 
     return colors;
   }
@@ -330,6 +338,31 @@ export class Generator {
     return cb > cw ? black : white;
   }
 
+  // Convert hex color to rgba string
+  #rgbaFromHex(hex, alpha = 1.0) {
+    const { r, g, b } = this.#hexToRgb(hex);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  // Mix color toward target by a given factor (0 = original, 1 = target)
+  #mixTowards(sourceHex, targetHex, factor = 0.5) {
+    const src = this.#hexToRgb(sourceHex);
+    const tgt = this.#hexToRgb(targetHex);
+    const r = Math.round(src.r + (tgt.r - src.r) * factor);
+    const g = Math.round(src.g + (tgt.g - src.g) * factor);
+    const b = Math.round(src.b + (tgt.b - src.b) * factor);
+    return this.#rgbToHex(r, g, b);
+  }
+
+  // Convert RGB to hex
+  #rgbToHex(r, g, b) {
+    const toHex = (n) => {
+      const hex = Math.max(0, Math.min(255, Math.round(n))).toString(16);
+      return hex.length === 1 ? "0" + hex : hex;
+    };
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }
+
   #generateDarkModeFieldsetColors(darkSurface) {
     // In dark mode, fieldsets should be slightly lighter for contrast
     return {
@@ -339,6 +372,59 @@ export class Generator {
       sunken: darkSurface.elevated, // Elevated from sunken
       overlay: this.#lightenColor(darkSurface.overlay, 0.05), // Slightly lighter than overlay
     };
+  }
+
+  /**
+   * Generate smart surface tokens with context-aware colors for text, icons, shadows, and borders.
+   * Each surface variant gets its own semantic tokens that automatically adapt to the surface's luminance.
+   * 
+   * @param {Object} surfaceShades - Object with surface color variants (base, subtle, elevated, etc.)
+   * @returns {Object} Smart tokens for each surface with text, icon, shadow, and border colors
+   */
+  #generateSmartSurfaceTokens(surfaceShades) {
+    const tokens = {};
+    
+    Object.entries(surfaceShades).forEach(([key, bgColor]) => {
+      // Skip non-color values (like 'hover' which uses CSS functions)
+      if (!bgColor || typeof bgColor !== 'string' || !bgColor.startsWith('#')) {
+        return;
+      }
+
+      const isDark = this.#luminance(bgColor) < 0.5;
+      
+      // Text colors with proper contrast ratios
+      const textPrimary = this.#findReadableOnColor(bgColor, 4.5);  // WCAG AA
+      const textSecondary = this.#findReadableOnColor(bgColor, 3.0); // Relaxed for secondary
+      const textMuted = this.#mixTowards(textPrimary, bgColor, 0.4); // 40% toward background
+      
+      // Icon color matches primary text for consistency
+      const icon = textPrimary;
+      const iconSubtle = textMuted;
+      
+      // Context-aware shadows: light shadows on dark surfaces, dark shadows on light
+      const shadowBase = isDark ? '#ffffff' : '#000000';
+      const shadowOpacity = isDark ? 0.15 : 0.1;
+      const shadowColor = this.#rgbaFromHex(shadowBase, shadowOpacity);
+      
+      // Semi-transparent borders that work on any surface
+      const borderBase = isDark ? '#ffffff' : '#000000';
+      const borderOpacity = isDark ? 0.15 : 0.1;
+      const border = this.#rgbaFromHex(borderBase, borderOpacity);
+      
+      tokens[key] = {
+        bg: bgColor,
+        text: textPrimary,
+        textSecondary: textSecondary,
+        textMuted: textMuted,
+        icon: icon,
+        iconSubtle: iconSubtle,
+        shadow: shadowColor,
+        border: border,
+        scheme: isDark ? 'dark' : 'light', // CSS color-scheme value
+      };
+    });
+    
+    return tokens;
   }
 
   #lightenColor(hexColor, factor = 0.05) {
@@ -706,11 +792,28 @@ ${this.#generateMediaQueries()}
 
     Object.entries(colors).forEach(([category, values]) => {
       if (category === "dark") return; // Handle dark mode separately
+      if (category === "surfaceSmart") return; // Handle smart tokens separately
 
       if (typeof values === "object" && values !== null) {
         generateNestedColors(values, `${category}-`);
       }
     });
+
+    // Generate smart surface tokens for context-aware styling
+    if (colors.surfaceSmart) {
+      css += `  /* Smart Surface Tokens (context-aware) */\n`;
+      Object.entries(colors.surfaceSmart).forEach(([surfaceKey, tokens]) => {
+        css += `  --surface-${surfaceKey}-bg: ${tokens.bg};\n`;
+        css += `  --surface-${surfaceKey}-text: ${tokens.text};\n`;
+        css += `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`;
+        css += `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`;
+        css += `  --surface-${surfaceKey}-icon: ${tokens.icon};\n`;
+        css += `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`;
+        css += `  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`;
+        css += `  --surface-${surfaceKey}-border: ${tokens.border};\n`;
+      });
+      css += `\n`;
+    }
 
     // Add semantic text colors for light mode
     css += `  /* Semantic Text Colors */\n`;
@@ -832,10 +935,28 @@ ${this.#generateMediaQueries()}
     };
 
     Object.entries(colors.dark).forEach(([category, values]) => {
+      if (category === "surfaceSmart") return; // Handle smart tokens separately
       if (typeof values === "object" && values !== null) {
         generateNestedDarkColors(values, `${category}-`);
       }
     });
+
+    // Generate smart surface tokens for dark mode
+    let smartSurfaceVars = "";
+    if (colors.dark.surfaceSmart) {
+      smartSurfaceVars += `  /* Smart Surface Tokens (dark mode, context-aware) */\n`;
+      Object.entries(colors.dark.surfaceSmart).forEach(([surfaceKey, tokens]) => {
+        smartSurfaceVars += `  --surface-${surfaceKey}-bg: ${tokens.bg};\n`;
+        smartSurfaceVars += `  --surface-${surfaceKey}-text: ${tokens.text};\n`;
+        smartSurfaceVars += `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`;
+        smartSurfaceVars += `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`;
+        smartSurfaceVars += `  --surface-${surfaceKey}-icon: ${tokens.icon};\n`;
+        smartSurfaceVars += `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`;
+        smartSurfaceVars += `  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`;
+        smartSurfaceVars += `  --surface-${surfaceKey}-border: ${tokens.border};\n`;
+      });
+      smartSurfaceVars += `\n`;
+    }
 
     const semanticVars = `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n`;
 
@@ -852,7 +973,7 @@ ${this.#generateMediaQueries()}
     let css = "";
 
     // Dark variables scoped to html[data-theme="dark"]
-    css += `html[data-theme="dark"] {\n${vars}${semanticVars}}\n\n`;
+    css += `html[data-theme="dark"] {\n${vars}${smartSurfaceVars}${semanticVars}}\n\n`;
     css += prefixRules('html[data-theme="dark"] ');
 
     return css;
@@ -3260,28 +3381,65 @@ a.icon-only {
 /* Surface backgrounds for nesting */
 .surface-base {
   background-color: var(--color-surface-base);
+  /* Apply smart surface tokens automatically */
+  background-color: var(--surface-base-bg);
+  color: var(--surface-base-text);
+  box-shadow: 0 1px 3px var(--surface-base-shadow);
 }
 
 .surface-base fieldset {
   background-color: var(--color-surface-subtle);
 }
 
+.surface-subtle {
+  background-color: var(--surface-subtle-bg);
+  color: var(--surface-subtle-text);
+}
+
 .surface-elevated {
   background-color: var(--color-surface-elevated);
-  box-shadow: var(--shadow-sm);
+  /* Apply smart surface tokens automatically */
+  background-color: var(--surface-elevated-bg);
+  color: var(--surface-elevated-text);
+  box-shadow: 0 2px 8px var(--surface-elevated-shadow);
 }
 
 .surface-elevated fieldset {
   background-color: var(--color-surface-sunken);
 }
 
+.surface-sunken {
+  background-color: var(--surface-sunken-bg);
+  color: var(--surface-sunken-text);
+  border: 1px solid var(--surface-sunken-border);
+}
+
 .surface-overlay {
   background-color: var(--color-surface-overlay);
-  box-shadow: var(--shadow-md);
+  /* Apply smart surface tokens automatically */
+  background-color: var(--surface-overlay-bg);
+  color: var(--surface-overlay-text);
+  box-shadow: 0 4px 16px var(--surface-overlay-shadow);
 }
 
 .surface-overlay fieldset {
   background-color: var(--color-surface-elevated);
+}
+
+/* Utility: apply smart icon colors to any surface */
+.surface-base svg-icon,
+.surface-base .icon {
+  color: var(--surface-base-icon);
+}
+
+.surface-elevated svg-icon,
+.surface-elevated .icon {
+  color: var(--surface-elevated-icon);
+}
+
+.surface-overlay svg-icon,
+.surface-overlay .icon {
+  color: var(--surface-overlay-icon);
 }
 
 /* Default behavior when no surface class is present */
@@ -3290,15 +3448,22 @@ body:not([class*="surface-"]) fieldset,
   background-color: var(--color-surface-subtle);
 }
 
-/* Mobile-first Cards */
+/* Mobile-first Cards with smart surface tokens */
 .card {
-  background-color: var(--color-surface-elevated);
+  background-color: var(--surface-elevated-bg);
+  color: var(--surface-elevated-text);
   border-radius: var(--radius-lg);
   padding: var(--spacing-4); /* Smaller padding on mobile */
-  box-shadow: var(--shadow-base);
+  box-shadow: 0 2px 8px var(--surface-elevated-shadow);
+  border: 1px solid var(--surface-elevated-border);
   transition: box-shadow var(--transition-normal);
   width: 100%;
   margin-bottom: var(--spacing-4);
+}
+
+.card svg-icon,
+.card .icon {
+  color: var(--surface-elevated-icon);
 }
 
 @media (min-width: ${breakpoints.sm}px) {
@@ -3308,7 +3473,7 @@ body:not([class*="surface-"]) fieldset,
 }
 
 .card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 16px var(--surface-elevated-shadow);
 }
 
 /* Mobile-first spacing utilities */
