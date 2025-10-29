@@ -30,6 +30,8 @@ customElements.define(
       schema: { type: Object, state: true },
       mode: { type: String },
       inspectorMode: { type: Boolean, state: true },
+      formValues: { type: Object, state: true }, // Filtered values for the form
+      formKey: { type: Number, state: true }, // Force form re-render
     };
 
     createRenderRoot() {
@@ -38,6 +40,7 @@ customElements.define(
 
     connectedCallback() {
       super.connectedCallback();
+      this.formKey = 0;
 
       this.mode = "simple";
       this.inspectorMode = false;
@@ -189,7 +192,16 @@ customElements.define(
 
     updated(changedProps) {
       if (changedProps.has("schema")) {
+        // When schema changes (mode switch), update form values
+        this.formValues = this.filterConfigForSchema(this.config);
+        this.formKey = (this.formKey || 0) + 1;
         this.applyStyles();
+      }
+      if (changedProps.has("formValues") || changedProps.has("formKey")) {
+        const form = this.querySelector("pds-jsonform");
+        if (form && this.formValues) {
+          form.values = this.formValues;
+        }
       }
     }
 
@@ -318,7 +330,8 @@ customElements.define(
     flattenConfig(obj, prefix = "") {
       const flattened = {};
       for (const [key, value] of Object.entries(obj)) {
-        const newKey = prefix ? `${prefix}.${key}` : key;
+        // Use JSON Pointer format with / separator
+        const newKey = prefix ? `${prefix}/${key}` : `/${key}`;
         if (value && typeof value === "object" && !Array.isArray(value)) {
           Object.assign(flattened, this.flattenConfig(value, newKey));
         } else {
@@ -326,6 +339,47 @@ customElements.define(
         }
       }
       return flattened;
+    }
+
+    // Get schema property paths in JSON Pointer format for pds-jsonform
+    getSchemaProperties(schema, prefix = "") {
+      const paths = new Set();
+      if (!schema || !schema.properties) return paths;
+      
+      for (const [key, value] of Object.entries(schema.properties)) {
+        const jsonPointerPath = prefix ? `${prefix}/${key}` : `/${key}`;
+        paths.add(jsonPointerPath);
+        
+        if (value.type === "object" && value.properties) {
+          const nested = this.getSchemaProperties(value, jsonPointerPath);
+          nested.forEach(p => paths.add(p));
+        }
+      }
+      return paths;
+    }
+
+    // Filter config values to only include those that exist in the current schema
+    filterConfigForSchema(config) {
+      if (!config) {
+        return {};
+      }
+      
+      if (!this.schema) {
+        // If schema isn't loaded yet, return full flattened config
+        return this.flattenConfig(config);
+      }
+      
+      const validPaths = this.getSchemaProperties(this.schema);
+      const flattened = this.flattenConfig(config);
+      const filtered = {};
+      
+      for (const [key, value] of Object.entries(flattened)) {
+        if (validPaths.has(key) && value !== null && value !== undefined) {
+          filtered[key] = value;
+        }
+      }
+      
+      return filtered;
     }
 
     handleFormChange = (event) => {
@@ -440,9 +494,15 @@ customElements.define(
       if (result) {
         localStorage.removeItem(STORAGE_KEY);
         this.config = JSON.parse(JSON.stringify(PDS.defaultConfig));
-        this.updateForm();
+        this.formValues = this.filterConfigForSchema(this.config); // Update form values
+        this.formKey = (this.formKey || 0) + 1; // Increment to force form update
         this.saveConfig();
-        this.applyStyles();
+        this.applyStyles(true);
+        
+        toast("Configuration reset to defaults", { 
+          type: "info", 
+          duration: 2000 
+        });
       }
     };
 
@@ -459,8 +519,10 @@ customElements.define(
         );
         
         this.config = presetConfig;
+        this.formValues = this.filterConfigForSchema(this.config);
+        this.formKey = (this.formKey || 0) + 1;
+        
         this.saveConfig();
-        this.requestUpdate(); // Force LitElement to re-render
         this.applyStyles(true);
         
         toast(`"${preset.name}" preset loaded successfully!`, { 
@@ -612,7 +674,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
             <pds-jsonform
               .jsonSchema=${this.schema}
               .uiSchema=${this._designerUiSchema()}
-              .values=${this.flattenConfig(this.config)}
+              .values=${this.formValues || {}}
               hide-reset
               hide-submit
               @pw:value-change=${this.handleFormChange}
@@ -632,6 +694,25 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
               </button>
 
               <menu>
+                <li>
+                  <a
+                    href="#"
+                    @click=${(e) => {
+                      e.preventDefault();
+                      this.handleReset();
+                    }}
+                  >
+                    <span class="preset-colors">
+                      <span style="background-color: #2d9dc9"></span>
+                      <span style="background-color: #a99b95"></span>
+                      <span style="background-color: #e54271"></span>
+                    </span>
+                    <span class="preset-info">
+                      <strong>Default</strong>
+                      <small>Original Pure DS balanced design with proven color harmony</small>
+                    </span>
+                  </a>
+                </li>
                 ${presets.map(
                   (preset) => html`
                     <li>
@@ -657,15 +738,6 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
                 )}
               </menu>
             </nav>
-
-            <button
-              @click=${this.handleReset}
-              class="btn-secondary"
-              style="width: 100%;"
-            >
-              <svg-icon icon="arrow-counter-clockwise" size="sm"></svg-icon>
-              <span>Reset to Defaults</span>
-            </button>
 
             <nav data-dropdown>
               <button class="btn-primary" style="width: 100%;">

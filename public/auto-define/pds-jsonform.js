@@ -88,10 +88,27 @@ export class SchemaForm extends LitElement {
   useValidator(fn) {
     this.#validator = fn;
   }
+  
   set values(v) {
-    this.#data = { ...(this.#data || {}), ...(v || {}) };
-    this.requestUpdate();
+    const oldValues = this.#data;
+    
+    // Convert flat JSON Pointer keys to nested object structure
+    this.#data = {};
+    if (v) {
+      for (const [key, value] of Object.entries(v)) {
+        if (key.startsWith('/')) {
+          // It's a JSON Pointer path - use setByPath to create nested structure
+          this.#setByPath(this.#data, key, value);
+        } else {
+          // Regular key - just assign
+          this.#data[key] = value;
+        }
+      }
+    }
+    
+    this.requestUpdate('values', oldValues);
   }
+  
   get values() {
     return this.#data;
   }
