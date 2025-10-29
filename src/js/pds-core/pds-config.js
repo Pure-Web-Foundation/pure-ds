@@ -18,13 +18,17 @@ export const presets = [
       }
     },
     typography: {
-      baseFontSize: 16,
-      fontScale: 1.25,
+      baseFontSize: 17,
+      fontScale: 1.5, // More dramatic scale for breathing room
       fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
       fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
     },
     spatialRhythm: {
-      baseUnit: 16
+      baseUnit: 20, // More spacious
+      scaleRatio: 1.4
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.large // Soft, flowing
     }
   },
   {
@@ -43,11 +47,17 @@ export const presets = [
     typography: {
       baseFontSize: 16,
       fontScale: 1.333,
-      fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
-      fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+      fontFamilyHeadings: "'IBM Plex Sans', system-ui, -apple-system, sans-serif",
+      fontFamilyBody: "'Inter', system-ui, -apple-system, sans-serif",
+      fontWeightSemibold: 600
     },
     spatialRhythm: {
-      baseUnit: 16
+      baseUnit: 16,
+      scaleRatio: 1.25
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.small, // Crisp corporate edges
+      borderWidth: enums.BorderWidths.thin
     }
   },
   {
@@ -65,12 +75,20 @@ export const presets = [
     },
     typography: {
       baseFontSize: 16,
-      fontScale: 1.2,
-      fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
-      fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+      fontScale: 1.618, // Golden ratio for futuristic feel
+      fontFamilyHeadings: "'Space Grotesk', system-ui, sans-serif",
+      fontFamilyBody: "'Space Grotesk', system-ui, sans-serif"
     },
     spatialRhythm: {
-      baseUnit: 16
+      baseUnit: 16,
+      scaleRatio: 1.5
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.xlarge, // Smooth, modern
+      borderWidth: enums.BorderWidths.medium
+    },
+    behavior: {
+      transitionSpeed: enums.TransitionSpeeds.fast
     }
   },
   {
@@ -87,13 +105,20 @@ export const presets = [
       }
     },
     typography: {
-      baseFontSize: 18,
-      fontScale: 1.414,
-      fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
-      fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+      baseFontSize: 18, // Readable, print-like
+      fontScale: 1.333, // Perfect fourth
+      fontFamilyHeadings: "'Helvetica Neue', 'Arial', sans-serif",
+      fontFamilyBody: "'Georgia', 'Times New Roman', serif",
+      fontWeightNormal: 400,
+      fontWeightBold: 700
     },
     spatialRhythm: {
-      baseUnit: 24
+      baseUnit: 12, // Tight, compact
+      scaleRatio: 1.2
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.none, // Sharp editorial
+      borderWidth: enums.BorderWidths.thin
     }
   },
   {
@@ -111,12 +136,17 @@ export const presets = [
     },
     typography: {
       baseFontSize: 16,
-      fontScale: 1.25,
-      fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
-      fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+      fontScale: 1.5,
+      fontFamilyHeadings: "'Quicksand', 'Comfortaa', sans-serif",
+      fontFamilyBody: "'Quicksand', 'Comfortaa', sans-serif"
     },
     spatialRhythm: {
-      baseUnit: 16
+      baseUnit: 20, // Relaxed, vacation vibes
+      scaleRatio: 1.5
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.full, // Playful, rounded
+      borderWidth: enums.BorderWidths.medium
     }
   },
   {
@@ -133,13 +163,22 @@ export const presets = [
       }
     },
     typography: {
-      baseFontSize: 16,
-      fontScale: 1.3,
-      fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
-      fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+      baseFontSize: 15,
+      fontScale: 1.5,
+      fontFamilyHeadings: "'Orbitron', 'Impact', monospace",
+      fontFamilyBody: "'Courier New', 'Courier', monospace",
+      fontWeightBold: 700
     },
     spatialRhythm: {
-      baseUnit: 16
+      baseUnit: 16,
+      scaleRatio: 1.25
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.none, // Sharp geometric 80s
+      borderWidth: enums.BorderWidths.thick // Bold borders
+    },
+    behavior: {
+      transitionSpeed: enums.TransitionSpeeds.instant // Snappy retro feel
     }
   },
   {
@@ -157,12 +196,17 @@ export const presets = [
     },
     typography: {
       baseFontSize: 16,
-      fontScale: 1.2,
-      fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
-      fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+      fontScale: 1.414, // Square root of 2, organic growth
+      fontFamilyHeadings: "'Merriweather Sans', 'Arial', sans-serif",
+      fontFamilyBody: "'Merriweather', 'Georgia', serif"
     },
     spatialRhythm: {
-      baseUnit: 16
+      baseUnit: 18,
+      scaleRatio: 1.3
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.medium, // Natural, organic curves
+      borderWidth: enums.BorderWidths.thin
     }
   },
   {
@@ -179,13 +223,20 @@ export const presets = [
       }
     },
     typography: {
-      baseFontSize: 16,
-      fontScale: 1.333,
-      fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
-      fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+      baseFontSize: 17,
+      fontScale: 1.5,
+      fontFamilyHeadings: "'Playfair Display', 'Georgia', serif",
+      fontFamilyBody: "'Crimson Text', 'Garamond', serif",
+      fontWeightNormal: 400,
+      fontWeightSemibold: 600
     },
     spatialRhythm: {
-      baseUnit: 16
+      baseUnit: 16,
+      scaleRatio: 1.333
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.small, // Subtle elegance
+      borderWidth: enums.BorderWidths.thin
     }
   }
 ];
