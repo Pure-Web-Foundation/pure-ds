@@ -45,7 +45,7 @@ export class SchemaForm extends LitElement {
   static properties = {
     jsonSchema: { type: Object, attribute: "json-schema" },
     uiSchema: { type: Object, attribute: "ui-schema" },
-    values: { type: Object },
+    values: { type: Object }, // Make it reactive again
     action: { type: String },
     method: { type: String }, // 'get' | 'post' | 'dialog'
     disabled: { type: Boolean, reflect: true },
@@ -89,28 +89,22 @@ export class SchemaForm extends LitElement {
     this.#validator = fn;
   }
   
-  set values(v) {
-    const oldValues = this.#data;
-    
-    // Convert flat JSON Pointer keys to nested object structure
-    this.#data = {};
-    if (v) {
-      for (const [key, value] of Object.entries(v)) {
-        if (key.startsWith('/')) {
-          // It's a JSON Pointer path - use setByPath to create nested structure
-          this.#setByPath(this.#data, key, value);
-        } else {
-          // Regular key - just assign
-          this.#data[key] = value;
-        }
-      }
-    }
-    
-    this.requestUpdate('values', oldValues);
+  // Get values in flat JSON Pointer format
+  getValuesFlat() {
+    return this.#flattenToPointers(this.#data);
   }
   
-  get values() {
-    return this.#data;
+  #flattenToPointers(obj, prefix = "") {
+    const flattened = {};
+    for (const [key, value] of Object.entries(obj)) {
+      const jsonPointerPath = prefix ? `${prefix}/${key}` : `/${key}`;
+      if (value && typeof value === "object" && !Array.isArray(value)) {
+        Object.assign(flattened, this.#flattenToPointers(value, jsonPointerPath));
+      } else {
+        flattened[jsonPointerPath] = value;
+      }
+    }
+    return flattened;
   }
 
   serialize() {
@@ -127,6 +121,23 @@ export class SchemaForm extends LitElement {
   willUpdate(changed) {
     if (changed.has("jsonSchema")) this.#compile();
     if (changed.has("uiSchema")) this.requestUpdate();
+    if (changed.has("values")) {
+      // When values property changes, update internal data
+      const v = this.values;
+      if (!v) {
+        this.#data = {};
+      } else {
+        const newData = {};
+        for (const [key, value] of Object.entries(v)) {
+          if (key.startsWith('/')) {
+            this.#setByPath(newData, key, value);
+          } else {
+            newData[key] = value;
+          }
+        }
+        this.#data = newData;
+      }
+    }
   }
 
   // ===== Schema compilation =====

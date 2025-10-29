@@ -194,16 +194,12 @@ customElements.define(
       if (changedProps.has("schema")) {
         // When schema changes (mode switch), update form values
         this.formValues = this.filterConfigForSchema(this.config);
-        this.formKey = (this.formKey || 0) + 1;
-        this.applyStyles();
-      }
-      if (changedProps.has("formValues") || changedProps.has("formKey")) {
-        const form = this.querySelector("pds-jsonform");
-        if (form && this.formValues) {
-          form.values = this.formValues;
-        }
+        // Re-apply styles using the current user config (do not revert to defaults)
+        this.applyStyles(true);
       }
     }
+    
+    // Helper method removed – binding `.values=${this.formValues}` handles syncing reactively
 
     applyStyles(useUserConfig = false) {
       // By default, use Generator.defaultConfig (non-designer callers)
@@ -396,12 +392,16 @@ customElements.define(
         // pw:serialize event provides { json, formData, valid, issues }
         values = event.detail.json;
       } else {
-        // Fallback: get values directly from the form element
-        const form = event.target.closest("pds-jsonform") || event.target;
-        if (form && form.values) {
-          values = form.values;
+        // pw:value-change event - get values directly from the form element
+        const form = event.currentTarget?.tagName?.toUpperCase() === "PDS-JSONFORM" 
+                     ? event.currentTarget 
+                     : this.querySelector("pds-jsonform");
+        
+        if (form) {
+          // Use getValuesFlat() to get JSON Pointer formatted keys
+          values = form.getValuesFlat?.() || form.values || {};
         } else {
-          console.warn("No values found in form change event", event);
+          console.warn("No form element found in form change event", event);
           return;
         }
       }
@@ -520,8 +520,7 @@ customElements.define(
         
         this.config = presetConfig;
         this.formValues = this.filterConfigForSchema(this.config);
-        this.formKey = (this.formKey || 0) + 1;
-        
+
         this.saveConfig();
         this.applyStyles(true);
         
@@ -679,8 +678,6 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
               hide-submit
               @pw:value-change=${this.handleFormChange}
               @pw:serialize=${this.handleFormChange}
-              @change=${this.handleFormChange}
-              @input=${this.handleFormChange}
             >
             </pds-jsonform>
           </div>
