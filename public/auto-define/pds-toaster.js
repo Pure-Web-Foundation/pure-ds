@@ -189,7 +189,7 @@ export class AppToaster extends HTMLElement {
     toast.setAttribute("role", "status");
     toast.setAttribute("aria-live", "polite");
 
-    const icon = document.createElement("svg-icon");
+    const icon = document.createElement("pds-icon");
     icon.className = "alert-icon";
     icon.setAttribute("icon", this.getToastIcon(type));
     icon.setAttribute("size", "lg");

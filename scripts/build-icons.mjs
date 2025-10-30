@@ -218,7 +218,7 @@ ${symbols.join('\n\n')}
   
   // Usage instructions
   log('Usage in HTML:', 'bright');
-  log('  <svg-icon icon="icon-name"></svg-icon>', 'yellow');
+  log('  <pds-icon icon="icon-name"></pds-icon>', 'yellow');
   log('\nAvailable icons:', 'bright');
   
   // Group by category for display

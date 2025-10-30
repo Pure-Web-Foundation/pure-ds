@@ -4,10 +4,10 @@
  * Displays icons from SVG sprite sheet with automatic fallbacks
  * 
  * @example
- * <svg-icon icon="house"></svg-icon>
- * <svg-icon icon="gear" size="32"></svg-icon>
- * <svg-icon icon="heart" color="red" label="Favorite"></svg-icon>
- * <svg-icon icon="menu" size="lg"></svg-icon>
+ * <pds-icon icon="house"></pds-icon>
+ * <pds-icon icon="gear" size="32"></pds-icon>
+ * <pds-icon icon="heart" color="red" label="Favorite"></pds-icon>
+ * <pds-icon icon="menu" size="lg"></pds-icon>
  */
 
 export class SvgIcon extends HTMLElement {
@@ -103,6 +103,6 @@ export class SvgIcon extends HTMLElement {
 }
 
 // Auto-register the component
-if (!customElements.get('svg-icon')) {
-  customElements.define('svg-icon', SvgIcon);
+if (!customElements.get('pds-icon')) {
+  customElements.define('pds-icon', SvgIcon);
 }

@@ -258,7 +258,7 @@ export class DrawerPanel extends LitElement {
             ></div>
             ${this.#shouldShowClose()
               ? html`<button class="close-btn" part="close-button" aria-label="Close drawer" @click=${this.closeDrawer}>
-                  <svg-icon icon="x" size="sm"></svg-icon>
+                  <pds-icon icon="x" size="sm"></pds-icon>
                 </button>`
               : null}
             <slot name="drawer-header"></slot>

@@ -8,7 +8,7 @@ A complete, production-ready icon system for the Pure Design System using **Phos
 
 ### New Files
 - **`scripts/build-icons.mjs`** - Downloads icons from CDN and builds SVG sprite sheet
-- **`src/js/svg-icon.js`** - Web component for displaying icons
+- **`src/js/pds-icon.js`** - Web component for displaying icons
 - **`public/icons-demo.html`** - Comprehensive demo showcasing all icon features
 - **`public/assets/img/icons.svg`** - Generated sprite sheet with 87 icons
 
@@ -69,27 +69,27 @@ This script:
 ### Basic Icon
 
 ```html
-<svg-icon icon="house"></svg-icon>
+<pds-icon icon="house"></pds-icon>
 ```
 
 ### Sized Icons
 
 ```html
-<svg-icon icon="gear" size="lg"></svg-icon>
-<svg-icon icon="heart" size="32"></svg-icon>  <!-- Or use px value -->
+<pds-icon icon="gear" size="lg"></pds-icon>
+<pds-icon icon="heart" size="32"></pds-icon>  <!-- Or use px value -->
 ```
 
 ### Colored Icons
 
 ```html
-<svg-icon icon="star" color="gold"></svg-icon>
-<svg-icon icon="check" class="icon-success"></svg-icon>
+<pds-icon icon="star" color="gold"></pds-icon>
+<pds-icon icon="check" class="icon-success"></pds-icon>
 ```
 
 ### With Accessibility
 
 ```html
-<svg-icon icon="menu" label="Open menu"></svg-icon>
+<pds-icon icon="menu" label="Open menu"></pds-icon>
 ```
 
 ### Utility Classes
@@ -97,18 +97,18 @@ This script:
 ```html
 <!-- Icon with text -->
 <div class="icon-text">
-  <svg-icon icon="envelope"></svg-icon>
+  <pds-icon icon="envelope"></pds-icon>
   <span>Email</span>
 </div>
 
 <!-- Icon button -->
 <button class="icon-only">
-  <svg-icon icon="x" label="Close"></svg-icon>
+  <pds-icon icon="x" label="Close"></pds-icon>
 </button>
 
 <!-- Input with icon -->
 <div class="input-icon">
-  <svg-icon icon="magnifying-glass"></svg-icon>
+  <pds-icon icon="magnifying-glass"></pds-icon>
   <input type="search" placeholder="Search...">
 </div>
 ```
@@ -138,7 +138,7 @@ Generator now generates:
 ## Features
 
 ### Smart Fallbacks
-The `svg-icon` component includes inline SVG fallbacks for critical icons (close, menu, home, etc.) that work even if the sprite sheet fails to load.
+The `pds-icon` component includes inline SVG fallbacks for critical icons (close, menu, home, etc.) that work even if the sprite sheet fails to load.
 
 ### Flexible Sizing
 Supports both named sizes (`xs`, `sm`, `md`, `lg`, `xl`, `2xl`) and pixel values (`24`, `32`, etc.).

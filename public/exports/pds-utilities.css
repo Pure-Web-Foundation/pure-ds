@@ -1,7 +1,7 @@
 @layer utilities {
 /* Icon System */
 
-svg-icon {
+pds-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -11,84 +11,84 @@ svg-icon {
 
 /* Icon size utilities */
 .icon-xs,
-svg-icon[size="xs"] {
+pds-icon[size="xs"] {
   width: var(--icon-size-xs);
   height: var(--icon-size-xs);
 }
 
 .icon-sm,
-svg-icon[size="sm"] {
+pds-icon[size="sm"] {
   width: var(--icon-size-sm);
   height: var(--icon-size-sm);
 }
 
 .icon-md,
-svg-icon[size="md"] {
+pds-icon[size="md"] {
   width: var(--icon-size-md);
   height: var(--icon-size-md);
 }
 
 .icon-lg,
-svg-icon[size="lg"] {
+pds-icon[size="lg"] {
   width: var(--icon-size-lg);
   height: var(--icon-size-lg);
 }
 
 .icon-xl,
-svg-icon[size="xl"] {
+pds-icon[size="xl"] {
   width: var(--icon-size-xl);
   height: var(--icon-size-xl);
 }
 
 .icon-2xl,
-svg-icon[size="2xl"] {
+pds-icon[size="2xl"] {
   width: var(--icon-size-2xl);
   height: var(--icon-size-2xl);
 }
 
 /* Icon color utilities */
 .icon-primary,
-svg-icon.primary {
+pds-icon.primary {
   color: var(--color-primary-600);
 }
 
 .icon-secondary,
-svg-icon.secondary {
+pds-icon.secondary {
   color: var(--color-secondary-600);
 }
 
 .icon-accent,
-svg-icon.accent {
+pds-icon.accent {
   color: var(--color-accent-600);
 }
 
 .icon-success,
-svg-icon.success {
+pds-icon.success {
   color: var(--color-success-600);
 }
 
 .icon-warning,
-svg-icon.warning {
+pds-icon.warning {
   color: var(--color-warning-600);
 }
 
 .icon-danger,
-svg-icon.danger {
+pds-icon.danger {
   color: var(--color-danger-600);
 }
 
 .icon-info,
-svg-icon.info {
+pds-icon.info {
   color: var(--color-info-600);
 }
 
 .icon-muted,
-svg-icon.muted {
+pds-icon.muted {
   color: var(--color-text-muted);
 }
 
 .icon-subtle,
-svg-icon.subtle {
+pds-icon.subtle {
   color: var(--color-text-subtle);
 }
 
@@ -108,8 +108,8 @@ svg-icon.subtle {
 }
 
 /* Button icon utilities */
-button svg-icon,
-a svg-icon {
+button pds-icon,
+a pds-icon {
   flex-shrink: 0;
 }
 
@@ -131,7 +131,7 @@ a.icon-only {
   align-items: center;
 }
 
-.input-icon svg-icon {
+.input-icon pds-icon {
   position: absolute;
   left: var(--spacing-3);
   color: var(--color-text-muted);
@@ -142,7 +142,7 @@ a.icon-only {
   padding-left: calc(var(--icon-size) + var(--spacing-5));
 }
 
-.input-icon-end svg-icon {
+.input-icon-end pds-icon {
   left: auto;
   right: var(--spacing-3);
 }

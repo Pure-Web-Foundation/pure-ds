@@ -264,11 +264,11 @@ customElements.define(
           aria-label="Toggle panel"
           aria-expanded="${this.open}"
         >
-          <svg-icon
+          <pds-icon
             icon="${this.open ? "x" : "list"}"
             width="24"
             height="24"
-          ></svg-icon>
+          ></pds-icon>
         </button>
         <div class="mobile-overlay" @click="${this.closeMobileView}"></div>
       `;

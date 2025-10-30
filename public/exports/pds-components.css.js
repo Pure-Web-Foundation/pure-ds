@@ -1160,7 +1160,7 @@ auto-form::before {
   align-items: center;
   justify-content: center;
   
-  svg-icon {
+  pds-icon {
     flex-shrink: 0;
   }
 }
@@ -2838,7 +2838,7 @@ auto-form::before {
   align-items: center;
   justify-content: center;
   
-  svg-icon {
+  pds-icon {
     flex-shrink: 0;
   }
 }

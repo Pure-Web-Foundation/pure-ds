@@ -3,7 +3,7 @@ import { html, LitElement, css, nothing } from "lit";
 export { html, LitElement, css, nothing };
 import { config } from "./config";
 import { ask } from "./common/ask";
-import "./svg-icon";
+import "../../public/auto-define/pds-icon";
 
 import { AutoDefiner } from "pure-web/auto-definer";
 
@@ -70,7 +70,7 @@ export class PureApp extends HTMLElement {
 
       // 3) Initialize AutoDefiner and predefine critical components
       definer = new AutoDefiner(config.autoDefine);
-      await AutoDefiner.define(["pds-toaster", "pds-jsonform"]);
+      await AutoDefiner.define(config.autoDefine?.predefine || []);
 
       // 4) Now render and attach runtime UI elements
       this.attachShadow({ mode: "open" });

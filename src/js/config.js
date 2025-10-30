@@ -10,6 +10,7 @@ export const config = {
   // Auto-define configuration for web components
   autoDefine: {
     baseURL: "/auto-define/",
+    predefine: ["pds-icon"],
     mapper: (tag) => {
       //console.log(tag)
 

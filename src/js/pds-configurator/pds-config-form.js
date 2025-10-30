@@ -1,8 +1,6 @@
 import { LitElement, html, nothing } from "../lit";
 import { config } from "../config";
 import { PDS } from "../pds";
-//import { Generator } from "../pds-core/pds-generator";
-import "../svg-icon";
 import { deepMerge } from "../common/common";
 import { presets } from "../pds-core/pds-config";
 
@@ -746,10 +744,10 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
                 ? "Deactivate"
                 : "Activate"} Code Inspector"
             >
-              <svg-icon
+              <pds-icon
                 icon="${this.inspectorMode ? "eye-slash" : "code"}"
                 size="sm"
-              ></svg-icon>
+              ></pds-icon>
               <span
                 >${this.inspectorMode
                   ? "Inspector Active"
@@ -795,9 +793,9 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
           <div class="designer-actions">
             <nav data-dropdown>
               <button class="btn-secondary" style="width: 100%;">
-                <svg-icon icon="palette" size="sm"></svg-icon>
+                <pds-icon icon="palette" size="sm"></pds-icon>
                 <span>Load Preset</span>
-                <svg-icon icon="caret-down" size="sm"></svg-icon>
+                <pds-icon icon="caret-down" size="sm"></pds-icon>
               </button>
 
               <menu>
@@ -848,9 +846,9 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
 
             <nav data-dropdown>
               <button class="btn-primary" style="width: 100%;">
-                <svg-icon icon="download" size="sm"></svg-icon>
+                <pds-icon icon="download" size="sm"></pds-icon>
                 <span>Download</span>
-                <svg-icon icon="caret-down" size="sm"></svg-icon>
+                <pds-icon icon="caret-down" size="sm"></pds-icon>
               </button>
 
               <menu>
@@ -862,7 +860,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
                       this.handleDownload("css");
                     }}
                   >
-                    <svg-icon icon="file-css" size="sm"></svg-icon>
+                    <pds-icon icon="file-css" size="sm"></pds-icon>
                     <span>CSS File</span>
                   </a>
                 </li>
@@ -875,7 +873,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
                       this.handleDownload("config");
                     }}
                   >
-                    <svg-icon icon="file-js" size="sm"></svg-icon>
+                    <pds-icon icon="file-js" size="sm"></pds-icon>
                     <span>Config File</span>
                   </a>
                 </li>
@@ -888,7 +886,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
                       this.handleDownload("tokens");
                     }}
                   >
-                    <svg-icon icon="brackets-curly" size="sm"></svg-icon>
+                    <pds-icon icon="brackets-curly" size="sm"></pds-icon>
                     <span>Design Tokens (JSON)</span>
                   </a>
                 </li>

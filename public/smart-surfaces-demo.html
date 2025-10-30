@@ -121,7 +121,7 @@
         <div class="surface-base container-demo">
           <h4>Base Surface Container</h4>
           <p>This is the default surface. Text, icons, and shadows automatically adapt.</p>
-          <p><svg-icon name="house"></svg-icon> Icon color is automatically calculated for contrast</p>
+          <p><pds-icon name="house"></pds-icon> Icon color is automatically calculated for contrast</p>
           <button class="btn-primary">Primary Button</button>
           <button class="btn-secondary">Secondary Button</button>
         </div>
@@ -130,7 +130,7 @@
         <div class="surface-elevated container-demo">
           <h4>Elevated Surface Container</h4>
           <p>Elevated surfaces get automatically adjusted shadows that work in both light and dark modes.</p>
-          <p><svg-icon name="arrow-up"></svg-icon> Icons maintain proper contrast</p>
+          <p><pds-icon name="arrow-up"></pds-icon> Icons maintain proper contrast</p>
           <div class="demo-grid">
             <div class="card">
               <h5>Card on Elevated Surface</h5>
@@ -138,7 +138,7 @@
             </div>
             <div class="card">
               <h5>Another Card</h5>
-              <p><svg-icon name="check-circle"></svg-icon> All elements adapt</p>
+              <p><pds-icon name="check-circle"></pds-icon> All elements adapt</p>
             </div>
           </div>
         </div>
@@ -154,7 +154,7 @@
         <div class="surface-overlay container-demo">
           <h4>Overlay Surface Container</h4>
           <p>Overlays get stronger shadows and proper text contrast for modals and popovers.</p>
-          <p><svg-icon name="x"></svg-icon> Close icons maintain visibility</p>
+          <p><pds-icon name="x"></pds-icon> Close icons maintain visibility</p>
         </div>
       </section>
 
@@ -165,19 +165,19 @@
 
         <div class="surface-base nesting-demo">
           <h4>Level 1: Base Surface</h4>
-          <p><svg-icon name="circle"></svg-icon> Notice how icons adapt at each level</p>
+          <p><pds-icon name="circle"></pds-icon> Notice how icons adapt at each level</p>
           
           <div class="surface-elevated" style="padding: var(--spacing-6); margin-top: var(--spacing-4);">
             <h5>Level 2: Elevated Surface</h5>
-            <p><svg-icon name="arrow-right"></svg-icon> Shadows and text colors automatically adjust</p>
+            <p><pds-icon name="arrow-right"></pds-icon> Shadows and text colors automatically adjust</p>
             
             <div class="card" style="margin-top: var(--spacing-4);">
               <h6>Level 3: Card</h6>
-              <p><svg-icon name="check"></svg-icon> Perfect contrast maintained</p>
+              <p><pds-icon name="check"></pds-icon> Perfect contrast maintained</p>
               
               <div class="surface-sunken" style="padding: var(--spacing-4); margin-top: var(--spacing-3);">
                 <p><small>Level 4: Sunken surface inside card</small></p>
-                <p><svg-icon name="info"></svg-icon> Icons remain readable</p>
+                <p><pds-icon name="info"></pds-icon> Icons remain readable</p>
               </div>
             </div>
           </div>
@@ -206,7 +206,7 @@
         <h3>Dark Surface in Light Mode</h3>
         <div class="inversion-demo" style="background-color: var(--color-gray-900);">
           <h4>Automatic Inversion</h4>
-          <p><svg-icon name="moon"></svg-icon> This dark surface automatically uses light text and icons</p>
+          <p><pds-icon name="moon"></pds-icon> This dark surface automatically uses light text and icons</p>
           <p>Text remains perfectly readable with WCAG AA contrast ratios</p>
           <button class="btn-primary">Primary Button</button>
           <button class="btn-secondary">Secondary Button</button>
@@ -215,15 +215,15 @@
         <h3>Various Dark Backgrounds</h3>
         <div class="demo-grid">
           <div class="inversion-demo" style="background-color: var(--color-primary-800);">
-            <h5><svg-icon name="palette"></svg-icon> Primary 800</h5>
+            <h5><pds-icon name="palette"></pds-icon> Primary 800</h5>
             <p>Text and icons auto-adapt</p>
           </div>
           <div class="inversion-demo" style="background-color: var(--color-accent-700);">
-            <h5><svg-icon name="heart"></svg-icon> Accent 700</h5>
+            <h5><pds-icon name="heart"></pds-icon> Accent 700</h5>
             <p>Perfect contrast maintained</p>
           </div>
           <div class="inversion-demo" style="background-color: var(--color-success-600);">
-            <h5><svg-icon name="check-circle"></svg-icon> Success 600</h5>
+            <h5><pds-icon name="check-circle"></pds-icon> Success 600</h5>
             <p>Icons remain visible</p>
           </div>
         </div>
@@ -273,19 +273,19 @@
 
         <div class="demo-grid">
           <div class="surface-base icon-example">
-            <svg-icon name="house" size="lg"></svg-icon>
+            <pds-icon name="house" size="lg"></pds-icon>
             <span>Base Surface</span>
           </div>
           <div class="surface-elevated icon-example">
-            <svg-icon name="arrow-up" size="lg"></svg-icon>
+            <pds-icon name="arrow-up" size="lg"></pds-icon>
             <span>Elevated Surface</span>
           </div>
           <div class="surface-sunken icon-example">
-            <svg-icon name="funnel" size="lg"></svg-icon>
+            <pds-icon name="funnel" size="lg"></pds-icon>
             <span>Sunken Surface</span>
           </div>
           <div class="icon-example" style="background-color: var(--color-gray-900);">
-            <svg-icon name="moon" size="lg"></svg-icon>
+            <pds-icon name="moon" size="lg"></pds-icon>
             <span style="color: white;">Dark Background</span>
           </div>
         </div>
@@ -293,27 +293,27 @@
         <h3>Icons in Various Contexts</h3>
         <div class="icon-grid">
           <div class="surface-elevated icon-example">
-            <svg-icon name="check-circle" size="md"></svg-icon>
+            <pds-icon name="check-circle" size="md"></pds-icon>
             <span>Success</span>
           </div>
           <div class="surface-elevated icon-example">
-            <svg-icon name="warning" size="md"></svg-icon>
+            <pds-icon name="warning" size="md"></pds-icon>
             <span>Warning</span>
           </div>
           <div class="surface-elevated icon-example">
-            <svg-icon name="x-circle" size="md"></svg-icon>
+            <pds-icon name="x-circle" size="md"></pds-icon>
             <span>Error</span>
           </div>
           <div class="surface-elevated icon-example">
-            <svg-icon name="info" size="md"></svg-icon>
+            <pds-icon name="info" size="md"></pds-icon>
             <span>Info</span>
           </div>
           <div class="surface-elevated icon-example">
-            <svg-icon name="gear" size="md"></svg-icon>
+            <pds-icon name="gear" size="md"></pds-icon>
             <span>Settings</span>
           </div>
           <div class="surface-elevated icon-example">
-            <svg-icon name="user" size="md"></svg-icon>
+            <pds-icon name="user" size="md"></pds-icon>
             <span>Profile</span>
           </div>
         </div>
@@ -379,15 +379,15 @@
         <h3>Card Grid (.card-grid utility)</h3>
         <div class="demo-grid">
           <div class="card">
-            <h5><svg-icon name="palette"></svg-icon> Design</h5>
+            <h5><pds-icon name="palette"></pds-icon> Design</h5>
             <p>Smart surfaces handle theming automatically</p>
           </div>
           <div class="card">
-            <h5><svg-icon name="code"></svg-icon> Development</h5>
+            <h5><pds-icon name="code"></pds-icon> Development</h5>
             <p>Zero manual color overrides needed</p>
           </div>
           <div class="card">
-            <h5><svg-icon name="rocket"></svg-icon> Performance</h5>
+            <h5><pds-icon name="rocket"></pds-icon> Performance</h5>
             <p>CSS custom properties are fast</p>
           </div>
         </div>
@@ -424,22 +424,22 @@
 
         <h3>Alert Variations</h3>
         <div class="alert alert-success">
-          <svg-icon name="check-circle"></svg-icon>
+          <pds-icon name="check-circle"></pds-icon>
           <strong>Success!</strong> Your changes have been saved.
         </div>
 
         <div class="alert alert-warning">
-          <svg-icon name="warning"></svg-icon>
+          <pds-icon name="warning"></pds-icon>
           <strong>Warning:</strong> This action cannot be undone.
         </div>
 
         <div class="alert alert-danger">
-          <svg-icon name="x-circle"></svg-icon>
+          <pds-icon name="x-circle"></pds-icon>
           <strong>Error:</strong> Something went wrong.
         </div>
 
         <div class="alert alert-info">
-          <svg-icon name="info"></svg-icon>
+          <pds-icon name="info"></pds-icon>
           <strong>Info:</strong> Icons maintain proper contrast in all alert types.
         </div>
       </section>

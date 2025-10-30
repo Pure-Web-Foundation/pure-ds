@@ -31,7 +31,7 @@ export const ontology = {
     { id: "fieldset", name: "Fieldset Group", selectors: ["fieldset[role='group']", "fieldset[role='radiogroup']"] },
     { id: "label-field", name: "Label+Input", selectors: ["label"] },
     { id: "accordion", name: "Accordion", selectors: [".accordion", ".accordion-item", "details"] },
-    { id: "icon", name: "Icon", selectors: ["svg-icon", ".icon", ".icon-*"] },
+    { id: "icon", name: "Icon", selectors: ["pds-icon", ".icon", ".icon-*"] },
     { id: "figure", name: "Figure/Media", selectors: ["figure", "figure.media"] },
     { id: "gallery", name: "Gallery", selectors: [".gallery", ".gallery-grid"] },
   ],
@@ -214,12 +214,12 @@ export function findComponentForElement(startEl, { maxDepth = 5 } = {}) {
 
     // 6) button/icon
     if (current.tagName === 'BUTTON') {
-      const hasIcon = current.querySelector && current.querySelector('svg-icon');
+      const hasIcon = current.querySelector && current.querySelector('pds-icon');
       return { element: current, componentType: 'button', displayName: hasIcon ? 'button with icon' : 'button' };
     }
-    if (tryMatches(current, 'svg-icon') || (current.closest && current.closest('svg-icon'))) {
-      const el = tryMatches(current, 'svg-icon') ? current : current.closest('svg-icon');
-      return { element: el, componentType: 'icon', displayName: `svg-icon (${el.getAttribute && el.getAttribute('icon') || 'unknown'})` };
+    if (tryMatches(current, 'pds-icon') || (current.closest && current.closest('pds-icon'))) {
+      const el = tryMatches(current, 'pds-icon') ? current : current.closest('pds-icon');
+      return { element: el, componentType: 'icon', displayName: `pds-icon (${el.getAttribute && el.getAttribute('icon') || 'unknown'})` };
     }
 
     // 7) nav dropdown

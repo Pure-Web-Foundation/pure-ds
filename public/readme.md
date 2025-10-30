@@ -24,7 +24,7 @@ A JavaScript-config-first design system that generates complete, production-read
   - [Accessibility](#accessibility)
 - [Web Components](#web-components)
   - [PureApp](#pure-app)
-  - [SvgIcon](#svg-icon)
+  - [SvgIcon](#pds-icon)
   - [AppToaster](#pds-toaster)
   - [TabStrip](#tabstrip)
 - [Features](#features)
@@ -386,18 +386,18 @@ This script:
 
 ```html
 <!-- Simple icon -->
-<svg-icon icon="house"></svg-icon>
+<pds-icon icon="house"></pds-icon>
 
 <!-- With size -->
-<svg-icon icon="gear" size="lg"></svg-icon>
-<svg-icon icon="heart" size="32"></svg-icon>
+<pds-icon icon="gear" size="lg"></pds-icon>
+<pds-icon icon="heart" size="32"></pds-icon>
 
 <!-- With color -->
-<svg-icon icon="star" color="gold"></svg-icon>
-<svg-icon icon="check" class="icon-success"></svg-icon>
+<pds-icon icon="star" color="gold"></pds-icon>
+<pds-icon icon="check" class="icon-success"></pds-icon>
 
 <!-- With accessibility label -->
-<svg-icon icon="menu" label="Open navigation menu"></svg-icon>
+<pds-icon icon="menu" label="Open navigation menu"></pds-icon>
 ```
 
 #### Size Variants
@@ -405,21 +405,21 @@ This script:
 Use named sizes or pixel values:
 
 ```html
-<svg-icon icon="home" size="xs"></svg-icon>  <!-- 16px -->
-<svg-icon icon="home" size="sm"></svg-icon>  <!-- 20px -->
-<svg-icon icon="home" size="md"></svg-icon>  <!-- 24px (default) -->
-<svg-icon icon="home" size="lg"></svg-icon>  <!-- 32px -->
-<svg-icon icon="home" size="xl"></svg-icon>  <!-- 48px -->
-<svg-icon icon="home" size="2xl"></svg-icon> <!-- 64px -->
-<svg-icon icon="home" size="40"></svg-icon>  <!-- Custom 40px -->
+<pds-icon icon="home" size="xs"></pds-icon>  <!-- 16px -->
+<pds-icon icon="home" size="sm"></pds-icon>  <!-- 20px -->
+<pds-icon icon="home" size="md"></pds-icon>  <!-- 24px (default) -->
+<pds-icon icon="home" size="lg"></pds-icon>  <!-- 32px -->
+<pds-icon icon="home" size="xl"></pds-icon>  <!-- 48px -->
+<pds-icon icon="home" size="2xl"></pds-icon> <!-- 64px -->
+<pds-icon icon="home" size="40"></pds-icon>  <!-- Custom 40px -->
 ```
 
 Or use utility classes:
 
 ```html
-<svg-icon icon="gear" class="icon-xs"></svg-icon>
-<svg-icon icon="gear" class="icon-sm"></svg-icon>
-<svg-icon icon="gear" class="icon-lg"></svg-icon>
+<pds-icon icon="gear" class="icon-xs"></pds-icon>
+<pds-icon icon="gear" class="icon-sm"></pds-icon>
+<pds-icon icon="gear" class="icon-lg"></pds-icon>
 ```
 
 #### Color Utilities
@@ -429,17 +429,17 @@ Icons inherit `currentColor` by default:
 ```html
 <!-- Inherits text color -->
 <div style="color: blue;">
-  <svg-icon icon="heart"></svg-icon>
+  <pds-icon icon="heart"></pds-icon>
 </div>
 
 <!-- Semantic colors -->
-<svg-icon icon="check-circle" class="icon-success"></svg-icon>
-<svg-icon icon="info" class="icon-primary"></svg-icon>
-<svg-icon icon="warning" class="icon-warning"></svg-icon>
-<svg-icon icon="x-circle" class="icon-danger"></svg-icon>
+<pds-icon icon="check-circle" class="icon-success"></pds-icon>
+<pds-icon icon="info" class="icon-primary"></pds-icon>
+<pds-icon icon="warning" class="icon-warning"></pds-icon>
+<pds-icon icon="x-circle" class="icon-danger"></pds-icon>
 
 <!-- Custom color -->
-<svg-icon icon="star" color="#fbbf24"></svg-icon>
+<pds-icon icon="star" color="#fbbf24"></pds-icon>
 ```
 
 #### Icon + Text Patterns
@@ -447,19 +447,19 @@ Icons inherit `currentColor` by default:
 ```html
 <!-- Icon before text -->
 <button class="icon-text">
-  <svg-icon icon="plus"></svg-icon>
+  <pds-icon icon="plus"></pds-icon>
   <span>Add Item</span>
 </button>
 
 <!-- Icon after text -->
 <button class="icon-text-end">
   <span>Next</span>
-  <svg-icon icon="arrow-right"></svg-icon>
+  <pds-icon icon="arrow-right"></pds-icon>
 </button>
 
 <!-- Icon-only button -->
 <button class="icon-only">
-  <svg-icon icon="x" label="Close"></svg-icon>
+  <pds-icon icon="x" label="Close"></pds-icon>
 </button>
 ```
 
@@ -468,14 +468,14 @@ Icons inherit `currentColor` by default:
 ```html
 <!-- Icon at start -->
 <div class="input-icon">
-  <svg-icon icon="magnifying-glass"></svg-icon>
+  <pds-icon icon="magnifying-glass"></pds-icon>
   <input type="search" placeholder="Search...">
 </div>
 
 <!-- Icon at end -->
 <div class="input-icon-end">
   <input type="email" placeholder="Email">
-  <svg-icon icon="envelope"></svg-icon>
+  <pds-icon icon="envelope"></pds-icon>
 </div>
 ```
 
@@ -537,7 +537,7 @@ npm run build-icons
 
 3. Use immediately:
 ```html
-<svg-icon icon="compass"></svg-icon>
+<pds-icon icon="compass"></pds-icon>
 ```
 
 #### Demo
@@ -616,10 +616,10 @@ const result = await app.ask('Choose action', {
 Display icons from sprite sheet with automatic fallbacks:
 
 ```html
-<svg-icon icon="house"></svg-icon>
-<svg-icon icon="gear" size="32"></svg-icon>
-<svg-icon icon="heart" size="lg" color="red"></svg-icon>
-<svg-icon icon="menu" label="Open menu"></svg-icon>
+<pds-icon icon="house"></pds-icon>
+<pds-icon icon="gear" size="32"></pds-icon>
+<pds-icon icon="heart" size="lg" color="red"></pds-icon>
+<pds-icon icon="menu" label="Open menu"></pds-icon>
 ```
 
 **Attributes:**
@@ -638,16 +638,16 @@ Display icons from sprite sheet with automatic fallbacks:
 **Utility classes:**
 ```html
 <div class="icon-text">
-  <svg-icon icon="envelope"></svg-icon>
+  <pds-icon icon="envelope"></pds-icon>
   <span>Email</span>
 </div>
 
 <button class="icon-only">
-  <svg-icon icon="gear"></svg-icon>
+  <pds-icon icon="gear"></pds-icon>
 </button>
 
 <div class="input-icon">
-  <svg-icon icon="magnifying-glass"></svg-icon>
+  <pds-icon icon="magnifying-glass"></pds-icon>
   <input type="search" placeholder="Search...">
 </div>
 ```
@@ -945,7 +945,7 @@ if (formElement.checkValidity()) {
 ### SvgIcon Component
 
 ```javascript
-const icon = document.querySelector('svg-icon');
+const icon = document.querySelector('pds-icon');
 
 // Attributes
 icon.setAttribute('icon', 'house');
@@ -980,7 +980,7 @@ See `auto-designer.config.js` for full example with all options.
     <div class="container">
       <h1>Welcome</h1>
       <button onclick="this.closest('pure-app').success('Hello!')">
-        <svg-icon icon="heart"></svg-icon>
+        <pds-icon icon="heart"></pds-icon>
         Click Me
       </button>
     </div>
@@ -993,28 +993,28 @@ See `auto-designer.config.js` for full example with all options.
 
 ```html
 <!-- Basic icon -->
-<svg-icon icon="house"></svg-icon>
+<pds-icon icon="house"></pds-icon>
 
 <!-- Sized icon -->
-<svg-icon icon="gear" size="lg"></svg-icon>
+<pds-icon icon="gear" size="lg"></pds-icon>
 
 <!-- Colored icon -->
-<svg-icon icon="heart" color="red"></svg-icon>
+<pds-icon icon="heart" color="red"></pds-icon>
 
 <!-- Icon with text -->
 <div class="icon-text">
-  <svg-icon icon="envelope"></svg-icon>
+  <pds-icon icon="envelope"></pds-icon>
   <span>Email</span>
 </div>
 
 <!-- Icon button -->
 <button class="icon-only">
-  <svg-icon icon="x" label="Close"></svg-icon>
+  <pds-icon icon="x" label="Close"></pds-icon>
 </button>
 
 <!-- Input with icon -->
 <div class="input-icon">
-  <svg-icon icon="magnifying-glass"></svg-icon>
+  <pds-icon icon="magnifying-glass"></pds-icon>
   <input type="search" placeholder="Search...">
 </div>
 ```

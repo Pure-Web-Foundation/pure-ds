@@ -257,19 +257,19 @@ customElements.define(
         element =
           element.tagName === "BUTTON" ? element : element.closest("button");
         componentType = "button";
-        const hasIcon = element.querySelector("svg-icon");
+        const hasIcon = element.querySelector("pds-icon");
         displayName = hasIcon ? "button with icon" : "button";
         return { element, componentType, displayName };
       }
 
       // SVG icons
-      if (element.tagName === "svg-icon" || element.closest("svg-icon")) {
+      if (element.tagName === "pds-icon" || element.closest("pds-icon")) {
         element =
-          element.tagName === "svg-icon"
+          element.tagName === "pds-icon"
             ? element
-            : element.closest("svg-icon");
+            : element.closest("pds-icon");
         componentType = "icon";
-        displayName = `svg-icon (${element.getAttribute("icon") || "unknown"})`;
+        displayName = `pds-icon (${element.getAttribute("icon") || "unknown"})`;
         return { element, componentType, displayName };
       }
 
@@ -741,12 +741,12 @@ customElements.define(
       const headerTemplate = html`
         <div class="code-drawer-header">
           <div class="code-drawer-title">
-            <svg-icon icon="code" size="sm"></svg-icon>
+            <pds-icon icon="code" size="sm"></pds-icon>
             <span>${displayName}</span>
             <span class="component-type-badge">${componentType}</span>
           </div>
           <button class="copy-code-btn" id="copyCodeBtn">
-            <svg-icon icon="clipboard" size="sm"></svg-icon>
+            <pds-icon icon="clipboard" size="sm"></pds-icon>
             Copy HTML
           </button>
         </div>
@@ -812,12 +812,12 @@ customElements.define(
 
             navigator.clipboard.writeText(textToCopy).then(() => {
               copyBtn.innerHTML = `
-              <svg-icon icon="check" size="sm"></svg-icon>
+              <pds-icon icon="check" size="sm"></pds-icon>
               Copied!
             `;
               setTimeout(() => {
                 copyBtn.innerHTML = `
-                <svg-icon icon="clipboard" size="sm"></svg-icon>
+                <pds-icon icon="clipboard" size="sm"></pds-icon>
                 Copy HTML
               `;
               }, 2000);
@@ -993,7 +993,7 @@ customElements.define(
         <nav class="showcase-toc" aria-label="Table of Contents">
           <div class="toc-wrapper">
             <div class="input-icon">
-              <svg-icon icon="magnifying-glass"></svg-icon>
+              <pds-icon icon="magnifying-glass"></pds-icon>
               <input
                 id="pds-search"
                 @focus=${(e) =>
@@ -1258,11 +1258,11 @@ customElements.define(
             <p>Why build a design system if you can generate it?</p>
             <div class="btn-group">
               <button class="btn-primary btn-lg">
-                <svg-icon icon="download"></svg-icon>
+                <pds-icon icon="download"></pds-icon>
                 Get Started
               </button>
               <button class="btn-secondary btn-lg" @click=${this.readDocs}>
-                <svg-icon icon="book-open"></svg-icon>
+                <pds-icon icon="book-open"></pds-icon>
                 View Docs
               </button>
             </div>
@@ -1271,11 +1271,11 @@ customElements.define(
           <!-- Colors Section -->
           <section class="showcase-section" data-section="color-system">
             <h2>
-              <svg-icon
+              <pds-icon
                 icon="palette"
                 size="lg"
                 class="icon-primary"
-              ></svg-icon>
+              ></pds-icon>
               Color System
             </h2>
 
@@ -1292,11 +1292,11 @@ customElements.define(
             <h3>Semantic Color Usage</h3>
             <div class="semantic-usage">
               <div class="semantic-message success">
-                <svg-icon
+                <pds-icon
                   icon="check-circle"
                   class="icon-success"
                   size="lg"
-                ></svg-icon>
+                ></pds-icon>
                 <div>
                   <strong>Success</strong>
                   <p>Operations completed successfully</p>
@@ -1304,11 +1304,11 @@ customElements.define(
               </div>
 
               <div class="semantic-message warning">
-                <svg-icon
+                <pds-icon
                   icon="warning"
                   class="icon-warning"
                   size="lg"
-                ></svg-icon>
+                ></pds-icon>
                 <div>
                   <strong>Warning</strong>
                   <p>Please review carefully</p>
@@ -1316,11 +1316,11 @@ customElements.define(
               </div>
 
               <div class="semantic-message danger">
-                <svg-icon
+                <pds-icon
                   icon="x-circle"
                   class="icon-danger"
                   size="lg"
-                ></svg-icon>
+                ></pds-icon>
                 <div>
                   <strong>Danger</strong>
                   <p>Critical error occurred</p>
@@ -1328,7 +1328,7 @@ customElements.define(
               </div>
 
               <div class="semantic-message info">
-                <svg-icon icon="info" class="icon-info" size="lg"></svg-icon>
+                <pds-icon icon="info" class="icon-info" size="lg"></pds-icon>
                 <div>
                   <strong>Info</strong>
                   <p>Helpful information</p>
@@ -1356,7 +1356,7 @@ customElements.define(
           <!-- Derived Color Scales Section -->
           <section class="showcase-section alt-bg">
             <h2>
-              <svg-icon icon="sun" size="lg" class="icon-warning"></svg-icon>
+              <pds-icon icon="sun" size="lg" class="icon-warning"></pds-icon>
               Derived Color Scales
             </h2>
             <p>
@@ -1388,11 +1388,11 @@ customElements.define(
           <!-- Typography Section -->
           <section class="showcase-section alt-bg" data-section="typography">
             <h2>
-              <svg-icon
+              <pds-icon
                 icon="text-aa"
                 size="lg"
                 class="icon-primary"
-              ></svg-icon>
+              ></pds-icon>
               Typography
             </h2>
 
@@ -1413,11 +1413,11 @@ customElements.define(
           <!-- Buttons Section -->
           <section class="showcase-section" data-section="buttons">
             <h2>
-              <svg-icon
+              <pds-icon
                 icon="cursor-click"
                 size="lg"
                 class="icon-primary"
-              ></svg-icon>
+              ></pds-icon>
               Buttons
             </h2>
 
@@ -1438,16 +1438,16 @@ customElements.define(
             <h3>Icon Buttons</h3>
             <div class="flex-wrap gap-sm">
               <button class="icon-only btn-primary">
-                <svg-icon icon="gear" label="Settings"></svg-icon>
+                <pds-icon icon="gear" label="Settings"></pds-icon>
               </button>
               <button class="icon-only btn-secondary">
-                <svg-icon icon="bell" label="Notifications"></svg-icon>
+                <pds-icon icon="bell" label="Notifications"></pds-icon>
               </button>
               <button class="icon-only btn-outline">
-                <svg-icon icon="heart" label="Favorite"></svg-icon>
+                <pds-icon icon="heart" label="Favorite"></pds-icon>
               </button>
               <button class="btn-primary">
-                <svg-icon icon="download"></svg-icon>
+                <pds-icon icon="download"></pds-icon>
                 <span>Download</span>
               </button>
             </div>
@@ -1455,11 +1455,11 @@ customElements.define(
 
           <section class="showcase-section alt-bg" data-section="forms">
             <h2>
-              <svg-icon
+              <pds-icon
                 icon="note-pencil"
                 size="lg"
                 class="icon-primary"
-              ></svg-icon>
+              ></pds-icon>
               Form Controls
             </h2>
 
@@ -1603,22 +1603,22 @@ customElements.define(
 
           <section class="showcase-section" data-section="alerts">
             <h2>
-              <svg-icon
+              <pds-icon
                 icon="bell-ringing"
                 size="lg"
                 class="icon-primary"
-              ></svg-icon>
+              ></pds-icon>
               Alerts & Feedback
             </h2>
 
             <div class="demo-grid cols-1">
               <div class="alert alert-success">
                 <div class="alert-icon">
-                  <svg-icon
+                  <pds-icon
                     icon="check-circle"
                     class="icon-success"
                     size="lg"
-                  ></svg-icon>
+                  ></pds-icon>
                 </div>
                 <div>
                   <div class="alert-title">Success!</div>
@@ -1628,7 +1628,7 @@ customElements.define(
 
               <div class="alert alert-info">
                 <div class="alert-icon">
-                  <svg-icon icon="info" class="icon-info" size="lg"></svg-icon>
+                  <pds-icon icon="info" class="icon-info" size="lg"></pds-icon>
                 </div>
                 <div>
                   <div class="alert-title">Information</div>
@@ -1638,11 +1638,11 @@ customElements.define(
 
               <div class="alert alert-warning">
                 <div class="alert-icon">
-                  <svg-icon
+                  <pds-icon
                     icon="warning"
                     class="icon-warning"
                     size="lg"
-                  ></svg-icon>
+                  ></pds-icon>
                 </div>
                 <div>
                   <div class="alert-title">Warning</div>
@@ -1652,11 +1652,11 @@ customElements.define(
 
               <div class="alert alert-danger">
                 <div class="alert-icon">
-                  <svg-icon
+                  <pds-icon
                     icon="x-circle"
                     class="icon-danger"
                     size="lg"
-                  ></svg-icon>
+                  ></pds-icon>
                 </div>
                 <div>
                   <div class="alert-title">Error</div>
@@ -1670,7 +1670,7 @@ customElements.define(
 
           <section class="showcase-section alt-bg">
             <h2>
-              <svg-icon icon="tag" size="lg" class="icon-primary"></svg-icon>
+              <pds-icon icon="tag" size="lg" class="icon-primary"></pds-icon>
               Badges & Pills
             </h2>
 
@@ -1716,7 +1716,7 @@ customElements.define(
           <!-- Media Elements Section -->
           <section class="showcase-section">
             <h2>
-              <svg-icon icon="image" size="lg" class="icon-primary"></svg-icon>
+              <pds-icon icon="image" size="lg" class="icon-primary"></pds-icon>
               Media Elements
             </h2>
 
@@ -1794,11 +1794,11 @@ customElements.define(
           <!-- Enhanced Components Section -->
           <section class="showcase-section alt-bg">
             <h2>
-              <svg-icon
+              <pds-icon
                 icon="brackets-curly"
                 size="lg"
                 class="icon-primary"
-              ></svg-icon>
+              ></pds-icon>
               Enhanced Components
             </h2>
 
@@ -1808,26 +1808,26 @@ customElements.define(
             </p>
             <nav data-dropdown>
               <button class="btn-primary">
-                <svg-icon icon="list"></svg-icon>
+                <pds-icon icon="list"></pds-icon>
                 Click for Menu
               </button>
               <menu class="dropdown-menu">
                 <ul>
                   <li>
                     <a href="#">
-                      <svg-icon icon="user" size="sm"></svg-icon>
+                      <pds-icon icon="user" size="sm"></pds-icon>
                       Profile
                     </a>
                   </li>
                   <li>
                     <a href="#">
-                      <svg-icon icon="gear" size="sm"></svg-icon>
+                      <pds-icon icon="gear" size="sm"></pds-icon>
                       Settings
                     </a>
                   </li>
                   <li>
                     <a href="#" class="danger">
-                      <svg-icon icon="x" size="sm"></svg-icon>
+                      <pds-icon icon="x" size="sm"></pds-icon>
                       Logout
                     </a>
                   </li>
@@ -1839,71 +1839,71 @@ customElements.define(
           <!-- Icons Section -->
           <section class="showcase-section" data-section="icons">
             <h2>
-              <svg-icon icon="star" size="lg" class="icon-accent"></svg-icon>
+              <pds-icon icon="star" size="lg" class="icon-accent"></pds-icon>
               Icon System
             </h2>
 
             <h3>Sizes</h3>
             <div class="icon-sizes">
-              <svg-icon icon="heart" size="xs"></svg-icon>
-              <svg-icon icon="heart" size="sm"></svg-icon>
-              <svg-icon icon="heart" size="md"></svg-icon>
-              <svg-icon icon="heart" size="lg"></svg-icon>
-              <svg-icon icon="heart" size="xl"></svg-icon>
-              <svg-icon icon="heart" size="2xl"></svg-icon>
+              <pds-icon icon="heart" size="xs"></pds-icon>
+              <pds-icon icon="heart" size="sm"></pds-icon>
+              <pds-icon icon="heart" size="md"></pds-icon>
+              <pds-icon icon="heart" size="lg"></pds-icon>
+              <pds-icon icon="heart" size="xl"></pds-icon>
+              <pds-icon icon="heart" size="2xl"></pds-icon>
             </div>
 
             <h3>Semantic Colors</h3>
             <div class="icon-colors">
-              <svg-icon
+              <pds-icon
                 icon="check-circle"
                 class="icon-primary"
                 size="lg"
-              ></svg-icon>
-              <svg-icon
+              ></pds-icon>
+              <pds-icon
                 icon="check-circle"
                 class="icon-secondary"
                 size="lg"
-              ></svg-icon>
-              <svg-icon
+              ></pds-icon>
+              <pds-icon
                 icon="check-circle"
                 class="icon-accent"
                 size="lg"
-              ></svg-icon>
-              <svg-icon
+              ></pds-icon>
+              <pds-icon
                 icon="check-circle"
                 class="icon-success"
                 size="lg"
-              ></svg-icon>
-              <svg-icon
+              ></pds-icon>
+              <pds-icon
                 icon="warning"
                 class="icon-warning"
                 size="lg"
-              ></svg-icon>
-              <svg-icon
+              ></pds-icon>
+              <pds-icon
                 icon="x-circle"
                 class="icon-danger"
                 size="lg"
-              ></svg-icon>
-              <svg-icon icon="info" class="icon-info" size="lg"></svg-icon>
+              ></pds-icon>
+              <pds-icon icon="info" class="icon-info" size="lg"></pds-icon>
             </div>
 
             <h3>Icon with Text</h3>
             <div class="icon-text-demo">
               <div class="icon-text">
-                <svg-icon icon="envelope"></svg-icon>
+                <pds-icon icon="envelope"></pds-icon>
                 <span>Email</span>
               </div>
               <div class="icon-text">
-                <svg-icon icon="phone"></svg-icon>
+                <pds-icon icon="phone"></pds-icon>
                 <span>Phone</span>
               </div>
               <div class="icon-text">
-                <svg-icon icon="user"></svg-icon>
+                <pds-icon icon="user"></pds-icon>
                 <span>Profile</span>
               </div>
               <div class="icon-text">
-                <svg-icon icon="calendar"></svg-icon>
+                <pds-icon icon="calendar"></pds-icon>
                 <span>Schedule</span>
               </div>
             </div>
@@ -1911,63 +1911,63 @@ customElements.define(
             <h3>Inputs with Icons</h3>
             <div class="input-icon-demo">
               <div class="input-icon">
-                <svg-icon icon="magnifying-glass"></svg-icon>
+                <pds-icon icon="magnifying-glass"></pds-icon>
                 <input type="search" placeholder="Search..." />
               </div>
               <div class="input-icon input-icon-end">
                 <input type="text" placeholder="Username" />
-                <svg-icon icon="user"></svg-icon>
+                <pds-icon icon="user"></pds-icon>
               </div>
             </div>
 
             <h3>Common Icons</h3>
             <div class="icon-grid">
               <div class="icon-grid-item">
-                <svg-icon icon="house" size="lg"></svg-icon>
+                <pds-icon icon="house" size="lg"></pds-icon>
                 <span class="icon-grid-label">house</span>
               </div>
               <div class="icon-grid-item">
-                <svg-icon icon="gear" size="lg"></svg-icon>
+                <pds-icon icon="gear" size="lg"></pds-icon>
                 <span class="icon-grid-label">gear</span>
               </div>
               <div class="icon-grid-item">
-                <svg-icon icon="bell" size="lg"></svg-icon>
+                <pds-icon icon="bell" size="lg"></pds-icon>
                 <span class="icon-grid-label">bell</span>
               </div>
               <div class="icon-grid-item">
-                <svg-icon icon="heart" size="lg"></svg-icon>
+                <pds-icon icon="heart" size="lg"></pds-icon>
                 <span class="icon-grid-label">heart</span>
               </div>
               <div class="icon-grid-item">
-                <svg-icon icon="star" size="lg"></svg-icon>
+                <pds-icon icon="star" size="lg"></pds-icon>
                 <span class="icon-grid-label">star</span>
               </div>
               <div class="icon-grid-item">
-                <svg-icon icon="trash" size="lg"></svg-icon>
+                <pds-icon icon="trash" size="lg"></pds-icon>
                 <span class="icon-grid-label">trash</span>
               </div>
               <div class="icon-grid-item">
-                <svg-icon icon="pencil" size="lg"></svg-icon>
+                <pds-icon icon="pencil" size="lg"></pds-icon>
                 <span class="icon-grid-label">pencil</span>
               </div>
               <div class="icon-grid-item">
-                <svg-icon icon="check" size="lg"></svg-icon>
+                <pds-icon icon="check" size="lg"></pds-icon>
                 <span class="icon-grid-label">check</span>
               </div>
               <div class="icon-grid-item">
-                <svg-icon icon="x" size="lg"></svg-icon>
+                <pds-icon icon="x" size="lg"></pds-icon>
                 <span class="icon-grid-label">x</span>
               </div>
               <div class="icon-grid-item">
-                <svg-icon icon="plus" size="lg"></svg-icon>
+                <pds-icon icon="plus" size="lg"></pds-icon>
                 <span class="icon-grid-label">plus</span>
               </div>
               <div class="icon-grid-item">
-                <svg-icon icon="minus" size="lg"></svg-icon>
+                <pds-icon icon="minus" size="lg"></pds-icon>
                 <span class="icon-grid-label">minus</span>
               </div>
               <div class="icon-grid-item">
-                <svg-icon icon="download" size="lg"></svg-icon>
+                <pds-icon icon="download" size="lg"></pds-icon>
                 <span class="icon-grid-label">download</span>
               </div>
             </div>
@@ -1976,11 +1976,11 @@ customElements.define(
           <!-- Layout & Cards Section -->
           <section class="showcase-section alt-bg">
             <h2>
-              <svg-icon
+              <pds-icon
                 icon="desktop"
                 size="lg"
                 class="icon-primary"
-              ></svg-icon>
+              ></pds-icon>
               Layout & Cards
             </h2>
 
@@ -2033,7 +2033,7 @@ customElements.define(
 
           <section class="showcase-section">
             <h2>
-              <svg-icon icon="list" size="lg" class="icon-primary"></svg-icon>
+              <pds-icon icon="list" size="lg" class="icon-primary"></pds-icon>
               Tables
             </h2>
 
@@ -2149,11 +2149,11 @@ customElements.define(
           <!-- Form Groups Section -->
           <section class="showcase-section alt-bg">
             <h2>
-              <svg-icon
+              <pds-icon
                 icon="list-bullets"
                 size="lg"
                 class="icon-primary"
-              ></svg-icon>
+              ></pds-icon>
               Form Groups
             </h2>
 
@@ -2215,11 +2215,11 @@ customElements.define(
           <!-- Smart Surfaces Section -->
           <section class="showcase-section" data-section="smart-surfaces">
             <h2>
-              <svg-icon
+              <pds-icon
                 icon="palette"
                 size="lg"
                 class="icon-primary"
-              ></svg-icon>
+              ></pds-icon>
               Smart Surface System
             </h2>
 
@@ -2233,7 +2233,7 @@ customElements.define(
             <div class="surface-demo-grid">
               <div class="surface-base" style="padding: var(--spacing-6);">
                 <strong class="surface-title">
-                  <svg-icon icon="square"></svg-icon>
+                  <pds-icon icon="square"></pds-icon>
                   Base Surface
                 </strong>
                 <p class="surface-description">
@@ -2245,7 +2245,7 @@ customElements.define(
               </div>
               <div class="surface-subtle" style="padding: var(--spacing-6);">
                 <strong class="surface-title">
-                  <svg-icon icon="square"></svg-icon>
+                  <pds-icon icon="square"></pds-icon>
                   Subtle Surface
                 </strong>
                 <p class="surface-description">
@@ -2257,7 +2257,7 @@ customElements.define(
               </div>
               <div class="surface-elevated" style="padding: var(--spacing-6);">
                 <strong class="surface-title">
-                  <svg-icon icon="arrow-up"></svg-icon>
+                  <pds-icon icon="arrow-up"></pds-icon>
                   Elevated Surface
                 </strong>
                 <p class="surface-description">
@@ -2269,7 +2269,7 @@ customElements.define(
               </div>
               <div class="surface-overlay" style="padding: var(--spacing-6);">
                 <strong class="surface-title">
-                  <svg-icon icon="desktop"></svg-icon>
+                  <pds-icon icon="desktop"></pds-icon>
                   Overlay Surface
                 </strong>
                 <p class="surface-description">
@@ -2288,17 +2288,17 @@ customElements.define(
             </p>
             <div class="shadow-demo-grid">
               <div class="shadow-demo-item shadow-sm">
-                <svg-icon icon="feather" size="lg"></svg-icon>
+                <pds-icon icon="feather" size="lg"></pds-icon>
                 <strong>Small</strong>
                 <p>--shadow-sm</p>
               </div>
               <div class="shadow-demo-item shadow-md">
-                <svg-icon icon="grid-four" size="lg"></svg-icon>
+                <pds-icon icon="grid-four" size="lg"></pds-icon>
                 <strong>Medium</strong>
                 <p>--shadow-md</p>
               </div>
               <div class="shadow-demo-item shadow-lg">
-                <svg-icon icon="rocket" size="lg"></svg-icon>
+                <pds-icon icon="rocket" size="lg"></pds-icon>
                 <strong>Large</strong>
                 <p>--shadow-lg</p>
               </div>
@@ -2308,7 +2308,7 @@ customElements.define(
           <!-- Nested Surfaces Section -->
           <section class="showcase-section alt-bg" data-section="nested-surfaces">
             <h2>
-              <svg-icon icon="grid-four" size="lg" class="icon-primary"></svg-icon>
+              <pds-icon icon="grid-four" size="lg" class="icon-primary"></pds-icon>
               Nested Surfaces
             </h2>
 
@@ -2319,7 +2319,7 @@ customElements.define(
 
             <div class="surface-base" style="padding: var(--spacing-6);">
               <h4>
-                <svg-icon icon="circle"></svg-icon>
+                <pds-icon icon="circle"></pds-icon>
                 Level 1: Base Surface
               </h4>
               <p>
@@ -2332,7 +2332,7 @@ customElements.define(
                 style="padding: var(--spacing-6); margin-top: var(--spacing-4);"
               >
                 <h5>
-                  <svg-icon icon="arrow-right"></svg-icon>
+                  <pds-icon icon="arrow-right"></pds-icon>
                   Level 2: Elevated Surface
                 </h5>
                 <p>Shadows and text colors automatically adjust</p>
@@ -2340,7 +2340,7 @@ customElements.define(
                 <div class="demo-grid cols-2" style="margin-top: var(--spacing-4);">
                   <div class="card">
                     <h6>
-                      <svg-icon icon="check"></svg-icon>
+                      <pds-icon icon="check"></pds-icon>
                       Level 3: Card
                     </h6>
                     <p>Perfect contrast maintained</p>
@@ -2350,7 +2350,7 @@ customElements.define(
                       style="padding: var(--spacing-4); margin-top: var(--spacing-3);"
                     >
                       <small>
-                        <svg-icon icon="info" size="sm"></svg-icon>
+                        <pds-icon icon="info" size="sm"></pds-icon>
                         Level 4: Sunken surface inside card
                       </small>
                     </div>
@@ -2358,12 +2358,12 @@ customElements.define(
 
                   <div class="card">
                     <h6>
-                      <svg-icon icon="star"></svg-icon>
+                      <pds-icon icon="star"></pds-icon>
                       Another Card
                     </h6>
                     <p>All elements adapt automatically</p>
                     <button class="btn-primary btn-sm" style="margin-top: var(--spacing-2);">
-                      <svg-icon icon="heart" size="sm"></svg-icon>
+                      <pds-icon icon="heart" size="sm"></pds-icon>
                       Action
                     </button>
                   </div>
@@ -2376,21 +2376,21 @@ customElements.define(
             <div class="demo-grid cols-3">
               <div class="card">
                 <h5>
-                  <svg-icon icon="palette"></svg-icon>
+                  <pds-icon icon="palette"></pds-icon>
                   Design
                 </h5>
                 <p>Smart surfaces handle theming automatically</p>
               </div>
               <div class="card">
                 <h5>
-                  <svg-icon icon="code"></svg-icon>
+                  <pds-icon icon="code"></pds-icon>
                   Development
                 </h5>
                 <p>Zero manual color overrides needed</p>
               </div>
               <div class="card">
                 <h5>
-                  <svg-icon icon="rocket"></svg-icon>
+                  <pds-icon icon="rocket"></pds-icon>
                   Performance
                 </h5>
                 <p>CSS custom properties are fast</p>
@@ -2401,7 +2401,7 @@ customElements.define(
           <!-- Surface Inversion Section -->
           <section class="showcase-section" data-section="surface-inversion">
             <h2>
-              <svg-icon icon="moon" size="lg" class="icon-primary"></svg-icon>
+              <pds-icon icon="moon" size="lg" class="icon-primary"></pds-icon>
               Surface Inversion
             </h2>
 
@@ -2418,7 +2418,7 @@ customElements.define(
                 style="background-color: #1a1a1a; padding: var(--spacing-6); border-radius: var(--radius-lg);"
               >
                 <h4 style="color: white;">
-                  <svg-icon icon="moon" style="color: white;"></svg-icon>
+                  <pds-icon icon="moon" style="color: white;"></pds-icon>
                   Automatic Inversion
                 </h4>
                 <p style="color: #e5e5e5;">
@@ -2435,7 +2435,7 @@ customElements.define(
                 style="background-color: #1e4a6f; padding: var(--spacing-6); border-radius: var(--radius-lg);"
               >
                 <h4 style="color: white;">
-                  <svg-icon icon="palette" style="color: white;"></svg-icon>
+                  <pds-icon icon="palette" style="color: white;"></pds-icon>
                   Primary 800
                 </h4>
                 <p style="color: #dbeafe;">
@@ -2453,11 +2453,11 @@ customElements.define(
                 class="demo-inversion-box"
                 style="background-color: #16a34a; padding: var(--spacing-5); border-radius: var(--radius-md); text-align: center;"
               >
-                <svg-icon
+                <pds-icon
                   icon="check-circle"
                   size="xl"
                   style="color: white;"
-                ></svg-icon>
+                ></pds-icon>
                 <h5 style="color: white; margin-top: var(--spacing-2);">
                   Success
                 </h5>
@@ -2468,11 +2468,11 @@ customElements.define(
                 class="demo-inversion-box"
                 style="background-color: #ca8a04; padding: var(--spacing-5); border-radius: var(--radius-md); text-align: center;"
               >
-                <svg-icon
+                <pds-icon
                   icon="warning"
                   size="xl"
                   style="color: white;"
-                ></svg-icon>
+                ></pds-icon>
                 <h5 style="color: white; margin-top: var(--spacing-2);">
                   Warning
                 </h5>
@@ -2485,11 +2485,11 @@ customElements.define(
                 class="demo-inversion-box"
                 style="background-color: #be185d; padding: var(--spacing-5); border-radius: var(--radius-md); text-align: center;"
               >
-                <svg-icon
+                <pds-icon
                   icon="heart"
                   size="xl"
                   style="color: white;"
-                ></svg-icon>
+                ></pds-icon>
                 <h5 style="color: white; margin-top: var(--spacing-2);">Accent</h5>
                 <p style="color: #fce7f3;">Automatic adjustment</p>
               </div>
@@ -2499,11 +2499,11 @@ customElements.define(
           <!-- Grid Utilities Section -->
           <section class="showcase-section" data-section="grid-utilities">
             <h2>
-              <svg-icon
+              <pds-icon
                 icon="squares-four"
                 size="lg"
                 class="icon-primary"
-              ></svg-icon>
+              ></pds-icon>
               Grid Utilities
             </h2>
             <p>
@@ -2516,12 +2516,12 @@ customElements.define(
             
             <div class="grid grid-cols-2 gap-md" style="margin-bottom: var(--spacing-4);">
               <div class="card">
-                <svg-icon icon="square" size="lg" class="icon-primary"></svg-icon>
+                <pds-icon icon="square" size="lg" class="icon-primary"></pds-icon>
                 <h4>Grid Column 1</h4>
                 <p>Two column layout</p>
               </div>
               <div class="card">
-                <svg-icon icon="square" size="lg" class="icon-secondary"></svg-icon>
+                <pds-icon icon="square" size="lg" class="icon-secondary"></pds-icon>
                 <h4>Grid Column 2</h4>
                 <p>Equal width columns</p>
               </div>
@@ -2529,15 +2529,15 @@ customElements.define(
 
             <div class="grid grid-cols-3 gap-sm" style="margin-bottom: var(--spacing-4);">
               <div class="card">
-                <svg-icon icon="circle" size="md" class="icon-success"></svg-icon>
+                <pds-icon icon="circle" size="md" class="icon-success"></pds-icon>
                 <p>Column 1</p>
               </div>
               <div class="card">
-                <svg-icon icon="circle" size="md" class="icon-warning"></svg-icon>
+                <pds-icon icon="circle" size="md" class="icon-warning"></pds-icon>
                 <p>Column 2</p>
               </div>
               <div class="card">
-                <svg-icon icon="circle" size="md" class="icon-error"></svg-icon>
+                <pds-icon icon="circle" size="md" class="icon-error"></pds-icon>
                 <p>Column 3</p>
               </div>
             </div>
@@ -2558,22 +2558,22 @@ customElements.define(
             <h4><code>.grid-auto-sm</code> (min 150px)</h4>
             <div class="grid grid-auto-sm gap-md" style="margin-bottom: var(--spacing-4);">
               <div class="card">
-                <svg-icon icon="desktop" size="lg" class="icon-info"></svg-icon>
+                <pds-icon icon="desktop" size="lg" class="icon-info"></pds-icon>
                 <h5>Responsive</h5>
                 <p>Automatically wraps</p>
               </div>
               <div class="card">
-                <svg-icon icon="device-mobile" size="lg" class="icon-info"></svg-icon>
+                <pds-icon icon="device-mobile" size="lg" class="icon-info"></pds-icon>
                 <h5>Adaptive</h5>
                 <p>Based on space</p>
               </div>
               <div class="card">
-                <svg-icon icon="globe" size="lg" class="icon-info"></svg-icon>
+                <pds-icon icon="globe" size="lg" class="icon-info"></pds-icon>
                 <h5>Flexible</h5>
                 <p>Resize the window</p>
               </div>
               <div class="card">
-                <svg-icon icon="feather" size="lg" class="icon-info"></svg-icon>
+                <pds-icon icon="feather" size="lg" class="icon-info"></pds-icon>
                 <h5>Dynamic</h5>
                 <p>No breakpoints needed</p>
               </div>
@@ -2582,17 +2582,17 @@ customElements.define(
             <h4><code>.grid-auto-md</code> (min 250px)</h4>
             <div class="grid grid-auto-md gap-lg" style="margin-bottom: var(--spacing-4);">
               <div class="card surface-elevated">
-                <svg-icon icon="rocket" size="xl" class="icon-accent"></svg-icon>
+                <pds-icon icon="rocket" size="xl" class="icon-accent"></pds-icon>
                 <h5>Card 1</h5>
                 <p>Larger minimum width means fewer columns on small screens</p>
               </div>
               <div class="card surface-elevated">
-                <svg-icon icon="palette" size="xl" class="icon-accent"></svg-icon>
+                <pds-icon icon="palette" size="xl" class="icon-accent"></pds-icon>
                 <h5>Card 2</h5>
                 <p>Smart surface tokens apply automatically</p>
               </div>
               <div class="card surface-elevated">
-                <svg-icon icon="heart" size="xl" class="icon-accent"></svg-icon>
+                <pds-icon icon="heart" size="xl" class="icon-accent"></pds-icon>
                 <h5>Card 3</h5>
                 <p>Consistent spacing with gap utilities</p>
               </div>
@@ -2641,7 +2641,7 @@ customElements.define(
 
             <h3>Code Inspector Support</h3>
             <p class="interactive-demo">
-              <svg-icon icon="cursor-click" size="sm" class="icon-primary"></svg-icon>
+              <pds-icon icon="cursor-click" size="sm" class="icon-primary"></pds-icon>
               Enable the <strong>Code Inspector</strong> and click on any grid container above.
               The ontology now recognizes layout patterns like <code>grid</code>, <code>grid-cols</code>,
               and <code>grid-auto</code> for intelligent component detection.
@@ -2651,7 +2651,7 @@ customElements.define(
           <!-- Mesh Gradients Section -->
           <section class="showcase-section" data-section="mesh-gradients">
             <h2>
-              <svg-icon icon="palette" size="lg" class="icon-primary"></svg-icon>
+              <pds-icon icon="palette" size="lg" class="icon-primary"></pds-icon>
               Mesh Gradients
             </h2>
             <p>
@@ -2670,7 +2670,7 @@ customElements.define(
                   @pointerleave=${this.clearMeshPreview}
                   title="Press and hold to preview on page background"
                 >
-                  <svg-icon icon="eye" size="sm"></svg-icon>
+                  <pds-icon icon="eye" size="sm"></pds-icon>
                   Preview
                 </button>
                 <div style="background: var(--color-surface-base); padding: var(--spacing-4); border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
@@ -2687,7 +2687,7 @@ customElements.define(
                   @pointerleave=${this.clearMeshPreview}
                   title="Press and hold to preview on page background"
                 >
-                  <svg-icon icon="eye" size="sm"></svg-icon>
+                  <pds-icon icon="eye" size="sm"></pds-icon>
                   Preview
                 </button>
                 <div style="background: var(--color-surface-base); padding: var(--spacing-4); border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
@@ -2707,9 +2707,9 @@ customElements.define(
                   @pointerleave=${this.clearMeshPreview}
                   title="Press and hold to preview on page background"
                 >
-                  <svg-icon icon="eye" size="sm"></svg-icon>
+                  <pds-icon icon="eye" size="sm"></pds-icon>
                 </button>
-                <svg-icon icon="sparkle" size="xl" style="opacity: 0.9; margin-bottom: var(--spacing-2);"></svg-icon>
+                <pds-icon icon="sparkle" size="xl" style="opacity: 0.9; margin-bottom: var(--spacing-2);"></pds-icon>
                 <code style="font-size: 0.75rem;">mesh-03</code>
               </div>
               <div style="position: relative; background: var(--background-mesh-04); padding: var(--spacing-5); border-radius: var(--radius-md); min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px solid var(--color-border);">
@@ -2721,9 +2721,9 @@ customElements.define(
                   @pointerleave=${this.clearMeshPreview}
                   title="Press and hold to preview on page background"
                 >
-                  <svg-icon icon="eye" size="sm"></svg-icon>
+                  <pds-icon icon="eye" size="sm"></pds-icon>
                 </button>
-                <svg-icon icon="sparkle" size="xl" style="opacity: 0.9; margin-bottom: var(--spacing-2);"></svg-icon>
+                <pds-icon icon="sparkle" size="xl" style="opacity: 0.9; margin-bottom: var(--spacing-2);"></pds-icon>
                 <code style="font-size: 0.75rem;">mesh-04</code>
               </div>
               <div style="position: relative; background: var(--background-mesh-05); padding: var(--spacing-5); border-radius: var(--radius-md); min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px solid var(--color-border);">
@@ -2735,9 +2735,9 @@ customElements.define(
                   @pointerleave=${this.clearMeshPreview}
                   title="Press and hold to preview on page background"
                 >
-                  <svg-icon icon="eye" size="sm"></svg-icon>
+                  <pds-icon icon="eye" size="sm"></pds-icon>
                 </button>
-                <svg-icon icon="sparkle" size="xl" style="opacity: 0.9; margin-bottom: var(--spacing-2);"></svg-icon>
+                <pds-icon icon="sparkle" size="xl" style="opacity: 0.9; margin-bottom: var(--spacing-2);"></pds-icon>
                 <code style="font-size: 0.75rem;">mesh-05</code>
               </div>
             </div>
@@ -2761,7 +2761,7 @@ customElements.define(
 }</code></pre>
 
             <p class="interactive-demo" style="margin-top: var(--spacing-4);">
-              <svg-icon icon="moon-stars" size="sm" class="icon-primary"></svg-icon>
+              <pds-icon icon="moon-stars" size="sm" class="icon-primary"></pds-icon>
               Toggle between light and dark modes to see how mesh gradients automatically adapt with reduced opacity in dark mode for subtle, non-interfering backgrounds.
             </p>
           </section>
@@ -2772,11 +2772,11 @@ customElements.define(
             data-section="interactive-states"
           >
             <h2>
-              <svg-icon
+              <pds-icon
                 icon="cursor-click"
                 size="lg"
                 class="icon-primary"
-              ></svg-icon>
+              ></pds-icon>
               Interactive States
             </h2>
 
@@ -2810,13 +2810,13 @@ customElements.define(
                 class="btn-primary"
                 @click="${this.triggerTransitionDemo}"
               >
-                <svg-icon icon="play" size="sm"></svg-icon>
+                <pds-icon icon="play" size="sm"></pds-icon>
                 Animate Transition
               </button>
 
               <div class="transition-demo-stage">
                 <div class="transition-demo-ball" id="transition-ball">
-                  <svg-icon icon="cursor-click" size="lg"></svg-icon>
+                  <pds-icon icon="cursor-click" size="lg"></pds-icon>
                 </div>
               </div>
             </div>
@@ -2832,11 +2832,11 @@ customElements.define(
             ? html`
                 <section class="showcase-section">
                   <h2>
-                    <svg-icon
+                    <pds-icon
                       icon="bell-ringing"
                       size="lg"
                       class="icon-primary"
-                    ></svg-icon>
+                    ></pds-icon>
                     Toast Notifications
                   </h2>
 
@@ -2851,36 +2851,36 @@ customElements.define(
                       class="btn-primary btn-sm"
                       @click="${this.showSuccessToast}"
                     >
-                      <svg-icon icon="check-circle" size="sm"></svg-icon>
+                      <pds-icon icon="check-circle" size="sm"></pds-icon>
                       Success
                     </button>
                     <button
                       class="btn-secondary btn-sm"
                       @click="${this.showInfoToast}"
                     >
-                      <svg-icon icon="info" size="sm"></svg-icon>
+                      <pds-icon icon="info" size="sm"></pds-icon>
                       Info
                     </button>
                     <button
                       class="btn-warning btn-sm"
                       @click="${this.showWarningToast}"
                     >
-                      <svg-icon icon="warning" size="sm"></svg-icon>
+                      <pds-icon icon="warning" size="sm"></pds-icon>
                       Warning
                     </button>
                     <button class="btn-danger btn-sm" @click="${this.showErrorToast}">
-                      <svg-icon icon="x-circle" size="sm"></svg-icon>
+                      <pds-icon icon="x-circle" size="sm"></pds-icon>
                       Error
                     </button>
                     <button class="btn-outline btn-sm" @click="${this.showLongToast}">
-                      <svg-icon icon="clock" size="sm"></svg-icon>
+                      <pds-icon icon="clock" size="sm"></pds-icon>
                       Long
                     </button>
                     <button
                       class="btn-outline btn-sm"
                       @click="${this.showPersistentToast}"
                     >
-                      <svg-icon icon="bell" size="sm"></svg-icon>
+                      <pds-icon icon="bell" size="sm"></pds-icon>
                       Persistent
                     </button>
                   </div>
@@ -2895,7 +2895,7 @@ customElements.define(
                 <!-- Tab Strip Section -->
                 <section class="showcase-section alt-bg" data-section="tabs">
                   <h2>
-                    <svg-icon icon="tabs"></svg-icon>
+                    <pds-icon icon="tabs"></pds-icon>
                     Tab Strip
                   </h2>
                   <p>
@@ -2976,21 +2976,21 @@ customElements.define(
                 <!-- Drawer Section -->
                 <section class="showcase-section">
                   <h2>
-                    <svg-icon icon="squares-four" size="lg" class="icon-primary"></svg-icon>
+                    <pds-icon icon="squares-four" size="lg" class="icon-primary"></pds-icon>
                     Drawer Example
                   </h2>
                   <p>Open the global drawer from different sides:</p>
                   <div class="btn-group" style="gap: var(--spacing-3); flex-wrap: wrap;">
                     <button class="btn-primary" @click=${this.openDrawer}>
-                      <svg-icon icon="sidebar" size="sm"></svg-icon>
+                      <pds-icon icon="sidebar" size="sm"></pds-icon>
                       Bottom Drawer
                     </button>
                     <button class="btn-secondary" @click=${this.openDrawerLeft}>
-                      <svg-icon icon="sidebar" size="sm"></svg-icon>
+                      <pds-icon icon="sidebar" size="sm"></pds-icon>
                       Left Drawer
                     </button>
                     <button class="btn-secondary" @click=${this.openDrawerRight}>
-                      <svg-icon icon="sidebar" size="sm"></svg-icon>
+                      <pds-icon icon="sidebar" size="sm"></pds-icon>
                       Right Drawer
                     </button>
                   </div>
