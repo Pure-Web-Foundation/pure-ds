@@ -218,7 +218,7 @@ export const presets = [
       accent: "#be123c",
       background: "#fef2f2",
       darkMode: {
-        background: "#1a0a0a",
+        background: "#1b0808",
         secondary: "#d1d5db"
       }
     },
