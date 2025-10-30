@@ -206,6 +206,213 @@ function validateDesign(designConfig = {}, options = {}) {
 /** Expose validator on the public API */
 PDS.validateDesign = validateDesign;
 
+/**
+ * Initialize PDS in live mode with the given configuration.
+ * This is the main entry point for consuming applications.
+ * 
+ * @param {object} config - The PDS configuration object
+ * @param {object} [options] - Optional settings
+ * @param {string} [options.autoDefineBaseURL] - Base URL for auto-define components (default: '/auto-define/')
+ * @param {boolean} [options.applyGlobalStyles=true] - Whether to apply styles globally via adoptedStyleSheets
+ * @param {boolean} [options.manageTheme=true] - Whether to automatically manage data-theme attribute and localStorage
+ * @param {string} [options.themeStorageKey='pure-ds-theme'] - localStorage key for theme preference
+ * @returns {Promise<{generator: Generator, config: object, theme: string}>} The generator instance, resolved config, and current theme
+ * 
+ * @example
+ * ```js
+ * import { PDS } from '@pure-ds/core';
+ * 
+ * await PDS.live({
+ *   colors: {
+ *     primary: '#007acc',
+ *     secondary: '#666666'
+ *   },
+ *   typography: {
+ *     fontFamily: 'Inter, sans-serif'
+ *   }
+ * });
+ * ```
+ */
+async function live(config, options = {}) {
+  if (!config || typeof config !== 'object') {
+    throw new Error('PDS.live() requires a valid configuration object');
+  }
+
+  const {
+    autoDefineBaseURL = '/auto-define/',
+    applyGlobalStyles = true,
+    manageTheme = true,
+    themeStorageKey = 'pure-ds-theme'
+  } = options;
+
+  try {
+    let resolvedTheme = 'light'; // default fallback
+    
+    // 1) Handle theme preference early so styles are generated with correct scope
+    if (manageTheme && typeof window !== 'undefined') {
+      const storedTheme = localStorage.getItem(themeStorageKey);
+      
+      if (storedTheme) {
+        // If user explicitly stored 'light' or 'dark', use that. If they stored 'system',
+        // resolve current OS preference and set the attribute to an explicit value
+        if (storedTheme === 'system') {
+          const prefersDark = window.matchMedia && 
+            window.matchMedia('(prefers-color-scheme: dark)').matches;
+          resolvedTheme = prefersDark ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', resolvedTheme);
+        } else {
+          resolvedTheme = storedTheme;
+          document.documentElement.setAttribute('data-theme', storedTheme);
+        }
+      } else {
+        // No persisted preference: choose from OS preference and do not persist
+        const prefersDark = window.matchMedia && 
+          window.matchMedia('(prefers-color-scheme: dark)').matches;
+        resolvedTheme = prefersDark ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', resolvedTheme);
+      }
+
+      // 2) If the user preference is 'system' we need to keep the html[data-theme]
+      // attribute in sync with the OS. When localStorage contains 'system' we
+      // register a matchMedia listener that updates the attribute to either
+      // 'dark' or 'light' on changes.
+      if (storedTheme === 'system' && window.matchMedia) {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        const listener = (e) => {
+          const isDark = e.matches === undefined ? mq.matches : e.matches;
+          try {
+            const newTheme = isDark ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            
+            // Emit event so consuming apps can react to theme changes
+            window.dispatchEvent(new CustomEvent('pds-theme-changed', {
+              detail: { theme: newTheme, source: 'system' }
+            }));
+          } catch (ex) {
+            /* ignore */
+          }
+        };
+
+        // Attach listener using modern API where available
+        if (typeof mq.addEventListener === 'function') {
+          mq.addEventListener('change', listener);
+        } else if (typeof mq.addListener === 'function') {
+          mq.addListener(listener);
+        }
+      }
+    }
+
+    // 3) Create generator with the provided config, including theme
+    const generatorConfig = structuredClone(config);
+    if (manageTheme) {
+      generatorConfig.theme = resolvedTheme;
+    }
+    
+    const generator = new PDS.Generator(generatorConfig);
+    
+    // Set the registry to use this designer
+    PDS.registry.setDesigner(generator);
+    
+    // Apply styles globally if requested (default behavior)
+    if (applyGlobalStyles) {
+      await PDS.Generator.applyStyles(generator);
+    }
+    
+    // Set up auto-define base URL for lazy-loaded components
+    if (typeof window !== 'undefined' && window.document) {
+      window.__pds = window.__pds || {};
+      window.__pds.autoDefineBaseURL = autoDefineBaseURL;
+    }
+    
+    // Emit event to notify that PDS is ready
+    if (typeof window !== 'undefined' && window.document) {
+      window.dispatchEvent(new CustomEvent('pds-live-ready', {
+        detail: { generator, config: generator.config, theme: resolvedTheme }
+      }));
+    }
+    
+    return { generator, config: generator.config, theme: resolvedTheme };
+    
+  } catch (error) {
+    // Emit error event
+    if (typeof window !== 'undefined' && window.document) {
+      window.dispatchEvent(new CustomEvent('pds-error', {
+        detail: error
+      }));
+    }
+    throw error;
+  }
+}
+
+/** Initialize PDS in live mode with the given configuration */
+PDS.live = live;
+
+/**
+ * Change the current theme programmatically.
+ * This updates localStorage, the data-theme attribute, and regenerates styles if in live mode.
+ * 
+ * @param {string} theme - Theme to apply: 'light', 'dark', or 'system'
+ * @param {object} [options] - Optional settings
+ * @param {string} [options.storageKey='pure-ds-theme'] - localStorage key for theme preference
+ * @param {boolean} [options.persist=true] - Whether to save to localStorage
+ * @returns {Promise<string>} The resolved theme ('light' or 'dark')
+ */
+async function setTheme(theme, options = {}) {
+  const { storageKey = 'pure-ds-theme', persist = true } = options;
+  
+  if (!['light', 'dark', 'system'].includes(theme)) {
+    throw new Error(`Invalid theme "${theme}". Must be "light", "dark", or "system".`);
+  }
+
+  if (typeof window === 'undefined') {
+    return theme === 'system' ? 'light' : theme;
+  }
+
+  let resolvedTheme = theme;
+
+  // Resolve 'system' to actual preference
+  if (theme === 'system') {
+    const prefersDark = window.matchMedia && 
+      window.matchMedia('(prefers-color-scheme: dark)').matches;
+    resolvedTheme = prefersDark ? 'dark' : 'light';
+  }
+
+  // Update data-theme attribute
+  document.documentElement.setAttribute('data-theme', resolvedTheme);
+
+  // Persist to localStorage if requested
+  if (persist) {
+    localStorage.setItem(storageKey, theme);
+  }
+
+  // If we're in live mode, regenerate styles with new theme
+  if (PDS.registry.isLive && PDS.registry.hasDesigner) {
+    try {
+      const currentDesigner = PDS.registry._designer; // Access internal designer
+      if (currentDesigner && currentDesigner.configure) {
+        // Update the designer's config with new theme
+        const newConfig = { ...currentDesigner.config, theme: resolvedTheme };
+        currentDesigner.configure(newConfig);
+        
+        // Reapply styles
+        await PDS.Generator.applyStyles(currentDesigner);
+      }
+    } catch (error) {
+      console.warn('Failed to update styles for new theme:', error);
+    }
+  }
+
+  // Emit theme change event
+  window.dispatchEvent(new CustomEvent('pds-theme-changed', {
+    detail: { theme: resolvedTheme, requested: theme, source: 'programmatic' }
+  }));
+
+  return resolvedTheme;
+}
+
+/** Change the current theme programmatically */
+PDS.setTheme = setTheme;
+
 Object.freeze(PDS);
 
 export { PDS };

@@ -1,14 +1,31 @@
 {
-  "name": "pure-design-system",
+  "name": "@pure-ds/core",
   "shortname": "pds",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Pure Design System - Why develop a Design System when you can generate one?",
   "type": "module",
-  "main": "app.js",
+  "main": "./public/assets/js/pds.js",
+  "module": "./public/assets/js/pds.js",
+  "types": "./src/js/pds.d.ts",
   "exports": {
-    "/pds-core": "./src/js/pds.js",
-    "/pds-configurator": "./src/js/pds-configurator/pds-configurator.js"
+    ".": {
+      "types": "./src/js/pds.d.ts",
+      "import": "./public/assets/js/pds.js"
+    },
+    "./pds-core": "./src/js/pds.js",
+    "./pds-configurator": "./src/js/pds-configurator/pds-configurator.js",
+    "./auto-define/*": "./public/auto-define/*"
   },
+  "files": [
+    "public/assets/js/",
+    "public/auto-define/",
+    "public/exports/",
+    "src/js/pds.d.ts",
+    "src/js/pds.js",
+    "src/js/pds-core/",
+    "src/js/pds-configurator/",
+    "README.md"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node esbuild-dev.js",
@@ -30,6 +47,4 @@
     "@qogni-technologies/pwa-utils-library": "^1.3.2",
     "showdown": "^2.1.0"
   }
-  ,
-  "types": "dist/types/pds.d.ts"
 }
