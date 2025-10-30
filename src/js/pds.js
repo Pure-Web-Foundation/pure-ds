@@ -126,8 +126,9 @@ function validateDesign(designConfig = {}, options = {}) {
       primary600: c.primary?.[600] || c.primary?.[500] || designConfig.colors?.primary,
     };
 
-    // Primary button (light): bg primary600, text white
-    const lightBtnRatio = contrast(light.primary600, "#ffffff");
+  // Primary button (light): prefer semantic primaryFill, else primary600; text white
+  const lightPrimaryFill = c.semantic?.primaryFill || light.primary600;
+  const lightBtnRatio = contrast(lightPrimaryFill, "#ffffff");
     if (lightBtnRatio < MIN) {
       issues.push({
         path: "/colors/primary",
@@ -150,12 +151,13 @@ function validateDesign(designConfig = {}, options = {}) {
       });
     }
 
-    // Outline/link style: primary600 as text on surface (AA target for normal text)
-    const lightOutlineRatio = contrast(light.primary600, light.surfaceBg);
+    // Prefer semantic primaryText if available for outline/link; fallback to primary600
+    const lightPrimaryText = c.semantic?.primaryText || light.primary600;
+    const lightOutlineRatio = contrast(lightPrimaryText, light.surfaceBg);
     if (lightOutlineRatio < MIN) {
       issues.push({
         path: "/colors/primary",
-        message: `Primary text on surface is too low for outline/link styles (light) (${lightOutlineRatio.toFixed(2)} < ${MIN}). Choose a darker primary or lighter surface.`,
+        message: `Primary text on surface is too low for outline/link styles (light) (${lightOutlineRatio.toFixed(2)} < ${MIN}). Choose a darker primary, lighter surface, or adjust semantic.primaryText.`,
         ratio: lightOutlineRatio,
         min: MIN,
         context: "light/outline"
@@ -169,7 +171,8 @@ function validateDesign(designConfig = {}, options = {}) {
         surfaceBg: d.surface?.base || d.semantic?.background || c.surface?.inverse,
         primary600: d.primary?.[600] || d.primary?.[500] || c.primary?.[600],
       };
-      const darkBtnRatio = contrast(dark.primary600, "#ffffff");
+  const darkPrimaryFill = d.semantic?.primaryFill || dark.primary600;
+  const darkBtnRatio = contrast(darkPrimaryFill, "#ffffff");
       if (darkBtnRatio < MIN) {
         issues.push({
           path: "/colors/darkMode/primary",
@@ -181,11 +184,12 @@ function validateDesign(designConfig = {}, options = {}) {
       }
 
       // Outline/link style in dark: primary text on dark surface (AA target)
-      const darkOutlineRatio = contrast(dark.primary600, dark.surfaceBg);
+      const darkPrimaryText = d.semantic?.primaryText || dark.primary600;
+      const darkOutlineRatio = contrast(darkPrimaryText, dark.surfaceBg);
       if (darkOutlineRatio < MIN) {
         issues.push({
           path: "/colors/darkMode/primary",
-          message: `Primary text on surface is too low for outline/link styles (dark) (${darkOutlineRatio.toFixed(2)} < ${MIN}). Override darkMode.primary or adjust dark background.`,
+          message: `Primary text on surface is too low for outline/link styles (dark) (${darkOutlineRatio.toFixed(2)} < ${MIN}). Override darkMode.primary/background or adjust semantic.primaryText.`,
           ratio: darkOutlineRatio,
           min: MIN,
           context: "dark/outline"

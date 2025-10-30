@@ -119,6 +119,21 @@ export class Generator {
     colors.semantic.onBackground =
       colors.semantic.onBackground || this.#findReadableOnColor(colors.semantic.background);
 
+    // New: Choose a primaryText shade that meets AA contrast on the base surface
+    try {
+      colors.semantic.primaryText =
+        colors.semantic.primaryText ||
+        this.#pickReadablePrimaryOnSurface(colors.primary, colors.surface.base, 4.5);
+      // Pick a fill shade for components with white text (buttons/badges)
+      colors.semantic.primaryFill =
+        colors.semantic.primaryFill ||
+        this.#pickFillShadeForWhite(colors.primary, 4.5);
+      // Info fill (used by badges), derived from info scale
+      colors.semantic.infoFill =
+        colors.semantic.infoFill ||
+        this.#pickFillShadeForWhite(colors.info, 4.5);
+    } catch {}
+
     // Add adaptive fieldset colors to surface
     colors.surface.fieldset = this.#generateFieldsetAdaptiveColors(
       colors.surface
@@ -268,7 +283,32 @@ export class Generator {
       ? overrides.background
       : this.#generateSmartDarkBackground(backgroundBase);
 
-    const darkSurface = this.#generateBackgroundShades(darkBackgroundBase);
+  const darkSurface = this.#generateBackgroundShades(darkBackgroundBase);
+
+    // Compute dark semantic tokens
+    const darkSemantic = {
+      surface: darkSurface.base,
+      onSurface: this.#findReadableOnColor(darkSurface.base, 4.5),
+    };
+
+    // Determine a readable primary text shade for outline/link on dark surfaces
+    const derivedPrimaryScale = overrides.primary
+      ? this.#generateColorScale(overrides.primary)
+      : this.#adjustColorsForDarkMode(lightColors.primary);
+    try {
+      darkSemantic.primaryText = this.#pickReadablePrimaryOnSurface(
+        derivedPrimaryScale,
+        darkSurface.base,
+        4.5
+      );
+    } catch {}
+
+    // Fill shades for dark mode components with white text
+    try {
+      darkSemantic.primaryFill = this.#pickFillShadeForWhite(derivedPrimaryScale, 4.5);
+      const derivedInfoScale = this.#adjustColorsForDarkMode(lightColors.info);
+      darkSemantic.infoFill = this.#pickFillShadeForWhite(derivedInfoScale, 4.5);
+    } catch {}
 
     return {
       surface: {
@@ -276,9 +316,7 @@ export class Generator {
         fieldset: this.#generateDarkModeFieldsetColors(darkSurface),
       },
       // For primary colors, use override, or adjust light colors for dark mode (dimmed for accessibility)
-      primary: overrides.primary
-        ? this.#generateColorScale(overrides.primary)
-        : this.#adjustColorsForDarkMode(lightColors.primary),
+      primary: derivedPrimaryScale,
       // Adjust other colors for dark mode, with optional overrides
       secondary: overrides.secondary
         ? this.#generateColorScale(overrides.secondary)
@@ -295,6 +333,7 @@ export class Generator {
       info: this.#adjustColorsForDarkMode(lightColors.info),
       warning: this.#adjustColorsForDarkMode(lightColors.warning),
       danger: this.#adjustColorsForDarkMode(lightColors.danger),
+      semantic: darkSemantic,
     };
   }
 
@@ -372,6 +411,38 @@ export class Generator {
       sunken: darkSurface.elevated, // Elevated from sunken
       overlay: this.#lightenColor(darkSurface.overlay, 0.05), // Slightly lighter than overlay
     };
+  }
+
+  /**
+   * Pick a readable primary shade on a given surface background, targeting AA contrast.
+   * Returns the first shade that meets target from a preferred order; falls back to the best ratio.
+   */
+  #pickReadablePrimaryOnSurface(primaryScale = {}, surfaceBg = "#000000", target = 4.5) {
+    const order = ["600", "700", "800", "500", "400", "900", "300", "200"]; // preference for UI semantics
+    let best = { shade: null, color: null, ratio: 0 };
+    for (const key of order) {
+      const hex = primaryScale?.[key];
+      if (!hex || typeof hex !== "string") continue;
+      const r = this.#contrastRatio(hex, surfaceBg);
+      if (r > best.ratio) best = { shade: key, color: hex, ratio: r };
+      if (r >= target) return hex;
+    }
+    // If no shade meets target, return the highest contrast candidate
+    return best.color || primaryScale?.["600"] || primaryScale?.["500"];
+  }
+
+  // Pick a color scale shade that supports white text at AA
+  #pickFillShadeForWhite(scale = {}, target = 4.5) {
+    const order = ["600", "700", "800", "500", "400", "900"]; // typical UI fills
+    let best = { shade: null, color: null, ratio: 0 };
+    for (const key of order) {
+      const hex = scale?.[key];
+      if (!hex || typeof hex !== "string") continue;
+      const r = this.#contrastRatio(hex, "#ffffff");
+      if (r > best.ratio) best = { shade: key, color: hex, ratio: r };
+      if (r >= target) return hex;
+    }
+    return best.color || scale?.["600"] || scale?.["500"];
   }
 
   /**
@@ -1766,7 +1837,7 @@ input[type="checkbox"] + label:not(fieldset[role="group"] label):not(label[data-
   justify-content: center;
   min-height: ${minButtonHeight}px;
   padding: calc(var(--spacing-1) * ${buttonPaddingValue}) var(--spacing-4);
-  border: ${borderWidth}px solid var(--color-primary-600);
+  border: ${borderWidth}px solid var(--color-semantic-primaryText);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -1778,7 +1849,7 @@ input[type="checkbox"] + label:not(fieldset[role="group"] label):not(label[data-
   touch-action: manipulation;
   user-select: none;
   background-color: transparent;
-  color: var(--color-primary-600);
+  color: var(--color-semantic-primaryText);
   margin: 0;
   flex: 0 1 auto;
   white-space: nowrap;
@@ -1801,8 +1872,8 @@ label:has(input[type="radio"]:not(:disabled)):hover,
 label:has(input[type="checkbox"]:not(:disabled)):hover:not(fieldset[role="group"] label):not(label[data-toggle]),
 input[type="radio"]:not(:disabled) + label:hover,
 input[type="checkbox"]:not(:disabled) + label:hover:not(fieldset[role="group"] label):not(label[data-toggle]) {
-  background-color: var(--color-primary-50);
-  border-color: var(--color-primary-700);
+  background-color: color-mix(in oklab, var(--color-semantic-primaryText) 10%, transparent);
+  border-color: var(--color-semantic-primaryText);
 }
 
 /* Checked state = primary button */
@@ -1811,9 +1882,9 @@ label:has(input[type="radio"]:checked),
 label:has(input[type="checkbox"]:checked):not(fieldset[role="group"] label):not(label[data-toggle]),
 input[type="radio"]:checked + label,
 input[type="checkbox"]:checked + label:not(fieldset[role="group"] label):not(label[data-toggle]) {
-  background-color: var(--color-primary-600);
+  background-color: var(--color-semantic-primaryFill);
   color: white;
-  border-color: var(--color-primary-600);
+  border-color: var(--color-semantic-primaryFill);
 }
 
 fieldset[role="radiogroup"] label:has(input[type="radio"]:checked):hover,
@@ -1821,8 +1892,8 @@ label:has(input[type="radio"]:checked:not(:disabled)):hover,
 label:has(input[type="checkbox"]:checked:not(:disabled)):hover:not(fieldset[role="group"] label):not(label[data-toggle]),
 input[type="radio"]:checked:not(:disabled) + label:hover,
 input[type="checkbox"]:checked:not(:disabled) + label:hover:not(fieldset[role="group"] label):not(label[data-toggle]) {
-  background-color: var(--color-primary-700);
-  border-color: var(--color-primary-700);
+  background-color: color-mix(in oklab, var(--color-semantic-primaryFill) 90%, black 10%);
+  border-color: color-mix(in oklab, var(--color-semantic-primaryFill) 90%, black 10%);
 }
 
 /* Focus states */
@@ -2070,13 +2141,13 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .btn-primary {
-  background-color: var(--color-primary-600);
+  background-color: var(--color-semantic-primaryFill);
   color: white;
-  border-color: var(--color-primary-600);
+  border-color: var(--color-semantic-primaryFill);
   
   &:hover {
-    background-color: var(--color-primary-700);
-    border-color: var(--color-primary-700);
+    background-color: color-mix(in oklab, var(--color-semantic-primaryFill) 90%, black 10%);
+    border-color: color-mix(in oklab, var(--color-semantic-primaryFill) 90%, black 10%);
   }
   
   &:focus {
@@ -2102,11 +2173,11 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 
 .btn-outline {
   background-color: transparent;
-  color: var(--color-primary-600);
-  border-color: var(--color-primary-600);
+  color: var(--color-semantic-primaryText);
+  border-color: var(--color-semantic-primaryText);
   
   &:hover {
-    background-color: var(--color-primary-600);
+    background-color: var(--color-semantic-primaryText);
     color: white;
   }
 }
@@ -2717,7 +2788,7 @@ tbody {
 }
 
 .badge-primary {
-  background-color: var(--color-primary-600);
+  background-color: var(--color-semantic-primaryFill);
   color: white;
 }
 
@@ -2732,7 +2803,7 @@ tbody {
 }
 
 .badge-info {
-  background-color: var(--color-info-600);
+  background-color: var(--color-semantic-infoFill);
   color: white;
 }
 
@@ -2752,7 +2823,7 @@ tbody {
 }
 
 .badge-outline.badge-primary {
-  color: var(--color-primary-600);
+  color: var(--color-semantic-primaryText);
 }
 
 .badge-outline.badge-secondary {
@@ -2764,7 +2835,7 @@ tbody {
 }
 
 .badge-outline.badge-info {
-  color: var(--color-info-600);
+  color: var(--color-semantic-infoFill);
 }
 
 .badge-outline.badge-warning {
