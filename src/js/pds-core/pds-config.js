@@ -250,7 +250,7 @@ export const presets = [
 export const defaultConfig = {
   colors: {
     // Palette - base colors that generate entire color palettes
-    primary: "#2d9dc9", // Primary brand color
+    primary: "#3097c0", // Primary brand color
     secondary: "#a99b95", // REQUIRED: Secondary/neutral color for gray scale generation
     accent: "#e54271", // Accent color (pink red)
     background: "#e7e6de", // Base background color for light mode

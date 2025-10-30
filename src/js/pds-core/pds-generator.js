@@ -832,6 +832,7 @@ ${components.alerts !== false ? this.#generateAlertStyles() : ""}
 ${components.toasts !== false ? this.#generateToastStyles() : ""}
 ${components.badges !== false ? this.#generateBadgeStyles() : ""}
 ${this.#generateDialogStyles()}
+${components.accordion !== false ? this.#generateAccordionStyles() : ""}
 ${components.tabStrip !== false ? this.#generateTabStripStyles() : ""}
 ${components.customScrollbars !== false ? this.#generateScrollbarStyles() : ""}
 
@@ -2760,6 +2761,82 @@ tbody {
   }
 }
 
+`;
+  }
+
+  #generateAccordionStyles() {
+    return /*css*/ `/* Accordion (details/summary) */
+
+.accordion {
+  --_acc-radius: var(--radius-md);
+  --_acc-border: 1px solid var(--color-border);
+  --_acc-bg: var(--color-surface-base);
+}
+
+.accordion details {
+  border: var(--_acc-border);
+  border-radius: var(--_acc-radius);
+  background: var(--_acc-bg);
+  margin: 0 0 var(--spacing-3) 0;
+}
+
+.accordion summary {
+  cursor: pointer;
+  padding: var(--spacing-3) var(--spacing-4);
+  list-style: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+.accordion summary::-webkit-details-marker { display: none; }
+
+/* Chevron indicator */
+.accordion summary::after {
+  content: "";
+  margin-inline-start: auto;
+  inline-size: 0.7em;
+  block-size: 0.7em;
+  border-inline-end: 2px solid currentColor;
+  border-block-end: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--transition-normal);
+}
+.accordion details[open] > summary::after { transform: rotate(45deg); }
+
+/* Modern smooth open/close using ::details-content */
+@supports selector(details::details-content) {
+  .accordion details { overflow: clip; }
+  .accordion details::details-content {
+    transition: block-size var(--transition-normal) ease;
+    transition-behavior: allow-discrete;
+    block-size: 0;
+    overflow: clip;
+  }
+  .accordion details[open]::details-content { block-size: auto; }
+
+  /* inner spacing for content */
+  .accordion details > *:not(summary) {
+    padding-inline: var(--spacing-4);
+    padding-block: var(--spacing-3);
+  }
+}
+
+/* Fallback (no ::details-content): requires .accordion__content wrapper */
+@supports not (selector(details::details-content)) {
+  .accordion details > .accordion__content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--transition-normal) ease;
+    overflow: hidden;
+  }
+  .accordion details[open] > .accordion__content { grid-template-rows: 1fr; }
+  .accordion details > .accordion__content > * { min-block-size: 0; }
+  .accordion details > .accordion__content {
+    padding-inline: var(--spacing-4);
+    padding-block: var(--spacing-3);
+  }
+}
 `;
   }
 
