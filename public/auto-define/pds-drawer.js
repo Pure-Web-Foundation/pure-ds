@@ -3,13 +3,16 @@ import { render } from "/assets/js/lit.js";
 
 export class DrawerPanel extends LitElement {
   #isDragging = false;
+  #startX = 0;
   #startY = 0;
+  #lastX = 0;
   #lastY = 0;
   #lastTS = 0;
-  #velocityY = 0;
+  #velocity = 0; // px/ms along active axis
   #startFraction = 0;
   #aside = null;
   #drawerHeight = 0;
+  #drawerWidth = 0;
   #raf = 0;
   #currentFraction = 0; // 0=open, 1=closed
   #resizeObs = null;
@@ -20,6 +23,7 @@ export class DrawerPanel extends LitElement {
     drag: { type: String, reflect: true },
     maxHeight: { type: String, attribute: "max-height" },
     minHeight: { type: String, attribute: "min-height" },
+    showClose: { type: Boolean, attribute: "show-close", reflect: true },
   };
 
   static styles = css`
@@ -83,6 +87,17 @@ export class DrawerPanel extends LitElement {
     :host([position="top"]) .layer {
       top: 0;
     }
+    /* Left/Right positioning and sizing */
+    :host([position="left"]) .layer,
+    :host([position="right"]) .layer {
+      top: 0;
+      bottom: 0;
+      translate: none;
+      width: var(--drawer-width, min(90vw, 420px));
+      max-width: var(--drawer-width, min(90vw, 420px));
+    }
+    :host([position="left"]) .layer { left: 0; right: auto; }
+    :host([position="right"]) .layer { right: 0; left: auto; }
 
     aside {
       display: grid;
@@ -106,6 +121,24 @@ export class DrawerPanel extends LitElement {
       border-bottom-left-radius: var(--_panel-radius);
       border-bottom-right-radius: var(--_panel-radius);
     }
+    :host([position="left"]) aside {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      border-top-right-radius: var(--_panel-radius);
+      border-bottom-right-radius: var(--_panel-radius);
+      max-height: 100vh;
+      height: 100%;
+      width: 100%;
+    }
+    :host([position="right"]) aside {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-top-left-radius: var(--_panel-radius);
+      border-bottom-left-radius: var(--_panel-radius);
+      max-height: 100vh;
+      height: 100%;
+      width: 100%;
+    }
     header {
       position: relative;
       min-block-size: var(--_header-min-hit);
@@ -122,6 +155,30 @@ export class DrawerPanel extends LitElement {
       pointer-events: none;
       user-select: none;
     }
+    /* Hide grab handle on side drawers to avoid odd appearance */
+    :host([position="left"]) .grab-handle,
+    :host([position="right"]) .grab-handle {
+      display: none;
+    }
+    /* Close button styles */
+    .close-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+    }
+    .close-btn:hover { opacity: 0.85; }
+    .close-btn:focus { outline: var(--focus-outline, none); }
     ::slotted([slot="drawer-header"]) {
       inline-size: 100%;
       display: block;
@@ -138,6 +195,17 @@ export class DrawerPanel extends LitElement {
     }
     :host(:not([open])) .layer {
       transform: translateY(100%);
+    }
+    /* Orientation-specific open/closed transforms for sides */
+    :host([position="left"][open]) .layer,
+    :host([position="right"][open]) .layer {
+      transform: translateX(0);
+    }
+    :host([position="left"]:not([open])) .layer {
+      transform: translateX(-100%);
+    }
+    :host([position="right"]:not([open])) .layer {
+      transform: translateX(100%);
     }
     :host aside {
       outline: none;
@@ -161,6 +229,7 @@ export class DrawerPanel extends LitElement {
     this.drag = "header";
     this.maxHeight = "";
     this.minHeight = "";
+    this.showClose = false; // optional for bottom/top; sides default via render()
   }
 
   render() {
@@ -187,6 +256,11 @@ export class DrawerPanel extends LitElement {
               part="grab-handle"
               aria-hidden="true"
             ></div>
+            ${this.#shouldShowClose()
+              ? html`<button class="close-btn" part="close-button" aria-label="Close drawer" @click=${this.closeDrawer}>
+                  <svg-icon icon="x" size="sm"></svg-icon>
+                </button>`
+              : null}
             <slot name="drawer-header"></slot>
           </header>
           <main part="content">
@@ -340,10 +414,12 @@ export class DrawerPanel extends LitElement {
     }
     const p = this.#getPoint(e);
     this.#isDragging = true;
+    this.#startX = p.x;
     this.#startY = p.y;
+    this.#lastX = p.x;
     this.#lastY = p.y;
     this.#lastTS = performance.now();
-    this.#velocityY = 0;
+    this.#velocity = 0;
     this.#startFraction = this.#currentFraction;
 
     // Capture pointer so dragging continues outside the element
@@ -364,23 +440,20 @@ export class DrawerPanel extends LitElement {
   #onPointerMove = (e) => {
     if (!this.#isDragging) return;
     const p = this.#getPoint(e);
-    const dir = this.position === "bottom" ? 1 : -1;
-
-    // Compute fraction based on displacement since drag start (not cumulative updates)
-    const deltaFromStart = p.y - this.#startY; // positive when moving down
-    const next = this.#clamp(
-      this.#startFraction +
-        (dir * deltaFromStart) / Math.max(1, this.#drawerHeight),
-      0,
-      1
-    );
+    const isVertical = this.position === "bottom" || this.position === "top";
+    const dir = this.position === "bottom" || this.position === "right" ? 1 : -1;
+    const deltaFromStart = isVertical ? (p.y - this.#startY) : (p.x - this.#startX);
+    const extent = isVertical ? Math.max(1, this.#drawerHeight) : Math.max(1, this.#drawerWidth);
+    const next = this.#clamp(this.#startFraction + (dir * deltaFromStart) / extent, 0, 1);
     this.#applyFraction(next, false);
 
     // Velocity (px/ms), positive when moving down in screen coords
     const now = performance.now();
     const dt = Math.max(1, now - this.#lastTS);
-    this.#velocityY = (p.y - this.#lastY) / dt; // px/ms
-    this.#lastY = p.y;
+    const comp = isVertical ? p.y : p.x;
+    const lastComp = isVertical ? this.#lastY : this.#lastX;
+    this.#velocity = (comp - lastComp) / dt; // px/ms along active axis
+    if (isVertical) this.#lastY = p.y; else this.#lastX = p.x;
     this.#lastTS = now;
 
     if (e.cancelable) e.preventDefault();
@@ -393,16 +466,17 @@ export class DrawerPanel extends LitElement {
     document.documentElement.style.cursor = "";
     this.renderRoot.querySelector("main")?.style.removeProperty("overflow");
 
-    const dir = this.position === "bottom" ? 1 : -1;
+    const isVertical = this.position === "bottom" || this.position === "top";
+    const dir = this.position === "bottom" || this.position === "right" ? 1 : -1;
     const throwCloseThreshold = (1.0 / 1000) * 1000; // keep var for clarity; we use 1.0 px/ms below
 
-    // Decide based on velocity first (throw down closes), else position threshold
-    const fastDown = this.#velocityY * dir > 1.0; // > ~1000 px/s downward relative to panel
-    const fastUp = this.#velocityY * dir < -1.0; // fast upward
+    // Decide based on velocity first (positive in closing direction), else position threshold
+    const fastForward = this.#velocity * dir > 1.0; // closing direction
+    const fastBackward = this.#velocity * dir < -1.0; // opening direction
 
-    if (fastDown) {
+    if (fastForward) {
       this.#animateTo(1); // close
-    } else if (fastUp) {
+    } else if (fastBackward) {
       this.#animateTo(0); // open
     } else {
       const shouldClose = this.#currentFraction >= 0.5;
@@ -421,6 +495,7 @@ export class DrawerPanel extends LitElement {
     if (!this.#aside) return;
     const rect = this.#aside.getBoundingClientRect();
     this.#drawerHeight = rect.height || 0;
+    this.#drawerWidth = rect.width || 0;
     this.#applyFraction(this.#currentFraction, false);
   };
 
@@ -440,11 +515,20 @@ export class DrawerPanel extends LitElement {
     const layer = this.renderRoot.getElementById("layer");
     if (!layer) return;
     layer.style.transition = t;
-    const yPct =
-      this.position === "bottom"
-        ? this.#currentFraction * 100
-        : -this.#currentFraction * 100;
-    layer.style.transform = `translateY(${yPct}%)`;
+    if (this.position === "bottom" || this.position === "top") {
+      const yPct = this.position === "bottom" ? this.#currentFraction * 100 : -this.#currentFraction * 100;
+      layer.style.transform = `translateY(${yPct}%)`;
+    } else {
+      const xPct = this.position === "right" ? this.#currentFraction * 100 : -this.#currentFraction * 100;
+      layer.style.transform = `translateX(${xPct}%)`;
+    }
+  }
+
+  // Whether to show the close icon button
+  #shouldShowClose() {
+    // Always show for side drawers; for top/bottom obey showClose flag
+    if (this.position === "left" || this.position === "right") return true;
+    return !!this.showClose;
   }
 
   #animateTo(targetFraction) {
@@ -453,8 +537,13 @@ export class DrawerPanel extends LitElement {
     layer.style.transition = `transform var(--_dur) var(--_easing)`;
     const clamped = this.#clamp(targetFraction, 0, 1);
     this.#currentFraction = clamped;
-    const yPct = this.position === "bottom" ? clamped * 100 : -clamped * 100;
-    layer.style.transform = `translateY(${yPct}%)`;
+    if (this.position === "bottom" || this.position === "top") {
+      const yPct = this.position === "bottom" ? clamped * 100 : -clamped * 100;
+      layer.style.transform = `translateY(${yPct}%)`;
+    } else {
+      const xPct = this.position === "right" ? clamped * 100 : -clamped * 100;
+      layer.style.transform = `translateX(${xPct}%)`;
+    }
 
     // Update the `open` property based on the target fraction
     this.open = clamped === 0;

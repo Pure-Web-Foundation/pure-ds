@@ -2979,11 +2979,21 @@ customElements.define(
                     <svg-icon icon="squares-four" size="lg" class="icon-primary"></svg-icon>
                     Drawer Example
                   </h2>
-                  <p>Click the button to open the global drawer:</p>
-                  <button class="btn-primary" @click=${this.openDrawer}>
-                    <svg-icon icon="sidebar" size="sm"></svg-icon>
-                    Open Drawer
-                  </button>
+                  <p>Open the global drawer from different sides:</p>
+                  <div class="btn-group" style="gap: var(--spacing-3); flex-wrap: wrap;">
+                    <button class="btn-primary" @click=${this.openDrawer}>
+                      <svg-icon icon="sidebar" size="sm"></svg-icon>
+                      Bottom Drawer
+                    </button>
+                    <button class="btn-secondary" @click=${this.openDrawerLeft}>
+                      <svg-icon icon="sidebar" size="sm"></svg-icon>
+                      Left Drawer
+                    </button>
+                    <button class="btn-secondary" @click=${this.openDrawerRight}>
+                      <svg-icon icon="sidebar" size="sm"></svg-icon>
+                      Right Drawer
+                    </button>
+                  </div>
                 </section>
               `
             : ""}
@@ -3075,7 +3085,34 @@ customElements.define(
           `,
           { 
             header: html`<h3>Example Drawer</h3>`, 
-            minHeight: "300px"
+            minHeight: "300px",
+            position: "bottom"
+          }
+        );
+      }
+    }
+
+    openDrawerLeft() {
+      const app = document.querySelector("pure-app");
+      if (app?.showDrawer) {
+        app.showDrawer(
+          this.renderDrawerContent(),
+          {
+            header: html`<h3>Example Drawer (Left)</h3>`,
+            position: "left"
+          }
+        );
+      }
+    }
+
+    openDrawerRight() {
+      const app = document.querySelector("pure-app");
+      if (app?.showDrawer) {
+        app.showDrawer(
+          this.renderDrawerContent(),
+          {
+            header: html`<h3>Example Drawer (Right)</h3>`,
+            position: "right"
           }
         );
       }

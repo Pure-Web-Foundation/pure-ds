@@ -199,9 +199,10 @@ export class PureApp extends HTMLElement {
    * @param {TemplateResult|HTMLElement|string} htmlContent - Content for drawer body (Lit template, HTML element, or string)
    * @param {Object} options - Drawer options
    * @param {TemplateResult|HTMLElement|string} options.header - Optional content for drawer header
-   * @param {string} options.position - Drawer position ('bottom' or 'top')
+   * @param {string} options.position - Drawer position ('bottom' | 'top' | 'left' | 'right')
    * @param {string} options.maxHeight - Max height CSS value (e.g., '70vh', '500px')
    * @param {string} options.minHeight - Min height CSS value (e.g., '200px', '30vh')
+   * @param {boolean} options.showClose - Show an icon-only close button in the header (default: true for left/right; false otherwise)
    * @param {boolean} options.waitForMedia - Whether to wait for images/videos to load (default: true)
    * @param {number} options.mediaTimeout - Max time to wait for media in ms (default: 500)
    * @returns {Promise<HTMLElement>} The drawer element
@@ -225,6 +226,12 @@ export class PureApp extends HTMLElement {
     if (options.minHeight) {
       drawer.setAttribute("min-height", options.minHeight);
     }
+    // Show or hide close button
+    const pos = options.position || drawer.getAttribute("position") || "bottom";
+    const defaultShowClose = pos === "left" || pos === "right";
+    const showClose = options.showClose === undefined ? defaultShowClose : !!options.showClose;
+    if (showClose) drawer.setAttribute("show-close", "");
+    else drawer.removeAttribute("show-close");
 
     // Render content
     drawer.setContent(htmlContent, options.header);

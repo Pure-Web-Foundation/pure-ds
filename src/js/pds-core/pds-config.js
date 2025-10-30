@@ -441,6 +441,7 @@ export const defaultConfig = {
         "magnifying-glass",
         "funnel",
         "tabs",
+        "sidebar",
       ],
       actions: [
         "plus",
