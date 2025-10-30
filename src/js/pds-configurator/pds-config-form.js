@@ -9,7 +9,7 @@ import { presets } from "../pds-core/pds-config";
 const STORAGE_KEY = "pure-ds-config";
 
 function toast(message, options = {}) {
-  document.querySelector("pure-app").toast(message, options);
+  return document.querySelector("pure-app").toast(message, options);
 }
 
 async function ask(message, options = {}) {
@@ -31,6 +31,7 @@ customElements.define(
       mode: { type: String },
       inspectorMode: { type: Boolean, state: true },
       formValues: { type: Object, state: true }, // Filtered values for the form
+      validationIssues: { type: Array, state: true }, // Accessibility/design issues from PDS.validateDesign
       formKey: { type: Number, state: true }, // Force form re-render
     };
 
@@ -41,6 +42,7 @@ customElements.define(
     connectedCallback() {
       super.connectedCallback();
       this.formKey = 0;
+      this._validationToastId = null;
 
       this.mode = "simple";
       this.inspectorMode = false;
@@ -93,6 +95,9 @@ customElements.define(
       // so the designer UI doesn't visually change when user edits are applied
       // elsewhere (these variables remain fixed for the designer element).
       this.applyDefaultHostVariables();
+      // Defer initial validation until after the form has rendered
+      this._initialValidationScheduled = false;
+      this._loadingToastShown = false;
     }
 
     disconnectedCallback() {
@@ -169,6 +174,13 @@ customElements.define(
         .then((response) => response.json())
         .then((data) => {
           this.schema = data;
+          // Sync form values to current config filtered by schema
+          this.formValues = this.filterConfigForSchema(this.config);
+          // Force form re-render if needed
+          this.formKey = (this.formKey || 0) + 1;
+        })
+        .catch((ex) => {
+          console.warn("Failed to load schema:", ex);
         });
     }
 
@@ -194,14 +206,32 @@ customElements.define(
       if (changedProps.has("schema")) {
         // When schema changes (mode switch), update form values
         this.formValues = this.filterConfigForSchema(this.config);
-        // Re-apply styles using the current user config (do not revert to defaults)
-        this.applyStyles(true);
+        // Re-apply styles using the current user config after the form fully renders.
+        // Schedule once shortly after render using double rAF to ensure paint.
+        if (!this._initialValidationScheduled) {
+          this._initialValidationScheduled = true;
+          // Delay slightly to ensure the JSON form fully renders and paints
+          setTimeout(() => {
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                try {
+                  this.applyStyles(true);
+                } catch (ex) {
+                  console.warn("Delayed applyStyles failed:", ex);
+                }
+              });
+            });
+          }, 150);
+        } else {
+          // For subsequent schema changes (e.g., mode toggle), still validate/apply after render
+          setTimeout(() => requestAnimationFrame(() => requestAnimationFrame(() => this.applyStyles(true)))), 50;
+        }
       }
     }
     
     // Helper method removed – binding `.values=${this.formValues}` handles syncing reactively
 
-    applyStyles(useUserConfig = false) {
+  applyStyles(useUserConfig = false) {
       // By default, use Generator.defaultConfig (non-designer callers)
       // If useUserConfig is true (pds-config-form wants to apply user edits),
       // merge the persisted user config into the default to generate runtime styles.
@@ -210,6 +240,30 @@ customElements.define(
       if (useUserConfig && this.config) {
         // Deep-merge user edits on top of defaults to ensure all keys exist
         baseConfig = deepMerge(baseConfig, this.config);
+      }
+
+      // Validate before generating/applying styles
+      try {
+        const v = PDS.validateDesign(baseConfig);
+        if (!v.ok) {
+          this.validationIssues = v.issues;
+          if (!this._validationToastId) {
+            const summary = v.issues.slice(0, 3).map(i => `• ${i.message}`).join("\n");
+            this._validationToastId = toast(
+              `Design has accessibility issues. Fix before applying.\n${summary}`,
+              { type: "error", persistent: true }
+            );
+          }
+          return; // Do not apply invalid styles
+        }
+        // Clear any existing persistent error toast
+        this.validationIssues = [];
+        if (this._validationToastId) {
+          document.querySelector("pure-app")?.toaster?.dismissToast(this._validationToastId);
+          this._validationToastId = null;
+        }
+      } catch (ex) {
+        console.warn("Validation failed unexpectedly:", ex);
       }
 
       // Pass explicit theme option (from dedicated localStorage) separately so
@@ -378,7 +432,7 @@ customElements.define(
       return filtered;
     }
 
-    handleFormChange = (event) => {
+  handleFormChange = (event) => {
       // Get values from the pds-jsonform's serialize method or from event detail
       let values;
       let changedField = null;
@@ -443,11 +497,37 @@ customElements.define(
 
       console.log("Nested values:", nestedValues);
 
-      // Deep merge the nested values into config
-      // Persist user changes locally, but do NOT apply them to the runtime designer
-      // (pds-config-form should use defaultConfig for styling)
-      this.config = deepMerge(this.config, nestedValues);
+      // Validate candidate config before persisting/applying
+      const candidate = deepMerge(structuredClone(this.config), nestedValues);
+      const validation = PDS.validateDesign(candidate);
+      if (!validation.ok) {
+        this.validationIssues = validation.issues;
+        // Show persistent toaster once
+        if (!this._validationToastId) {
+          const summary = validation.issues
+            .slice(0, 3)
+            .map((i) => `• ${i.message}`)
+            .join("\n");
+          this._validationToastId = toast(
+            `Design has accessibility issues. Fix before saving.\n${summary}`,
+            { type: "error", persistent: true }
+          );
+        }
+        return; // Do not persist or apply invalid config
+      }
 
+      this.validationIssues = [];
+      // Clear persistent toast if present
+      try {
+        if (this._validationToastId) {
+          document
+            .querySelector("pure-app")
+            ?.toaster?.dismissToast(this._validationToastId);
+          this._validationToastId = null;
+        }
+      } catch {}
+      // Accept new config and persist
+      this.config = candidate;
       console.log("Updated (persisted) config (not applied):", this.config);
       this.saveConfig();
 
@@ -506,7 +586,7 @@ customElements.define(
       }
     };
 
-    applyPreset = async (preset) => {
+  applyPreset = async (preset) => {
       const result = await ask(
         `Load "${preset.name}" preset? This will replace your current settings.`
       );
@@ -518,6 +598,33 @@ customElements.define(
           preset
         );
         
+        // Validate preset before applying
+        const validationResult = PDS.validateDesign(presetConfig);
+        if (!validationResult.ok) {
+          this.validationIssues = validationResult.issues;
+          if (!this._validationToastId) {
+            const summary = validationResult.issues
+              .slice(0, 3)
+              .map((i) => `• ${i.message}`)
+              .join("\n");
+            this._validationToastId = toast(
+              `Preset "${preset.name}" has accessibility issues — not applied.\n${summary}`,
+              { type: "error", persistent: true }
+            );
+          }
+          return;
+        }
+
+        this.validationIssues = [];
+        // Clear any persistent error toast if present
+        try {
+          if (this._validationToastId) {
+            document
+              .querySelector("pure-app")
+              ?.toaster?.dismissToast(this._validationToastId);
+            this._validationToastId = null;
+          }
+        } catch {}
         this.config = presetConfig;
         this.formValues = this.filterConfigForSchema(this.config);
 
@@ -607,9 +714,12 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
 
     render() {
       if (!this.schema) {
-        setTimeout(() => {
-          toast("Loading schema...", { duration: 1000 });
-        }, 500);
+        if (!this._loadingToastShown) {
+          this._loadingToastShown = true;
+          setTimeout(() => {
+            try { toast("Loading schema...", { duration: 1000 }); } catch {}
+          }, 250);
+        }
         return nothing;
       }
       return html`
@@ -822,7 +932,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
         "ui:max": 24,
       };
       ui["/typography/fontScale"] = {
-        "ui:widget": "input-number",
+        "ui:widget": "input-range",
         "ui:min": 1.1,
         "ui:max": 1.618,
         "ui:step": 0.01

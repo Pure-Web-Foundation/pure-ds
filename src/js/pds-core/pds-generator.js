@@ -2973,7 +2973,8 @@ dialog.dialog-full {
     max-width: 100vw;
     max-height: 100vh;
     border-radius: 0;
-    inset: 0;
+    top: 50%;
+    transform: translateY(-50%);
     margin: 0;
   }
   

@@ -79,8 +79,8 @@
           "description": "Multiplier for heading sizes (1.2 = minor third, 1.333 = perfect fourth, 1.5 = perfect fifth).",
           "default": 1.2,
           "minimum": 1.1,
-          "maximum": 1.618,
-          "multipleOf": 0.01
+          "maximum": 1.6,
+          "multipleOf": 0.1
         },
         "fontFamilyHeadings": {
           "type": "string",

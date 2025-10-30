@@ -77,6 +77,131 @@ PDS.defaultConfig = defaultConfig;
 /** Find a component definition (ontology) for a given DOM element */
 PDS.findComponentForElement = findComponentForElement;
 
+/**
+ * Validate a design configuration for accessibility sanity checks.
+ * Currently validates color contrast for primary buttons and base surface text
+ * in both light and dark themes.
+ *
+ * @param {object} designConfig - A full or partial PDS config object
+ * @param {object} [options]
+ * @param {number} [options.minContrast=4.5] - Minimum contrast ratio for normal text
+ * @returns {{ ok: boolean, issues: Array<{path:string, message:string, ratio:number, min:number, context?:string}> }}
+ */
+function validateDesign(designConfig = {}, options = {}) {
+  const MIN = Number(options.minContrast || 4.5);
+
+  // Local helpers (keep public; no dependency on private Generator methods)
+  const hexToRgb = (hex) => {
+    const h = String(hex || "").replace("#", "");
+    const full = h.length === 3 ? h.split("").map((c) => c + c).join("") : h;
+    const num = parseInt(full || "0", 16);
+    return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+  };
+  const luminance = (hex) => {
+    const { r, g, b } = hexToRgb(hex);
+    const srgb = [r / 255, g / 255, b / 255].map((v) =>
+      v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
+    );
+    return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
+  };
+  const contrast = (a, b) => {
+    if (!a || !b) return 0;
+    const L1 = luminance(a);
+    const L2 = luminance(b);
+    const lighter = Math.max(L1, L2);
+    const darker = Math.min(L1, L2);
+    return (lighter + 0.05) / (darker + 0.05);
+  };
+
+  const issues = [];
+  try {
+    // Build tokens from the candidate config
+    const gen = new PDS.Generator(structuredClone(designConfig));
+    const c = gen.tokens.colors;
+
+    // Light theme checks
+    const light = {
+      surfaceBg: c.surface?.base || c.semantic?.background,
+      surfaceText: c.semantic?.onSurface,
+      primary600: c.primary?.[600] || c.primary?.[500] || designConfig.colors?.primary,
+    };
+
+    // Primary button (light): bg primary600, text white
+    const lightBtnRatio = contrast(light.primary600, "#ffffff");
+    if (lightBtnRatio < MIN) {
+      issues.push({
+        path: "/colors/primary",
+        message: `Primary button contrast too low in light theme (${lightBtnRatio.toFixed(2)} < ${MIN}). Choose a darker primary.`,
+        ratio: lightBtnRatio,
+        min: MIN,
+        context: "light/btn-primary"
+      });
+    }
+
+    // Surface text (light): onSurface vs surface base
+    const lightTextRatio = contrast(light.surfaceBg, light.surfaceText);
+    if (lightTextRatio < MIN) {
+      issues.push({
+        path: "/colors/background",
+        message: `Base text contrast on surface (light) is too low (${lightTextRatio.toFixed(2)} < ${MIN}). Adjust background or secondary (gray).`,
+        ratio: lightTextRatio,
+        min: MIN,
+        context: "light/surface-text"
+      });
+    }
+
+    // Outline/link style: primary600 as text on surface (AA target for normal text)
+    const lightOutlineRatio = contrast(light.primary600, light.surfaceBg);
+    if (lightOutlineRatio < MIN) {
+      issues.push({
+        path: "/colors/primary",
+        message: `Primary text on surface is too low for outline/link styles (light) (${lightOutlineRatio.toFixed(2)} < ${MIN}). Choose a darker primary or lighter surface.`,
+        ratio: lightOutlineRatio,
+        min: MIN,
+        context: "light/outline"
+      });
+    }
+
+    // Dark theme checks
+    const d = c.dark;
+    if (d) {
+      const dark = {
+        surfaceBg: d.surface?.base || d.semantic?.background || c.surface?.inverse,
+        primary600: d.primary?.[600] || d.primary?.[500] || c.primary?.[600],
+      };
+      const darkBtnRatio = contrast(dark.primary600, "#ffffff");
+      if (darkBtnRatio < MIN) {
+        issues.push({
+          path: "/colors/darkMode/primary",
+          message: `Primary button contrast too low in dark theme (${darkBtnRatio.toFixed(2)} < ${MIN}). Override darkMode.primary or pick a brighter hue.`,
+          ratio: darkBtnRatio,
+          min: MIN,
+          context: "dark/btn-primary"
+        });
+      }
+
+      // Outline/link style in dark: primary text on dark surface (AA target)
+      const darkOutlineRatio = contrast(dark.primary600, dark.surfaceBg);
+      if (darkOutlineRatio < MIN) {
+        issues.push({
+          path: "/colors/darkMode/primary",
+          message: `Primary text on surface is too low for outline/link styles (dark) (${darkOutlineRatio.toFixed(2)} < ${MIN}). Override darkMode.primary or adjust dark background.`,
+          ratio: darkOutlineRatio,
+          min: MIN,
+          context: "dark/outline"
+        });
+      }
+    }
+  } catch (err) {
+    issues.push({ path: "/", message: `Validation failed: ${String(err?.message || err)}`, ratio: 0, min: 0 });
+  }
+
+  return { ok: issues.length === 0, issues };
+}
+
+/** Expose validator on the public API */
+PDS.validateDesign = validateDesign;
+
 Object.freeze(PDS);
 
 export { PDS };

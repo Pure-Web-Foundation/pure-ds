@@ -34,7 +34,7 @@ export class AppToaster extends HTMLElement {
           margin-bottom: var(--spacing-3);
           position: relative;
           pointer-events: auto;
-          max-height: 200px;
+          __max-height: 200px;
           overflow: hidden;
           transition: transform var(--transition-normal, 0.3s) cubic-bezier(0.175, 0.885, 0.32, 1.275),
                       opacity var(--transition-normal, 0.3s) ease-out,
@@ -90,8 +90,12 @@ export class AppToaster extends HTMLElement {
           to { width: 0%; }
         }
 
+        aside.toast p {
+           white-space: pre-line;
+        }
+
         /* Mobile responsive toast positioning */
-        @media (max-width: 640px) {
+        @_media (max-width: 640px) {
           :host {
             top: auto;
             bottom: var(--spacing-4);
