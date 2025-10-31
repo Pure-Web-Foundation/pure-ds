@@ -1,4 +1,3 @@
-import "./pure-app";
 import "./pds-configurator/pds-configurator";
 import { PDS } from "./pds";
 import { config } from "./config";
@@ -14,8 +13,13 @@ await PDS.live(config.design, {
 	preloadStyles: false,
 });
 
-// Expose PDS on window for easy dev console access (optional)
-if (typeof window !== "undefined") {
-	// @ts-ignore
-	window.PDS = PDS;
-}
+document.body.innerHTML = /*html*/ `
+		<header>
+			<pds-toaster id="global-toaster"></pds-toaster>
+		</header>
+		
+		<main>
+      <pds-configurator></pds-configurator>
+    </main>
+    <pds-drawer id="global-drawer" position="bottom"></pds-drawer>
+`

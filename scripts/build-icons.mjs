@@ -129,9 +129,9 @@ async function buildIconSprite() {
   
   // Load configuration
   const configPath = resolve(projectRoot, 'src/js/pds-core/pds-config.js');
-  const { defaultConfig } = await import(`file://${configPath}`);
+  const { presets } = await import(`file://${configPath}`);
   
-  const iconConfig = defaultConfig.icons;
+  const iconConfig = presets.default.icons;
   
   if (!iconConfig || !iconConfig.include) {
     log('❌ No icon configuration found in config.js', 'red');

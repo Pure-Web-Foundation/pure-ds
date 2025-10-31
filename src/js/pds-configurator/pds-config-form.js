@@ -1,17 +1,14 @@
 import { LitElement, html, nothing } from "../lit";
 import { config } from "../config";
-import { PDS } from "../pds";
+import { Generator } from "../pds-core/pds-generator.js";
+import { presets } from "../pds-core/pds-config.js";
+import { validateDesign } from "../pds";
 import { deepMerge } from "../common/common";
-import { presets } from "../pds-core/pds-config";
 
 const STORAGE_KEY = "pure-ds-config";
 
 function toast(message, options = {}) {
-  return document.querySelector("pure-app").toast(message, options);
-}
-
-async function ask(message, options = {}) {
-  return await document.querySelector("pure-app").ask(...arguments);
+  return document.querySelector("#global-toaster").toast(message, options);
 }
 
 customElements.define(
@@ -114,13 +111,13 @@ customElements.define(
 
     /**
      * Apply CSS custom properties to the designer host derived from
-     * Generator.defaultConfig. This locks spacing and typography
-     * variables for the designer's UI so they don't change during form edits.
+     * the default preset. This locks spacing and typography variables
+     * for the configurator UI so it remains stable while editing.
      */
     applyDefaultHostVariables() {
       try {
-        const baseConfig = structuredClone(PDS.defaultConfig);
-        const tmpDesigner = new PDS.Generator(baseConfig);
+        const baseConfig = structuredClone(presets.default);
+        const tmpDesigner = new Generator(baseConfig);
 
         // Spacing tokens (keys are numeric strings 1..N)
         const spacing = tmpDesigner.generateSpacingTokens(
@@ -188,22 +185,103 @@ customElements.define(
         });
     }
 
+    // --- Storage helpers: preset + overrides ---
+    // Deep equality for primitives/arrays/objects
+    _isEqual(a, b) {
+      if (a === b) return true;
+      if (typeof a !== typeof b) return false;
+      if (a && b && typeof a === "object") {
+        if (Array.isArray(a)) {
+          if (!Array.isArray(b) || a.length !== b.length) return false;
+          for (let i = 0; i < a.length; i++)
+            if (!this._isEqual(a[i], b[i])) return false;
+          return true;
+        }
+        const aKeys = Object.keys(a);
+        const bKeys = Object.keys(b);
+        if (aKeys.length !== bKeys.length) {
+          // lengths can differ but still be equal when we only compare a -> b; we will compare per-key below
+        }
+        for (const k of new Set([...aKeys, ...bKeys])) {
+          if (!this._isEqual(a[k], b[k])) return false;
+        }
+        return true;
+      }
+      return false;
+    }
+
+    _deepDiff(base, target) {
+      // Return only properties in target that differ from base
+      if (this._isEqual(base, target)) return undefined;
+      if (
+        base &&
+        target &&
+        typeof base === "object" &&
+        typeof target === "object" &&
+        !Array.isArray(base) &&
+        !Array.isArray(target)
+      ) {
+        const out = {};
+        const keys = new Set([...Object.keys(target)]);
+        for (const k of keys) {
+          const d = this._deepDiff(base[k], target[k]);
+          if (d !== undefined) out[k] = d;
+        }
+        return Object.keys(out).length ? out : undefined;
+      }
+      // For arrays or primitives, return the target if not equal
+      return this._isEqual(base, target) ? undefined : target;
+    }
+
+    _resolvePresetBase(presetId) {
+      const id = String(presetId || "default").toLowerCase();
+      const preset = presets?.[id] || presets?.["default"];
+      return preset
+        ? JSON.parse(JSON.stringify(preset))
+        : JSON.parse(JSON.stringify(presets.default));
+    }
+
     loadConfig() {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          // Merge with defaults to ensure all properties exist
-          return deepMerge(config.design, parsed);
+          // New shape: { preset?: string, design?: object }
+          if (parsed && ("preset" in parsed || "design" in parsed)) {
+            const presetId = parsed.preset || "default";
+            const base = this._resolvePresetBase(presetId);
+            const full = deepMerge(base, parsed.design || {});
+            this._stored = { preset: presetId, design: parsed.design || {} };
+            this._legacy = false;
+            return full;
+          }
+          // Legacy: merged full config
+          const merged = deepMerge(config.design, parsed);
+          this._stored = null;
+          this._legacy = true;
+          return merged;
         } catch (e) {
           console.warn("Failed to parse stored config, using defaults", e);
         }
       }
-      return JSON.parse(JSON.stringify(config.design)); // Deep clone
+      this._stored = { preset: "default", design: {} };
+      this._legacy = false;
+      return JSON.parse(JSON.stringify(this._resolvePresetBase("default")));
     }
 
     saveConfig() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.config));
+      try {
+        // Determine baseline: preset base if known, else default
+        const presetId = (this._stored && this._stored.preset) || "default";
+        const base = this._resolvePresetBase(presetId);
+        const overrides = this._deepDiff(base, this.config) || {};
+        const toStore = { preset: presetId, design: overrides };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
+        this._stored = toStore;
+        this._legacy = false;
+      } catch (e) {
+        console.warn("Failed to save config: ", e);
+      }
     }
 
     updated(changedProps) {
@@ -224,19 +302,17 @@ customElements.define(
     }
 
     applyStyles(useUserConfig = false) {
-      // By default, use Generator.defaultConfig (non-designer callers)
-      // If useUserConfig is true (pds-config-form wants to apply user edits),
-      // merge the persisted user config into the default to generate runtime styles.
-      let baseConfig = structuredClone(PDS.defaultConfig);
-
+      // Runtime baseline: if using user config, build from preset base + overrides; else default
+      let baseConfig = structuredClone(presets.default);
       if (useUserConfig && this.config) {
-        // Deep-merge user edits on top of defaults to ensure all keys exist
-        baseConfig = deepMerge(baseConfig, this.config);
+        const presetId = (this._stored && this._stored.preset) || "default";
+        const presetBase = this._resolvePresetBase(presetId);
+        baseConfig = deepMerge(presetBase, this.config);
       }
 
       // Validate before generating/applying styles
       try {
-        const v = PDS.validateDesign(baseConfig);
+        const v = validateDesign(baseConfig);
         if (!v.ok) {
           this.validationIssues = v.issues;
           if (!this._validationToastId) {
@@ -255,8 +331,8 @@ customElements.define(
         this.validationIssues = [];
         if (this._validationToastId) {
           document
-            .querySelector("pure-app")
-            ?.toaster?.dismissToast(this._validationToastId);
+            .querySelector("#global-toaster")
+            ?.dismissToast(this._validationToastId);
           this._validationToastId = null;
         }
       } catch (ex) {
@@ -279,8 +355,8 @@ customElements.define(
       const generatorOptions = structuredClone(baseConfig);
       if (storedTheme) generatorOptions.theme = storedTheme;
 
-      this.designer = new PDS.Generator(generatorOptions);
-      PDS.Generator.applyStyles(this.designer);
+      this.designer = new Generator(generatorOptions);
+      Generator.applyStyles(this.designer);
 
       // Ensure document html[data-theme] respects persisted theme if present.
       // Priority: localStorage 'pure-ds-theme' > leave existing attribute (set at startup from OS preference).
@@ -524,8 +600,8 @@ customElements.define(
       try {
         if (this._validationToastId) {
           document
-            .querySelector("pure-app")
-            ?.toaster?.dismissToast(this._validationToastId);
+            .querySelector("#global-toaster")
+            ?.dismissToast(this._validationToastId);
           this._validationToastId = null;
         }
       } catch {}
@@ -570,13 +646,15 @@ customElements.define(
     };
 
     handleReset = async () => {
-      const result = await ask(
+      const result = await PDS.ask(
         "Reset to default configuration? This will clear your saved settings."
       );
 
       if (result) {
-        localStorage.removeItem(STORAGE_KEY);
-        this.config = JSON.parse(JSON.stringify(PDS.defaultConfig));
+        // Migrate to new storage shape: preset 'default' with no overrides
+        this._stored = { preset: "default", design: {} };
+        const base = this._resolvePresetBase("default");
+        this.config = JSON.parse(JSON.stringify(base));
         this.formValues = this.filterConfigForSchema(this.config); // Update form values
         this.formKey = (this.formKey || 0) + 1; // Increment to force form update
         this.saveConfig();
@@ -590,18 +668,13 @@ customElements.define(
     };
 
     applyPreset = async (preset) => {
-      const result = await ask(
+      const result = await PDS.ask(
         `Load "${preset.name}" preset? This will replace your current settings.`
       );
 
       if (result) {
-        // Merge preset config on top of default config
-        const presetConfig = deepMerge(
-          JSON.parse(JSON.stringify(PDS.defaultConfig)),
-          preset
-        );
-
-        // Validate preset before applying
+        // Build from preset only (no default baseline); store as preset + overrides {}
+        const presetConfig = JSON.parse(JSON.stringify(preset));
         const validationResult = PDS.validateDesign(presetConfig);
         if (!validationResult.ok) {
           this.validationIssues = validationResult.issues;
@@ -623,14 +696,17 @@ customElements.define(
         try {
           if (this._validationToastId) {
             document
-              .querySelector("pure-app")
-              ?.toaster?.dismissToast(this._validationToastId);
+              .querySelector("#global-toaster")
+              ?.dismissToast(this._validationToastId);
             this._validationToastId = null;
           }
         } catch {}
         this.config = presetConfig;
+        this._stored = {
+          preset: (preset.id || preset.name || "").toLowerCase(),
+          design: {},
+        };
         this.formValues = this.filterConfigForSchema(this.config);
-
         this.saveConfig();
         this.applyStyles(true);
 
@@ -851,35 +927,42 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
                     </span>
                   </a>
                 </li>
-                ${presets.map(
-                  (preset) => html`
-                    <li>
-                      <a
-                        href="#"
-                        @click=${(e) => {
-                          e.preventDefault();
-                          this.applyPreset(preset);
-                        }}
-                      >
-                        <span class="preset-colors">
-                          <span
-                            style="background-color: ${preset.colors.primary}"
-                          ></span>
-                          <span
-                            style="background-color: ${preset.colors.secondary}"
-                          ></span>
-                          <span
-                            style="background-color: ${preset.colors.accent}"
-                          ></span>
-                        </span>
-                        <span class="preset-info">
-                          <strong>${preset.name}</strong>
-                          <small>${preset.description}</small>
-                        </span>
-                      </a>
-                    </li>
-                  `
-                )}
+                ${Object.values(PDS.presets)
+                  .filter(
+                    (preset) =>
+                      (preset.id || preset.name || "").toLowerCase() !==
+                      "default"
+                  )
+                  .map(
+                    (preset) => html`
+                      <li>
+                        <a
+                          href="#"
+                          @click=${(e) => {
+                            e.preventDefault();
+                            this.applyPreset(preset);
+                          }}
+                        >
+                          <span class="preset-colors">
+                            <span
+                              style="background-color: ${preset.colors.primary}"
+                            ></span>
+                            <span
+                              style="background-color: ${preset.colors
+                                .secondary}"
+                            ></span>
+                            <span
+                              style="background-color: ${preset.colors.accent}"
+                            ></span>
+                          </span>
+                          <span class="preset-info">
+                            <strong>${preset.name}</strong>
+                            <small>${preset.description}</small>
+                          </span>
+                        </a>
+                      </li>
+                    `
+                  )}
               </menu>
             </nav>
 

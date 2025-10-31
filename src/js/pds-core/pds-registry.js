@@ -18,12 +18,16 @@ class PDSRegistry {
 
   /**
    * Set the designer instance and switch to live mode
-   * Called by pure-app.js when design system is initialized
    */
-  setDesigner(designer) {
+  setDesigner(designer, meta = {}) {
     this._designer = designer;
     this._mode = "live";
-    console.log("[PDS Registry] Switched to LIVE mode with designer instance");
+    const presetName = meta?.presetName;
+    if (presetName) {
+      console.log(`PDS live with preset "${presetName}"`);
+    } else {
+      console.log("PDS live with custom config");
+    }
   }
 
   /**

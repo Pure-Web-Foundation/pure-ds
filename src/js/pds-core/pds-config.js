@@ -1,10 +1,12 @@
 import { enums } from "./pds-enums.js";
 
 /**
- * Design system presets - pre-configured themes for quick starts
+ * Design system presets - pre-configured themes for quick starts.
+ * Expose as an object keyed by preset id.
  */
-export const presets = [
-  {
+export const presets = {
+  "ocean-breeze": {
+    id: "ocean-breeze",
     name: "Ocean Breeze",
     description: "Fresh and calming ocean-inspired palette with professional undertones",
     colors: {
@@ -31,7 +33,8 @@ export const presets = [
       radiusSize: enums.RadiusSizes.large // Soft, flowing
     }
   },
-  {
+  "midnight-steel": {
+    id: "midnight-steel",
     name: "Midnight Steel",
     description: "Bold industrial aesthetic with sharp contrasts and urban edge",
     colors: {
@@ -60,7 +63,8 @@ export const presets = [
       borderWidth: enums.BorderWidths.thin
     }
   },
-  {
+  "neural-glow": {
+    id: "neural-glow",
     name: "Neural Glow",
     description: "AI-inspired with vibrant purple-blue gradients and futuristic vibes",
     colors: {
@@ -91,7 +95,8 @@ export const presets = [
       transitionSpeed: enums.TransitionSpeeds.fast
     }
   },
-  {
+  "paper-and-ink": {
+    id: "paper-and-ink",
     name: "Paper & Ink",
     description: "Ultra-minimal design with focus on typography and whitespace",
     colors: {
@@ -121,7 +126,8 @@ export const presets = [
       borderWidth: enums.BorderWidths.thin
     }
   },
-  {
+  "sunset-paradise": {
+    id: "sunset-paradise",
     name: "Sunset Paradise",
     description: "Warm tropical colors evoking golden hour by the beach",
     colors: {
@@ -151,7 +157,8 @@ export const presets = [
       borderWidth: enums.BorderWidths.medium
     }
   },
-  {
+  "retro-wave": {
+    id: "retro-wave",
     name: "Retro Wave",
     description: "Nostalgic 80s-inspired palette with neon undertones",
     colors: {
@@ -185,7 +192,8 @@ export const presets = [
       transitionSpeed: enums.TransitionSpeeds.instant // Snappy retro feel
     }
   },
-  {
+  "forest-canopy": {
+    id: "forest-canopy",
     name: "Forest Canopy",
     description: "Natural earth tones with organic, calming green hues",
     colors: {
@@ -213,7 +221,8 @@ export const presets = [
       borderWidth: enums.BorderWidths.thin
     }
   },
-  {
+  "ruby-elegance": {
+    id: "ruby-elegance",
     name: "Ruby Elegance",
     description: "Sophisticated palette with rich ruby reds and warm accents",
     colors: {
@@ -243,7 +252,7 @@ export const presets = [
       borderWidth: enums.BorderWidths.thin
     }
   }
-];
+};
 
 /**
  * Default configuration for the Pure Design System.
@@ -251,7 +260,11 @@ export const presets = [
  * spatial rhythm, layers, shape, behavior, layout, advanced options,
  * accessibility, components, and icons.
  */
-export const defaultConfig = {
+// Default configuration moved into presets as the canonical "default" entry
+presets.default = {
+  id: "default",
+  name: "Default",
+  description: "Base Pure DS preset",
   colors: {
     // Palette - base colors that generate entire color palettes
     primary: "#3097c0", // Primary brand color
@@ -555,3 +568,4 @@ export const defaultConfig = {
 
   debug: false,
 };
+// Note: presets is now a stable object keyed by id

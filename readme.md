@@ -565,52 +565,6 @@ a11y: {
 
 ## Web Components
 
-### PureApp
-
-Main application orchestrator. Auto-injects toaster and provides integrated features:
-
-```html
-<pure-app>
-  <h1>My Application</h1>
-  <!-- Your app content -->
-</pure-app>
-```
-
-**Features:**
-- Toast notifications
-- Dialog system with form integration
-- Design system configuration
-- Auto-injection of sub-components
-
-**API:**
-
-```javascript
-const app = document.querySelector('pure-app');
-
-// Configure design system
-app.configure({
-  colors: { primary: '#2563eb' },
-  spatialRhythm: { baseUnit: 16 },
-});
-
-// Toast notifications
-app.toast('Message', 'information', duration);
-app.success('Success message');
-app.warning('Warning message');
-app.error('Error message');
-
-// Smart dialogs
-const confirmed = await app.ask('Delete this item?');
-
-const result = await app.ask('Choose action', {
-  content: '<p>Additional content</p>',
-  buttons: {
-    save: { name: 'Save' },
-    cancel: { name: 'Cancel', cancel: true }
-  }
-});
-
-
 ### SvgIcon
 
 Display icons from sprite sheet with automatic fallbacks:
@@ -890,29 +844,15 @@ enums.TransitionSpeeds // fast, normal, slow
 enums.AnimationEasings // linear, ease, ease-in, ease-out, ...
 ```
 
-### PureApp Component
-
-```javascript
-const app = document.querySelector('pure-app');
-
-// Configuration
-app.configure(config);
-app.designer;  // Access Generator instance
-app.definer;   // Access SchemaFormDefiner instance
-
-// Notifications
-app.toast(message, type, duration);
-app.success(message, duration);
-app.warning(message, duration);
-app.error(message, duration);
 
 // Dialogs
-await app.ask(message, options);
+```js
+await PDS.ask(message, options);
 ```
 
 **Ask Options:**
 
-```javascript
+```js
 {
   title: 'Dialog Title',
   content: '<p>Additional HTML</p>',
@@ -976,15 +916,13 @@ See `auto-designer.config.js` for full example with all options.
   <title>Pure App</title>
 </head>
 <body>
-  <pure-app>
-    <div class="container">
-      <h1>Welcome</h1>
-      <button onclick="this.closest('pure-app').success('Hello!')">
-        <pds-icon icon="heart"></pds-icon>
-        Click Me
-      </button>
-    </div>
-  </pure-app>
+  <div class="container">
+    <h1>Welcome</h1>
+    <button onclick="this.closest('pure-app').success('Hello!')">
+      <pds-icon icon="heart"></pds-icon>
+      Click Me
+    </button>
+  </div>
 </body>
 </html>
 ```

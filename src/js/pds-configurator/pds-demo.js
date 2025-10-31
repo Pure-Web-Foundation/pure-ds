@@ -4,6 +4,11 @@ import { PDS } from "../pds";
 
 import { AutoComplete } from "pure-web/ac";
 
+const toast = (message, options)=> {
+  const toaster = document.getElementById("global-toaster");
+  toaster.toast(...arguments);
+}
+
 customElements.define(
   "pds-demo",
   class extends LitElement {
@@ -23,7 +28,16 @@ customElements.define(
       this.designer = null;
       this.sections = [];
       this.inspectorActive = false;
+      this._docsBase = '/pds';
+      this._showdown = new showdown.Converter({
+        ghCompatibleHeaderId: true,
+        tables: true,
+        strikethrough: true,
+        tasklists: true,
+      });
     }
+
+    
 
     // Disable shadow DOM to use global styles
     createRenderRoot() {
@@ -37,6 +51,10 @@ customElements.define(
       document.addEventListener("design-updated", (e) => {
         this.config = e.detail.config;
         this.designer = e.detail.designer;
+        // Update docs base if staticBase changes
+        if (this.config && this.config.staticBase) {
+          this._docsBase = ('/' + String(this.config.staticBase).replace(/^\/+|\/+$/g, ''));
+        }
       });
 
       // Listen for field changes to scroll to relevant section
@@ -78,6 +96,23 @@ customElements.define(
       };
 
       this.addEventListener("click", this._inspectorCaptureHandler, true);
+      // Determine docs base from global override or config
+      try {
+        const globalBase = window.PDS_DOCS_BASE;
+        if (typeof globalBase === 'string' && globalBase.trim()) {
+          this._docsBase = globalBase.replace(/\/+$/, '');
+        }
+      } catch {}
+      // Defer to config.staticBase if provided
+      if (this.config && this.config.staticBase) {
+        this._docsBase = ('/' + String(this.config.staticBase).replace(/^\/+|\/+$/g, ''));
+      }
+
+      // Listen for external requests to view docs
+      document.addEventListener('pds-view-docs', async (e) => {
+        const file = (e.detail && e.detail.file) || 'README.md';
+        await this._renderDocToDialog(file);
+      });
     }
 
     disconnectedCallback() {
@@ -86,6 +121,40 @@ customElements.define(
         this.removeEventListener("click", this._inspectorCaptureHandler, true);
         this._inspectorCaptureHandler = null;
       }
+    }
+
+    /** Fetch a markdown file from the docs base and return HTML */
+    async fetchDocHTML(file = 'README.md') {
+      const base = this._docsBase || '/pds';
+      const url = `${base.replace(/\/+$/, '')}/${file}`;
+      try {
+        const res = await fetch(url, { cache: 'no-cache' });
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+        const md = await res.text();
+        return this._showdown.makeHtml(md);
+      } catch (err) {
+        return `<p>Failed to load ${file} from ${base}: ${String(err.message || err)}</p>`;
+      }
+    }
+
+    /** Render markdown into a simple dialog overlay */
+    async _renderDocToDialog(file) {
+      const htmlContent = await this.fetchDocHTML(file);
+      let dlg = document.getElementById('pds-docs-dialog');
+      if (!dlg) {
+        dlg = document.createElement('dialog');
+        dlg.id = 'pds-docs-dialog';
+        dlg.style.width = 'min(900px, 90vw)';
+        dlg.style.maxHeight = '85vh';
+        dlg.style.padding = '0';
+        dlg.innerHTML = `<div style="padding:16px 20px; overflow:auto; max-height:85vh">
+          <div class="markdown-body"></div>
+        </div>`;
+        document.body.appendChild(dlg);
+      }
+      const body = dlg.querySelector('.markdown-body');
+      if (body) body.innerHTML = htmlContent;
+      if (!dlg.open) dlg.showModal();
     }
 
     deactivateInspector() {
@@ -158,7 +227,17 @@ customElements.define(
       }
 
       // Prioritize semantic HTML primitives (figure, table, details, etc.)
-      const semanticElements = ['FIGURE', 'TABLE', 'DETAILS', 'VIDEO', 'AUDIO', 'PICTURE', 'BLOCKQUOTE', 'PRE', 'CODE'];
+      const semanticElements = [
+        "FIGURE",
+        "TABLE",
+        "DETAILS",
+        "VIDEO",
+        "AUDIO",
+        "PICTURE",
+        "BLOCKQUOTE",
+        "PRE",
+        "CODE",
+      ];
       if (semanticElements.includes(element.tagName)) {
         return {
           element: element,
@@ -650,10 +729,10 @@ customElements.define(
       if (!detected) return;
 
       const { element, componentType, displayName } = detected;
-      
+
       // Turn off inspector mode after selecting an element (like a color picker)
       this.deactivateInspector();
-      
+
       // Check if an enhancer provides a demo HTML to display (clean template)
       let demoHtml = null;
       let enhancer = null;
@@ -732,10 +811,7 @@ customElements.define(
      * Show code in pds-drawer
      */
     async showCodeDrawer(htmlCode, litProps, displayName, componentType) {
-      const app = document.querySelector("pure-app");
-      if (!app?.showDrawer) return;
-      
-      
+      const drawer = document.querySelector("#global-drawer");
 
       // Create header template
       const headerTemplate = html`
@@ -753,31 +829,38 @@ customElements.define(
       `;
 
       // Create content template with loading state
-      const litPropsTemplate = litProps.length > 0 
-        ? html`
-          <div class="lit-properties">
-            <h4>Lit Properties</h4>
-            <div class="lit-props-list">
-              ${litProps.map(prop => html`
-                <div class="lit-prop">
-                  <code class="prop-name">${prop.name}</code>
-                  <code class="prop-value">${JSON.stringify(prop.value)}</code>
+      const litPropsTemplate =
+        litProps.length > 0
+          ? html`
+              <div class="lit-properties">
+                <h4>Lit Properties</h4>
+                <div class="lit-props-list">
+                  ${litProps.map(
+                    (prop) => html`
+                      <div class="lit-prop">
+                        <code class="prop-name">${prop.name}</code>
+                        <code class="prop-value"
+                          >${JSON.stringify(prop.value)}</code
+                        >
+                      </div>
+                    `
+                  )}
                 </div>
-              `)}
-            </div>
-          </div>
-        `
-        : nothing;
+              </div>
+            `
+          : nothing;
 
       const loadingTemplate = html`
         ${litPropsTemplate}
         <div class="code-block-wrapper">
-          <pre class="code-block"><code class="language-html">Loading syntax highlighting...</code></pre>
+          <pre
+            class="code-block"
+          ><code class="language-html">Loading syntax highlighting...</code></pre>
         </div>
       `;
 
       // Show drawer with loading content
-      await app.showDrawer(loadingTemplate, { header: headerTemplate });
+      await drawer.show(loadingTemplate, { header: headerTemplate });
 
       // Highlight code asynchronously
       const highlightedCode = await this.highlightWithShiki(htmlCode);
@@ -786,16 +869,18 @@ customElements.define(
       const finalTemplate = html`
         ${litPropsTemplate}
         <div class="code-block-wrapper">
-          <pre class="code-block"><code class="language-html">${unsafeHTML(highlightedCode)}</code></pre>
+          <pre class="code-block"><code class="language-html">${unsafeHTML(
+            highlightedCode
+          )}</code></pre>
         </div>
       `;
 
       // Re-render with highlighted code
-      await app.showDrawer(finalTemplate, { header: headerTemplate });
+      await document.getElementById("global-drawer").show(finalTemplate, { header: headerTemplate });
 
       // Add copy functionality
       setTimeout(() => {
-        const drawer = document.getElementById('global-drawer');
+        const drawer = document.getElementById("global-drawer");
         const copyBtn = drawer?.querySelector("#copyCodeBtn");
         if (copyBtn) {
           copyBtn.onclick = () => {
@@ -1217,27 +1302,7 @@ customElements.define(
       };
     }
 
-    // ${this.sections.map(
-    //             (section) => html`
-    //               <a
-    //                 href="#${section.id}"
-    //                 class="toc-link"
-    //                 @click=${(e) => this.handleTOCClick(e, section.id)}
-    //               >
-    //                 ${section.title}
-    //               </a>
-    //             `
-    //           )}
-
-    // handleTOCClick(e, sectionId) {
-    //   e.preventDefault();
-    //   const section = this.querySelector(`[data-section="${sectionId}"]`);
-    //   if (section) {
-    //     section.scrollIntoView({ behavior: "smooth", block: "start" });
-    //     // Update URL hash
-    //     history.pushState(null, "", `#${sectionId}`);
-    //   }
-    // }
+   
 
     render() {
       const components = this.config?.components || {};
@@ -1257,11 +1322,11 @@ customElements.define(
             <h1>Pure Design System</h1>
             <p>Why build a design system if you can generate it?</p>
             <div class="btn-group">
-              <button class="btn-primary btn-lg">
+              <button class="btn-primary btn-lg" @click=${()=>{this.showDoc('getting-started.md')}}>
                 <pds-icon icon="download"></pds-icon>
                 Get Started
               </button>
-              <button class="btn-secondary btn-lg" @click=${this.readDocs}>
+              <button class="btn-secondary btn-lg" @click=${()=>{this.showDoc('readme.md')}}>
                 <pds-icon icon="book-open"></pds-icon>
                 View Docs
               </button>
@@ -2225,8 +2290,8 @@ customElements.define(
 
             <p>
               The smart surface system automatically adapts text, icon, shadow,
-              and border colors based on surface backgrounds. All colors maintain
-              WCAG AA contrast ratios automatically.
+              and border colors based on surface backgrounds. All colors
+              maintain WCAG AA contrast ratios automatically.
             </p>
 
             <h3>Surface Variants</h3>
@@ -2239,7 +2304,10 @@ customElements.define(
                 <p class="surface-description">
                   Default background with auto-adjusted text and icons
                 </p>
-                <button class="btn-primary" style="margin-top: var(--spacing-3);">
+                <button
+                  class="btn-primary"
+                  style="margin-top: var(--spacing-3);"
+                >
                   Button
                 </button>
               </div>
@@ -2251,7 +2319,10 @@ customElements.define(
                 <p class="surface-description">
                   Slightly different tone for visual hierarchy
                 </p>
-                <button class="btn-secondary" style="margin-top: var(--spacing-3);">
+                <button
+                  class="btn-secondary"
+                  style="margin-top: var(--spacing-3);"
+                >
                   Button
                 </button>
               </div>
@@ -2263,7 +2334,10 @@ customElements.define(
                 <p class="surface-description">
                   Raised with smart shadows that adapt in dark mode
                 </p>
-                <button class="btn-primary" style="margin-top: var(--spacing-3);">
+                <button
+                  class="btn-primary"
+                  style="margin-top: var(--spacing-3);"
+                >
                   Button
                 </button>
               </div>
@@ -2275,7 +2349,10 @@ customElements.define(
                 <p class="surface-description">
                   Modal/dropdown backgrounds with stronger shadows
                 </p>
-                <button class="btn-outline" style="margin-top: var(--spacing-3);">
+                <button
+                  class="btn-outline"
+                  style="margin-top: var(--spacing-3);"
+                >
                   Button
                 </button>
               </div>
@@ -2306,9 +2383,16 @@ customElements.define(
           </section>
 
           <!-- Nested Surfaces Section -->
-          <section class="showcase-section alt-bg" data-section="nested-surfaces">
+          <section
+            class="showcase-section alt-bg"
+            data-section="nested-surfaces"
+          >
             <h2>
-              <pds-icon icon="grid-four" size="lg" class="icon-primary"></pds-icon>
+              <pds-icon
+                icon="grid-four"
+                size="lg"
+                class="icon-primary"
+              ></pds-icon>
               Nested Surfaces
             </h2>
 
@@ -2323,8 +2407,8 @@ customElements.define(
                 Level 1: Base Surface
               </h4>
               <p>
-                Notice how icons and text adapt at each nesting level to maintain
-                readability.
+                Notice how icons and text adapt at each nesting level to
+                maintain readability.
               </p>
 
               <div
@@ -2337,7 +2421,10 @@ customElements.define(
                 </h5>
                 <p>Shadows and text colors automatically adjust</p>
 
-                <div class="demo-grid cols-2" style="margin-top: var(--spacing-4);">
+                <div
+                  class="demo-grid cols-2"
+                  style="margin-top: var(--spacing-4);"
+                >
                   <div class="card">
                     <h6>
                       <pds-icon icon="check"></pds-icon>
@@ -2362,7 +2449,10 @@ customElements.define(
                       Another Card
                     </h6>
                     <p>All elements adapt automatically</p>
-                    <button class="btn-primary btn-sm" style="margin-top: var(--spacing-2);">
+                    <button
+                      class="btn-primary btn-sm"
+                      style="margin-top: var(--spacing-2);"
+                    >
                       <pds-icon icon="heart" size="sm"></pds-icon>
                       Action
                     </button>
@@ -2406,9 +2496,9 @@ customElements.define(
             </h2>
 
             <p>
-              The smart surface system automatically inverts text and icon colors
-              when you use a dark surface in light mode (or vice versa). Toggle
-              dark mode to see the magic!
+              The smart surface system automatically inverts text and icon
+              colors when you use a dark surface in light mode (or vice versa).
+              Toggle dark mode to see the magic!
             </p>
 
             <h3>Dark Surfaces in Light Mode</h3>
@@ -2425,7 +2515,10 @@ customElements.define(
                   This dark surface automatically uses light text and icons for
                   perfect readability
                 </p>
-                <button class="btn-primary" style="margin-top: var(--spacing-3);">
+                <button
+                  class="btn-primary"
+                  style="margin-top: var(--spacing-3);"
+                >
                   Primary Button
                 </button>
               </div>
@@ -2441,7 +2534,10 @@ customElements.define(
                 <p style="color: #dbeafe;">
                   Text and icons auto-adapt to maintain WCAG AA contrast
                 </p>
-                <button class="btn-secondary" style="margin-top: var(--spacing-3);">
+                <button
+                  class="btn-secondary"
+                  style="margin-top: var(--spacing-3);"
+                >
                   Secondary Button
                 </button>
               </div>
@@ -2476,9 +2572,7 @@ customElements.define(
                 <h5 style="color: white; margin-top: var(--spacing-2);">
                   Warning
                 </h5>
-                <p style="color: #fef9c3;">
-                  Perfect contrast maintained
-                </p>
+                <p style="color: #fef9c3;">Perfect contrast maintained</p>
               </div>
 
               <div
@@ -2490,7 +2584,9 @@ customElements.define(
                   size="xl"
                   style="color: white;"
                 ></pds-icon>
-                <h5 style="color: white; margin-top: var(--spacing-2);">Accent</h5>
+                <h5 style="color: white; margin-top: var(--spacing-2);">
+                  Accent
+                </h5>
                 <p style="color: #fce7f3;">Automatic adjustment</p>
               </div>
             </div>
@@ -2507,33 +2603,58 @@ customElements.define(
               Grid Utilities
             </h2>
             <p>
-              Modern, config-driven grid system with auto-fit responsive layouts.
-              All utilities are generated from <code>layout.gridSystem</code> configuration.
+              Modern, config-driven grid system with auto-fit responsive
+              layouts. All utilities are generated from
+              <code>layout.gridSystem</code> configuration.
             </p>
 
             <h3>Fixed Column Grids</h3>
-            <p>Use <code>.grid-cols-{n}</code> classes for fixed column layouts:</p>
-            
-            <div class="grid grid-cols-2 gap-md" style="margin-bottom: var(--spacing-4);">
+            <p>
+              Use <code>.grid-cols-{n}</code> classes for fixed column layouts:
+            </p>
+
+            <div
+              class="grid grid-cols-2 gap-md"
+              style="margin-bottom: var(--spacing-4);"
+            >
               <div class="card">
-                <pds-icon icon="square" size="lg" class="icon-primary"></pds-icon>
+                <pds-icon
+                  icon="square"
+                  size="lg"
+                  class="icon-primary"
+                ></pds-icon>
                 <h4>Grid Column 1</h4>
                 <p>Two column layout</p>
               </div>
               <div class="card">
-                <pds-icon icon="square" size="lg" class="icon-secondary"></pds-icon>
+                <pds-icon
+                  icon="square"
+                  size="lg"
+                  class="icon-secondary"
+                ></pds-icon>
                 <h4>Grid Column 2</h4>
                 <p>Equal width columns</p>
               </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-sm" style="margin-bottom: var(--spacing-4);">
+            <div
+              class="grid grid-cols-3 gap-sm"
+              style="margin-bottom: var(--spacing-4);"
+            >
               <div class="card">
-                <pds-icon icon="circle" size="md" class="icon-success"></pds-icon>
+                <pds-icon
+                  icon="circle"
+                  size="md"
+                  class="icon-success"
+                ></pds-icon>
                 <p>Column 1</p>
               </div>
               <div class="card">
-                <pds-icon icon="circle" size="md" class="icon-warning"></pds-icon>
+                <pds-icon
+                  icon="circle"
+                  size="md"
+                  class="icon-warning"
+                ></pds-icon>
                 <p>Column 2</p>
               </div>
               <div class="card">
@@ -2551,19 +2672,26 @@ customElements.define(
 
             <h3>Auto-Fit Responsive Grids</h3>
             <p>
-              Use <code>.grid-auto-{size}</code> for responsive layouts that automatically
-              adjust columns based on available space:
+              Use <code>.grid-auto-{size}</code> for responsive layouts that
+              automatically adjust columns based on available space:
             </p>
-            
+
             <h4><code>.grid-auto-sm</code> (min 150px)</h4>
-            <div class="grid grid-auto-sm gap-md" style="margin-bottom: var(--spacing-4);">
+            <div
+              class="grid grid-auto-sm gap-md"
+              style="margin-bottom: var(--spacing-4);"
+            >
               <div class="card">
                 <pds-icon icon="desktop" size="lg" class="icon-info"></pds-icon>
                 <h5>Responsive</h5>
                 <p>Automatically wraps</p>
               </div>
               <div class="card">
-                <pds-icon icon="device-mobile" size="lg" class="icon-info"></pds-icon>
+                <pds-icon
+                  icon="device-mobile"
+                  size="lg"
+                  class="icon-info"
+                ></pds-icon>
                 <h5>Adaptive</h5>
                 <p>Based on space</p>
               </div>
@@ -2580,14 +2708,25 @@ customElements.define(
             </div>
 
             <h4><code>.grid-auto-md</code> (min 250px)</h4>
-            <div class="grid grid-auto-md gap-lg" style="margin-bottom: var(--spacing-4);">
+            <div
+              class="grid grid-auto-md gap-lg"
+              style="margin-bottom: var(--spacing-4);"
+            >
               <div class="card surface-elevated">
-                <pds-icon icon="rocket" size="xl" class="icon-accent"></pds-icon>
+                <pds-icon
+                  icon="rocket"
+                  size="xl"
+                  class="icon-accent"
+                ></pds-icon>
                 <h5>Card 1</h5>
                 <p>Larger minimum width means fewer columns on small screens</p>
               </div>
               <div class="card surface-elevated">
-                <pds-icon icon="palette" size="xl" class="icon-accent"></pds-icon>
+                <pds-icon
+                  icon="palette"
+                  size="xl"
+                  class="icon-accent"
+                ></pds-icon>
                 <h5>Card 2</h5>
                 <p>Smart surface tokens apply automatically</p>
               </div>
@@ -2599,9 +2738,14 @@ customElements.define(
             </div>
 
             <h3>Gap Utilities</h3>
-            <p>Control spacing between grid items with <code>.gap-{size}</code> classes:</p>
-            
-            <div style="display: grid; gap: var(--spacing-4); grid-template-columns: 1fr 1fr;">
+            <p>
+              Control spacing between grid items with
+              <code>.gap-{size}</code> classes:
+            </p>
+
+            <div
+              style="display: grid; gap: var(--spacing-4); grid-template-columns: 1fr 1fr;"
+            >
               <div>
                 <p><strong>.gap-xs</strong> (spacing-1)</p>
                 <div class="grid grid-cols-3 gap-xs">
@@ -2610,7 +2754,7 @@ customElements.define(
                   <div class="card"><p>C</p></div>
                 </div>
               </div>
-              
+
               <div>
                 <p><strong>.gap-sm</strong> (spacing-2)</p>
                 <div class="grid grid-cols-3 gap-sm">
@@ -2619,7 +2763,7 @@ customElements.define(
                   <div class="card"><p>C</p></div>
                 </div>
               </div>
-              
+
               <div>
                 <p><strong>.gap-md</strong> (spacing-4)</p>
                 <div class="grid grid-cols-3 gap-md">
@@ -2628,7 +2772,7 @@ customElements.define(
                   <div class="card"><p>C</p></div>
                 </div>
               </div>
-              
+
               <div>
                 <p><strong>.gap-lg</strong> (spacing-6)</p>
                 <div class="grid grid-cols-3 gap-lg">
@@ -2641,31 +2785,46 @@ customElements.define(
 
             <h3>Code Inspector Support</h3>
             <p class="interactive-demo">
-              <pds-icon icon="cursor-click" size="sm" class="icon-primary"></pds-icon>
-              Enable the <strong>Code Inspector</strong> and click on any grid container above.
-              The ontology now recognizes layout patterns like <code>grid</code>, <code>grid-cols</code>,
-              and <code>grid-auto</code> for intelligent component detection.
+              <pds-icon
+                icon="cursor-click"
+                size="sm"
+                class="icon-primary"
+              ></pds-icon>
+              Enable the <strong>Code Inspector</strong> and click on any grid
+              container above. The ontology now recognizes layout patterns like
+              <code>grid</code>, <code>grid-cols</code>, and
+              <code>grid-auto</code> for intelligent component detection.
             </p>
           </section>
 
           <!-- Mesh Gradients Section -->
           <section class="showcase-section" data-section="mesh-gradients">
             <h2>
-              <pds-icon icon="palette" size="lg" class="icon-primary"></pds-icon>
+              <pds-icon
+                icon="palette"
+                size="lg"
+                class="icon-primary"
+              ></pds-icon>
               Mesh Gradients
             </h2>
             <p>
-              Subtle, beautiful mesh gradient backgrounds generated from your color palette.
-              Using <code>--background-mesh-01</code> through <code>--background-mesh-05</code> custom properties.
-              Automatically adapts to light and dark modes.
+              Subtle, beautiful mesh gradient backgrounds generated from your
+              color palette. Using <code>--background-mesh-01</code> through
+              <code>--background-mesh-05</code> custom properties. Automatically
+              adapts to light and dark modes.
             </p>
 
-            <div class="grid grid-cols-2 gap-lg" style="margin-bottom: var(--spacing-6);">
-              <div style="position: relative; background: var(--background-mesh-01); padding: var(--spacing-6); border-radius: var(--radius-lg); min-height: 200px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-border);">
-                <button 
-                  class="btn-primary btn-xs" 
+            <div
+              class="grid grid-cols-2 gap-lg"
+              style="margin-bottom: var(--spacing-6);"
+            >
+              <div
+                style="position: relative; background: var(--background-mesh-01); padding: var(--spacing-6); border-radius: var(--radius-lg); min-height: 200px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-border);"
+              >
+                <button
+                  class="btn-primary btn-xs"
                   style="position: absolute; top: var(--spacing-2); right: var(--spacing-2);"
-                  @pointerdown=${() => this.previewMesh('01')}
+                  @pointerdown=${() => this.previewMesh("01")}
                   @pointerup=${this.clearMeshPreview}
                   @pointerleave=${this.clearMeshPreview}
                   title="Press and hold to preview on page background"
@@ -2673,16 +2832,22 @@ customElements.define(
                   <pds-icon icon="eye" size="sm"></pds-icon>
                   Preview
                 </button>
-                <div style="background: var(--color-surface-base); padding: var(--spacing-4); border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+                <div
+                  style="background: var(--color-surface-base); padding: var(--spacing-4); border-radius: var(--radius-md); box-shadow: var(--shadow-md);"
+                >
                   <h4 style="margin: 0;">Mesh 01</h4>
-                  <p style="margin: var(--spacing-2) 0 0 0; opacity: 0.7;">Subtle radial blend</p>
+                  <p style="margin: var(--spacing-2) 0 0 0; opacity: 0.7;">
+                    Subtle radial blend
+                  </p>
                 </div>
               </div>
-              <div style="position: relative; background: var(--background-mesh-02); padding: var(--spacing-6); border-radius: var(--radius-lg); min-height: 200px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-border);">
-                <button 
-                  class="btn-primary btn-xs" 
+              <div
+                style="position: relative; background: var(--background-mesh-02); padding: var(--spacing-6); border-radius: var(--radius-lg); min-height: 200px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-border);"
+              >
+                <button
+                  class="btn-primary btn-xs"
                   style="position: absolute; top: var(--spacing-2); right: var(--spacing-2);"
-                  @pointerdown=${() => this.previewMesh('02')}
+                  @pointerdown=${() => this.previewMesh("02")}
                   @pointerup=${this.clearMeshPreview}
                   @pointerleave=${this.clearMeshPreview}
                   title="Press and hold to preview on page background"
@@ -2690,60 +2855,85 @@ customElements.define(
                   <pds-icon icon="eye" size="sm"></pds-icon>
                   Preview
                 </button>
-                <div style="background: var(--color-surface-base); padding: var(--spacing-4); border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+                <div
+                  style="background: var(--color-surface-base); padding: var(--spacing-4); border-radius: var(--radius-md); box-shadow: var(--shadow-md);"
+                >
                   <h4 style="margin: 0;">Mesh 02</h4>
-                  <p style="margin: var(--spacing-2) 0 0 0; opacity: 0.7;">Corner accents</p>
+                  <p style="margin: var(--spacing-2) 0 0 0; opacity: 0.7;">
+                    Corner accents
+                  </p>
                 </div>
               </div>
             </div>
 
             <div class="grid grid-cols-3 gap-md">
-              <div style="position: relative; background: var(--background-mesh-03); padding: var(--spacing-5); border-radius: var(--radius-md); min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px solid var(--color-border);">
-                <button 
-                  class="btn-primary btn-xs" 
+              <div
+                style="position: relative; background: var(--background-mesh-03); padding: var(--spacing-5); border-radius: var(--radius-md); min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px solid var(--color-border);"
+              >
+                <button
+                  class="btn-primary btn-xs"
                   style="position: absolute; top: var(--spacing-2); right: var(--spacing-2);"
-                  @pointerdown=${() => this.previewMesh('03')}
+                  @pointerdown=${() => this.previewMesh("03")}
                   @pointerup=${this.clearMeshPreview}
                   @pointerleave=${this.clearMeshPreview}
                   title="Press and hold to preview on page background"
                 >
                   <pds-icon icon="eye" size="sm"></pds-icon>
                 </button>
-                <pds-icon icon="sparkle" size="xl" style="opacity: 0.9; margin-bottom: var(--spacing-2);"></pds-icon>
+                <pds-icon
+                  icon="sparkle"
+                  size="xl"
+                  style="opacity: 0.9; margin-bottom: var(--spacing-2);"
+                ></pds-icon>
                 <code style="font-size: 0.75rem;">mesh-03</code>
               </div>
-              <div style="position: relative; background: var(--background-mesh-04); padding: var(--spacing-5); border-radius: var(--radius-md); min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px solid var(--color-border);">
-                <button 
-                  class="btn-primary btn-xs" 
+              <div
+                style="position: relative; background: var(--background-mesh-04); padding: var(--spacing-5); border-radius: var(--radius-md); min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px solid var(--color-border);"
+              >
+                <button
+                  class="btn-primary btn-xs"
                   style="position: absolute; top: var(--spacing-2); right: var(--spacing-2);"
-                  @pointerdown=${() => this.previewMesh('04')}
+                  @pointerdown=${() => this.previewMesh("04")}
                   @pointerup=${this.clearMeshPreview}
                   @pointerleave=${this.clearMeshPreview}
                   title="Press and hold to preview on page background"
                 >
                   <pds-icon icon="eye" size="sm"></pds-icon>
                 </button>
-                <pds-icon icon="sparkle" size="xl" style="opacity: 0.9; margin-bottom: var(--spacing-2);"></pds-icon>
+                <pds-icon
+                  icon="sparkle"
+                  size="xl"
+                  style="opacity: 0.9; margin-bottom: var(--spacing-2);"
+                ></pds-icon>
                 <code style="font-size: 0.75rem;">mesh-04</code>
               </div>
-              <div style="position: relative; background: var(--background-mesh-05); padding: var(--spacing-5); border-radius: var(--radius-md); min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px solid var(--color-border);">
-                <button 
-                  class="btn-primary btn-xs" 
+              <div
+                style="position: relative; background: var(--background-mesh-05); padding: var(--spacing-5); border-radius: var(--radius-md); min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px solid var(--color-border);"
+              >
+                <button
+                  class="btn-primary btn-xs"
                   style="position: absolute; top: var(--spacing-2); right: var(--spacing-2);"
-                  @pointerdown=${() => this.previewMesh('05')}
+                  @pointerdown=${() => this.previewMesh("05")}
                   @pointerup=${this.clearMeshPreview}
                   @pointerleave=${this.clearMeshPreview}
                   title="Press and hold to preview on page background"
                 >
                   <pds-icon icon="eye" size="sm"></pds-icon>
                 </button>
-                <pds-icon icon="sparkle" size="xl" style="opacity: 0.9; margin-bottom: var(--spacing-2);"></pds-icon>
+                <pds-icon
+                  icon="sparkle"
+                  size="xl"
+                  style="opacity: 0.9; margin-bottom: var(--spacing-2);"
+                ></pds-icon>
                 <code style="font-size: 0.75rem;">mesh-05</code>
               </div>
             </div>
 
             <h3>Usage</h3>
-            <pre class="code-block" style="margin-top: var(--spacing-4);"><code class="language-css">/* Apply as background */
+            <pre
+              class="code-block"
+              style="margin-top: var(--spacing-4);"
+            ><code class="language-css">/* Apply as background */
 .hero-section {
   background: var(--background-mesh-01);
 }
@@ -2761,8 +2951,14 @@ customElements.define(
 }</code></pre>
 
             <p class="interactive-demo" style="margin-top: var(--spacing-4);">
-              <pds-icon icon="moon-stars" size="sm" class="icon-primary"></pds-icon>
-              Toggle between light and dark modes to see how mesh gradients automatically adapt with reduced opacity in dark mode for subtle, non-interfering backgrounds.
+              <pds-icon
+                icon="moon-stars"
+                size="sm"
+                class="icon-primary"
+              ></pds-icon>
+              Toggle between light and dark modes to see how mesh gradients
+              automatically adapt with reduced opacity in dark mode for subtle,
+              non-interfering backgrounds.
             </p>
           </section>
 
@@ -2868,11 +3064,17 @@ customElements.define(
                       <pds-icon icon="warning" size="sm"></pds-icon>
                       Warning
                     </button>
-                    <button class="btn-danger btn-sm" @click="${this.showErrorToast}">
+                    <button
+                      class="btn-danger btn-sm"
+                      @click="${this.showErrorToast}"
+                    >
                       <pds-icon icon="x-circle" size="sm"></pds-icon>
                       Error
                     </button>
-                    <button class="btn-outline btn-sm" @click="${this.showLongToast}">
+                    <button
+                      class="btn-outline btn-sm"
+                      @click="${this.showLongToast}"
+                    >
                       <pds-icon icon="clock" size="sm"></pds-icon>
                       Long
                     </button>
@@ -2976,11 +3178,18 @@ customElements.define(
                 <!-- Drawer Section -->
                 <section class="showcase-section">
                   <h2>
-                    <pds-icon icon="squares-four" size="lg" class="icon-primary"></pds-icon>
+                    <pds-icon
+                      icon="squares-four"
+                      size="lg"
+                      class="icon-primary"
+                    ></pds-icon>
                     Drawer Example
                   </h2>
                   <p>Open the global drawer from different sides:</p>
-                  <div class="btn-group" style="gap: var(--spacing-3); flex-wrap: wrap;">
+                  <div
+                    class="btn-group"
+                    style="gap: var(--spacing-3); flex-wrap: wrap;"
+                  >
                     <button class="btn-primary" @click=${this.openDrawer}>
                       <pds-icon icon="sidebar" size="sm"></pds-icon>
                       Bottom Drawer
@@ -2989,7 +3198,10 @@ customElements.define(
                       <pds-icon icon="sidebar" size="sm"></pds-icon>
                       Left Drawer
                     </button>
-                    <button class="btn-secondary" @click=${this.openDrawerRight}>
+                    <button
+                      class="btn-secondary"
+                      @click=${this.openDrawerRight}
+                    >
                       <pds-icon icon="sidebar" size="sm"></pds-icon>
                       Right Drawer
                     </button>
@@ -3017,8 +3229,8 @@ customElements.define(
       `;
     }
 
-    async readDocs(e) {
-      const url = "/readme.md";
+    async showDoc(doc) {
+      const url = `/pds/${doc}`;
       try {
         const res = await fetch(url, { cache: "no-store" });
         const text = await res.text();
@@ -3037,84 +3249,60 @@ customElements.define(
           }
         }
 
-        const app = document.querySelector("pure-app");
-        if (app?.showDrawer) {
-          // Use unsafeHTML to render the markdown HTML
-          
-          
-          app.showDrawer(
-            html`${unsafeHTML(htmlContent)}`,
-            { 
-              header: html`<h3>PDS Documentation</h3>` 
-            }
-          );
-        } else {
-          // fallback: show toast if available
-          const app = document.querySelector("pure-app");
-          if (app?.toast) {
-            app.toast("Docs drawer not found. See console for details.", {
-              type: "warning",
-            });
-          }
-          console.warn("#global-drawer not found; docs HTML:\n", htmlContent);
-        }
+        const drawer = document.getElementById("global-drawer");
+        drawer.show(html`${unsafeHTML(htmlContent)}`, {
+          header: html`<h3>PDS Documentation</h3>`,
+        });
+      
       } catch (err) {
         console.error("Error fetching README:", err);
-        const app = document.querySelector("pure-app");
-        if (app?.toast)
-          app.toast("Error loading docs. See console.", { type: "danger" });
+        const toaster = document.getElementById("global-toaster");
+        toaster.toast("Error loading docs. See console.", { type: "danger" });
       }
     }
 
     openDrawer() {
-      const app = document.querySelector("pure-app");
-      if (app?.showDrawer) {
-        app.showDrawer(
-          html`
-            <figure class="media-figure">
-              <img
-                class="media-image"
-                src="https://picsum.photos/800/600?random=1"
-                alt="Random landscape"
-              />
-              <figcaption class="media-caption">
-                <strong>Figure 1:</strong> A beautiful landscape demonstrating image
-                handling in the design system.
-              </figcaption>
-            </figure>
-          `,
-          { 
-            header: html`<h3>Example Drawer</h3>`, 
-            minHeight: "300px",
-            position: "bottom"
-          }
-        );
-      }
+      const drawer = document.getElementById("global-drawer");
+
+      drawer.show(
+        html`
+          <figure class="media-figure">
+            <img
+              class="media-image"
+              src="https://picsum.photos/800/600?random=1"
+              alt="Random landscape"
+            />
+            <figcaption class="media-caption">
+              <strong>Figure 1:</strong> A beautiful landscape demonstrating
+              image handling in the design system.
+            </figcaption>
+          </figure>
+        `,
+        {
+          header: html`<h3>Example Drawer</h3>`,
+          minHeight: "300px",
+          position: "bottom",
+        }
+      );
     }
 
     openDrawerLeft() {
-      const app = document.querySelector("pure-app");
-      if (app?.showDrawer) {
-        app.showDrawer(
-          this.renderDrawerContent(),
-          {
-            header: html`<h3>Example Drawer (Left)</h3>`,
-            position: "left"
-          }
-        );
+      const drawer = document.getElementById("global-drawer");
+      if (drawer) {
+        drawer.show(this.renderDrawerContent(), {
+          header: html`<h3>Example Drawer (Left)</h3>`,
+          position: "left",
+        });
       }
     }
 
     openDrawerRight() {
-      const app = document.querySelector("pure-app");
-      if (app?.showDrawer) {
-        app.showDrawer(
-          this.renderDrawerContent(),
-          {
-            header: html`<h3>Example Drawer (Right)</h3>`,
-            position: "right"
-          }
-        );
+      const drawer = document.getElementById("global-drawer");
+      if (drawer) {
+        drawer.show(this.renderDrawerContent(), {
+          header: html`<h3>Example Drawer (Right)</h3>`,
+          position: "right",
+        });
       }
     }
 
@@ -3123,13 +3311,13 @@ customElements.define(
       const originalBg = document.body.style.backgroundImage;
       this._originalBodyBg = originalBg;
       document.body.style.backgroundImage = `var(--background-mesh-${meshNumber})`;
-      
+
       // Dim all content to make the mesh background more visible
-      const mainContent = document.querySelector('pds-demo');
+      const mainContent = document.querySelector("pds-demo");
       if (mainContent && !this._originalOpacity) {
         this._originalOpacity = mainContent.style.opacity;
-        mainContent.style.transition = 'opacity 200ms ease-out';
-        mainContent.style.opacity = '0.1';
+        mainContent.style.transition = "opacity 200ms ease-out";
+        mainContent.style.opacity = "0.1";
       }
     }
 
@@ -3138,16 +3326,16 @@ customElements.define(
         document.body.style.backgroundImage = this._originalBodyBg;
         this._originalBodyBg = undefined;
       }
-      
+
       // Restore content opacity
-      const mainContent = document.querySelector('pds-demo');
+      const mainContent = document.querySelector("pds-demo");
       if (mainContent && this._originalOpacity !== undefined) {
-        mainContent.style.opacity = this._originalOpacity || '1';
+        mainContent.style.opacity = this._originalOpacity || "1";
         this._originalOpacity = undefined;
         // Remove transition after animation completes
         setTimeout(() => {
-          if (mainContent.style.opacity !== '0.1') {
-            mainContent.style.transition = '';
+          if (mainContent.style.opacity !== "0.1") {
+            mainContent.style.transition = "";
           }
         }, 200);
       }
@@ -3157,7 +3345,7 @@ customElements.define(
     showSuccessToast() {
       const app = document.querySelector("pure-app");
       if (app?.toast) {
-        app.toast("Your changes have been saved successfully!", {
+        toast("Your changes have been saved successfully!", {
           type: "success",
         });
       }
@@ -3166,7 +3354,7 @@ customElements.define(
     showInfoToast() {
       const app = document.querySelector("pure-app");
       if (app?.toast) {
-        app.toast("This is an informational message with helpful context.", {
+        toast("This is an informational message with helpful context.", {
           type: "info",
         });
       }
@@ -3175,7 +3363,7 @@ customElements.define(
     showWarningToast() {
       const app = document.querySelector("pure-app");
       if (app?.toast) {
-        app.toast("Warning: This action cannot be undone!", {
+        toast("Warning: This action cannot be undone!", {
           type: "warning",
         });
       }
@@ -3184,7 +3372,7 @@ customElements.define(
     showErrorToast() {
       const app = document.querySelector("pure-app");
       if (app?.toast) {
-        app.toast("Error: Something went wrong. Please try again.", {
+        toast("Error: Something went wrong. Please try again.", {
           type: "error",
         });
       }
@@ -3193,7 +3381,7 @@ customElements.define(
     showLongToast() {
       const app = document.querySelector("pure-app");
       if (app?.toast) {
-        app.toast(
+        toast(
           "This is a longer toast notification message that demonstrates how the duration is automatically calculated based on the message length. The toast will stay visible longer to give you enough time to read the entire message.",
           { type: "info" }
         );
@@ -3203,7 +3391,7 @@ customElements.define(
     showPersistentToast() {
       const app = document.querySelector("pure-app");
       if (app?.toast) {
-        app.toast(
+        toast(
           "This is a persistent toast that won't auto-dismiss. Click the × to close it.",
           {
             type: "info",

@@ -1,4 +1,4 @@
-import { enums } from "./pds-enums.js";
+
 /**
  * Generator - A JS-config-first design system
  * Generates comprehensive CSS variables and styles from a minimal configuration
@@ -4624,3 +4624,4 @@ export function createStylesheet(css) {
 export function isLiveMode() {
   return pdsRegistry.isLive;
 }
+import { enums } from "./pds-enums.js";

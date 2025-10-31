@@ -88,6 +88,72 @@ PDS provides these components out of the box:
 - **`<pds-toaster>`** - Toast notifications
 - **`<pds-upload>`** - File upload with drag & drop
 
+## Static mode (build once, serve anywhere)
+
+If you don’t need live regeneration at runtime, you can generate a static bundle of PDS assets and initialize with `PDS.static()`.
+
+1) Generate assets into your app’s web root
+
+```bash
+npm run pds:static
+```
+
+This will:
+- Detect your web root (public/, static/, dist/, etc.)
+- Create a base folder (default `pds/`, override with `staticBase` in `pds-config.js`) with:
+  - `assets/img/pds-icons.svg`
+  - `auto-define/*.js` (web components)
+  - `css/pds-*.css` and `css/pds-*.css.js`
+  - All PDS `*.md` docs (e.g., `README.md`, `GETTING-STARTED.md`, etc.) copied into the same base
+
+Optionally create a `pds-config.js` in your project root to control icons, tokens, etc. If omitted, the internal default preset is used.
+
+2) Initialize PDS in static mode
+
+```js
+import { PDS } from '@pure-ds/core';
+
+await PDS.static({ /* your config if needed */ }, {
+  // Point to the generated constructable stylesheets
+  staticPaths: {
+    tokens: '/pds/css/pds-tokens.css.js',
+    primitives: '/pds/css/pds-primitives.css.js',
+    components: '/pds/css/pds-components.css.js',
+    utilities: '/pds/css/pds-utilities.css.js',
+    styles: '/pds/css/pds-styles.css.js'
+  },
+  // Components auto-load from here
+  autoDefineBaseURL: '/pds/auto-define/'
+});
+### Configure base folder
+
+Set a custom base folder name for static assets and docs in your project’s `pds-config.js`:
+
+```js
+export default {
+  // ... your design config ...
+  staticBase: 'design-system' // default is 'pds'
+}
+```
+
+The static exporter will generate `/<webroot>/design-system` instead, and copy all `*.md` there.
+
+### Viewing docs in the configurator
+
+The configurator can render Markdown using Showdown. It will try to load docs from the static base (default `/pds`).
+You can programmatically trigger a docs view:
+
+```js
+// Show GETTING-STARTED.md
+document.dispatchEvent(new CustomEvent('pds-view-docs', { detail: { file: 'GETTING-STARTED.md' } }));
+
+// Or override the base folder globally (optional)
+window.PDS_DOCS_BASE = '/design-system';
+```
+```
+
+Then update your app to use `PDS.static()` instead of `PDS.live()`.
+
 ## Advanced Configuration
 
 ### Theme Management
@@ -181,7 +247,7 @@ export default function App({ Component, pageProps }) {
 
 ```js
 // src/main.js
-import { PDS } from '@pure-ds/core';
+import { PDS } from '@pure-ds/co1re';
 
 // Initialize PDS
 await PDS.live({

@@ -31,9 +31,9 @@
  * @property {(el: Element) => import("./pds-core/pds-ontology.js").ComponentDef | null} findComponentForElement - Helper to find a component definition for a DOM element
  */
 
-/** @type {PDSAPI} 
+/** @type {PDSAPI}
  * Workspace for the Pure Design System runtime API
-*/
+ */
 const PDS = {};
 
 import {
@@ -46,8 +46,9 @@ import {
 import { registry } from "./pds-core/pds-registry.js";
 import ontology from "./pds-core/pds-ontology.js";
 import { findComponentForElement } from "./pds-core/pds-ontology.js";
-import { defaultConfig } from "./pds-core/pds-config.js";
+import { presets } from "./pds-core/pds-config.js";
 import { enums } from "./pds-core/pds-enums.js";
+import { ask } from "./common/ask.js";
 
 /** Generator class — use to programmatically create design system assets from a config */
 PDS.Generator = Generator;
@@ -72,7 +73,10 @@ PDS.isLiveMode = isLiveMode;
 
 PDS.enums = enums;
 
-PDS.defaultConfig = defaultConfig;
+PDS.ask = ask;
+
+// Expose presets object directly
+PDS.presets = presets;
 
 /** Find a component definition (ontology) for a given DOM element */
 PDS.findComponentForElement = findComponentForElement;
@@ -103,9 +107,9 @@ PDS.defaultEnhancers = [
       const menu = elem.querySelector("menu");
       if (!menu) return;
       // Ensure toggle button doesn't submit forms by default
-      const btn = elem.querySelector('button');
-      if (btn && !btn.hasAttribute('type')) {
-        btn.setAttribute('type', 'button');
+      const btn = elem.querySelector("button");
+      if (btn && !btn.hasAttribute("type")) {
+        btn.setAttribute("type", "button");
       }
       const toggle = () => {
         const isCurrentlyVisible = menu.style.display !== "none";
@@ -204,7 +208,13 @@ function validateDesign(designConfig = {}, options = {}) {
   // Local helpers (keep public; no dependency on private Generator methods)
   const hexToRgb = (hex) => {
     const h = String(hex || "").replace("#", "");
-    const full = h.length === 3 ? h.split("").map((c) => c + c).join("") : h;
+    const full =
+      h.length === 3
+        ? h
+            .split("")
+            .map((c) => c + c)
+            .join("")
+        : h;
     const num = parseInt(full || "0", 16);
     return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
   };
@@ -234,19 +244,22 @@ function validateDesign(designConfig = {}, options = {}) {
     const light = {
       surfaceBg: c.surface?.base || c.semantic?.background,
       surfaceText: c.semantic?.onSurface,
-      primary600: c.primary?.[600] || c.primary?.[500] || designConfig.colors?.primary,
+      primary600:
+        c.primary?.[600] || c.primary?.[500] || designConfig.colors?.primary,
     };
 
-  // Primary button (light): prefer semantic primaryFill, else primary600; text white
-  const lightPrimaryFill = c.semantic?.primaryFill || light.primary600;
-  const lightBtnRatio = contrast(lightPrimaryFill, "#ffffff");
+    // Primary button (light): prefer semantic primaryFill, else primary600; text white
+    const lightPrimaryFill = c.semantic?.primaryFill || light.primary600;
+    const lightBtnRatio = contrast(lightPrimaryFill, "#ffffff");
     if (lightBtnRatio < MIN) {
       issues.push({
         path: "/colors/primary",
-        message: `Primary button contrast too low in light theme (${lightBtnRatio.toFixed(2)} < ${MIN}). Choose a darker primary.`,
+        message: `Primary button contrast too low in light theme (${lightBtnRatio.toFixed(
+          2
+        )} < ${MIN}). Choose a darker primary.`,
         ratio: lightBtnRatio,
         min: MIN,
-        context: "light/btn-primary"
+        context: "light/btn-primary",
       });
     }
 
@@ -255,10 +268,12 @@ function validateDesign(designConfig = {}, options = {}) {
     if (lightTextRatio < MIN) {
       issues.push({
         path: "/colors/background",
-        message: `Base text contrast on surface (light) is too low (${lightTextRatio.toFixed(2)} < ${MIN}). Adjust background or secondary (gray).`,
+        message: `Base text contrast on surface (light) is too low (${lightTextRatio.toFixed(
+          2
+        )} < ${MIN}). Adjust background or secondary (gray).`,
         ratio: lightTextRatio,
         min: MIN,
-        context: "light/surface-text"
+        context: "light/surface-text",
       });
     }
 
@@ -268,10 +283,12 @@ function validateDesign(designConfig = {}, options = {}) {
     if (lightOutlineRatio < MIN) {
       issues.push({
         path: "/colors/primary",
-        message: `Primary text on surface is too low for outline/link styles (light) (${lightOutlineRatio.toFixed(2)} < ${MIN}). Choose a darker primary, lighter surface, or adjust semantic.primaryText.`,
+        message: `Primary text on surface is too low for outline/link styles (light) (${lightOutlineRatio.toFixed(
+          2
+        )} < ${MIN}). Choose a darker primary, lighter surface, or adjust semantic.primaryText.`,
         ratio: lightOutlineRatio,
         min: MIN,
-        context: "light/outline"
+        context: "light/outline",
       });
     }
 
@@ -279,18 +296,21 @@ function validateDesign(designConfig = {}, options = {}) {
     const d = c.dark;
     if (d) {
       const dark = {
-        surfaceBg: d.surface?.base || d.semantic?.background || c.surface?.inverse,
+        surfaceBg:
+          d.surface?.base || d.semantic?.background || c.surface?.inverse,
         primary600: d.primary?.[600] || d.primary?.[500] || c.primary?.[600],
       };
-  const darkPrimaryFill = d.semantic?.primaryFill || dark.primary600;
-  const darkBtnRatio = contrast(darkPrimaryFill, "#ffffff");
+      const darkPrimaryFill = d.semantic?.primaryFill || dark.primary600;
+      const darkBtnRatio = contrast(darkPrimaryFill, "#ffffff");
       if (darkBtnRatio < MIN) {
         issues.push({
           path: "/colors/darkMode/primary",
-          message: `Primary button contrast too low in dark theme (${darkBtnRatio.toFixed(2)} < ${MIN}). Override darkMode.primary or pick a brighter hue.`,
+          message: `Primary button contrast too low in dark theme (${darkBtnRatio.toFixed(
+            2
+          )} < ${MIN}). Override darkMode.primary or pick a brighter hue.`,
           ratio: darkBtnRatio,
           min: MIN,
-          context: "dark/btn-primary"
+          context: "dark/btn-primary",
         });
       }
 
@@ -300,15 +320,22 @@ function validateDesign(designConfig = {}, options = {}) {
       if (darkOutlineRatio < MIN) {
         issues.push({
           path: "/colors/darkMode/primary",
-          message: `Primary text on surface is too low for outline/link styles (dark) (${darkOutlineRatio.toFixed(2)} < ${MIN}). Override darkMode.primary/background or adjust semantic.primaryText.`,
+          message: `Primary text on surface is too low for outline/link styles (dark) (${darkOutlineRatio.toFixed(
+            2
+          )} < ${MIN}). Override darkMode.primary/background or adjust semantic.primaryText.`,
           ratio: darkOutlineRatio,
           min: MIN,
-          context: "dark/outline"
+          context: "dark/outline",
         });
       }
     }
   } catch (err) {
-    issues.push({ path: "/", message: `Validation failed: ${String(err?.message || err)}`, ratio: 0, min: 0 });
+    issues.push({
+      path: "/",
+      message: `Validation failed: ${String(err?.message || err)}`,
+      ratio: 0,
+      min: 0,
+    });
   }
 
   return { ok: issues.length === 0, issues };
@@ -341,7 +368,7 @@ PDS.validateDesigns = validateDesigns;
 /**
  * Initialize PDS in live mode with the given configuration.
  * This is the main entry point for consuming applications.
- * 
+ *
  * @param {object} config - The PDS configuration object
  * @param {object} [options] - Optional settings
  * @param {string} [options.autoDefineBaseURL] - Base URL for auto-define components (default: '/auto-define/')
@@ -353,15 +380,15 @@ PDS.validateDesigns = validateDesigns;
  * @param {boolean} [options.preloadStyles=false] - Whether to inject critical CSS synchronously to prevent flash
  * @param {string[]} [options.criticalLayers=['tokens', 'primitives']] - Which CSS layers to preload synchronously
  * @returns {Promise<{generator: Generator, config: object, theme: string, autoDefiner?: any}>} The generator instance, resolved config, current theme, and autoDefiner if available
- * 
+ *
  * @example
  * ```js
  * import { PDS } from '@pure-ds/core';
- * 
+ *
  * // With auto-define components
  * await PDS.live({
  *   colors: { primary: '#007acc' }
- * }, { 
+ * }, {
  *   autoDefineBaseURL: '/components/',
  *   autoDefinePreload: ['my-app', 'pds-icon']
  * });
@@ -376,7 +403,8 @@ function __resolveThemeAndApply({ manageTheme, themeStorageKey }) {
     if (storedTheme) {
       if (storedTheme === "system") {
         const prefersDark =
-          window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
         resolvedTheme = prefersDark ? "dark" : "light";
         document.documentElement.setAttribute("data-theme", resolvedTheme);
       } else {
@@ -385,7 +413,8 @@ function __resolveThemeAndApply({ manageTheme, themeStorageKey }) {
       }
     } else {
       const prefersDark =
-        window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
       resolvedTheme = prefersDark ? "dark" : "light";
       document.documentElement.setAttribute("data-theme", resolvedTheme);
     }
@@ -398,15 +427,114 @@ function __resolveThemeAndApply({ manageTheme, themeStorageKey }) {
           const newTheme = isDark ? "dark" : "light";
           document.documentElement.setAttribute("data-theme", newTheme);
           window.dispatchEvent(
-            new CustomEvent("pds-theme-changed", { detail: { theme: newTheme, source: "system" } })
+            new CustomEvent("pds-theme-changed", {
+              detail: { theme: newTheme, source: "system" },
+            })
           );
         } catch {}
       };
-      if (typeof mq.addEventListener === "function") mq.addEventListener("change", listener);
+      if (typeof mq.addEventListener === "function")
+        mq.addEventListener("change", listener);
       else if (typeof mq.addListener === "function") mq.addListener(listener);
     }
   }
   return { resolvedTheme, storedTheme };
+}
+
+// Internal: deep merge utility (arrays replace; objects merge)
+function __deepMerge(target = {}, source = {}) {
+  if (!source || typeof source !== "object") return target;
+  const out = Array.isArray(target) ? [...target] : { ...target };
+  for (const [key, value] of Object.entries(source)) {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      out[key] = __deepMerge(
+        out[key] && typeof out[key] === "object" ? out[key] : {},
+        value
+      );
+    } else {
+      out[key] = value;
+    }
+  }
+  return out;
+}
+
+// Internal: create a slug for matching names like "Paper & Ink" -> "paper-and-ink"
+function __slugify(str = "") {
+  return String(str)
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+// Internal: normalize first-arg config to a full generator config and extract enhancers if provided inline
+function __normalizeInitConfig(inputConfig = {}, options = {}) {
+  // If caller passed a plain design config (legacy), keep as-is
+  const hasDesignKeys =
+    typeof inputConfig === "object" &&
+    ("colors" in inputConfig ||
+      "typography" in inputConfig ||
+      "spatialRhythm" in inputConfig ||
+      "shape" in inputConfig ||
+      "behavior" in inputConfig ||
+      "layout" in inputConfig ||
+      "advanced" in inputConfig ||
+      "a11y" in inputConfig ||
+      "components" in inputConfig ||
+      "icons" in inputConfig);
+
+  // Extract potential inline enhancers from config; prefer inline over options
+  let inlineEnhancers = inputConfig && inputConfig.enhancers;
+  if (inlineEnhancers && !Array.isArray(inlineEnhancers)) {
+    // If an object was provided, convert to array of values
+    inlineEnhancers = Object.values(inlineEnhancers);
+  }
+  const enhancers = inlineEnhancers ?? options.enhancers ?? [];
+
+  // New API: { preset?: string, design?: object }
+  const presetId = inputConfig && inputConfig.preset;
+  const designOverrides = inputConfig && inputConfig.design;
+
+  const hasNewShape =
+    "preset" in (inputConfig || {}) ||
+    "design" in (inputConfig || {}) ||
+    "enhancers" in (inputConfig || {});
+
+  let generatorConfig;
+  let presetInfo = null;
+
+  if (hasNewShape) {
+    // Always resolve a preset; default if none provided
+    const effectivePreset = String(presetId || "default").toLowerCase();
+    const found = presets?.[effectivePreset] || Object.values(presets || {}).find((p) => __slugify(p.name) === effectivePreset || String(p.name || "").toLowerCase() === effectivePreset);
+    if (!found)
+      throw new Error(`PDS preset not found: "${presetId || "default"}"`);
+
+    presetInfo = {
+      id: found.id || __slugify(found.name),
+      name: found.name || found.id || String(effectivePreset),
+    };
+
+    let base = structuredClone(found);
+    if (designOverrides && typeof designOverrides === "object") {
+      base = __deepMerge(base, structuredClone(designOverrides));
+    }
+    generatorConfig = base;
+  } else if (hasDesignKeys) {
+    // Back-compat: treat the provided object as the full config
+    generatorConfig = structuredClone(inputConfig);
+  } else {
+    // Nothing recognizable: use default preset
+    const foundDefault = presets?.["default"] || Object.values(presets || {}).find((p) => __slugify(p.name) === "default");
+    if (!foundDefault) throw new Error("PDS default preset not available");
+    presetInfo = {
+      id: foundDefault.id || "default",
+      name: foundDefault.name || "Default",
+    };
+    generatorConfig = structuredClone(foundDefault);
+  }
+
+  return { generatorConfig, enhancers, presetInfo };
 }
 
 // Internal: setup AutoDefiner and run enhancers
@@ -421,7 +549,9 @@ async function __setupAutoDefinerAndEnhancers(options) {
   // Warn if assets not present (best-effort)
   try {
     if (typeof window !== "undefined") {
-      const response = await fetch(`${autoDefineBaseURL}pds-icon.js`, { method: "HEAD" });
+      const response = await fetch(`${autoDefineBaseURL}pds-icon.js`, {
+        method: "HEAD",
+      });
       if (!response.ok) {
         console.warn("⚠️ PDS components not found in auto-define directory.");
       }
@@ -443,7 +573,8 @@ async function __setupAutoDefinerAndEnhancers(options) {
     let AutoDefinerCtor = null;
     try {
       const mod = await import("pure-web/auto-definer");
-      AutoDefinerCtor = mod?.AutoDefiner || mod?.default?.AutoDefiner || mod?.default || null;
+      AutoDefinerCtor =
+        mod?.AutoDefiner || mod?.default?.AutoDefiner || mod?.default || null;
     } catch (e) {
       console.warn("AutoDefiner not available:", e?.message || e);
     }
@@ -471,7 +602,9 @@ async function __setupAutoDefinerAndEnhancers(options) {
       },
       onError: (tag, err) => {
         if (typeof tag === "string" && tag.startsWith("pds-")) {
-          console.warn(`⚠️ PDS component <${tag}> not found. Assets may not be installed.`);
+          console.warn(
+            `⚠️ PDS component <${tag}> not found. Assets may not be installed.`
+          );
         } else {
           console.error(`❌ Auto-define error for <${tag}>:`, err);
         }
@@ -480,7 +613,10 @@ async function __setupAutoDefinerAndEnhancers(options) {
 
     if (AutoDefinerCtor) {
       autoDefiner = new AutoDefinerCtor(autoDefineConfig);
-      if (autoDefinePreload.length > 0 && typeof AutoDefinerCtor.define === "function") {
+      if (
+        autoDefinePreload.length > 0 &&
+        typeof AutoDefinerCtor.define === "function"
+      ) {
         await AutoDefinerCtor.define(autoDefinePreload);
       }
     }
@@ -491,94 +627,119 @@ async function __setupAutoDefinerAndEnhancers(options) {
 }
 
 async function live(config, options = {}) {
-  if (!config || typeof config !== 'object') {
-    throw new Error('PDS.live() requires a valid configuration object');
+  if (!config || typeof config !== "object") {
+    throw new Error("PDS.live() requires a valid configuration object");
+  }
+
+  // Expose PDS on window for easy dev console access (optional)
+  if (typeof window !== "undefined") {
+    // @ts-ignore
+    window.PDS = PDS;
   }
 
   const {
-    autoDefineBaseURL = '/auto-define/',
+    autoDefineBaseURL = "/auto-define/",
     autoDefinePreload = [],
     autoDefineMapper = null,
     applyGlobalStyles = true,
     manageTheme = true,
-    themeStorageKey = 'pure-ds-theme',
+    themeStorageKey = "pure-ds-theme",
     preloadStyles = false,
-    criticalLayers = ['tokens', 'primitives']
+    criticalLayers = ["tokens", "primitives"],
   } = options;
 
   try {
     // 1) Handle theme preference
-    const { resolvedTheme, storedTheme } = __resolveThemeAndApply({ manageTheme, themeStorageKey });
+    const { resolvedTheme, storedTheme } = __resolveThemeAndApply({
+      manageTheme,
+      themeStorageKey,
+    });
 
-    // 3) Create generator with the provided config, including theme
-    const generatorConfig = structuredClone(config);
+    // 2) Normalize first-arg API: support { preset, design, enhancers } or plain config
+    const normalized = __normalizeInitConfig(config, options);
+    const userEnhancers = normalized.enhancers;
+    const generatorConfig = structuredClone(normalized.generatorConfig);
     if (manageTheme) {
       generatorConfig.theme = resolvedTheme;
     }
-    
+
     const generator = new PDS.Generator(generatorConfig);
-    
+
     // 4) Preload critical styles synchronously to prevent flash
-    if (preloadStyles && typeof window !== 'undefined' && document.head) {
+    if (preloadStyles && typeof window !== "undefined" && document.head) {
       try {
         // Generate critical CSS layers synchronously
         const criticalCSS = criticalLayers
-          .map(layer => {
+          .map((layer) => {
             try {
-              return generator.css?.[layer] || '';
+              return generator.css?.[layer] || "";
             } catch (e) {
-              console.warn(`Failed to generate critical CSS for layer "${layer}":`, e);
-              return '';
+              console.warn(
+                `Failed to generate critical CSS for layer "${layer}":`,
+                e
+              );
+              return "";
             }
           })
-          .filter(css => css.trim())
-          .join('\n');
+          .filter((css) => css.trim())
+          .join("\n");
 
         if (criticalCSS) {
           // Remove any existing PDS critical styles
-          const existingCritical = document.head.querySelector('style[data-pds-critical]');
+          const existingCritical = document.head.querySelector(
+            "style[data-pds-critical]"
+          );
           if (existingCritical) {
             existingCritical.remove();
           }
 
           // Inject critical CSS as a <style> tag in head
-          const styleEl = document.createElement('style');
-          styleEl.setAttribute('data-pds-critical', '');
+          const styleEl = document.createElement("style");
+          styleEl.setAttribute("data-pds-critical", "");
           styleEl.textContent = criticalCSS;
-          
+
           // Insert early in head, but after charset/viewport if present
-          const insertAfter = document.head.querySelector('meta[charset], meta[name="viewport"]');
+          const insertAfter = document.head.querySelector(
+            'meta[charset], meta[name="viewport"]'
+          );
           if (insertAfter) {
-            insertAfter.parentNode.insertBefore(styleEl, insertAfter.nextSibling);
+            insertAfter.parentNode.insertBefore(
+              styleEl,
+              insertAfter.nextSibling
+            );
           } else {
             document.head.insertBefore(styleEl, document.head.firstChild);
           }
         }
       } catch (error) {
-        console.warn('Failed to preload critical styles:', error);
+        console.warn("Failed to preload critical styles:", error);
         // Continue without critical styles - better than crashing
       }
     }
-    
+
     // Set the registry to use this designer
-    PDS.registry.setDesigner(generator);
-    
+    PDS.registry.setDesigner(generator, {
+      presetName: normalized.presetInfo?.name,
+    });
+
     // Apply styles globally if requested (default behavior)
     if (applyGlobalStyles) {
       await PDS.Generator.applyStyles(generator);
-      
+
       // Clean up critical styles after adoptedStyleSheets are applied
-      if (preloadStyles && typeof window !== 'undefined') {
+      if (preloadStyles && typeof window !== "undefined") {
         // Small delay to ensure adoptedStyleSheets have taken effect
         setTimeout(() => {
-          const criticalStyle = document.head.querySelector('style[data-pds-critical]');
+          const criticalStyle = document.head.querySelector(
+            "style[data-pds-critical]"
+          );
           if (criticalStyle) {
             criticalStyle.remove();
           }
         }, 100);
       }
     }
-    
+
     // Note: auto-define base URL is used internally; no globals are written
 
     // 5) Set up AutoDefiner + run enhancers (defaults merged with user)
@@ -588,31 +749,44 @@ async function live(config, options = {}) {
         autoDefineBaseURL,
         autoDefinePreload,
         autoDefineMapper,
-        enhancers: options.enhancers,
+        enhancers: userEnhancers,
       });
       autoDefiner = res.autoDefiner;
     } catch (error) {
-      console.error('❌ Failed to initialize AutoDefiner/Enhancers:', error);
+      console.error("❌ Failed to initialize AutoDefiner/Enhancers:", error);
     }
-    
+
     // Determine resolved config to expose (generator stores input as options)
     const resolvedConfig = generator?.options || generatorConfig;
 
     // Emit event to notify that PDS is ready
-    if (typeof window !== 'undefined' && window.document) {
-      window.dispatchEvent(new CustomEvent('pds-live-ready', {
-        detail: { generator, config: resolvedConfig, theme: resolvedTheme, autoDefiner }
-      }));
+    if (typeof window !== "undefined" && window.document) {
+      window.dispatchEvent(
+        new CustomEvent("pds-live-ready", {
+          detail: {
+            generator,
+            config: resolvedConfig,
+            theme: resolvedTheme,
+            autoDefiner,
+          },
+        })
+      );
     }
-    
-    return { generator, config: resolvedConfig, theme: resolvedTheme, autoDefiner };
-    
+
+    return {
+      generator,
+      config: resolvedConfig,
+      theme: resolvedTheme,
+      autoDefiner,
+    };
   } catch (error) {
     // Emit error event
-    if (typeof window !== 'undefined' && window.document) {
-      window.dispatchEvent(new CustomEvent('pds-error', {
-        detail: error
-      }));
+    if (typeof window !== "undefined" && window.document) {
+      window.dispatchEvent(
+        new CustomEvent("pds-error", {
+          detail: error,
+        })
+      );
     }
     throw error;
   }
@@ -626,39 +800,48 @@ PDS.live = live;
  * Signature mirrors PDS.live(config, options).
  */
 async function staticInit(config, options = {}) {
-  if (!config || typeof config !== 'object') {
-    throw new Error('PDS.static() requires a valid configuration object');
+  if (!config || typeof config !== "object") {
+    throw new Error("PDS.static() requires a valid configuration object");
   }
 
   const {
-    autoDefineBaseURL = '/auto-define/',
+    autoDefineBaseURL = "/auto-define/",
     autoDefinePreload = [],
     autoDefineMapper = null,
     applyGlobalStyles = true,
     manageTheme = true,
-    themeStorageKey = 'pure-ds-theme',
+    themeStorageKey = "pure-ds-theme",
     staticPaths = {},
   } = options;
 
   try {
     // 1) Theme
-    const { resolvedTheme } = __resolveThemeAndApply({ manageTheme, themeStorageKey });
+    const { resolvedTheme } = __resolveThemeAndApply({
+      manageTheme,
+      themeStorageKey,
+    });
+
+    // Normalize first-arg to allow { preset, design, enhancers }
+    const normalized = __normalizeInitConfig(config, options);
+    const userEnhancers = normalized.enhancers;
 
     // 2) Static mode registry
     PDS.registry.setStaticMode(staticPaths);
 
     // 3) Apply global static styles if requested
-    if (applyGlobalStyles && typeof document !== 'undefined') {
+    if (applyGlobalStyles && typeof document !== "undefined") {
       try {
-        const stylesSheet = await PDS.registry.getStylesheet('styles');
+        const stylesSheet = await PDS.registry.getStylesheet("styles");
         if (stylesSheet) {
           // Tag and adopt alongside existing non-PDS
           stylesSheet._pds = true;
-          const others = (document.adoptedStyleSheets || []).filter((s) => s._pds !== true);
+          const others = (document.adoptedStyleSheets || []).filter(
+            (s) => s._pds !== true
+          );
           document.adoptedStyleSheets = [...others, stylesSheet];
         }
       } catch (e) {
-        console.warn('Failed to apply static styles:', e);
+        console.warn("Failed to apply static styles:", e);
       }
     }
 
@@ -669,24 +852,36 @@ async function staticInit(config, options = {}) {
         autoDefineBaseURL,
         autoDefinePreload,
         autoDefineMapper,
-        enhancers: options.enhancers,
+        enhancers: userEnhancers,
       });
       autoDefiner = res.autoDefiner;
     } catch (error) {
-      console.error('❌ Failed to initialize AutoDefiner/Enhancers (static):', error);
+      console.error(
+        "❌ Failed to initialize AutoDefiner/Enhancers (static):",
+        error
+      );
     }
 
     // 5) Emit ready event
-    if (typeof window !== 'undefined' && window.document) {
-      window.dispatchEvent(new CustomEvent('pds-static-ready', {
-        detail: { config, theme: resolvedTheme, autoDefiner }
-      }));
+    if (typeof window !== "undefined" && window.document) {
+      window.dispatchEvent(
+        new CustomEvent("pds-static-ready", {
+          detail: {
+            config: normalized.generatorConfig,
+            theme: resolvedTheme,
+            autoDefiner,
+          },
+        })
+      );
     }
-    return { config, theme: resolvedTheme, autoDefiner };
-
+    return {
+      config: normalized.generatorConfig,
+      theme: resolvedTheme,
+      autoDefiner,
+    };
   } catch (error) {
-    if (typeof window !== 'undefined' && window.document) {
-      window.dispatchEvent(new CustomEvent('pds-error', { detail: error }));
+    if (typeof window !== "undefined" && window.document) {
+      window.dispatchEvent(new CustomEvent("pds-error", { detail: error }));
     }
     throw error;
   }
@@ -698,7 +893,7 @@ PDS.static = staticInit;
 /**
  * Change the current theme programmatically.
  * This updates localStorage, the data-theme attribute, and regenerates styles if in live mode.
- * 
+ *
  * @param {string} theme - Theme to apply: 'light', 'dark', or 'system'
  * @param {object} [options] - Optional settings
  * @param {string} [options.storageKey='pure-ds-theme'] - localStorage key for theme preference
@@ -706,27 +901,30 @@ PDS.static = staticInit;
  * @returns {Promise<string>} The resolved theme ('light' or 'dark')
  */
 async function setTheme(theme, options = {}) {
-  const { storageKey = 'pure-ds-theme', persist = true } = options;
-  
-  if (!['light', 'dark', 'system'].includes(theme)) {
-    throw new Error(`Invalid theme "${theme}". Must be "light", "dark", or "system".`);
+  const { storageKey = "pure-ds-theme", persist = true } = options;
+
+  if (!["light", "dark", "system"].includes(theme)) {
+    throw new Error(
+      `Invalid theme "${theme}". Must be "light", "dark", or "system".`
+    );
   }
 
-  if (typeof window === 'undefined') {
-    return theme === 'system' ? 'light' : theme;
+  if (typeof window === "undefined") {
+    return theme === "system" ? "light" : theme;
   }
 
   let resolvedTheme = theme;
 
   // Resolve 'system' to actual preference
-  if (theme === 'system') {
-    const prefersDark = window.matchMedia && 
-      window.matchMedia('(prefers-color-scheme: dark)').matches;
-    resolvedTheme = prefersDark ? 'dark' : 'light';
+  if (theme === "system") {
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    resolvedTheme = prefersDark ? "dark" : "light";
   }
 
   // Update data-theme attribute
-  document.documentElement.setAttribute('data-theme', resolvedTheme);
+  document.documentElement.setAttribute("data-theme", resolvedTheme);
 
   // Persist to localStorage if requested
   if (persist) {
@@ -741,19 +939,25 @@ async function setTheme(theme, options = {}) {
         // Update the designer's config with new theme
         const newConfig = { ...currentDesigner.config, theme: resolvedTheme };
         currentDesigner.configure(newConfig);
-        
+
         // Reapply styles
         await PDS.Generator.applyStyles(currentDesigner);
       }
     } catch (error) {
-      console.warn('Failed to update styles for new theme:', error);
+      console.warn("Failed to update styles for new theme:", error);
     }
   }
 
   // Emit theme change event
-  window.dispatchEvent(new CustomEvent('pds-theme-changed', {
-    detail: { theme: resolvedTheme, requested: theme, source: 'programmatic' }
-  }));
+  window.dispatchEvent(
+    new CustomEvent("pds-theme-changed", {
+      detail: {
+        theme: resolvedTheme,
+        requested: theme,
+        source: "programmatic",
+      },
+    })
+  );
 
   return resolvedTheme;
 }
@@ -765,13 +969,13 @@ PDS.setTheme = setTheme;
  * Preload minimal CSS to prevent flash of unstyled content.
  * Call this BEFORE any DOM content is rendered for best results.
  * This is a lightweight alternative to full PDS.live() initialization.
- * 
+ *
  * @param {object} config - Minimal PDS config (colors at minimum)
  * @param {object} [options] - Optional settings
  * @param {string} [options.theme] - Theme to generate for ('light', 'dark', or 'system')
  * @param {string[]} [options.layers=['tokens']] - Which CSS layers to preload
  * @returns {void}
- * 
+ *
  * @example
  * ```html
  * <script type="module">
@@ -782,55 +986,56 @@ PDS.setTheme = setTheme;
  * ```
  */
 function preloadCritical(config, options = {}) {
-  if (typeof window === 'undefined' || !document.head || !config) {
+  if (typeof window === "undefined" || !document.head || !config) {
     return;
   }
 
-  const { theme, layers = ['tokens'] } = options;
-  
+  const { theme, layers = ["tokens"] } = options;
+
   try {
     // Resolve theme quickly
-    let resolvedTheme = theme || 'light';
-    if (theme === 'system' || !theme) {
-      const prefersDark = window.matchMedia && 
-        window.matchMedia('(prefers-color-scheme: dark)').matches;
-      resolvedTheme = prefersDark ? 'dark' : 'light';
+    let resolvedTheme = theme || "light";
+    if (theme === "system" || !theme) {
+      const prefersDark =
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+      resolvedTheme = prefersDark ? "dark" : "light";
     }
 
     // Set theme attribute immediately
-    document.documentElement.setAttribute('data-theme', resolvedTheme);
+    document.documentElement.setAttribute("data-theme", resolvedTheme);
 
     // Generate minimal CSS synchronously
     const tempConfig = { ...config, theme: resolvedTheme };
     const tempGenerator = new PDS.Generator(tempConfig);
-    
+
     const criticalCSS = layers
-      .map(layer => {
+      .map((layer) => {
         try {
-          return tempGenerator.css?.[layer] || '';
+          return tempGenerator.css?.[layer] || "";
         } catch (e) {
-          return '';
+          return "";
         }
       })
-      .filter(css => css.trim())
-      .join('\n');
+      .filter((css) => css.trim())
+      .join("\n");
 
     if (criticalCSS) {
       // Remove any existing critical styles
-      const existing = document.head.querySelector('style[data-pds-preload]');
+      const existing = document.head.querySelector("style[data-pds-preload]");
       if (existing) existing.remove();
 
       // Inject immediately
-      const styleEl = document.createElement('style');
-      styleEl.setAttribute('data-pds-preload', '');
+      const styleEl = document.createElement("style");
+      styleEl.setAttribute("data-pds-preload", "");
       styleEl.textContent = criticalCSS;
-      
+
       // Insert as early as possible
       document.head.insertBefore(styleEl, document.head.firstChild);
     }
   } catch (error) {
     // Fail silently - better than blocking page load
-    console.warn('PDS preload failed:', error);
+    console.warn("PDS preload failed:", error);
   }
 }
 
@@ -839,4 +1044,4 @@ PDS.preloadCritical = preloadCritical;
 
 Object.freeze(PDS);
 
-export { PDS };
+export { PDS, validateDesign };

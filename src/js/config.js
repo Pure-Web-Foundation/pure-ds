@@ -4,7 +4,7 @@ import { PDS } from "./pds";
 export const config = {
   // Design system configuration
   design: {
-    ...PDS.defaultConfig,
+    ...PDS.presets.default,
   },
 
   // Auto-define configuration for web components

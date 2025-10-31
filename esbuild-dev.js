@@ -18,18 +18,18 @@ import path from 'path';
 
 const run = async () => {
   const copyReadmePlugin = {
-    name: 'copy-readme-to-public',
+    name: 'copy-markdown',
     setup(build) {
       build.onEnd(async (result) => {
         if (result.errors && result.errors.length) return;
         try {
           const root = process.cwd();
           const src = path.join(root, 'readme.md');
-          const dest = path.join(root, 'public', 'readme.md');
+          const dest = path.join(root, 'public/pds', 'readme.md');
           await copyFile(src, dest);
-          console.log('Copied readme.md to public/readme.md');
+          
         } catch (err) {
-          console.error('Failed to copy readme into public/:', err);
+          console.error('Failed to copy readme into public/pds:', err);
         }
       });
     },

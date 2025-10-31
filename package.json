@@ -26,6 +26,7 @@
     "src/js/pds-core/",
     "src/js/pds-configurator/",
     "packages/pds-cli/bin/postinstall.js",
+    "packages/pds-cli/bin/pds-static.js",
     "packages/pds-cli/bin/sync-assets.js",
     "README.md"
   ],
@@ -38,7 +39,8 @@
     "export-config": "node scripts/export-config-json.mjs",
     "build-icons": "node scripts/build-icons.mjs",
     "sync-assets": "node packages/pds-cli/bin/sync-assets.js",
-    "postinstall": "node packages/pds-cli/bin/postinstall.js"
+    "postinstall": "node packages/pds-cli/bin/postinstall.js",
+    "pds:static": "node packages/pds-cli/bin/pds-static.js"
   },
   "author": "",
   "license": "ISC",
