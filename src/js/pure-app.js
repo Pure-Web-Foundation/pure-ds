@@ -1,143 +1,20 @@
-import { PDS } from "./pds";
-import { html, LitElement, css, nothing } from "lit";
-export { html, LitElement, css, nothing };
 import { config } from "./config";
 import { ask } from "./common/ask";
-import "../../public/auto-define/pds-icon";
-
-import { AutoDefiner } from "pure-web/auto-definer";
-
-// Designer and definer will be initialized asynchronously in PureApp.init()
-let designer = null;
-let definer = null;
-
-// Export PDS object (registry is available immediately; designer is set at runtime)
-export { PDS };
 
 export class PureApp extends HTMLElement {
   constructor() {
     super();
-    this.init();
+    // Minimal host: provide a light wrapper with a slot
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.innerHTML = this.render();
   }
 
   get toaster() {
     return document.querySelector("pds-toaster");
   }
 
-  async init() {
-    // 1) Apply theme preference early so styles generated below pick the right scope
-    try {
-      const storedTheme =
-        typeof window !== "undefined" && localStorage.getItem("pure-ds-theme");
-      if (storedTheme) {
-        // If user explicitly stored 'light' or 'dark', use that. If they stored 'system',
-        // resolve current OS preference and set the attribute to an explicit value
-        // ('dark'|'light') so the attribute is always concrete.
-        if (storedTheme === "system") {
-          const prefersDark =
-            typeof window !== "undefined" &&
-            window.matchMedia &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches;
-          document.documentElement.setAttribute(
-            "data-theme",
-            prefersDark ? "dark" : "light"
-          );
-        } else {
-          document.documentElement.setAttribute("data-theme", storedTheme);
-        }
-      } else {
-        // No persisted preference: choose from OS preference and do not persist
-        const prefersDark =
-          typeof window !== "undefined" &&
-          window.matchMedia &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches;
-        document.documentElement.setAttribute(
-          "data-theme",
-          prefersDark ? "dark" : "light"
-        );
-      }
-
-      // 2) Initialize the design system (designer + registry + styles)
-      // Pass explicit theme option from localStorage so generated CSS is scoped correctly
-      const generatorOptions = structuredClone(config.design);
-      if (storedTheme) generatorOptions.theme = storedTheme;
-      designer = new PDS.Generator(generatorOptions);
-      PDS.registry.setDesigner(designer);
-      if (typeof window !== "undefined") {
-        window.PDS = PDS;
-      }
-      PDS.Generator.applyStyles(designer);
-
-      // 3) Initialize AutoDefiner and predefine critical components
-      definer = new AutoDefiner(config.autoDefine);
-      await AutoDefiner.define(config.autoDefine?.predefine || []);
-
-      // 4) Now render and attach runtime UI elements
-      this.attachShadow({ mode: "open" });
-      this.shadowRoot.innerHTML = this.render();
-
-      // Ensure there's only ever one toaster in the DOM
-      if (!document.querySelector("pds-toaster")) {
-        const toaster = document.createElement("pds-toaster");
-        document.body.appendChild(toaster);
-      }
-      // 5) If the user preference is 'system' we need to keep the html[data-theme]
-      // attribute in sync with the OS. When localStorage contains 'system' we
-      // register a matchMedia listener that updates the attribute to either
-      // 'dark' or 'light' on changes. If the user stored an explicit 'light' or
-      // 'dark', we do not override it.
-      try {
-        if (
-          storedTheme === "system" &&
-          typeof window !== "undefined" &&
-          window.matchMedia
-        ) {
-          const mq = window.matchMedia("(prefers-color-scheme: dark)");
-          const listener = (e) => {
-            const isDark = e.matches === undefined ? mq.matches : e.matches;
-            try {
-              document.documentElement.setAttribute(
-                "data-theme",
-                isDark ? "dark" : "light"
-              );
-            } catch (ex) {
-              /* ignore */
-            }
-          };
-
-          // Attach listener using modern API where available
-          if (typeof mq.addEventListener === "function") {
-            mq.addEventListener("change", listener);
-          } else if (typeof mq.addListener === "function") {
-            mq.addListener(listener);
-          }
-        }
-      } catch (ex) {
-        /* ignore matchMedia wiring errors */
-      }
-    } catch (ex) {
-      console.error("pure-app.init failed:", ex);
-      // Best-effort render even on failure
-      try {
-        this.attachShadow({ mode: "open" });
-        this.shadowRoot.innerHTML = this.render();
-      } catch (e) {
-        /* ignore */
-      }
-    }
-  }
-
   render() {
     return /* html */ `<slot></slot>`;
-  }
-
-  // Expose the designer instance for runtime updates
-  get designer() {
-    return designer;
-  }
-
-  get definer() {
-    return definer;
   }
 
   async ask() {
@@ -146,52 +23,12 @@ export class PureApp extends HTMLElement {
 
   // Toast method - duration is auto-calculated based on message length
   toast(message, options = {}) {
-    return this.toaster.toast(message, options);
-  }
-
-  /**
-   * Wait for all media elements (images, videos) to load
-   * @param {HTMLElement} container - Container to search for media elements
-   * @param {number} maxTimeout - Maximum time to wait in milliseconds
-   * @returns {Promise<void>}
-   */
-  async waitForMedia(container, maxTimeout = 500) {
-    const mediaElements = container.querySelectorAll("img, video");
-    if (mediaElements.length === 0) {
-      return Promise.resolve();
+    let toaster = this.toaster;
+    if (!toaster) {
+      toaster = document.createElement("pds-toaster");
+      document.body.appendChild(toaster);
     }
-
-    const mediaPromises = Array.from(mediaElements).map((el) => {
-      if (el.tagName === "IMG") {
-        // Image already loaded
-        if (el.complete && el.naturalHeight !== 0) {
-          return Promise.resolve();
-        }
-        // Wait for image to load
-        return new Promise((resolve) => {
-          el.addEventListener("load", resolve, { once: true });
-          el.addEventListener("error", resolve, { once: true }); // Resolve even on error
-        });
-      } else if (el.tagName === "VIDEO") {
-        // Video metadata loaded
-        if (el.readyState >= 1) {
-          // HAVE_METADATA
-          return Promise.resolve();
-        }
-        // Wait for video metadata
-        return new Promise((resolve) => {
-          el.addEventListener("loadedmetadata", resolve, { once: true });
-          el.addEventListener("error", resolve, { once: true }); // Resolve even on error
-        });
-      }
-      return Promise.resolve();
-    });
-
-    // Race between media loading and timeout
-    const timeoutPromise = new Promise((resolve) =>
-      setTimeout(resolve, maxTimeout)
-    );
-    await Promise.race([Promise.all(mediaPromises), timeoutPromise]);
+    return toaster.toast(message, options);
   }
 
   /**

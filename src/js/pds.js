@@ -78,6 +78,117 @@ PDS.defaultConfig = defaultConfig;
 /** Find a component definition (ontology) for a given DOM element */
 PDS.findComponentForElement = findComponentForElement;
 
+// ----------------------------------------------------------------------------
+// Default Enhancers — first-class citizens alongside AutoDefiner
+// ----------------------------------------------------------------------------
+/**
+ * Default DOM enhancers shipped with PDS. These are lightweight progressive
+ * enhancements that can be applied to vanilla markup. Consumers can override
+ * or add to these via the `enhancers` option of PDS.live()/PDS.static().
+ */
+PDS.defaultEnhancers = [
+  {
+    selector: "nav[data-dropdown]",
+    demoHtml: () => `
+      <nav data-dropdown>
+        <button class="btn-primary">Menu</button>
+        <menu style="display:none">
+          <li><a href="#">Item 1</a></li>
+          <li><a href="#">Item 2</a></li>
+        </menu>
+      </nav>`,
+    run: (elem) => {
+      if (elem.dataset.enhancedDropdown) return;
+      elem.dataset.enhancedDropdown = "true";
+      elem.style.position = "relative";
+      const menu = elem.querySelector("menu");
+      if (!menu) return;
+      // Ensure toggle button doesn't submit forms by default
+      const btn = elem.querySelector('button');
+      if (btn && !btn.hasAttribute('type')) {
+        btn.setAttribute('type', 'button');
+      }
+      const toggle = () => {
+        const isCurrentlyVisible = menu.style.display !== "none";
+        menu.style.display = isCurrentlyVisible ? "none" : "block";
+      };
+      menu.style.display = "none";
+      elem.addEventListener("click", toggle);
+    },
+  },
+  {
+    selector: "label[data-toggle]",
+    demoHtml: () => `<label data-toggle>
+      <span data-label>Enable notifications</span>
+      <input type="checkbox">
+    </label>`,
+    run: (elem) => {
+      if (elem.dataset.enhancedToggle) return;
+      elem.dataset.enhancedToggle = "true";
+      const checkbox = elem.querySelector('input[type="checkbox"]');
+      if (!checkbox) return;
+      const toggleSwitch = document.createElement("span");
+      toggleSwitch.className = "toggle-switch";
+      toggleSwitch.setAttribute("role", "presentation");
+      toggleSwitch.setAttribute("aria-hidden", "true");
+      const knob = document.createElement("span");
+      knob.className = "toggle-knob";
+      toggleSwitch.appendChild(knob);
+      const labelSpan = elem.querySelector("span[data-label]");
+      if (labelSpan) elem.insertBefore(toggleSwitch, labelSpan);
+      else elem.appendChild(toggleSwitch);
+      elem.addEventListener("click", (e) => {
+        if (checkbox.disabled) return;
+        e.preventDefault();
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+    },
+  },
+  {
+    selector: 'input[type="range"]',
+    demoHtml: (elem) => {
+      const min = elem?.getAttribute?.("min") || 0;
+      const max = elem?.getAttribute?.("max") || 100;
+      const value = elem?.getAttribute?.("value") || elem?.value || 0;
+      return `<input type="range" min="${min}" max="${max}" value="${value}">`;
+    },
+    run: (elem) => {
+      if (elem.dataset.enhancedRange) return;
+      let container = elem.closest(".range-container");
+      if (!container) {
+        container = document.createElement("div");
+        container.className = "range-container";
+        elem.parentNode?.insertBefore(container, elem);
+        container.appendChild(elem);
+      }
+      container.style.position = "relative";
+      const bubble = document.createElement("div");
+      bubble.className = "range-bubble";
+      bubble.setAttribute("aria-hidden", "true");
+      container.appendChild(bubble);
+      const updateBubble = () => {
+        const min = parseFloat(elem.min) || 0;
+        const max = parseFloat(elem.max) || 100;
+        const value = parseFloat(elem.value);
+        const pct = (value - min) / (max - min);
+        bubble.style.left = `calc(${pct * 100}% )`;
+        bubble.textContent = String(value);
+      };
+      const show = () => bubble.classList.add("visible");
+      const hide = () => bubble.classList.remove("visible");
+      elem.addEventListener("input", updateBubble);
+      elem.addEventListener("pointerdown", show);
+      elem.addEventListener("pointerup", hide);
+      elem.addEventListener("pointerleave", hide);
+      elem.addEventListener("focus", show);
+      elem.addEventListener("blur", hide);
+      updateBubble();
+      elem.dataset.enhancedRange = "1";
+    },
+  },
+];
+
 /**
  * Validate a design configuration for accessibility sanity checks.
  * Currently validates color contrast for primary buttons and base surface text
@@ -236,6 +347,118 @@ PDS.validateDesign = validateDesign;
  * });
  * ```
  */
+// Internal: resolve theme and set html[data-theme], return resolvedTheme and storedTheme
+function __resolveThemeAndApply({ manageTheme, themeStorageKey }) {
+  let resolvedTheme = "light";
+  let storedTheme = null;
+  if (manageTheme && typeof window !== "undefined") {
+    storedTheme = localStorage.getItem(themeStorageKey);
+    if (storedTheme) {
+      if (storedTheme === "system") {
+        const prefersDark =
+          window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        resolvedTheme = prefersDark ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", resolvedTheme);
+      } else {
+        resolvedTheme = storedTheme;
+        document.documentElement.setAttribute("data-theme", storedTheme);
+      }
+    } else {
+      const prefersDark =
+        window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      resolvedTheme = prefersDark ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", resolvedTheme);
+    }
+
+    if (storedTheme === "system" && window.matchMedia) {
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      const listener = (e) => {
+        const isDark = e.matches === undefined ? mq.matches : e.matches;
+        try {
+          const newTheme = isDark ? "dark" : "light";
+          document.documentElement.setAttribute("data-theme", newTheme);
+          window.dispatchEvent(
+            new CustomEvent("pds-theme-changed", { detail: { theme: newTheme, source: "system" } })
+          );
+        } catch {}
+      };
+      if (typeof mq.addEventListener === "function") mq.addEventListener("change", listener);
+      else if (typeof mq.addListener === "function") mq.addListener(listener);
+    }
+  }
+  return { resolvedTheme, storedTheme };
+}
+
+// Internal: setup AutoDefiner and run enhancers
+async function __setupAutoDefinerAndEnhancers(options) {
+  const {
+    autoDefineBaseURL = "/auto-define/",
+    autoDefinePreload = [],
+    autoDefineMapper = null,
+    enhancers = [],
+  } = options;
+
+  // Warn if assets not present (best-effort)
+  try {
+    if (typeof window !== "undefined") {
+      const response = await fetch(`${autoDefineBaseURL}pds-icon.js`, { method: "HEAD" });
+      if (!response.ok) {
+        console.warn("⚠️ PDS components not found in auto-define directory.");
+      }
+    }
+  } catch {}
+
+  // Merge defaults with user enhancers (user overrides by selector)
+  const mergedEnhancers = (() => {
+    const map = new Map();
+    (PDS.defaultEnhancers || []).forEach((e) => map.set(e.selector, e));
+    (enhancers || []).forEach((e) => map.set(e.selector, e));
+    return Array.from(map.values());
+  })();
+
+  // Setup AutoDefiner in browser context (it already observes shadow DOMs)
+  let autoDefiner = null;
+  if (typeof window !== "undefined" && typeof document !== "undefined") {
+    const defaultMapper = (tag) => {
+      switch (tag) {
+        case "pds-tabpanel":
+          return "pds-tabstrip.js";
+        default:
+          return `${tag}.js`;
+      }
+    };
+
+    const autoDefineConfig = {
+      baseURL: autoDefineBaseURL,
+      predefine: autoDefinePreload,
+      scanExisting: true,
+      observeShadows: true,
+      patchAttachShadow: true,
+      debounceMs: 16,
+      enhancers: mergedEnhancers,
+      mapper: (tag) => {
+        if (customElements.get(tag)) return null;
+        return (autoDefineMapper || defaultMapper)(tag);
+      },
+      onError: (tag, err) => {
+        if (typeof tag === "string" && tag.startsWith("pds-")) {
+          console.warn(`⚠️ PDS component <${tag}> not found. Assets may not be installed.`);
+        } else {
+          console.error(`❌ Auto-define error for <${tag}>:`, err);
+        }
+      },
+    };
+
+    autoDefiner = new AutoDefiner(autoDefineConfig);
+    if (autoDefinePreload.length > 0) {
+      await AutoDefiner.define(autoDefinePreload);
+    }
+  }
+  // Rely on AutoDefiner to run enhancers across light and shadow DOMs
+
+  return { autoDefiner };
+}
+
 async function live(config, options = {}) {
   if (!config || typeof config !== 'object') {
     throw new Error('PDS.live() requires a valid configuration object');
@@ -253,61 +476,8 @@ async function live(config, options = {}) {
   } = options;
 
   try {
-    let resolvedTheme = 'light'; // default fallback
-    
-    // 1) Handle theme preference early so styles are generated with correct scope
-    if (manageTheme && typeof window !== 'undefined') {
-      const storedTheme = localStorage.getItem(themeStorageKey);
-      
-      if (storedTheme) {
-        // If user explicitly stored 'light' or 'dark', use that. If they stored 'system',
-        // resolve current OS preference and set the attribute to an explicit value
-        if (storedTheme === 'system') {
-          const prefersDark = window.matchMedia && 
-            window.matchMedia('(prefers-color-scheme: dark)').matches;
-          resolvedTheme = prefersDark ? 'dark' : 'light';
-          document.documentElement.setAttribute('data-theme', resolvedTheme);
-        } else {
-          resolvedTheme = storedTheme;
-          document.documentElement.setAttribute('data-theme', storedTheme);
-        }
-      } else {
-        // No persisted preference: choose from OS preference and do not persist
-        const prefersDark = window.matchMedia && 
-          window.matchMedia('(prefers-color-scheme: dark)').matches;
-        resolvedTheme = prefersDark ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', resolvedTheme);
-      }
-
-      // 2) If the user preference is 'system' we need to keep the html[data-theme]
-      // attribute in sync with the OS. When localStorage contains 'system' we
-      // register a matchMedia listener that updates the attribute to either
-      // 'dark' or 'light' on changes.
-      if (storedTheme === 'system' && window.matchMedia) {
-        const mq = window.matchMedia('(prefers-color-scheme: dark)');
-        const listener = (e) => {
-          const isDark = e.matches === undefined ? mq.matches : e.matches;
-          try {
-            const newTheme = isDark ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            
-            // Emit event so consuming apps can react to theme changes
-            window.dispatchEvent(new CustomEvent('pds-theme-changed', {
-              detail: { theme: newTheme, source: 'system' }
-            }));
-          } catch (ex) {
-            /* ignore */
-          }
-        };
-
-        // Attach listener using modern API where available
-        if (typeof mq.addEventListener === 'function') {
-          mq.addEventListener('change', listener);
-        } else if (typeof mq.addListener === 'function') {
-          mq.addListener(listener);
-        }
-      }
-    }
+    // 1) Handle theme preference
+    const { resolvedTheme, storedTheme } = __resolveThemeAndApply({ manageTheme, themeStorageKey });
 
     // 3) Create generator with the provided config, including theme
     const generatorConfig = structuredClone(config);
@@ -380,81 +550,18 @@ async function live(config, options = {}) {
     
     // Note: auto-define base URL is used internally; no globals are written
 
-    // 5) Set up AutoDefiner for component auto-loading
+    // 5) Set up AutoDefiner + run enhancers (defaults merged with user)
     let autoDefiner = null;
     try {
-      // Check if PDS assets have been copied (postinstall ran) - browser only
-      if (typeof window !== 'undefined') {
-        const checkAssetsAvailable = async () => {
-          try {
-            const response = await fetch(`${autoDefineBaseURL}pds-icon.js`, { method: 'HEAD' });
-            return response.ok;
-          } catch (e) {
-            return false;
-          }
-        };
-        
-        const assetsAvailable = await checkAssetsAvailable();
-        if (!assetsAvailable) {
-          console.warn('⚠️ PDS components not found in auto-define directory.');
-          console.log('💡 Run the postinstall script to copy PDS assets:');
-          console.log('   node node_modules/@pure-ds/core/packages/pds-cli/bin/postinstall.js');
-          console.log('📖 See GETTING-STARTED.md for more information');
-        }
-      }
-      
-      // Only set up AutoDefiner in browser context
-      if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-        const defaultMapper = (tag) => {
-          switch (tag) {
-            case "pds-tabpanel":
-              return "pds-tabstrip.js";
-            default:
-              return `${tag}.js`;
-          }
-        };
-
-        // Configure AutoDefiner to load components from local auto-define directory
-        const autoDefineConfig = {
-          baseURL: autoDefineBaseURL,
-          predefine: autoDefinePreload,
-          scanExisting: true,
-          observeShadows: true,
-          patchAttachShadow: true,
-          debounceMs: 16,
-          mapper: (tag) => {
-            // Check if the component is already defined
-            if (customElements.get(tag)) {
-              return null; // Skip - already defined
-            }
-            
-            // Use the mapper to determine the file name
-            return (autoDefineMapper || defaultMapper)(tag);
-          },
-          onError: (tag, err) => {
-            // Check if this might be a missing PDS component
-            const pdsComponents = ['pds-icon', 'pds-drawer', 'pds-jsonform', 'pds-splitpanel', 'pds-tabstrip', 'pds-tabpanel', 'pds-toaster', 'pds-upload'];
-            if (pdsComponents.includes(tag)) {
-              console.warn(`⚠️ PDS component <${tag}> not found. Assets may not be installed.`);
-              console.log('💡 Run: node node_modules/@pure-ds/core/packages/pds-cli/bin/postinstall.js');
-            } else {
-              console.error(`❌ Auto-define error for <${tag}>:`, err);
-            }
-          }
-        };
-
-        // Create the AutoDefiner instance
-        autoDefiner = new AutoDefiner(autoDefineConfig);
-        
-        // Predefine critical components immediately
-        if (autoDefinePreload.length > 0) {
-          await AutoDefiner.define(autoDefinePreload);
-        }
-      }
-      
+      const res = await __setupAutoDefinerAndEnhancers({
+        autoDefineBaseURL,
+        autoDefinePreload,
+        autoDefineMapper,
+        enhancers: options.enhancers,
+      });
+      autoDefiner = res.autoDefiner;
     } catch (error) {
-      console.error('❌ Failed to initialize AutoDefiner:', error);
-      // Continue without AutoDefiner - not critical for core functionality
+      console.error('❌ Failed to initialize AutoDefiner/Enhancers:', error);
     }
     
     // Determine resolved config to expose (generator stores input as options)
@@ -482,6 +589,80 @@ async function live(config, options = {}) {
 
 /** Initialize PDS in live mode with the given configuration */
 PDS.live = live;
+
+/**
+ * Initialize PDS in static mode with the given configuration.
+ * Signature mirrors PDS.live(config, options).
+ */
+async function staticInit(config, options = {}) {
+  if (!config || typeof config !== 'object') {
+    throw new Error('PDS.static() requires a valid configuration object');
+  }
+
+  const {
+    autoDefineBaseURL = '/auto-define/',
+    autoDefinePreload = [],
+    autoDefineMapper = null,
+    applyGlobalStyles = true,
+    manageTheme = true,
+    themeStorageKey = 'pure-ds-theme',
+    staticPaths = {},
+  } = options;
+
+  try {
+    // 1) Theme
+    const { resolvedTheme } = __resolveThemeAndApply({ manageTheme, themeStorageKey });
+
+    // 2) Static mode registry
+    PDS.registry.setStaticMode(staticPaths);
+
+    // 3) Apply global static styles if requested
+    if (applyGlobalStyles && typeof document !== 'undefined') {
+      try {
+        const stylesSheet = await PDS.registry.getStylesheet('styles');
+        if (stylesSheet) {
+          // Tag and adopt alongside existing non-PDS
+          stylesSheet._pds = true;
+          const others = (document.adoptedStyleSheets || []).filter((s) => s._pds !== true);
+          document.adoptedStyleSheets = [...others, stylesSheet];
+        }
+      } catch (e) {
+        console.warn('Failed to apply static styles:', e);
+      }
+    }
+
+    // 4) AutoDefiner + Enhancers
+    let autoDefiner = null;
+    try {
+      const res = await __setupAutoDefinerAndEnhancers({
+        autoDefineBaseURL,
+        autoDefinePreload,
+        autoDefineMapper,
+        enhancers: options.enhancers,
+      });
+      autoDefiner = res.autoDefiner;
+    } catch (error) {
+      console.error('❌ Failed to initialize AutoDefiner/Enhancers (static):', error);
+    }
+
+    // 5) Emit ready event
+    if (typeof window !== 'undefined' && window.document) {
+      window.dispatchEvent(new CustomEvent('pds-static-ready', {
+        detail: { config, theme: resolvedTheme, autoDefiner }
+      }));
+    }
+    return { config, theme: resolvedTheme, autoDefiner };
+
+  } catch (error) {
+    if (typeof window !== 'undefined' && window.document) {
+      window.dispatchEvent(new CustomEvent('pds-error', { detail: error }));
+    }
+    throw error;
+  }
+}
+
+/** Initialize PDS in static mode with the given configuration */
+PDS.static = staticInit;
 
 /**
  * Change the current theme programmatically.

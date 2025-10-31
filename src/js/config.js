@@ -54,7 +54,6 @@ export const config = {
 
           const toggle = () => {
             const isCurrentlyVisible = menu.style.display !== "none";
-            console.log("Toggle dropdown", !isCurrentlyVisible);
             menu.style.display = isCurrentlyVisible ? "none" : "block";
           };
 
