@@ -31,6 +31,47 @@ A JavaScript-config-first design system that generates complete, production-read
 - [API Reference](#api-reference)
 - [Examples](#examples)
 
+### Using Lit in PDS (#pds/lit)
+
+PDS web components import Lit from a virtual specifier `#pds/lit` so you can choose where Lit comes from without changing component code.
+
+- Browser (no bundler): add an import map that points `#pds/lit` to your Lit ESM bundle. The default demos map it to the local aggregate at `/assets/js/lit.js`.
+
+```html
+<script type="importmap">
+  {
+    "imports": {
+      "#pds/lit": "/assets/js/lit.js"
+    }
+  }
+}</script>
+```
+
+- Bundlers (Vite/Webpack/Rollup): alias `#pds/lit` to the real `lit` package to enable dedupe and tree-shaking.
+
+Vite
+```js
+// vite.config.js
+export default {
+  resolve: { alias: { "#pds/lit": "lit" } }
+}
+```
+
+Webpack
+```js
+// webpack.config.js
+module.exports = {
+  resolve: { alias: { "#pds/lit": require.resolve("lit") } }
+}
+```
+
+Rollup
+```js
+// rollup.config.js
+import alias from '@rollup/plugin-alias';
+export default { plugins: [alias({ entries: [{ find: '#pds/lit', replacement: 'lit' }] })] };
+```
+
 ---
 
 ## Quick Start

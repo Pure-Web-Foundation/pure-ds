@@ -6,6 +6,15 @@
   <title>Schema Form Actions Demo</title>
   <link rel="stylesheet" href="assets/css/auto-designer.css">
   <link rel="stylesheet" href="assets/css/styles.css">
+  
+  <!-- Import map to resolve virtual specifier for Lit -->
+  <script type="importmap">
+    {
+      "imports": {
+        "#pds/lit": "/assets/js/lit.js"
+      }
+    }
+  </script>
 </head>
 <body>
   <main>
@@ -48,7 +57,7 @@
 
   <script type="module" src="assets/js/app.js"></script>
   <script type="module">
-    import { LitElement, html } from '/assets/js/lit.js';
+  import { LitElement, html } from '#pds/lit';
 
     const simpleSchema = {
       type: "object",

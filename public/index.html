@@ -9,6 +9,16 @@
     <link rel="stylesheet" href="/assets/css/pds-jsonform.css" />
     <link rel="stylesheet" href="/assets/css/styles.css" />
     <!-- showcase.css loaded programmatically after design tokens are injected -->
+    
+    <!-- Import map to resolve virtual specifier for Lit used by PDS components -->
+    <script type="importmap">
+      {
+        "imports": {
+          "#pds/lit": "/assets/js/lit.js"
+        }
+      }
+    </script>
+
     <script type="module" src="/assets/js/app.js" defer></script>
   </head>
   <body>

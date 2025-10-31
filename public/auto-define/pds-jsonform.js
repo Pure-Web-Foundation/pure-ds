@@ -1,4 +1,4 @@
-import { LitElement, html, nothing, ifDefined } from "/assets/js/lit.js";
+import { LitElement, html, nothing, ifDefined } from "#pds/lit";
 
 function getStep(value) {
   if (typeof value === "number") {

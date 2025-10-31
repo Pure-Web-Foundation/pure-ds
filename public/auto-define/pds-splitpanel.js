@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "/assets/js/lit.js";
+import { LitElement, html, css } from "#pds/lit";
 import { PDS } from "/assets/js/pds.js";
 
 customElements.define(

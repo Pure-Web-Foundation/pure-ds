@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart Surfaces Demo - Pure Design System</title>
   <link rel="stylesheet" href="/assets/css/styles.css" />
+  
+  <!-- Import map to resolve virtual specifier for Lit used by PDS components -->
+  <script type="importmap">
+    {
+      "imports": {
+        "#pds/lit": "/assets/js/lit.js"
+      }
+    }
+  </script>
   <script type="module" src="/assets/js/app.js" defer></script>
   <style>
     /* Demo-specific styles */

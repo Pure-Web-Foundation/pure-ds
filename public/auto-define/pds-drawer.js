@@ -1,5 +1,4 @@
-import { LitElement, html, css, ifDefined } from "/assets/js/lit.js";
-import { render } from "/assets/js/lit.js";
+import { LitElement, html, css, ifDefined, render } from "#pds/lit";
 
 export class DrawerPanel extends LitElement {
   #isDragging = false;
@@ -342,9 +341,9 @@ export class DrawerPanel extends LitElement {
   /**
    * Public convenience to configure and open the drawer in one call.
    * Mirrors PureApp.showDrawer signature for a near drop-in replacement.
-   * @param {import('/assets/js/lit.js').TemplateResult|HTMLElement|string} htmlContent
+  * @param {import('#pds/lit').TemplateResult|HTMLElement|string} htmlContent
    * @param {Object} [options]
-   * @param {import('/assets/js/lit.js').TemplateResult|HTMLElement|string} [options.header]
+  * @param {import('#pds/lit').TemplateResult|HTMLElement|string} [options.header]
    * @param {('bottom'|'top'|'left'|'right')} [options.position]
    * @param {string} [options.maxHeight]
    * @param {string} [options.minHeight]

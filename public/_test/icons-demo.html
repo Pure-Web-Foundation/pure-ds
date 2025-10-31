@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Icon System Demo - Pure Design System</title>
   <link rel="stylesheet" href="/assets/css/auto-designer.css">
+  
+  <!-- Import map to resolve virtual specifier for Lit used by PDS components -->
+  <script type="importmap">
+    {
+      "imports": {
+        "#pds/lit": "/assets/js/lit.js"
+      }
+    }
+  </script>
   <style>
     body {
       padding: var(--spacing-8);
