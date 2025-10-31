@@ -131,7 +131,9 @@ export const presets = [
       background: "#fffbeb",
       darkMode: {
         background: "#1a0f0a",
-        secondary: "#c9a482"
+        secondary: "#c9a482",
+        // Ensure sufficient contrast for primary-filled components with white text in dark mode
+        primary: "#9a3412"
       }
     },
     typography: {
@@ -159,7 +161,9 @@ export const presets = [
       background: "#fef3ff",
       darkMode: {
         background: "#1a0a1f",
-        secondary: "#c4b5fd"
+        secondary: "#c4b5fd",
+        // Deepen primary for dark mode to meet AA contrast with white text
+        primary: "#6d28d9"
       }
     },
     typography: {

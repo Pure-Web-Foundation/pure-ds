@@ -1,4 +1,4 @@
-import { enums } from "./pds-enums";
+import { enums } from "./pds-enums.js";
 /**
  * Generator - A JS-config-first design system
  * Generates comprehensive CSS variables and styles from a minimal configuration

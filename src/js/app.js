@@ -8,7 +8,6 @@ await PDS.live(config.design, {
 	autoDefineBaseURL: config.autoDefine?.baseURL,
 	autoDefinePreload: config.autoDefine?.predefine || ["pds-icon"],
 	autoDefineMapper: config.autoDefine?.mapper,
-	enhancers: config.autoDefine?.enhancers,
 	applyGlobalStyles: true,
 	manageTheme: true,
 	themeStorageKey: "pure-ds-theme",

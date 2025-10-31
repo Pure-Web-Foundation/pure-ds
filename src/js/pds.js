@@ -43,12 +43,11 @@ import {
   createStylesheet,
   isLiveMode,
 } from "./pds-core/pds-generator.js";
-import { registry } from "./pds-core/pds-registry";
-import ontology from "./pds-core/pds-ontology";
+import { registry } from "./pds-core/pds-registry.js";
+import ontology from "./pds-core/pds-ontology.js";
 import { findComponentForElement } from "./pds-core/pds-ontology.js";
 import { defaultConfig } from "./pds-core/pds-config.js";
 import { enums } from "./pds-core/pds-enums.js";
-import { AutoDefiner } from "pure-web/auto-definer";
 
 /** Generator class — use to programmatically create design system assets from a config */
 PDS.Generator = Generator;
@@ -319,6 +318,27 @@ function validateDesign(designConfig = {}, options = {}) {
 PDS.validateDesign = validateDesign;
 
 /**
+ * Validate multiple design configurations at once.
+ * Useful for build-time enforcement of preset compliance.
+ *
+ * @param {Array<object>} designs - Array of design configs; items may include an optional `name` property.
+ * @param {object} [options] - Options forwarded to validateDesign (e.g., { minContrast })
+ * @returns {{ ok: boolean, results: Array<{ name?: string, ok: boolean, issues: Array<{path:string, message:string, ratio:number, min:number, context?:string}> }> }}
+ */
+function validateDesigns(designs = [], options = {}) {
+  const results = [];
+  for (const d of designs || []) {
+    const name = d?.name || undefined;
+    const { ok, issues } = validateDesign(d, options);
+    results.push({ name, ok, issues });
+  }
+  return { ok: results.every((r) => r.ok), results };
+}
+
+/** Expose batch validator on the public API */
+PDS.validateDesigns = validateDesigns;
+
+/**
  * Initialize PDS in live mode with the given configuration.
  * This is the main entry point for consuming applications.
  * 
@@ -419,6 +439,15 @@ async function __setupAutoDefinerAndEnhancers(options) {
   // Setup AutoDefiner in browser context (it already observes shadow DOMs)
   let autoDefiner = null;
   if (typeof window !== "undefined" && typeof document !== "undefined") {
+    // Dynamically import AutoDefiner to avoid Node/CJS interop at build time
+    let AutoDefinerCtor = null;
+    try {
+      const mod = await import("pure-web/auto-definer");
+      AutoDefinerCtor = mod?.AutoDefiner || mod?.default?.AutoDefiner || mod?.default || null;
+    } catch (e) {
+      console.warn("AutoDefiner not available:", e?.message || e);
+    }
+
     const defaultMapper = (tag) => {
       switch (tag) {
         case "pds-tabpanel":
@@ -449,9 +478,11 @@ async function __setupAutoDefinerAndEnhancers(options) {
       },
     };
 
-    autoDefiner = new AutoDefiner(autoDefineConfig);
-    if (autoDefinePreload.length > 0) {
-      await AutoDefiner.define(autoDefinePreload);
+    if (AutoDefinerCtor) {
+      autoDefiner = new AutoDefinerCtor(autoDefineConfig);
+      if (autoDefinePreload.length > 0 && typeof AutoDefinerCtor.define === "function") {
+        await AutoDefinerCtor.define(autoDefinePreload);
+      }
     }
   }
   // Rely on AutoDefiner to run enhancers across light and shadow DOMs
