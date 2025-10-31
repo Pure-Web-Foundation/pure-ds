@@ -1,5 +1,4 @@
 import { LitElement, html, css } from "#pds/lit";
-import { PDS } from "/assets/js/pds.js";
 
 customElements.define(
   "pds-splitpanel",

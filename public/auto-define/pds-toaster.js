@@ -1,6 +1,3 @@
-// Import PDS helpers from bundled app
-// These are exported from auto-designer.js which is bundled into app.js
-import { PDS } from "/assets/js/pds.js";
 
 export class AppToaster extends HTMLElement {
   constructor() {

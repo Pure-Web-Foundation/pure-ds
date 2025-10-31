@@ -93,306 +93,218 @@ const designer = new Generator({
 });
 ```
 
-This generates **500+ CSS variables** and comprehensive styles for:
-- ✅ Complete color system with semantic scales
-- ✅ Typography with responsive sizes
-- ✅ Spacing and layout utilities
-- ✅ Form controls with all interactive states
-- ✅ Components (buttons, alerts, badges, modals)
-- ✅ Dark mode support
-- ✅ Accessibility features
-- ✅ Icon system integration
+# Pure Design System (PDS)
 
----
+Generate a complete, production‑ready design system from a tiny JS config. No framework lock‑in. Native ESM. Progressive enhancement.
 
-## Core Concepts
+• Browser = Framework • Import Maps • Constructable Stylesheets • Lazy‑loaded Web Components
 
-### 🎨 Generator
 
-The heart of the system. Transforms minimal configuration into a complete design language:
+## Contents
 
-```javascript
-const designer = new Generator(config);
-designer.injectStyles(); // Injects into document
-const css = designer.css; // Or get as string
+- Context
+- Getting started
+- Simple config, live and static modes
+- Structure (best‑practices semantic CSS)
+- Included lazy‑loaded Web Components & progressive enhancements
+- Extensibility
+- Contributing
+
+
+## Context
+
+### Pure Web Manifesto
+
+- Use the browser as your framework: native ESM, import maps, Web Components, and CSS custom properties.
+- Ship less JS by default. Keep everything progressively enhanced and cacheable.
+- Prefer composition and small, explicit modules over opaque toolchains.
+
+### Storybook and local component development
+
+Storybook is fantastic for rich documentation, but it often drags in heavy bundling, multiple preview layers, and environment drift between “storybook” and “app.” PDS favors a lighter loop for development and testing:
+
+- Native ESM demo pages under `public/_test/*` (zero bundler).
+- A small internal configurator for live tweaking of tokens and scales.
+- Optional storybook integration (separate CLI) when you really need it—without coupling core runtime to Storybook’s stack.
+
+### Accelerating PWA app development
+
+- Start with tokens and utilities you can theme at runtime or compile statically.
+- Lazy‑load components on demand; they enhance semantic HTML rather than replace it.
+- Keep a single source of truth for color, type, spacing, and layers—usable in Shadow DOM and Light DOM alike.
+
+
+## Getting started
+
+Prerequisites: Node 18+ recommended.
+
+Local dev (watch and open demo pages):
+
+1) Install dependencies
+   - npm install
+2) Build in watch mode
+   - npm run dev
+3) Open any demo page (no server required) e.g. `public/index.html` or `public/_test/forms.html` in your browser. For live reload, use your editor’s live server.
+
+Production build:
+
+- npm run build
+
+Optional local config server (interactive designer):
+
+- npm run config-server
+
+Static asset bundle (drop‑in CSS/JS for any project):
+
+- npm run pds:static
+  - Ships CSS and auto‑define component modules you can serve from any origin. See “Structure” and “Web Components” sections below for what to include.
+
+
+## Simple config, live and static modes
+
+PDS can run “live” (generate CSS at runtime) or be exported to static CSS/JS.
+
+### Live mode (runtime generation)
+
+Use the `Generator` to produce CSS layers and apply them to the document or into Shadow DOM. This is ideal for configurators, themes, and apps that need runtime theming.
+
+```js
+import { PDS } from '/assets/js/pds.js';
+
+const designer = new PDS.Generator({
+  colors: { primary: '#2563eb', accent: '#f59e0b' },
+  spatialRhythm: { baseUnit: 16 },
+  shape: { radiusSize: 'medium' }
+});
+
+await PDS.Generator.applyStyles(designer); // injects layered CSS into the page
 ```
 
-### 📐 Mathematical Scales
+To adopt styles in a Web Component’s Shadow DOM:
 
-Everything derives from base values using mathematical ratios:
-- **Colors**: 9-step scale (50-900) generated from single color
-- **Spacing**: Exponential scale from `baseUnit` × `scaleRatio`
-- **Typography**: Modular scale for font sizes
-- **Semantic tokens**: Meaningful names mapped to scales
-
-### 🌓 Smart Dark Mode
-
-Automatic color inversion with intelligent adjustments:
-- Image dimming for dark backgrounds
-- Preserves color relationships
-- Maintains WCAG contrast ratios
-- Optional manual overrides
-
----
-
-## Configuration
-
-### Colors
-
-Generate complete color palettes from base colors:
-
-```javascript
-colors: {
-  // Core brand colors (required)
-  primary: '#2563eb',      // Primary brand color
-  secondary: '#64748b',    // Secondary/neutral color
-  accent: '#f59e0b',       // Accent/highlight color
-  background: '#ffffff',   // Base background
-  
-  // Semantic colors (auto-generated if omitted)
-  success: null,           // Auto: green variant of primary
-  warning: null,           // Auto: uses accent
-  danger: null,            // Auto: red variant of primary
-  info: null,              // Auto: uses primary
-  
-  // Dark mode (auto-generated if omitted)
-  darkMode: {
-    background: '#1a1a1a', // Dark background
-    secondary: '#8b9199',  // Override specific colors
-    // Other colors auto-adjust from light mode
-  },
-  
-  // Advanced
-  gradientStops: 3,        // Gradient color steps
-  elevationOpacity: 0.05,  // Shadow overlay opacity
-}
+```js
+// inside component after this.shadowRoot is available
+await PDS.adoptLayers(this.shadowRoot, ['tokens', 'utilities', 'components', 'styles']);
 ```
 
-**Generated tokens:**
-```css
---color-primary-50 through --color-primary-900
---color-secondary-50 through --color-secondary-900
---color-success-600, --color-danger-600, etc.
---color-text-primary, --color-text-secondary, --color-text-muted
---color-surface-base, --color-surface-elevated, --color-surface-overlay
---color-border, --color-border-subtle, --color-focus
+### Static mode (prebuilt CSS/JS)
+
+Use `npm run pds:static` to produce a ready‑to‑serve bundle. Then include CSS layers directly as `<link>` tags (see “Structure”), and load auto‑define modules for components you need.
+
+Static mode is great for server‑rendered sites, CMSs, and minimal JS PWAs.
+
+
+## Structure (best‑practices semantic CSS)
+
+PDS outputs layered CSS you can opt into incrementally. In `public/exports/`:
+
+- pds-tokens.css — Design tokens (colors, typography scale, spacing, z‑layers)
+- pds-utilities.css — Utility classes (layout, spacing, text, surfaces)
+- pds-components.css — Base component styles
+- pds-styles.css — Optional higher‑level opinions and examples
+
+Recommended include order (Light DOM):
+
+```html
+<link rel="stylesheet" href="/exports/pds-tokens.css">
+<link rel="stylesheet" href="/exports/pds-utilities.css">
+<link rel="stylesheet" href="/exports/pds-components.css">
+<link rel="stylesheet" href="/exports/pds-styles.css">
 ```
 
-### Typography
+Tokens and utilities are designed to be semantic and composable. Favor meaningful surfaces and roles over brittle one‑off overrides.
 
-Complete type system with modular scale:
 
-```javascript
-typography: {
-  // Font stacks
-  fontFamilySans: 'system-ui, -apple-system, sans-serif',
-  fontFamilyMono: 'ui-monospace, Consolas, monospace',
-  
-  // Base size (default: 16px)
-  baseFontSize: 16,
-  
-  // Font weights (enum or number)
-  fontWeightLight: 'light',      // or 300
-  fontWeightNormal: 'normal',    // or 400
-  fontWeightMedium: 'medium',    // or 500
-  fontWeightSemibold: 'semibold',// or 600
-  fontWeightBold: 'bold',        // or 700
-  
-  // Line heights (enum or number)
-  lineHeightTight: 'tight',      // or 1.25
-  lineHeightNormal: 'normal',    // or 1.5
-  lineHeightRelaxed: 'relaxed',  // or 1.75
-  
-  // Letter spacing
-  letterSpacingTight: -0.025,
-  letterSpacingNormal: 0,
-  letterSpacingWide: 0.025,
-}
+## Included lazy‑loaded Web Components & progressive enhancements
+
+PDS ships optional Web Components you can lazy‑load via native ESM. They are designed to progressively enhance semantic HTML—your content remains usable before the component loads.
+
+Auto‑define modules live under `public/auto-define/` (and mirrored under `public/pds/auto-define/` for static bundles). Example components:
+
+- pds-drawer — Responsive drawer (bottom/top/left/right), drag‑to‑dismiss
+- pds-jsonform — JSON‑Schema driven form generator (Light DOM)
+- pds-splitpanel — Resizable split panel layout
+- pds-tabstrip — Accessible tabstrip
+- pds-toaster — App‑level toast notifications
+- pds-upload — Basic upload surface
+- pds-icon — SVG icon element
+
+Usage (no bundler):
+
+```html
+<!-- Map virtual Lit import once for all components -->
+<script type="importmap">
+  { "imports": { "#pds/lit": "/assets/js/lit.js" } }
+  </script>
+
+<!-- Load only the components you need -->
+<script type="module" src="/pds/auto-define/pds-drawer.js"></script>
+<script type="module" src="/pds/auto-define/pds-jsonform.js"></script>
 ```
 
-**Generated tokens:**
-```css
---font-family-sans, --font-family-mono
---font-size-xs through --font-size-4xl
---font-weight-light through --font-weight-bold
---font-lineHeight-tight, --font-lineHeight-normal, --font-lineHeight-relaxed
+Inside components and dynamic scripts, import Lit from the virtual specifier (consumers can resolve it to their preferred source):
+
+```js
+import { html, css, LitElement } from '#pds/lit';
 ```
 
-### Spatial Rhythm
+Bundled apps should alias `#pds/lit` → `lit` to dedupe and tree‑shake.
 
-Mathematical spacing system:
+Bundler alias quick refs:
 
-```javascript
-spatialRhythm: {
-  baseUnit: 16,            // All spacing derives from this
-  scaleRatio: 1.25,        // Growth ratio (1.25 = major third)
-  maxSpacingSteps: 32,     // Maximum spacing value
-  
-  // Container
-  containerMaxWidth: 1200,
-  containerPadding: 1.0,   // Multiplier of baseUnit
-  
-  // Component spacing
-  inputPadding: 0.75,
-  buttonPadding: 1.0,
-  sectionSpacing: 2.0,
-}
-```
+- Vite
+  ```js
+  // vite.config.js
+  export default { resolve: { alias: { '#pds/lit': 'lit' } } }
+  ```
+- Webpack
+  ```js
+  // webpack.config.js
+  module.exports = { resolve: { alias: { '#pds/lit': require.resolve('lit') } } };
+  ```
+- Rollup
+  ```js
+  // rollup.config.js
+  import alias from '@rollup/plugin-alias';
+  export default { plugins: [alias({ entries: [{ find: '#pds/lit', replacement: 'lit' }] })] };
+  ```
 
-**Generated scale:**
-```css
---spacing-0: 0
---spacing-1: 4px     /* baseUnit × 0.25 */
---spacing-2: 8px     /* baseUnit × 0.5 */
---spacing-3: 12px    /* baseUnit × 0.75 */
---spacing-4: 16px    /* baseUnit × 1 */
---spacing-5: 20px    /* baseUnit × 1.25 */
---spacing-6: 24px    /* baseUnit × 1.5 */
-/* ... continues to 32 */
-```
 
-### Shape & Borders
+## Extensibility
 
-Control roundness and borders:
+- Write your own components with Lit, importing from `#pds/lit` so consumers can decide where Lit is sourced (import map or bundler alias).
+- Adopt PDS layers into Shadow DOM via `PDS.adoptLayers(sr)` or use `PDS.createStylesheet(css)` for local tweaks.
+- Extend tokens: add custom CSS variables that build on top of generated scales.
+- Author utilities and component styles that respect surfaces, states, and motion tokens for consistency.
+- Progressive enhancement first: ship semantic HTML, enhance behavior when JS is available.
 
-```javascript
-shape: {
-  // Corner radius (enum or custom)
-  radiusSize: 'medium',    // none, small, medium, large, full
-  customRadius: null,      // Or specify px value: 8
-  
-  // Border width (enum)
-  borderWidth: 'thin',     // hairline, thin, medium, thick
-}
-```
 
-**Enum values:**
-```javascript
-RadiusSizes: {
-  none: 0,
-  small: 4,
-  medium: 8,
-  large: 16,
-  full: 9999,
-}
+## Contributing
 
-BorderWidths: {
-  hairline: 0.5,
-  thin: 1,
-  medium: 2,
-  thick: 3,
-}
-```
+We welcome issues and PRs. A few notes to keep contributions smooth:
 
-### Layers & Shadows
+- Tooling
+  - npm run dev — esbuild watch for JS bundles
+  - npm run build — production build
+  - npm run config-server — local configurator server (live tweaking)
+  - npm run update-styles — regenerate styles from the current config
+  - npm run pds:static — build a static bundle (CSS + auto‑define modules)
+  - npm run sync-assets — helper to sync built assets (used by CLI)
 
-Depth and z-index hierarchy:
+- Code style
+  - Native ESM across the repo
+  - Prefer small, focused modules
+  - No framework coupling in core; keep Storybook and other integrations optional
 
-```javascript
-layers: {
-  // Shadow depth
-  shadowDepth: 'medium',   // none, light, medium, deep, extreme
-  
-  // Blur levels (px)
-  blurLight: 4,
-  blurMedium: 8,
-  blurHeavy: 16,
-  
-  // Z-index scale
-  zIndexBase: 0,
-  zIndexDropdown: 1000,
-  zIndexSticky: 1020,
-  zIndexFixed: 1030,
-  zIndexModal: 1040,
-  zIndexPopover: 1050,
-  zIndexTooltip: 1060,
-  zIndexNotification: 1070,
-}
-```
+- Testing and demos
+  - Add or update a page under `public/_test/` that showcases your change
+  - Keep components progressively enhancing semantic HTML
 
-### Behavior & Motion
+- Docs
+  - Keep README concise and actionable
+  - Include before/after screenshots or GIFs for UI changes when possible
 
-Transitions and animations:
-
-```javascript
-behavior: {
-  // Transition speed (enum or custom ms)
-  transitionSpeed: 'normal',  // fast (150ms), normal (250ms), slow (350ms)
-  customTransitionSpeed: null,
-  
-  // Easing function
-  animationEasing: 'ease-out',  // linear, ease, ease-in, ease-out, ease-in-out, bounce
-  customEasing: null,            // Or cubic-bezier(...)
-  
-  // Focus ring
-  focusRingWidth: 3,
-  focusRingOpacity: 0.3,
-  
-  // Hover effects
-  hoverOpacity: 0.8,
-}
-```
-
-### Layout
-
-Grid system and breakpoints:
-
-```javascript
-layout: {
-  // Grid
-  gridColumns: 12,
-  gridGutter: 1.0,         // Multiplier of baseUnit
-  
-  // Responsive breakpoints (px)
-  breakpoints: {
-    sm: 640,   // Mobile
-    md: 768,   // Tablet
-    lg: 1024,  // Desktop
-    xl: 1280,  // Wide
-  },
-  
-  // Density variants
-  densityCompact: 0.8,
-  densityNormal: 1.0,
-  densityComfortable: 1.2,
-  
-  // Touch targets
-  buttonMinHeight: 44,     // iOS/Android standard
-  inputMinHeight: 40,
-}
-```
-
-### Icons
-
-**Professional icon system with Phosphor Icons** - 9,072+ icons, 6 weights, world-class design.
-
-#### Configuration
-
-```javascript
-icons: {
-  set: 'phosphor',         // phosphor, lucide, heroicons, tabler, custom
-  weight: 'regular',       // For Phosphor: thin, light, regular, bold, fill, duotone
-  defaultSize: 24,
-  
-  // Size scale
-  sizes: {
-    xs: 16,
-    sm: 20,
-    md: 24,
-    lg: 32,
-    xl: 48,
-    '2xl': 64,
-  },
-  
-  // Icons organized by category (87 icons included)
-  include: {
-    navigation: ['arrow-left', 'arrow-right', 'arrow-up', 'arrow-down', 'caret-left', 
-                 'caret-right', 'caret-up', 'caret-down', 'house', 'magnifying-glass',
-                 'list', 'dots-three-vertical', 'dots-three', 'x', 'check', 'gear'],
-    actions: ['plus', 'minus', 'check', 'x', 'trash', 'pencil', 'copy', 'download',
-              'upload', 'share', 'heart', 'star', 'bookmark', 'eye', 'eye-slash', 'lock'],
-    communication: ['envelope', 'bell', 'chat-circle', 'phone', 'video-camera', 
-                    'user', 'users', 'at'],
+Thanks for helping make PDS a fast, practical, and truly “pure web” design system.
     content: ['image', 'file', 'file-text', 'folder', 'link', 'paperclip', 
               'play', 'pause', 'microphone', 'speaker-high'],
     status: ['info', 'warning', 'check-circle', 'x-circle', 'question', 

@@ -1,14 +1,3 @@
-// /d:/Code/pure/pure-ds/public/auto-define/upload-area.js
-// A best-practice, accessible web component that replaces <input type="file">
-// - Drag & drop support
-// - Click to open file picker
-// - Small tiles for dropped files with previews and remove controls
-// - Attributes: accept, multiple, disabled, max-files
-// - Methods: getFiles(), clear()
-// - Events: "files-changed" (detail: FileList-like array)
-
-// Import PDS helpers from bundled app
-import { PDS } from '/assets/js/pds.js';
 
 class UploadArea extends HTMLElement {
   static get observedAttributes() {
