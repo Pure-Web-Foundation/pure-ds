@@ -340,6 +340,51 @@ export class DrawerPanel extends LitElement {
   }
 
   /**
+   * Public convenience to configure and open the drawer in one call.
+   * Mirrors PureApp.showDrawer signature for a near drop-in replacement.
+   * @param {import('/assets/js/lit.js').TemplateResult|HTMLElement|string} htmlContent
+   * @param {Object} [options]
+   * @param {import('/assets/js/lit.js').TemplateResult|HTMLElement|string} [options.header]
+   * @param {('bottom'|'top'|'left'|'right')} [options.position]
+   * @param {string} [options.maxHeight]
+   * @param {string} [options.minHeight]
+   * @param {boolean} [options.showClose]
+   * @param {boolean} [options.waitForMedia=true]
+   * @param {number} [options.mediaTimeout=500]
+   * @returns {Promise<this>} resolves to the drawer element
+   */
+  async show(htmlContent, options = {}) {
+    // Apply provided options to this instance
+    if (options.position) this.position = options.position;
+    if (options.maxHeight) this.maxHeight = options.maxHeight;
+    if (options.minHeight) this.minHeight = options.minHeight;
+
+    // Close button visibility
+    const pos = this.position || "bottom";
+    const defaultShowClose = pos === "left" || pos === "right";
+    const showClose = options.showClose === undefined ? defaultShowClose : !!options.showClose;
+    this.showClose = showClose;
+
+    // Render content (header/body)
+    this.setContent(htmlContent, options.header);
+
+    // Wait for Lit to finish rendering the slotted content
+    await this.updateComplete;
+
+    // Optionally wait for media to load (default: true)
+    const shouldWaitForMedia = options.waitForMedia !== false;
+    if (shouldWaitForMedia) {
+      const mediaTimeout = options.mediaTimeout || 500;
+      await this.#waitForMedia(mediaTimeout);
+    }
+
+    // Open with a short delay to ensure layout has settled
+    await new Promise((r) => setTimeout(r, 10));
+    this.openDrawer();
+    return this;
+  }
+
+  /**
    * Set drawer content using slots
    * @param {TemplateResult|HTMLElement|string} bodyContent - Content for drawer body (Lit template, HTML element, or string)
    * @param {TemplateResult|HTMLElement|string} headerContent - Optional content for drawer header
@@ -500,6 +545,34 @@ export class DrawerPanel extends LitElement {
   };
 
   // Helpers
+  async #waitForMedia(maxTimeout = 500) {
+    // Find media elements within the drawer (including slotted content)
+    const media = Array.from(this.querySelectorAll("img, video"));
+    if (media.length === 0) return;
+
+    const mediaPromises = media.map((el) => {
+      if (el.tagName === "IMG") {
+        const img = /** @type {HTMLImageElement} */ (el);
+        if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
+        return new Promise((resolve) => {
+          img.addEventListener("load", resolve, { once: true });
+          img.addEventListener("error", resolve, { once: true });
+        });
+      }
+      if (el.tagName === "VIDEO") {
+        const vid = /** @type {HTMLVideoElement} */ (el);
+        if (vid.readyState > 0) return Promise.resolve();
+        return new Promise((resolve) => {
+          vid.addEventListener("loadedmetadata", resolve, { once: true });
+          vid.addEventListener("error", resolve, { once: true });
+        });
+      }
+      return Promise.resolve();
+    });
+
+    const timeout = new Promise((resolve) => setTimeout(resolve, maxTimeout));
+    await Promise.race([Promise.all(mediaPromises), timeout]);
+  }
   #getPoint(e) {
     if (e.touches && e.touches[0])
       return { x: e.touches[0].clientX, y: e.touches[0].clientY };

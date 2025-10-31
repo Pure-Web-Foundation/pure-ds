@@ -81,7 +81,7 @@ export class SvgIcon extends HTMLElement {
       >
         ${useFallback 
           ? this.getFallbackIcon(icon)
-          : `<use href="/assets/img/icons.svg#${icon}"></use>`
+          : `<use href="/assets/img/pds-icons.svg#${icon}"></use>`
         }
       </svg>
     `;

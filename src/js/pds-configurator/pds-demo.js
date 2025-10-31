@@ -1,4 +1,4 @@
-import { LitElement, html, nothing, render } from "../lit";
+import { LitElement, html, nothing, render, unsafeHTML } from "../lit";
 import showdown from "showdown";
 import { PDS } from "../pds";
 
@@ -735,7 +735,7 @@ customElements.define(
       const app = document.querySelector("pure-app");
       if (!app?.showDrawer) return;
       
-      const { unsafeHTML } = await import("../lit");
+      
 
       // Create header template
       const headerTemplate = html`
@@ -3040,7 +3040,7 @@ customElements.define(
         const app = document.querySelector("pure-app");
         if (app?.showDrawer) {
           // Use unsafeHTML to render the markdown HTML
-          const { unsafeHTML } = await import("../lit");
+          
           
           app.showDrawer(
             html`${unsafeHTML(htmlContent)}`,

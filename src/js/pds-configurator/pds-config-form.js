@@ -54,7 +54,10 @@ customElements.define(
           this.dispatchInspectorModeChange();
         }
       };
-      document.addEventListener("inspector-deactivate", this._inspectorDeactivateHandler);
+      document.addEventListener(
+        "inspector-deactivate",
+        this._inspectorDeactivateHandler
+      );
 
       // Initialize document theme attribute: prefer localStorage, otherwise use OS preference
       try {
@@ -101,7 +104,10 @@ customElements.define(
     disconnectedCallback() {
       super.disconnectedCallback();
       if (this._inspectorDeactivateHandler) {
-        document.removeEventListener("inspector-deactivate", this._inspectorDeactivateHandler);
+        document.removeEventListener(
+          "inspector-deactivate",
+          this._inspectorDeactivateHandler
+        );
         this._inspectorDeactivateHandler = null;
       }
     }
@@ -204,32 +210,20 @@ customElements.define(
       if (changedProps.has("schema")) {
         // When schema changes (mode switch), update form values
         this.formValues = this.filterConfigForSchema(this.config);
-        // Re-apply styles using the current user config after the form fully renders.
-        // Schedule once shortly after render using double rAF to ensure paint.
-        if (!this._initialValidationScheduled) {
-          this._initialValidationScheduled = true;
-          // Delay slightly to ensure the JSON form fully renders and paints
-          setTimeout(() => {
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                try {
-                  this.applyStyles(true);
-                } catch (ex) {
-                  console.warn("Delayed applyStyles failed:", ex);
-                }
-              });
-            });
-          }, 150);
-        } else {
-          // For subsequent schema changes (e.g., mode toggle), still validate/apply after render
-          setTimeout(() => requestAnimationFrame(() => requestAnimationFrame(() => this.applyStyles(true)))), 50;
-        }
+
+        const delay = this._initialValidationScheduled ? 50 : 150;
+        this._initialValidationScheduled = true;
+        setTimeout(() => {
+          try {
+            this.applyStyles(true);
+          } catch (ex) {
+            console.warn("Delayed applyStyles failed:", ex);
+          }
+        }, delay);
       }
     }
-    
-    // Helper method removed – binding `.values=${this.formValues}` handles syncing reactively
 
-  applyStyles(useUserConfig = false) {
+    applyStyles(useUserConfig = false) {
       // By default, use Generator.defaultConfig (non-designer callers)
       // If useUserConfig is true (pds-config-form wants to apply user edits),
       // merge the persisted user config into the default to generate runtime styles.
@@ -246,7 +240,10 @@ customElements.define(
         if (!v.ok) {
           this.validationIssues = v.issues;
           if (!this._validationToastId) {
-            const summary = v.issues.slice(0, 3).map(i => `• ${i.message}`).join("\n");
+            const summary = v.issues
+              .slice(0, 3)
+              .map((i) => `• ${i.message}`)
+              .join("\n");
             this._validationToastId = toast(
               `Design has accessibility issues. Fix before applying.\n${summary}`,
               { type: "error", persistent: true }
@@ -257,7 +254,9 @@ customElements.define(
         // Clear any existing persistent error toast
         this.validationIssues = [];
         if (this._validationToastId) {
-          document.querySelector("pure-app")?.toaster?.dismissToast(this._validationToastId);
+          document
+            .querySelector("pure-app")
+            ?.toaster?.dismissToast(this._validationToastId);
           this._validationToastId = null;
         }
       } catch (ex) {
@@ -269,7 +268,10 @@ customElements.define(
       // scoping (html[data-theme] vs prefers-color-scheme).
       let storedTheme = null;
       try {
-        storedTheme = (typeof window !== 'undefined' && localStorage.getItem('pure-ds-theme')) || null;
+        storedTheme =
+          (typeof window !== "undefined" &&
+            localStorage.getItem("pure-ds-theme")) ||
+          null;
       } catch (ex) {
         storedTheme = null;
       }
@@ -393,14 +395,14 @@ customElements.define(
     getSchemaProperties(schema, prefix = "") {
       const paths = new Set();
       if (!schema || !schema.properties) return paths;
-      
+
       for (const [key, value] of Object.entries(schema.properties)) {
         const jsonPointerPath = prefix ? `${prefix}/${key}` : `/${key}`;
         paths.add(jsonPointerPath);
-        
+
         if (value.type === "object" && value.properties) {
           const nested = this.getSchemaProperties(value, jsonPointerPath);
-          nested.forEach(p => paths.add(p));
+          nested.forEach((p) => paths.add(p));
         }
       }
       return paths;
@@ -411,26 +413,26 @@ customElements.define(
       if (!config) {
         return {};
       }
-      
+
       if (!this.schema) {
         // If schema isn't loaded yet, return full flattened config
         return this.flattenConfig(config);
       }
-      
+
       const validPaths = this.getSchemaProperties(this.schema);
       const flattened = this.flattenConfig(config);
       const filtered = {};
-      
+
       for (const [key, value] of Object.entries(flattened)) {
         if (validPaths.has(key) && value !== null && value !== undefined) {
           filtered[key] = value;
         }
       }
-      
+
       return filtered;
     }
 
-  handleFormChange = (event) => {
+    handleFormChange = (event) => {
       // Get values from the pds-jsonform's serialize method or from event detail
       let values;
       let changedField = null;
@@ -445,10 +447,11 @@ customElements.define(
         values = event.detail.json;
       } else {
         // pw:value-change event - get values directly from the form element
-        const form = event.currentTarget?.tagName?.toUpperCase() === "PDS-JSONFORM" 
-                     ? event.currentTarget 
-                     : this.querySelector("pds-jsonform");
-        
+        const form =
+          event.currentTarget?.tagName?.toUpperCase() === "PDS-JSONFORM"
+            ? event.currentTarget
+            : this.querySelector("pds-jsonform");
+
         if (form) {
           // Use getValuesFlat() to get JSON Pointer formatted keys
           values = form.getValuesFlat?.() || form.values || {};
@@ -464,7 +467,8 @@ customElements.define(
       // e.g., { "colors.primary": "#123" } => { colors: { primary: "#123" } }
       // and { "/colors/primary": "#123" } => { colors: { primary: "#123" } }
       const nestedValues = {};
-      const unescapePointer = (seg) => seg.replace(/~1/g, "/").replace(/~0/g, "~");
+      const unescapePointer = (seg) =>
+        seg.replace(/~1/g, "/").replace(/~0/g, "~");
 
       for (const [key, value] of Object.entries(values)) {
         if (!key) continue;
@@ -484,7 +488,8 @@ customElements.define(
           const parts = key.split(".");
           let current = nestedValues;
           for (let i = 0; i < parts.length - 1; i++) {
-            if (!current[parts[i]] || typeof current[parts[i]] !== "object") current[parts[i]] = {};
+            if (!current[parts[i]] || typeof current[parts[i]] !== "object")
+              current[parts[i]] = {};
             current = current[parts[i]];
           }
           current[parts[parts.length - 1]] = value;
@@ -576,15 +581,15 @@ customElements.define(
         this.formKey = (this.formKey || 0) + 1; // Increment to force form update
         this.saveConfig();
         this.applyStyles(true);
-        
-        toast("Configuration reset to defaults", { 
-          type: "info", 
-          duration: 2000 
+
+        toast("Configuration reset to defaults", {
+          type: "info",
+          duration: 2000,
         });
       }
     };
 
-  applyPreset = async (preset) => {
+    applyPreset = async (preset) => {
       const result = await ask(
         `Load "${preset.name}" preset? This will replace your current settings.`
       );
@@ -595,7 +600,7 @@ customElements.define(
           JSON.parse(JSON.stringify(PDS.defaultConfig)),
           preset
         );
-        
+
         // Validate preset before applying
         const validationResult = PDS.validateDesign(presetConfig);
         if (!validationResult.ok) {
@@ -628,10 +633,10 @@ customElements.define(
 
         this.saveConfig();
         this.applyStyles(true);
-        
-        toast(`"${preset.name}" preset loaded successfully!`, { 
-          type: "success", 
-          duration: 3000 
+
+        toast(`"${preset.name}" preset loaded successfully!`, {
+          type: "success",
+          duration: 3000,
         });
       }
     };
@@ -715,7 +720,9 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
         if (!this._loadingToastShown) {
           this._loadingToastShown = true;
           setTimeout(() => {
-            try { toast("Loading schema...", { duration: 1000 }); } catch {}
+            try {
+              toast("Loading schema...", { duration: 1000 });
+            } catch {}
           }, 250);
         }
         return nothing;
@@ -734,7 +741,8 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
               /><span
                 >${this.mode === "advanced"
                   ? "Switch to Basic Mode"
-                  : "Switch to Advanced Mode"}</span>
+                  : "Switch to Advanced Mode"}</span
+              >
             </label>
 
             <button
@@ -751,25 +759,47 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
               <span
                 >${this.inspectorMode
                   ? "Inspector Active"
-                  : "Code Inspector"}</span>
+                  : "Code Inspector"}</span
+              >
             </button>
-            
+
             <fieldset role="radiogroup" aria-label="Theme" class="theme-select">
               <legend>Theme</legend>
               ${(() => {
-                const stored = (typeof window !== 'undefined' && localStorage.getItem('pure-ds-theme')) || null;
-                const selected = stored || 'system';
+                const stored =
+                  (typeof window !== "undefined" &&
+                    localStorage.getItem("pure-ds-theme")) ||
+                  null;
+                const selected = stored || "system";
                 return html`
                   <label>
-                    <input type="radio" name="theme" value="system" @change=${this.handleThemeChange} .checked=${selected === 'system'} />
+                    <input
+                      type="radio"
+                      name="theme"
+                      value="system"
+                      @change=${this.handleThemeChange}
+                      .checked=${selected === "system"}
+                    />
                     <span>System</span>
                   </label>
                   <label>
-                    <input type="radio" name="theme" value="light" @change=${this.handleThemeChange} .checked=${selected === 'light'} />
+                    <input
+                      type="radio"
+                      name="theme"
+                      value="light"
+                      @change=${this.handleThemeChange}
+                      .checked=${selected === "light"}
+                    />
                     <span>Light</span>
                   </label>
                   <label>
-                    <input type="radio" name="theme" value="dark" @change=${this.handleThemeChange} .checked=${selected === 'dark'} />
+                    <input
+                      type="radio"
+                      name="theme"
+                      value="dark"
+                      @change=${this.handleThemeChange}
+                      .checked=${selected === "dark"}
+                    />
                     <span>Dark</span>
                   </label>
                 `;
@@ -814,7 +844,10 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
                     </span>
                     <span class="preset-info">
                       <strong>Default</strong>
-                      <small>Original Pure DS balanced design with proven color harmony</small>
+                      <small
+                        >Original Pure DS balanced design with proven color
+                        harmony</small
+                      >
                     </span>
                   </a>
                 </li>
@@ -829,9 +862,15 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
                         }}
                       >
                         <span class="preset-colors">
-                          <span style="background-color: ${preset.colors.primary}"></span>
-                          <span style="background-color: ${preset.colors.secondary}"></span>
-                          <span style="background-color: ${preset.colors.accent}"></span>
+                          <span
+                            style="background-color: ${preset.colors.primary}"
+                          ></span>
+                          <span
+                            style="background-color: ${preset.colors.secondary}"
+                          ></span>
+                          <span
+                            style="background-color: ${preset.colors.accent}"
+                          ></span>
                         </span>
                         <span class="preset-info">
                           <strong>${preset.name}</strong>
@@ -933,7 +972,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
         "ui:widget": "input-range",
         "ui:min": 1.1,
         "ui:max": 1.618,
-        "ui:step": 0.01
+        "ui:step": 0.01,
       };
       ui["/spatialRhythm/baseUnit"] = {
         "ui:widget": "input-range",

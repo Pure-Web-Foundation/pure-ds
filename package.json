@@ -19,11 +19,14 @@
   "files": [
     "public/assets/js/",
     "public/auto-define/",
+    "public/assets/img/icons.svg",
     "public/exports/",
     "src/js/pds.d.ts",
     "src/js/pds.js",
     "src/js/pds-core/",
     "src/js/pds-configurator/",
+    "packages/pds-cli/bin/postinstall.js",
+    "packages/pds-cli/bin/sync-assets.js",
     "README.md"
   ],
   "scripts": {
@@ -33,7 +36,9 @@
     "update-styles": "node scripts/update-styles.mjs",
     "config-server": "node scripts/config-server.mjs",
     "export-config": "node scripts/export-config-json.mjs",
-    "build-icons": "node scripts/build-icons.mjs"
+    "build-icons": "node scripts/build-icons.mjs",
+    "sync-assets": "node packages/pds-cli/bin/sync-assets.js",
+    "postinstall": "node packages/pds-cli/bin/postinstall.js"
   },
   "author": "",
   "license": "ISC",

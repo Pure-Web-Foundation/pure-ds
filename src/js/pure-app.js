@@ -75,7 +75,7 @@ export class PureApp extends HTMLElement {
       // 4) Now render and attach runtime UI elements
       this.attachShadow({ mode: "open" });
       this.shadowRoot.innerHTML = this.render();
-      
+
       // Ensure there's only ever one toaster in the DOM
       if (!document.querySelector("pds-toaster")) {
         const toaster = document.createElement("pds-toaster");
@@ -215,43 +215,8 @@ export class PureApp extends HTMLElement {
       );
       return null;
     }
-
-    // Set drawer properties
-    if (options.position) {
-      drawer.setAttribute("position", options.position);
-    }
-    if (options.maxHeight) {
-      drawer.setAttribute("max-height", options.maxHeight);
-    }
-    if (options.minHeight) {
-      drawer.setAttribute("min-height", options.minHeight);
-    }
-    // Show or hide close button
-    const pos = options.position || drawer.getAttribute("position") || "bottom";
-    const defaultShowClose = pos === "left" || pos === "right";
-    const showClose = options.showClose === undefined ? defaultShowClose : !!options.showClose;
-    if (showClose) drawer.setAttribute("show-close", "");
-    else drawer.removeAttribute("show-close");
-
-    // Render content
-    drawer.setContent(htmlContent, options.header);
-
-    // Wait for Lit to finish rendering the slotted content
-    await drawer.updateComplete;
-
-    // Optionally wait for media to load (default: true)
-    const shouldWaitForMedia = options.waitForMedia !== false;
-    if (shouldWaitForMedia) {
-      const mediaTimeout = options.mediaTimeout || 500;
-      await this.waitForMedia(drawer, mediaTimeout);
-    }
-
-    // Now open with the correct height calculated
-    setTimeout(() => {
-      drawer.open = true;
-    }, 10);
-
-    return drawer;
+    // Delegate to the drawer component's public API
+    return await drawer.show(htmlContent, options);
   }
 
   /**

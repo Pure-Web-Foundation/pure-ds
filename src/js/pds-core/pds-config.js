@@ -544,7 +544,7 @@ export const defaultConfig = {
         "squares-four",
       ],
     },
-    spritePath: "public/assets/img/icons.svg",
+    spritePath: "public/assets/img/pds-icons.svg",
   },
 
   gap: 4,

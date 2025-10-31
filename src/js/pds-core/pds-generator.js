@@ -766,7 +766,7 @@ export class Generator {
         xl: 48,
         "2xl": 64,
       },
-      spritePath = "/assets/img/icons.svg",
+      spritePath = "/assets/img/pds-icons.svg",
     } = iconConfig;
 
     return {

@@ -48,6 +48,7 @@ import ontology from "./pds-core/pds-ontology";
 import { findComponentForElement } from "./pds-core/pds-ontology.js";
 import { defaultConfig } from "./pds-core/pds-config.js";
 import { enums } from "./pds-core/pds-enums.js";
+import { AutoDefiner } from "pure-web/auto-definer";
 
 /** Generator class — use to programmatically create design system assets from a config */
 PDS.Generator = Generator;
@@ -213,23 +214,25 @@ PDS.validateDesign = validateDesign;
  * @param {object} config - The PDS configuration object
  * @param {object} [options] - Optional settings
  * @param {string} [options.autoDefineBaseURL] - Base URL for auto-define components (default: '/auto-define/')
+ * @param {string[]} [options.autoDefinePreload] - Component tags to predefine immediately (e.g., ['pds-icon'])
+ * @param {function} [options.autoDefineMapper] - Custom mapper function for tag-to-file mapping
  * @param {boolean} [options.applyGlobalStyles=true] - Whether to apply styles globally via adoptedStyleSheets
  * @param {boolean} [options.manageTheme=true] - Whether to automatically manage data-theme attribute and localStorage
  * @param {string} [options.themeStorageKey='pure-ds-theme'] - localStorage key for theme preference
- * @returns {Promise<{generator: Generator, config: object, theme: string}>} The generator instance, resolved config, and current theme
+ * @param {boolean} [options.preloadStyles=false] - Whether to inject critical CSS synchronously to prevent flash
+ * @param {string[]} [options.criticalLayers=['tokens', 'primitives']] - Which CSS layers to preload synchronously
+ * @returns {Promise<{generator: Generator, config: object, theme: string, autoDefiner?: any}>} The generator instance, resolved config, current theme, and autoDefiner if available
  * 
  * @example
  * ```js
  * import { PDS } from '@pure-ds/core';
  * 
+ * // With auto-define components
  * await PDS.live({
- *   colors: {
- *     primary: '#007acc',
- *     secondary: '#666666'
- *   },
- *   typography: {
- *     fontFamily: 'Inter, sans-serif'
- *   }
+ *   colors: { primary: '#007acc' }
+ * }, { 
+ *   autoDefineBaseURL: '/components/',
+ *   autoDefinePreload: ['my-app', 'pds-icon']
  * });
  * ```
  */
@@ -240,9 +243,13 @@ async function live(config, options = {}) {
 
   const {
     autoDefineBaseURL = '/auto-define/',
+    autoDefinePreload = [],
+    autoDefineMapper = null,
     applyGlobalStyles = true,
     manageTheme = true,
-    themeStorageKey = 'pure-ds-theme'
+    themeStorageKey = 'pure-ds-theme',
+    preloadStyles = false,
+    criticalLayers = ['tokens', 'primitives']
   } = options;
 
   try {
@@ -310,28 +317,157 @@ async function live(config, options = {}) {
     
     const generator = new PDS.Generator(generatorConfig);
     
+    // 4) Preload critical styles synchronously to prevent flash
+    if (preloadStyles && typeof window !== 'undefined' && document.head) {
+      try {
+        // Generate critical CSS layers synchronously
+        const criticalCSS = criticalLayers
+          .map(layer => {
+            try {
+              return generator.css?.[layer] || '';
+            } catch (e) {
+              console.warn(`Failed to generate critical CSS for layer "${layer}":`, e);
+              return '';
+            }
+          })
+          .filter(css => css.trim())
+          .join('\n');
+
+        if (criticalCSS) {
+          // Remove any existing PDS critical styles
+          const existingCritical = document.head.querySelector('style[data-pds-critical]');
+          if (existingCritical) {
+            existingCritical.remove();
+          }
+
+          // Inject critical CSS as a <style> tag in head
+          const styleEl = document.createElement('style');
+          styleEl.setAttribute('data-pds-critical', '');
+          styleEl.textContent = criticalCSS;
+          
+          // Insert early in head, but after charset/viewport if present
+          const insertAfter = document.head.querySelector('meta[charset], meta[name="viewport"]');
+          if (insertAfter) {
+            insertAfter.parentNode.insertBefore(styleEl, insertAfter.nextSibling);
+          } else {
+            document.head.insertBefore(styleEl, document.head.firstChild);
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to preload critical styles:', error);
+        // Continue without critical styles - better than crashing
+      }
+    }
+    
     // Set the registry to use this designer
     PDS.registry.setDesigner(generator);
     
     // Apply styles globally if requested (default behavior)
     if (applyGlobalStyles) {
       await PDS.Generator.applyStyles(generator);
+      
+      // Clean up critical styles after adoptedStyleSheets are applied
+      if (preloadStyles && typeof window !== 'undefined') {
+        // Small delay to ensure adoptedStyleSheets have taken effect
+        setTimeout(() => {
+          const criticalStyle = document.head.querySelector('style[data-pds-critical]');
+          if (criticalStyle) {
+            criticalStyle.remove();
+          }
+        }, 100);
+      }
     }
     
-    // Set up auto-define base URL for lazy-loaded components
-    if (typeof window !== 'undefined' && window.document) {
-      window.__pds = window.__pds || {};
-      window.__pds.autoDefineBaseURL = autoDefineBaseURL;
+    // Note: auto-define base URL is used internally; no globals are written
+
+    // 5) Set up AutoDefiner for component auto-loading
+    let autoDefiner = null;
+    try {
+      // Check if PDS assets have been copied (postinstall ran) - browser only
+      if (typeof window !== 'undefined') {
+        const checkAssetsAvailable = async () => {
+          try {
+            const response = await fetch(`${autoDefineBaseURL}pds-icon.js`, { method: 'HEAD' });
+            return response.ok;
+          } catch (e) {
+            return false;
+          }
+        };
+        
+        const assetsAvailable = await checkAssetsAvailable();
+        if (!assetsAvailable) {
+          console.warn('⚠️ PDS components not found in auto-define directory.');
+          console.log('💡 Run the postinstall script to copy PDS assets:');
+          console.log('   node node_modules/@pure-ds/core/packages/pds-cli/bin/postinstall.js');
+          console.log('📖 See GETTING-STARTED.md for more information');
+        }
+      }
+      
+      // Only set up AutoDefiner in browser context
+      if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+        const defaultMapper = (tag) => {
+          switch (tag) {
+            case "pds-tabpanel":
+              return "pds-tabstrip.js";
+            default:
+              return `${tag}.js`;
+          }
+        };
+
+        // Configure AutoDefiner to load components from local auto-define directory
+        const autoDefineConfig = {
+          baseURL: autoDefineBaseURL,
+          predefine: autoDefinePreload,
+          scanExisting: true,
+          observeShadows: true,
+          patchAttachShadow: true,
+          debounceMs: 16,
+          mapper: (tag) => {
+            // Check if the component is already defined
+            if (customElements.get(tag)) {
+              return null; // Skip - already defined
+            }
+            
+            // Use the mapper to determine the file name
+            return (autoDefineMapper || defaultMapper)(tag);
+          },
+          onError: (tag, err) => {
+            // Check if this might be a missing PDS component
+            const pdsComponents = ['pds-icon', 'pds-drawer', 'pds-jsonform', 'pds-splitpanel', 'pds-tabstrip', 'pds-tabpanel', 'pds-toaster', 'pds-upload'];
+            if (pdsComponents.includes(tag)) {
+              console.warn(`⚠️ PDS component <${tag}> not found. Assets may not be installed.`);
+              console.log('💡 Run: node node_modules/@pure-ds/core/packages/pds-cli/bin/postinstall.js');
+            } else {
+              console.error(`❌ Auto-define error for <${tag}>:`, err);
+            }
+          }
+        };
+
+        // Create the AutoDefiner instance
+        autoDefiner = new AutoDefiner(autoDefineConfig);
+        
+        // Predefine critical components immediately
+        if (autoDefinePreload.length > 0) {
+          await AutoDefiner.define(autoDefinePreload);
+        }
+      }
+      
+    } catch (error) {
+      console.error('❌ Failed to initialize AutoDefiner:', error);
+      // Continue without AutoDefiner - not critical for core functionality
     }
     
+    // Determine resolved config to expose (generator stores input as options)
+    const resolvedConfig = generator?.options || generatorConfig;
+
     // Emit event to notify that PDS is ready
     if (typeof window !== 'undefined' && window.document) {
       window.dispatchEvent(new CustomEvent('pds-live-ready', {
-        detail: { generator, config: generator.config, theme: resolvedTheme }
+        detail: { generator, config: resolvedConfig, theme: resolvedTheme, autoDefiner }
       }));
     }
     
-    return { generator, config: generator.config, theme: resolvedTheme };
+    return { generator, config: resolvedConfig, theme: resolvedTheme, autoDefiner };
     
   } catch (error) {
     // Emit error event
@@ -412,6 +548,82 @@ async function setTheme(theme, options = {}) {
 
 /** Change the current theme programmatically */
 PDS.setTheme = setTheme;
+
+/**
+ * Preload minimal CSS to prevent flash of unstyled content.
+ * Call this BEFORE any DOM content is rendered for best results.
+ * This is a lightweight alternative to full PDS.live() initialization.
+ * 
+ * @param {object} config - Minimal PDS config (colors at minimum)
+ * @param {object} [options] - Optional settings
+ * @param {string} [options.theme] - Theme to generate for ('light', 'dark', or 'system')
+ * @param {string[]} [options.layers=['tokens']] - Which CSS layers to preload
+ * @returns {void}
+ * 
+ * @example
+ * ```html
+ * <script type="module">
+ *   import { PDS } from '@pure-ds/core';
+ *   // Call immediately to prevent flash
+ *   PDS.preloadCritical({ colors: { primary: '#007acc' } });
+ * </script>
+ * ```
+ */
+function preloadCritical(config, options = {}) {
+  if (typeof window === 'undefined' || !document.head || !config) {
+    return;
+  }
+
+  const { theme, layers = ['tokens'] } = options;
+  
+  try {
+    // Resolve theme quickly
+    let resolvedTheme = theme || 'light';
+    if (theme === 'system' || !theme) {
+      const prefersDark = window.matchMedia && 
+        window.matchMedia('(prefers-color-scheme: dark)').matches;
+      resolvedTheme = prefersDark ? 'dark' : 'light';
+    }
+
+    // Set theme attribute immediately
+    document.documentElement.setAttribute('data-theme', resolvedTheme);
+
+    // Generate minimal CSS synchronously
+    const tempConfig = { ...config, theme: resolvedTheme };
+    const tempGenerator = new PDS.Generator(tempConfig);
+    
+    const criticalCSS = layers
+      .map(layer => {
+        try {
+          return tempGenerator.css?.[layer] || '';
+        } catch (e) {
+          return '';
+        }
+      })
+      .filter(css => css.trim())
+      .join('\n');
+
+    if (criticalCSS) {
+      // Remove any existing critical styles
+      const existing = document.head.querySelector('style[data-pds-preload]');
+      if (existing) existing.remove();
+
+      // Inject immediately
+      const styleEl = document.createElement('style');
+      styleEl.setAttribute('data-pds-preload', '');
+      styleEl.textContent = criticalCSS;
+      
+      // Insert as early as possible
+      document.head.insertBefore(styleEl, document.head.firstChild);
+    }
+  } catch (error) {
+    // Fail silently - better than blocking page load
+    console.warn('PDS preload failed:', error);
+  }
+}
+
+/** Preload minimal CSS to prevent flash of unstyled content */
+PDS.preloadCritical = preloadCritical;
 
 Object.freeze(PDS);
 

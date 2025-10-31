@@ -3,7 +3,8 @@
   "version": "0.0.0-dev",
   "type": "module",
   "bin": {
-    "pds-cli": "bin/pds.js"
+    "pds-cli": "bin/pds.js",
+    "pds-sync-assets": "bin/sync-assets.js"
   },
   "dependencies": {}
 }
