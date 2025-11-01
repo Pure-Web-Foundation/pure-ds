@@ -1020,11 +1020,10 @@ ${this.#generateMediaQueries()}
   }
 
   #generateIconVariables(icons) {
-    let css = `1  /* Icon System */;
-      --icon-set: ${icons.set};
-      --icon-weight: ${icons.weight};
-      --icon-size: ${icons.defaultSize};
-    `;
+    let css = "  /* Icon System */\n";
+    css += `  --icon-set: ${icons.set};\n`;
+    css += `  --icon-weight: ${icons.weight};\n`;
+    css += `  --icon-size: ${icons.defaultSize};\n`;
 
     // Icon size scale
     Object.entries(icons.sizes).forEach(([key, value]) => {
@@ -1114,6 +1113,57 @@ ${this.#generateMediaQueries()}
     css += prefixRules('html[data-theme="dark"] ');
 
     return css;
+  }
+
+  // Generate ONLY the dark-mode variable overrides (no component rules),
+  // and do NOT wrap them in any @layer. This ensures that when a page has
+  // older unlayered CSS loaded, the explicit html[data-theme="dark"]
+  // variables here will take precedence and correctly flip the theme.
+  #generateDarkVariablesOnly(colors) {
+    if (!colors?.dark) return "";
+
+    let vars = "";
+    const generateNested = (obj, prefix = "") => {
+      Object.entries(obj).forEach(([key, value]) => {
+        if (typeof value === "object" && value !== null) {
+          generateNested(value, `${prefix}${key}-`);
+        } else if (typeof value === "string") {
+          vars += `  --color-${prefix}${key}: ${value};\n`;
+        }
+      });
+    };
+
+    Object.entries(colors.dark).forEach(([category, values]) => {
+      if (category === "surfaceSmart") return;
+      if (typeof values === "object" && values !== null) {
+        generateNested(values, `${category}-`);
+      }
+    });
+
+    // Smart surface tokens
+    let smart = "";
+    if (colors.dark.surfaceSmart) {
+      smart += `  /* Smart Surface Tokens (dark mode, context-aware) */\n`;
+      Object.entries(colors.dark.surfaceSmart).forEach(([surfaceKey, tokens]) => {
+        smart += `  --surface-${surfaceKey}-bg: ${tokens.bg};\n`;
+        smart += `  --surface-${surfaceKey}-text: ${tokens.text};\n`;
+        smart += `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`;
+        smart += `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`;
+        smart += `  --surface-${surfaceKey}-icon: ${tokens.icon};\n`;
+        smart += `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`;
+        smart += `  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`;
+        smart += `  --surface-${surfaceKey}-border: ${tokens.border};\n`;
+      });
+      smart += `\n`;
+    }
+
+    const semantic = `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n`;
+
+    const backdrop = `  /* Backdrop tokens - dark mode */\n  --backdrop-bg: linear-gradient(\n      135deg,\n      rgba(0, 0, 0, 0.6),\n      rgba(0, 0, 0, 0.4)\n    );\n  --backdrop-blur: 10px;\n  --backdrop-saturate: 120%;\n  --backdrop-brightness: 0.7;\n  --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));\n  --backdrop-opacity: 1;\n  \n  /* Legacy alias for backwards compatibility */\n  --backdrop-background: var(--backdrop-bg);\n`;
+
+    const mesh = this.#generateMeshGradientsDark(colors);
+
+    return `html[data-theme="dark"] {\n${vars}${smart}${semantic}${backdrop}${mesh}}\n`;
   }
 
   #generateMeshGradientsDark(colors) {
@@ -3943,9 +3993,16 @@ a.icon-only {
           ${this.#generateTransitionVariables(transitions)}
           ${this.#generateZIndexVariables(zIndex)}
           ${this.#generateIconVariables(icons)}
-       };
+       }
        ${this.#generateDarkModeCSS(colors)}
     }`;
+
+    // Important: emit a non-layered dark variables block so that manual
+    // html[data-theme="dark"] wins even if the page has older, unlayered
+    // PDS CSS loaded. Unlayered declarations outrank layered ones in the
+    // cascade; this small non-layered override ensures correct theming.
+    css += `\n/* Non-layered dark variables fallback (ensures attribute wins) */\n`;
+    css += this.#generateDarkVariablesOnly(colors);
 
     return css;
   }
@@ -4447,8 +4504,9 @@ export const ${name}CSS = \`${escapedCSS}\`;
       return;
     }
 
-    // Preferred: use the in-memory css text produced by the designer for atomic updates
-    const cssText = designer.css || designer.layeredCSS || "";
+  // Preferred: apply layered CSS so tokens + primitives + components + utilities
+  // are available in light DOM (ensures primitives like :where(button):active apply)
+  const cssText = designer.layeredCSS || designer.css || "";
     if (!cssText) {
       console.warn("[Generator] No CSS available on designer to apply");
       return;

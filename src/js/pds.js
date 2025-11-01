@@ -784,15 +784,25 @@ async function live(config) {
       await PDS.Generator.applyStyles(generator);
 
       // Clean up critical styles after adoptedStyleSheets are applied
-      if (preloadStyles && typeof window !== "undefined") {
+      if (typeof window !== "undefined") {
         // Small delay to ensure adoptedStyleSheets have taken effect
         setTimeout(() => {
+          // Remove any previously inlined critical/preload styles that were unlayered
           const criticalStyle = document.head.querySelector(
             "style[data-pds-critical]"
           );
-          if (criticalStyle) {
-            criticalStyle.remove();
-          }
+          if (criticalStyle) criticalStyle.remove();
+
+          const preloadStyle = document.head.querySelector(
+            "style[data-pds-preload]"
+          );
+          if (preloadStyle) preloadStyle.remove();
+
+          // Remove legacy fallback runtime style tag if present
+          const legacyRuntime = document.getElementById(
+            "pds-runtime-stylesheet"
+          );
+          if (legacyRuntime) legacyRuntime.remove();
         }, 100);
       }
     }
