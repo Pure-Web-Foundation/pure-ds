@@ -2,16 +2,8 @@ import "./pds-configurator/pds-configurator";
 import { PDS } from "./pds";
 import { config } from "./config";
 
-// Initialize PDS once at app startup for this project as well
-await PDS.live(config.design, {
-	autoDefineBaseURL: config.autoDefine?.baseURL,
-	autoDefinePreload: config.autoDefine?.predefine || ["pds-icon"],
-	autoDefineMapper: config.autoDefine?.mapper,
-	applyGlobalStyles: true,
-	manageTheme: true,
-	themeStorageKey: "pure-ds-theme",
-	preloadStyles: false,
-});
+// Initialize PDS once at app startup using the new unified shape
+await PDS.live(config);
 
 document.body.innerHTML = /*html*/ `
 		<header>

@@ -354,11 +354,59 @@ PDS.validateDesign = validateDesign;
  */
 function validateDesigns(designs = [], options = {}) {
   const results = [];
-  for (const d of designs || []) {
-    const name = d?.name || undefined;
-    const { ok, issues } = validateDesign(d, options);
+
+  const list = Array.isArray(designs)
+    ? designs
+    : designs && typeof designs === "object"
+    ? Object.values(designs)
+    : [];
+
+  for (const item of list) {
+    let name;
+    let configToValidate = null;
+
+    // Accept a few shapes:
+    // - string => treat as preset id/name
+    // - { preset, design?, name? } => resolve preset then merge overrides
+    // - full config object (legacy) => validate directly
+    if (typeof item === "string") {
+      const id = String(item).toLowerCase();
+      const found = presets?.[id] || Object.values(presets || {}).find((p) => __slugify(p.name) === id || String(p.name || "").toLowerCase() === id);
+      if (!found) {
+        results.push({ name: item, ok: false, issues: [{ path: "/", message: `Preset not found: ${item}`, ratio: 0, min: 0 }] });
+        continue;
+      }
+      name = found.name || id;
+      configToValidate = structuredClone(found);
+    } else if (item && typeof item === "object") {
+      name = item.name || item.preset || undefined;
+      if ("preset" in item || "design" in item) {
+        const effectivePreset = String(item.preset || "default").toLowerCase();
+        const found = presets?.[effectivePreset] || Object.values(presets || {}).find((p) => __slugify(p.name) === effectivePreset || String(p.name || "").toLowerCase() === effectivePreset);
+        if (!found) {
+          results.push({ name, ok: false, issues: [{ path: "/", message: `Preset not found: ${item.preset}`, ratio: 0, min: 0 }] });
+          continue;
+        }
+        let base = structuredClone(found);
+        if (item.design && typeof item.design === "object") {
+          base = __deepMerge(base, structuredClone(item.design));
+        }
+        configToValidate = base;
+      } else {
+        // Assume a full config object
+        configToValidate = item;
+      }
+    }
+
+    if (!configToValidate) {
+      results.push({ name, ok: false, issues: [{ path: "/", message: "Invalid design entry", ratio: 0, min: 0 }] });
+      continue;
+    }
+
+    const { ok, issues } = validateDesign(configToValidate, options);
     results.push({ name, ok, issues });
   }
+
   return { ok: results.every((r) => r.ok), results };
 }
 
@@ -366,33 +414,36 @@ function validateDesigns(designs = [], options = {}) {
 PDS.validateDesigns = validateDesigns;
 
 /**
- * Initialize PDS in live mode with the given configuration.
+ * Initialize PDS in live mode with the given configuration (new unified shape).
  * This is the main entry point for consuming applications.
  *
- * @param {object} config - The PDS configuration object
- * @param {object} [options] - Optional settings
- * @param {string} [options.autoDefineBaseURL] - Base URL for auto-define components (default: '/auto-define/')
- * @param {string[]} [options.autoDefinePreload] - Component tags to predefine immediately (e.g., ['pds-icon'])
- * @param {function} [options.autoDefineMapper] - Custom mapper function for tag-to-file mapping
- * @param {boolean} [options.applyGlobalStyles=true] - Whether to apply styles globally via adoptedStyleSheets
- * @param {boolean} [options.manageTheme=true] - Whether to automatically manage data-theme attribute and localStorage
- * @param {string} [options.themeStorageKey='pure-ds-theme'] - localStorage key for theme preference
- * @param {boolean} [options.preloadStyles=false] - Whether to inject critical CSS synchronously to prevent flash
- * @param {string[]} [options.criticalLayers=['tokens', 'primitives']] - Which CSS layers to preload synchronously
- * @returns {Promise<{generator: Generator, config: object, theme: string, autoDefiner?: any}>} The generator instance, resolved config, current theme, and autoDefiner if available
+ * Shape:
+ * PDS.live({
+ *   preset?: string,
+ *   design?: object,
+ *   autoDefine?: {
+ *     baseURL?: string,
+ *     predefine?: string[],
+ *     mapper?: (tag:string)=>string,
+ *     // plus any AutoDefiner flags: scanExisting, observeShadows, patchAttachShadow, debounceMs, onError
+ *   },
+ *   // runtime flags (optional)
+ *   applyGlobalStyles?: boolean,
+ *   manageTheme?: boolean,
+ *   themeStorageKey?: string,
+ *   preloadStyles?: boolean,
+ *   criticalLayers?: string[]
+ * })
+ *
+ * @param {object} config - The PDS configuration object (unified shape)
+ * @returns {Promise<{generator: Generator, config: object, theme: string, autoDefiner?: any}>}
  *
  * @example
- * ```js
- * import { PDS } from '@pure-ds/core';
- *
- * // With auto-define components
  * await PDS.live({
- *   colors: { primary: '#007acc' }
- * }, {
- *   autoDefineBaseURL: '/components/',
- *   autoDefinePreload: ['my-app', 'pds-icon']
+ *   preset: 'paper-and-ink',
+ *   design: { colors: { accent: '#FF4081' } },
+ *   autoDefine: { predefine: ['pds-icon'] }
  * });
- * ```
  */
 // Internal: resolve theme and set html[data-theme], return resolvedTheme and storedTheme
 function __resolveThemeAndApply({ manageTheme, themeStorageKey }) {
@@ -544,6 +595,8 @@ async function __setupAutoDefinerAndEnhancers(options) {
     autoDefinePreload = [],
     autoDefineMapper = null,
     enhancers = [],
+    // New: raw overrides for AutoDefiner config (scanExisting, observeShadows, etc.)
+    autoDefineOverrides = null,
   } = options;
 
   // Warn if assets not present (best-effort)
@@ -609,6 +662,8 @@ async function __setupAutoDefinerAndEnhancers(options) {
           console.error(`❌ Auto-define error for <${tag}>:`, err);
         }
       },
+      // Merge user overrides (new API) last
+      ...(autoDefineOverrides && typeof autoDefineOverrides === 'object' ? autoDefineOverrides : {}),
     };
 
     if (AutoDefinerCtor) {
@@ -626,7 +681,7 @@ async function __setupAutoDefinerAndEnhancers(options) {
   return { autoDefiner };
 }
 
-async function live(config, options = {}) {
+async function live(config) {
   if (!config || typeof config !== "object") {
     throw new Error("PDS.live() requires a valid configuration object");
   }
@@ -637,16 +692,18 @@ async function live(config, options = {}) {
     window.PDS = PDS;
   }
 
-  const {
-    autoDefineBaseURL = "/auto-define/",
-    autoDefinePreload = [],
-    autoDefineMapper = null,
-    applyGlobalStyles = true,
-    manageTheme = true,
-    themeStorageKey = "pure-ds-theme",
-    preloadStyles = false,
-    criticalLayers = ["tokens", "primitives"],
-  } = options;
+  // Extract runtime flags directly from unified config
+  let applyGlobalStyles = config.applyGlobalStyles ?? true;
+  let manageTheme = config.manageTheme ?? true;
+  let themeStorageKey = config.themeStorageKey ?? "pure-ds-theme";
+  let preloadStyles = config.preloadStyles ?? false;
+  let criticalLayers = config.criticalLayers ?? ["tokens", "primitives"];
+
+  // New unified shape: autoDefine inside the first argument
+  const cfgAuto = (config && config.autoDefine) || null;
+  if (cfgAuto && typeof cfgAuto === 'object') {
+    // no-op here; resolved below for __setupAutoDefinerAndEnhancers
+  }
 
   try {
     // 1) Handle theme preference
@@ -655,8 +712,8 @@ async function live(config, options = {}) {
       themeStorageKey,
     });
 
-    // 2) Normalize first-arg API: support { preset, design, enhancers } or plain config
-    const normalized = __normalizeInitConfig(config, options);
+  // 2) Normalize first-arg API: support { preset, design, enhancers }
+  const normalized = __normalizeInitConfig(config, {});
     const userEnhancers = normalized.enhancers;
     const generatorConfig = structuredClone(normalized.generatorConfig);
     if (manageTheme) {
@@ -746,10 +803,11 @@ async function live(config, options = {}) {
     let autoDefiner = null;
     try {
       const res = await __setupAutoDefinerAndEnhancers({
-        autoDefineBaseURL,
-        autoDefinePreload,
-        autoDefineMapper,
+        autoDefineBaseURL: (cfgAuto && cfgAuto.baseURL) || "/auto-define/",
+        autoDefinePreload: (cfgAuto && Array.isArray(cfgAuto.predefine) && cfgAuto.predefine) || [],
+        autoDefineMapper: (cfgAuto && typeof cfgAuto.mapper === 'function' && cfgAuto.mapper) || null,
         enhancers: userEnhancers,
+        autoDefineOverrides: cfgAuto || null,
       });
       autoDefiner = res.autoDefiner;
     } catch (error) {
@@ -796,23 +854,38 @@ async function live(config, options = {}) {
 PDS.live = live;
 
 /**
- * Initialize PDS in static mode with the given configuration.
- * Signature mirrors PDS.live(config, options).
+ * Initialize PDS in static mode with the same unified configuration shape as PDS.live.
+ *
+ * Shape:
+ * PDS.static({
+ *   preset?: string,
+ *   design?: object,
+ *   autoDefine?: {
+ *     baseURL?: string,
+ *     predefine?: string[],
+ *     mapper?: (tag:string)=>string,
+ *     // plus any AutoDefiner flags
+ *   },
+ *   // static/runtime flags (optional)
+ *   applyGlobalStyles?: boolean,
+ *   manageTheme?: boolean,
+ *   themeStorageKey?: string,
+ *   staticPaths?: Record<string,string>
+ * })
  */
-async function staticInit(config, options = {}) {
+async function staticInit(config) {
   if (!config || typeof config !== "object") {
     throw new Error("PDS.static() requires a valid configuration object");
   }
 
-  const {
-    autoDefineBaseURL = "/auto-define/",
-    autoDefinePreload = [],
-    autoDefineMapper = null,
-    applyGlobalStyles = true,
-    manageTheme = true,
-    themeStorageKey = "pure-ds-theme",
-    staticPaths = {},
-  } = options;
+  const applyGlobalStyles = config.applyGlobalStyles ?? true;
+  const manageTheme = config.manageTheme ?? true;
+  const themeStorageKey = config.themeStorageKey ?? "pure-ds-theme";
+  const staticPaths = config.staticPaths ?? {};
+  const cfgAuto = (config && config.autoDefine) || null;
+  const autoDefineBaseURL = (cfgAuto && cfgAuto.baseURL) || "/auto-define/";
+  const autoDefinePreload = (cfgAuto && Array.isArray(cfgAuto.predefine) && cfgAuto.predefine) || [];
+  const autoDefineMapper = (cfgAuto && typeof cfgAuto.mapper === 'function' && cfgAuto.mapper) || null;
 
   try {
     // 1) Theme
@@ -821,8 +894,8 @@ async function staticInit(config, options = {}) {
       themeStorageKey,
     });
 
-    // Normalize first-arg to allow { preset, design, enhancers }
-    const normalized = __normalizeInitConfig(config, options);
+  // Normalize first-arg to allow { preset, design, enhancers }
+  const normalized = __normalizeInitConfig(config, {});
     const userEnhancers = normalized.enhancers;
 
     // 2) Static mode registry
@@ -853,6 +926,7 @@ async function staticInit(config, options = {}) {
         autoDefinePreload,
         autoDefineMapper,
         enhancers: userEnhancers,
+        autoDefineOverrides: cfgAuto || null,
       });
       autoDefiner = res.autoDefiner;
     } catch (error) {

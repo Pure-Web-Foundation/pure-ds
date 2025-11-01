@@ -54,7 +54,7 @@ class UploadArea extends HTMLElement {
 
   async _adoptStyles() {
     // Component-specific styles (button styles come from primitives)
-    const componentStyles = PDS.createStylesheet(`
+    const componentStyles = PDS.createStylesheet(/*css*/`
       @layer components {
         :host {
           display: block;

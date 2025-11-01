@@ -1,120 +1,128 @@
 # Getting Started with Pure Design System (PDS)
 
-Pure Design System (PDS) is a comprehensive design system that enables rapid development of consistent, accessible user interfaces. This guide will help you get started with PDS in your project.
+Pure Design System (PDS) is a browser‑native design system for building consistent, accessible UIs. This guide shows the modern setup using the unified API and the virtual Lit import.
 
-## Installation
+## Install
 
-### Published Package (Recommended)
+Install the core package into your app:
+
 ```bash
 npm install @pure-ds/core
 ```
 
-The package will automatically copy PDS components to your project's web root during installation.
-
-### Development (npm link)
-For development or when using unreleased versions:
+Most projects will also sync the web assets (components, icons) into your web root during install via the included postinstall script. If needed, you can run it manually:
 
 ```bash
-# In the PDS project directory
-npm link
-
-# In your project directory
-npm link @pure-ds/core
-
-# Manually sync assets
 node node_modules/@pure-ds/core/packages/pds-cli/bin/postinstall.js
 ```
 
-## Basic Usage
+## Lit without hardcoding paths
 
-### 1. Initialize PDS
+PDS components and any of your own web components should import Lit from a virtual specifier so consumers can choose how to resolve it:
 
-Create or update your main JavaScript file:
+```js
+import { html, css, LitElement } from '#pds/lit';
+```
+
+- In the browser (no bundler), add an import map to map `#pds/lit` to a file your server hosts (this repo ships `/assets/js/lit.js`):
+
+```html
+<script type="importmap">
+{
+  "imports": {
+    "#pds/lit": "/assets/js/lit.js"
+  }
+}
+</script>
+```
+
+- In bundlers, alias `#pds/lit` to the real `lit` package:
+  - Vite
+    ```js
+    // vite.config.ts
+    export default {
+      resolve: { alias: { '#pds/lit': 'lit' } }
+    }
+    ```
+  - Webpack
+    ```js
+    // webpack.config.js
+    module.exports = {
+      resolve: { alias: { '#pds/lit': 'lit' } }
+    }
+    ```
+  - Rollup
+    ```js
+    // rollup.config.mjs
+    import alias from '@rollup/plugin-alias';
+    export default {
+      plugins: [alias({ entries: [{ find: '#pds/lit', replacement: 'lit' }] })]
+    }
+    ```
+
+## Quick start (live mode)
+
+Initialize PDS at app startup. The unified config shape keeps design and runtime concerns separate:
 
 ```js
 import { PDS } from '@pure-ds/core';
 
-// Initialize PDS with your design configuration
-const { autoDefiner, config } = await PDS.live({
-  colors: {
-    primary: '#007acc',
-    secondary: '#6c757d'
+await PDS.live({
+  // Pick a preset and optionally override pieces
+  preset: 'default',
+  design: {
+    colors: { primary: '#007acc' }
   },
-  typography: {
-    fontFamily: 'Inter, system-ui, sans-serif'
-  }
-});
 
-// You can use the returned values if needed
-console.log('PDS config applied:', config);
-// autoDefiner is available for advanced usage, but not required for normal use
+  // AutoDefine controls how components are discovered/lazy‑loaded
+  autoDefine: {
+    baseURL: '/auto-define/',        // where your <pds-*> web components live
+    predefine: ['pds-icon'],         // optional: eagerly register some tags
+    // mapper: (tag) => `${tag}.js`, // optional: customize file mapping
+  },
+
+  // Runtime flags
+  applyGlobalStyles: true,           // adopt global styles into document
+  manageTheme: true,                 // keep html[data-theme] in sync
+  themeStorageKey: 'pure-ds-theme',
+  preloadStyles: false,              // set true to inline critical CSS very early
+  criticalLayers: ['tokens','primitives']
+});
 ```
 
-### 2. Use PDS Components
-
-PDS components are automatically available in your HTML without imports:
+Use components directly in HTML—AutoDefiner will lazy‑load the module when a tag appears:
 
 ```html
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>My App with PDS</title>
-</head>
-<body>
-  <!-- PDS components work automatically -->
-  <pds-icon name="star"></pds-icon>
-  <pds-drawer title="Settings">
-    <p>Drawer content here</p>
-  </pds-drawer>
-  
-  <!-- Your custom components also work -->
-  <my-app></my-app>
-  
-  <script type="module" src="/src/main.js"></script>
-</body>
-</html>
+<pds-icon name="star"></pds-icon>
+<pds-drawer title="Settings"></pds-drawer>
 ```
-
-### 3. Available Components
-
-PDS provides these components out of the box:
-
-- **`<pds-icon>`** - Scalable vector icons
-- **`<pds-drawer>`** - Slide-out panels and navigation
-- **`<pds-jsonform>`** - Dynamic forms from JSON schema
-- **`<pds-splitpanel>`** - Resizable split layouts
-- **`<pds-tabstrip>`** - Tabbed interfaces
-- **`<pds-toaster>`** - Toast notifications
-- **`<pds-upload>`** - File upload with drag & drop
 
 ## Static mode (build once, serve anywhere)
 
-If you don’t need live regeneration at runtime, you can generate a static bundle of PDS assets and initialize with `PDS.static()`.
+If you don’t need runtime generation, point PDS at prebuilt constructable stylesheets and the auto‑define components you host.
 
-1) Generate assets into your app’s web root
+1) Generate assets into your web root (defaults to `pds/` unless configured)
 
 ```bash
 npm run pds:static
 ```
 
-This will:
-- Detect your web root (public/, static/, dist/, etc.)
-- Create a base folder (default `pds/`, override with `staticBase` in `pds-config.js`) with:
-  - `assets/img/pds-icons.svg`
-  - `auto-define/*.js` (web components)
-  - `css/pds-*.css` and `css/pds-*.css.js`
-  - All PDS `*.md` docs (e.g., `README.md`, `GETTING-STARTED.md`, etc.) copied into the same base
+This typically creates:
 
-Optionally create a `pds-config.js` in your project root to control icons, tokens, etc. If omitted, the internal default preset is used.
+- `pds/assets/img/pds-icons.svg`
+- `pds/auto-define/*.js` (web components)
+- `pds/css/pds-*.css` and `pds/css/pds-*.css.js` (constructable styles)
+- docs copied alongside (README.md, GETTING-STARTED.md, …) when enabled
 
-2) Initialize PDS in static mode
+2) Initialize in static mode with the same unified shape:
 
 ```js
 import { PDS } from '@pure-ds/core';
 
-await PDS.static({ /* your config if needed */ }, {
-  // Point to the generated constructable stylesheets
+await PDS.static({
+  preset: 'default',
+
+  // Where to fetch prebuilt constructable stylesheets from
   staticPaths: {
     tokens: '/pds/css/pds-tokens.css.js',
     primitives: '/pds/css/pds-primitives.css.js',
@@ -122,12 +130,20 @@ await PDS.static({ /* your config if needed */ }, {
     utilities: '/pds/css/pds-utilities.css.js',
     styles: '/pds/css/pds-styles.css.js'
   },
-  // Components auto-load from here
-  autoDefineBaseURL: '/pds/auto-define/'
+
+  // Components base directory
+  autoDefine: { baseURL: '/pds/auto-define/' },
+
+  // Optional flags (same as live)
+  applyGlobalStyles: true,
+  manageTheme: true,
+  themeStorageKey: 'pure-ds-theme'
 });
+```
+
 ### Configure base folder
 
-Set a custom base folder name for static assets and docs in your project’s `pds-config.js`:
+Set a custom base folder name for static assets/docs in your project’s `pds-config.js`:
 
 ```js
 export default {
@@ -136,110 +152,89 @@ export default {
 }
 ```
 
-The static exporter will generate `/<webroot>/design-system` instead, and copy all `*.md` there.
+The static exporter will generate `/<webroot>/design-system` and copy docs there.
 
 ### Viewing docs in the configurator
 
-The configurator can render Markdown using Showdown. It will try to load docs from the static base (default `/pds`).
-You can programmatically trigger a docs view:
+The configurator can render Markdown docs; it looks under the static base (default `/pds`). You can request a file:
 
 ```js
-// Show GETTING-STARTED.md
 document.dispatchEvent(new CustomEvent('pds-view-docs', { detail: { file: 'GETTING-STARTED.md' } }));
-
-// Or override the base folder globally (optional)
+// Optionally override the docs base
 window.PDS_DOCS_BASE = '/design-system';
 ```
-```
 
-Then update your app to use `PDS.static()` instead of `PDS.live()`.
+## Advanced configuration
 
-## Advanced Configuration
-
-### Theme Management
+### Theme management
 
 ```js
-// Initialize with system theme detection
 await PDS.live({
-  colors: { primary: '#007acc' }
-}, {
-  manageTheme: true,           // Auto-manage data-theme attribute
-  themeStorageKey: 'my-theme'  // localStorage key
+  preset: 'default',
+  design: { colors: { primary: '#007acc' } },
+  manageTheme: true,
+  themeStorageKey: 'my-theme'
 });
 
-// Programmatically change theme
-await PDS.setTheme('dark');    // 'light', 'dark', or 'system'
+// Change theme later
+await PDS.setTheme('dark'); // 'light' | 'dark' | 'system'
 ```
 
-### Flash Prevention
-
-Prevent flash of unstyled content by preloading critical styles:
+### Preventing flash (critical CSS)
 
 ```js
 await PDS.live({
-  colors: { primary: '#007acc' }
-}, {
+  preset: 'default',
+  design: { colors: { primary: '#007acc' } },
   preloadStyles: true,
-  criticalLayers: ['tokens', 'primitives']
+  criticalLayers: ['tokens','primitives']
 });
 ```
 
-### Auto-Define Configuration
-
-Customize component loading behavior:
+### Auto‑Define tuning
 
 ```js
 await PDS.live({
-  colors: { primary: '#007acc' }
-}, {
-  autoDefineBaseURL: '/components/',  // Custom component directory
-  autoDefinePreload: ['my-app'],      // Pre-load specific components
-  autoDefineMapper: (tag) => {        // Custom file mapping
-    if (tag === 'my-special-component') {
-      return 'special/component.js';
-    }
-    return `${tag}.js`;
+  preset: 'default',
+  autoDefine: {
+    baseURL: '/components/',
+    predefine: ['my-app'],
+    mapper: (tag) => tag === 'my-special-component' ? 'special/component.js' : `${tag}.js`,
+    // You can also override observer flags here if needed:
+    // scanExisting: true, observeShadows: true, patchAttachShadow: true, debounceMs: 16
   }
 });
 ```
 
-## Project Structure
-
-After installation, your project should have this structure:
+## Project structure (typical)
 
 ```
 your-project/
-├── public/
-│   ├── auto-define/          # PDS components (auto-copied)
-│   │   ├── pds-icon.js
-│   │   ├── pds-drawer.js
-│   │   └── ...
-│   ├── assets/
-│   │   └── img/
-│   │       └── pds-icons.svg # PDS icons (auto-copied)
-│   └── index.html
-├── src/
-│   └── main.js               # Your PDS initialization
-└── package.json
+├─ public/
+│  ├─ auto-define/          # PDS components (hosted for the browser)
+│  ├─ assets/
+│  │  ├─ js/lit.js          # Lit shim for import maps
+│  │  └─ img/pds-icons.svg  # PDS icons
+│  └─ index.html
+├─ src/
+│  └─ main.js               # Your PDS initialization
+└─ package.json
 ```
 
-## Framework Integration
+## Framework integration tips
 
-### Next.js
+### Next.js (app router)
 
 ```js
-// pages/_app.js or app/layout.js
-import { PDS } from '@pure-ds/core';
+// app/layout.js
 import { useEffect } from 'react';
+import { PDS } from '@pure-ds/core';
 
-export default function App({ Component, pageProps }) {
+export default function RootLayout({ children }) {
   useEffect(() => {
-    PDS.live({
-      colors: { primary: '#007acc' }
-    });
+    PDS.live({ preset: 'default' });
   }, []);
-
-  return <Component {...pageProps} />;
+  return children;
 }
 ```
 
@@ -247,116 +242,88 @@ export default function App({ Component, pageProps }) {
 
 ```js
 // src/main.js
-import { PDS } from '@pure-ds/co1re';
-
-// Initialize PDS
-await PDS.live({
-  colors: { primary: '#007acc' }
-});
-
-// Your app code
-import './App.js';
+import { PDS } from '@pure-ds/core';
+await PDS.live({ preset: 'default' });
 ```
+
+Add the alias in `vite.config.*` as shown above so `#pds/lit` resolves to `lit` in dev/build.
 
 ### Vanilla HTML
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <script type="module">
-    import { PDS } from '@pure-ds/core';
-    
-    // Initialize immediately
-    await PDS.live({
-      colors: { primary: '#007acc' }
-    });
-  </script>
-</head>
-<body>
-  <pds-icon name="star"></pds-icon>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <!-- Map the virtual Lit specifier for the browser -->
+    <script type="importmap">
+    { "imports": { "#pds/lit": "/assets/js/lit.js" } }
+    </script>
+    <script type="module">
+      import { PDS } from '/assets/js/pds.js';
+      await PDS.live({ preset: 'default' });
+    </script>
+  </head>
+  <body>
+    <pds-icon name="star"></pds-icon>
+  </body>
 </html>
 ```
 
 ## Troubleshooting
 
-### Components Not Loading
+### Components not loading
 
-If PDS components aren't working:
+1) Ensure your components directory exists (default `/auto-define/` or `/pds/auto-define/` in static mode).
 
-1. **Check assets were copied**: Look for `public/auto-define/` directory
-2. **Manual asset sync**: Run the postinstall script manually:
-   ```bash
-   node node_modules/@pure-ds/core/packages/pds-cli/bin/postinstall.js
-   ```
-3. **Check console**: Look for AutoDefiner messages and errors
+2) If you rely on import maps, confirm the `#pds/lit` mapping points at a valid file (network tab should show `/assets/js/lit.js`).
 
-### Development Workflow
+3) Manually sync assets if needed:
 
-When using `npm link` for development:
+```bash
+node node_modules/@pure-ds/core/packages/pds-cli/bin/postinstall.js
+```
 
-1. Link the package: `npm link @pure-ds/core`
-2. Sync assets manually when needed (components updated, etc.)
-3. Restart your dev server if components don't update
+### Dev linking (@pure-ds/core)
 
-### Asset Conflicts
+When using `npm link` for local development, re‑run the postinstall/sync script whenever component files change.
 
-If you've modified PDS components and they're overwritten:
+## API reference (essentials)
 
-1. Use the sync script with `--force` to overwrite
-2. Or rename your customized components to avoid conflicts
-3. Check `.pds-install.json` for tracking information
+### PDS.live(config)
 
-## API Reference
+Initializes PDS in live/designer mode.
 
-### PDS.live(config, options)
+- config: `{ preset?, design?, autoDefine?, applyGlobalStyles?, manageTheme?, themeStorageKey?, preloadStyles?, criticalLayers? }`
+- returns: `Promise<{ generator, config, theme, autoDefiner }>`
 
-Main initialization function.
+### PDS.static(config)
 
-**Parameters:**
-- `config` (object) - Design system configuration
-- `options` (object) - Runtime options
+Initializes PDS in static mode using prebuilt assets.
 
-**Returns:** Promise resolving to `{ generator, config, theme, autoDefiner }`
+- config: `{ preset?, staticPaths, autoDefine?, applyGlobalStyles?, manageTheme?, themeStorageKey? }`
+- returns: `Promise<{ config, theme, autoDefiner }>`
 
 ### PDS.setTheme(theme, options)
 
-Change theme programmatically.
-
-**Parameters:**
-- `theme` (string) - 'light', 'dark', or 'system'
-- `options` (object) - Theme options
-
-**Returns:** Promise resolving to resolved theme name
+Change theme programmatically; `theme` is `'light' | 'dark' | 'system'`.
 
 ### PDS.preloadCritical(config, options)
 
-Preload minimal CSS to prevent flash.
-
-**Parameters:**
-- `config` (object) - Minimal design configuration
-- `options` (object) - Preload options
+Low‑level helper to inject minimal CSS synchronously to prevent flash.
 
 ### PDS.validateDesign(config, options)
 
-Validate design configuration for accessibility.
+Validate a design config for basic accessibility contrast checks.
 
-**Parameters:**
-- `config` (object) - Design configuration to validate
-- `options` (object) - Validation options
+## Migration notes (from older API)
 
-**Returns:** `{ ok: boolean, issues: Array }`
-
-## Next Steps
-
-- Explore the [Component Documentation](./components.md)
-- Learn about [Design Tokens](./tokens.md)
-- See [Advanced Patterns](./patterns.md)
-- Check out [Examples](./examples/)
+- Old: `PDS.live(config, options)` → New: `PDS.live({ ...config, /* options merged here */ })`
+- Move `autoDefineBaseURL`, `autoDefinePreload`, `autoDefineMapper` under `autoDefine: { baseURL, predefine, mapper }`.
+- `PDS.static()` now accepts the same unified shape; pass `staticPaths` inside the single config object.
 
 ## Support
 
-- 📖 [Full Documentation](./docs/)
-- 🐛 [Report Issues](https://github.com/mvneerven/pure-ds/issues)
-- 💬 [Discussions](https://github.com/mvneerven/pure-ds/discussions)
+- 📖 Full docs live in this repo’s `/docs`
+- 🐛 Issues: https://github.com/mvneerven/pure-ds/issues
+- 💬 Discussions: https://github.com/mvneerven/pure-ds/discussions
