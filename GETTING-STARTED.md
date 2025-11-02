@@ -67,7 +67,8 @@ Initialize PDS at app startup. The unified config shape keeps design and runtime
 ```js
 import { PDS } from '@pure-ds/core';
 
-await PDS.live({
+await PDS.start({
+  mode: 'live',
   // Pick a preset and optionally override pieces
   preset: 'default',
   design: {
@@ -119,7 +120,8 @@ This typically creates:
 ```js
 import { PDS } from '@pure-ds/core';
 
-await PDS.static({
+await PDS.start({
+  mode: 'static',
   preset: 'default',
 
   // Where to fetch prebuilt constructable stylesheets from
@@ -169,7 +171,7 @@ window.PDS_DOCS_BASE = '/design-system';
 ### Theme management
 
 ```js
-await PDS.live({
+await PDS.start({ mode: 'live',
   preset: 'default',
   design: { colors: { primary: '#007acc' } },
   manageTheme: true,
@@ -183,7 +185,7 @@ await PDS.setTheme('dark'); // 'light' | 'dark' | 'system'
 ### Preventing flash (critical CSS)
 
 ```js
-await PDS.live({
+await PDS.start({ mode: 'live',
   preset: 'default',
   design: { colors: { primary: '#007acc' } },
   preloadStyles: true,
@@ -194,7 +196,7 @@ await PDS.live({
 ### Auto‑Define tuning
 
 ```js
-await PDS.live({
+await PDS.start({ mode: 'live',
   preset: 'default',
   autoDefine: {
     baseURL: '/components/',
@@ -232,7 +234,7 @@ import { PDS } from '@pure-ds/core';
 
 export default function RootLayout({ children }) {
   useEffect(() => {
-    PDS.live({ preset: 'default' });
+    PDS.start({ mode: 'live', preset: 'default' });
   }, []);
   return children;
 }
@@ -243,7 +245,7 @@ export default function RootLayout({ children }) {
 ```js
 // src/main.js
 import { PDS } from '@pure-ds/core';
-await PDS.live({ preset: 'default' });
+await PDS.start({ mode: 'live', preset: 'default' });
 ```
 
 Add the alias in `vite.config.*` as shown above so `#pds/lit` resolves to `lit` in dev/build.
@@ -260,8 +262,8 @@ Add the alias in `vite.config.*` as shown above so `#pds/lit` resolves to `lit` 
     { "imports": { "#pds/lit": "/assets/js/lit.js" } }
     </script>
     <script type="module">
-      import { PDS } from '/assets/js/pds.js';
-      await PDS.live({ preset: 'default' });
+  import { PDS } from '/assets/js/pds.js';
+  await PDS.start({ mode: 'live', preset: 'default' });
     </script>
   </head>
   <body>
@@ -290,19 +292,14 @@ When using `npm link` for local development, re‑run the postinstall/sync scrip
 
 ## API reference (essentials)
 
-### PDS.live(config)
+### PDS.start(config)
 
-Initializes PDS in live/designer mode.
+Unified entry point. Starts PDS in live or static mode.
 
-- config: `{ preset?, design?, autoDefine?, applyGlobalStyles?, manageTheme?, themeStorageKey?, preloadStyles?, criticalLayers? }`
-- returns: `Promise<{ generator, config, theme, autoDefiner }>`
+- config: `{ mode?: 'live' | 'static' = 'live', preset?, design?, autoDefine?, applyGlobalStyles?, manageTheme?, themeStorageKey?, preloadStyles?, criticalLayers?, staticPaths? }`
+- returns: `Promise<{ generator?, config, theme, autoDefiner }>` — `generator` is present in live mode
 
-### PDS.static(config)
-
-Initializes PDS in static mode using prebuilt assets.
-
-- config: `{ preset?, staticPaths, autoDefine?, applyGlobalStyles?, manageTheme?, themeStorageKey? }`
-- returns: `Promise<{ config, theme, autoDefiner }>`
+<!-- Note: PDS.live() and PDS.static() have been consolidated into PDS.start(). -->
 
 ### PDS.setTheme(theme, options)
 
@@ -318,9 +315,7 @@ Validate a design config for basic accessibility contrast checks.
 
 ## Migration notes (from older API)
 
-- Old: `PDS.live(config, options)` → New: `PDS.live({ ...config, /* options merged here */ })`
-- Move `autoDefineBaseURL`, `autoDefinePreload`, `autoDefineMapper` under `autoDefine: { baseURL, predefine, mapper }`.
-- `PDS.static()` now accepts the same unified shape; pass `staticPaths` inside the single config object.
+- Migration from older API: Use `PDS.start({ mode: 'live' | 'static', ... })` instead of `PDS.live()` / `PDS.static()` and move AutoDefine options under `autoDefine: { baseURL, predefine, mapper }`.
 
 ## Support
 

@@ -87,7 +87,7 @@ PDS.findComponentForElement = findComponentForElement;
 /**
  * Default DOM enhancers shipped with PDS. These are lightweight progressive
  * enhancements that can be applied to vanilla markup. Consumers can override
- * or add to these via the `enhancers` option of PDS.live()/PDS.static().
+ * or add to these via the `enhancers` option of PDS.start({ mode }).
  */
 PDS.defaultEnhancers = [
   {
@@ -415,10 +415,11 @@ PDS.validateDesigns = validateDesigns;
 
 /**
  * Initialize PDS in live mode with the given configuration (new unified shape).
- * This is the main entry point for consuming applications.
+ * Typically invoked via PDS.start({ mode: 'live', ... }).
  *
  * Shape:
- * PDS.live({
+ * PDS.start({
+ *   mode: 'live',
  *   preset?: string,
  *   design?: object,
  *   autoDefine?: {
@@ -439,7 +440,7 @@ PDS.validateDesigns = validateDesigns;
  * @returns {Promise<{generator: Generator, config: object, theme: string, autoDefiner?: any}>}
  *
  * @example
- * await PDS.live({
+ * await PDS.start({ mode: 'live',
  *   preset: 'paper-and-ink',
  *   design: { colors: { accent: '#FF4081' } },
  *   autoDefine: { predefine: ['pds-icon'] }
@@ -683,7 +684,7 @@ async function __setupAutoDefinerAndEnhancers(options) {
 
 async function live(config) {
   if (!config || typeof config !== "object") {
-    throw new Error("PDS.live() requires a valid configuration object");
+    throw new Error("PDS.start({ mode: 'live', ... }) requires a valid configuration object");
   }
 
   // Expose PDS on window for easy dev console access (optional)
@@ -860,14 +861,31 @@ async function live(config) {
   }
 }
 
-/** Initialize PDS in live mode with the given configuration */
-PDS.live = live;
+/**
+ * Start PDS given a unified configuration and an explicit mode.
+ *
+ * @param {object} config - Unified configuration
+ * @param {('live'|'static')} [config.mode='live'] - Runtime mode selector
+ * @returns {Promise<any>} Live returns { generator, config, theme, autoDefiner }; Static returns { config, theme, autoDefiner }
+ */
+async function start(config) {
+  const mode = (config && config.mode) || "live";
+  const { mode: _omit, ...rest } = config || {};
+  if (mode === "static") return staticInit(rest);
+  return live(rest);
+}
+
+/** Primary unified entry point */
+PDS.start = start;
+
+// Note: PDS.live is not exported. Use PDS.start({ mode: 'live', ... }).
 
 /**
- * Initialize PDS in static mode with the same unified configuration shape as PDS.live.
+ * Initialize PDS in static mode with the same unified configuration shape as live mode.
  *
  * Shape:
- * PDS.static({
+ * PDS.start({
+ *   mode: 'static',
  *   preset?: string,
  *   design?: object,
  *   autoDefine?: {
@@ -885,7 +903,7 @@ PDS.live = live;
  */
 async function staticInit(config) {
   if (!config || typeof config !== "object") {
-    throw new Error("PDS.static() requires a valid configuration object");
+    throw new Error("PDS.start({ mode: 'static', ... }) requires a valid configuration object");
   }
 
   const applyGlobalStyles = config.applyGlobalStyles ?? true;
@@ -971,8 +989,7 @@ async function staticInit(config) {
   }
 }
 
-/** Initialize PDS in static mode with the given configuration */
-PDS.static = staticInit;
+// Note: PDS.static is not exported. Use PDS.start({ mode: 'static', ... }).
 
 /**
  * Change the current theme programmatically.
@@ -1052,7 +1069,7 @@ PDS.setTheme = setTheme;
 /**
  * Preload minimal CSS to prevent flash of unstyled content.
  * Call this BEFORE any DOM content is rendered for best results.
- * This is a lightweight alternative to full PDS.live() initialization.
+ * This is a lightweight alternative to full PDS.start({ mode: 'live' }) initialization.
  *
  * @param {object} config - Minimal PDS config (colors at minimum)
  * @param {object} [options] - Optional settings

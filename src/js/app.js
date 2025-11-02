@@ -3,7 +3,7 @@ import { PDS } from "./pds";
 import { config } from "./config";
 
 // Initialize PDS once at app startup using the new unified shape
-await PDS.live(config);
+await PDS.start({ mode: 'live', ...config });
 
 document.body.innerHTML = /*html*/ `
 		<header>

@@ -186,7 +186,7 @@ async function main() {
     await writeFile(path.join(cssDir, 'pds-utilities.css'), designer.utilitiesCSS, 'utf-8');
     await writeFile(path.join(cssDir, 'pds-styles.css'), designer.layeredCSS, 'utf-8');
 
-    // Also emit constructable stylesheet modules for PDS.static()
+  // Also emit constructable stylesheet modules for PDS.start({ mode: 'static' })
     const modules = designer.getCSSModules();
     for (const [filename, content] of Object.entries(modules)) {
       await writeFile(path.join(cssDir, filename), content, 'utf-8');

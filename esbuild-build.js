@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import esbuild from 'esbuild';
 import path from 'path';
-import { mkdir, copyFile } from 'fs/promises';
+import { mkdir, copyFile, readdir, unlink } from 'fs/promises';
 import { pathToFileURL } from 'url';
 
 // Validate all design presets at build time to ensure a11y compliance
@@ -38,7 +38,7 @@ const outdir = path.join(process.cwd(), 'dist');
 async function run() {
   try {
     await esbuild.build({
-      entryPoints: ['src/js/lit.js', 'src/js/app.js'],
+      entryPoints: ['src/js/lit.js', 'src/js/app.js', 'src/js/pds.js'],
       bundle: true,
       platform: 'browser',
       target: 'es2022',
@@ -63,6 +63,17 @@ async function run() {
     } catch (err) {
       console.warn('No declaration file to copy:', declSrc, err.message);
     }
+
+    // Clean up stale source maps in public assets (sourcemap is disabled for prod build)
+    try {
+      const jsDir = path.join(process.cwd(), 'public', 'assets', 'js');
+      const files = await readdir(jsDir);
+      await Promise.all(
+        files
+          .filter((f) => f.endsWith('.map'))
+          .map((f) => unlink(path.join(jsDir, f)).catch(() => {}))
+      );
+    } catch {}
 
     console.log('Build complete — outputs in', outdir);
   } catch (err) {
