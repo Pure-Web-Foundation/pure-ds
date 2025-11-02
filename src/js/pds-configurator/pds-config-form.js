@@ -2,7 +2,7 @@ import { LitElement, html, nothing } from "../lit";
 import { config } from "../config";
 import { Generator } from "../pds-core/pds-generator.js";
 import { presets } from "../pds-core/pds-config.js";
-import { validateDesign } from "../pds";
+import { PDS, validateDesign } from "../pds";
 import { deepMerge } from "../common/common";
 
 const STORAGE_KEY = "pure-ds-config";
@@ -44,15 +44,15 @@ customElements.define(
 
       this.config = this.loadConfig();
 
-      // Listen for inspector deactivation requests from pds-demo
+      // Listen for inspector deactivation requests from the unified PDS bus
       this._inspectorDeactivateHandler = () => {
         if (this.inspectorMode) {
           this.inspectorMode = false;
           this.dispatchInspectorModeChange();
         }
       };
-      document.addEventListener(
-        "inspector-deactivate",
+      PDS.addEventListener(
+        "pds:inspector:deactivate",
         this._inspectorDeactivateHandler
       );
 
@@ -101,8 +101,8 @@ customElements.define(
     disconnectedCallback() {
       super.disconnectedCallback();
       if (this._inspectorDeactivateHandler) {
-        document.removeEventListener(
-          "inspector-deactivate",
+        PDS.removeEventListener(
+          "pds:inspector:deactivate",
           this._inspectorDeactivateHandler
         );
         this._inspectorDeactivateHandler = null;
@@ -404,10 +404,8 @@ customElements.define(
           this.#scheduledDesignEmit = null;
         }
 
-        this.dispatchEvent(
-          new CustomEvent("design-updated", {
-            bubbles: true,
-            composed: true,
+        PDS.dispatchEvent(
+          new CustomEvent("pds:design:updated", {
             detail,
           })
         );
@@ -442,11 +440,9 @@ customElements.define(
     }
 
     dispatchInspectorModeChange() {
-      // Dispatch event to notify showcase
-      this.dispatchEvent(
-        new CustomEvent("inspector-mode-changed", {
-          bubbles: true,
-          composed: true,
+      // Dispatch event to notify showcase (unified)
+      PDS.dispatchEvent(
+        new CustomEvent("pds:inspector:mode:changed", {
           detail: { active: this.inspectorMode },
         })
       );
@@ -616,10 +612,8 @@ customElements.define(
           "🔔 Emitting design-field-changed event for field:",
           changedField
         );
-        this.dispatchEvent(
-          new CustomEvent("design-field-changed", {
-            bubbles: true,
-            composed: true,
+        PDS.dispatchEvent(
+          new CustomEvent("pds:design:field:changed", {
             detail: {
               field: changedField,
               config: this.config,

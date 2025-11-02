@@ -47,8 +47,8 @@ customElements.define(
     connectedCallback() {
       super.connectedCallback();
 
-      // Listen for design updates from pds-config-form
-      document.addEventListener("design-updated", (e) => {
+      // Listen for design updates from unified PDS bus
+      PDS.addEventListener("pds:design:updated", (e) => {
         this.config = e.detail.config;
         this.designer = e.detail.designer;
         // Update docs base if staticBase changes
@@ -58,14 +58,14 @@ customElements.define(
       });
 
       // Listen for field changes to scroll to relevant section
-      document.addEventListener("design-field-changed", (e) => {
+      PDS.addEventListener("pds:design:field:changed", (e) => {
         setTimeout(() => {
           this.scrollToRelevantSection(e.detail.field);
         }, 1000);
       });
 
       // Listen for inspector mode changes
-      document.addEventListener("inspector-mode-changed", (e) => {
+      PDS.addEventListener("pds:inspector:mode:changed", (e) => {
         this.inspectorActive = e.detail.active;
       });
 
@@ -108,8 +108,8 @@ customElements.define(
         this._docsBase = ('/' + String(this.config.staticBase).replace(/^\/+|\/+$/g, ''));
       }
 
-      // Listen for external requests to view docs
-      document.addEventListener('pds-view-docs', async (e) => {
+      // Listen for external requests to view docs via PDS bus
+      PDS.addEventListener('pds:docs:view', async (e) => {
         const file = (e.detail && e.detail.file) || 'README.md';
         await this._renderDocToDialog(file);
       });
@@ -158,11 +158,10 @@ customElements.define(
     }
 
     deactivateInspector() {
-      // Dispatch event to pds-config-form to toggle inspector mode off
-      document.dispatchEvent(
-        new CustomEvent("inspector-deactivate", {
-          bubbles: true,
-          composed: true,
+      // Dispatch request on PDS bus to toggle inspector mode off
+      PDS.dispatchEvent(
+        new CustomEvent("pds:inspector:deactivate", {
+          detail: {}
         })
       );
     }

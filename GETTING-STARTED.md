@@ -161,7 +161,8 @@ The static exporter will generate `/<webroot>/design-system` and copy docs there
 The configurator can render Markdown docs; it looks under the static base (default `/pds`). You can request a file:
 
 ```js
-document.dispatchEvent(new CustomEvent('pds-view-docs', { detail: { file: 'GETTING-STARTED.md' } }));
+// Ask the configurator to show a docs file (served from the static base)
+PDS.dispatchEvent(new CustomEvent('pds:docs:view', { detail: { file: 'GETTING-STARTED.md' } }));
 // Optionally override the docs base
 window.PDS_DOCS_BASE = '/design-system';
 ```

@@ -31,10 +31,14 @@
  * @property {(el: Element) => import("./pds-core/pds-ontology.js").ComponentDef | null} findComponentForElement - Helper to find a component definition for a DOM element
  */
 
-/** @type {PDSAPI}
+/**
  * Workspace for the Pure Design System runtime API
+ * PDS is now an EventTarget so consumers can subscribe to a single, consistent
+ * event bus instead of listening on window/document or individual elements.
  */
-const PDS = {};
+class __PDS_EventBus extends EventTarget {}
+/** @type {PDSAPI & __PDS_EventBus} */
+const PDS = new __PDS_EventBus();
 
 import {
   Generator,
@@ -478,8 +482,8 @@ function __resolveThemeAndApply({ manageTheme, themeStorageKey }) {
         try {
           const newTheme = isDark ? "dark" : "light";
           document.documentElement.setAttribute("data-theme", newTheme);
-          window.dispatchEvent(
-            new CustomEvent("pds-theme-changed", {
+          PDS.dispatchEvent(
+            new CustomEvent("pds:theme:changed", {
               detail: { theme: newTheme, source: "system" },
             })
           );
@@ -828,19 +832,18 @@ async function live(config) {
     // Determine resolved config to expose (generator stores input as options)
     const resolvedConfig = generator?.options || generatorConfig;
 
-    // Emit event to notify that PDS is ready
-    if (typeof window !== "undefined" && window.document) {
-      window.dispatchEvent(
-        new CustomEvent("pds-live-ready", {
-          detail: {
-            generator,
-            config: resolvedConfig,
-            theme: resolvedTheme,
-            autoDefiner,
-          },
-        })
-      );
-    }
+    // Emit event to notify that PDS is ready (unified)
+    PDS.dispatchEvent(
+      new CustomEvent("pds:ready", {
+        detail: {
+          mode: "live",
+          generator,
+          config: resolvedConfig,
+          theme: resolvedTheme,
+          autoDefiner,
+        },
+      })
+    );
 
     return {
       generator,
@@ -850,13 +853,11 @@ async function live(config) {
     };
   } catch (error) {
     // Emit error event
-    if (typeof window !== "undefined" && window.document) {
-      window.dispatchEvent(
-        new CustomEvent("pds-error", {
-          detail: error,
-        })
-      );
-    }
+    PDS.dispatchEvent(
+      new CustomEvent("pds:error", {
+        detail: { error },
+      })
+    );
     throw error;
   }
 }
@@ -964,27 +965,24 @@ async function staticInit(config) {
       );
     }
 
-    // 5) Emit ready event
-    if (typeof window !== "undefined" && window.document) {
-      window.dispatchEvent(
-        new CustomEvent("pds-static-ready", {
-          detail: {
-            config: normalized.generatorConfig,
-            theme: resolvedTheme,
-            autoDefiner,
-          },
-        })
-      );
-    }
+    // 5) Emit ready event (unified)
+    PDS.dispatchEvent(
+      new CustomEvent("pds:ready", {
+        detail: {
+          mode: "static",
+          config: normalized.generatorConfig,
+          theme: resolvedTheme,
+          autoDefiner,
+        },
+      })
+    );
     return {
       config: normalized.generatorConfig,
       theme: resolvedTheme,
       autoDefiner,
     };
   } catch (error) {
-    if (typeof window !== "undefined" && window.document) {
-      window.dispatchEvent(new CustomEvent("pds-error", { detail: error }));
-    }
+    PDS.dispatchEvent(new CustomEvent("pds:error", { detail: { error } }));
     throw error;
   }
 }
@@ -1049,9 +1047,9 @@ async function setTheme(theme, options = {}) {
     }
   }
 
-  // Emit theme change event
-  window.dispatchEvent(
-    new CustomEvent("pds-theme-changed", {
+  // Emit theme change event (unified)
+  PDS.dispatchEvent(
+    new CustomEvent("pds:theme:changed", {
       detail: {
         theme: resolvedTheme,
         requested: theme,
