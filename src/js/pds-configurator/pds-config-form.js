@@ -56,34 +56,10 @@ customElements.define(
         this._inspectorDeactivateHandler
       );
 
-      // Initialize document theme attribute: prefer localStorage, otherwise use OS preference
+      // Let PDS manage the theme: apply the resolved theme and enable system listener
       try {
-        const storedTheme = localStorage.getItem("pure-ds-theme");
-        if (storedTheme) {
-          if (storedTheme === "system") {
-            // Resolve system to an explicit value so the attribute is always 'light' or 'dark'
-            const prefersDark =
-              typeof window !== "undefined" &&
-              window.matchMedia &&
-              window.matchMedia("(prefers-color-scheme: dark)").matches;
-            document.documentElement.setAttribute(
-              "data-theme",
-              prefersDark ? "dark" : "light"
-            );
-          } else {
-            document.documentElement.setAttribute("data-theme", storedTheme);
-          }
-        } else {
-          // No stored preference — choose from OS preference and do not persist
-          const prefersDark =
-            typeof window !== "undefined" &&
-            window.matchMedia &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches;
-          document.documentElement.setAttribute(
-            "data-theme",
-            prefersDark ? "dark" : "light"
-          );
-        }
+        PDS._applyResolvedTheme(PDS.theme);
+        PDS._setupSystemListenerIfNeeded(PDS.theme);
       } catch (ex) {
         /* ignore if document not available or other errors */
       }
@@ -339,18 +315,10 @@ customElements.define(
         console.warn("Validation failed unexpectedly:", ex);
       }
 
-      // Pass explicit theme option (from dedicated localStorage) separately so
+      // Pass explicit theme option (from PDS.theme) separately so
       // configs remain theme-agnostic while Generator can emit the correct
       // scoping (html[data-theme] vs prefers-color-scheme).
-      let storedTheme = null;
-      try {
-        storedTheme =
-          (typeof window !== "undefined" &&
-            localStorage.getItem("pure-ds-theme")) ||
-          null;
-      } catch (ex) {
-        storedTheme = null;
-      }
+      const storedTheme = PDS.theme || null;
 
       const generatorOptions = structuredClone(baseConfig);
       if (storedTheme) generatorOptions.theme = storedTheme;
@@ -358,26 +326,10 @@ customElements.define(
       this.designer = new Generator(generatorOptions);
       Generator.applyStyles(this.designer);
 
-      // Ensure document html[data-theme] respects persisted theme if present.
-      // Priority: localStorage 'pure-ds-theme' > leave existing attribute (set at startup from OS preference).
+      // Let PDS ensure document html[data-theme] reflects persisted preference
       try {
-        const storedTheme = localStorage.getItem("pure-ds-theme");
-        if (storedTheme) {
-          // Honor stored preference (system/light/dark)
-          if (storedTheme === "system") {
-            const prefersDark =
-              typeof window !== "undefined" &&
-              window.matchMedia &&
-              window.matchMedia("(prefers-color-scheme: dark)").matches;
-            document.documentElement.setAttribute(
-              "data-theme",
-              prefersDark ? "dark" : "light"
-            );
-          } else {
-            document.documentElement.setAttribute("data-theme", storedTheme);
-          }
-        }
-        // No else needed: if no stored theme, leave the current attribute (set at startup from OS preference)
+        PDS._applyResolvedTheme(PDS.theme);
+        PDS._setupSystemListenerIfNeeded(PDS.theme);
       } catch (ex) {
         /* ignore in non-browser environments */
       }
@@ -714,28 +666,8 @@ customElements.define(
     handleThemeChange(e) {
       try {
         const value = e.target.value;
-        // Persist only to dedicated localStorage key (theme is not part of config)
-        try {
-          localStorage.setItem("pure-ds-theme", value);
-        } catch (ex) {
-          /* ignore localstorage failures */
-        }
-
-        // Update document attribute so generated CSS scoped to data-theme applies.
-        // Always set an explicit 'light' or 'dark' attribute. If the user
-        // selected 'system', resolve the current OS value via matchMedia.
-        if (value === "system") {
-          const prefersDark =
-            typeof window !== "undefined" &&
-            window.matchMedia &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches;
-          document.documentElement.setAttribute(
-            "data-theme",
-            prefersDark ? "dark" : "light"
-          );
-        } else {
-          document.documentElement.setAttribute("data-theme", value);
-        }
+        // Update centralized theme via PDS (this persists + applies + sets up listeners)
+        PDS.theme = value;
 
         // Apply immediately and emit styles using the user config (keep config separate)
         this.applyStyles(true);
@@ -836,10 +768,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
             <fieldset role="radiogroup" aria-label="Theme" class="theme-select">
               <legend>Theme</legend>
               ${(() => {
-                const stored =
-                  (typeof window !== "undefined" &&
-                    localStorage.getItem("pure-ds-theme")) ||
-                  null;
+                const stored = PDS.theme || null;
                 const selected = stored || "system";
                 return html`
                   <label>

@@ -85,6 +85,111 @@ PDS.presets = presets;
 /** Find a component definition (ontology) for a given DOM element */
 PDS.findComponentForElement = findComponentForElement;
 
+// ---------------------------------------------------------------------------
+// Theme management (centralized on PDS.theme)
+// Consumers may read/write `PDS.theme` with values: 'system' | 'light' | 'dark'
+// Setting the property persists to localStorage (when available), updates
+// document.documentElement[data-theme] to an explicit 'light'|'dark' value
+// and emits a `pds:theme:changed` event. Reading the property returns the
+// raw stored preference (or null if none).
+PDS._themeStorageKey = "pure-ds-theme";
+PDS._themeMQ = null;
+PDS._themeMQListener = null;
+
+PDS._applyResolvedTheme = function (raw) {
+  try {
+    if (typeof document === "undefined") return;
+    let resolved = "light";
+    if (!raw) {
+      // No stored preference: use OS preference
+      const prefersDark =
+        typeof window !== "undefined" &&
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+      resolved = prefersDark ? "dark" : "light";
+    } else if (raw === "system") {
+      const prefersDark =
+        typeof window !== "undefined" &&
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+      resolved = prefersDark ? "dark" : "light";
+    } else {
+      resolved = raw;
+    }
+    document.documentElement.setAttribute("data-theme", resolved);
+  } catch (e) {}
+};
+
+PDS._setupSystemListenerIfNeeded = function (raw) {
+  try {
+    // Remove any existing listener first
+    if (PDS._themeMQ && PDS._themeMQListener) {
+      try {
+        if (typeof PDS._themeMQ.removeEventListener === "function")
+          PDS._themeMQ.removeEventListener("change", PDS._themeMQListener);
+        else if (typeof PDS._themeMQ.removeListener === "function")
+          PDS._themeMQ.removeListener(PDS._themeMQListener);
+      } catch (e) {}
+      PDS._themeMQ = null;
+      PDS._themeMQListener = null;
+    }
+
+    if (raw === "system" && typeof window !== "undefined" && window.matchMedia) {
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      const listener = (e) => {
+        const isDark = e?.matches === undefined ? mq.matches : e.matches;
+        try {
+          const newTheme = isDark ? "dark" : "light";
+          document.documentElement.setAttribute("data-theme", newTheme);
+          PDS.dispatchEvent(
+            new CustomEvent("pds:theme:changed", {
+              detail: { theme: newTheme, source: "system" },
+            })
+          );
+        } catch (ex) {}
+      };
+      PDS._themeMQ = mq;
+      PDS._themeMQListener = listener;
+      if (typeof mq.addEventListener === "function") mq.addEventListener("change", listener);
+      else if (typeof mq.addListener === "function") mq.addListener(listener);
+    }
+  } catch (e) {}
+};
+
+Object.defineProperty(PDS, "theme", {
+  get() {
+    try {
+      if (typeof window === "undefined") return null;
+      return localStorage.getItem(PDS._themeStorageKey) || null;
+    } catch (e) {
+      return null;
+    }
+  },
+  set(value) {
+    try {
+      if (typeof window === "undefined") return;
+      if (value === null || value === undefined) {
+        localStorage.removeItem(PDS._themeStorageKey);
+      } else {
+        localStorage.setItem(PDS._themeStorageKey, value);
+      }
+
+      // Apply resolved (light/dark) value to document
+      PDS._applyResolvedTheme(value);
+      // Setup system change listener only when 'system' is selected
+      PDS._setupSystemListenerIfNeeded(value);
+
+      // Emit a notification with the raw preference (value may be 'system')
+      PDS.dispatchEvent(
+        new CustomEvent("pds:theme:changed", {
+          detail: { theme: value, source: "api" },
+        })
+      );
+    } catch (e) {}
+  },
+});
+
+
 // ----------------------------------------------------------------------------
 // Default Enhancers — first-class citizens alongside AutoDefiner
 // ----------------------------------------------------------------------------
@@ -107,9 +212,12 @@ PDS.defaultEnhancers = [
     run: (elem) => {
       if (elem.dataset.enhancedDropdown) return;
       elem.dataset.enhancedDropdown = "true";
-      elem.style.position = "relative";
+      
       const menu = elem.querySelector("menu");
       if (!menu) return;
+
+      menu.style.position = "relative";
+      
       // Ensure toggle button doesn't submit forms by default
       const btn = elem.querySelector("button");
       if (btn && !btn.hasAttribute("type")) {
@@ -455,43 +563,34 @@ function __resolveThemeAndApply({ manageTheme, themeStorageKey }) {
   let resolvedTheme = "light";
   let storedTheme = null;
   if (manageTheme && typeof window !== "undefined") {
-    storedTheme = localStorage.getItem(themeStorageKey);
+    // Read raw preference (may be null, 'system', 'light', 'dark') using provided storage key
+    try {
+      storedTheme = localStorage.getItem(themeStorageKey) || null;
+    } catch (e) {
+      storedTheme = null;
+    }
+
+    // Apply the resolved theme and ensure system listener exists when needed
+    try {
+      PDS._applyResolvedTheme(storedTheme);
+      PDS._setupSystemListenerIfNeeded(storedTheme);
+    } catch (e) {}
+
+    // Compute explicit resolvedTheme to return
     if (storedTheme) {
       if (storedTheme === "system") {
         const prefersDark =
           window.matchMedia &&
           window.matchMedia("(prefers-color-scheme: dark)").matches;
         resolvedTheme = prefersDark ? "dark" : "light";
-        document.documentElement.setAttribute("data-theme", resolvedTheme);
       } else {
         resolvedTheme = storedTheme;
-        document.documentElement.setAttribute("data-theme", storedTheme);
       }
     } else {
       const prefersDark =
         window.matchMedia &&
         window.matchMedia("(prefers-color-scheme: dark)").matches;
       resolvedTheme = prefersDark ? "dark" : "light";
-      document.documentElement.setAttribute("data-theme", resolvedTheme);
-    }
-
-    if (storedTheme === "system" && window.matchMedia) {
-      const mq = window.matchMedia("(prefers-color-scheme: dark)");
-      const listener = (e) => {
-        const isDark = e.matches === undefined ? mq.matches : e.matches;
-        try {
-          const newTheme = isDark ? "dark" : "light";
-          document.documentElement.setAttribute("data-theme", newTheme);
-          PDS.dispatchEvent(
-            new CustomEvent("pds:theme:changed", {
-              detail: { theme: newTheme, source: "system" },
-            })
-          );
-        } catch {}
-      };
-      if (typeof mq.addEventListener === "function")
-        mq.addEventListener("change", listener);
-      else if (typeof mq.addListener === "function") mq.addListener(listener);
     }
   }
   return { resolvedTheme, storedTheme };
