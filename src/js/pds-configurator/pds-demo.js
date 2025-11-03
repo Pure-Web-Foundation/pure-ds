@@ -4,10 +4,10 @@ import { PDS } from "../pds";
 
 import { AutoComplete } from "pure-web/ac";
 
-const toast = (message, options)=> {
+const toast = (message, options) => {
   const toaster = document.getElementById("global-toaster");
-  toaster.toast(...arguments);
-}
+  toaster.toast(message, options);
+};
 
 customElements.define(
   "pds-demo",
@@ -28,7 +28,7 @@ customElements.define(
       this.designer = null;
       this.sections = [];
       this.inspectorActive = false;
-      this._docsBase = '/pds';
+      this._docsBase = "/pds";
       this._showdown = new showdown.Converter({
         ghCompatibleHeaderId: true,
         tables: true,
@@ -36,8 +36,6 @@ customElements.define(
         tasklists: true,
       });
     }
-
-    
 
     // Disable shadow DOM to use global styles
     createRenderRoot() {
@@ -53,7 +51,8 @@ customElements.define(
         this.designer = e.detail.designer;
         // Update docs base if staticBase changes
         if (this.config && this.config.staticBase) {
-          this._docsBase = ('/' + String(this.config.staticBase).replace(/^\/+|\/+$/g, ''));
+          this._docsBase =
+            "/" + String(this.config.staticBase).replace(/^\/+|\/+$/g, "");
         }
       });
 
@@ -99,18 +98,19 @@ customElements.define(
       // Determine docs base from global override or config
       try {
         const globalBase = window.PDS_DOCS_BASE;
-        if (typeof globalBase === 'string' && globalBase.trim()) {
-          this._docsBase = globalBase.replace(/\/+$/, '');
+        if (typeof globalBase === "string" && globalBase.trim()) {
+          this._docsBase = globalBase.replace(/\/+$/, "");
         }
       } catch {}
       // Defer to config.staticBase if provided
       if (this.config && this.config.staticBase) {
-        this._docsBase = ('/' + String(this.config.staticBase).replace(/^\/+|\/+$/g, ''));
+        this._docsBase =
+          "/" + String(this.config.staticBase).replace(/^\/+|\/+$/g, "");
       }
 
       // Listen for external requests to view docs via PDS bus
-      PDS.addEventListener('pds:docs:view', async (e) => {
-        const file = (e.detail && e.detail.file) || 'README.md';
+      PDS.addEventListener("pds:docs:view", async (e) => {
+        const file = (e.detail && e.detail.file) || "README.md";
         await this._renderDocToDialog(file);
       });
     }
@@ -124,35 +124,37 @@ customElements.define(
     }
 
     /** Fetch a markdown file from the docs base and return HTML */
-    async fetchDocHTML(file = 'README.md') {
-      const base = this._docsBase || '/pds';
-      const url = `${base.replace(/\/+$/, '')}/${file}`;
+    async fetchDocHTML(file = "README.md") {
+      const base = this._docsBase || "/pds";
+      const url = `${base.replace(/\/+$/, "")}/${file}`;
       try {
-        const res = await fetch(url, { cache: 'no-cache' });
+        const res = await fetch(url, { cache: "no-cache" });
         if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
         const md = await res.text();
         return this._showdown.makeHtml(md);
       } catch (err) {
-        return `<p>Failed to load ${file} from ${base}: ${String(err.message || err)}</p>`;
+        return `<p>Failed to load ${file} from ${base}: ${String(
+          err.message || err
+        )}</p>`;
       }
     }
 
     /** Render markdown into a simple dialog overlay */
     async _renderDocToDialog(file) {
       const htmlContent = await this.fetchDocHTML(file);
-      let dlg = document.getElementById('pds-docs-dialog');
+      let dlg = document.getElementById("pds-docs-dialog");
       if (!dlg) {
-        dlg = document.createElement('dialog');
-        dlg.id = 'pds-docs-dialog';
-        dlg.style.width = 'min(900px, 90vw)';
-        dlg.style.maxHeight = '85vh';
-        dlg.style.padding = '0';
+        dlg = document.createElement("dialog");
+        dlg.id = "pds-docs-dialog";
+        dlg.style.width = "min(900px, 90vw)";
+        dlg.style.maxHeight = "85vh";
+        dlg.style.padding = "0";
         dlg.innerHTML = `<div style="padding:16px 20px; overflow:auto; max-height:85vh">
           <div class="markdown-body"></div>
         </div>`;
         document.body.appendChild(dlg);
       }
-      const body = dlg.querySelector('.markdown-body');
+      const body = dlg.querySelector(".markdown-body");
       if (body) body.innerHTML = htmlContent;
       if (!dlg.open) dlg.showModal();
     }
@@ -161,7 +163,7 @@ customElements.define(
       // Dispatch request on PDS bus to toggle inspector mode off
       PDS.dispatchEvent(
         new CustomEvent("pds:inspector:deactivate", {
-          detail: {}
+          detail: {},
         })
       );
     }
@@ -736,8 +738,7 @@ customElements.define(
       let demoHtml = null;
       let enhancer = null;
       try {
-        // Prefer the runtime config dispatched from pds-config-form; fall back to
-        // any global appConfig or the pure-app element if present.
+        
         const enhancers =
           this.config?.autoDefine?.enhancers ||
           (typeof appConfig !== "undefined"
@@ -875,7 +876,9 @@ customElements.define(
       `;
 
       // Re-render with highlighted code
-      await document.getElementById("global-drawer").show(finalTemplate, { header: headerTemplate });
+      await document
+        .getElementById("global-drawer")
+        .show(finalTemplate, { header: headerTemplate });
 
       // Add copy functionality
       setTimeout(() => {
@@ -1301,8 +1304,6 @@ customElements.define(
       };
     }
 
-   
-
     render() {
       const components = this.config?.components || {};
 
@@ -1321,11 +1322,21 @@ customElements.define(
             <h1>Pure Design System</h1>
             <p>Why build a design system if you can generate it?</p>
             <div class="btn-group">
-              <button class="btn-primary btn-lg" @click=${()=>{this.showDoc('getting-started.md')}}>
+              <button
+                class="btn-primary btn-lg"
+                @click=${() => {
+                  this.showDoc("getting-started.md");
+                }}
+              >
                 <pds-icon icon="download"></pds-icon>
                 Get Started
               </button>
-              <button class="btn-secondary btn-lg" @click=${()=>{this.showDoc('readme.md')}}>
+              <button
+                class="btn-secondary btn-lg"
+                @click=${() => {
+                  this.showDoc("readme.md");
+                }}
+              >
                 <pds-icon icon="book-open"></pds-icon>
                 View Docs
               </button>
@@ -1876,26 +1887,24 @@ customElements.define(
                 Click for Menu
               </button>
               <menu class="dropdown-menu">
-                <ul>
-                  <li>
-                    <a href="#">
-                      <pds-icon icon="user" size="sm"></pds-icon>
-                      Profile
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <pds-icon icon="gear" size="sm"></pds-icon>
-                      Settings
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="danger">
-                      <pds-icon icon="x" size="sm"></pds-icon>
-                      Logout
-                    </a>
-                  </li>
-                </ul>
+                <li>
+                  <a href="#">
+                    <pds-icon icon="user" size="sm"></pds-icon>
+                    Profile
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <pds-icon icon="gear" size="sm"></pds-icon>
+                    Settings
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="danger">
+                    <pds-icon icon="x" size="sm"></pds-icon>
+                    Logout
+                  </a>
+                </li>
               </menu>
             </nav>
           </section>
@@ -3252,7 +3261,6 @@ customElements.define(
         drawer.show(html`${unsafeHTML(htmlContent)}`, {
           header: html`<h3>PDS Documentation</h3>`,
         });
-      
       } catch (err) {
         console.error("Error fetching README:", err);
         const toaster = document.getElementById("global-toaster");
@@ -3342,62 +3350,44 @@ customElements.define(
 
     // Toast handler methods
     showSuccessToast() {
-      const app = document.querySelector("pure-app");
-      if (app?.toast) {
-        toast("Your changes have been saved successfully!", {
-          type: "success",
-        });
-      }
+      toast("Your changes have been saved successfully!", {
+        type: "success",
+      });
     }
 
     showInfoToast() {
-      const app = document.querySelector("pure-app");
-      if (app?.toast) {
-        toast("This is an informational message with helpful context.", {
-          type: "info",
-        });
-      }
+      toast("This is an informational message with helpful context.", {
+        type: "info",
+      });
     }
 
     showWarningToast() {
-      const app = document.querySelector("pure-app");
-      if (app?.toast) {
-        toast("Warning: This action cannot be undone!", {
-          type: "warning",
-        });
-      }
+      toast("Warning: This action cannot be undone!", {
+        type: "warning",
+      });
     }
 
     showErrorToast() {
-      const app = document.querySelector("pure-app");
-      if (app?.toast) {
-        toast("Error: Something went wrong. Please try again.", {
-          type: "error",
-        });
-      }
+      toast("Error: Something went wrong. Please try again.", {
+        type: "error",
+      });
     }
 
     showLongToast() {
-      const app = document.querySelector("pure-app");
-      if (app?.toast) {
-        toast(
-          "This is a longer toast notification message that demonstrates how the duration is automatically calculated based on the message length. The toast will stay visible longer to give you enough time to read the entire message.",
-          { type: "info" }
-        );
-      }
+      toast(
+        "This is a longer toast notification message that demonstrates how the duration is automatically calculated based on the message length. The toast will stay visible longer to give you enough time to read the entire message.",
+        { type: "info" }
+      );
     }
 
     showPersistentToast() {
-      const app = document.querySelector("pure-app");
-      if (app?.toast) {
-        toast(
-          "This is a persistent toast that won't auto-dismiss. Click the × to close it.",
-          {
-            type: "info",
-            persistent: true,
-          }
-        );
-      }
+      toast(
+        "This is a persistent toast that won't auto-dismiss. Click the × to close it.",
+        {
+          type: "info",
+          persistent: true,
+        }
+      );
     }
 
     triggerTransitionDemo() {

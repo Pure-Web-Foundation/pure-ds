@@ -212,25 +212,97 @@ PDS.defaultEnhancers = [
     run: (elem) => {
       if (elem.dataset.enhancedDropdown) return;
       elem.dataset.enhancedDropdown = "true";
-      
-      const runtimeStyle = getComputedStyle(elem);
-      
-      
       const menu = elem.querySelector("menu");
       if (!menu) return;
 
-      
       // Ensure toggle button doesn't submit forms by default
       const btn = elem.querySelector("button");
       if (btn && !btn.hasAttribute("type")) {
         btn.setAttribute("type", "button");
       }
-      const toggle = () => {
-        const isCurrentlyVisible = menu.style.display !== "none";
-        menu.style.display = isCurrentlyVisible ? "none" : "block";
-      };
+
+      // Accessibility attributes
+      if (btn) {
+        btn.setAttribute("aria-haspopup", "true");
+        btn.setAttribute("aria-expanded", "false");
+      }
+      menu.setAttribute("role", menu.getAttribute("role") || "menu");
+      menu.setAttribute("aria-hidden", "true");
+
+      // Ensure initial hidden state
       menu.style.display = "none";
-      elem.addEventListener("click", toggle);
+
+      const placeMenu = (direction) => {
+        if (direction === "up") {
+          menu.style.top = "auto";
+          menu.style.bottom = "100%";
+          menu.style.marginTop = "";
+          menu.style.marginBottom = "var(--spacing-2)";
+        } else {
+          menu.style.top = "100%";
+          menu.style.bottom = "auto";
+          menu.style.marginBottom = "";
+          menu.style.marginTop = "var(--spacing-2)";
+        }
+      };
+
+      const computeAutoDirection = () => {
+        // Temporarily show the menu offscreen to measure its height
+        const prevDisplay = menu.style.display;
+        const prevVisibility = menu.style.visibility;
+        menu.style.visibility = "hidden";
+        menu.style.display = "block";
+        // Use offsetHeight/scrollHeight as best-effort measurement
+        const menuHeight = menu.offsetHeight || menu.scrollHeight || 0;
+        menu.style.display = prevDisplay || "none";
+        menu.style.visibility = prevVisibility || "";
+
+        const rect = elem.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        // Prefer down unless insufficient space below and more space above
+        if (spaceBelow < menuHeight && spaceAbove > menuHeight) return "up";
+        return "down";
+      };
+
+      const showMenu = () => {
+        const mode = (elem.getAttribute("data-mode") || "auto").toLowerCase();
+        let dir = mode;
+        if (mode === "auto") {
+          dir = computeAutoDirection();
+        }
+        placeMenu(dir);
+        menu.style.display = "block";
+        menu.setAttribute("aria-hidden", "false");
+        if (btn) btn.setAttribute("aria-expanded", "true");
+      };
+
+      const hideMenu = () => {
+        menu.style.display = "none";
+        menu.setAttribute("aria-hidden", "true");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+      };
+
+      const toggle = (e) => {
+        // If event originates from a link inside the menu, let it proceed
+        if (e && e.target && e.target.closest && e.target.closest('menu')) return;
+        const isVisible = menu.style.display !== "none";
+        if (isVisible) hideMenu();
+        else showMenu();
+      };
+
+      // Click only on the toggle button should open/close; clicks inside menu
+      // should be handled normally. Close when clicking outside.
+      if (btn) btn.addEventListener("click", (ev) => { ev.stopPropagation(); toggle(ev); });
+      // Close on outside click
+      document.addEventListener("click", (ev) => {
+        if (!elem.contains(ev.target)) hideMenu();
+      });
+
+      // Also close on Escape
+      document.addEventListener("keydown", (ev) => {
+        if (ev.key === "Escape") hideMenu();
+      });
     },
   },
   {

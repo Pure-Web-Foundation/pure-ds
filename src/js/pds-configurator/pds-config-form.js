@@ -65,6 +65,7 @@ customElements.define(
       }
 
       this.updateForm();
+      
       // Apply host-level CSS variable overrides from the default design config
       // so the designer UI doesn't visually change when user edits are applied
       // elsewhere (these variables remain fixed for the designer element).

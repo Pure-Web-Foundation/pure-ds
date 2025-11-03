@@ -2730,7 +2730,8 @@ tbody {
   #generateAlertStyles() {
     return /*css*/ `/* Alert/Notification Styles */
 
-.alert {
+/* Alias: .semantic-message shares alert base styles */
+.alert, .semantic-message {
   padding: var(--spacing-4);
   border-radius: var(--radius-md);
   margin: 0 0 var(--spacing-4) 0;
@@ -2745,31 +2746,33 @@ tbody {
     margin-bottom: 0;
   }
 }
-
-.alert-success {
+/* Variants: success/info/warning/danger mapped to tokens */
+.alert-success, .semantic-message.success {
   background-color: var(--color-success-50);
   border-color: var(--color-success-600);
   color: var(--color-success-900);
 }
-
-.alert-info {
+.alert-info, .semantic-message.info {
   background-color: var(--color-info-50);
   border-color: var(--color-info-600);
   color: var(--color-info-900);
 }
-
-.alert-warning {
+.alert-warning, .semantic-message.warning {
   background-color: var(--color-warning-50);
   border-color: var(--color-warning-600);
   color: var(--color-warning-900);
 }
-
 .alert-danger,
-.alert-error {
+.alert-error,
+.semantic-message.danger {
   background-color: var(--color-danger-50);
   border-color: var(--color-danger-600);
   color: var(--color-danger-900);
 }
+
+/* Semantic-message content defaults */
+.semantic-message strong { display: block; }
+.semantic-message p { margin: 0; font-size: var(--font-size-sm); }
 
 .alert-title {
   font-weight: var(--font-weight-semibold);
@@ -3556,22 +3559,29 @@ a.icon-only {
   #generateDropdownStyles() {
     return /*css*/ `/* Dropdown Component */
 
-/* Basic dropdown surface for nav[data-dropdown] */
+/* Basic dropdown host */
 nav[data-dropdown] {
   position: relative;
-  background: var(--color-surface-overlay);
   padding: 0;
-  margin-top: var(--spacing-2);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--color-border);
 }
 
 nav[data-dropdown] menu {
   position: absolute;
   list-style: none;
-  padding: 0;
+  padding: var(--spacing-2);
   margin: 0;
+  background: var(--color-surface-overlay);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  /* Default drop direction: down (top anchored). JavaScript enhancer may
+     override for data-mode="auto" by switching to bottom:100% when needed. */
+  top: 100%;
+  bottom: auto;
+  left: 0;
+  right: 0;
+  margin-top: var(--spacing-2);
+  display: none;
 }
 
 nav[data-dropdown] li {
@@ -3593,6 +3603,26 @@ nav[data-dropdown] a {
 
 nav[data-dropdown] a.danger {
   color: var(--color-danger-600);
+}
+
+/* Explicit direction modifiers */
+nav[data-dropdown][data-mode="up"] menu {
+  top: auto;
+  bottom: 100%;
+  margin-bottom: var(--spacing-2);
+}
+
+nav[data-dropdown][data-mode="down"] menu {
+  top: 100%;
+  bottom: auto;
+  margin-top: var(--spacing-2);
+}
+
+/* Auto acts like down by default; the enhancer will calculate at runtime
+   and set inline top/bottom when necessary to avoid overflow. */
+nav[data-dropdown][data-mode="auto"] menu {
+  top: 100%;
+  bottom: auto;
 }
 `;
   }
@@ -4344,6 +4374,9 @@ nav[data-dropdown] a.danger {
       css += this.#generateTableStyles();
     }
 
+    // Card component styles (utility-friendly, token-driven)
+    css += `/* Card component */\n\n.card {\n  background: var(--color-surface-base);\n  border-radius: var(--radius-md);\n  padding: var(--spacing-4);\n}\n\n.card--elevated, .card-elevated {\n  background: var(--color-surface-elevated);\n  box-shadow: var(--shadow-md);\n}\n\n.card--outlined, .card-basic {\n  background: var(--color-surface-base);\n  border: 1px solid var(--color-border);\n}\n\n.card--interactive:hover {\n  transform: translateY(-2px);\n  box-shadow: var(--shadow-lg);\n  transition: transform var(--transition-fast), box-shadow var(--transition-fast);\n}\n`;
+
     // Custom scrollbar styles
     if (components.customScrollbars !== false) {
       css += this.#generateScrollbarStyles();
@@ -4361,6 +4394,9 @@ nav[data-dropdown] a.danger {
 
     // Layout utilities
     css += this.#generateLayoutUtilities();
+
+    // Surface utilities
+    css += `/* Surface utilities */\n\n.surface-overlay {\n  padding: var(--spacing-4);\n  background-color: var(--color-surface-overlay);\n  box-shadow: var(--shadow-lg);\n  border-radius: var(--radius-md);\n}\n\n`;
 
     // Media utilities
     css += this.#generateMediaUtilities();
