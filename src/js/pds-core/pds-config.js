@@ -30,7 +30,7 @@ export const presets = {
       scaleRatio: 1.4
     },
     shape: {
-      radiusSize: enums.RadiusSizes.large // Soft, flowing
+      radiusSize: enums.RadiusSizes.xxlarge // Soft, flowing
     }
   },
   "midnight-steel": {
@@ -153,7 +153,7 @@ export const presets = {
       scaleRatio: 1.5
     },
     shape: {
-      radiusSize: enums.RadiusSizes.full, // Playful, rounded
+      radiusSize: enums.RadiusSizes.xxlarge, // Playful, rounded
       borderWidth: enums.BorderWidths.medium
     }
   },
@@ -345,8 +345,8 @@ presets.default = {
   },
 
   shape: {
-    radiusSize: enums.RadiusSizes.none,
-    borderWidth: enums.BorderWidths.thin,
+    radiusSize: enums.RadiusSizes.large,
+    borderWidth: enums.BorderWidths.medium,
     customRadius: null,
   },
 

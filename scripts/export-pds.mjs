@@ -19,27 +19,29 @@ import { fileURLToPath, pathToFileURL } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Import the design system
-// Note: We need to load config and Generator
+// Import the design system (PDS Core)
+// Load config and Generator from pds-core
 const projectRoot = path.join(__dirname, '..');
-const srcPath = path.join(projectRoot, 'src', 'js');
+const srcPath = path.join(projectRoot, 'src', 'js', 'pds-core');
 
 // Dynamic import of the design system modules
 async function generatePDSExports() {
   console.log('🎨 Pure Design System - Export Generator\n');
 
   try {
-    // Import config and Generator (convert Windows paths to file:// URLs)
-    const configModule = await import(pathToFileURL(path.join(srcPath, 'config.js')).href);
-    const autoDesignerModule = await import(pathToFileURL(path.join(srcPath, 'auto-designer.js')).href);
-    
-    const { config } = configModule;
-    const { Generator } = autoDesignerModule;
+    // Import PDS Core config and Generator (convert Windows paths to file:// URLs)
+    const configModule = await import(pathToFileURL(path.join(srcPath, 'pds-config.js')).href);
+    const generatorModule = await import(pathToFileURL(path.join(srcPath, 'pds-generator.js')).href);
 
-    console.log('✓ Loaded design system configuration');
+    const { presets } = configModule;
+    const { Generator } = generatorModule;
+
+    // Use the default preset for export (acts as canonical base)
+    const config = presets?.default || {};
+    console.log('✓ Loaded PDS Core configuration (default preset)');
 
     // Create designer instance
-    const designer = new Generator(config.design);
+    const designer = new Generator({ ...config, debug: false });
     console.log('✓ Generated design system tokens and styles');
 
     // Create exports directory
@@ -86,7 +88,7 @@ async function generatePDSExports() {
     // Export CSS.js modules
     console.log('\n📦 Exporting CSS.js modules...');
     
-    const cssModules = designer.getCSSModules();
+  const cssModules = designer.getCSSModules();
     
     for (const [filename, content] of Object.entries(cssModules)) {
       fs.writeFileSync(path.join(exportsDir, filename), content);

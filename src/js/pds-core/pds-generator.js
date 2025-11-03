@@ -580,11 +580,19 @@ export class Generator {
   #generateRadiusTokens(shapeConfig) {
     const { radiusSize = "medium", customRadius = null } = shapeConfig;
 
-    // Use custom radius if provided, otherwise use the enum
-    const baseRadius =
-      customRadius !== null
-        ? customRadius
-        : enums.RadiusSizes[radiusSize] ?? enums.RadiusSizes.medium;
+    // Accept either a custom value, an enum key ("small"), or an enum value (e.g., 4)
+    let baseRadius;
+    if (customRadius !== null && customRadius !== undefined) {
+      baseRadius = customRadius;
+    } else if (typeof radiusSize === "number") {
+      // Direct numeric value (including 0)
+      baseRadius = radiusSize;
+    } else if (typeof radiusSize === "string") {
+      // Enum key (e.g., "none", "small", "medium", "large", "full")
+      baseRadius = enums.RadiusSizes[radiusSize] ?? enums.RadiusSizes.medium;
+    } else {
+      baseRadius = enums.RadiusSizes.medium;
+    }
 
     return {
       none: "0",
@@ -2080,7 +2088,7 @@ label[data-toggle] .toggle-switch {
   width: 44px;
   height: 24px;
   background-color: var(--color-gray-300);
-  border-radius: 12px;
+  border-radius: var(--radius-full);
   transition: background-color 200ms ease;
   cursor: pointer;
   flex-shrink: 0;
@@ -2088,7 +2096,7 @@ label[data-toggle] .toggle-switch {
 
 /* Toggle switch when checked - using :has() selector */
 label[data-toggle]:has(input[type="checkbox"]:checked) .toggle-switch {
-  background-color: var(--color-success-600);
+  background-color: var(--color-accent-500);
 }
 
 
@@ -4610,6 +4618,7 @@ export const ${name}CSS = \`${escapedCSS}\`;
    * This approach reduces flicker and avoids link/blob swapping.
    */
   static installRuntimeStyles(cssText) {
+    console.log(cssText);
     try {
       if (typeof document === "undefined") return; // server-side guard
 

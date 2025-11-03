@@ -170,7 +170,7 @@ export class DrawerPanel extends LitElement {
       justify-content: center;
       width: 32px;
       height: 32px;
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       border: none;
       background: transparent;
       color: inherit;

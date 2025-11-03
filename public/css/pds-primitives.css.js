@@ -21,6 +21,11 @@ primitives.replaceSync(`@layer primitives {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
   }
 
+  :where(dialog){
+    background-color: transparent;
+    border: none;
+  }
+
   :where(body) {
     margin: 0;
     padding: 0;
@@ -93,7 +98,7 @@ primitives.replaceSync(`@layer primitives {
   :where(textarea):focus-visible {
     outline: none;
     border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px var(--color-primary-500)30;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500) 30%, transparent);
   }
 
   :where(input):disabled,
@@ -259,6 +264,11 @@ export const primitivesCSS = `@layer primitives {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
   }
 
+  :where(dialog){
+    background-color: transparent;
+    border: none;
+  }
+
   :where(body) {
     margin: 0;
     padding: 0;
@@ -331,7 +341,7 @@ export const primitivesCSS = `@layer primitives {
   :where(textarea):focus-visible {
     outline: none;
     border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px var(--color-primary-500)30;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500) 30%, transparent);
   }
 
   :where(input):disabled,

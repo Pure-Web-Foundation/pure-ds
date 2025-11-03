@@ -11,6 +11,7 @@ pds-icon {
   justify-content: center;
   flex-shrink: 0;
   vertical-align: middle;
+  pointer-events: none;
 }
 
 /* Icon size utilities */
@@ -156,37 +157,55 @@ a.icon-only {
   padding-right: calc(var(--icon-size) + var(--spacing-5));
 }
 
-/* Mobile-First Layout Utilities */
+
+/* ============================================================================
+   Layout Utilities
+   Modern grid and flex system for building responsive layouts
+   ============================================================================ */
+
+/* Container */
 .container {
   display: block;
   width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 var(--spacing-4); /* Mobile padding */
-  overflow-x: hidden; /* Prevent horizontal scroll */
+  padding: var(--spacing-6);
 }
 
-/* Responsive container padding and max-width */
-@media (min-width: 640px) {
-  .container {
-    padding: 0 var(--spacing-6);
-  }
+/* Grid System */
+.grid {
+  display: grid;
+  gap: var(--spacing-4);
 }
 
-@media (min-width: 768px) {
-  .container {
-    max-width: var(--layout-maxWidth);
-    padding: 0 var(--layout-containerPadding);
-  }
-}
+.grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-cols-6 { grid-template-columns: repeat(6, 1fr); }
 
-/* Mobile-first Flexbox */
+/* Auto-fit grids (responsive) */
+.grid-auto-sm { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.grid-auto-md { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.grid-auto-lg { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
+.grid-auto-xl { grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); }
+
+/* Gap utilities */
+.gap-0 { gap: 0; }
+.gap-xs { gap: var(--spacing-1); }
+.gap-sm { gap: var(--spacing-2); }
+.gap-md { gap: var(--spacing-4); }
+.gap-lg { gap: var(--spacing-6); }
+.gap-xl { gap: var(--spacing-8); }
+
+
+/* Flexbox System */
 .flex {
   display: flex;
-  flex-wrap: wrap; /* Allow wrapping on mobile */
 }
 
-.flex > * {
-  min-width: 0; /* Prevent flex children from overflowing */
+.flex-wrap {
+  flex-wrap: wrap;
 }
 
 .flex-col {
@@ -197,182 +216,77 @@ a.icon-only {
   flex-direction: row;
 }
 
-/* Mobile: stack by default, row on larger screens */
-.flex-mobile-col {
-  flex-direction: column;
+/* Flex alignment */
+.items-start { align-items: flex-start; }
+.items-center { align-items: center; }
+.items-end { align-items: flex-end; }
+.items-stretch { align-items: stretch; }
+.items-baseline { align-items: baseline; }
+
+.justify-start { justify-content: flex-start; }
+.justify-center { justify-content: center; }
+.justify-end { justify-content: flex-end; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.justify-evenly { justify-content: space-evenly; }
+
+/* Responsive helpers */
+@media (max-width: 767px) {
+  .mobile-stack { flex-direction: column; }
+  .mobile-stack > * { width: 100%; }
 }
 
-@media (min-width: 640px) {
-  .flex-mobile-col {
-    flex-direction: row;
-  }
+/* ============================================================================
+   Backdrop Utilities
+   Reusable backdrop layer for modal components (dialogs, drawers, overlays)
+   ============================================================================ */
+
+/* Base backdrop class for modal overlays */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--backdrop-bg);
+  backdrop-filter: var(--backdrop-filter);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: var(--z-modal, 1040);
 }
 
-.items-center {
-  align-items: center;
+.backdrop.active {
+  opacity: var(--backdrop-opacity, 1);
+  pointer-events: auto;
 }
 
-.items-start {
-  align-items: flex-start;
+/* Backdrop variants */
+.backdrop-light {
+  --backdrop-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+  --backdrop-brightness: 1.1;
 }
 
-.items-stretch {
-  align-items: stretch;
+.backdrop-dark {
+  --backdrop-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+  --backdrop-brightness: 0.6;
 }
 
-.justify-center {
-  justify-content: center;
+.backdrop-blur-sm {
+  --backdrop-blur: 5px;
 }
 
-.justify-between {
-  justify-content: space-between;
+.backdrop-blur-md {
+  --backdrop-blur: 10px;
 }
 
-.justify-start {
-  justify-content: flex-start;
+.backdrop-blur-lg {
+  --backdrop-blur: 20px;
 }
-
-/* Mobile-first spacing */
-.gap-1 { gap: var(--spacing-1); }
-.gap-2 { gap: var(--spacing-2); }
-.gap-3 { gap: var(--spacing-3); }
-.gap-4 { gap: var(--spacing-4); }
-.gap-6 { gap: var(--spacing-6); }
-.gap-8 { gap: var(--spacing-8); }
-
-/* Mobile-first Grid */
-.grid {
-  display: grid;
-  width: 100%;
-  gap: var(--spacing-4);
-}
-
-.grid > * {
-  min-width: 0; /* Prevent grid children from overflowing */
-}
-
-/* Mobile: single column by default */
-.grid-cols-1 { grid-template-columns: 1fr; }
-.grid-cols-2 { grid-template-columns: 1fr; } /* Single column on mobile */
-.grid-cols-3 { grid-template-columns: 1fr; } /* Single column on mobile */
-.grid-cols-4 { grid-template-columns: 1fr; } /* Single column on mobile */
-
-/* Responsive grid columns */
-@media (min-width: 640px) {
-  .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (min-width: 768px) {
-  .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
-}
-
-@media (min-width: 1024px) {
-  .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
-}
-
-/* Surface backgrounds for nesting */
-.surface-base {
-  background-color: var(--color-surface-base);
-}
-
-.surface-base fieldset {
-  background-color: var(--color-surface-subtle);
-}
-
-.surface-elevated {
-  background-color: var(--color-surface-elevated);
-  box-shadow: var(--shadow-sm);
-}
-
-.surface-elevated fieldset {
-  background-color: var(--color-surface-sunken);
-}
+/* Surface utilities */
 
 .surface-overlay {
+  padding: var(--spacing-4);
   background-color: var(--color-surface-overlay);
-  box-shadow: var(--shadow-md);
-}
-
-.surface-overlay fieldset {
-  background-color: var(--color-surface-elevated);
-}
-
-/* Default behavior when no surface class is present */
-body:not([class*="surface-"]) fieldset,
-.container fieldset {
-  background-color: var(--color-surface-subtle);
-}
-
-/* Mobile-first Cards */
-.card {
-  background-color: var(--color-surface-elevated);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-4); /* Smaller padding on mobile */
-  box-shadow: var(--shadow-base);
-  transition: box-shadow var(--transition-normal);
-  width: 100%;
-  margin-bottom: var(--spacing-4);
-}
-
-@media (min-width: 640px) {
-  .card {
-    padding: var(--spacing-6); /* Larger padding on desktop */
-  }
-}
-
-.card:hover {
-  box-shadow: var(--shadow-md);
-}
-
-/* Mobile-first spacing utilities */
-.p-0 { padding: var(--spacing-0); }
-.p-1 { padding: var(--spacing-1); }
-.p-2 { padding: var(--spacing-2); }
-.p-3 { padding: var(--spacing-3); }
-.p-4 { padding: var(--spacing-4); }
-.p-6 { padding: var(--spacing-6); }
-.p-8 { padding: var(--spacing-8); }
-
-.px-4 { padding-left: var(--spacing-4); padding-right: var(--spacing-4); }
-.py-4 { padding-top: var(--spacing-4); padding-bottom: var(--spacing-4); }
-
-.m-0 { margin: var(--spacing-0); }
-.m-1 { margin: var(--spacing-1); }
-.m-2 { margin: var(--spacing-2); }
-.m-3 { margin: var(--spacing-3); }
-.m-4 { margin: var(--spacing-4); }
-.m-6 { margin: var(--spacing-6); }
-.m-8 { margin: var(--spacing-8); }
-
-.mx-auto { margin-left: auto; margin-right: auto; }
-
-.mb-4 { margin-bottom: var(--spacing-4); }
-.mt-4 { margin-top: var(--spacing-4); }
-.mr-4 { margin-right: var(--spacing-4); }
-.ml-4 { margin-left: var(--spacing-4); }
-
-/* Mobile-first text utilities */
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
-
-.text-sm { font-size: var(--font-size-sm); }
-.text-base { font-size: var(--font-size-base); }
-.text-lg { font-size: var(--font-size-lg); }
-
-/* Hide/show utilities */
-.hidden { display: none; }
-.block { display: block; }
-.inline { display: inline; }
-.inline-block { display: inline-block; }
-
-/* Mobile-specific utilities */
-.mobile-hidden { display: none; }
-.desktop-hidden { display: block; }
-
-@media (min-width: 640px) {
-  .mobile-hidden { display: block; }
-  .desktop-hidden { display: none; }
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-md);
 }
 
 /* Media Element Utilities */
@@ -527,6 +441,7 @@ pds-icon {
   justify-content: center;
   flex-shrink: 0;
   vertical-align: middle;
+  pointer-events: none;
 }
 
 /* Icon size utilities */
@@ -672,37 +587,55 @@ a.icon-only {
   padding-right: calc(var(--icon-size) + var(--spacing-5));
 }
 
-/* Mobile-First Layout Utilities */
+
+/* ============================================================================
+   Layout Utilities
+   Modern grid and flex system for building responsive layouts
+   ============================================================================ */
+
+/* Container */
 .container {
   display: block;
   width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 var(--spacing-4); /* Mobile padding */
-  overflow-x: hidden; /* Prevent horizontal scroll */
+  padding: var(--spacing-6);
 }
 
-/* Responsive container padding and max-width */
-@media (min-width: 640px) {
-  .container {
-    padding: 0 var(--spacing-6);
-  }
+/* Grid System */
+.grid {
+  display: grid;
+  gap: var(--spacing-4);
 }
 
-@media (min-width: 768px) {
-  .container {
-    max-width: var(--layout-maxWidth);
-    padding: 0 var(--layout-containerPadding);
-  }
-}
+.grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-cols-6 { grid-template-columns: repeat(6, 1fr); }
 
-/* Mobile-first Flexbox */
+/* Auto-fit grids (responsive) */
+.grid-auto-sm { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.grid-auto-md { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.grid-auto-lg { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
+.grid-auto-xl { grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); }
+
+/* Gap utilities */
+.gap-0 { gap: 0; }
+.gap-xs { gap: var(--spacing-1); }
+.gap-sm { gap: var(--spacing-2); }
+.gap-md { gap: var(--spacing-4); }
+.gap-lg { gap: var(--spacing-6); }
+.gap-xl { gap: var(--spacing-8); }
+
+
+/* Flexbox System */
 .flex {
   display: flex;
-  flex-wrap: wrap; /* Allow wrapping on mobile */
 }
 
-.flex > * {
-  min-width: 0; /* Prevent flex children from overflowing */
+.flex-wrap {
+  flex-wrap: wrap;
 }
 
 .flex-col {
@@ -713,182 +646,77 @@ a.icon-only {
   flex-direction: row;
 }
 
-/* Mobile: stack by default, row on larger screens */
-.flex-mobile-col {
-  flex-direction: column;
+/* Flex alignment */
+.items-start { align-items: flex-start; }
+.items-center { align-items: center; }
+.items-end { align-items: flex-end; }
+.items-stretch { align-items: stretch; }
+.items-baseline { align-items: baseline; }
+
+.justify-start { justify-content: flex-start; }
+.justify-center { justify-content: center; }
+.justify-end { justify-content: flex-end; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.justify-evenly { justify-content: space-evenly; }
+
+/* Responsive helpers */
+@media (max-width: 767px) {
+  .mobile-stack { flex-direction: column; }
+  .mobile-stack > * { width: 100%; }
 }
 
-@media (min-width: 640px) {
-  .flex-mobile-col {
-    flex-direction: row;
-  }
+/* ============================================================================
+   Backdrop Utilities
+   Reusable backdrop layer for modal components (dialogs, drawers, overlays)
+   ============================================================================ */
+
+/* Base backdrop class for modal overlays */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--backdrop-bg);
+  backdrop-filter: var(--backdrop-filter);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: var(--z-modal, 1040);
 }
 
-.items-center {
-  align-items: center;
+.backdrop.active {
+  opacity: var(--backdrop-opacity, 1);
+  pointer-events: auto;
 }
 
-.items-start {
-  align-items: flex-start;
+/* Backdrop variants */
+.backdrop-light {
+  --backdrop-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+  --backdrop-brightness: 1.1;
 }
 
-.items-stretch {
-  align-items: stretch;
+.backdrop-dark {
+  --backdrop-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+  --backdrop-brightness: 0.6;
 }
 
-.justify-center {
-  justify-content: center;
+.backdrop-blur-sm {
+  --backdrop-blur: 5px;
 }
 
-.justify-between {
-  justify-content: space-between;
+.backdrop-blur-md {
+  --backdrop-blur: 10px;
 }
 
-.justify-start {
-  justify-content: flex-start;
+.backdrop-blur-lg {
+  --backdrop-blur: 20px;
 }
-
-/* Mobile-first spacing */
-.gap-1 { gap: var(--spacing-1); }
-.gap-2 { gap: var(--spacing-2); }
-.gap-3 { gap: var(--spacing-3); }
-.gap-4 { gap: var(--spacing-4); }
-.gap-6 { gap: var(--spacing-6); }
-.gap-8 { gap: var(--spacing-8); }
-
-/* Mobile-first Grid */
-.grid {
-  display: grid;
-  width: 100%;
-  gap: var(--spacing-4);
-}
-
-.grid > * {
-  min-width: 0; /* Prevent grid children from overflowing */
-}
-
-/* Mobile: single column by default */
-.grid-cols-1 { grid-template-columns: 1fr; }
-.grid-cols-2 { grid-template-columns: 1fr; } /* Single column on mobile */
-.grid-cols-3 { grid-template-columns: 1fr; } /* Single column on mobile */
-.grid-cols-4 { grid-template-columns: 1fr; } /* Single column on mobile */
-
-/* Responsive grid columns */
-@media (min-width: 640px) {
-  .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (min-width: 768px) {
-  .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
-}
-
-@media (min-width: 1024px) {
-  .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
-}
-
-/* Surface backgrounds for nesting */
-.surface-base {
-  background-color: var(--color-surface-base);
-}
-
-.surface-base fieldset {
-  background-color: var(--color-surface-subtle);
-}
-
-.surface-elevated {
-  background-color: var(--color-surface-elevated);
-  box-shadow: var(--shadow-sm);
-}
-
-.surface-elevated fieldset {
-  background-color: var(--color-surface-sunken);
-}
+/* Surface utilities */
 
 .surface-overlay {
+  padding: var(--spacing-4);
   background-color: var(--color-surface-overlay);
-  box-shadow: var(--shadow-md);
-}
-
-.surface-overlay fieldset {
-  background-color: var(--color-surface-elevated);
-}
-
-/* Default behavior when no surface class is present */
-body:not([class*="surface-"]) fieldset,
-.container fieldset {
-  background-color: var(--color-surface-subtle);
-}
-
-/* Mobile-first Cards */
-.card {
-  background-color: var(--color-surface-elevated);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-4); /* Smaller padding on mobile */
-  box-shadow: var(--shadow-base);
-  transition: box-shadow var(--transition-normal);
-  width: 100%;
-  margin-bottom: var(--spacing-4);
-}
-
-@media (min-width: 640px) {
-  .card {
-    padding: var(--spacing-6); /* Larger padding on desktop */
-  }
-}
-
-.card:hover {
-  box-shadow: var(--shadow-md);
-}
-
-/* Mobile-first spacing utilities */
-.p-0 { padding: var(--spacing-0); }
-.p-1 { padding: var(--spacing-1); }
-.p-2 { padding: var(--spacing-2); }
-.p-3 { padding: var(--spacing-3); }
-.p-4 { padding: var(--spacing-4); }
-.p-6 { padding: var(--spacing-6); }
-.p-8 { padding: var(--spacing-8); }
-
-.px-4 { padding-left: var(--spacing-4); padding-right: var(--spacing-4); }
-.py-4 { padding-top: var(--spacing-4); padding-bottom: var(--spacing-4); }
-
-.m-0 { margin: var(--spacing-0); }
-.m-1 { margin: var(--spacing-1); }
-.m-2 { margin: var(--spacing-2); }
-.m-3 { margin: var(--spacing-3); }
-.m-4 { margin: var(--spacing-4); }
-.m-6 { margin: var(--spacing-6); }
-.m-8 { margin: var(--spacing-8); }
-
-.mx-auto { margin-left: auto; margin-right: auto; }
-
-.mb-4 { margin-bottom: var(--spacing-4); }
-.mt-4 { margin-top: var(--spacing-4); }
-.mr-4 { margin-right: var(--spacing-4); }
-.ml-4 { margin-left: var(--spacing-4); }
-
-/* Mobile-first text utilities */
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
-
-.text-sm { font-size: var(--font-size-sm); }
-.text-base { font-size: var(--font-size-base); }
-.text-lg { font-size: var(--font-size-lg); }
-
-/* Hide/show utilities */
-.hidden { display: none; }
-.block { display: block; }
-.inline { display: inline; }
-.inline-block { display: inline-block; }
-
-/* Mobile-specific utilities */
-.mobile-hidden { display: none; }
-.desktop-hidden { display: block; }
-
-@media (min-width: 640px) {
-  .mobile-hidden { display: block; }
-  .desktop-hidden { display: none; }
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-md);
 }
 
 /* Media Element Utilities */

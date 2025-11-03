@@ -25,7 +25,8 @@ export const enums = {
     small: 4,
     medium: 8,
     large: 16,
-    full: 9999,
+    xlarge: 24,
+    xxlarge: 32
   },
 
   ShadowDepths: {
