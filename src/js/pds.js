@@ -213,10 +213,12 @@ PDS.defaultEnhancers = [
       if (elem.dataset.enhancedDropdown) return;
       elem.dataset.enhancedDropdown = "true";
       
+      const runtimeStyle = getComputedStyle(elem);
+      
+      
       const menu = elem.querySelector("menu");
       if (!menu) return;
 
-      menu.style.position = "relative";
       
       // Ensure toggle button doesn't submit forms by default
       const btn = elem.querySelector("button");

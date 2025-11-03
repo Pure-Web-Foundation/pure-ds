@@ -3213,7 +3213,6 @@ dialog.dialog-full {
 pds-tabstrip {
   margin-top: var(--spacing-6);
 }
-
 pds-tabstrip > nav {
   display: flex;
   gap: var(--spacing-1);
@@ -3551,6 +3550,50 @@ a.icon-only {
   padding-right: calc(var(--icon-size) + var(--spacing-5));
 }
 
+`;
+  }
+
+  #generateDropdownStyles() {
+    return /*css*/ `/* Dropdown Component */
+
+/* Basic dropdown surface for nav[data-dropdown] */
+nav[data-dropdown] {
+  position: relative;
+  background: var(--color-surface-overlay);
+  padding: 0;
+  margin-top: var(--spacing-2);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+}
+
+nav[data-dropdown] menu {
+  position: absolute;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+nav[data-dropdown] li {
+  padding: var(--spacing-2) 0;
+}
+
+nav[data-dropdown] li + li {
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--spacing-2);
+}
+
+nav[data-dropdown] a {
+  display: flex;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+nav[data-dropdown] a.danger {
+  color: var(--color-danger-600);
+}
 `;
   }
 
@@ -4285,6 +4328,11 @@ a.icon-only {
 
     // Dialog primitive styles
     css += this.#generateDialogStyles();
+
+    // Dropdown component styles
+    if (components.dropdown !== false) {
+      css += this.#generateDropdownStyles();
+    }
 
     // TabStrip component styles
     if (components.tabStrip !== false) {
