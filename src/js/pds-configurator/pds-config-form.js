@@ -1,5 +1,5 @@
 import { LitElement, html, nothing } from "../lit";
-import { config } from "../config";
+//import { config } from "../config";
 import { Generator } from "../pds-core/pds-generator.js";
 import { presets } from "../pds-core/pds-config.js";
 import { PDS, validateDesign } from "../pds";

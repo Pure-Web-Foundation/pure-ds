@@ -801,12 +801,7 @@ export class Generator {
       icons,
     } = this.tokens;
 
-    const { components = {} } = this.options;
-
-    if (this.options.debug) {
-      console.log("Components config:", components);
-      console.log("toasts enabled:", components.toasts !== false);
-    }
+    // Components are always included; component toggles are removed.
 
     const css = `
 :root {
@@ -835,14 +830,14 @@ ${this.#generateSemanticHTMLStyles()}
 
 ${this.#generateFormStyles()}
 
-${components.tables !== false ? this.#generateTableStyles() : ""}
-${components.alerts !== false ? this.#generateAlertStyles() : ""}
-${components.toasts !== false ? this.#generateToastStyles() : ""}
-${components.badges !== false ? this.#generateBadgeStyles() : ""}
+${this.#generateTableStyles()}
+${this.#generateAlertStyles()}
+${this.#generateToastStyles()}
+${this.#generateBadgeStyles()}
 ${this.#generateDialogStyles()}
-${components.accordion !== false ? this.#generateAccordionStyles() : ""}
-${components.tabStrip !== false ? this.#generateTabStripStyles() : ""}
-${components.customScrollbars !== false ? this.#generateScrollbarStyles() : ""}
+${this.#generateAccordionStyles()}
+${this.#generateTabStripStyles()}
+${this.#generateScrollbarStyles()}
 
 ${this.#generateIconStyles()}
 
@@ -4347,7 +4342,6 @@ nav[data-dropdown][data-mode="auto"] menu {
   }
 
   #generateComponentsLayer() {
-    const { components = {} } = this.options;
     let css = `@layer components {\n`;
 
     // Semantic HTML element styles (blockquote, hr, details, etc.)
@@ -4368,27 +4362,19 @@ nav[data-dropdown][data-mode="auto"] menu {
     css += this.#generateDialogStyles();
 
     // Dropdown component styles
-    if (components.dropdown !== false) {
-      css += this.#generateDropdownStyles();
-    }
+    css += this.#generateDropdownStyles();
 
     // TabStrip component styles
-    if (components.tabStrip !== false) {
-      css += this.#generateTabStripStyles();
-    }
+    css += this.#generateTabStripStyles();
 
     // Table component styles
-    if (components.tables !== false) {
-      css += this.#generateTableStyles();
-    }
+    css += this.#generateTableStyles();
 
     // Card component styles (utility-friendly, token-driven)
     css += `/* Card component */\n\n.card {\n  background: var(--color-surface-base);\n  border-radius: var(--radius-md);\n  padding: var(--spacing-4);\n}\n\n.card--elevated, .card-elevated {\n  background: var(--color-surface-elevated);\n  box-shadow: var(--shadow-md);\n}\n\n.card--outlined, .card-basic {\n  background: var(--color-surface-base);\n  border: 1px solid var(--color-border);\n}\n\n.card--interactive:hover {\n  transform: translateY(-2px);\n  box-shadow: var(--shadow-lg);\n  transition: transform var(--transition-fast), box-shadow var(--transition-fast);\n}\n`;
 
     // Custom scrollbar styles
-    if (components.customScrollbars !== false) {
-      css += this.#generateScrollbarStyles();
-    }
+    css += this.#generateScrollbarStyles();
 
     css += "}\n";
     return css;

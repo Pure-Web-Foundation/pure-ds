@@ -1,9 +1,11 @@
 import "./pds-configurator/pds-configurator";
 import { PDS } from "./pds";
-import { config } from "./config";
 
 // Initialize PDS once at app startup using the new unified shape
-await PDS.start({ mode: 'live', ...config });
+await PDS.start({ 
+	mode: 'live', 
+	preset: "default"	
+});
 
 document.body.innerHTML = /*html*/ `
 		<header>

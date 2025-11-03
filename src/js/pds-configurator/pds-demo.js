@@ -3032,127 +3032,119 @@ customElements.define(
           </section>
 
           <!-- Toast Notifications Section -->
-          ${components.toasts
-            ? html`
-                <section class="showcase-section">
-                  <h2>
-                    <pds-icon
-                      icon="bell-ringing"
-                      size="lg"
-                      class="icon-primary"
-                    ></pds-icon>
-                    Toast Notifications
-                  </h2>
+          <section class="showcase-section">
+            <h2>
+              <pds-icon
+                icon="bell-ringing"
+                size="lg"
+                class="icon-primary"
+              ></pds-icon>
+              Toast Notifications
+            </h2>
 
-                  <p class="toast-demo-description">
-                    Toast notifications appear in the top-right corner and
-                    auto-dismiss after a few seconds. Click the buttons below to
-                    see them in action:
-                  </p>
+            <p class="toast-demo-description">
+              Toast notifications appear in the top-right corner and
+              auto-dismiss after a few seconds. Click the buttons below to
+              see them in action:
+            </p>
 
-                  <div class="flex flex-wrap gap-md">
-                    <button
-                      class="btn-primary btn-sm"
-                      @click="${this.showSuccessToast}"
-                    >
-                      <pds-icon icon="check-circle" size="sm"></pds-icon>
-                      Success
-                    </button>
-                    <button
-                      class="btn-secondary btn-sm"
-                      @click="${this.showInfoToast}"
-                    >
-                      <pds-icon icon="info" size="sm"></pds-icon>
-                      Info
-                    </button>
-                    <button
-                      class="btn-warning btn-sm"
-                      @click="${this.showWarningToast}"
-                    >
-                      <pds-icon icon="warning" size="sm"></pds-icon>
-                      Warning
-                    </button>
-                    <button
-                      class="btn-danger btn-sm"
-                      @click="${this.showErrorToast}"
-                    >
-                      <pds-icon icon="x-circle" size="sm"></pds-icon>
-                      Error
-                    </button>
-                    <button
-                      class="btn-outline btn-sm"
-                      @click="${this.showLongToast}"
-                    >
-                      <pds-icon icon="clock" size="sm"></pds-icon>
-                      Long
-                    </button>
-                    <button
-                      class="btn-outline btn-sm"
-                      @click="${this.showPersistentToast}"
-                    >
-                      <pds-icon icon="bell" size="sm"></pds-icon>
-                      Persistent
-                    </button>
-                  </div>
-                </section>
-              `
-            : this.renderDisabledSection(
-                "Toast Notifications",
-                "Toast notifications are disabled. Enable in the designer panel."
-              )}
-          ${this.config?.components?.tabStrip
-            ? html`
-                <!-- Tab Strip Section -->
-                <section class="showcase-section alt-bg" data-section="tabs">
-                  <h2>
-                    <pds-icon icon="tabs"></pds-icon>
-                    Tab Strip
-                  </h2>
+            <div class="flex flex-wrap gap-md">
+              <button
+                class="btn-primary btn-sm"
+                @click="${this.showSuccessToast}"
+              >
+                <pds-icon icon="check-circle" size="sm"></pds-icon>
+                Success
+              </button>
+              <button
+                class="btn-secondary btn-sm"
+                @click="${this.showInfoToast}"
+              >
+                <pds-icon icon="info" size="sm"></pds-icon>
+                Info
+              </button>
+              <button
+                class="btn-warning btn-sm"
+                @click="${this.showWarningToast}"
+              >
+                <pds-icon icon="warning" size="sm"></pds-icon>
+                Warning
+              </button>
+              <button
+                class="btn-danger btn-sm"
+                @click="${this.showErrorToast}"
+              >
+                <pds-icon icon="x-circle" size="sm"></pds-icon>
+                Error
+              </button>
+              <button
+                class="btn-outline btn-sm"
+                @click="${this.showLongToast}"
+              >
+                <pds-icon icon="clock" size="sm"></pds-icon>
+                Long
+              </button>
+              <button
+                class="btn-outline btn-sm"
+                @click="${this.showPersistentToast}"
+              >
+                <pds-icon icon="bell" size="sm"></pds-icon>
+                Persistent
+              </button>
+            </div>
+          </section>
+
+          <!-- Tab Strip Section -->
+          <section class="showcase-section alt-bg" data-section="tabs">
+            <h2>
+              <pds-icon icon="tabs"></pds-icon>
+              Tab Strip
+            </h2>
+            <p>
+              Accessible tab navigation with hash-based routing and
+              keyboard support.
+            </p>
+
+            <div style="margin-top: var(--spacing-6);">
+              <pds-tabstrip label="Example Tabs">
+                <pds-tabpanel id="overview" label="Overview">
+                  <h3>Overview</h3>
                   <p>
-                    Accessible tab navigation with hash-based routing and
-                    keyboard support.
+                    This is the overview tab. Tab strips provide organized
+                    navigation between related content.
                   </p>
+                </pds-tabpanel>
 
-                  <div style="margin-top: var(--spacing-6);">
-                    <pds-tabstrip label="Example Tabs">
-                      <pds-tabpanel id="overview" label="Overview">
-                        <h3>Overview</h3>
-                        <p>
-                          This is the overview tab. Tab strips provide organized
-                          navigation between related content.
-                        </p>
-                      </pds-tabpanel>
+                <pds-tabpanel id="features" label="Features">
+                  <h3>Features</h3>
+                  <p>
+                    Tab strips are built with modern web components and
+                    include:
+                  </p>
+                  <ul>
+                    <li>
+                      <strong>Deep linking:</strong> Each tab has a unique
+                      URL hash
+                    </li>
+                    <li>
+                      <strong>Progressive enhancement:</strong> Works
+                      without JavaScript
+                    </li>
+                    <li>
+                      <strong>Responsive:</strong> Adapts to mobile and
+                      desktop
+                    </li>
+                    <li>
+                      <strong>Customizable:</strong> Style with CSS
+                      variables
+                    </li>
+                  </ul>
+                </pds-tabpanel>
 
-                      <pds-tabpanel id="features" label="Features">
-                        <h3>Features</h3>
-                        <p>
-                          Tab strips are built with modern web components and
-                          include:
-                        </p>
-                        <ul>
-                          <li>
-                            <strong>Deep linking:</strong> Each tab has a unique
-                            URL hash
-                          </li>
-                          <li>
-                            <strong>Progressive enhancement:</strong> Works
-                            without JavaScript
-                          </li>
-                          <li>
-                            <strong>Responsive:</strong> Adapts to mobile and
-                            desktop
-                          </li>
-                          <li>
-                            <strong>Customizable:</strong> Style with CSS
-                            variables
-                          </li>
-                        </ul>
-                      </pds-tabpanel>
-
-                      <pds-tabpanel id="usage" label="Usage">
-                        <h3>Usage</h3>
-                        <p>Simple markup example:</p>
-                        <pre><code>&lt;pds-tabstrip label="My Tabs"&gt;
+                <pds-tabpanel id="usage" label="Usage">
+                  <h3>Usage</h3>
+                  <p>Simple markup example:</p>
+                  <pre><code>&lt;pds-tabstrip label="My Tabs"&gt;
   &lt;pds-tabpanel id="tab1" label="First Tab"&gt;
     Content for first tab
   &lt;/pds-tabpanel&gt;
@@ -3160,63 +3152,58 @@ customElements.define(
     Content for second tab
   &lt;/pds-tabpanel&gt;
 &lt;/pds-tabstrip&gt;</code></pre>
-                      </pds-tabpanel>
+                </pds-tabpanel>
 
-                      <pds-tabpanel id="accessibility" label="Accessibility">
-                        <h3>Accessibility</h3>
-                        <p>Built with accessibility in mind:</p>
-                        <ul>
-                          <li><code>aria-label</code> on navigation</li>
-                          <li><code>aria-current</code> on active tab</li>
-                          <li>
-                            <code>aria-controls</code> linking tabs to panels
-                          </li>
-                          <li><code>role="region"</code> on tab panels</li>
-                          <li>Keyboard navigation with arrow keys</li>
-                          <li>Focus management</li>
-                        </ul>
-                      </pds-tabpanel>
-                    </pds-tabstrip>
-                  </div>
-                </section>
-              `
-            : ""}
-          ${components.drawer
-            ? html`
-                <!-- Drawer Section -->
-                <section class="showcase-section">
-                  <h2>
-                    <pds-icon
-                      icon="squares-four"
-                      size="lg"
-                      class="icon-primary"
-                    ></pds-icon>
-                    Drawer Example
-                  </h2>
-                  <p>Open the global drawer from different sides:</p>
-                  <div
-                    class="btn-group"
-                    style="gap: var(--spacing-3); flex-wrap: wrap;"
-                  >
-                    <button class="btn-primary" @click=${this.openDrawer}>
-                      <pds-icon icon="sidebar" size="sm"></pds-icon>
-                      Bottom Drawer
-                    </button>
-                    <button class="btn-secondary" @click=${this.openDrawerLeft}>
-                      <pds-icon icon="sidebar" size="sm"></pds-icon>
-                      Left Drawer
-                    </button>
-                    <button
-                      class="btn-secondary"
-                      @click=${this.openDrawerRight}
-                    >
-                      <pds-icon icon="sidebar" size="sm"></pds-icon>
-                      Right Drawer
-                    </button>
-                  </div>
-                </section>
-              `
-            : ""}
+                <pds-tabpanel id="accessibility" label="Accessibility">
+                  <h3>Accessibility</h3>
+                  <p>Built with accessibility in mind:</p>
+                  <ul>
+                    <li><code>aria-label</code> on navigation</li>
+                    <li><code>aria-current</code> on active tab</li>
+                    <li>
+                      <code>aria-controls</code> linking tabs to panels
+                    </li>
+                    <li><code>role="region"</code> on tab panels</li>
+                    <li>Keyboard navigation with arrow keys</li>
+                    <li>Focus management</li>
+                  </ul>
+                </pds-tabpanel>
+              </pds-tabstrip>
+            </div>
+          </section>
+
+          <!-- Drawer Section -->
+          <section class="showcase-section">
+            <h2>
+              <pds-icon
+                icon="squares-four"
+                size="lg"
+                class="icon-primary"
+              ></pds-icon>
+              Drawer Example
+            </h2>
+            <p>Open the global drawer from different sides:</p>
+            <div
+              class="btn-group"
+              style="gap: var(--spacing-3); flex-wrap: wrap;"
+            >
+              <button class="btn-primary" @click=${this.openDrawer}>
+                <pds-icon icon="sidebar" size="sm"></pds-icon>
+                Bottom Drawer
+              </button>
+              <button class="btn-secondary" @click=${this.openDrawerLeft}>
+                <pds-icon icon="sidebar" size="sm"></pds-icon>
+                Left Drawer
+              </button>
+              <button
+                class="btn-secondary"
+                @click=${this.openDrawerRight}
+              >
+                <pds-icon icon="sidebar" size="sm"></pds-icon>
+                Right Drawer
+              </button>
+            </div>
+          </section>
         </div>
       `;
     }

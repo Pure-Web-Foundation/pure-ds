@@ -608,68 +608,6 @@
       },
       "required": []
     },
-    "components": {
-      "type": "object",
-      "title": "Component Toggles",
-      "description": "Enable or disable built-in component styling.",
-      "properties": {
-        "tables": {
-          "type": "boolean",
-          "title": "Tables",
-          "description": "Include styling for table components.",
-          "default": true
-        },
-        "alerts": {
-          "type": "boolean",
-          "title": "Alerts",
-          "description": "Include styling for alert components.",
-          "default": true
-        },
-        "toasts": {
-          "type": "boolean",
-          "title": "Toasts",
-          "description": "Include styling for toast notification components.",
-          "default": true
-        },
-        "badges": {
-          "type": "boolean",
-          "title": "Badges",
-          "description": "Include styling for badge components.",
-          "default": true
-        },
-        "modals": {
-          "type": "boolean",
-          "title": "Modals",
-          "description": "Include styling for modal dialog components.",
-          "default": true
-        },
-        "forms": {
-          "type": "boolean",
-          "title": "Forms",
-          "description": "Include styling for form elements (inputs, buttons, etc.).",
-          "default": true
-        },
-        "tabStrip": {
-          "type": "boolean",
-          "title": "Tab Strip",
-          "description": "Include styling for tab strip (tabs) components.",
-          "default": true
-        },
-        "customScrollbars": {
-          "type": "boolean",
-          "title": "Custom Scrollbars",
-          "description": "Include custom styling for scrollbars.",
-          "default": true
-        },
-        "drawer": {
-          "type": "boolean",
-          "title": "Drawer",
-          "description": "Include styling for drawer (off-canvas panel) components.",
-          "default": true
-        }
-      },
-      "required": []
-    },
     "icons": {
       "type": "object",
       "title": "Icons",
