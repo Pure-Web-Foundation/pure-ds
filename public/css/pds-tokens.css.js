@@ -106,6 +106,11 @@ tokens.replaceSync(`@layer tokens {
   --color-semantic-primaryText: #1c576e;
   --color-semantic-primaryFill: #267797;
   --color-semantic-infoFill: #267797;
+  --color-semantic-onPrimaryFill: #ffffff;
+  --color-semantic-primaryFillHover: #216985;
+  --color-semantic-onPrimaryFillHover: #ffffff;
+  --color-semantic-primaryFillActive: #1e5d76;
+  --color-semantic-onPrimaryFillActive: #ffffff;
   /* Smart Surface Tokens (context-aware) */
   --surface-base-bg: #e7e6de;
   --surface-base-text: #000000;
@@ -523,43 +528,43 @@ tokens.replaceSync(`@layer tokens {
     radial-gradient(at 10% 10%, color-mix(in oklab, #ce2d5b 14%, transparent) 0px, transparent 50%),
     radial-gradient(at 90% 10%, color-mix(in oklab, #999ea5 13%, transparent) 0px, transparent 50%),
     radial-gradient(at 50% 90%, color-mix(in oklab, #ce2d5b 10%, transparent) 0px, transparent 50%);
-    }
+    
+  /* Alert dark mode adjustments */
+  .alert-success {
+    background-color: var(--color-success-50);
+    border-color: var(--color-success-500);
+    color: var(--color-success-900);
+  }
 
-/* Alert dark mode adjustments */
-html[data-theme="dark"] .alert-success {
-html[data-theme="dark"]   background-color: var(--color-success-50);
-html[data-theme="dark"]   border-color: var(--color-success-500);
-html[data-theme="dark"]   color: var(--color-success-900);
-}
+  .alert-info {
+    background-color: var(--color-info-50);
+    border-color: var(--color-info-500);
+    color: var(--color-info-900);
+  }
 
-html[data-theme="dark"] .alert-info {
-html[data-theme="dark"]   background-color: var(--color-info-50);
-html[data-theme="dark"]   border-color: var(--color-info-500);
-html[data-theme="dark"]   color: var(--color-info-900);
-}
+  .alert-warning {
+    background-color: var(--color-warning-50);
+    border-color: var(--color-warning-500);
+    color: var(--color-warning-900);
+  }
 
-html[data-theme="dark"] .alert-warning {
-html[data-theme="dark"]   background-color: var(--color-warning-50);
-html[data-theme="dark"]   border-color: var(--color-warning-500);
-html[data-theme="dark"]   color: var(--color-warning-900);
-}
+  .alert-danger,
+  .alert-error {
+    background-color: var(--color-danger-50);
+    border-color: var(--color-danger-500);
+    color: var(--color-danger-900);
+  }
 
-html[data-theme="dark"] .alert-danger,
-html[data-theme="dark"] .alert-error {
-html[data-theme="dark"]   background-color: var(--color-danger-50);
-html[data-theme="dark"]   border-color: var(--color-danger-500);
-html[data-theme="dark"]   color: var(--color-danger-900);
-}
+  /* Dim images in dark mode */
+  img, video {
+    opacity: 0.8;
+    transition: opacity var(--transition-normal);
+  }
+  img:hover, video:hover {
+    opacity: 1;
+  }
 
-/* Dim images in dark mode */
-html[data-theme="dark"] img, video {
-html[data-theme="dark"]   opacity: 0.8;
-html[data-theme="dark"]   transition: opacity var(--transition-normal);
 }
-html[data-theme="dark"] img:hover, video:hover {
-html[data-theme="dark"]   opacity: 1;
-}
-
     }
 /* Non-layered dark variables fallback (ensures attribute wins) */
 html[data-theme="dark"] {
@@ -865,6 +870,11 @@ export const tokensCSS = `@layer tokens {
   --color-semantic-primaryText: #1c576e;
   --color-semantic-primaryFill: #267797;
   --color-semantic-infoFill: #267797;
+  --color-semantic-onPrimaryFill: #ffffff;
+  --color-semantic-primaryFillHover: #216985;
+  --color-semantic-onPrimaryFillHover: #ffffff;
+  --color-semantic-primaryFillActive: #1e5d76;
+  --color-semantic-onPrimaryFillActive: #ffffff;
   /* Smart Surface Tokens (context-aware) */
   --surface-base-bg: #e7e6de;
   --surface-base-text: #000000;
@@ -1282,43 +1292,43 @@ export const tokensCSS = `@layer tokens {
     radial-gradient(at 10% 10%, color-mix(in oklab, #ce2d5b 14%, transparent) 0px, transparent 50%),
     radial-gradient(at 90% 10%, color-mix(in oklab, #999ea5 13%, transparent) 0px, transparent 50%),
     radial-gradient(at 50% 90%, color-mix(in oklab, #ce2d5b 10%, transparent) 0px, transparent 50%);
-    }
+    
+  /* Alert dark mode adjustments */
+  .alert-success {
+    background-color: var(--color-success-50);
+    border-color: var(--color-success-500);
+    color: var(--color-success-900);
+  }
 
-/* Alert dark mode adjustments */
-html[data-theme="dark"] .alert-success {
-html[data-theme="dark"]   background-color: var(--color-success-50);
-html[data-theme="dark"]   border-color: var(--color-success-500);
-html[data-theme="dark"]   color: var(--color-success-900);
-}
+  .alert-info {
+    background-color: var(--color-info-50);
+    border-color: var(--color-info-500);
+    color: var(--color-info-900);
+  }
 
-html[data-theme="dark"] .alert-info {
-html[data-theme="dark"]   background-color: var(--color-info-50);
-html[data-theme="dark"]   border-color: var(--color-info-500);
-html[data-theme="dark"]   color: var(--color-info-900);
-}
+  .alert-warning {
+    background-color: var(--color-warning-50);
+    border-color: var(--color-warning-500);
+    color: var(--color-warning-900);
+  }
 
-html[data-theme="dark"] .alert-warning {
-html[data-theme="dark"]   background-color: var(--color-warning-50);
-html[data-theme="dark"]   border-color: var(--color-warning-500);
-html[data-theme="dark"]   color: var(--color-warning-900);
-}
+  .alert-danger,
+  .alert-error {
+    background-color: var(--color-danger-50);
+    border-color: var(--color-danger-500);
+    color: var(--color-danger-900);
+  }
 
-html[data-theme="dark"] .alert-danger,
-html[data-theme="dark"] .alert-error {
-html[data-theme="dark"]   background-color: var(--color-danger-50);
-html[data-theme="dark"]   border-color: var(--color-danger-500);
-html[data-theme="dark"]   color: var(--color-danger-900);
-}
+  /* Dim images in dark mode */
+  img, video {
+    opacity: 0.8;
+    transition: opacity var(--transition-normal);
+  }
+  img:hover, video:hover {
+    opacity: 1;
+  }
 
-/* Dim images in dark mode */
-html[data-theme="dark"] img, video {
-html[data-theme="dark"]   opacity: 0.8;
-html[data-theme="dark"]   transition: opacity var(--transition-normal);
 }
-html[data-theme="dark"] img:hover, video:hover {
-html[data-theme="dark"]   opacity: 1;
-}
-
     }
 /* Non-layered dark variables fallback (ensures attribute wins) */
 html[data-theme="dark"] {

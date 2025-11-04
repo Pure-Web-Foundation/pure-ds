@@ -721,7 +721,8 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   color: var(--color-text-primary);
   border-color: var(--color-border);
   
-  &:hover {
+  /* Only apply generic hover to non-variant buttons */
+  &:hover:not(.btn-primary):not(.btn-secondary):not(.btn-outline) {
     background-color: var(--color-surface-elevated);
   }
   
@@ -741,12 +742,19 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 
 .btn-primary {
   background-color: var(--color-semantic-primaryFill);
-  color: white;
+  color: var(--color-semantic-onPrimaryFill);
   border-color: var(--color-semantic-primaryFill);
   
   &:hover {
-    background-color: color-mix(in oklab, var(--color-semantic-primaryFill) 90%, black 10%);
-    border-color: color-mix(in oklab, var(--color-semantic-primaryFill) 90%, black 10%);
+    background-color: var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill));
+    border-color: var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill));
+    color: var(--color-semantic-onPrimaryFillHover, var(--color-semantic-onPrimaryFill));
+  }
+
+  &:active {
+    background-color: var(--color-semantic-primaryFillActive, var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill)));
+    border-color: var(--color-semantic-primaryFillActive, var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill)));
+    color: var(--color-semantic-onPrimaryFillActive, var(--color-semantic-onPrimaryFillHover, var(--color-semantic-onPrimaryFill)));
   }
   
   &:focus {
@@ -2622,7 +2630,8 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   color: var(--color-text-primary);
   border-color: var(--color-border);
   
-  &:hover {
+  /* Only apply generic hover to non-variant buttons */
+  &:hover:not(.btn-primary):not(.btn-secondary):not(.btn-outline) {
     background-color: var(--color-surface-elevated);
   }
   
@@ -2642,12 +2651,19 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 
 .btn-primary {
   background-color: var(--color-semantic-primaryFill);
-  color: white;
+  color: var(--color-semantic-onPrimaryFill);
   border-color: var(--color-semantic-primaryFill);
   
   &:hover {
-    background-color: color-mix(in oklab, var(--color-semantic-primaryFill) 90%, black 10%);
-    border-color: color-mix(in oklab, var(--color-semantic-primaryFill) 90%, black 10%);
+    background-color: var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill));
+    border-color: var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill));
+    color: var(--color-semantic-onPrimaryFillHover, var(--color-semantic-onPrimaryFill));
+  }
+
+  &:active {
+    background-color: var(--color-semantic-primaryFillActive, var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill)));
+    border-color: var(--color-semantic-primaryFillActive, var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill)));
+    color: var(--color-semantic-onPrimaryFillActive, var(--color-semantic-onPrimaryFillHover, var(--color-semantic-onPrimaryFill)));
   }
   
   &:focus {

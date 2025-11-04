@@ -365,7 +365,11 @@ export const presets = {
       darkMode: {
         background: "#0b0b0b",
         secondary: "#9ca3af",
-        primary: "#0a0a0a"
+        // Set a chromatic primary in dark mode to ensure both:
+        // - outline/link contrast on dark surface, and
+        // - sufficient button fill contrast against white text.
+        // Cyan signal aligns with preset accent and produces high-contrast dark fills.
+        primary: "#06b6d4"
       }
     },
     typography: {

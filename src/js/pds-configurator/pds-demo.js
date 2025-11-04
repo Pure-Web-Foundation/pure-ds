@@ -113,6 +113,7 @@ customElements.define(
         const file = (e.detail && e.detail.file) || "README.md";
         await this._renderDocToDialog(file);
       });
+
     }
 
     disconnectedCallback() {
@@ -1306,6 +1307,15 @@ customElements.define(
 
     render() {
       const components = this.config?.components || {};
+      // Determine current theme from DOM so section copy can adapt
+      const theme =
+        (typeof document !== "undefined" &&
+          document.documentElement?.getAttribute("data-theme")) ||
+        "light";
+      const inversionTitle =
+        theme === "dark" ? "Light Surfaces in Dark Mode" : "Dark Surfaces in Light Mode";
+      const inversePhrase =
+        theme === "dark" ? "light surface in dark mode" : "dark surface in light mode";
 
       return html`
         <div
@@ -2064,15 +2074,15 @@ customElements.define(
               </div>
 
               <div class="demo-grid cols-3">
-                <div class="card-basic">
+                <div class="card">
                   <h4>Card 1</h4>
                   <p>Cards provide a clean container for content.</p>
                 </div>
-                <div class="card-basic">
+                <div class="card">
                   <h4>Card 2</h4>
                   <p>They have consistent spacing and shadows.</p>
                 </div>
-                <div class="card-basic">
+                <div class="card">
                   <h4>Card 3</h4>
                   <p>And they respond beautifully to hover states.</p>
                 </div>
@@ -2505,47 +2515,35 @@ customElements.define(
 
             <p>
               The smart surface system automatically inverts text and icon
-              colors when you use a dark surface in light mode (or vice versa).
+              colors when you use a ${inversePhrase} (or vice versa).
               Toggle dark mode to see the magic!
             </p>
 
-            <h3>Dark Surfaces in Light Mode</h3>
+            <h3>${inversionTitle}</h3>
             <div class="demo-grid cols-2">
-              <div
-                class="demo-inversion-box"
-                style="background-color: #1a1a1a; padding: var(--spacing-6); border-radius: var(--radius-lg);"
-              >
-                <h4 style="color: white;">
-                  <pds-icon icon="moon" style="color: white;"></pds-icon>
+              <div class="demo-inversion-box surface-inverse surface-box">
+                <h4>
+                  <pds-icon icon="moon"></pds-icon>
                   Automatic Inversion
                 </h4>
-                <p style="color: #e5e5e5;">
+                <p>
                   This dark surface automatically uses light text and icons for
                   perfect readability
                 </p>
-                <button
-                  class="btn-primary"
-                  style="margin-top: var(--spacing-3);"
-                >
+                <button class="btn-primary" style="margin-top: var(--spacing-3);">
                   Primary Button
                 </button>
               </div>
 
-              <div
-                class="demo-inversion-box"
-                style="background-color: #1e4a6f; padding: var(--spacing-6); border-radius: var(--radius-lg);"
-              >
-                <h4 style="color: white;">
-                  <pds-icon icon="palette" style="color: white;"></pds-icon>
-                  Primary 800
+              <div class="demo-inversion-box surface-overlay surface-box">
+                <h4>
+                  <pds-icon icon="palette"></pds-icon>
+                  Overlay Surface
                 </h4>
-                <p style="color: #dbeafe;">
+                <p>
                   Text and icons auto-adapt to maintain WCAG AA contrast
                 </p>
-                <button
-                  class="btn-secondary"
-                  style="margin-top: var(--spacing-3);"
-                >
+                <button class="btn-secondary" style="margin-top: var(--spacing-3);">
                   Secondary Button
                 </button>
               </div>
@@ -2553,49 +2551,22 @@ customElements.define(
 
             <h3>Semantic Surfaces with Auto-Contrast</h3>
             <div class="demo-grid cols-3">
-              <div
-                class="demo-inversion-box"
-                style="background-color: #16a34a; padding: var(--spacing-5); border-radius: var(--radius-md); text-align: center;"
-              >
-                <pds-icon
-                  icon="check-circle"
-                  size="xl"
-                  style="color: white;"
-                ></pds-icon>
-                <h5 style="color: white; margin-top: var(--spacing-2);">
-                  Success
-                </h5>
-                <p style="color: #dcfce7;">Icons remain visible</p>
+              <div class="demo-inversion-box alert alert-success surface-center">
+                <pds-icon icon="check-circle" size="xl"></pds-icon>
+                <h5 style="margin-top: var(--spacing-2);">Success</h5>
+                <p>Icons remain visible</p>
               </div>
 
-              <div
-                class="demo-inversion-box"
-                style="background-color: #ca8a04; padding: var(--spacing-5); border-radius: var(--radius-md); text-align: center;"
-              >
-                <pds-icon
-                  icon="warning"
-                  size="xl"
-                  style="color: white;"
-                ></pds-icon>
-                <h5 style="color: white; margin-top: var(--spacing-2);">
-                  Warning
-                </h5>
-                <p style="color: #fef9c3;">Perfect contrast maintained</p>
+              <div class="demo-inversion-box alert alert-warning surface-center">
+                <pds-icon icon="warning" size="xl"></pds-icon>
+                <h5 style="margin-top: var(--spacing-2);">Warning</h5>
+                <p>Perfect contrast maintained</p>
               </div>
 
-              <div
-                class="demo-inversion-box"
-                style="background-color: #be185d; padding: var(--spacing-5); border-radius: var(--radius-md); text-align: center;"
-              >
-                <pds-icon
-                  icon="heart"
-                  size="xl"
-                  style="color: white;"
-                ></pds-icon>
-                <h5 style="color: white; margin-top: var(--spacing-2);">
-                  Accent
-                </h5>
-                <p style="color: #fce7f3;">Automatic adjustment</p>
+              <div class="demo-inversion-box alert alert-danger surface-center">
+                <pds-icon icon="heart" size="xl"></pds-icon>
+                <h5 style="margin-top: var(--spacing-2);">Danger</h5>
+                <p>Automatic adjustment</p>
               </div>
             </div>
           </section>

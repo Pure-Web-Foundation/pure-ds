@@ -53,5 +53,6 @@
     "pure-web": "^1.1.22",
     "@qogni-technologies/pwa-utils-library": "^1.3.2",
     "showdown": "^2.1.0"
+    
   }
 }

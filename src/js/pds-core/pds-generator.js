@@ -1142,21 +1142,52 @@ ${this.#generateMediaQueries()}
     // Generate dark mode mesh gradients
     const meshVars = this.#generateMeshGradientsDark(colors);
 
-    const rules = `/* Alert dark mode adjustments */\n.alert-success {\n  background-color: var(--color-success-50);\n  border-color: var(--color-success-500);\n  color: var(--color-success-900);\n}\n\n.alert-info {\n  background-color: var(--color-info-50);\n  border-color: var(--color-info-500);\n  color: var(--color-info-900);\n}\n\n.alert-warning {\n  background-color: var(--color-warning-50);\n  border-color: var(--color-warning-500);\n  color: var(--color-warning-900);\n}\n\n.alert-danger,\n.alert-error {\n  background-color: var(--color-danger-50);\n  border-color: var(--color-danger-500);\n  color: var(--color-danger-900);\n}\n\n/* Dim images in dark mode */\nimg, video {\n  opacity: 0.8;\n  transition: opacity var(--transition-normal);\n}\nimg:hover, video:hover {\n  opacity: 1;\n}\n`;
+    const rules = `/* Alert dark mode adjustments */
+.alert-success {
+  background-color: var(--color-success-50);
+  border-color: var(--color-success-500);
+  color: var(--color-success-900);
+}
 
-    // Prefix selectors with html[data-theme="dark"] so rules are applied only in dark mode
-    const prefixRules = (selPrefix) => {
-      return rules.replace(/(^|\n)(\.?[a-zA-Z0-9-_., ]+)/g, (m, p1, p2) => {
-        if (!p2.trim()) return m;
-        return `${p1}${selPrefix}${p2}`;
-      });
-    };
+.alert-info {
+  background-color: var(--color-info-50);
+  border-color: var(--color-info-500);
+  color: var(--color-info-900);
+}
 
+.alert-warning {
+  background-color: var(--color-warning-50);
+  border-color: var(--color-warning-500);
+  color: var(--color-warning-900);
+}
+
+.alert-danger,
+.alert-error {
+  background-color: var(--color-danger-50);
+  border-color: var(--color-danger-500);
+  color: var(--color-danger-900);
+}
+
+/* Dim images in dark mode */
+img, video {
+  opacity: 0.8;
+  transition: opacity var(--transition-normal);
+}
+img:hover, video:hover {
+  opacity: 1;
+}
+`;
+
+    // Scope rules using native CSS nesting by wrapping inside html[data-theme="dark"]
+    // This yields: html[data-theme="dark"] .selector { ... }
     let css = "";
-
-    // Dark variables scoped to html[data-theme="dark"]
-    css += `html[data-theme="dark"] {\n${vars}${smartSurfaceVars}${semanticVars}${backdropVars}${meshVars}}\n\n`;
-    css += prefixRules('html[data-theme="dark"] ');
+    css += `html[data-theme="dark"] {\n${vars}${smartSurfaceVars}${semanticVars}${backdropVars}${meshVars}`;
+    // indent nested rule block for readability
+    const nested = rules
+      .split('\n')
+      .map(line => (line.length ? `  ${line}` : line))
+      .join('\n');
+    css += `\n${nested}\n}`;
 
     return css;
   }
@@ -1670,7 +1701,7 @@ fieldset {
   border: none;
   border-radius: var(--radius-md);
   width: 100%;
-  background-color: var(--color-surface-subtle);
+  background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
   
   &[role="radiogroup"] {
     display: flex;
