@@ -295,7 +295,11 @@ export const presets = {
       darkMode: {
         background: "#0b0f14",
         secondary: "#9ca3af",
-        primary: "#0f172a" // navy-very-dark for white text on filled controls
+        // Use a lighter primary in dark mode to ensure outline/link text
+        // has strong contrast against the very-dark surface. The generator
+        // will still pick appropriate darker fill shades for buttons so
+        // white-on-fill contrast is preserved.
+  primary: "#d1d5db" // lighter-gray (tuned to balance outline/link contrast and white-on-fill contrast)
       }
     },
     typography: {

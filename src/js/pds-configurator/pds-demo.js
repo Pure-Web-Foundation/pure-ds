@@ -1329,7 +1329,7 @@ customElements.define(
 
           <!-- Hero Section -->
           <section class="showcase-hero">
-            <h1>Pure Design System</h1>
+            <h1>Pure Design System </h1>
             <p>Why build a design system if you can generate it?</p>
             <div class="btn-group">
               <button
@@ -1927,7 +1927,7 @@ customElements.define(
             </h2>
 
             <h3>Sizes</h3>
-            <div class="icon-sizes">
+            <div class="icon-sizes surface-transparent-01">
               <pds-icon icon="heart" size="xs"></pds-icon>
               <pds-icon icon="heart" size="sm"></pds-icon>
               <pds-icon icon="heart" size="md"></pds-icon>
@@ -1937,7 +1937,7 @@ customElements.define(
             </div>
 
             <h3>Semantic Colors</h3>
-            <div class="icon-colors">
+            <div class="icon-colors surface-transparent-01">
               <pds-icon
                 icon="check-circle"
                 class="icon-primary"
@@ -2004,7 +2004,7 @@ customElements.define(
             </div>
 
             <h3>Common Icons</h3>
-            <div class="icon-grid">
+            <div class="icon-grid surface-transparent-01">
               <div class="icon-grid-item">
                 <pds-icon icon="house" size="lg"></pds-icon>
                 <span class="icon-grid-label">house</span>
@@ -2068,7 +2068,7 @@ customElements.define(
             </h2>
 
             <div class="demo-grid cols-1">
-              <div class="card-elevated">
+              <div class="card surface-elevated">
                 <h3>Elevated Surface</h3>
                 <p>This surface has a subtle shadow and elevated background.</p>
               </div>
