@@ -1703,8 +1703,8 @@ form {
 
 fieldset {
   margin: 0 0 var(--spacing-${Math.round((gap * sectionSpacingValue) / 4)}) 0;
-  padding: var(--spacing-4);
-  border: none;
+  padding: var(--spacing-5);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   width: 100%;
   background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
@@ -1768,15 +1768,12 @@ fieldset {
   }
 }
 
-legend {
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-3) 0;
-  border: none;
-  line-height: var(--font-lineHeight-tight);
-  padding: 0 var(--spacing-2);
-  font-size: var(--font-size-base);
-}
+
+
+/* Nested legend scaling: reduce font-size for deeper sub-forms */
+fieldset > legend { font-size: var(--font-size-lg); }
+fieldset fieldset > legend { font-size: var(--font-size-base); }
+fieldset fieldset fieldset > legend { font-size: var(--font-size-sm); }
 
 .form-container {
   display: grid;
@@ -4336,6 +4333,23 @@ nav[data-dropdown][data-mode="auto"] menu {
     font-weight: var(--font-weight-semibold);
     padding: 0 var(--spacing-2);
     color: var(--color-text-primary);
+    display: contents; /* treat legend as heading inside fieldset */
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3) 0;
+    border: none;
+    line-height: var(--font-lineHeight-tight);
+    padding: 0 var(--spacing-3);
+    font-size: var(--font-size-lg);
+    background: transparent; /* avoid browser default notch behavior */
+    width: auto;
+    box-sizing: border-box;
+
+    &::after{
+      content: "";
+      display: block;
+      margin-bottom: var(--spacing-4);
+    }
   }
 
   /* List primitives */

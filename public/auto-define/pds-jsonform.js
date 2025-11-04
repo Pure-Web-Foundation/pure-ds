@@ -10,10 +10,6 @@ function getStep(value) {
 
 /**
  * <pds-jsonform>
- * Light DOM, JSON-Schema–aware form generator.
- * - Renderers return ONLY controls; wrapper (label/fieldset) is centralized.
- * - ES2022 #privates throughout.
- * - No shadow CSS; style externally.
  *
  * Form Actions:
  * By default, the form includes Submit and Reset buttons inside the <form> element.
