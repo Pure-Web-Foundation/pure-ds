@@ -247,22 +247,14 @@ PDS.defaultEnhancers = [
       };
 
       const computeAutoDirection = () => {
-        // Temporarily show the menu offscreen to measure its height
-        const prevDisplay = menu.style.display;
-        const prevVisibility = menu.style.visibility;
-        menu.style.visibility = "hidden";
-        menu.style.display = "block";
-        // Use offsetHeight/scrollHeight as best-effort measurement
-        const menuHeight = menu.offsetHeight || menu.scrollHeight || 0;
-        menu.style.display = prevDisplay || "none";
-        menu.style.visibility = prevVisibility || "";
-
+        // Choose the direction with the most vertical space available.
+        // This is simpler and more robust for very long menus: prefer the
+        // direction that gives the user the most room and allow the menu to
+        // scroll when needed.
         const rect = elem.getBoundingClientRect();
-        const spaceBelow = window.innerHeight - rect.bottom;
-        const spaceAbove = rect.top;
-        // Prefer down unless insufficient space below and more space above
-        if (spaceBelow < menuHeight && spaceAbove > menuHeight) return "up";
-        return "down";
+        const spaceBelow = Math.max(0, window.innerHeight - rect.bottom);
+        const spaceAbove = Math.max(0, rect.top);
+        return spaceAbove > spaceBelow ? "up" : "down";
       };
 
       const showMenu = () => {
@@ -272,6 +264,22 @@ PDS.defaultEnhancers = [
           dir = computeAutoDirection();
         }
         placeMenu(dir);
+        // Constrain menu height to available viewport space and allow scrolling
+        // when content exceeds that height. Add a tiny safety margin.
+        const rect = elem.getBoundingClientRect();
+        const spaceBelow = Math.max(0, window.innerHeight - rect.bottom);
+        const spaceAbove = Math.max(0, rect.top);
+        const available = dir === "up" ? spaceAbove : spaceBelow;
+        const maxHeight = Math.max(0, available - 8); // 8px margin
+        if (maxHeight > 0) {
+          menu.style.maxHeight = `${maxHeight}px`;
+          menu.style.overflowY = "auto";
+        } else {
+          // Fallback: allow the menu to grow but still scroll if needed
+          menu.style.maxHeight = "60vh";
+          menu.style.overflowY = "auto";
+        }
+
         menu.style.display = "block";
         menu.setAttribute("aria-hidden", "false");
         if (btn) btn.setAttribute("aria-expanded", "true");

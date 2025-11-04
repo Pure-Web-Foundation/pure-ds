@@ -251,6 +251,175 @@ export const presets = {
       radiusSize: enums.RadiusSizes.small, // Subtle elegance
       borderWidth: enums.BorderWidths.thin
     }
+  },
+  "desert-dawn": {
+    id: "desert-dawn",
+    name: "Desert Dawn",
+    description: "Sun-baked neutrals with grounded terracotta and cool oasis accents",
+    colors: {
+      primary: "#b45309", // terracotta
+      secondary: "#a8a29e", // warm gray
+      accent: "#0ea5a8", // oasis teal
+      background: "#fcf6ef",
+      darkMode: {
+        background: "#12100e",
+        secondary: "#d1d5db",
+        // Deepen primary in dark to keep white text AA-compliant
+        primary: "#7c2d12"
+      }
+    },
+    typography: {
+      baseFontSize: 16,
+      fontScale: 1.414,
+      fontFamilyHeadings: "'Source Sans Pro', system-ui, -apple-system, sans-serif",
+      fontFamilyBody: "'Source Serif Pro', Georgia, serif"
+    },
+    spatialRhythm: {
+      baseUnit: 18,
+      scaleRatio: 1.3
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.medium,
+      borderWidth: enums.BorderWidths.medium
+    }
+  },
+  "contrast-pro": {
+    id: "contrast-pro",
+    name: "Contrast Pro",
+    description: "Accessibility-first, high-contrast UI with assertive clarity",
+    colors: {
+      primary: "#1f2937", // slate-800
+      secondary: "#111827", // gray-900
+      accent: "#eab308", // amber-500
+      background: "#ffffff",
+      darkMode: {
+        background: "#0b0f14",
+        secondary: "#9ca3af",
+        primary: "#0f172a" // navy-very-dark for white text on filled controls
+      }
+    },
+    typography: {
+      baseFontSize: 17,
+      fontScale: 1.2,
+      fontFamilyHeadings: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+      fontFamilyBody: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+      fontWeightBold: 700
+    },
+    spatialRhythm: {
+      baseUnit: 14, // compact, data-dense
+      scaleRatio: 1.2
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.small,
+      borderWidth: enums.BorderWidths.thick
+    },
+    behavior: {
+      transitionSpeed: enums.TransitionSpeeds.fast,
+      focusRingWidth: 4
+    }
+  },
+  "pastel-play": {
+    id: "pastel-play",
+    name: "Pastel Play",
+    description: "Playful pastels with soft surfaces and friendly rounded shapes",
+    colors: {
+      primary: "#db2777", // raspberry
+      secondary: "#a78bfa", // lavender
+      accent: "#34d399", // mint
+      background: "#fff7fa",
+      darkMode: {
+        background: "#1a1016",
+        secondary: "#c4b5fd",
+        primary: "#9d174d" // deeper for white text contrast
+      }
+    },
+    typography: {
+      baseFontSize: 16,
+      fontScale: 1.333,
+      fontFamilyHeadings: "'Nunito', system-ui, -apple-system, sans-serif",
+      fontFamilyBody: "'Nunito', system-ui, -apple-system, sans-serif",
+      lineHeightRelaxed: enums.LineHeights.relaxed
+    },
+    spatialRhythm: {
+      baseUnit: 20, // comfy
+      scaleRatio: 1.4
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.xxlarge,
+      borderWidth: enums.BorderWidths.thin
+    },
+    behavior: {
+      transitionSpeed: enums.TransitionSpeeds.slow,
+      animationEasing: enums.AnimationEasings["ease-out"]
+    }
+  },
+  "brutalist-tech": {
+    id: "brutalist-tech",
+    name: "Brutalist Tech",
+    description: "Stark grayscale with engineered accents and unapologetically bold structure",
+    colors: {
+      primary: "#111111",
+      secondary: "#4b5563",
+      accent: "#06b6d4", // cyan signal
+      background: "#f8fafc",
+      darkMode: {
+        background: "#0b0b0b",
+        secondary: "#9ca3af",
+        primary: "#0a0a0a"
+      }
+    },
+    typography: {
+      baseFontSize: 15,
+      fontScale: 1.25,
+      fontFamilyHeadings: "'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace",
+      fontFamilyBody: "'Inter', system-ui, -apple-system, sans-serif",
+      letterSpacingTight: -0.02
+    },
+    spatialRhythm: {
+      baseUnit: 16,
+      scaleRatio: 1.25
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.none,
+      borderWidth: enums.BorderWidths.thick
+    },
+    behavior: {
+      transitionSpeed: enums.TransitionSpeeds.instant
+    }
+  },
+  "zen-garden": {
+    id: "zen-garden",
+    name: "Zen Garden",
+    description: "Soft botanicals with contemplative spacing and balanced motion",
+    colors: {
+      primary: "#3f6212", // deep olive
+      secondary: "#6b7280", // neutral leaf shadow
+      accent: "#7c3aed", // iris bloom
+      background: "#f7fbef",
+      darkMode: {
+        background: "#0d130a",
+        secondary: "#a3a3a3",
+        primary: "#365314" // deepen for white text
+      }
+    },
+    typography: {
+      baseFontSize: 17,
+      fontScale: 1.414,
+      fontFamilyHeadings: "'Merriweather', Georgia, serif",
+      fontFamilyBody: "'Noto Sans', system-ui, -apple-system, sans-serif"
+    },
+    spatialRhythm: {
+      baseUnit: 22, // airy
+      scaleRatio: 1.35
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.large,
+      borderWidth: enums.BorderWidths.medium
+    },
+    behavior: {
+      transitionSpeed: enums.TransitionSpeeds.normal,
+      animationEasing: enums.AnimationEasings.ease
+    }
   }
 };
 
