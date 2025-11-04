@@ -132,7 +132,50 @@ export class Generator {
       colors.semantic.infoFill =
         colors.semantic.infoFill ||
         this.#pickFillShadeForWhite(colors.info, 4.5);
+      // Compute readable foregrounds for fills and interaction states.
+      // We pick hover/active backgrounds by mixing slightly toward black (darker)
+      // and then ensure the on-color for each state meets AA contrast.
+      try {
+        const base = colors.semantic.primaryFill;
+        if (base && typeof base === 'string') {
+          const onBase = this.#findReadableOnColor(base, 4.5);
+          const hover = this.#mixTowards(base, '#000000', 0.12);
+          const active = this.#mixTowards(base, '#000000', 0.22);
+          const onHover = this.#findReadableOnColor(hover, 4.5);
+          const onActive = this.#findReadableOnColor(active, 4.5);
+          colors.semantic.onPrimaryFill = onBase;
+          colors.semantic.primaryFillHover = hover;
+          colors.semantic.onPrimaryFillHover = onHover;
+          colors.semantic.primaryFillActive = active;
+          colors.semantic.onPrimaryFillActive = onActive;
+        }
+      } catch (e) {
+        // swallow - generator should not crash on token computation
+      }
     } catch {}
+
+    // Ensure we always emit usable semantic fill tokens. If any computation
+    // failed above, fall back to reasonable defaults so CSS variables are
+    // always defined (prevents undefined var(...) in runtime).
+    try {
+      if (!colors.semantic.primaryFill || typeof colors.semantic.primaryFill !== 'string') {
+        colors.semantic.primaryFill = colors.primary?.[600] || colors.primary?.[500] || Object.values(colors.primary || {})[0] || '#000000';
+      }
+      colors.semantic.onPrimaryFill =
+        colors.semantic.onPrimaryFill || this.#findReadableOnColor(colors.semantic.primaryFill, 4.5);
+
+      if (!colors.semantic.primaryFillHover || typeof colors.semantic.primaryFillHover !== 'string') {
+        colors.semantic.primaryFillHover = this.#mixTowards(colors.semantic.primaryFill, '#000000', 0.12);
+      }
+      colors.semantic.onPrimaryFillHover =
+        colors.semantic.onPrimaryFillHover || this.#findReadableOnColor(colors.semantic.primaryFillHover, 4.5);
+
+      if (!colors.semantic.primaryFillActive || typeof colors.semantic.primaryFillActive !== 'string') {
+        colors.semantic.primaryFillActive = this.#mixTowards(colors.semantic.primaryFill, '#000000', 0.22);
+      }
+      colors.semantic.onPrimaryFillActive =
+        colors.semantic.onPrimaryFillActive || this.#findReadableOnColor(colors.semantic.primaryFillActive, 4.5);
+    } catch (e) {}
 
     // Add adaptive fieldset colors to surface
     colors.surface.fieldset = this.#generateFieldsetAdaptiveColors(
@@ -2176,7 +2219,8 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   color: var(--color-text-primary);
   border-color: var(--color-border);
   
-  &:hover {
+  /* Only apply generic hover to non-variant buttons */
+  &:hover:not(.btn-primary):not(.btn-secondary):not(.btn-outline) {
     background-color: var(--color-surface-elevated);
   }
   
@@ -2196,12 +2240,19 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 
 .btn-primary {
   background-color: var(--color-semantic-primaryFill);
-  color: white;
+  color: var(--color-semantic-onPrimaryFill);
   border-color: var(--color-semantic-primaryFill);
   
   &:hover {
-    background-color: color-mix(in oklab, var(--color-semantic-primaryFill) 90%, black 10%);
-    border-color: color-mix(in oklab, var(--color-semantic-primaryFill) 90%, black 10%);
+    background-color: var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill));
+    border-color: var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill));
+    color: var(--color-semantic-onPrimaryFillHover, var(--color-semantic-onPrimaryFill));
+  }
+
+  &:active {
+    background-color: var(--color-semantic-primaryFillActive, var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill)));
+    border-color: var(--color-semantic-primaryFillActive, var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill)));
+    color: var(--color-semantic-onPrimaryFillActive, var(--color-semantic-onPrimaryFillHover, var(--color-semantic-onPrimaryFill)));
   }
   
   &:focus {
