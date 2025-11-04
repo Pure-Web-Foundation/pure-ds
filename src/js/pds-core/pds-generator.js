@@ -945,6 +945,12 @@ ${this.#generateMediaQueries()}
     css += `  --color-input-disabled-text: var(--color-gray-500);\n`;
     css += `  --color-code-bg: var(--color-gray-100);\n`;
 
+  // Translucent surface tokens for semantic transparency (consumer-friendly)
+  css += `  /* Translucent Surface Tokens */\n`;
+  css += `  --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);\n`;
+  css += `  --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);\n`;
+  css += `  --color-surface-translucent-75: color-mix(in oklab, var(--color-surface-subtle) 75%, transparent 25%);\n`;
+
     css += `   /* Backdrop tokens - used for modal dialogs, drawers, overlays */
     
     --backdrop-bg: linear-gradient(
@@ -4471,8 +4477,23 @@ nav[data-dropdown][data-mode="auto"] menu {
     // Layout utilities
     css += this.#generateLayoutUtilities();
 
-    // Surface utilities
-    css += `/* Surface utilities */\n\n.surface-overlay {\n  padding: var(--spacing-4);\n  background-color: var(--color-surface-overlay);\n  box-shadow: var(--shadow-lg);\n  border-radius: var(--radius-md);\n}\n\n`;
+  // Surface utilities
+  css += `/* Surface utilities */\n\n`;
+  // Base semantic surface backgrounds
+  css += `.surface {\n  background-color: var(--color-surface-base);\n}\n\n`;
+  css += `.surface--subtle {\n  background-color: var(--color-surface-subtle);\n}\n\n`;
+  css += `.surface--elevated {\n  background-color: var(--color-surface-elevated);\n}\n\n`;
+  css += `.surface--sunken {\n  background-color: var(--color-surface-sunken);\n}\n\n`;
+  css += `.surface--overlay {\n  background-color: var(--color-surface-overlay);\n}\n\n`;
+
+  // Translucent semantic variants
+  css += `.surface--translucent {\n  background-color: var(--color-surface-translucent-50);\n}\n\n`;
+  css += `.surface--translucent-25 {\n  background-color: var(--color-surface-translucent-25);\n}\n\n`;
+  css += `.surface--translucent-50 {\n  background-color: var(--color-surface-translucent-50);\n}\n\n`;
+  css += `.surface--translucent-75 {\n  background-color: var(--color-surface-translucent-75);\n}\n\n`;
+
+  // Legacy utility retained for backwards compatibility (opinionated overlay)
+  css += `.surface-overlay {\n  padding: var(--spacing-4);\n  background-color: var(--color-surface-overlay);\n  box-shadow: var(--shadow-lg);\n  border-radius: var(--radius-md);\n}\n\n`;
 
     // Media utilities
     css += this.#generateMediaUtilities();

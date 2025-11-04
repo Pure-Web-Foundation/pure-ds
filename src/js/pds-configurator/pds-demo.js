@@ -1927,7 +1927,7 @@ customElements.define(
             </h2>
 
             <h3>Sizes</h3>
-            <div class="icon-sizes surface-transparent-01">
+            <div class="icon-sizes surface--translucent">
               <pds-icon icon="heart" size="xs"></pds-icon>
               <pds-icon icon="heart" size="sm"></pds-icon>
               <pds-icon icon="heart" size="md"></pds-icon>
@@ -1937,7 +1937,7 @@ customElements.define(
             </div>
 
             <h3>Semantic Colors</h3>
-            <div class="icon-colors surface-transparent-01">
+            <div class="icon-colors surface--translucent">
               <pds-icon
                 icon="check-circle"
                 class="icon-primary"
@@ -2004,7 +2004,7 @@ customElements.define(
             </div>
 
             <h3>Common Icons</h3>
-            <div class="icon-grid surface-transparent-01">
+            <div class="icon-grid surface--translucent">
               <div class="icon-grid-item">
                 <pds-icon icon="house" size="lg"></pds-icon>
                 <span class="icon-grid-label">house</span>

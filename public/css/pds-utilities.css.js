@@ -282,6 +282,43 @@ a.icon-only {
 }
 /* Surface utilities */
 
+.surface {
+  background-color: var(--color-surface-base);
+}
+
+.surface--subtle {
+  background-color: var(--color-surface-subtle);
+}
+
+.surface--elevated {
+  background-color: var(--color-surface-elevated);
+}
+
+.surface--sunken {
+  background-color: var(--color-surface-sunken);
+}
+
+.surface--overlay {
+  background-color: var(--color-surface-overlay);
+}
+
+/* Translucent variants (semantic transparency) */
+.surface--translucent {
+  background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
+}
+
+.surface--translucent-25 {
+  background-color: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);
+}
+
+.surface--translucent-50 {
+  background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
+}
+
+.surface--translucent-75 {
+  background-color: color-mix(in oklab, var(--color-surface-subtle) 75%, transparent 25%);
+}
+
 .surface-overlay {
   padding: var(--spacing-4);
   background-color: var(--color-surface-overlay);
