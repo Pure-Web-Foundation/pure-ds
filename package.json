@@ -1,16 +1,16 @@
 {
-  "name": "@pure-ds/core",
+  "name": "pure-ds",
   "shortname": "pds",
   "version": "0.1.0",
   "description": "Pure Design System - Why develop a Design System when you can generate one?",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mvneerven/pure-ds.git"
+    "url": "git+https://github.com/Pure-Web-Foundation/pure-ds.git"
   },
   "bugs": {
-    "url": "https://github.com/mvneerven/pure-ds/issues"
+    "url": "https://github.com/Pure-Web-Foundation/pure-ds/issues"
   },
-  "homepage": "https://github.com/mvneerven/pure-ds#readme",
+  "homepage": "https://puredesignsystem.z6.web.core.windows.net/",
   "keywords": [
     "design-system",
     "css",
