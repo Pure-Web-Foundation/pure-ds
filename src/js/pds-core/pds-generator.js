@@ -2009,10 +2009,26 @@ input[type="range"]:active::-moz-range-thumb {
 }
 
 input[type="color"] {
-  width: var(--spacing-16);
-  height: var(--spacing-12);
-  padding: var(--spacing-1);
+  -webkit-appearance: none;
+  border: none;
+  padding: 0;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem; /* your radius */
+  overflow: hidden; /* important */
   cursor: pointer;
+}
+
+/* The wrapper */
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: inherit;
+}
+
+/* The swatch (the actual color box) */
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: inherit;
 }
 
 /* Awesome button-style radio and checkbox inputs */

@@ -207,7 +207,7 @@ Object.defineProperty(PDS, "theme", {
 PDS.defaultEnhancers = [
   {
     selector: "nav[data-dropdown]",
-    demoHtml: () => `
+    demoHtml: () => /*html*/`
       <nav data-dropdown>
         <button class="btn-primary">Menu</button>
         <menu style="display:none">

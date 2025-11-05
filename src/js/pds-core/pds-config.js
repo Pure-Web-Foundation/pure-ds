@@ -11,7 +11,7 @@ export const presets = {
     description: "Fresh and calming ocean-inspired palette with professional undertones",
     options: {
       liquidGlassEffects: true,
-      backgroundMesh: 1
+      backgroundMesh: 3
     },
     colors: {
       primary: "#0891b2",
@@ -134,6 +134,10 @@ export const presets = {
     id: "sunset-paradise",
     name: "Sunset Paradise",
     description: "Warm tropical colors evoking golden hour by the beach",
+     options: {
+      liquidGlassEffects: true,
+      backgroundMesh: 2
+    },
     colors: {
       primary: "#f97316",
       secondary: "#d4a373",
@@ -446,7 +450,10 @@ presets.default = {
   id: "default",
   name: "Default",
   description: "Base Pure DS preset",
-  options: {},
+   options: {
+      liquidGlassEffects: true,
+      backgroundMesh: 4
+    },
   colors: {
     // Palette - base colors that generate entire color palettes
     primary: "#3097c0", // Primary brand color
@@ -692,6 +699,7 @@ presets.default = {
         "code",
         "folder-simple",
         "grid-four",
+        "briefcase"
       ],
       status: [
         "info",

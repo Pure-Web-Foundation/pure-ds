@@ -17,13 +17,13 @@ export * from 'lit/directives/class-map.js';
 
 export { ref, createRef } from "lit/directives/ref.js";
 export { ifDefined } from "lit/directives/if-defined.js";
-export { str } from "@lit/localize";
+//export { str } from "@lit/localize";
 export { until } from "lit/directives/until.js";
 export { unsafeHTML } from "lit/directives/unsafe-html.js";
 
 export { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 
-export { msg } from "@qogni-technologies/pwa-utils-library/utils/msg.js";
+export { msg } from "./common/msg.js";
 
 /**
  * Loads the strings from a given (5-letter-code) locale

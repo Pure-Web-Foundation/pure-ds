@@ -1,0 +1,12 @@
+* text=auto eol=lf
+
+# Treat these as binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.svg text eol=lf
+
+# Keep Windows scripts CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf

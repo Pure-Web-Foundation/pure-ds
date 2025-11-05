@@ -1,5 +1,4 @@
 import { LitElement, html, nothing, render, unsafeHTML } from "../lit";
-import showdown from "showdown";
 import { PDS } from "../pds";
 
 import { AutoComplete } from "pure-web/ac";
@@ -29,12 +28,9 @@ customElements.define(
       this.sections = [];
       this.inspectorActive = false;
       this._docsBase = "/pds";
-      this._showdown = new showdown.Converter({
-        ghCompatibleHeaderId: true,
-        tables: true,
-        strikethrough: true,
-        tasklists: true,
-      });
+      // Showdown (Markdown) converter will be loaded from CDN on demand
+      this._showdown = null;
+      this._showdownLoading = false;
     }
 
     // Disable shadow DOM to use global styles
@@ -132,7 +128,8 @@ customElements.define(
         const res = await fetch(url, { cache: "no-cache" });
         if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
         const md = await res.text();
-        return this._showdown.makeHtml(md);
+        const conv = await this.getShowdownConverter();
+        return conv ? conv.makeHtml(md) : `<pre>${this.escapeHTML(md)}</pre>`;
       } catch (err) {
         return `<p>Failed to load ${file} from ${base}: ${String(
           err.message || err
@@ -974,6 +971,78 @@ customElements.define(
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+    }
+
+    /**
+     * Ensure Showdown is available (loaded from CDN) and return a Converter
+     */
+    async getShowdownConverter() {
+      if (this._showdown) return this._showdown;
+      const showdownNS = await this.loadShowdownFromCDN();
+      if (!showdownNS || !showdownNS.Converter) return null;
+      this._showdown = new showdownNS.Converter({
+        ghCompatibleHeaderId: true,
+        tables: true,
+        strikethrough: true,
+        tasklists: true,
+      });
+      return this._showdown;
+    }
+
+    /**
+     * Load Showdown from a reliable CDN (jsDelivr with unpkg fallback)
+     */
+    async loadShowdownFromCDN() {
+      if (typeof window !== "undefined" && window.showdown) return window.showdown;
+      if (this._showdownLoading) {
+        // wait while another load is in progress
+        while (this._showdownLoading) {
+          await new Promise((r) => setTimeout(r, 50));
+        }
+        return window.showdown || null;
+      }
+
+      this._showdownLoading = true;
+      const urls = [
+        "https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js",
+        "https://unpkg.com/showdown@2.1.0/dist/showdown.min.js",
+      ];
+
+      for (const src of urls) {
+        try {
+          await this._injectScript(src, "showdown");
+          if (window.showdown) {
+            this._showdownLoading = false;
+            return window.showdown;
+          }
+        } catch (e) {
+          // try next
+        }
+      }
+      this._showdownLoading = false;
+      return null;
+    }
+
+    _injectScript(src, libName) {
+      return new Promise((resolve, reject) => {
+        // Avoid duplicates
+        if (document.querySelector(`script[data-lib="${libName}"][src="${src}"]`)) {
+          // Resolve on next tick
+          setTimeout(resolve, 0);
+          return;
+        }
+        const s = document.createElement("script");
+        s.src = src;
+        s.async = true;
+        s.defer = true;
+        s.dataset.lib = libName || "lib";
+        s.onload = () => resolve();
+        s.onerror = () => {
+          s.remove();
+          reject(new Error(`Failed to load script: ${src}`));
+        };
+        document.head.appendChild(s);
+      });
     }
 
     scrollToRelevantSection(fieldPath) {
@@ -3196,7 +3265,7 @@ customElements.define(
     }
 
     async showDoc(doc) {
-      const url = `/pds/${doc}`;
+      const url = `/${doc}`;
       try {
         const res = await fetch(url, { cache: "no-store" });
         const text = await res.text();
@@ -3208,10 +3277,10 @@ customElements.define(
           htmlContent = `<div class="docs-error">Failed to load README at ${url}. Ensure readme.md exists under public/</div>`;
         } else {
           try {
-            const conv = new showdown.Converter();
-            htmlContent = conv.makeHtml(trimmed);
+            const conv = await this.getShowdownConverter();
+            htmlContent = conv ? conv.makeHtml(trimmed) : `<pre>${this.escapeHTML(trimmed)}</pre>`;
           } catch (err) {
-            htmlContent = `<pre>${this._escapeHtml(trimmed)}</pre>`;
+            htmlContent = `<pre>${this.escapeHTML(trimmed)}</pre>`;
           }
         }
 

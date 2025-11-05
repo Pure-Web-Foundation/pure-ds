@@ -1,5 +1,5 @@
 export const config = {
-  mode: "live",
+  mode: "static",
   preset: "default",
   options: {
     liquidGlassEffects: true,
@@ -8,5 +8,4 @@ export const config = {
   static: {
     root: "public/assets/pds/"
   }
-
 };

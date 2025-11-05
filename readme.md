@@ -1,5 +1,8 @@
 # Pure Design System (PDS)
 
+[![CI](https://github.com/mvneerven/pure-ds/actions/workflows/ci.yml/badge.svg)](https://github.com/mvneerven/pure-ds/actions/workflows/ci.yml)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](#license-and-support)
+
 A browser‑native, JavaScript‑config‑first design system that generates complete, production‑ready CSS from a minimal configuration. PDS ships both as a live generator you can run in your app and as a static export you can host anywhere.
 
 - Zero framework lock‑in: works with plain HTML, Web Components, Lit, React, Vue, etc.
@@ -217,7 +220,7 @@ await PDS.start({
 
 Automatically manage the theme attribute (`html[data-theme]`) and persist the preference. PDS supports `light`, `dark`, and `system`.
 
-```js
+```jsF
 await PDS.start({ mode: 'live', manageTheme: true, themeStorageKey: 'pure-ds-theme' });
 await PDS.setTheme('dark');             // or 'light' | 'system'
 ```
@@ -378,10 +381,6 @@ See also:
 - Discussions: https://github.com/mvneerven/pure-ds/discussions
 
 Made with ❤️ for the open web.
-PDS.dispatchEvent(new CustomEvent('pds:docs:view', { detail: { file: 'GETTING-STARTED.md' } }));
-```
-
-
 
 
 ---
