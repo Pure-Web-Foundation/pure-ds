@@ -446,6 +446,7 @@ presets.default = {
   id: "default",
   name: "Default",
   description: "Base Pure DS preset",
+  options: {},
   colors: {
     // Palette - base colors that generate entire color palettes
     primary: "#3097c0", // Primary brand color

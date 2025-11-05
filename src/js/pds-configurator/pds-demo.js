@@ -1896,7 +1896,7 @@ customElements.define(
                 <pds-icon icon="list"></pds-icon>
                 Click for Menu
               </button>
-              <menu class="dropdown-menu">
+              <menu class="dropdown-menu liquid-glass">
                 <li>
                   <a href="#">
                     <pds-icon icon="user" size="sm"></pds-icon>

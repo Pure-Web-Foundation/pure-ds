@@ -888,6 +888,10 @@ ${this.#generateLayoutUtilities()}
 
 ${this.#generateMediaUtilities()}
 
+${this.#generateBodyBackgroundMeshRule()}
+
+${this.#generateLiquidGlassUtility()}
+
 ${this.#generateMediaQueries()}
 `;
 
@@ -1283,6 +1287,39 @@ img:hover, video:hover {
     radial-gradient(at 90% 10%, color-mix(in oklab, ${secondary} 13%, transparent) 0px, transparent 50%),
     radial-gradient(at 50% 90%, color-mix(in oklab, ${accent} 10%, transparent) 0px, transparent 50%);
     `;
+  }
+
+  // If the config specifies options.backgroundMesh (1-5), apply the mesh to body.
+  // Mesh variables are always generated above; this just opts-in the body background.
+  #generateBodyBackgroundMeshRule() {
+    
+    try {
+      const meshOption =
+        this.options?.options?.backgroundMesh ?? this.options?.backgroundMesh;
+      const num = Number(meshOption);
+      if (!Number.isFinite(num)) return "";
+      const idx = Math.max(1, Math.min(5, Math.floor(num)));
+      return `/* Optional background mesh applied from config */\nbody {\n  background: var(--background-mesh-0${idx});\n  background-attachment: fixed;\n}`;
+    } catch {
+      return "";
+    }
+  }
+
+  // Conditionally generate a lightweight ".liquid-glass" utility for frosted glass cards.
+  // Inspired by the referenced article, using gradients, borders, shadows, and backdrop-filter.
+  #generateLiquidGlassUtility() {
+    try {
+      const enabled =
+        this.options?.options?.liquidGlassEffects ?? this.options?.liquidGlassEffects;
+      if (!enabled) return "";
+      // Use design tokens where possible so the effect adapts to the theme.
+      return `/* Liquid glass utility (opt-in via options.liquidGlassEffects) */\n.liquid-glass {\n  position: relative;\n  border-radius: var(--radius-lg);\n  /* Subtle translucent fill blended with surface */\n  background: color-mix(in oklab, var(--color-surface-subtle) 45%, transparent);\n  background-image: linear-gradient(\n    135deg,\n    rgba(255,255,255,0.35),\n    rgba(255,255,255,0.12)\n  );\n  /* Frosted glass blur + saturation */\n  -webkit-backdrop-filter: blur(12px) saturate(140%);\n  backdrop-filter: blur(12px) saturate(140%);\n  /* Soft inner highlight and outer depth */\n  box-shadow:\n    inset 0 1px 0 rgba(255,255,255,0.6),\n    inset 0 -40px 80px rgba(255,255,255,0.12),\n    0 10px 30px rgba(0,0,0,0.10);\n  /* Glossy border with slight light and dark edges */\n  border: 1px solid color-mix(in oklab, var(--color-primary-500) 22%, transparent);\n  outline: 1px solid color-mix(in oklab, #ffffff 18%, transparent);\n  outline-offset: -1px;\n}
+
+/* Fallback when backdrop-filter isn't supported */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {\n  .liquid-glass {\n    /* Strengthen fill a bit to compensate for lack of blur */\n    background: color-mix(in oklab, var(--color-surface-subtle) 70%, rgba(255,255,255,0.4));\n    box-shadow:\n      inset 0 1px 0 rgba(255,255,255,0.6),\n      0 10px 24px rgba(0,0,0,0.08);\n  }\n}\n`;
+    } catch {
+      return "";
+    }
   }
 
   #generateLightModeCSS(colors) {
@@ -1706,8 +1743,6 @@ form {
 fieldset {
   margin: 0 0 var(--spacing-${Math.round((gap * sectionSpacingValue) / 4)}) 0;
   padding: var(--spacing-5);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
   width: 100%;
   background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
   
@@ -4324,8 +4359,7 @@ nav[data-dropdown][data-mode="auto"] menu {
   }
 
   :where(fieldset) {
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
+    border: none;
     padding: var(--spacing-4);
     margin: 0 0 var(--spacing-4) 0;
     background-color: var(--color-surface-subtle);
@@ -4335,7 +4369,6 @@ nav[data-dropdown][data-mode="auto"] menu {
     font-weight: var(--font-weight-semibold);
     padding: 0 var(--spacing-2);
     color: var(--color-text-primary);
-    display: contents; /* treat legend as heading inside fieldset */
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-primary);
     margin: 0 0 var(--spacing-3) 0;
@@ -4346,12 +4379,6 @@ nav[data-dropdown][data-mode="auto"] menu {
     background: transparent; /* avoid browser default notch behavior */
     width: auto;
     box-sizing: border-box;
-
-    &::after{
-      content: "";
-      display: block;
-      margin-bottom: var(--spacing-4);
-    }
   }
 
   /* List primitives */
@@ -4492,6 +4519,12 @@ nav[data-dropdown][data-mode="auto"] menu {
 
     // Layout utilities
     css += this.#generateLayoutUtilities();
+
+    // Optional utilities/features controlled by config options
+    // - Body background mesh rule (applies one of the generated mesh vars)
+    // - Liquid glass utility class
+    css += this.#generateBodyBackgroundMeshRule();
+    css += this.#generateLiquidGlassUtility();
 
   // Surface utilities
   css += `/* Surface utilities */\n\n`;

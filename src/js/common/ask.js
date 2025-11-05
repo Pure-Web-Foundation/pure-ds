@@ -1,4 +1,5 @@
 import { render, html } from "lit";
+import { config } from "../../../pds.config"
 
 /**
  * Get the current page title for dialogs
@@ -31,6 +32,9 @@ export async function ask(message, options = {}) {
   return new Promise((resolve) => {
     // Create native dialog element
     const dialog = document.createElement("dialog");
+    
+    if(config.options.liquidGlassEffects)
+      dialog.classList.add("liquid-glass");
     
     // Add optional CSS classes
     if (options.size) {
