@@ -13,29 +13,9 @@ const config = {
   sourcemap: true,
 };
 
-import { copyFile } from 'fs/promises';
-import path from 'path';
-
 const run = async () => {
-  const copyReadmePlugin = {
-    name: 'copy-markdown',
-    setup(build) {
-      build.onEnd(async (result) => {
-        if (result.errors && result.errors.length) return;
-        try {
-          const root = process.cwd();
-          const src = path.join(root, 'readme.md');
-          const dest = path.join(root, 'public/pds', 'readme.md');
-          await copyFile(src, dest);
-          
-        } catch (err) {
-          console.error('Failed to copy readme into public/pds:', err);
-        }
-      });
-    },
-  };
-
-  const ctx = await esbuild.context({ ...config, plugins: [rebuildNotifyPlugin(), copyReadmePlugin] });
+  // Dev context with rebuild notify only. Avoid creating or writing to public/pds.
+  const ctx = await esbuild.context({ ...config, plugins: [rebuildNotifyPlugin()] });
   await ctx.watch();
 };
 

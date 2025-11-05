@@ -85,6 +85,12 @@ PDS.presets = presets;
 /** Find a component definition (ontology) for a given DOM element */
 PDS.findComponentForElement = findComponentForElement;
 
+// Always expose PDS on the window in browser contexts so consumers can access it in both live and static modes
+if (typeof window !== "undefined") {
+  // @ts-ignore
+  window.PDS = PDS;
+}
+
 // ---------------------------------------------------------------------------
 // Theme management (centralized on PDS.theme)
 // Consumers may read/write `PDS.theme` with values: 'system' | 'light' | 'dark'
@@ -872,11 +878,7 @@ async function live(config) {
     throw new Error("PDS.start({ mode: 'live', ... }) requires a valid configuration object");
   }
 
-  // Expose PDS on window for easy dev console access (optional)
-  if (typeof window !== "undefined") {
-    // @ts-ignore
-    window.PDS = PDS;
-  }
+  // PDS is exposed on window at module init for both modes
 
   // Extract runtime flags directly from unified config
   let applyGlobalStyles = config.applyGlobalStyles ?? true;
@@ -1091,7 +1093,8 @@ async function staticInit(config) {
   const applyGlobalStyles = config.applyGlobalStyles ?? true;
   const manageTheme = config.manageTheme ?? true;
   const themeStorageKey = config.themeStorageKey ?? "pure-ds-theme";
-  const staticPaths = config.staticPaths ?? {};
+  let staticPaths = config.staticPaths ?? {};
+  const staticConfig = /** @type {{ root?: string }} */ (config.static || {});
   const cfgAuto = (config && config.autoDefine) || null;
   const autoDefineBaseURL = (cfgAuto && cfgAuto.baseURL) || "/auto-define/";
   const autoDefinePreload = (cfgAuto && Array.isArray(cfgAuto.predefine) && cfgAuto.predefine) || [];
@@ -1108,19 +1111,54 @@ async function staticInit(config) {
   const normalized = __normalizeInitConfig(config, {});
     const userEnhancers = normalized.enhancers;
 
-    // 2) Static mode registry
+    // 2) Compute static asset URLs from config.static.root if provided
+    //    This allows consumers to specify a filesystem-ish path like
+    //    "public/assets/pds/" which maps to "/assets/pds/" at runtime.
+    const toUrlRoot = (root) => {
+      if (!root) return null;
+      try {
+        let r = String(root).replace(/\\/g, '/');
+        // If already an absolute URL or root-relative, use as-is
+        if (/^https?:\/\//i.test(r) || r.startsWith('/')) {
+          if (!r.endsWith('/')) r += '/';
+          return r;
+        }
+        // Map repo/public-relative to web root
+        if (r.startsWith('public/')) r = r.substring('public/'.length);
+        if (!r.startsWith('/')) r = '/' + r;
+        if (!r.endsWith('/')) r += '/';
+        return r;
+      } catch {
+        return null;
+      }
+    };
+
+    const staticRootURL = toUrlRoot(staticConfig.root);
+
+    // Derive default staticPaths from staticRootURL when not explicitly provided
+    if (staticRootURL) {
+      staticPaths = {
+        tokens: `${staticRootURL}styles/pds-tokens.css.js`,
+        primitives: `${staticRootURL}styles/pds-primitives.css.js`,
+        components: `${staticRootURL}styles/pds-components.css.js`,
+        utilities: `${staticRootURL}styles/pds-utilities.css.js`,
+        styles: `${staticRootURL}styles/pds-styles.css.js`,
+        ...staticPaths,
+      };
+    }
+
+    // 3) Static mode registry
     PDS.registry.setStaticMode(staticPaths);
 
-    // 3) Apply global static styles if requested
+    // 4) Apply global static styles if requested
     if (applyGlobalStyles && typeof document !== "undefined") {
       try {
+        // Always adopt from exported css.js modules so static mode loads from JS exports
         const stylesSheet = await PDS.registry.getStylesheet("styles");
         if (stylesSheet) {
-          // Tag and adopt alongside existing non-PDS
+          // Tag and adopt alongside existing non-PDS sheets
           stylesSheet._pds = true;
-          const others = (document.adoptedStyleSheets || []).filter(
-            (s) => s._pds !== true
-          );
+          const others = (document.adoptedStyleSheets || []).filter((s) => s._pds !== true);
           document.adoptedStyleSheets = [...others, stylesSheet];
         }
       } catch (e) {
@@ -1128,7 +1166,7 @@ async function staticInit(config) {
       }
     }
 
-    // 4) AutoDefiner + Enhancers
+    // 5) AutoDefiner + Enhancers
     let autoDefiner = null;
     try {
       const res = await __setupAutoDefinerAndEnhancers({
@@ -1146,7 +1184,7 @@ async function staticInit(config) {
       );
     }
 
-    // 5) Emit ready event (unified)
+    // 6) Emit ready event (unified)
     PDS.dispatchEvent(
       new CustomEvent("pds:ready", {
         detail: {

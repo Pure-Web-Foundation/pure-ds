@@ -5,4 +5,8 @@ export const config = {
     liquidGlassEffects: true,
     backgroundMesh: 1,
   },
+  static: {
+    root: "public/assets/pds/"
+  }
+
 };

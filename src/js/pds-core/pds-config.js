@@ -591,7 +591,7 @@ presets.default = {
     focusStyle: enums.FocusStyles.ring,
   },
 
-  components: {
+  components_old: {
     toasts: true,
     tabStrip: true,
     customScrollbars: true,

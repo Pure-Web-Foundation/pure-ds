@@ -16,7 +16,7 @@ app-files.js
 .idea
 *.iml
 .azure
-/public/pds/
+/public/assets/pds/
 /.gitlab-ci-local
 /.gitlab-ci-local-variables.yml
 /localazy.keys.json

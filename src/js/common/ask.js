@@ -1,5 +1,5 @@
 import { render, html } from "lit";
-import { config } from "../../../pds.config"
+import { config } from "../../../pds.config.js"
 
 /**
  * Get the current page title for dialogs

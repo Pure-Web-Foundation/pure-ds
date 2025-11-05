@@ -947,83 +947,70 @@ ${this.#generateMediaQueries()}
   }
 
   #generateColorVariables(colors) {
-    let css = "  /* Colors */\n";
+    const chunks = [];
 
+    // Header
+    chunks.push(`  /* Colors */\n`);
+
+    // Recursively emit color variables
     const generateNestedColors = (obj, prefix = "") => {
       Object.entries(obj).forEach(([key, value]) => {
         if (typeof value === "object" && value !== null) {
-          // Handle nested objects like surface.fieldset
           generateNestedColors(value, `${prefix}${key}-`);
         } else if (typeof value === "string") {
-          // Handle color values (hex, rgb, hsl, etc.)
-          css += `  --color-${prefix}${key}: ${value};\n`;
+          chunks.push(`  --color-${prefix}${key}: ${value};\n`);
         }
       });
     };
 
     Object.entries(colors).forEach(([category, values]) => {
-      if (category === "dark") return; // Handle dark mode separately
-      if (category === "surfaceSmart") return; // Handle smart tokens separately
-
+      if (category === "dark") return; // handled elsewhere
+      if (category === "surfaceSmart") return; // handled below
       if (typeof values === "object" && values !== null) {
         generateNestedColors(values, `${category}-`);
       }
     });
 
-    // Generate smart surface tokens for context-aware styling
+    // Smart surface tokens
     if (colors.surfaceSmart) {
-      css += `  /* Smart Surface Tokens (context-aware) */\n`;
+      chunks.push(`  /* Smart Surface Tokens (context-aware) */\n`);
       Object.entries(colors.surfaceSmart).forEach(([surfaceKey, tokens]) => {
-        css += `  --surface-${surfaceKey}-bg: ${tokens.bg};\n`;
-        css += `  --surface-${surfaceKey}-text: ${tokens.text};\n`;
-        css += `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`;
-        css += `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`;
-        css += `  --surface-${surfaceKey}-icon: ${tokens.icon};\n`;
-        css += `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`;
-        css += `  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`;
-        css += `  --surface-${surfaceKey}-border: ${tokens.border};\n`;
+        chunks.push(`  --surface-${surfaceKey}-bg: ${tokens.bg};\n`);
+        chunks.push(`  --surface-${surfaceKey}-text: ${tokens.text};\n`);
+        chunks.push(`  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`);
+        chunks.push(`  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`);
+        chunks.push(`  --surface-${surfaceKey}-icon: ${tokens.icon};\n`);
+        chunks.push(`  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`);
+        chunks.push(`  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`);
+        chunks.push(`  --surface-${surfaceKey}-border: ${tokens.border};\n`);
       });
-      css += `\n`;
+      chunks.push(`\n`);
     }
 
-    // Add semantic text colors for light mode
-    css += `  /* Semantic Text Colors */\n`;
-    css += `  --color-text-primary: var(--color-gray-900);\n`;
-    css += `  --color-text-secondary: var(--color-gray-600);\n`;
-    css += `  --color-text-muted: var(--color-gray-500);\n`;
-    css += `  --color-border: var(--color-gray-300);\n`;
-    css += `  --color-input-bg: var(--color-surface-base);\n`;
-    css += `  --color-input-disabled-bg: var(--color-gray-50);\n`;
-    css += `  --color-input-disabled-text: var(--color-gray-500);\n`;
-    css += `  --color-code-bg: var(--color-gray-100);\n`;
+    // Semantic text colors (light mode)
+    chunks.push(`  /* Semantic Text Colors */\n`);
+    chunks.push(`  --color-text-primary: var(--color-gray-900);\n`);
+    chunks.push(`  --color-text-secondary: var(--color-gray-600);\n`);
+    chunks.push(`  --color-text-muted: var(--color-gray-500);\n`);
+    chunks.push(`  --color-border: var(--color-gray-300);\n`);
+    chunks.push(`  --color-input-bg: var(--color-surface-base);\n`);
+    chunks.push(`  --color-input-disabled-bg: var(--color-gray-50);\n`);
+    chunks.push(`  --color-input-disabled-text: var(--color-gray-500);\n`);
+    chunks.push(`  --color-code-bg: var(--color-gray-100);\n`);
 
-    // Translucent surface tokens for semantic transparency (consumer-friendly)
-    css += `  /* Translucent Surface Tokens */\n`;
-    css += `  --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);\n`;
-    css += `  --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);\n`;
-    css += `  --color-surface-translucent-75: color-mix(in oklab, var(--color-surface-subtle) 75%, transparent 25%);\n`;
+    // Translucent surface tokens
+    chunks.push(`  /* Translucent Surface Tokens */\n`);
+    chunks.push(`  --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);\n`);
+    chunks.push(`  --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);\n`);
+    chunks.push(`  --color-surface-translucent-75: color-mix(in oklab, var(--color-surface-subtle) 75%, transparent 25%);\n`);
 
-    css += `   /* Backdrop tokens - used for modal dialogs, drawers, overlays */
-    
-    --backdrop-bg: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.2),
-        rgba(255, 255, 255, 0.1)
-      );
-    --backdrop-blur: 10px;
-    --backdrop-saturate: 150%;
-    --backdrop-brightness: 0.9;
-    --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));
-    --backdrop-opacity: 1;
-    
-    /* Legacy alias for backwards compatibility */
-    --backdrop-background: var(--backdrop-bg);
-    `;
+    // Backdrop tokens (light mode)
+    chunks.push(`   /* Backdrop tokens - used for modal dialogs, drawers, overlays */\n\n    --backdrop-bg: linear-gradient(\n        135deg,\n        rgba(255, 255, 255, 0.2),\n        rgba(255, 255, 255, 0.1)\n      );\n    --backdrop-blur: 10px;\n    --backdrop-saturate: 150%;\n    --backdrop-brightness: 0.9;\n    --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));\n    --backdrop-opacity: 1;\n    \n    /* Legacy alias for backwards compatibility */\n    --backdrop-background: var(--backdrop-bg);\n    `);
 
-    // Generate mesh gradient backgrounds
-    css += this.#generateMeshGradients(colors);
+    // Mesh gradients
+    chunks.push(this.#generateMeshGradients(colors));
 
-    return css + "\n";
+    return `${chunks.join("")}\n`;
   }
 
   #generateMeshGradients(colors) {
@@ -1032,7 +1019,7 @@ ${this.#generateMediaQueries()}
     const secondary = colors.secondary?.[500] || "#8b5cf6";
     const accent = colors.accent?.[500] || "#f59e0b";
 
-    return `
+    return /*css*/`
   /* Mesh Gradient Backgrounds */
   --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 25%, transparent) 0px, transparent 50%),
     radial-gradient(at 97% 21%, color-mix(in oklab, ${secondary} 22%, transparent) 0px, transparent 50%),
@@ -1180,10 +1167,10 @@ ${this.#generateMediaQueries()}
       smartSurfaceVars += `\n`;
     }
 
-    const semanticVars = `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n`;
+    const semanticVars = /*css*/`  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n`;
 
     // Backdrop tokens for dark mode
-    const backdropVars = `  /* Backdrop tokens - used for modal dialogs, drawers, overlays (dark mode) */
+    const backdropVars = /*css*/`  /* Backdrop tokens - used for modal dialogs, drawers, overlays (dark mode) */
   --backdrop-bg: linear-gradient(
       135deg,
       rgba(0, 0, 0, 0.6),
@@ -1202,7 +1189,7 @@ ${this.#generateMediaQueries()}
     // Generate dark mode mesh gradients
     const meshVars = this.#generateMeshGradientsDark(colors);
 
-    const rules = `/* Alert dark mode adjustments */
+    const rules = /*css*/`/* Alert dark mode adjustments */
 .alert-success {
   background-color: var(--color-success-50);
   border-color: var(--color-success-500);
@@ -4839,7 +4826,7 @@ export const ${name}CSS = \`${escapedCSS}\`;
    * This approach reduces flicker and avoids link/blob swapping.
    */
   static installRuntimeStyles(cssText) {
-    console.log(cssText);
+    //console.log(cssText);
     try {
       if (typeof document === "undefined") return; // server-side guard
 

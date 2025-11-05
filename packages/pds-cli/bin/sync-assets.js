@@ -49,8 +49,8 @@ async function findPdsRoot() {
 /**
  * Sync PDS assets to consuming app's public directory
  * Copies:
- * - public/auto-define/* -> <targetDir>/auto-define/*
- * - public/assets/img/icons.svg -> <targetDir>/assets/img/pds-icons.svg
+ * - public/auto-define/* -> <targetDir>/components/*
+ * - (icons no longer synced; static export focuses on components and styles)
  * 
  * Usage: npx @pure-ds/core sync-assets [options]
  * Options:
@@ -62,7 +62,7 @@ async function findPdsRoot() {
 
 async function syncAssets(options = {}) {
   const {
-    targetDir = './public',
+  targetDir = './public',
     force = false,
     dryRun = false,
     verbose = false
@@ -74,11 +74,9 @@ async function syncAssets(options = {}) {
   const pdsRoot = await findPdsRoot();
   
   const autoDefineSource = path.join(pdsRoot, 'public/auto-define');
-  const iconsSource = path.join(pdsRoot, 'public/assets/img/icons.svg');
   
   // Target directories
-  const autoDefineTarget = path.join(process.cwd(), targetDir, 'auto-define');
-  const iconsTarget = path.join(process.cwd(), targetDir, 'assets/img/pds-icons.svg');
+  const autoDefineTarget = path.join(process.cwd(), targetDir, 'components');
   
   // Load or create asset tracking file
   const trackingFile = path.join(process.cwd(), '.pds-assets.json');
@@ -180,17 +178,13 @@ async function syncAssets(options = {}) {
     }
   };
   
-  // Sync auto-define components directory
+  // Sync components directory
   if (verbose) {
-    console.log('📁 Syncing auto-define components...');
+    console.log('📁 Syncing components...');
   }
-  await syncDirectory(autoDefineSource, autoDefineTarget, 'auto-define/');
+  await syncDirectory(autoDefineSource, autoDefineTarget, 'components/');
   
-  // Sync icons.svg file specifically
-  if (verbose) {
-    console.log('🎨 Syncing pds-icons.svg...');
-  }
-  await syncFile(iconsSource, iconsTarget, 'assets/img/pds-icons.svg');
+  // Note: icons are not synced in this flow; use pds:export if needed
   
   // Update tracking file
   if (!dryRun) {
@@ -213,7 +207,6 @@ async function syncAssets(options = {}) {
   if (verbose) {
     console.log(`📊 Tracking file: ${trackingFile}`);
     console.log(`📁 Components: ${autoDefineTarget}`);
-    console.log(`🎨 Icons: ${iconsTarget}`);
   }
   
   return {
