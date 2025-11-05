@@ -780,7 +780,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
                       @change=${this.handleThemeChange}
                       .checked=${selected === "system"}
                     />
-                    <span>System</span>
+                    <span><pds-icon icon="moon-stars"></pds-icon> System</span>
                   </label>
                   <label>
                     <input
@@ -790,7 +790,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
                       @change=${this.handleThemeChange}
                       .checked=${selected === "light"}
                     />
-                    <span>Light</span>
+                    <span><pds-icon icon="sun"></pds-icon> Light</span>
                   </label>
                   <label>
                     <input
@@ -800,7 +800,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
                       @change=${this.handleThemeChange}
                       .checked=${selected === "dark"}
                     />
-                    <span>Dark</span>
+                    <span><pds-icon icon="moon"></pds-icon> Dark</span>
                   </label>
                 `;
               })()}

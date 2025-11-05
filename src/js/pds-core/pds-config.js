@@ -735,6 +735,7 @@ presets.default = {
         "battery-charging",
         "sun",
         "moon",
+        "moon-stars",
         "palette",
         "rocket",
         "feather",

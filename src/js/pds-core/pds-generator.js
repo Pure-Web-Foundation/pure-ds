@@ -1,4 +1,3 @@
-
 /**
  * Generator - A JS-config-first design system
  * Generates comprehensive CSS variables and styles from a minimal configuration
@@ -74,14 +73,14 @@ export class Generator {
   #generateColorTokens(colorConfig) {
     const {
       primary = "#3b82f6",
-      secondary = "#64748b",      // REQUIRED for gray scale generation
+      secondary = "#64748b", // REQUIRED for gray scale generation
       accent = "#ec4899",
       background = "#ffffff",
       success = null,
       warning = "#FFBF00",
       danger = null,
       info = null,
-      darkMode = {}                // Extract dark mode overrides
+      darkMode = {}, // Extract dark mode overrides
     } = colorConfig;
 
     const colors = {
@@ -111,19 +110,26 @@ export class Generator {
     colors.semantic = colors.semantic || {};
     colors.semantic.primary = colors.semantic.primary || primary;
     colors.semantic.onPrimary =
-      colors.semantic.onPrimary || this.#findReadableOnColor(colors.semantic.primary);
+      colors.semantic.onPrimary ||
+      this.#findReadableOnColor(colors.semantic.primary);
     colors.semantic.surface = colors.semantic.surface || colors.surface.base;
     colors.semantic.onSurface =
-      colors.semantic.onSurface || this.#findReadableOnColor(colors.semantic.surface);
+      colors.semantic.onSurface ||
+      this.#findReadableOnColor(colors.semantic.surface);
     colors.semantic.background = colors.semantic.background || background;
     colors.semantic.onBackground =
-      colors.semantic.onBackground || this.#findReadableOnColor(colors.semantic.background);
+      colors.semantic.onBackground ||
+      this.#findReadableOnColor(colors.semantic.background);
 
     // New: Choose a primaryText shade that meets AA contrast on the base surface
     try {
       colors.semantic.primaryText =
         colors.semantic.primaryText ||
-        this.#pickReadablePrimaryOnSurface(colors.primary, colors.surface.base, 4.5);
+        this.#pickReadablePrimaryOnSurface(
+          colors.primary,
+          colors.surface.base,
+          4.5
+        );
       // Pick a fill shade for components with white text (buttons/badges)
       colors.semantic.primaryFill =
         colors.semantic.primaryFill ||
@@ -137,10 +143,10 @@ export class Generator {
       // and then ensure the on-color for each state meets AA contrast.
       try {
         const base = colors.semantic.primaryFill;
-        if (base && typeof base === 'string') {
+        if (base && typeof base === "string") {
           const onBase = this.#findReadableOnColor(base, 4.5);
-          const hover = this.#mixTowards(base, '#000000', 0.12);
-          const active = this.#mixTowards(base, '#000000', 0.22);
+          const hover = this.#mixTowards(base, "#000000", 0.12);
+          const active = this.#mixTowards(base, "#000000", 0.22);
           const onHover = this.#findReadableOnColor(hover, 4.5);
           const onActive = this.#findReadableOnColor(active, 4.5);
           colors.semantic.onPrimaryFill = onBase;
@@ -158,23 +164,47 @@ export class Generator {
     // failed above, fall back to reasonable defaults so CSS variables are
     // always defined (prevents undefined var(...) in runtime).
     try {
-      if (!colors.semantic.primaryFill || typeof colors.semantic.primaryFill !== 'string') {
-        colors.semantic.primaryFill = colors.primary?.[600] || colors.primary?.[500] || Object.values(colors.primary || {})[0] || '#000000';
+      if (
+        !colors.semantic.primaryFill ||
+        typeof colors.semantic.primaryFill !== "string"
+      ) {
+        colors.semantic.primaryFill =
+          colors.primary?.[600] ||
+          colors.primary?.[500] ||
+          Object.values(colors.primary || {})[0] ||
+          "#000000";
       }
       colors.semantic.onPrimaryFill =
-        colors.semantic.onPrimaryFill || this.#findReadableOnColor(colors.semantic.primaryFill, 4.5);
+        colors.semantic.onPrimaryFill ||
+        this.#findReadableOnColor(colors.semantic.primaryFill, 4.5);
 
-      if (!colors.semantic.primaryFillHover || typeof colors.semantic.primaryFillHover !== 'string') {
-        colors.semantic.primaryFillHover = this.#mixTowards(colors.semantic.primaryFill, '#000000', 0.12);
+      if (
+        !colors.semantic.primaryFillHover ||
+        typeof colors.semantic.primaryFillHover !== "string"
+      ) {
+        colors.semantic.primaryFillHover = this.#mixTowards(
+          colors.semantic.primaryFill,
+          "#000000",
+          0.12
+        );
       }
       colors.semantic.onPrimaryFillHover =
-        colors.semantic.onPrimaryFillHover || this.#findReadableOnColor(colors.semantic.primaryFillHover, 4.5);
+        colors.semantic.onPrimaryFillHover ||
+        this.#findReadableOnColor(colors.semantic.primaryFillHover, 4.5);
 
-      if (!colors.semantic.primaryFillActive || typeof colors.semantic.primaryFillActive !== 'string') {
-        colors.semantic.primaryFillActive = this.#mixTowards(colors.semantic.primaryFill, '#000000', 0.22);
+      if (
+        !colors.semantic.primaryFillActive ||
+        typeof colors.semantic.primaryFillActive !== "string"
+      ) {
+        colors.semantic.primaryFillActive = this.#mixTowards(
+          colors.semantic.primaryFill,
+          "#000000",
+          0.22
+        );
       }
       colors.semantic.onPrimaryFillActive =
-        colors.semantic.onPrimaryFillActive || this.#findReadableOnColor(colors.semantic.primaryFillActive, 4.5);
+        colors.semantic.onPrimaryFillActive ||
+        this.#findReadableOnColor(colors.semantic.primaryFillActive, 4.5);
     } catch (e) {}
 
     // Add adaptive fieldset colors to surface
@@ -189,12 +219,14 @@ export class Generator {
     colors.dark = this.#generateDarkModeColors(
       colors,
       background,
-      darkMode  // Pass the darkMode object directly
+      darkMode // Pass the darkMode object directly
     );
 
     // Generate smart tokens for dark mode surfaces too
     if (colors.dark && colors.dark.surface) {
-      colors.dark.surfaceSmart = this.#generateSmartSurfaceTokens(colors.dark.surface);
+      colors.dark.surfaceSmart = this.#generateSmartSurfaceTokens(
+        colors.dark.surface
+      );
     }
 
     return colors;
@@ -326,7 +358,7 @@ export class Generator {
       ? overrides.background
       : this.#generateSmartDarkBackground(backgroundBase);
 
-  const darkSurface = this.#generateBackgroundShades(darkBackgroundBase);
+    const darkSurface = this.#generateBackgroundShades(darkBackgroundBase);
 
     // Compute dark semantic tokens
     const darkSemantic = {
@@ -348,9 +380,15 @@ export class Generator {
 
     // Fill shades for dark mode components with white text
     try {
-      darkSemantic.primaryFill = this.#pickFillShadeForWhite(derivedPrimaryScale, 4.5);
+      darkSemantic.primaryFill = this.#pickFillShadeForWhite(
+        derivedPrimaryScale,
+        4.5
+      );
       const derivedInfoScale = this.#adjustColorsForDarkMode(lightColors.info);
-      darkSemantic.infoFill = this.#pickFillShadeForWhite(derivedInfoScale, 4.5);
+      darkSemantic.infoFill = this.#pickFillShadeForWhite(
+        derivedInfoScale,
+        4.5
+      );
     } catch {}
 
     return {
@@ -385,7 +423,13 @@ export class Generator {
   // -------------------------
   #hexToRgb(hex) {
     const h = String(hex || "").replace("#", "");
-    const full = h.length === 3 ? h.split("").map((c) => c + c).join("") : h;
+    const full =
+      h.length === 3
+        ? h
+            .split("")
+            .map((c) => c + c)
+            .join("")
+        : h;
     const num = parseInt(full, 16);
     return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
   }
@@ -460,7 +504,11 @@ export class Generator {
    * Pick a readable primary shade on a given surface background, targeting AA contrast.
    * Returns the first shade that meets target from a preferred order; falls back to the best ratio.
    */
-  #pickReadablePrimaryOnSurface(primaryScale = {}, surfaceBg = "#000000", target = 4.5) {
+  #pickReadablePrimaryOnSurface(
+    primaryScale = {},
+    surfaceBg = "#000000",
+    target = 4.5
+  ) {
     const order = ["600", "700", "800", "500", "400", "900", "300", "200"]; // preference for UI semantics
     let best = { shade: null, color: null, ratio: 0 };
     for (const key of order) {
@@ -491,41 +539,41 @@ export class Generator {
   /**
    * Generate smart surface tokens with context-aware colors for text, icons, shadows, and borders.
    * Each surface variant gets its own semantic tokens that automatically adapt to the surface's luminance.
-   * 
+   *
    * @param {Object} surfaceShades - Object with surface color variants (base, subtle, elevated, etc.)
    * @returns {Object} Smart tokens for each surface with text, icon, shadow, and border colors
    */
   #generateSmartSurfaceTokens(surfaceShades) {
     const tokens = {};
-    
+
     Object.entries(surfaceShades).forEach(([key, bgColor]) => {
       // Skip non-color values (like 'hover' which uses CSS functions)
-      if (!bgColor || typeof bgColor !== 'string' || !bgColor.startsWith('#')) {
+      if (!bgColor || typeof bgColor !== "string" || !bgColor.startsWith("#")) {
         return;
       }
 
       const isDark = this.#luminance(bgColor) < 0.5;
-      
+
       // Text colors with proper contrast ratios
-      const textPrimary = this.#findReadableOnColor(bgColor, 4.5);  // WCAG AA
+      const textPrimary = this.#findReadableOnColor(bgColor, 4.5); // WCAG AA
       const textSecondary = this.#findReadableOnColor(bgColor, 3.0); // Relaxed for secondary
       const textMuted = this.#mixTowards(textPrimary, bgColor, 0.4); // 40% toward background
-      
+
       // Icon color matches primary text for consistency
       const icon = textPrimary;
       const iconSubtle = textMuted;
-      
+
       // Context-aware shadows: light shadows on dark surfaces, dark shadows on light
       // Light shadows need higher opacity to be visible on dark backgrounds
-      const shadowBase = isDark ? '#ffffff' : '#000000';
+      const shadowBase = isDark ? "#ffffff" : "#000000";
       const shadowOpacity = isDark ? 0.25 : 0.1;
       const shadowColor = this.#rgbaFromHex(shadowBase, shadowOpacity);
-      
+
       // Semi-transparent borders that work on any surface
-      const borderBase = isDark ? '#ffffff' : '#000000';
+      const borderBase = isDark ? "#ffffff" : "#000000";
       const borderOpacity = isDark ? 0.15 : 0.1;
       const border = this.#rgbaFromHex(borderBase, borderOpacity);
-      
+
       tokens[key] = {
         bg: bgColor,
         text: textPrimary,
@@ -535,10 +583,10 @@ export class Generator {
         iconSubtle: iconSubtle,
         shadow: shadowColor,
         border: border,
-        scheme: isDark ? 'dark' : 'light', // CSS color-scheme value
+        scheme: isDark ? "dark" : "light", // CSS color-scheme value
       };
     });
-    
+
     return tokens;
   }
 
@@ -846,7 +894,7 @@ export class Generator {
 
     // Components are always included; component toggles are removed.
 
-  const css = `
+    const css = `
 :root {
 
   --focus-ring-width: 3px;
@@ -949,11 +997,11 @@ ${this.#generateMediaQueries()}
     css += `  --color-input-disabled-text: var(--color-gray-500);\n`;
     css += `  --color-code-bg: var(--color-gray-100);\n`;
 
-  // Translucent surface tokens for semantic transparency (consumer-friendly)
-  css += `  /* Translucent Surface Tokens */\n`;
-  css += `  --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);\n`;
-  css += `  --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);\n`;
-  css += `  --color-surface-translucent-75: color-mix(in oklab, var(--color-surface-subtle) 75%, transparent 25%);\n`;
+    // Translucent surface tokens for semantic transparency (consumer-friendly)
+    css += `  /* Translucent Surface Tokens */\n`;
+    css += `  --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);\n`;
+    css += `  --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);\n`;
+    css += `  --color-surface-translucent-75: color-mix(in oklab, var(--color-surface-subtle) 75%, transparent 25%);\n`;
 
     css += `   /* Backdrop tokens - used for modal dialogs, drawers, overlays */
     
@@ -980,10 +1028,10 @@ ${this.#generateMediaQueries()}
 
   #generateMeshGradients(colors) {
     // Create subtle mesh gradients using color palette
-    const primary = colors.primary?.[500] || '#3b82f6';
-    const secondary = colors.secondary?.[500] || '#8b5cf6';
-    const accent = colors.accent?.[500] || '#f59e0b';
-    
+    const primary = colors.primary?.[500] || "#3b82f6";
+    const secondary = colors.secondary?.[500] || "#8b5cf6";
+    const accent = colors.accent?.[500] || "#f59e0b";
+
     return `
   /* Mesh Gradient Backgrounds */
   --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 25%, transparent) 0px, transparent 50%),
@@ -1117,16 +1165,18 @@ ${this.#generateMediaQueries()}
     let smartSurfaceVars = "";
     if (colors.dark.surfaceSmart) {
       smartSurfaceVars += `  /* Smart Surface Tokens (dark mode, context-aware) */\n`;
-      Object.entries(colors.dark.surfaceSmart).forEach(([surfaceKey, tokens]) => {
-        smartSurfaceVars += `  --surface-${surfaceKey}-bg: ${tokens.bg};\n`;
-        smartSurfaceVars += `  --surface-${surfaceKey}-text: ${tokens.text};\n`;
-        smartSurfaceVars += `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`;
-        smartSurfaceVars += `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`;
-        smartSurfaceVars += `  --surface-${surfaceKey}-icon: ${tokens.icon};\n`;
-        smartSurfaceVars += `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`;
-        smartSurfaceVars += `  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`;
-        smartSurfaceVars += `  --surface-${surfaceKey}-border: ${tokens.border};\n`;
-      });
+      Object.entries(colors.dark.surfaceSmart).forEach(
+        ([surfaceKey, tokens]) => {
+          smartSurfaceVars += `  --surface-${surfaceKey}-bg: ${tokens.bg};\n`;
+          smartSurfaceVars += `  --surface-${surfaceKey}-text: ${tokens.text};\n`;
+          smartSurfaceVars += `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`;
+          smartSurfaceVars += `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`;
+          smartSurfaceVars += `  --surface-${surfaceKey}-icon: ${tokens.icon};\n`;
+          smartSurfaceVars += `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`;
+          smartSurfaceVars += `  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`;
+          smartSurfaceVars += `  --surface-${surfaceKey}-border: ${tokens.border};\n`;
+        }
+      );
       smartSurfaceVars += `\n`;
     }
 
@@ -1194,9 +1244,9 @@ img:hover, video:hover {
     css += `html[data-theme="dark"] {\n${vars}${smartSurfaceVars}${semanticVars}${backdropVars}${meshVars}`;
     // indent nested rule block for readability
     const nested = rules
-      .split('\n')
-      .map(line => (line.length ? `  ${line}` : line))
-      .join('\n');
+      .split("\n")
+      .map((line) => (line.length ? `  ${line}` : line))
+      .join("\n");
     css += `\n${nested}\n}`;
 
     return css;
@@ -1231,16 +1281,18 @@ img:hover, video:hover {
     let smart = "";
     if (colors.dark.surfaceSmart) {
       smart += `  /* Smart Surface Tokens (dark mode, context-aware) */\n`;
-      Object.entries(colors.dark.surfaceSmart).forEach(([surfaceKey, tokens]) => {
-        smart += `  --surface-${surfaceKey}-bg: ${tokens.bg};\n`;
-        smart += `  --surface-${surfaceKey}-text: ${tokens.text};\n`;
-        smart += `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`;
-        smart += `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`;
-        smart += `  --surface-${surfaceKey}-icon: ${tokens.icon};\n`;
-        smart += `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`;
-        smart += `  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`;
-        smart += `  --surface-${surfaceKey}-border: ${tokens.border};\n`;
-      });
+      Object.entries(colors.dark.surfaceSmart).forEach(
+        ([surfaceKey, tokens]) => {
+          smart += `  --surface-${surfaceKey}-bg: ${tokens.bg};\n`;
+          smart += `  --surface-${surfaceKey}-text: ${tokens.text};\n`;
+          smart += `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`;
+          smart += `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`;
+          smart += `  --surface-${surfaceKey}-icon: ${tokens.icon};\n`;
+          smart += `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`;
+          smart += `  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`;
+          smart += `  --surface-${surfaceKey}-border: ${tokens.border};\n`;
+        }
+      );
       smart += `\n`;
     }
 
@@ -1256,10 +1308,10 @@ img:hover, video:hover {
   #generateMeshGradientsDark(colors) {
     // Create darker, more subtle mesh gradients for dark mode
     const dark = colors.dark || colors;
-    const primary = dark.primary?.[400] || '#60a5fa';
-    const secondary = dark.secondary?.[400] || '#a78bfa';
-    const accent = dark.accent?.[400] || '#fbbf24';
-    
+    const primary = dark.primary?.[400] || "#60a5fa";
+    const secondary = dark.secondary?.[400] || "#a78bfa";
+    const accent = dark.accent?.[400] || "#fbbf24";
+
     return `
   /* Mesh Gradient Backgrounds (Dark Mode) */
   --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 20%, transparent) 0px, transparent 50%),
@@ -1292,7 +1344,6 @@ img:hover, video:hover {
   // If the config specifies options.backgroundMesh (1-5), apply the mesh to body.
   // Mesh variables are always generated above; this just opts-in the body background.
   #generateBodyBackgroundMeshRule() {
-    
     try {
       const meshOption =
         this.options?.options?.backgroundMesh ?? this.options?.backgroundMesh;
@@ -1310,7 +1361,8 @@ img:hover, video:hover {
   #generateLiquidGlassUtility() {
     try {
       const enabled =
-        this.options?.options?.liquidGlassEffects ?? this.options?.liquidGlassEffects;
+        this.options?.options?.liquidGlassEffects ??
+        this.options?.liquidGlassEffects;
       if (!enabled) return "";
       // Use design tokens where possible so the effect adapts to the theme.
       return `/* Liquid glass utility (opt-in via options.liquidGlassEffects) */\n.liquid-glass {\n  position: relative;\n  border-radius: var(--radius-lg);\n  /* Subtle translucent fill blended with surface */\n  background: color-mix(in oklab, var(--color-surface-subtle) 45%, transparent);\n  background-image: linear-gradient(\n    135deg,\n    rgba(255,255,255,0.35),\n    rgba(255,255,255,0.12)\n  );\n  /* Frosted glass blur + saturation */\n  -webkit-backdrop-filter: blur(12px) saturate(140%);\n  backdrop-filter: blur(12px) saturate(140%);\n  /* Soft inner highlight and outer depth */\n  box-shadow:\n    inset 0 1px 0 rgba(255,255,255,0.6),\n    inset 0 -40px 80px rgba(255,255,255,0.12),\n    0 10px 30px rgba(0,0,0,0.10);\n  /* Glossy border with slight light and dark edges */\n  border: 1px solid color-mix(in oklab, var(--color-primary-500) 22%, transparent);\n  outline: 1px solid color-mix(in oklab, #ffffff 18%, transparent);\n  outline-offset: -1px;\n}
@@ -3764,10 +3816,10 @@ nav[data-dropdown][data-mode="auto"] menu {
     const gridSystem = layout.gridSystem || {};
     const columns = gridSystem.columns || [1, 2, 3, 4, 6];
     const autoFitBreakpoints = gridSystem.autoFitBreakpoints || {
-      sm: '150px',
-      md: '250px',
-      lg: '350px',
-      xl: '450px',
+      sm: "150px",
+      md: "250px",
+      lg: "350px",
+      xl: "450px",
     };
 
     let css = /*css*/ `
@@ -3780,9 +3832,9 @@ nav[data-dropdown][data-mode="auto"] menu {
 .container {
   display: block;
   width: 100%;
-  max-width: ${layout.containerMaxWidth || '1400px'};
+  max-width: ${layout.containerMaxWidth || "1400px"};
   margin: 0 auto;
-  padding: ${layout.containerPadding || 'var(--spacing-6)'};
+  padding: ${layout.containerPadding || "var(--spacing-6)"};
 }
 
 /* Grid System */
@@ -3798,7 +3850,7 @@ nav[data-dropdown][data-mode="auto"] menu {
       css += `.grid-cols-${col} { grid-template-columns: repeat(${col}, 1fr); }\n`;
     }
 
-    css += '\n/* Auto-fit grids (responsive) */\n';
+    css += "\n/* Auto-fit grids (responsive) */\n";
     // Generate auto-fit responsive grids
     for (const [name, minWidth] of Object.entries(autoFitBreakpoints)) {
       css += `.grid-auto-${name} { grid-template-columns: repeat(auto-fit, minmax(${minWidth}, 1fr)); }\n`;
@@ -3806,7 +3858,7 @@ nav[data-dropdown][data-mode="auto"] menu {
 
     // Generate gap utilities
     if (gridSystem.enableGapUtilities) {
-      css += `
+      css += /*css*/`
 /* Gap utilities */
 .gap-0 { gap: 0; }
 .gap-xs { gap: var(--spacing-1); }
@@ -4473,85 +4525,116 @@ nav[data-dropdown][data-mode="auto"] menu {
   }
 
   #generateComponentsLayer() {
-    let css = `@layer components {\n`;
+    return `@layer components {\n
+${this.#generateSemanticHTMLStyles()}
 
-    // Semantic HTML element styles (blockquote, hr, details, etc.)
-    css += this.#generateSemanticHTMLStyles();
+${this.#generateFormStyles()}
 
-    // Form component styles (buttons, inputs, checkboxes, radio buttons, toggles, etc.)
-    css += this.#generateFormStyles();
+${this.#generateAlertStyles()}
 
-    // Alert component styles
+${this.#generateBadgeStyles()}
 
-    css += this.#generateAlertStyles();
+${this.#generateDialogStyles()}
 
-    // Badge component styles
+${this.#generateDropdownStyles()}
 
-    css += this.#generateBadgeStyles();
+${this.#generateTabStripStyles()}
 
-    // Dialog primitive styles
-    css += this.#generateDialogStyles();
+${this.#generateTableStyles()}
 
-    // Dropdown component styles
-    css += this.#generateDropdownStyles();
+/* Card component */
 
-    // TabStrip component styles
-    css += this.#generateTabStripStyles();
+.card {
+  background: var(--color-surface-base);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-4);
+}
 
-    // Table component styles
-    css += this.#generateTableStyles();
+.card--elevated, .card-elevated {
+  background: var(--color-surface-elevated);
+  box-shadow: var(--shadow-md);
+}
 
-    // Card component styles (utility-friendly, token-driven)
-    css += `/* Card component */\n\n.card {\n  background: var(--color-surface-base);\n  border-radius: var(--radius-md);\n  padding: var(--spacing-4);\n}\n\n.card--elevated, .card-elevated {\n  background: var(--color-surface-elevated);\n  box-shadow: var(--shadow-md);\n}\n\n.card--outlined, .card-basic {\n  background: var(--color-surface-base);\n  border: 1px solid var(--color-border);\n}\n\n.card--interactive:hover {\n  transform: translateY(-2px);\n  box-shadow: var(--shadow-lg);\n  transition: transform var(--transition-fast), box-shadow var(--transition-fast);\n}\n`;
+.card--outlined, .card-basic {
+  background: var(--color-surface-base);
+  border: 1px solid var(--color-border);
+}
 
-    // Custom scrollbar styles
-    css += this.#generateScrollbarStyles();
+.card--interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
 
-    css += "}\n";
-    return css;
+${this.#generateScrollbarStyles()}
+
+}\n`;
   }
 
   #generateUtilitiesLayer() {
-    let css = `@layer utilities {\n`;
+    return `@layer utilities {\n
+${this.#generateIconStyles()}
 
-    // Icon utilities
-    css += this.#generateIconStyles();
+${this.#generateLayoutUtilities()}
 
-    // Layout utilities
-    css += this.#generateLayoutUtilities();
+/* Optional utilities/features controlled by config options */
+/* - Body background mesh rule (applies one of the generated mesh vars) */
+/* - Liquid glass utility class */
+${this.#generateBodyBackgroundMeshRule()}
+${this.#generateLiquidGlassUtility()}
 
-    // Optional utilities/features controlled by config options
-    // - Body background mesh rule (applies one of the generated mesh vars)
-    // - Liquid glass utility class
-    css += this.#generateBodyBackgroundMeshRule();
-    css += this.#generateLiquidGlassUtility();
+/* Surface utilities */
 
-  // Surface utilities
-  css += `/* Surface utilities */\n\n`;
-  // Base semantic surface backgrounds
-  css += `.surface {\n  background-color: var(--color-surface-base);\n}\n\n`;
-  css += `.surface--subtle {\n  background-color: var(--color-surface-subtle);\n}\n\n`;
-  css += `.surface--elevated {\n  background-color: var(--color-surface-elevated);\n}\n\n`;
-  css += `.surface--sunken {\n  background-color: var(--color-surface-sunken);\n}\n\n`;
-  css += `.surface--overlay {\n  background-color: var(--color-surface-overlay);\n}\n\n`;
+.surface {
+  background-color: var(--color-surface-base);
+}
 
-  // Translucent semantic variants
-  css += `.surface--translucent {\n  background-color: var(--color-surface-translucent-50);\n}\n\n`;
-  css += `.surface--translucent-25 {\n  background-color: var(--color-surface-translucent-25);\n}\n\n`;
-  css += `.surface--translucent-50 {\n  background-color: var(--color-surface-translucent-50);\n}\n\n`;
-  css += `.surface--translucent-75 {\n  background-color: var(--color-surface-translucent-75);\n}\n\n`;
+.surface--subtle {
+  background-color: var(--color-surface-subtle);
+}
 
-  // Legacy utility retained for backwards compatibility (opinionated overlay)
-  css += `.surface-overlay {\n  padding: var(--spacing-4);\n  background-color: var(--color-surface-overlay);\n  box-shadow: var(--shadow-lg);\n  border-radius: var(--radius-md);\n}\n\n`;
+.surface--elevated {
+  background-color: var(--color-surface-elevated);
+}
 
-    // Media utilities
-    css += this.#generateMediaUtilities();
+.surface--sunken {
+  background-color: var(--color-surface-sunken);
+}
 
-    // Responsive media queries with utility classes
-    css += this.#generateMediaQueries();
+.surface--overlay {
+  background-color: var(--color-surface-overlay);
+}
 
-    css += "}\n";
-    return css;
+/* Translucent semantic variants */
+.surface--translucent {
+  background-color: var(--color-surface-translucent-50);
+}
+
+.surface--translucent-25 {
+  background-color: var(--color-surface-translucent-25);
+}
+
+.surface--translucent-50 {
+  background-color: var(--color-surface-translucent-50);
+}
+
+.surface--translucent-75 {
+  background-color: var(--color-surface-translucent-75);
+}
+
+/* Legacy utility retained for backwards compatibility (opinionated overlay) */
+.surface-overlay {
+  padding: var(--spacing-4);
+  background-color: var(--color-surface-overlay);
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-md);
+}
+
+${this.#generateMediaUtilities()}
+
+${this.#generateMediaQueries()}
+
+}\n`;
   }
 
   /**
@@ -4734,9 +4817,9 @@ export const ${name}CSS = \`${escapedCSS}\`;
       return;
     }
 
-  // Preferred: apply layered CSS so tokens + primitives + components + utilities
-  // are available in light DOM (ensures primitives like :where(button):active apply)
-  const cssText = designer.layeredCSS || designer.css || "";
+    // Preferred: apply layered CSS so tokens + primitives + components + utilities
+    // are available in light DOM (ensures primitives like :where(button):active apply)
+    const cssText = designer.layeredCSS || designer.css || "";
     if (!cssText) {
       console.warn("[Generator] No CSS available on designer to apply");
       return;
