@@ -846,7 +846,7 @@ export class Generator {
 
     // Components are always included; component toggles are removed.
 
-    const css = `
+  const css = `
 :root {
 
   --focus-ring-width: 3px;
@@ -1509,9 +1509,11 @@ figcaption {
       xl: 1280,
     };
 
-    return /*css*/ `/* Semantic HTML Elements */
+    // Note: We intentionally use :where() to minimize specificity of semantic element styles
+    // so applications can easily override them without resorting to !important.
+    return /*css*/ `/* Semantic HTML Elements (low-specificity via :where()) */
 
-blockquote {
+:where(blockquote) {
   margin: 0 0 var(--spacing-4) 0;
   padding: var(--spacing-4) var(--spacing-6);
   border-left: 4px solid var(--color-primary-500);
@@ -1520,11 +1522,11 @@ blockquote {
   font-style: italic;
   color: var(--color-text-secondary);
   
-  p:last-child {
+  :where(p):last-child {
     margin-bottom: 0;
   }
   
-  cite {
+  :where(cite) {
     display: block;
     margin-top: var(--spacing-2);
     font-size: var(--font-size-sm);
@@ -1537,18 +1539,18 @@ blockquote {
   }
 }
 
-hr {
+:where(hr) {
   margin: var(--spacing-8) 0;
   border: none;
   border-top: 1px solid var(--color-border);
   height: 0;
 }
 
-dl {
+:where(dl) {
   margin: 0 0 var(--spacing-4) 0;
 }
 
-dt {
+:where(dt) {
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-top: var(--spacing-3);
@@ -1558,20 +1560,20 @@ dt {
   }
 }
 
-dd {
+:where(dd) {
   margin: var(--spacing-1) 0 var(--spacing-3) var(--spacing-6);
   color: var(--color-text-secondary);
 }
 
-nav, header, footer {
+:where(nav), :where(header), :where(footer) {
   display: block;
 }
 
-header, footer {
+:where(header), :where(footer) {
   width: 100%;
 }
 
-article, section, aside {
+:where(article), :where(section), :where(aside) {
   display: block;
   margin-bottom: var(--spacing-6);
   
@@ -1580,14 +1582,14 @@ article, section, aside {
   }
 }
 
-mark {
+:where(mark) {
   background-color: var(--color-warning-200);
   color: var(--color-warning-900);
   padding: 0 var(--spacing-1);
   border-radius: var(--radius-sm);
 }
 
-kbd {
+:where(kbd) {
   display: inline-block;
   padding: var(--spacing-1) var(--spacing-2);
   font-family: var(--font-family-mono);
@@ -1599,29 +1601,29 @@ kbd {
   box-shadow: 0 2px 0 0 var(--color-border);
 }
 
-abbr[title] {
+:where(abbr[title]) {
   text-decoration: underline dotted;
   cursor: help;
   text-decoration-thickness: 1px;
 }
 
-time {
+:where(time) {
   font-variant-numeric: tabular-nums;
 }
 
-address {
+:where(address) {
   font-style: normal;
   line-height: var(--font-lineHeight-relaxed);
   margin: 0 0 var(--spacing-4) 0;
 }
 
-details {
+:where(details) {
   margin: 0 0 var(--spacing-2) 0;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface-base);
   
-  &[open] summary {
+  &[open] :where(summary) {
     border-bottom: 1px solid var(--color-border);
     background-color: var(--color-surface-subtle);
     
@@ -1630,12 +1632,12 @@ details {
     }
   }
   
-  & > *:not(summary) {
+  & > *:not(:where(summary)) {
     padding: var(--spacing-4);
   }
 }
 
-summary {
+:where(summary) {
   padding: var(--spacing-3) var(--spacing-4);
   cursor: pointer;
   border-radius: var(--radius-md);
@@ -3101,7 +3103,7 @@ dialog {
   position: fixed;
   inset: 0;
   max-width: min(600px, calc(100vw - var(--spacing-8)));
-  max-height: calc(100vh - var(--spacing-8)));
+  max-height: calc(100vh - var(--spacing-8));
   margin: auto;
   padding: 0;
   border: none;

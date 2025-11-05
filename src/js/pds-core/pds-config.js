@@ -9,6 +9,10 @@ export const presets = {
     id: "ocean-breeze",
     name: "Ocean Breeze",
     description: "Fresh and calming ocean-inspired palette with professional undertones",
+    options: {
+      liquidGlassEffects: true,
+      backgroundMesh: 1
+    },
     colors: {
       primary: "#0891b2",
       secondary: "#64748b",
