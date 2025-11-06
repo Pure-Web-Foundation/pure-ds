@@ -865,7 +865,8 @@ export class Generator {
         xl: 48,
         "2xl": 64,
       },
-      spritePath = "/assets/img/pds-icons.svg",
+  // Default path for dev/demo; static export places it at [static.root]/icons/pds-icons.svg
+  spritePath = "/assets/pds/icons/pds-icons.svg",
     } = iconConfig;
 
     return {

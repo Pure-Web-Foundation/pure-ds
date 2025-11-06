@@ -22,6 +22,7 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 
 import { discoverWebRoot } from './postinstall.js';
+import { runPdsBuildIcons } from './pds-build-icons.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -159,16 +160,45 @@ async function main() {
   }
   log(`✅ Styles written to ${path.relative(process.cwd(), stylesDir)} (and CSS.js modules)`, 'green');
 
-  // 5b) Ensure icon sprite is available at [static.root]/icons/icons.svg
+  // 5b) Build custom icon sprite when consumer config overrides defaults; otherwise copy stock sprite
   try {
-    const iconSource = path.join(repoRoot, 'public/assets/img/pds-icons.svg');
+    const internalConfigPath = path.join(repoRoot, 'src/js/pds-core/pds-config.js');
+    const internal = await import(pathToFileURL(internalConfigPath).href);
+    const defaultIcons = internal.presets?.default?.icons || {};
+    const consumerIcons = config?.icons || null;
+
+    const isDifferent = () => {
+      if (!consumerIcons) return false;
+      const setDiff = consumerIcons.set && consumerIcons.set !== defaultIcons.set;
+      const weightDiff = consumerIcons.weight && consumerIcons.weight !== defaultIcons.weight;
+      const includeDiff = JSON.stringify(consumerIcons.include || {}) !== JSON.stringify(defaultIcons.include || {});
+      return Boolean(setDiff || weightDiff || includeDiff);
+    };
+
     const iconsDir = path.join(targetDir, 'icons');
     await mkdir(iconsDir, { recursive: true });
-    const iconTarget = path.join(iconsDir, 'icons.svg');
-    await copyFile(iconSource, iconTarget);
-    log(`✅ Icons sprite copied to ${path.relative(process.cwd(), iconTarget)}`, 'green');
+    const iconTarget = path.join(iconsDir, 'pds-icons.svg');
+
+    if (isDifferent()) {
+      log('🛠️  Detected custom icons in consumer config — building sprite...', 'bold');
+      // Pass the resolved targetDir to the builder via env override
+      const prev = process.env.PDS_STATIC_ROOT;
+      process.env.PDS_STATIC_ROOT = targetDir;
+      try {
+        await runPdsBuildIcons();
+        log(`✅ Icons sprite built at ${path.relative(process.cwd(), iconTarget)}`, 'green');
+      } finally {
+        // restore previous env var (if any)
+        if (prev === undefined) delete process.env.PDS_STATIC_ROOT; else process.env.PDS_STATIC_ROOT = prev;
+      }
+    } else {
+      // Copy stock sprite shipped with the package
+      const iconSource = path.join(repoRoot, 'public/assets/pds/icons/pds-icons.svg');
+      await copyFile(iconSource, iconTarget);
+      log(`✅ Icons sprite copied to ${path.relative(process.cwd(), iconTarget)}`, 'green');
+    }
   } catch (e) {
-    log(`⚠️  Could not copy icon sprite: ${e?.message || e}`, 'yellow');
+    log(`⚠️  Icon sprite step encountered an issue: ${e?.message || e}`, 'yellow');
   }
 
   // 6) Summary

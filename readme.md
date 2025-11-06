@@ -112,7 +112,7 @@ npm run pds:static
 
 This produces:
 
-- `pds/icons/icons.svg`
+- `pds/icons/pds-icons.svg`
 - `pds/auto-define/*.js` (web components)
 - `pds/css/pds-*.css` and `pds/css/pds-*.css.js` (constructable styles)
 - docs copied alongside when enabled (README.md, GETTING-STARTED.md, …)
@@ -367,6 +367,12 @@ npm run pds:static
 npm run sync-assets
 ```
 
+Notes on icons:
+
+- When your `pds.config.js` defines custom icons (any change to `icons.set`, `icons.weight`, or `icons.include`), `pds:static` will automatically build the sprite into `[static.root]/icons/pds-icons.svg`.
+- If no custom icons are defined, `pds:static` copies the stock sprite shipped with the package to the same location.
+- You can also rebuild explicitly via `pds:build-icons` (used internally by the export flow).
+
 
 ## Troubleshooting
 
@@ -406,7 +412,11 @@ your-project/
 │  ├─ auto-define/          # PDS components (hosted for the browser)
 │  ├─ assets/
 │  │  ├─ js/lit.js          # Lit shim for import maps
-│  │  └─ icons/icons.svg  # PDS icons
+│  │  └─ (optional) other assets
+│  ├─ pds/
+│  │  ├─ components/        # Exported PDS components
+│  │  ├─ styles/            # Exported PDS CSS and .css.js
+│  │  └─ pds-icons.svg      # PDS icons sprite (exported)
 │  └─ index.html
 ├─ src/
 │  └─ main.js               # Your PDS initialization

@@ -54,6 +54,7 @@ export class SvgIcon extends HTMLElement {
     const sizeAttr = this.getAttribute('size') || '24';
     const color = this.getAttribute('color') || 'currentColor';
     const label = this.getAttribute('label');
+    const spriteOverride = this.getAttribute('sprite');
     
     // Parse size - can be number (px) or named size (xs, sm, md, lg, xl, 2xl)
     const namedSizes = {
@@ -66,6 +67,17 @@ export class SvgIcon extends HTMLElement {
     };
     const size = namedSizes[sizeAttr] || sizeAttr;
     
+    // Compute sprite href: prefer relative to this module (../pds-icons.svg), allow override via `sprite` attr
+    let spriteHref;
+    try {
+      const url = new URL('../icons/pds-icons.svg', import.meta.url);
+      spriteHref = url.pathname;
+    } catch (e) {
+      // Fallback (should rarely happen)
+      spriteHref = '/icons/pds-icons.svg';
+    }
+    if (spriteOverride) spriteHref = spriteOverride;
+
     // Determine if we should use sprite or fallback
     const useFallback = this.hasAttribute('no-sprite') || !this.spriteAvailable();
     
@@ -81,7 +93,7 @@ export class SvgIcon extends HTMLElement {
       >
         ${useFallback 
           ? this.getFallbackIcon(icon)
-          : `<use href="/assets/img/pds-icons.svg#${icon}"></use>`
+          : `<use href="${spriteHref}#${icon}"></use>`
         }
       </svg>
     `;

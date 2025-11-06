@@ -3,8 +3,8 @@
 /**
  * PDS Build Icons CLI
  *
- * Rebuilds the SVG sprite (icons.svg) into the consumer app's configured static root.
- * Output path: [config.static.root]/icons/icons.svg
+ * Rebuilds the SVG sprite (pds-icons.svg) into the consumer app's configured static root.
+ * Output path: [config.static.root]/icons/pds-icons.svg
  *
  * Usage: node node_modules/pure-ds/packages/pds-cli/bin/pds-build-icons.js
  */
@@ -74,7 +74,7 @@ async function main() {
     const config = await loadConsumerConfig();
 
     // Require static.root to be configured
-    const rootInput = config?.static?.root;
+    const rootInput = process.env.PDS_STATIC_ROOT || config?.static?.root;
     if (!rootInput || typeof rootInput !== 'string') {
       log('⚠️  static.root is not configured in pds.config.js — skipping icon build.', 'yellow');
       log('   Set config.static.root (e.g., "public/assets/pds/") and re-run.', 'yellow');
@@ -82,8 +82,8 @@ async function main() {
       return;
     }
     const staticRoot = path.isAbsolute(rootInput) ? rootInput : path.resolve(process.cwd(), rootInput);
-    const outDir = path.join(staticRoot, 'icons');
-    const outFile = path.join(outDir, 'icons.svg');
+  const outDir = path.join(staticRoot, 'icons');
+  const outFile = path.join(outDir, 'pds-icons.svg');
 
     // Determine icon set configuration (consumer overrides internal defaults)
     const internal = await import(pathToFileURL(path.join(repoRoot, 'src/js/pds-core/pds-config.js')).href);
