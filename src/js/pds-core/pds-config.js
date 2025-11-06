@@ -752,7 +752,9 @@ presets.default = {
         "squares-four",
       ],
     },
-    spritePath: "public/assets/img/pds-icons.svg",
+  // Default sprite path for internal/dev use. For consumer apps, icons are exported to
+  // [config.static.root]/icons/icons.svg and components should consume from there.
+  spritePath: "public/assets/pds/icons/icons.svg",
   },
 
   gap: 4,

@@ -1,7 +1,7 @@
 {
   "name": "pure-ds",
   "shortname": "pds",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pure Design System - Why develop a Design System when you can generate one?",
   "repository": {
     "type": "git",
@@ -52,12 +52,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node esbuild-dev.js",
     "build": "node esbuild-build.js",
-    "export-config": "node scripts/export-config-json.mjs",
-    "build-icons": "node scripts/build-icons.mjs",
-    "postinstall": "node packages/pds-cli/bin/postinstall.js",
     "pds:export": "node packages/pds-cli/bin/pds-static.js",
-    "pds:static": "node packages/pds-cli/bin/pds-static.js",
-    "sync-assets": "node packages/pds-cli/bin/sync-assets.js"
+    "pds:build-icons": "node scripts/build-icons.mjs"
   },
   "author": "Marc van Neerven",
   "license": "ISC",

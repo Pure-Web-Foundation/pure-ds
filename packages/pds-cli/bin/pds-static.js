@@ -108,12 +108,13 @@ async function main() {
   const config = await loadConsumerConfig();
 
   // 3) Resolve target directory: prefer config.static.root, else fall back to webRoot + base
+  //    IMPORTANT: Resolve relative paths against the consumer app's CWD, not the PDS package root.
   let targetDir;
   if (config?.static?.root) {
     const rootPath = String(config.static.root);
     targetDir = path.isAbsolute(rootPath)
       ? rootPath
-      : path.resolve(repoRoot, rootPath);
+      : path.resolve(process.cwd(), rootPath);
   } else {
     const baseFolderName = String(config?.staticBase || 'pds').replace(/^\/+|\/+$/g, '');
     targetDir = path.join(webRoot.path, baseFolderName);
@@ -146,6 +147,18 @@ async function main() {
     await writeFile(path.join(stylesDir, filename), content, 'utf-8');
   }
   log(`✅ Styles written to ${path.relative(process.cwd(), stylesDir)} (and CSS.js modules)`, 'green');
+
+  // 5b) Ensure icon sprite is available at [static.root]/icons/icons.svg
+  try {
+    const iconSource = path.join(repoRoot, 'public/assets/img/pds-icons.svg');
+    const iconsDir = path.join(targetDir, 'icons');
+    await mkdir(iconsDir, { recursive: true });
+    const iconTarget = path.join(iconsDir, 'icons.svg');
+    await copyFile(iconSource, iconTarget);
+    log(`✅ Icons sprite copied to ${path.relative(process.cwd(), iconTarget)}`, 'green');
+  } catch (e) {
+    log(`⚠️  Could not copy icon sprite: ${e?.message || e}`, 'yellow');
+  }
 
   // 6) Summary
   log('\n────────────────────────────────────────────');

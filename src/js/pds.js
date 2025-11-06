@@ -1096,7 +1096,7 @@ async function staticInit(config) {
   let staticPaths = config.staticPaths ?? {};
   const staticConfig = /** @type {{ root?: string }} */ (config.static || {});
   const cfgAuto = (config && config.autoDefine) || null;
-  const autoDefineBaseURL = (cfgAuto && cfgAuto.baseURL) || "/auto-define/";
+  let autoDefineBaseURL = (cfgAuto && cfgAuto.baseURL) || "/auto-define/";
   const autoDefinePreload = (cfgAuto && Array.isArray(cfgAuto.predefine) && cfgAuto.predefine) || [];
   const autoDefineMapper = (cfgAuto && typeof cfgAuto.mapper === 'function' && cfgAuto.mapper) || null;
 
@@ -1133,7 +1133,7 @@ async function staticInit(config) {
       }
     };
 
-    const staticRootURL = toUrlRoot(staticConfig.root);
+  const staticRootURL = toUrlRoot(staticConfig.root);
 
     // Derive default staticPaths from staticRootURL when not explicitly provided
     if (staticRootURL) {
@@ -1145,6 +1145,10 @@ async function staticInit(config) {
         styles: `${staticRootURL}styles/pds-styles.css.js`,
         ...staticPaths,
       };
+      // Derive a sensible default for AutoDefiner base when not provided
+      if (!(cfgAuto && cfgAuto.baseURL)) {
+        autoDefineBaseURL = `${staticRootURL}components/`;
+      }
     }
 
     // 3) Static mode registry
@@ -1297,7 +1301,7 @@ PDS.setTheme = setTheme;
  * @example
  * ```html
  * <script type="module">
- *   import { PDS } from '@pure-ds/core';
+ *   import { PDS } from 'pure-ds/pds-core';
  *   // Call immediately to prevent flash
  *   PDS.preloadCritical({ colors: { primary: '#007acc' } });
  * </script>

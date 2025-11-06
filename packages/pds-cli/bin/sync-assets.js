@@ -17,11 +17,15 @@ async function findPdsRoot() {
   }
   
   // If running from node_modules (consumer app)
-  // The structure would be: node_modules/@pure-ds/core/packages/pds-cli/bin
+  // The structure would be: node_modules/pure-ds/packages/pds-cli/bin
   if (currentDir.includes('node_modules')) {
     let dir = currentDir;
     while (dir !== path.dirname(dir)) {
-      if (path.basename(dir) === 'core' && path.basename(path.dirname(dir)) === '@pure-ds') {
+      // Support both legacy scoped name and new unscoped name
+      // node_modules/@pure-ds/core/... OR node_modules/pure-ds/...
+      const base = path.basename(dir);
+      const parent = path.basename(path.dirname(dir));
+      if ((base === 'core' && parent === '@pure-ds') || base === 'pure-ds') {
         return dir;
       }
       dir = path.dirname(dir);
@@ -34,7 +38,7 @@ async function findPdsRoot() {
     try {
       const packagePath = path.join(dir, 'package.json');
       const pkg = JSON.parse(await readFile(packagePath, 'utf8'));
-      if (pkg.name === '@pure-ds/core') {
+      if (pkg.name === '@pure-ds/core' || pkg.name === 'pure-ds') {
         return dir;
       }
     } catch (e) {
@@ -52,7 +56,7 @@ async function findPdsRoot() {
  * - public/auto-define/* -> <targetDir>/components/*
  * - (icons no longer synced; static export focuses on components and styles)
  * 
- * Usage: npx @pure-ds/core sync-assets [options]
+ * Usage: node node_modules/pure-ds/packages/pds-cli/bin/sync-assets.js [options]
  * Options:
  *   --target=<path>  Target directory (default: ./public)
  *   --force          Overwrite user-modified files

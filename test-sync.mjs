@@ -3,7 +3,7 @@
 // Test script to verify package exports work correctly
 // Run this from a consumer app context to test sync functionality
 
-import { syncAssets } from '@pure-ds/core/sync-assets';
+import { syncAssets } from './packages/pds-cli/bin/sync-assets.js';
 
 console.log('🧪 Testing PDS sync functionality...');
 

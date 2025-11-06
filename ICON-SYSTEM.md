@@ -1,10 +1,20 @@
 # Icon System
 
+> ⚠️ Alpha status (pre‑1.0)
+>
+> Pure Design System (pure‑ds) is in active alpha and under rapid development.
+>
+> - APIs, exports, file paths, and CLI behavior may change between 0.x releases.
+> - Breaking changes can ship without deprecation; not recommended for production yet.
+> - If you experiment in real projects, pin a specific version (e.g. "pure-ds": "~0.1.0").
+> - Feedback welcome → [Issues](https://github.com/mvneerven/pure-ds/issues) • [Discussions](https://github.com/mvneerven/pure-ds/discussions).
+> - Breaking changes will be noted in the [CHANGELOG](./CHANGELOG.md).
+
 PDS ships a simple, sprite‑based icon solution and a lightweight `<pds-icon>` web component. This page explains how it works today and how to rebuild the sprite if you customize your set.
 
 ## Files
 
-- `public/assets/img/pds-icons.svg` — SVG sprite sheet consumed at runtime
+- `public/assets/pds/icons/icons.svg` — SVG sprite sheet consumed at runtime
 - `public/auto-define/pds-icon.js` — auto‑defined component that renders icons from the sprite
 - `scripts/build-icons.mjs` — script to (re)generate the sprite
 - Demo: `public/_test/icons-demo.html`
@@ -17,7 +27,7 @@ Regenerate the sprite after changing your icon selection or sources:
 npm run build-icons
 ```
 
-By default, the sprite is written to `public/assets/img/pds-icons.svg`.
+By default, the sprite is written to `public/assets/pds/icons/icons.svg`.
 
 ## Usage
 
@@ -39,7 +49,7 @@ Examples:
 <pds-icon icon="menu" label="Open menu"></pds-icon>
 ```
 
-The component points to the sprite at `/assets/img/pds-icons.svg` by default.
+The component points to the sprite at `/assets/pds/icons/icons.svg` by default.
 
 ## Notes
 

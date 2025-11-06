@@ -1,5 +1,15 @@
 # Pure Design System (PDS)
 
+> ⚠️ Alpha status (pre‑1.0)
+> 
+> Pure Design System (pure‑ds) is in active alpha and under rapid development.
+> 
+> - APIs, exports, file paths, and CLI behavior may change between 0.x releases.
+> - Breaking changes can ship without deprecation; not recommended for production yet.
+> - If you experiment in real projects, pin a specific version (e.g. "pure-ds": "~0.1.0").
+> - Feedback welcome → [Issues](https://github.com/mvneerven/pure-ds/issues) • [Discussions](https://github.com/mvneerven/pure-ds/discussions).
+> - Breaking changes will be noted in the [CHANGELOG](./CHANGELOG.md).
+
 [![CI](https://github.com/mvneerven/pure-ds/actions/workflows/ci.yml/badge.svg)](https://github.com/mvneerven/pure-ds/actions/workflows/ci.yml)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](#license-and-support)
 
@@ -33,13 +43,13 @@ A browser‑native, JavaScript‑config‑first design system that generates com
 ## Install
 
 ```bash
-npm install @pure-ds/core
+npm install pure-ds
 ```
 
 Most apps also sync web assets (components, icons, etc.) to your public folder during install via an included script. If needed, run it manually:
 
 ```bash
-node node_modules/@pure-ds/core/packages/pds-cli/bin/postinstall.js
+node node_modules/pure-ds/packages/pds-cli/bin/postinstall.js
 ```
 
 
@@ -67,7 +77,7 @@ import { html, css, LitElement } from '#pds/lit';
 ## Quick start (live mode)
 
 ```js
-import { PDS } from '@pure-ds/core';
+import { PDS } from 'pure-ds/pds-core';
 
 await PDS.start({
   mode: 'live',
@@ -102,7 +112,7 @@ npm run pds:static
 
 This produces:
 
-- `pds/assets/img/pds-icons.svg`
+- `pds/icons/icons.svg`
 - `pds/auto-define/*.js` (web components)
 - `pds/css/pds-*.css` and `pds/css/pds-*.css.js` (constructable styles)
 - docs copied alongside when enabled (README.md, GETTING-STARTED.md, …)
@@ -110,7 +120,7 @@ This produces:
 2) Initialize:
 
 ```js
-import { PDS } from '@pure-ds/core';
+import { PDS } from 'pure-ds/pds-core';
 
 await PDS.start({
   mode: 'static',
@@ -328,9 +338,9 @@ npm run sync-assets
   2) If using import maps, confirm the `#pds/lit` mapping points at a valid file (e.g., `/assets/js/lit.js`).
   3) Manually sync assets if needed:
 
-     ```bash
-     node node_modules/@pure-ds/core/packages/pds-cli/bin/postinstall.js
-     ```
+  ```bash
+  node node_modules/pure-ds/packages/pds-cli/bin/postinstall.js
+  ```
 
 - Flash of unstyled content
   - Call `PDS.preloadCritical()` as early as possible and/or enable `preloadStyles` with `criticalLayers` in `PDS.start()`.
@@ -359,7 +369,7 @@ your-project/
 │  ├─ auto-define/          # PDS components (hosted for the browser)
 │  ├─ assets/
 │  │  ├─ js/lit.js          # Lit shim for import maps
-│  │  └─ img/pds-icons.svg  # PDS icons
+│  │  └─ icons/icons.svg  # PDS icons
 │  └─ index.html
 ├─ src/
 │  └─ main.js               # Your PDS initialization

@@ -7,7 +7,7 @@ const config = {
   platform: "browser", 
   target: "es2022", 
   outdir: "public/assets/js/",
-  external: ["*.woff", "*.eot", "*.ttf", "*.svg", "@pure-ds/core/*"],
+  external: ["*.woff", "*.eot", "*.ttf", "*.svg", "pure-ds/*"],
   bundle: true,
   format: "esm",
   sourcemap: true,

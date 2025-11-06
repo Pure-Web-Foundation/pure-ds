@@ -1,5 +1,15 @@
 # PDS CSS Layer Architecture
 
+> ⚠️ Alpha status (pre‑1.0)
+>
+> Pure Design System (pure‑ds) is in active alpha and under rapid development.
+>
+> - APIs, exports, file paths, and CLI behavior may change between 0.x releases.
+> - Breaking changes can ship without deprecation; not recommended for production yet.
+> - If you experiment in real projects, pin a specific version (e.g. "pure-ds": "~0.1.0").
+> - Feedback welcome → [Issues](https://github.com/mvneerven/pure-ds/issues) • [Discussions](https://github.com/mvneerven/pure-ds/discussions).
+> - Breaking changes will be noted in the [CHANGELOG](./CHANGELOG.md).
+
 This document explains how PDS structures CSS into predictable layers and how to consume them in both light and shadow DOM with the current, unified API.
 
 ## Layers
@@ -21,7 +31,7 @@ For convenience, a combined bundle “styles” is also produced.
 Choose the mode once when you start PDS and keep the same API everywhere.
 
 ```js
-import { PDS } from '@pure-ds/core';
+import { PDS } from 'pure-ds/pds-core';
 
 // Live
 await PDS.start({ mode: 'live', preset: 'default' });

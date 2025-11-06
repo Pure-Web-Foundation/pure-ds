@@ -16,15 +16,12 @@ app-files.js
 .idea
 *.iml
 .azure
-/public/assets/pds/
 /.gitlab-ci-local
 /.gitlab-ci-local-variables.yml
 /localazy.keys.json
 /app-files.js
-
 .env
 Thumbs.db
-
 *.d.ts
 build-meta.json
 yarn.lock

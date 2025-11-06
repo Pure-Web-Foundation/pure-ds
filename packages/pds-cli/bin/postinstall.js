@@ -1,16 +1,43 @@
 #!/usr/bin/env node
 
 /**
- * NPM postinstall script for @pure-ds/core
+ * NPM postinstall script for pure-ds
  * Automatically copies PDS assets to the consuming app's web root
  */
 
 import { readFile, writeFile, mkdir, copyFile, readdir, stat, access, unlink } from 'fs/promises';
 import { createHash } from 'crypto';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(__dirname, '../../../');
+
+/**
+ * Ensure consumer package.json contains a handy export script
+ */
+async function ensureExportScript(cwd) {
+  try {
+    const consumerPkgPath = path.join(cwd, 'package.json');
+    const consumerPkgRaw = await readFile(consumerPkgPath, 'utf8');
+    const consumerPkg = JSON.parse(consumerPkgRaw);
+
+    consumerPkg.scripts = consumerPkg.scripts || {};
+
+    const desiredScriptName = 'pds:export';
+    const desiredScriptCmd = 'node ./node_modules/pure-ds/packages/pds-cli/bin/pds-static.js';
+
+    if (!consumerPkg.scripts[desiredScriptName]) {
+      consumerPkg.scripts[desiredScriptName] = desiredScriptCmd;
+      await writeFile(consumerPkgPath, JSON.stringify(consumerPkg, null, 2) + '\n');
+      console.log(`🧩 Added "${desiredScriptName}" script to consumer package.json`);
+    } else {
+      console.log(`🔧 Script "${desiredScriptName}" already present in consumer package.json`);
+    }
+  } catch (e) {
+    console.warn('⚠️  Could not ensure pds:export script in consumer package.json:', e.message);
+  }
+}
 
 /**
  * Discover the web root directory using common patterns
@@ -108,7 +135,7 @@ async function copyPdsAssets() {
     try {
       const pkg = JSON.parse(await readFile(packagePath, 'utf8'));
       console.log('📄 Package name:', pkg.name);
-      if (pkg.name === '@pure-ds/core') {
+      if (pkg.name === '@pure-ds/core' || pkg.name === 'pure-ds') {
         console.log('⚠️  Running from PDS package itself - skipping postinstall');
         console.log('💡 This script is designed to run when installing in consumer apps');
         return;
@@ -118,24 +145,84 @@ async function copyPdsAssets() {
       // package.json doesn't exist or can't be read, continue
     }
     
-    console.log('📦 Proceeding with asset copying...');
+  console.log('📦 Proceeding with asset copying...');
+
+    // Proactively add export scripts to consumer package.json
+    await ensureExportScript(cwd);
+    try {
+      const consumerPkgPath = path.join(cwd, 'package.json');
+      const pkgRaw = await readFile(consumerPkgPath, 'utf8');
+      const pkgJson = JSON.parse(pkgRaw);
+      pkgJson.scripts = pkgJson.scripts || {};
+      const buildIconsName = 'pds:build-icons';
+      const buildIconsCmd = 'node ./node_modules/pure-ds/packages/pds-cli/bin/pds-build-icons.js';
+      if (!pkgJson.scripts[buildIconsName]) {
+        pkgJson.scripts[buildIconsName] = buildIconsCmd;
+        await writeFile(consumerPkgPath, JSON.stringify(pkgJson, null, 2) + '\n');
+        console.log(`🧩 Added "${buildIconsName}" script to consumer package.json`);
+      } else {
+        console.log(`🔧 Script "${buildIconsName}" already present in consumer package.json`);
+      }
+    } catch (e) {
+      console.warn('⚠️  Could not ensure pds:build-icons script in consumer package.json:', e?.message || e);
+    }
     
     // Find web root
     const webRoot = await discoverWebRoot();
+
+    // Load consumer config to determine static.root if available
+    async function loadConsumerConfig() {
+      const cwd = process.cwd();
+      // Prefer consumer app config
+      for (const fname of ['pds.config.js', 'pds-config.js']) {
+        const candidate = path.join(cwd, fname);
+        if (await access(candidate).then(() => true).catch(() => false)) {
+          try {
+            const mod = await import(pathToFileURL(candidate).href);
+            return mod.config || mod.default || mod.presets?.default || null;
+          } catch(e) {
+            console.warn('⚠️  Failed to load consumer config:', e?.message || e);
+          }
+        }
+      }
+      // Fallback to internal default preset
+      try {
+        const internalPath = path.join(repoRoot, 'src/js/pds-core/pds-config.js');
+        const internal = await import(pathToFileURL(internalPath).href);
+        return internal.presets?.default || null;
+      } catch {
+        return null;
+      }
+    }
+
+    const config = await loadConsumerConfig();
     
-    // Find PDS package location
-    const pdsRoot = path.resolve(__dirname, '../../../'); // Navigate up from packages/pds-cli/bin
+  // Find PDS package location
+  const pdsRoot = repoRoot; // Navigate up from packages/pds-cli/bin
     
     // Source paths
     const autoDefineSource = path.join(pdsRoot, 'public/auto-define');
-    const iconsSource = path.join(pdsRoot, 'public/assets/img/icons.svg');
+  const iconsSource = path.join(pdsRoot, 'public/assets/img/pds-icons.svg');
     
     // Target paths
     const autoDefineTarget = path.join(webRoot.path, 'auto-define');
-    const iconsTarget = path.join(webRoot.path, 'assets/img/pds-icons.svg'); // Renamed to pds-icons.svg
+    // Determine icons target: prefer [static.root]/icons/icons.svg if configured
+    let iconsTarget = null;
+    if (config?.static?.root) {
+      const rootPath = String(config.static.root);
+      const staticRoot = path.isAbsolute(rootPath)
+        ? rootPath
+        : path.resolve(process.cwd(), rootPath);
+      iconsTarget = path.join(staticRoot, 'icons', 'icons.svg');
+      console.log(`🎨 Icons target (from static.root): ${path.relative(process.cwd(), iconsTarget)}`);
+    } else {
+      // Fallback to prior location under web root
+      iconsTarget = path.join(webRoot.path, 'assets/img/pds-icons.svg');
+      console.log(`🎨 Icons target (fallback): ${path.relative(process.cwd(), iconsTarget)}`);
+    }
     
     // Sync PDS components (conservative approach - preserve non-PDS files)
-    console.log(`📁 Syncing PDS components to ${webRoot.relative}/auto-define/`);
+  console.log(`📁 Syncing PDS components to ${webRoot.relative}/auto-define/`);
     await mkdir(autoDefineTarget, { recursive: true });
     
     // Get existing files in target directory
@@ -179,14 +266,18 @@ async function copyPdsAssets() {
       }
     }
     
-    // Copy icons.svg as pds-icons.svg
-    console.log(`🎨 Copying icons to ${webRoot.relative}/assets/img/pds-icons.svg`);
-    await mkdir(path.dirname(iconsTarget), { recursive: true });
-    await copyFile(iconsSource, iconsTarget);
+    // Copy icon sprite to resolved target
+    try {
+      await mkdir(path.dirname(iconsTarget), { recursive: true });
+      await copyFile(iconsSource, iconsTarget);
+      console.log(`🎨 Copied icon sprite → ${path.relative(process.cwd(), iconsTarget)}`);
+    } catch (e) {
+      console.warn('⚠️  Failed to copy icon sprite:', e?.message || e);
+    }
     
     console.log(`✅ PDS assets synced successfully!`);
     console.log(`   📁 ${copiedCount} components → ${webRoot.relative}/auto-define/`);
-    console.log(`   🎨 1 icon file → ${webRoot.relative}/assets/img/pds-icons.svg`);
+  console.log(`   🎨 1 icon file → ${path.relative(process.cwd(), iconsTarget)}`);
     console.log('   🔒 Non-PDS files in auto-define/ were preserved');
     console.log('');
     console.log('🎉 You can now use PDS components like <pds-icon>, <pds-drawer>, etc.');
@@ -203,11 +294,13 @@ async function copyPdsAssets() {
       approach: 'conservative-sync'
     };
     await writeFile(trackingFile, JSON.stringify(tracking, null, 2));
+
+    // (Export script already ensured earlier)
     
   } catch (error) {
     console.error('❌ PDS postinstall failed:', error.message);
-    console.log('💡 You can manually copy assets later using:');
-    console.log('   node node_modules/@pure-ds/core/packages/pds-cli/bin/sync-assets.js');
+  console.log('💡 You can manually copy assets later using:');
+  console.log('   node node_modules/pure-ds/packages/pds-cli/bin/sync-assets.js');
     // Don't fail the npm install - just warn
   }
 }

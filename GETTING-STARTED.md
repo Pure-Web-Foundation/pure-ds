@@ -1,5 +1,15 @@
 # Getting Started with Pure Design System (PDS)
 
+> ⚠️ Alpha status (pre‑1.0)
+>
+> Pure Design System (pure‑ds) is in active alpha and under rapid development.
+>
+> - APIs, exports, file paths, and CLI behavior may change between 0.x releases.
+> - Breaking changes can ship without deprecation; not recommended for production yet.
+> - If you experiment in real projects, pin a specific version (e.g. "pure-ds": "~0.1.0").
+> - Feedback welcome → [Issues](https://github.com/mvneerven/pure-ds/issues) • [Discussions](https://github.com/mvneerven/pure-ds/discussions).
+> - Breaking changes will be noted in the [CHANGELOG](./CHANGELOG.md).
+
 Pure Design System (PDS) is a browser‑native design system for building consistent, accessible UIs. This guide shows the modern setup using the unified API and the virtual Lit import.
 
 ## Install
@@ -7,13 +17,13 @@ Pure Design System (PDS) is a browser‑native design system for building consis
 Install the core package into your app:
 
 ```bash
-npm install @pure-ds/core
+npm install pure-ds
 ```
 
 Most projects will also sync the web assets (components, icons) into your web root during install via the included postinstall script. If needed, you can run it manually:
 
 ```bash
-node node_modules/@pure-ds/core/packages/pds-cli/bin/postinstall.js
+node node_modules/pure-ds/packages/pds-cli/bin/postinstall.js
 ```
 
 ## Lit without hardcoding paths
@@ -65,7 +75,7 @@ import { html, css, LitElement } from '#pds/lit';
 Initialize PDS at app startup. The unified config shape keeps design and runtime concerns separate:
 
 ```js
-import { PDS } from '@pure-ds/core';
+import { PDS } from 'pure-ds/pds-core';
 
 await PDS.start({
   mode: 'live',
@@ -95,22 +105,18 @@ Use components directly in HTML—AutoDefiner will lazy‑load the module when a
 
 ```html
 <pds-icon name="star"></pds-icon>
-<pds-drawer title="Settings"></pds-drawer>
-```
-
-## Static mode (build once, serve anywhere)
 
 If you don’t need runtime generation, point PDS at prebuilt constructable stylesheets and the auto‑define components you host.
 
 1) Generate assets into your web root (defaults to `pds/` unless configured)
-
+  import { PDS } from 'pure-ds/pds-core';
 ```bash
 npm run pds:static
 ```
 
 This typically creates:
 
-- `pds/assets/img/pds-icons.svg`
+- `pds/icons/icons.svg`
 - `pds/auto-define/*.js` (web components)
 - `pds/css/pds-*.css` and `pds/css/pds-*.css.js` (constructable styles)
 - docs copied alongside (README.md, GETTING-STARTED.md, …) when enabled
@@ -118,7 +124,7 @@ This typically creates:
 2) Initialize in static mode with the same unified shape:
 
 ```js
-import { PDS } from '@pure-ds/core';
+import { PDS } from 'pure-ds/pds-core';
 
 await PDS.start({
   mode: 'static',
@@ -138,8 +144,6 @@ await PDS.start({
 
   // Optional flags (same as live)
   applyGlobalStyles: true,
-  manageTheme: true,
-  themeStorageKey: 'pure-ds-theme'
 });
 ```
 
@@ -157,13 +161,9 @@ export default {
 The static exporter will generate `/<webroot>/design-system` and copy docs there.
 
 ### Viewing docs in the configurator
-
 The configurator can render Markdown docs; it looks under the static base (default `/pds`). You can request a file:
 
 ```js
-// Ask the configurator to show a docs file (served from the static base)
-PDS.dispatchEvent(new CustomEvent('pds:docs:view', { detail: { file: 'GETTING-STARTED.md' } }));
-// Optionally override the docs base
 window.PDS_DOCS_BASE = '/design-system';
 ```
 
@@ -217,7 +217,7 @@ your-project/
 │  ├─ auto-define/          # PDS components (hosted for the browser)
 │  ├─ assets/
 │  │  ├─ js/lit.js          # Lit shim for import maps
-│  │  └─ img/pds-icons.svg  # PDS icons
+│  │  └─ icons/icons.svg  # PDS icons
 │  └─ index.html
 ├─ src/
 │  └─ main.js               # Your PDS initialization
@@ -231,7 +231,7 @@ your-project/
 ```js
 // app/layout.js
 import { useEffect } from 'react';
-import { PDS } from '@pure-ds/core';
+import { PDS } from 'pure-ds/pds-core';
 
 export default function RootLayout({ children }) {
   useEffect(() => {
@@ -245,7 +245,7 @@ export default function RootLayout({ children }) {
 
 ```js
 // src/main.js
-import { PDS } from '@pure-ds/core';
+import { PDS } from 'pure-ds/pds-core';
 await PDS.start({ mode: 'live', preset: 'default' });
 ```
 
@@ -284,10 +284,10 @@ Add the alias in `vite.config.*` as shown above so `#pds/lit` resolves to `lit` 
 3) Manually sync assets if needed:
 
 ```bash
-node node_modules/@pure-ds/core/packages/pds-cli/bin/postinstall.js
+node node_modules/pure-ds/packages/pds-cli/bin/postinstall.js
 ```
 
-### Dev linking (@pure-ds/core)
+### Dev linking (pure-ds)
 
 When using `npm link` for local development, re‑run the postinstall/sync script whenever component files change.
 
