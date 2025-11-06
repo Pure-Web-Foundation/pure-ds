@@ -83,11 +83,25 @@ async function loadConsumerConfig() {
     const configPath = path.join(cwd, fname);
     if (existsSync(configPath)) {
       log(`📋 Using consumer config: ${path.relative(cwd, configPath)}`,'blue');
-      const mod = await import(pathToFileURL(configPath).href);
-      if (mod.config) return mod.config;
-      if (mod.default) return mod.default;
-      if (mod.presets?.default) return mod.presets.default;
-      log(`⚠️  Could not resolve config from ${fname}; trying next/fallback`, 'yellow');
+      try {
+        const mod = await import(pathToFileURL(configPath).href);
+        if (mod.config) return mod.config;
+        if (mod.default) return mod.default;
+        if (mod.presets?.default) return mod.presets.default;
+        log(`⚠️  Could not resolve config from ${fname}; trying next/fallback`, 'yellow');
+      } catch (e) {
+        const msg = e?.message || String(e);
+        // Helpful guidance when consumer config references browser globals
+        if (/PDS is not defined/i.test(msg)) {
+          log('❌ Failed to evaluate pds.config.js: PDS is not defined', 'red');
+          log('   This usually means your config references the browser global "PDS".', 'yellow');
+          log('   The static exporter runs in Node, so please import presets instead of using window.PDS.', 'yellow');
+          log('   Example fix for pds.config.js:', 'yellow');
+          log("     import { presets } from 'pure-ds/src/js/pds-core/pds-config.js'", 'blue');
+          log('     export const config = { ...presets.default, static: { root: "public/assets/pds/" } }', 'blue');
+        }
+        throw e;
+      }
     }
   }
 
