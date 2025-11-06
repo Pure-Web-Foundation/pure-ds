@@ -77,7 +77,7 @@ import { html, css, LitElement } from '#pds/lit';
 ## Quick start (live mode)
 
 ```js
-import { PDS } from 'pure-ds/pds-core';
+import { PDS } from 'pure-ds';
 
 await PDS.start({
   mode: 'live',
@@ -120,7 +120,7 @@ This produces:
 2) Initialize:
 
 ```js
-import { PDS } from 'pure-ds/pds-core';
+import { PDS } from 'pure-ds';
 
 await PDS.start({
   mode: 'static',

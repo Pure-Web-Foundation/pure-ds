@@ -319,6 +319,24 @@ a.icon-only {
   background-color: color-mix(in oklab, var(--color-surface-subtle) 75%, transparent 25%);
 }
 
+/* Inverse surface (dark) using smart surface tokens */
+.surface-inverse {
+  background-color: var(--color-surface-inverse);
+  /* Ensure foregrounds inside use the correct smart-surface tokens */
+  color: var(--surface-inverse-text);
+  --color-text-primary: var(--surface-inverse-text);
+  --color-text-secondary: var(--surface-inverse-text-secondary);
+  --color-text-muted: var(--surface-inverse-text-muted);
+  /* Ensure code/pre and other muted surfaces have contrast on inverse */
+  --color-surface-muted: rgba(255, 255, 255, 0.08);
+  /* Optional: adjust borders/shadows if utilities/components read these */
+  --color-border: var(--surface-inverse-border);
+}
+
+.surface-inverse pds-icon {
+  color: var(--surface-inverse-icon);
+}
+
 .surface-overlay {
   padding: var(--spacing-4);
   background-color: var(--color-surface-overlay);
@@ -748,6 +766,60 @@ a.icon-only {
   --backdrop-blur: 20px;
 }
 /* Surface utilities */
+.surface {
+  background-color: var(--color-surface-base);
+}
+
+.surface--subtle {
+  background-color: var(--color-surface-subtle);
+}
+
+.surface--elevated {
+  background-color: var(--color-surface-elevated);
+}
+
+.surface--sunken {
+  background-color: var(--color-surface-sunken);
+}
+
+.surface--overlay {
+  background-color: var(--color-surface-overlay);
+}
+
+/* Translucent variants (semantic transparency) */
+.surface--translucent {
+  background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
+}
+
+.surface--translucent-25 {
+  background-color: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);
+}
+
+.surface--translucent-50 {
+  background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
+}
+
+.surface--translucent-75 {
+  background-color: color-mix(in oklab, var(--color-surface-subtle) 75%, transparent 25%);
+}
+
+/* Inverse surface (dark) using smart surface tokens */
+.surface-inverse {
+  background-color: var(--color-surface-inverse);
+  /* Ensure foregrounds inside use the correct smart-surface tokens */
+  color: var(--surface-inverse-text);
+  --color-text-primary: var(--surface-inverse-text);
+  --color-text-secondary: var(--surface-inverse-text-secondary);
+  --color-text-muted: var(--surface-inverse-text-muted);
+  /* Ensure code/pre and other muted surfaces have contrast on inverse */
+  --color-surface-muted: rgba(255, 255, 255, 0.08);
+  /* Optional: adjust borders/shadows if utilities/components read these */
+  --color-border: var(--surface-inverse-border);
+}
+
+.surface-inverse pds-icon {
+  color: var(--surface-inverse-icon);
+}
 
 .surface-overlay {
   padding: var(--spacing-4);

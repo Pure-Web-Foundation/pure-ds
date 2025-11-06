@@ -763,24 +763,6 @@ pds-demo {
   border-radius: var(--radius-lg);
 }
 
-/* Inverse surface (dark) using PDS tokens; text/icons inherit currentColor */
-.surface-inverse {
-  background-color: var(--color-surface-inverse);
-  /* Ensure foregrounds inside use the correct smart-surface tokens */
-  color: var(--surface-inverse-text);
-  --color-text-primary: var(--surface-inverse-text);
-  --color-text-secondary: var(--surface-inverse-text-secondary);
-  --color-text-muted: var(--surface-inverse-text-muted);
-  /* Ensure code/pre and other muted surfaces have contrast on inverse */
-  --color-surface-muted: rgba(255, 255, 255, 0.08);
-  /* Optional: adjust borders/shadows if utilities/components read these */
-  --color-border: var(--surface-inverse-border);
-}
-
-.surface-inverse pds-icon {
-  color: var(--surface-inverse-icon);
-}
-
 .surface-center {
   text-align: center;
 }
@@ -1219,3 +1201,4 @@ fieldset[data-path="/components"] {
     background-color: var(--color-surface-overlay);
   }
 }
+
