@@ -123,11 +123,21 @@ async function main() {
   log(`📂 Web root: ${webRoot.relative}/`,'blue');
   log(`📦 Target folder: ${path.relative(process.cwd(), targetDir)}`,'blue');
 
-  // 4) Copy auto-define components into target/components
-  const autoDefineSrc = path.join(repoRoot, 'public/auto-define');
-  const componentsDir = path.join(targetDir, 'components');
-  log(`📁 Copying components → ${path.relative(process.cwd(), componentsDir)}`,'bold');
-  await copyDirectory(autoDefineSrc, componentsDir);
+  // 4) Copy component modules into target/components
+  // Prefer new location (public/pds/components); fallback to legacy (public/auto-define)
+  const compSrcCandidates = [
+    path.join(repoRoot, 'public/pds/components'),
+    path.join(repoRoot, 'public/auto-define'),
+  ];
+  let componentsSource = compSrcCandidates.find(p => existsSync(p));
+  if (!componentsSource) {
+    log(`⚠️  No components source found (looked for: ${compSrcCandidates.map(p=>path.relative(repoRoot,p)).join(', ')})`, 'yellow');
+    log(`   Skipping components copy. You can still use generated styles.`, 'yellow');
+  } else {
+    const componentsDir = path.join(targetDir, 'components');
+    log(`📁 Copying components → ${path.relative(process.cwd(), componentsDir)}`,'bold');
+    await copyDirectory(componentsSource, componentsDir);
+  }
 
   // 5) Generate CSS layers into target/styles
   log('🧬 Generating styles...', 'bold');

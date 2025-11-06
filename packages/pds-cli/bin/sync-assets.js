@@ -53,7 +53,7 @@ async function findPdsRoot() {
 /**
  * Sync PDS assets to consuming app's public directory
  * Copies:
- * - public/auto-define/* -> <targetDir>/components/*
+ * - public/pds/components/* (or legacy public/auto-define/*) -> <targetDir>/components/*
  * - (icons no longer synced; static export focuses on components and styles)
  * 
  * Usage: node node_modules/pure-ds/packages/pds-cli/bin/sync-assets.js [options]
@@ -77,7 +77,13 @@ async function syncAssets(options = {}) {
   // Find PDS package root
   const pdsRoot = await findPdsRoot();
   
-  const autoDefineSource = path.join(pdsRoot, 'public/auto-define');
+  // Prefer new location; fallback to legacy
+  let autoDefineSource = path.join(pdsRoot, 'public/pds/components');
+  try {
+    await stat(autoDefineSource);
+  } catch {
+    autoDefineSource = path.join(pdsRoot, 'public/auto-define');
+  }
   
   // Target directories
   const autoDefineTarget = path.join(process.cwd(), targetDir, 'components');

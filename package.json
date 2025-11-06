@@ -1,7 +1,7 @@
 {
   "name": "pure-ds",
   "shortname": "pds",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "Pure Design System - Why develop a Design System when you can generate one?",
   "repository": {
     "type": "git",
@@ -37,7 +37,8 @@
   "files": [
     "public/assets/js/",
     "public/auto-define/",
-  "public/assets/img/pds-icons.svg",
+    "public/pds/components/",
+    "public/assets/img/pds-icons.svg",
     "public/exports/",
     "src/js/pds.d.ts",
     "src/js/pds.js",
@@ -52,6 +53,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node esbuild-dev.js",
     "build": "node esbuild-build.js",
+    "postinstall": "node packages/pds-cli/bin/postinstall.js",
     "pds:export": "node packages/pds-cli/bin/pds-static.js",
     "pds:build-icons": "node scripts/build-icons.mjs"
   },

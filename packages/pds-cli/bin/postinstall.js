@@ -14,11 +14,43 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '../../../');
 
 /**
+ * Find the consumer app root (directory containing the consumer's package.json)
+ * Prefer INIT_CWD (npm sets this to the original cwd) and fallback by walking up from the package dir
+ */
+async function findConsumerRoot() {
+  const tryPaths = [];
+  if (process.env.INIT_CWD) tryPaths.push(process.env.INIT_CWD);
+  // Walk up from the package dir until we exit node_modules
+  let dir = repoRoot;
+  while (dir && path.basename(dir) !== path.dirname(dir)) {
+    if (path.basename(dir) === 'node_modules') {
+      const candidate = path.dirname(dir);
+      tryPaths.push(candidate);
+      break;
+    }
+    dir = path.dirname(dir);
+  }
+
+  for (const p of tryPaths) {
+    try {
+      const pkgPath = path.join(p, 'package.json');
+      const pkg = JSON.parse(await readFile(pkgPath, 'utf8'));
+      if (pkg && pkg.name && pkg.name !== 'pure-ds') {
+        return p;
+      }
+    } catch {}
+  }
+
+  // Final fallback: INIT_CWD or current working dir
+  return process.env.INIT_CWD || process.cwd();
+}
+
+/**
  * Ensure consumer package.json contains a handy export script
  */
-async function ensureExportScript(cwd) {
+async function ensureExportScript(consumerRoot) {
   try {
-    const consumerPkgPath = path.join(cwd, 'package.json');
+    const consumerPkgPath = path.join(consumerRoot, 'package.json');
     const consumerPkgRaw = await readFile(consumerPkgPath, 'utf8');
     const consumerPkg = JSON.parse(consumerPkgRaw);
 
@@ -42,8 +74,8 @@ async function ensureExportScript(cwd) {
 /**
  * Discover the web root directory using common patterns
  */
-async function discoverWebRoot() {
-  const cwd = process.cwd();
+async function discoverWebRoot(baseDir) {
+  const cwd = baseDir || process.env.INIT_CWD || process.cwd();
   
   // Common web root patterns (in order of preference)
   const candidates = [
@@ -127,30 +159,15 @@ async function copyPdsAssets() {
   console.log('📦 PDS postinstall: Copying assets...');
   
   try {
-    const cwd = process.cwd();
-    console.log('🔍 Current working directory:', cwd);
-    
-    // Check if we're running from within the PDS package itself (development mode)
-    const packagePath = path.join(cwd, 'package.json');
-    try {
-      const pkg = JSON.parse(await readFile(packagePath, 'utf8'));
-      console.log('📄 Package name:', pkg.name);
-      if (pkg.name === '@pure-ds/core' || pkg.name === 'pure-ds') {
-        console.log('⚠️  Running from PDS package itself - skipping postinstall');
-        console.log('💡 This script is designed to run when installing in consumer apps');
-        return;
-      }
-    } catch (e) {
-      console.log('❌ Failed to read package.json:', e.message);
-      // package.json doesn't exist or can't be read, continue
-    }
+    const consumerRoot = await findConsumerRoot();
+    console.log('� Consumer root:', consumerRoot);
     
   console.log('📦 Proceeding with asset copying...');
 
     // Proactively add export scripts to consumer package.json
-    await ensureExportScript(cwd);
+    await ensureExportScript(consumerRoot);
     try {
-      const consumerPkgPath = path.join(cwd, 'package.json');
+      const consumerPkgPath = path.join(consumerRoot, 'package.json');
       const pkgRaw = await readFile(consumerPkgPath, 'utf8');
       const pkgJson = JSON.parse(pkgRaw);
       pkgJson.scripts = pkgJson.scripts || {};
@@ -168,7 +185,7 @@ async function copyPdsAssets() {
     }
     
     // Find web root
-    const webRoot = await discoverWebRoot();
+  const webRoot = await discoverWebRoot(consumerRoot);
 
     // Load consumer config to determine static.root if available
     async function loadConsumerConfig() {
@@ -201,11 +218,17 @@ async function copyPdsAssets() {
   const pdsRoot = repoRoot; // Navigate up from packages/pds-cli/bin
     
     // Source paths
-    const autoDefineSource = path.join(pdsRoot, 'public/auto-define');
+    // Prefer new packaged location; fallback to legacy path
+    let autoDefineSource = path.join(pdsRoot, 'public/pds/components');
+    try {
+      await access(autoDefineSource);
+    } catch {
+      autoDefineSource = path.join(pdsRoot, 'public/auto-define');
+    }
   const iconsSource = path.join(pdsRoot, 'public/assets/img/pds-icons.svg');
     
     // Target paths
-    const autoDefineTarget = path.join(webRoot.path, 'auto-define');
+  const autoDefineTarget = path.join(webRoot.path, 'auto-define');
     // Determine icons target: prefer [static.root]/icons/icons.svg if configured
     let iconsTarget = null;
     if (config?.static?.root) {
@@ -284,7 +307,7 @@ async function copyPdsAssets() {
     console.log('   They will be auto-defined when used in your HTML/templates.');
     
     // Create a simple tracking file for debugging
-    const trackingFile = path.join(webRoot.path, '.pds-install.json');
+  const trackingFile = path.join(webRoot.path, '.pds-install.json');
     const tracking = {
       version: '0.1.0',
       installDate: new Date().toISOString(),
