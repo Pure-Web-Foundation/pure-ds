@@ -1,7 +1,6 @@
 /localazy/
 /xliff/
 /node_modules/
-/public/assets/css/
 !/public/assets/css/main.css
 !/public/assets/css/.gitkeep
 /public/assets/js/
