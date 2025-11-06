@@ -56,8 +56,8 @@ async function ensureExportScript(consumerRoot) {
 
     consumerPkg.scripts = consumerPkg.scripts || {};
 
-    const desiredScriptName = 'pds:export';
-    const desiredScriptCmd = 'node ./node_modules/pure-ds/packages/pds-cli/bin/pds-static.js';
+  const desiredScriptName = 'pds:export';
+  const desiredScriptCmd = 'pds-export';
 
     if (!consumerPkg.scripts[desiredScriptName]) {
       consumerPkg.scripts[desiredScriptName] = desiredScriptCmd;
@@ -172,7 +172,7 @@ async function copyPdsAssets() {
       const pkgJson = JSON.parse(pkgRaw);
       pkgJson.scripts = pkgJson.scripts || {};
       const buildIconsName = 'pds:build-icons';
-      const buildIconsCmd = 'node ./node_modules/pure-ds/packages/pds-cli/bin/pds-build-icons.js';
+  const buildIconsCmd = 'pds-build-icons';
       if (!pkgJson.scripts[buildIconsName]) {
         pkgJson.scripts[buildIconsName] = buildIconsCmd;
         await writeFile(consumerPkgPath, JSON.stringify(pkgJson, null, 2) + '\n');
@@ -219,11 +219,16 @@ async function copyPdsAssets() {
     
     // Source paths
     // Prefer new packaged location; fallback to legacy path
-    let autoDefineSource = path.join(pdsRoot, 'public/pds/components');
+    let autoDefineSource = path.join(pdsRoot, 'public/assets/pds/components');
     try {
       await access(autoDefineSource);
     } catch {
-      autoDefineSource = path.join(pdsRoot, 'public/auto-define');
+      try {
+        autoDefineSource = path.join(pdsRoot, 'public/pds/components');
+        await access(autoDefineSource);
+      } catch {
+        autoDefineSource = path.join(pdsRoot, 'public/auto-define');
+      }
     }
   const iconsSource = path.join(pdsRoot, 'public/assets/img/pds-icons.svg');
     

@@ -77,12 +77,17 @@ async function syncAssets(options = {}) {
   // Find PDS package root
   const pdsRoot = await findPdsRoot();
   
-  // Prefer new location; fallback to legacy
-  let autoDefineSource = path.join(pdsRoot, 'public/pds/components');
+  // Prefer new packaged location; fall back to legacy paths
+  let autoDefineSource = path.join(pdsRoot, 'public/assets/pds/components');
   try {
     await stat(autoDefineSource);
   } catch {
-    autoDefineSource = path.join(pdsRoot, 'public/auto-define');
+    try {
+      autoDefineSource = path.join(pdsRoot, 'public/pds/components');
+      await stat(autoDefineSource);
+    } catch {
+      autoDefineSource = path.join(pdsRoot, 'public/auto-define');
+    }
   }
   
   // Target directories

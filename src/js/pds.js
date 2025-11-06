@@ -625,7 +625,7 @@ PDS.validateDesigns = validateDesigns;
  *   autoDefine?: {
  *     baseURL?: string,
  *     predefine?: string[],
- *     mapper?: (tag:string)=>string,
+ *     mapper?: (tag:string)=>string|undefined|null, // return undefined/null/false to let PDS default mapper handle it
  *     // plus any AutoDefiner flags: scanExisting, observeShadows, patchAttachShadow, debounceMs, onError
  *   },
  *   // runtime flags (optional)
@@ -833,6 +833,10 @@ async function __setupAutoDefinerAndEnhancers(options) {
       }
     };
 
+    // Respect user overrides but never allow them to overwrite our mapper wrapper.
+    const { mapper: _overrideMapperIgnored, ...restAutoDefineOverrides } =
+      (autoDefineOverrides && typeof autoDefineOverrides === 'object' ? autoDefineOverrides : {});
+
     const autoDefineConfig = {
       baseURL: autoDefineBaseURL,
       predefine: autoDefinePreload,
@@ -841,10 +845,6 @@ async function __setupAutoDefinerAndEnhancers(options) {
       patchAttachShadow: true,
       debounceMs: 16,
       enhancers: mergedEnhancers,
-      mapper: (tag) => {
-        if (customElements.get(tag)) return null;
-        return (autoDefineMapper || defaultMapper)(tag);
-      },
       onError: (tag, err) => {
         if (typeof tag === "string" && tag.startsWith("pds-")) {
           console.warn(
@@ -854,8 +854,31 @@ async function __setupAutoDefinerAndEnhancers(options) {
           console.error(`❌ Auto-define error for <${tag}>:`, err);
         }
       },
-      // Merge user overrides (new API) last
-      ...(autoDefineOverrides && typeof autoDefineOverrides === 'object' ? autoDefineOverrides : {}),
+      // Apply all user overrides except mapper so we can still wrap it
+      ...restAutoDefineOverrides,
+      mapper: (tag) => {
+        // If already defined, do nothing
+        if (customElements.get(tag)) return null;
+
+        // If a custom mapper exists, let it try first; if it returns a non-value, fallback to default
+        if (typeof autoDefineMapper === 'function') {
+          try {
+            const mapped = autoDefineMapper(tag);
+            // Treat undefined, null, false, or empty string as "not handled" and fallback
+            if (mapped === undefined || mapped === null || mapped === false || mapped === '') {
+              return defaultMapper(tag);
+            }
+            return mapped;
+          } catch (e) {
+            // Be resilient: if custom mapper throws, fall back to default
+            console.warn("Custom autoDefine.mapper error; falling back to default:", e?.message || e);
+            return defaultMapper(tag);
+          }
+        }
+
+        // No custom mapper provided — use default
+        return defaultMapper(tag);
+      },
     };
 
     if (AutoDefinerCtor) {
@@ -997,11 +1020,39 @@ async function live(config) {
 
     // Note: auto-define base URL is used internally; no globals are written
 
+    // Derive a sensible default AutoDefiner base for LIVE mode too when not provided
+    // If consumer provided config.static.root, default to `${root}components/` so that
+    // PDS components resolve from the installed assets directory. This mirrors static mode behavior.
+    let derivedAutoDefineBaseURL = (cfgAuto && cfgAuto.baseURL) || "/auto-define/";
+    if (!(cfgAuto && cfgAuto.baseURL)) {
+      const staticConfig = /** @type {{ root?: string }} */ (config.static || {});
+      const toUrlRoot = (root) => {
+        if (!root) return null;
+        try {
+          let r = String(root).replace(/\\/g, '/');
+          if (/^https?:\/\//i.test(r) || r.startsWith('/')) {
+            if (!r.endsWith('/')) r += '/';
+            return r;
+          }
+          if (r.startsWith('public/')) r = r.substring('public/'.length);
+          if (!r.startsWith('/')) r = '/' + r;
+          if (!r.endsWith('/')) r += '/';
+          return r;
+        } catch {
+          return null;
+        }
+      };
+      const staticRootURL = toUrlRoot(staticConfig.root);
+      if (staticRootURL) {
+        derivedAutoDefineBaseURL = `${staticRootURL}components/`;
+      }
+    }
+
     // 5) Set up AutoDefiner + run enhancers (defaults merged with user)
     let autoDefiner = null;
     try {
       const res = await __setupAutoDefinerAndEnhancers({
-        autoDefineBaseURL: (cfgAuto && cfgAuto.baseURL) || "/auto-define/",
+        autoDefineBaseURL: derivedAutoDefineBaseURL,
         autoDefinePreload: (cfgAuto && Array.isArray(cfgAuto.predefine) && cfgAuto.predefine) || [],
         autoDefineMapper: (cfgAuto && typeof cfgAuto.mapper === 'function' && cfgAuto.mapper) || null,
         enhancers: userEnhancers,

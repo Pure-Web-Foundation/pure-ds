@@ -126,6 +126,7 @@ async function main() {
   // 4) Copy component modules into target/components
   // Prefer new location (public/pds/components); fallback to legacy (public/auto-define)
   const compSrcCandidates = [
+    path.join(repoRoot, 'public/assets/pds/components'),
     path.join(repoRoot, 'public/pds/components'),
     path.join(repoRoot, 'public/auto-define'),
   ];

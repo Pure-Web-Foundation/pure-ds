@@ -225,6 +225,43 @@ await PDS.start({
 });
 ```
 
+### Custom mapper and built‑in fallback
+
+In many apps you’ll want to map your own components while letting PDS handle all `pds-*` tags without hardcoding PDS internals. The custom `autoDefine.mapper` supports a fallback contract:
+
+- PDS calls your custom mapper first.
+- If your mapper returns `undefined`, `null`, `false`, or an empty string `''`, PDS falls back to its internal default mapper for that tag.
+- If your mapper throws, PDS also falls back to the default mapper.
+
+Default PDS mapper behavior:
+
+- If the tag is already defined via `customElements.get(tag)`, it returns `null` (no action).
+- Otherwise it resolves to `${tag}.js`, except for `pds-tabpanel` which maps to `pds-tabstrip.js`.
+
+Where the path is resolved from (baseURL rules):
+
+1) If you set `autoDefine.baseURL`, it is used as‑is.
+2) Else if you set `static.root`, PDS derives a URL root and uses `${static.root}/components/` as the base.
+   - Example: `static.root: "public/assets/pds/"` → base becomes `/assets/pds/components/`.
+3) Else the default base is `/auto-define/`.
+
+These rules apply in both live and static modes. Note that components and icons are static assets by default; only styles are generated in live mode.
+
+Minimal example that handles only your own tags and delegates all `pds-*` to PDS automatically:
+
+```js
+await PDS.start({
+  mode: 'live',
+  static: { root: 'public/assets/pds/' }, // so PDS resolves to /assets/pds/components/
+  autoDefine: {
+    mapper: (tag) => {
+      if (tag.startsWith('my-')) return `/auto-define/${tag}.js`;
+      // return nothing → PDS maps pds-* using its default and derived baseURL
+    }
+  }
+});
+```
+
 
 ## Theming and critical CSS
 
