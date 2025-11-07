@@ -109,7 +109,6 @@ customElements.define(
         const file = (e.detail && e.detail.file) || "README.md";
         await this._renderDocToDialog(file);
       });
-
     }
 
     disconnectedCallback() {
@@ -736,7 +735,6 @@ customElements.define(
       let demoHtml = null;
       let enhancer = null;
       try {
-        
         const enhancers =
           this.config?.autoDefine?.enhancers ||
           (typeof appConfig !== "undefined"
@@ -993,7 +991,8 @@ customElements.define(
      * Load Showdown from a reliable CDN (jsDelivr with unpkg fallback)
      */
     async loadShowdownFromCDN() {
-      if (typeof window !== "undefined" && window.showdown) return window.showdown;
+      if (typeof window !== "undefined" && window.showdown)
+        return window.showdown;
       if (this._showdownLoading) {
         // wait while another load is in progress
         while (this._showdownLoading) {
@@ -1026,7 +1025,9 @@ customElements.define(
     _injectScript(src, libName) {
       return new Promise((resolve, reject) => {
         // Avoid duplicates
-        if (document.querySelector(`script[data-lib="${libName}"][src="${src}"]`)) {
+        if (
+          document.querySelector(`script[data-lib="${libName}"][src="${src}"]`)
+        ) {
           // Resolve on next tick
           setTimeout(resolve, 0);
           return;
@@ -1382,9 +1383,13 @@ customElements.define(
           document.documentElement?.getAttribute("data-theme")) ||
         "light";
       const inversionTitle =
-        theme === "dark" ? "Light Surfaces in Dark Mode" : "Dark Surfaces in Light Mode";
+        theme === "dark"
+          ? "Light Surfaces in Dark Mode"
+          : "Dark Surfaces in Light Mode";
       const inversePhrase =
-        theme === "dark" ? "light surface in dark mode" : "dark surface in light mode";
+        theme === "dark"
+          ? "light surface in dark mode"
+          : "dark surface in light mode";
 
       return html`
         <div
@@ -1398,7 +1403,7 @@ customElements.define(
 
           <!-- Hero Section -->
           <section class="showcase-hero">
-            <h1>Pure Design System </h1>
+            <h1>Pure Design System</h1>
             <p>Why build a design system if you can generate it?</p>
             <div class="btn-group">
               <button
@@ -1650,8 +1655,11 @@ customElements.define(
                 </label>
 
                 <label>
-                  <span>Time</span>
-                  <input type="time" />
+                  <span>Rich Text</span>
+                  <pds-richtext
+                    name="richtext"
+                    placeholder="Enter rich text"
+                  ></pds-richtext>
                 </label>
 
                 <label>
@@ -1924,6 +1932,22 @@ customElements.define(
                 alt="Gallery image 4"
               />
             </div>
+
+            <h3>Scroll Row</h3>
+            <pds-scrollrow>
+              <h4 slot="heading">Images</h4>
+
+              ${new Array(10)
+                .fill(0)
+                .map(
+                  (_, i) => html`<img
+                    loading="lazy"
+                    class="gallery-image"
+                    src="https://picsum.photos/200/200?random=${i + 1}"
+                    alt="Gallery image ${i + 1}"
+                  />`
+                )}
+            </pds-scrollrow>
 
             <h3>Video Element</h3>
             <figure class="video-container">
@@ -2584,8 +2608,8 @@ customElements.define(
 
             <p>
               The smart surface system automatically inverts text and icon
-              colors when you use a ${inversePhrase} (or vice versa).
-              Toggle dark mode to see the magic!
+              colors when you use a ${inversePhrase} (or vice versa). Toggle
+              dark mode to see the magic!
             </p>
 
             <h3>${inversionTitle}</h3>
@@ -2599,7 +2623,10 @@ customElements.define(
                   This dark surface automatically uses light text and icons for
                   perfect readability
                 </p>
-                <button class="btn-primary" style="margin-top: var(--spacing-3);">
+                <button
+                  class="btn-primary"
+                  style="margin-top: var(--spacing-3);"
+                >
                   Primary Button
                 </button>
               </div>
@@ -2609,10 +2636,11 @@ customElements.define(
                   <pds-icon icon="palette"></pds-icon>
                   Overlay Surface
                 </h4>
-                <p>
-                  Text and icons auto-adapt to maintain WCAG AA contrast
-                </p>
-                <button class="btn-secondary" style="margin-top: var(--spacing-3);">
+                <p>Text and icons auto-adapt to maintain WCAG AA contrast</p>
+                <button
+                  class="btn-secondary"
+                  style="margin-top: var(--spacing-3);"
+                >
                   Secondary Button
                 </button>
               </div>
@@ -2620,13 +2648,17 @@ customElements.define(
 
             <h3>Semantic Surfaces with Auto-Contrast</h3>
             <div class="demo-grid cols-3">
-              <div class="demo-inversion-box alert alert-success surface-center">
+              <div
+                class="demo-inversion-box alert alert-success surface-center"
+              >
                 <pds-icon icon="check-circle" size="xl"></pds-icon>
                 <h5 style="margin-top: var(--spacing-2);">Success</h5>
                 <p>Icons remain visible</p>
               </div>
 
-              <div class="demo-inversion-box alert alert-warning surface-center">
+              <div
+                class="demo-inversion-box alert alert-warning surface-center"
+              >
                 <pds-icon icon="warning" size="xl"></pds-icon>
                 <h5 style="margin-top: var(--spacing-2);">Warning</h5>
                 <p>Perfect contrast maintained</p>
@@ -3084,8 +3116,8 @@ customElements.define(
 
             <p class="toast-demo-description">
               Toast notifications appear in the top-right corner and
-              auto-dismiss after a few seconds. Click the buttons below to
-              see them in action:
+              auto-dismiss after a few seconds. Click the buttons below to see
+              them in action:
             </p>
 
             <div class="flex flex-wrap gap-md">
@@ -3110,17 +3142,11 @@ customElements.define(
                 <pds-icon icon="warning" size="sm"></pds-icon>
                 Warning
               </button>
-              <button
-                class="btn-danger btn-sm"
-                @click="${this.showErrorToast}"
-              >
+              <button class="btn-danger btn-sm" @click="${this.showErrorToast}">
                 <pds-icon icon="x-circle" size="sm"></pds-icon>
                 Error
               </button>
-              <button
-                class="btn-outline btn-sm"
-                @click="${this.showLongToast}"
-              >
+              <button class="btn-outline btn-sm" @click="${this.showLongToast}">
                 <pds-icon icon="clock" size="sm"></pds-icon>
                 Long
               </button>
@@ -3141,8 +3167,8 @@ customElements.define(
               Tab Strip
             </h2>
             <p>
-              Accessible tab navigation with hash-based routing and
-              keyboard support.
+              Accessible tab navigation with hash-based routing and keyboard
+              support.
             </p>
 
             <div style="margin-top: var(--spacing-6);">
@@ -3158,25 +3184,22 @@ customElements.define(
                 <pds-tabpanel id="features" label="Features">
                   <h3>Features</h3>
                   <p>
-                    Tab strips are built with modern web components and
-                    include:
+                    Tab strips are built with modern web components and include:
                   </p>
                   <ul>
                     <li>
-                      <strong>Deep linking:</strong> Each tab has a unique
-                      URL hash
+                      <strong>Deep linking:</strong> Each tab has a unique URL
+                      hash
                     </li>
                     <li>
-                      <strong>Progressive enhancement:</strong> Works
-                      without JavaScript
+                      <strong>Progressive enhancement:</strong> Works without
+                      JavaScript
                     </li>
                     <li>
-                      <strong>Responsive:</strong> Adapts to mobile and
-                      desktop
+                      <strong>Responsive:</strong> Adapts to mobile and desktop
                     </li>
                     <li>
-                      <strong>Customizable:</strong> Style with CSS
-                      variables
+                      <strong>Customizable:</strong> Style with CSS variables
                     </li>
                   </ul>
                 </pds-tabpanel>
@@ -3200,9 +3223,7 @@ customElements.define(
                   <ul>
                     <li><code>aria-label</code> on navigation</li>
                     <li><code>aria-current</code> on active tab</li>
-                    <li>
-                      <code>aria-controls</code> linking tabs to panels
-                    </li>
+                    <li><code>aria-controls</code> linking tabs to panels</li>
                     <li><code>role="region"</code> on tab panels</li>
                     <li>Keyboard navigation with arrow keys</li>
                     <li>Focus management</li>
@@ -3235,10 +3256,7 @@ customElements.define(
                 <pds-icon icon="sidebar" size="sm"></pds-icon>
                 Left Drawer
               </button>
-              <button
-                class="btn-secondary"
-                @click=${this.openDrawerRight}
-              >
+              <button class="btn-secondary" @click=${this.openDrawerRight}>
                 <pds-icon icon="sidebar" size="sm"></pds-icon>
                 Right Drawer
               </button>
@@ -3278,7 +3296,9 @@ customElements.define(
         } else {
           try {
             const conv = await this.getShowdownConverter();
-            htmlContent = conv ? conv.makeHtml(trimmed) : `<pre>${this.escapeHTML(trimmed)}</pre>`;
+            htmlContent = conv
+              ? conv.makeHtml(trimmed)
+              : `<pre>${this.escapeHTML(trimmed)}</pre>`;
           } catch (err) {
             htmlContent = `<pre>${this.escapeHTML(trimmed)}</pre>`;
           }

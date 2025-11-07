@@ -186,7 +186,7 @@ class UploadArea extends HTMLElement {
     `);
 
     // Adopt primitives (for button) + component styles
-    await PDS.adoptPrimitives(this.#root, [componentStyles]);
+    await PDS.adoptLayers(this.#root, ["primitives", "components", "utilities"], [componentStyles]);
   }
 
   // Form-associated lifecycle callbacks

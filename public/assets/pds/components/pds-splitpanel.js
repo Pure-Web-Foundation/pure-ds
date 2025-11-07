@@ -1,27 +1,147 @@
-import { LitElement, html, css } from "#pds/lit";
-
 customElements.define(
   "pds-splitpanel",
-  class extends LitElement {
-    static properties = {
-      layout: { type: String },
-      defaultSplit: { type: String },
-      breakpoint: { type: Number },
-      open: { type: Boolean, reflect: true },
-    };
+  class extends HTMLElement {
+    static get observedAttributes() {
+      return ["layout", "defaultsplit", "breakpoint", "open"];
+    }
 
     constructor() {
       super();
-      this.layout = "horizontal";
-      this.defaultSplit = "450px";
-      this.breakpoint = 1024;
+      this.attachShadow({ mode: "open" });
+
+      // Defaults
+      this._layout = "horizontal";
+      this._defaultSplit = "450px";
+      this._breakpoint = 1024;
+      this._open = this.hasAttribute("open");
       this.isDragging = false;
-      this.open = false; // reactive mobile-open state
+
+      // Bound handlers for add/remove
+      this._onResize = () => this.updateLayout();
+      this._onMouseMove = (e) => this.drag(e);
+      this._onMouseUp = () => this.stopDragging();
+
+      this._render();
     }
 
-    async firstUpdated() {
-      // create a small component stylesheet for local tweaks
-      const componentStyles = PDS.createStylesheet(/*css*/ `
+    connectedCallback() {
+      // Ensure defaults reflected if attributes missing
+      if (!this.hasAttribute("layout")) this.setAttribute("layout", this._layout);
+      if (!this.hasAttribute("defaultsplit")) this.setAttribute("defaultsplit", this._defaultSplit);
+      if (!this.hasAttribute("breakpoint")) this.setAttribute("breakpoint", String(this._breakpoint));
+      if (this._open) this.setAttribute("open", "");
+
+      // Adopt primitives + component stylesheet (fallback to <style> if PDS not present)
+      this._adoptStyles();
+
+      // Cache references
+      this.$leftWrap = this.shadowRoot.querySelector(".left-panel");
+      this.$rightWrap = this.shadowRoot.querySelector(".right-panel");
+      this.$splitter = this.shadowRoot.querySelector(".splitter");
+      this.$toggleBtn = this.shadowRoot.getElementById("mobile-toggle");
+      this.$overlay = this.shadowRoot.querySelector(".mobile-overlay");
+      this.$icon = this.shadowRoot.querySelector("pds-icon");
+
+      // Wire events
+      window.addEventListener("resize", this._onResize);
+      if (this.$splitter) this.$splitter.addEventListener("mousedown", (e) => this.startDragging(e));
+      document.addEventListener("mousemove", this._onMouseMove);
+      document.addEventListener("mouseup", this._onMouseUp);
+      if (this.$toggleBtn) this.$toggleBtn.addEventListener("click", () => this.toggleMobileView());
+      if (this.$overlay) this.$overlay.addEventListener("click", () => this.closeMobileView());
+
+      // Initial layout
+      this.updateLayout();
+      this._updateToggleButton();
+    }
+
+    disconnectedCallback() {
+      window.removeEventListener("resize", this._onResize);
+      document.removeEventListener("mousemove", this._onMouseMove);
+      document.removeEventListener("mouseup", this._onMouseUp);
+      if (this.$splitter) this.$splitter.removeEventListener("mousedown", (e) => this.startDragging(e));
+      if (this.$toggleBtn) this.$toggleBtn.removeEventListener("click", () => this.toggleMobileView());
+      if (this.$overlay) this.$overlay.removeEventListener("click", () => this.closeMobileView());
+    }
+
+    attributeChangedCallback(name, _oldVal, newVal) {
+      switch (name) {
+        case "layout":
+          this._layout = (newVal || "horizontal").toLowerCase();
+          this.updateLayout();
+          break;
+        case "defaultsplit":
+          this._defaultSplit = newVal || "450px";
+          this.updateLayout();
+          break;
+        case "breakpoint":
+          this._breakpoint = Number(newVal) || 1024;
+          this.updateLayout();
+          break;
+        case "open":
+          this._open = this.hasAttribute("open");
+          this._updateToggleButton();
+          break;
+      }
+    }
+
+    // Properties
+    get layout() {
+      return this._layout;
+    }
+    set layout(v) {
+      this.setAttribute("layout", v);
+    }
+
+    get defaultSplit() {
+      return this._defaultSplit;
+    }
+    set defaultSplit(v) {
+      this.setAttribute("defaultsplit", v);
+    }
+
+    get breakpoint() {
+      return this._breakpoint;
+    }
+    set breakpoint(v) {
+      this.setAttribute("breakpoint", String(v));
+    }
+
+    get open() {
+      return this._open;
+    }
+    set open(v) {
+      if (Boolean(v)) {
+        if (!this.hasAttribute("open")) this.setAttribute("open", "");
+      } else {
+        if (this.hasAttribute("open")) this.removeAttribute("open");
+      }
+    }
+
+    // Rendering
+    _render() {
+      this.shadowRoot.innerHTML = `
+        <div class="left-panel">
+          <slot name="left"></slot>
+        </div>
+        <div class="splitter"></div>
+        <div class="right-panel">
+          <slot name="right"></slot>
+        </div>
+        <button
+          id="mobile-toggle"
+          class="mobile-toggle btn btn-sm"
+          aria-label="Toggle panel"
+          aria-expanded="${this._open ? "true" : "false"}"
+        >
+          <pds-icon icon="${this._open ? "x" : "list"}" width="24" height="24"></pds-icon>
+        </button>
+        <div class="mobile-overlay"></div>
+      `;
+    }
+
+    async _adoptStyles() {
+      const cssText = `
       :host {
         display: flex;
         position: relative;
@@ -37,14 +157,12 @@ customElements.define(
         flex-direction: column;
       }
 
-      /* Panels wrappers used for layout and overlaying */
       .left-panel,
       .right-panel {
         display: block;
         min-width: 0;
       }
 
-      /* left panel width controlled by CSS variable (set from JS) */
       .left-panel {
         flex: 0 0 var(--left-width, 450px);
       }
@@ -72,7 +190,6 @@ customElements.define(
         cursor: row-resize;
       }
 
-      /* Mobile toggle positioning (hidden by default, visible under host[mobile]) */
       #mobile-toggle {
         visibility: hidden;
         position: fixed;
@@ -85,9 +202,6 @@ customElements.define(
         visibility: visible;
       }
 
-      /* Default: hide the left slot element on mobile (slot box takes no space)
-         and let the right slot take the full width. When open, show the left
-         slot as an overlayed fixed panel. */
       :host([mobile]) .left-panel {
         display: none;
       }
@@ -99,7 +213,6 @@ customElements.define(
 
       :host([mobile][open]) .left-panel {
         display: block;
-        /* overlay the left panel within the splitpanel host */
         position: absolute;
         top: 0;
         left: 0;
@@ -109,7 +222,6 @@ customElements.define(
         background: var(--color-surface-base);
       }
 
-      /* Also style the assigned left node to animate in/out and ensure it fills the slot */
       :host([mobile]) .left-panel ::slotted([slot="left"]) {
         display: block;
         width: 100%;
@@ -122,14 +234,12 @@ customElements.define(
         transform: translateX(0);
       }
 
-      /* Overlay visibility controlled by host attributes */
       .mobile-overlay {
         display: none;
       }
 
       :host([mobile][open]) .mobile-overlay {
         display: block;
-        /* overlay the splitpanel host area */
         position: absolute;
         top: 0;
         left: 0;
@@ -139,8 +249,6 @@ customElements.define(
         z-index: 999;
       }
 
-      /* Ensure small buttons are tighter — primitives provide .btn/.btn-sm but
-         some demos may not include the base .btn; include a safe local tweak */
       .mobile-toggle.btn {
         padding: var(--spacing-1, 4px) var(--spacing-2, 6px);
       }
@@ -148,87 +256,74 @@ customElements.define(
       .mobile-toggle.btn-sm {
         padding: var(--spacing-1, 4px);
       }
-    `);
+      `;
 
-      // Adopt primitives + our component stylesheet early so primitives' button styles
-      // are available inside the shadow root before render interactions.
+      // Prefer PDS layers if available
       try {
-        await PDS.adoptLayers(
-          this.shadowRoot,
-          ["primitives", "components"],
-          [componentStyles]
-        );
+        if (window.PDS && typeof PDS.createStylesheet === "function" && typeof PDS.adoptLayers === "function") {
+          const componentStyles = PDS.createStylesheet(cssText);
+          await PDS.adoptLayers(this.shadowRoot, ["primitives", "components"], [componentStyles]);
+          return;
+        }
       } catch (e) {
-        // adoptPrimitives handles errors internally, but guard here just in case
-        console.error("pds-splitpanel: adoptPrimitives failed", e);
+        console.error("pds-splitpanel: adoptLayers failed", e);
       }
 
-      this.leftPanel = this.querySelector('[slot="left"]');
-      this.rightPanel = this.querySelector('[slot="right"]');
-      this.splitter = this.shadowRoot.querySelector(".splitter");
-
-      // Mobile overlay and toggle will render from template; grab references if needed
-      this.mobileToggle = this.shadowRoot.getElementById("mobile-toggle");
-      this.mobileOverlay = this.shadowRoot.querySelector(".mobile-overlay");
-
-      this.updateLayout();
-
-      window.addEventListener("resize", () => this.updateLayout());
-
-      if (this.splitter)
-        this.splitter.addEventListener("mousedown", (e) =>
-          this.startDragging(e)
-        );
-      document.addEventListener("mousemove", (e) => this.drag(e));
-      document.addEventListener("mouseup", () => this.stopDragging());
+      // Fallback: inject <style> into shadow root
+      const style = document.createElement("style");
+      style.textContent = cssText;
+      this.shadowRoot.prepend(style);
     }
 
     updateLayout() {
-      const isMobile = window.innerWidth < this.breakpoint;
+      const isMobile = window.innerWidth < this._breakpoint;
       this.toggleAttribute("mobile", isMobile);
 
-      // Use CSS-driven show/hide for mobile — reactive state controls `open` and host attributes
       if (isMobile) {
-        // when switching to mobile, ensure `open` is false by default
-        if (!this.hasAttribute("open")) this.open = false;
-        // collapse splitter in mobile via CSS (host[mobile] .splitter)
-        if (this.splitter) this.splitter.style.display = "none";
-        if (this.rightPanel) this.rightPanel.style.display = "block";
-        // clear left width so right panel can claim full width
-        this.style.removeProperty('--left-width');
+        if (!this.hasAttribute("open")) this._open = false;
+        if (this.$splitter) this.$splitter.style.display = "none";
+        if (this.$rightWrap) this.$rightWrap.style.display = "block";
+        this.style.removeProperty("--left-width");
+        if (this.$leftWrap) this.$leftWrap.style.height = "";
+        if (this.$rightWrap) this.$rightWrap.style.flex = "1 1 auto";
       } else {
-        // restore desktop layout
-        if (this.splitter) this.splitter.style.display = "block";
-        // set CSS var to control left panel width
-        this.style.setProperty('--left-width', this.defaultSplit);
-        if (this.rightPanel)
-          this.rightPanel.style.flex = `1 1 calc(100% - ${this.defaultSplit})`;
+        if (this.$splitter) this.$splitter.style.display = "block";
+        this.style.setProperty("--left-width", this._defaultSplit);
+        if (this.$rightWrap)
+          this.$rightWrap.style.flex = `1 1 calc(100% - ${this._defaultSplit})`;
+        if (this._layout === "vertical") {
+          // For vertical layout, width var isn't used; ensure panels reset
+          if (this.$leftWrap) this.$leftWrap.style.height = "";
+          if (this.$rightWrap) this.$rightWrap.style.flex = "1 1 auto";
+        }
       }
+      this._updateToggleButton();
     }
 
     startDragging(event) {
       if (this.hasAttribute("mobile")) return;
       this.isDragging = true;
       document.body.style.cursor =
-        this.layout === "horizontal" ? "col-resize" : "row-resize";
-      event.preventDefault(); // Prevent text selection during dragging
+        this._layout === "horizontal" ? "col-resize" : "row-resize";
+      event.preventDefault();
     }
 
     drag(event) {
       if (!this.isDragging) return;
 
       const newSize =
-        this.layout === "horizontal"
+        this._layout === "horizontal"
           ? Math.max(200, Math.min(event.clientX, window.innerWidth - 200))
           : Math.max(200, Math.min(event.clientY, window.innerHeight - 200));
 
-      if (this.layout === "horizontal") {
-        // set CSS variable so layout updates purely via CSS
-        this.style.setProperty('--left-width', `${newSize}px`);
-        if (this.rightPanel) this.rightPanel.style.flex = `1 1 calc(100% - ${newSize}px)`;
+      if (this._layout === "horizontal") {
+        this.style.setProperty("--left-width", `${newSize}px`);
+        if (this.$rightWrap)
+          this.$rightWrap.style.flex = `1 1 calc(100% - ${newSize}px)`;
       } else {
-        if (this.leftPanel) this.leftPanel.style.height = `${newSize}px`;
-        if (this.rightPanel) this.rightPanel.style.flex = `1 1 calc(100% - ${newSize}px)`;
+        if (this.$leftWrap) this.$leftWrap.style.height = `${newSize}px`;
+        if (this.$rightWrap)
+          this.$rightWrap.style.flex = `1 1 calc(100% - ${newSize}px)`;
       }
     }
 
@@ -239,38 +334,17 @@ customElements.define(
     }
 
     toggleMobileView() {
-      // Toggle reactive open state — template and CSS will handle UI changes
-      this.open = !this.open;
+      this.open = !this._open;
     }
 
     closeMobileView() {
       this.open = false;
     }
 
-    render() {
-      return html`
-        <div class="left-panel">
-          <slot name="left"></slot>
-        </div>
-        <div class="splitter"></div>
-        <div class="right-panel">
-          <slot name="right"></slot>
-        </div>
-        <button
-          @click="${this.toggleMobileView}"
-          id="mobile-toggle"
-          class="mobile-toggle btn btn-sm"
-          aria-label="Toggle panel"
-          aria-expanded="${this.open}"
-        >
-          <pds-icon
-            icon="${this.open ? "x" : "list"}"
-            width="24"
-            height="24"
-          ></pds-icon>
-        </button>
-        <div class="mobile-overlay" @click="${this.closeMobileView}"></div>
-      `;
+    _updateToggleButton() {
+      if (!this.$toggleBtn || !this.$icon) return;
+      this.$toggleBtn.setAttribute("aria-expanded", this._open ? "true" : "false");
+      this.$icon.setAttribute("icon", this._open ? "x" : "list");
     }
   }
 );

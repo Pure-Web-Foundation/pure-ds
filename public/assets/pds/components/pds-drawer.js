@@ -1,8 +1,3 @@
-// Refactored to a plain Web Component (no Lit dependency)
-// - Adopts PDS layers (primitives, components) into Shadow DOM
-// - Uses semantic tokens and CSS custom properties (no hardcoded colors)
-// - Preserves public API (attributes/methods) and drag/animate behavior
-
 export class DrawerPanel extends HTMLElement {
   #isDragging = false;
   #startX = 0;
