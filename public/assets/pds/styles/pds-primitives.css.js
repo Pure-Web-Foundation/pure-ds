@@ -149,6 +149,7 @@ primitives.replaceSync(`@layer primitives {
   }
 
   :where(legend) {
+    display: contents;
     font-weight: var(--font-weight-semibold);
     padding: 0 var(--spacing-2);
     color: var(--color-text-primary);
@@ -163,6 +164,15 @@ primitives.replaceSync(`@layer primitives {
     width: auto;
     box-sizing: border-box;
   }
+
+  legend::after {
+    content: "";
+    display: block;
+    margin-bottom: var(--spacing-3);
+
+  }
+
+
 
   /* List primitives */
   :where(ul, ol) {
@@ -401,6 +411,7 @@ export const primitivesCSS = `@layer primitives {
   }
 
   :where(legend) {
+    display: contents;
     font-weight: var(--font-weight-semibold);
     padding: 0 var(--spacing-2);
     color: var(--color-text-primary);
@@ -415,6 +426,15 @@ export const primitivesCSS = `@layer primitives {
     width: auto;
     box-sizing: border-box;
   }
+
+  legend::after {
+    content: "";
+    display: block;
+    margin-bottom: var(--spacing-3);
+
+  }
+
+
 
   /* List primitives */
   :where(ul, ol) {

@@ -1,14 +1,9 @@
 /localazy/
-/xliff/
 /node_modules/
-!/public/assets/css/main.css
 !/public/assets/css/.gitkeep
 /public/assets/js/
-!/public/assets/js/lib/*
-!/public/assets/js/polyfills/navigationPolyfill.js
-!/public/assets/js/polyfills/viewTransitionPolyfill.js
-/public/assets/svg/
 /public/service-worker.js
+/public/assets/pds/styles/
 app-files.js
 /dist
 .vscode
@@ -26,3 +21,4 @@ build-meta.json
 yarn.lock
 /public/exports/
 public/readme.md
+

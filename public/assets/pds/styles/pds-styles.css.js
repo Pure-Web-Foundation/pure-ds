@@ -916,6 +916,7 @@ html[data-theme="dark"] {
   }
 
   :where(legend) {
+    display: contents;
     font-weight: var(--font-weight-semibold);
     padding: 0 var(--spacing-2);
     color: var(--color-text-primary);
@@ -930,6 +931,15 @@ html[data-theme="dark"] {
     width: auto;
     box-sizing: border-box;
   }
+
+  legend::after {
+    content: "";
+    display: block;
+    margin-bottom: var(--spacing-3);
+
+  }
+
+
 
   /* List primitives */
   :where(ul, ol) {
@@ -3045,6 +3055,26 @@ body {
   box-shadow: var(--shadow-lg);
   border-radius: var(--radius-md);
 }
+
+
+/* Inverse surface (dark) using PDS tokens; text/icons inherit currentColor */
+.surface-inverse {
+  background-color: var(--color-surface-inverse);
+  /* Ensure foregrounds inside use the correct smart-surface tokens */
+  color: var(--surface-inverse-text);
+  --color-text-primary: var(--surface-inverse-text);
+  --color-text-secondary: var(--surface-inverse-text-secondary);
+  --color-text-muted: var(--surface-inverse-text-muted);
+  /* Ensure code/pre and other muted surfaces have contrast on inverse */
+  --color-surface-muted: rgba(255, 255, 255, 0.08);
+  /* Optional: adjust borders/shadows if utilities/components read these */
+  --color-border: var(--surface-inverse-border);
+}
+
+.surface-inverse pds-icon {
+  color: var(--surface-inverse-icon);
+}
+
 
 /* Media Element Utilities */
 
@@ -4107,6 +4137,7 @@ html[data-theme="dark"] {
   }
 
   :where(legend) {
+    display: contents;
     font-weight: var(--font-weight-semibold);
     padding: 0 var(--spacing-2);
     color: var(--color-text-primary);
@@ -4121,6 +4152,15 @@ html[data-theme="dark"] {
     width: auto;
     box-sizing: border-box;
   }
+
+  legend::after {
+    content: "";
+    display: block;
+    margin-bottom: var(--spacing-3);
+
+  }
+
+
 
   /* List primitives */
   :where(ul, ol) {
@@ -6236,6 +6276,26 @@ body {
   box-shadow: var(--shadow-lg);
   border-radius: var(--radius-md);
 }
+
+
+/* Inverse surface (dark) using PDS tokens; text/icons inherit currentColor */
+.surface-inverse {
+  background-color: var(--color-surface-inverse);
+  /* Ensure foregrounds inside use the correct smart-surface tokens */
+  color: var(--surface-inverse-text);
+  --color-text-primary: var(--surface-inverse-text);
+  --color-text-secondary: var(--surface-inverse-text-secondary);
+  --color-text-muted: var(--surface-inverse-text-muted);
+  /* Ensure code/pre and other muted surfaces have contrast on inverse */
+  --color-surface-muted: rgba(255, 255, 255, 0.08);
+  /* Optional: adjust borders/shadows if utilities/components read these */
+  --color-border: var(--surface-inverse-border);
+}
+
+.surface-inverse pds-icon {
+  color: var(--surface-inverse-icon);
+}
+
 
 /* Media Element Utilities */
 
