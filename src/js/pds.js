@@ -140,7 +140,11 @@ PDS._setupSystemListenerIfNeeded = function (raw) {
       PDS._themeMQListener = null;
     }
 
-    if (raw === "system" && typeof window !== "undefined" && window.matchMedia) {
+    if (
+      raw === "system" &&
+      typeof window !== "undefined" &&
+      window.matchMedia
+    ) {
       const mq = window.matchMedia("(prefers-color-scheme: dark)");
       const listener = (e) => {
         const isDark = e?.matches === undefined ? mq.matches : e.matches;
@@ -156,7 +160,8 @@ PDS._setupSystemListenerIfNeeded = function (raw) {
       };
       PDS._themeMQ = mq;
       PDS._themeMQListener = listener;
-      if (typeof mq.addEventListener === "function") mq.addEventListener("change", listener);
+      if (typeof mq.addEventListener === "function")
+        mq.addEventListener("change", listener);
       else if (typeof mq.addListener === "function") mq.addListener(listener);
     }
   } catch (e) {}
@@ -195,7 +200,6 @@ Object.defineProperty(PDS, "theme", {
   },
 });
 
-
 // ----------------------------------------------------------------------------
 // Default Enhancers — first-class citizens alongside AutoDefiner
 // ----------------------------------------------------------------------------
@@ -207,7 +211,8 @@ Object.defineProperty(PDS, "theme", {
 PDS.defaultEnhancers = [
   {
     selector: "nav[data-dropdown]",
-    demoHtml: () => /*html*/`
+    description: "Enhances a nav element with data-dropdown to function as a dropdown menu.",
+    demoHtml: () => /*html*/ `
       <nav data-dropdown>
         <button class="btn-primary">Menu</button>
         <menu style="display:none">
@@ -220,6 +225,21 @@ PDS.defaultEnhancers = [
       elem.dataset.enhancedDropdown = "true";
       const menu = elem.querySelector("menu");
       if (!menu) return;
+
+      // Ensure positioning context and predictable absolute placement for the menu
+      try {
+        const cs = getComputedStyle(elem);
+        if (cs && cs.position === "static") {
+          // Avoid layout shifts by only setting when not already positioned
+          elem.style.position = "relative";
+        }
+      } catch {}
+      if (!menu.style.position) menu.style.position = "absolute";
+      // Default to left alignment; may be overridden by placeHorizontal()
+      if (!menu.style.left && !menu.style.right) {
+        menu.style.left = "0";
+        menu.style.right = "auto";
+      }
 
       // Ensure toggle button doesn't submit forms by default
       const btn = elem.querySelector("button");
@@ -252,6 +272,18 @@ PDS.defaultEnhancers = [
         }
       };
 
+      // Horizontal alignment helper: support nav[data-dropdown].align-right
+      const placeHorizontal = () => {
+        const alignRight = elem.classList.contains("align-right");
+        if (alignRight) {
+          menu.style.right = "0";
+          menu.style.left = "auto";
+        } else {
+          menu.style.left = "0";
+          menu.style.right = "auto";
+        }
+      };
+
       const computeAutoDirection = () => {
         // Choose the direction with the most vertical space available.
         // This is simpler and more robust for very long menus: prefer the
@@ -270,6 +302,7 @@ PDS.defaultEnhancers = [
           dir = computeAutoDirection();
         }
         placeMenu(dir);
+        placeHorizontal();
         // Constrain menu height to available viewport space and allow scrolling
         // when content exceeds that height. Add a tiny safety margin.
         const rect = elem.getBoundingClientRect();
@@ -299,7 +332,8 @@ PDS.defaultEnhancers = [
 
       const toggle = (e) => {
         // If event originates from a link inside the menu, let it proceed
-        if (e && e.target && e.target.closest && e.target.closest('menu')) return;
+        if (e && e.target && e.target.closest && e.target.closest("menu"))
+          return;
         const isVisible = menu.style.display !== "none";
         if (isVisible) hideMenu();
         else showMenu();
@@ -307,7 +341,11 @@ PDS.defaultEnhancers = [
 
       // Click only on the toggle button should open/close; clicks inside menu
       // should be handled normally. Close when clicking outside.
-      if (btn) btn.addEventListener("click", (ev) => { ev.stopPropagation(); toggle(ev); });
+      if (btn)
+        btn.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          toggle(ev);
+        });
       // Close on outside click
       document.addEventListener("click", (ev) => {
         if (!elem.contains(ev.target)) hideMenu();
@@ -321,6 +359,7 @@ PDS.defaultEnhancers = [
   },
   {
     selector: "label[data-toggle]",
+    description: "Creates a toggle switch element from a checkbox.",
     demoHtml: () => `<label data-toggle>
       <span data-label>Enable notifications</span>
       <input type="checkbox">
@@ -350,6 +389,7 @@ PDS.defaultEnhancers = [
   },
   {
     selector: 'input[type="range"]',
+    description: "Enhances range inputs with a value bubble.",
     demoHtml: (elem) => {
       const min = elem?.getAttribute?.("min") || 0;
       const max = elem?.getAttribute?.("max") || 100;
@@ -388,6 +428,40 @@ PDS.defaultEnhancers = [
       elem.addEventListener("blur", hide);
       updateBubble();
       elem.dataset.enhancedRange = "1";
+    },
+  },
+  {
+    selector: "form [required]",
+    description: "Enhances required form fields using an asterisk in the label.",
+    demoHtml: () => /*html*/ `
+      <label>
+        <span>Field Label</span>
+        <input type="text" required>
+      </label>
+    `,
+    run: (elem) => {
+      const label = elem.closest("label");
+      if (label) {
+        if (label.querySelector(".required-asterisk")) return;
+
+        const asterisk = document.createElement("span");
+        asterisk.classList.add("required-asterisk");
+        asterisk.textContent = "*";
+        asterisk.style.marginLeft = "4px";
+        label.querySelector("span").appendChild(asterisk);
+
+        const form = elem.closest("form");
+
+        // insert legend for asterisk meaning if not already present
+        if (form && !form.querySelector(".required-legend")) {
+          const legend = document.createElement("div");
+          legend.classList.add("required-legend", "badge", "badge-danger");
+          legend.style.fontSize = "0.9em";
+          legend.style.marginBottom = "8px";
+          legend.textContent = "* Required fields";
+          form.insertBefore(legend, form.lastChild);
+        }
+      }
     },
   },
 ];
@@ -571,9 +645,26 @@ function validateDesigns(designs = [], options = {}) {
     // - full config object (legacy) => validate directly
     if (typeof item === "string") {
       const id = String(item).toLowerCase();
-      const found = presets?.[id] || Object.values(presets || {}).find((p) => __slugify(p.name) === id || String(p.name || "").toLowerCase() === id);
+      const found =
+        presets?.[id] ||
+        Object.values(presets || {}).find(
+          (p) =>
+            __slugify(p.name) === id ||
+            String(p.name || "").toLowerCase() === id
+        );
       if (!found) {
-        results.push({ name: item, ok: false, issues: [{ path: "/", message: `Preset not found: ${item}`, ratio: 0, min: 0 }] });
+        results.push({
+          name: item,
+          ok: false,
+          issues: [
+            {
+              path: "/",
+              message: `Preset not found: ${item}`,
+              ratio: 0,
+              min: 0,
+            },
+          ],
+        });
         continue;
       }
       name = found.name || id;
@@ -582,9 +673,26 @@ function validateDesigns(designs = [], options = {}) {
       name = item.name || item.preset || undefined;
       if ("preset" in item || "design" in item) {
         const effectivePreset = String(item.preset || "default").toLowerCase();
-        const found = presets?.[effectivePreset] || Object.values(presets || {}).find((p) => __slugify(p.name) === effectivePreset || String(p.name || "").toLowerCase() === effectivePreset);
+        const found =
+          presets?.[effectivePreset] ||
+          Object.values(presets || {}).find(
+            (p) =>
+              __slugify(p.name) === effectivePreset ||
+              String(p.name || "").toLowerCase() === effectivePreset
+          );
         if (!found) {
-          results.push({ name, ok: false, issues: [{ path: "/", message: `Preset not found: ${item.preset}`, ratio: 0, min: 0 }] });
+          results.push({
+            name,
+            ok: false,
+            issues: [
+              {
+                path: "/",
+                message: `Preset not found: ${item.preset}`,
+                ratio: 0,
+                min: 0,
+              },
+            ],
+          });
           continue;
         }
         let base = structuredClone(found);
@@ -599,7 +707,13 @@ function validateDesigns(designs = [], options = {}) {
     }
 
     if (!configToValidate) {
-      results.push({ name, ok: false, issues: [{ path: "/", message: "Invalid design entry", ratio: 0, min: 0 }] });
+      results.push({
+        name,
+        ok: false,
+        issues: [
+          { path: "/", message: "Invalid design entry", ratio: 0, min: 0 },
+        ],
+      });
       continue;
     }
 
@@ -749,7 +863,13 @@ function __normalizeInitConfig(inputConfig = {}, options = {}) {
   if (hasNewShape) {
     // Always resolve a preset; default if none provided
     const effectivePreset = String(presetId || "default").toLowerCase();
-    const found = presets?.[effectivePreset] || Object.values(presets || {}).find((p) => __slugify(p.name) === effectivePreset || String(p.name || "").toLowerCase() === effectivePreset);
+    const found =
+      presets?.[effectivePreset] ||
+      Object.values(presets || {}).find(
+        (p) =>
+          __slugify(p.name) === effectivePreset ||
+          String(p.name || "").toLowerCase() === effectivePreset
+      );
     if (!found)
       throw new Error(`PDS preset not found: "${presetId || "default"}"`);
 
@@ -768,7 +888,9 @@ function __normalizeInitConfig(inputConfig = {}, options = {}) {
     generatorConfig = structuredClone(inputConfig);
   } else {
     // Nothing recognizable: use default preset
-    const foundDefault = presets?.["default"] || Object.values(presets || {}).find((p) => __slugify(p.name) === "default");
+    const foundDefault =
+      presets?.["default"] ||
+      Object.values(presets || {}).find((p) => __slugify(p.name) === "default");
     if (!foundDefault) throw new Error("PDS default preset not available");
     presetInfo = {
       id: foundDefault.id || "default",
@@ -835,7 +957,9 @@ async function __setupAutoDefinerAndEnhancers(options) {
 
     // Respect user overrides but never allow them to overwrite our mapper wrapper.
     const { mapper: _overrideMapperIgnored, ...restAutoDefineOverrides } =
-      (autoDefineOverrides && typeof autoDefineOverrides === 'object' ? autoDefineOverrides : {});
+      autoDefineOverrides && typeof autoDefineOverrides === "object"
+        ? autoDefineOverrides
+        : {};
 
     const autoDefineConfig = {
       baseURL: autoDefineBaseURL,
@@ -861,17 +985,25 @@ async function __setupAutoDefinerAndEnhancers(options) {
         if (customElements.get(tag)) return null;
 
         // If a custom mapper exists, let it try first; if it returns a non-value, fallback to default
-        if (typeof autoDefineMapper === 'function') {
+        if (typeof autoDefineMapper === "function") {
           try {
             const mapped = autoDefineMapper(tag);
             // Treat undefined, null, false, or empty string as "not handled" and fallback
-            if (mapped === undefined || mapped === null || mapped === false || mapped === '') {
+            if (
+              mapped === undefined ||
+              mapped === null ||
+              mapped === false ||
+              mapped === ""
+            ) {
               return defaultMapper(tag);
             }
             return mapped;
           } catch (e) {
             // Be resilient: if custom mapper throws, fall back to default
-            console.warn("Custom autoDefine.mapper error; falling back to default:", e?.message || e);
+            console.warn(
+              "Custom autoDefine.mapper error; falling back to default:",
+              e?.message || e
+            );
             return defaultMapper(tag);
           }
         }
@@ -898,7 +1030,9 @@ async function __setupAutoDefinerAndEnhancers(options) {
 
 async function live(config) {
   if (!config || typeof config !== "object") {
-    throw new Error("PDS.start({ mode: 'live', ... }) requires a valid configuration object");
+    throw new Error(
+      "PDS.start({ mode: 'live', ... }) requires a valid configuration object"
+    );
   }
 
   // PDS is exposed on window at module init for both modes
@@ -912,7 +1046,7 @@ async function live(config) {
 
   // New unified shape: autoDefine inside the first argument
   const cfgAuto = (config && config.autoDefine) || null;
-  if (cfgAuto && typeof cfgAuto === 'object') {
+  if (cfgAuto && typeof cfgAuto === "object") {
     // no-op here; resolved below for __setupAutoDefinerAndEnhancers
   }
 
@@ -923,8 +1057,8 @@ async function live(config) {
       themeStorageKey,
     });
 
-  // 2) Normalize first-arg API: support { preset, design, enhancers }
-  const normalized = __normalizeInitConfig(config, {});
+    // 2) Normalize first-arg API: support { preset, design, enhancers }
+    const normalized = __normalizeInitConfig(config, {});
     const userEnhancers = normalized.enhancers;
     const generatorConfig = structuredClone(normalized.generatorConfig);
     if (manageTheme) {
@@ -1023,20 +1157,23 @@ async function live(config) {
     // Derive a sensible default AutoDefiner base for LIVE mode too when not provided
     // If consumer provided config.static.root, default to `${root}components/` so that
     // PDS components resolve from the installed assets directory. This mirrors static mode behavior.
-    let derivedAutoDefineBaseURL = (cfgAuto && cfgAuto.baseURL) || "/auto-define/";
+    let derivedAutoDefineBaseURL =
+      (cfgAuto && cfgAuto.baseURL) || "/auto-define/";
     if (!(cfgAuto && cfgAuto.baseURL)) {
-      const staticConfig = /** @type {{ root?: string }} */ (config.static || {});
+      const staticConfig = /** @type {{ root?: string }} */ (
+        config.static || {}
+      );
       const toUrlRoot = (root) => {
         if (!root) return null;
         try {
-          let r = String(root).replace(/\\/g, '/');
-          if (/^https?:\/\//i.test(r) || r.startsWith('/')) {
-            if (!r.endsWith('/')) r += '/';
+          let r = String(root).replace(/\\/g, "/");
+          if (/^https?:\/\//i.test(r) || r.startsWith("/")) {
+            if (!r.endsWith("/")) r += "/";
             return r;
           }
-          if (r.startsWith('public/')) r = r.substring('public/'.length);
-          if (!r.startsWith('/')) r = '/' + r;
-          if (!r.endsWith('/')) r += '/';
+          if (r.startsWith("public/")) r = r.substring("public/".length);
+          if (!r.startsWith("/")) r = "/" + r;
+          if (!r.endsWith("/")) r += "/";
           return r;
         } catch {
           return null;
@@ -1053,8 +1190,12 @@ async function live(config) {
     try {
       const res = await __setupAutoDefinerAndEnhancers({
         autoDefineBaseURL: derivedAutoDefineBaseURL,
-        autoDefinePreload: (cfgAuto && Array.isArray(cfgAuto.predefine) && cfgAuto.predefine) || [],
-        autoDefineMapper: (cfgAuto && typeof cfgAuto.mapper === 'function' && cfgAuto.mapper) || null,
+        autoDefinePreload:
+          (cfgAuto && Array.isArray(cfgAuto.predefine) && cfgAuto.predefine) ||
+          [],
+        autoDefineMapper:
+          (cfgAuto && typeof cfgAuto.mapper === "function" && cfgAuto.mapper) ||
+          null,
         enhancers: userEnhancers,
         autoDefineOverrides: cfgAuto || null,
       });
@@ -1138,7 +1279,9 @@ PDS.start = start;
  */
 async function staticInit(config) {
   if (!config || typeof config !== "object") {
-    throw new Error("PDS.start({ mode: 'static', ... }) requires a valid configuration object");
+    throw new Error(
+      "PDS.start({ mode: 'static', ... }) requires a valid configuration object"
+    );
   }
 
   const applyGlobalStyles = config.applyGlobalStyles ?? true;
@@ -1148,8 +1291,10 @@ async function staticInit(config) {
   const staticConfig = /** @type {{ root?: string }} */ (config.static || {});
   const cfgAuto = (config && config.autoDefine) || null;
   let autoDefineBaseURL = (cfgAuto && cfgAuto.baseURL) || "/auto-define/";
-  const autoDefinePreload = (cfgAuto && Array.isArray(cfgAuto.predefine) && cfgAuto.predefine) || [];
-  const autoDefineMapper = (cfgAuto && typeof cfgAuto.mapper === 'function' && cfgAuto.mapper) || null;
+  const autoDefinePreload =
+    (cfgAuto && Array.isArray(cfgAuto.predefine) && cfgAuto.predefine) || [];
+  const autoDefineMapper =
+    (cfgAuto && typeof cfgAuto.mapper === "function" && cfgAuto.mapper) || null;
 
   try {
     // 1) Theme
@@ -1158,8 +1303,8 @@ async function staticInit(config) {
       themeStorageKey,
     });
 
-  // Normalize first-arg to allow { preset, design, enhancers }
-  const normalized = __normalizeInitConfig(config, {});
+    // Normalize first-arg to allow { preset, design, enhancers }
+    const normalized = __normalizeInitConfig(config, {});
     const userEnhancers = normalized.enhancers;
 
     // 2) Compute static asset URLs from config.static.root if provided
@@ -1168,23 +1313,23 @@ async function staticInit(config) {
     const toUrlRoot = (root) => {
       if (!root) return null;
       try {
-        let r = String(root).replace(/\\/g, '/');
+        let r = String(root).replace(/\\/g, "/");
         // If already an absolute URL or root-relative, use as-is
-        if (/^https?:\/\//i.test(r) || r.startsWith('/')) {
-          if (!r.endsWith('/')) r += '/';
+        if (/^https?:\/\//i.test(r) || r.startsWith("/")) {
+          if (!r.endsWith("/")) r += "/";
           return r;
         }
         // Map repo/public-relative to web root
-        if (r.startsWith('public/')) r = r.substring('public/'.length);
-        if (!r.startsWith('/')) r = '/' + r;
-        if (!r.endsWith('/')) r += '/';
+        if (r.startsWith("public/")) r = r.substring("public/".length);
+        if (!r.startsWith("/")) r = "/" + r;
+        if (!r.endsWith("/")) r += "/";
         return r;
       } catch {
         return null;
       }
     };
 
-  const staticRootURL = toUrlRoot(staticConfig.root);
+    const staticRootURL = toUrlRoot(staticConfig.root);
 
     // Derive default staticPaths from staticRootURL when not explicitly provided
     if (staticRootURL) {
@@ -1213,7 +1358,9 @@ async function staticInit(config) {
         if (stylesSheet) {
           // Tag and adopt alongside existing non-PDS sheets
           stylesSheet._pds = true;
-          const others = (document.adoptedStyleSheets || []).filter((s) => s._pds !== true);
+          const others = (document.adoptedStyleSheets || []).filter(
+            (s) => s._pds !== true
+          );
           document.adoptedStyleSheets = [...others, stylesSheet];
         }
       } catch (e) {

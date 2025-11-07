@@ -865,8 +865,8 @@ export class Generator {
         xl: 48,
         "2xl": 64,
       },
-  // Default path for dev/demo; static export places it at [static.root]/icons/pds-icons.svg
-  spritePath = "/assets/pds/icons/pds-icons.svg",
+      // Default path for dev/demo; static export places it at [static.root]/icons/pds-icons.svg
+      spritePath = "/assets/pds/icons/pds-icons.svg",
     } = iconConfig;
 
     return {
@@ -978,10 +978,16 @@ ${this.#generateMediaQueries()}
       Object.entries(colors.surfaceSmart).forEach(([surfaceKey, tokens]) => {
         chunks.push(`  --surface-${surfaceKey}-bg: ${tokens.bg};\n`);
         chunks.push(`  --surface-${surfaceKey}-text: ${tokens.text};\n`);
-        chunks.push(`  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`);
-        chunks.push(`  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`);
+        chunks.push(
+          `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`
+        );
+        chunks.push(
+          `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`
+        );
         chunks.push(`  --surface-${surfaceKey}-icon: ${tokens.icon};\n`);
-        chunks.push(`  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`);
+        chunks.push(
+          `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`
+        );
         chunks.push(`  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`);
         chunks.push(`  --surface-${surfaceKey}-border: ${tokens.border};\n`);
       });
@@ -1001,12 +1007,20 @@ ${this.#generateMediaQueries()}
 
     // Translucent surface tokens
     chunks.push(`  /* Translucent Surface Tokens */\n`);
-    chunks.push(`  --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);\n`);
-    chunks.push(`  --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);\n`);
-    chunks.push(`  --color-surface-translucent-75: color-mix(in oklab, var(--color-surface-subtle) 75%, transparent 25%);\n`);
+    chunks.push(
+      `  --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);\n`
+    );
+    chunks.push(
+      `  --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);\n`
+    );
+    chunks.push(
+      `  --color-surface-translucent-75: color-mix(in oklab, var(--color-surface-subtle) 75%, transparent 25%);\n`
+    );
 
     // Backdrop tokens (light mode)
-    chunks.push(`   /* Backdrop tokens - used for modal dialogs, drawers, overlays */\n\n    --backdrop-bg: linear-gradient(\n        135deg,\n        rgba(255, 255, 255, 0.2),\n        rgba(255, 255, 255, 0.1)\n      );\n    --backdrop-blur: 10px;\n    --backdrop-saturate: 150%;\n    --backdrop-brightness: 0.9;\n    --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));\n    --backdrop-opacity: 1;\n    \n    /* Legacy alias for backwards compatibility */\n    --backdrop-background: var(--backdrop-bg);\n    `);
+    chunks.push(
+      `   /* Backdrop tokens - used for modal dialogs, drawers, overlays */\n\n    --backdrop-bg: linear-gradient(\n        135deg,\n        rgba(255, 255, 255, 0.2),\n        rgba(255, 255, 255, 0.1)\n      );\n    --backdrop-blur: 10px;\n    --backdrop-saturate: 150%;\n    --backdrop-brightness: 0.9;\n    --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));\n    --backdrop-opacity: 1;\n    \n    /* Legacy alias for backwards compatibility */\n    --backdrop-background: var(--backdrop-bg);\n    `
+    );
 
     // Mesh gradients
     chunks.push(this.#generateMeshGradients(colors));
@@ -1020,7 +1034,7 @@ ${this.#generateMediaQueries()}
     const secondary = colors.secondary?.[500] || "#8b5cf6";
     const accent = colors.accent?.[500] || "#f59e0b";
 
-    return /*css*/`
+    return /*css*/ `
   /* Mesh Gradient Backgrounds */
   --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 25%, transparent) 0px, transparent 50%),
     radial-gradient(at 97% 21%, color-mix(in oklab, ${secondary} 22%, transparent) 0px, transparent 50%),
@@ -1168,10 +1182,10 @@ ${this.#generateMediaQueries()}
       smartSurfaceVars += `\n`;
     }
 
-    const semanticVars = /*css*/`  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n`;
+    const semanticVars = /*css*/ `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n`;
 
     // Backdrop tokens for dark mode
-    const backdropVars = /*css*/`  /* Backdrop tokens - used for modal dialogs, drawers, overlays (dark mode) */
+    const backdropVars = /*css*/ `  /* Backdrop tokens - used for modal dialogs, drawers, overlays (dark mode) */
   --backdrop-bg: linear-gradient(
       135deg,
       rgba(0, 0, 0, 0.6),
@@ -1190,7 +1204,7 @@ ${this.#generateMediaQueries()}
     // Generate dark mode mesh gradients
     const meshVars = this.#generateMeshGradientsDark(colors);
 
-    const rules = /*css*/`/* Alert dark mode adjustments */
+    const rules = /*css*/ `/* Alert dark mode adjustments */
 .alert-success {
   background-color: var(--color-success-50);
   border-color: var(--color-success-500);
@@ -3583,7 +3597,7 @@ nav[data-dropdown][data-mode="auto"] menu {
 
     // Generate gap utilities
     if (gridSystem.enableGapUtilities) {
-      css += /*css*/`
+      css += /*css*/ `
 /* Gap utilities */
 .gap-0 { gap: 0; }
 .gap-xs { gap: var(--spacing-1); }
@@ -4143,6 +4157,7 @@ nav[data-dropdown][data-mode="auto"] menu {
   }
 
   :where(legend) {
+    display: contents;
     font-weight: var(--font-weight-semibold);
     padding: 0 var(--spacing-2);
     color: var(--color-text-primary);
@@ -4157,6 +4172,15 @@ nav[data-dropdown][data-mode="auto"] menu {
     width: auto;
     box-sizing: border-box;
   }
+
+  legend::after {
+    content: "";
+    display: block;
+    margin-bottom: var(--spacing-3);
+
+  }
+
+
 
   /* List primitives */
   :where(ul, ol) {
@@ -4297,7 +4321,7 @@ ${this.#generateScrollbarStyles()}
   }
 
   #generateUtilitiesLayer() {
-    return `@layer utilities {\n
+    return /*css*/`@layer utilities {\n
 ${this.#generateIconStyles()}
 
 ${this.#generateLayoutUtilities()}
@@ -4354,6 +4378,26 @@ ${this.#generateLiquidGlassUtility()}
   box-shadow: var(--shadow-lg);
   border-radius: var(--radius-md);
 }
+
+
+/* Inverse surface (dark) using PDS tokens; text/icons inherit currentColor */
+.surface-inverse {
+  background-color: var(--color-surface-inverse);
+  /* Ensure foregrounds inside use the correct smart-surface tokens */
+  color: var(--surface-inverse-text);
+  --color-text-primary: var(--surface-inverse-text);
+  --color-text-secondary: var(--surface-inverse-text-secondary);
+  --color-text-muted: var(--surface-inverse-text-muted);
+  /* Ensure code/pre and other muted surfaces have contrast on inverse */
+  --color-surface-muted: rgba(255, 255, 255, 0.08);
+  /* Optional: adjust borders/shadows if utilities/components read these */
+  --color-border: var(--surface-inverse-border);
+}
+
+.surface-inverse pds-icon {
+  color: var(--surface-inverse-icon);
+}
+
 
 ${this.#generateMediaUtilities()}
 
