@@ -12,6 +12,25 @@ import { fileURLToPath, pathToFileURL } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '../../../');
+const isWin = process.platform === 'win32';
+const normalizePath = (p) => {
+  if (!p) return '';
+  const resolved = path.resolve(p).replace(/[\\/]+$/, '');
+  return isWin ? resolved.toLowerCase() : resolved;
+};
+
+function isNpmLinkInvocation() {
+  try {
+    const argvRaw = process.env.npm_config_argv;
+    if (!argvRaw) return false;
+    const argv = JSON.parse(argvRaw);
+    const orig = argv && (argv.original || argv.cooked || []);
+    if (!Array.isArray(orig)) return false;
+    return orig.includes('link');
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Find the consumer app root (directory containing the consumer's package.json)
@@ -161,8 +180,29 @@ async function copyPdsAssets() {
   try {
     const consumerRoot = await findConsumerRoot();
     console.log('� Consumer root:', consumerRoot);
+
+    // Allow opting out explicitly (useful for local dev / linking)
+    if (
+      process.env.PDS_SKIP_POSTINSTALL === '1' ||
+      process.env.PDS_SKIP_POSTINSTALL === 'true' ||
+      process.env.npm_config_pds_skip_postinstall === 'true'
+    ) {
+      console.log('� Skipping PDS postinstall (PDS_SKIP_POSTINSTALL set).');
+      return;
+    }
+
+    // If running inside the package repo itself (e.g., during `npm link`), skip
+    const inRepo = normalizePath(consumerRoot) === normalizePath(repoRoot);
+    const linkInvocation = isNpmLinkInvocation();
+    if (inRepo || linkInvocation) {
+      const reason = inRepo
+        ? 'inside the package repo'
+        : 'detected npm link invocation';
+      console.log(`🛑 Skipping PDS postinstall (${reason}).`);
+      return;
+    }
     
-  console.log('📦 Proceeding with asset copying...');
+  console.log('�📦 Proceeding with asset copying...');
 
     // Proactively add export scripts to consumer package.json
     await ensureExportScript(consumerRoot);
@@ -230,7 +270,13 @@ async function copyPdsAssets() {
         autoDefineSource = path.join(pdsRoot, 'public/auto-define');
       }
     }
-  const iconsSource = path.join(pdsRoot, 'public/assets/img/pds-icons.svg');
+  // Prefer new icons path under assets/pds/icons, fallback to legacy assets/img
+  let iconsSource = path.join(pdsRoot, 'public/assets/pds/icons/pds-icons.svg');
+    try {
+      await access(iconsSource);
+    } catch {
+      iconsSource = path.join(pdsRoot, 'public/assets/img/pds-icons.svg');
+    }
     
     // Target paths
   const autoDefineTarget = path.join(webRoot.path, 'auto-define');
