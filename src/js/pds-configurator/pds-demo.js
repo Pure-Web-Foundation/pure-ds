@@ -362,7 +362,7 @@ customElements.define(
       const interestingClasses = [
         "color-card",
         "color-scale",
-        "demo-grid",
+        "grid",
         "flex-wrap",
         "btn-group",
       ];
@@ -1555,7 +1555,7 @@ customElements.define(
               Typography
             </h2>
 
-            <div class="demo-grid cols-1">
+            <div class="grid grid-cols-1">
               <h1>Heading 1 - The quick brown fox</h1>
               <h2>Heading 2 - The quick brown fox</h2>
               <h3>Heading 3 - The quick brown fox</h3>
@@ -1773,7 +1773,7 @@ customElements.define(
               Alerts & Feedback
             </h2>
 
-            <div class="demo-grid cols-1">
+            <div class="grid grid-cols-1">
               <div class="alert alert-success">
                 <div class="alert-icon">
                   <pds-icon
@@ -1932,12 +1932,11 @@ customElements.define(
                 alt="Gallery image 4"
               />
             </div>
-
-            <h3>Scroll Row</h3>
+            
+            <h3>Netflix Row</h3>
+            
             <pds-scrollrow>
-              <h4 slot="heading">Images</h4>
-
-              ${new Array(10)
+              ${new Array(20)
                 .fill(0)
                 .map(
                   (_, i) => html`<img
@@ -2160,13 +2159,13 @@ customElements.define(
               Layout & Cards
             </h2>
 
-            <div class="demo-grid cols-1">
+            <div class="grid grid-cols-1">
               <div class="card surface-elevated">
                 <h3>Elevated Surface</h3>
                 <p>This surface has a subtle shadow and elevated background.</p>
               </div>
 
-              <div class="demo-grid cols-3">
+              <div class="grid grid-cols-3">
                 <div class="card">
                   <h4>Card 1</h4>
                   <p>Cards provide a clean container for content.</p>
@@ -2333,7 +2332,7 @@ customElements.define(
               Form Groups
             </h2>
 
-            <div class="demo-grid cols-2">
+            <div class="grid grid-cols-2">
               <div class="form-group">
                 <h3>Radio Buttons</h3>
                 <fieldset role="radiogroup">
@@ -2533,7 +2532,7 @@ customElements.define(
                 <p>Shadows and text colors automatically adjust</p>
 
                 <div
-                  class="demo-grid cols-2"
+                  class="grid grid-cols-2"
                   style="margin-top: var(--spacing-4);"
                 >
                   <div class="card">
@@ -2574,7 +2573,7 @@ customElements.define(
 
             <h3>Card Grids</h3>
             <p>Cards automatically adapt when nested or grouped</p>
-            <div class="demo-grid cols-3">
+            <div class="grid grid-cols-3">
               <div class="card">
                 <h5>
                   <pds-icon icon="palette"></pds-icon>
@@ -2613,7 +2612,7 @@ customElements.define(
             </p>
 
             <h3>${inversionTitle}</h3>
-            <div class="demo-grid cols-2">
+            <div class="grid grid-cols-2">
               <div class="demo-inversion-box surface-inverse surface-box">
                 <h4>
                   <pds-icon icon="moon"></pds-icon>
@@ -2647,7 +2646,7 @@ customElements.define(
             </div>
 
             <h3>Semantic Surfaces with Auto-Contrast</h3>
-            <div class="demo-grid cols-3">
+            <div class="grid grid-cols-3">
               <div
                 class="demo-inversion-box alert alert-success surface-center"
               >

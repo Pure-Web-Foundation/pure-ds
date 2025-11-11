@@ -8,10 +8,11 @@ export const presets = {
   "ocean-breeze": {
     id: "ocean-breeze",
     name: "Ocean Breeze",
-    description: "Fresh and calming ocean-inspired palette with professional undertones",
+    description:
+      "Fresh and calming ocean-inspired palette with professional undertones",
     options: {
       liquidGlassEffects: true,
-      backgroundMesh: 3
+      backgroundMesh: 3,
     },
     colors: {
       primary: "#0891b2",
@@ -20,27 +21,30 @@ export const presets = {
       background: "#f0f9ff",
       darkMode: {
         background: "#0c1821",
-        secondary: "#94a3b8"
-      }
+        secondary: "#94a3b8",
+      },
     },
     typography: {
       baseFontSize: 17,
       fontScale: 1.5, // More dramatic scale for breathing room
-      fontFamilyHeadings: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
-      fontFamilyBody: "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+      fontFamilyHeadings:
+        'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+      fontFamilyBody:
+        'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
     },
     spatialRhythm: {
       baseUnit: 20, // More spacious
-      scaleRatio: 1.4
+      scaleRatio: 1.4,
     },
     shape: {
-      radiusSize: enums.RadiusSizes.xxlarge // Soft, flowing
-    }
+      radiusSize: enums.RadiusSizes.xxlarge, // Soft, flowing
+    },
   },
   "midnight-steel": {
     id: "midnight-steel",
     name: "Midnight Steel",
-    description: "Bold industrial aesthetic with sharp contrasts and urban edge",
+    description:
+      "Bold industrial aesthetic with sharp contrasts and urban edge",
     colors: {
       primary: "#3b82f6",
       secondary: "#52525b",
@@ -48,29 +52,31 @@ export const presets = {
       background: "#fafaf9",
       darkMode: {
         background: "#18181b",
-        secondary: "#71717a"
-      }
+        secondary: "#71717a",
+      },
     },
     typography: {
       baseFontSize: 16,
       fontScale: 1.333,
-      fontFamilyHeadings: "'IBM Plex Sans', system-ui, -apple-system, sans-serif",
+      fontFamilyHeadings:
+        "'IBM Plex Sans', system-ui, -apple-system, sans-serif",
       fontFamilyBody: "'Inter', system-ui, -apple-system, sans-serif",
-      fontWeightSemibold: 600
+      fontWeightSemibold: 600,
     },
     spatialRhythm: {
       baseUnit: 16,
-      scaleRatio: 1.25
+      scaleRatio: 1.25,
     },
     shape: {
       radiusSize: enums.RadiusSizes.small, // Crisp corporate edges
-      borderWidth: enums.BorderWidths.thin
-    }
+      borderWidth: enums.BorderWidths.thin,
+    },
   },
   "neural-glow": {
     id: "neural-glow",
     name: "Neural Glow",
-    description: "AI-inspired with vibrant purple-blue gradients and futuristic vibes",
+    description:
+      "AI-inspired with vibrant purple-blue gradients and futuristic vibes",
     colors: {
       primary: "#8b5cf6",
       secondary: "#6366f1",
@@ -78,26 +84,26 @@ export const presets = {
       background: "#faf5ff",
       darkMode: {
         background: "#0f0a1a",
-        secondary: "#818cf8"
-      }
+        secondary: "#818cf8",
+      },
     },
     typography: {
       baseFontSize: 16,
       fontScale: 1.618, // Golden ratio for futuristic feel
       fontFamilyHeadings: "'Space Grotesk', system-ui, sans-serif",
-      fontFamilyBody: "'Space Grotesk', system-ui, sans-serif"
+      fontFamilyBody: "'Space Grotesk', system-ui, sans-serif",
     },
     spatialRhythm: {
       baseUnit: 16,
-      scaleRatio: 1.5
+      scaleRatio: 1.5,
     },
     shape: {
       radiusSize: enums.RadiusSizes.xlarge, // Smooth, modern
-      borderWidth: enums.BorderWidths.medium
+      borderWidth: enums.BorderWidths.medium,
     },
     behavior: {
-      transitionSpeed: enums.TransitionSpeeds.fast
-    }
+      transitionSpeed: enums.TransitionSpeeds.fast,
+    },
   },
   "paper-and-ink": {
     id: "paper-and-ink",
@@ -110,8 +116,8 @@ export const presets = {
       background: "#ffffff",
       darkMode: {
         background: "#0a0a0a",
-        secondary: "#a3a3a3"
-      }
+        secondary: "#a3a3a3",
+      },
     },
     typography: {
       baseFontSize: 18, // Readable, print-like
@@ -119,24 +125,24 @@ export const presets = {
       fontFamilyHeadings: "'Helvetica Neue', 'Arial', sans-serif",
       fontFamilyBody: "'Georgia', 'Times New Roman', serif",
       fontWeightNormal: 400,
-      fontWeightBold: 700
+      fontWeightBold: 700,
     },
     spatialRhythm: {
       baseUnit: 12, // Tight, compact
-      scaleRatio: 1.2
+      scaleRatio: 1.2,
     },
     shape: {
       radiusSize: enums.RadiusSizes.none, // Sharp editorial
-      borderWidth: enums.BorderWidths.thin
-    }
+      borderWidth: enums.BorderWidths.thin,
+    },
   },
   "sunset-paradise": {
     id: "sunset-paradise",
     name: "Sunset Paradise",
     description: "Warm tropical colors evoking golden hour by the beach",
-     options: {
+    options: {
       liquidGlassEffects: true,
-      backgroundMesh: 2
+      backgroundMesh: 2,
     },
     colors: {
       primary: "#f97316",
@@ -147,23 +153,23 @@ export const presets = {
         background: "#1a0f0a",
         secondary: "#c9a482",
         // Ensure sufficient contrast for primary-filled components with white text in dark mode
-        primary: "#9a3412"
-      }
+        primary: "#9a3412",
+      },
     },
     typography: {
       baseFontSize: 16,
       fontScale: 1.5,
       fontFamilyHeadings: "'Quicksand', 'Comfortaa', sans-serif",
-      fontFamilyBody: "'Quicksand', 'Comfortaa', sans-serif"
+      fontFamilyBody: "'Quicksand', 'Comfortaa', sans-serif",
     },
     spatialRhythm: {
       baseUnit: 20, // Relaxed, vacation vibes
-      scaleRatio: 1.5
+      scaleRatio: 1.5,
     },
     shape: {
       radiusSize: enums.RadiusSizes.xxlarge, // Playful, rounded
-      borderWidth: enums.BorderWidths.medium
-    }
+      borderWidth: enums.BorderWidths.medium,
+    },
   },
   "retro-wave": {
     id: "retro-wave",
@@ -178,27 +184,27 @@ export const presets = {
         background: "#1a0a1f",
         secondary: "#c4b5fd",
         // Deepen primary for dark mode to meet AA contrast with white text
-        primary: "#6d28d9"
-      }
+        primary: "#6d28d9",
+      },
     },
     typography: {
       baseFontSize: 15,
       fontScale: 1.5,
       fontFamilyHeadings: "'Orbitron', 'Impact', monospace",
       fontFamilyBody: "'Courier New', 'Courier', monospace",
-      fontWeightBold: 700
+      fontWeightBold: 700,
     },
     spatialRhythm: {
       baseUnit: 16,
-      scaleRatio: 1.25
+      scaleRatio: 1.25,
     },
     shape: {
       radiusSize: enums.RadiusSizes.none, // Sharp geometric 80s
-      borderWidth: enums.BorderWidths.thick // Bold borders
+      borderWidth: enums.BorderWidths.thick, // Bold borders
     },
     behavior: {
-      transitionSpeed: enums.TransitionSpeeds.instant // Snappy retro feel
-    }
+      transitionSpeed: enums.TransitionSpeeds.instant, // Snappy retro feel
+    },
   },
   "forest-canopy": {
     id: "forest-canopy",
@@ -211,23 +217,23 @@ export const presets = {
       background: "#f0fdf4",
       darkMode: {
         background: "#0a1410",
-        secondary: "#a8a29e"
-      }
+        secondary: "#a8a29e",
+      },
     },
     typography: {
       baseFontSize: 16,
       fontScale: 1.414, // Square root of 2, organic growth
       fontFamilyHeadings: "'Merriweather Sans', 'Arial', sans-serif",
-      fontFamilyBody: "'Merriweather', 'Georgia', serif"
+      fontFamilyBody: "'Merriweather', 'Georgia', serif",
     },
     spatialRhythm: {
       baseUnit: 18,
-      scaleRatio: 1.3
+      scaleRatio: 1.3,
     },
     shape: {
       radiusSize: enums.RadiusSizes.medium, // Natural, organic curves
-      borderWidth: enums.BorderWidths.thin
-    }
+      borderWidth: enums.BorderWidths.thin,
+    },
   },
   "ruby-elegance": {
     id: "ruby-elegance",
@@ -240,8 +246,8 @@ export const presets = {
       background: "#fef2f2",
       darkMode: {
         background: "#1b0808",
-        secondary: "#d1d5db"
-      }
+        secondary: "#d1d5db",
+      },
     },
     typography: {
       baseFontSize: 17,
@@ -249,21 +255,22 @@ export const presets = {
       fontFamilyHeadings: "'Playfair Display', 'Georgia', serif",
       fontFamilyBody: "'Crimson Text', 'Garamond', serif",
       fontWeightNormal: 400,
-      fontWeightSemibold: 600
+      fontWeightSemibold: 600,
     },
     spatialRhythm: {
       baseUnit: 16,
-      scaleRatio: 1.333
+      scaleRatio: 1.333,
     },
     shape: {
       radiusSize: enums.RadiusSizes.small, // Subtle elegance
-      borderWidth: enums.BorderWidths.thin
-    }
+      borderWidth: enums.BorderWidths.thin,
+    },
   },
   "desert-dawn": {
     id: "desert-dawn",
     name: "Desert Dawn",
-    description: "Sun-baked neutrals with grounded terracotta and cool oasis accents",
+    description:
+      "Sun-baked neutrals with grounded terracotta and cool oasis accents",
     colors: {
       primary: "#b45309", // terracotta
       secondary: "#a8a29e", // warm gray
@@ -273,23 +280,24 @@ export const presets = {
         background: "#12100e",
         secondary: "#d1d5db",
         // Deepen primary in dark to keep white text AA-compliant
-        primary: "#7c2d12"
-      }
+        primary: "#7c2d12",
+      },
     },
     typography: {
       baseFontSize: 16,
       fontScale: 1.414,
-      fontFamilyHeadings: "'Source Sans Pro', system-ui, -apple-system, sans-serif",
-      fontFamilyBody: "'Source Serif Pro', Georgia, serif"
+      fontFamilyHeadings:
+        "'Source Sans Pro', system-ui, -apple-system, sans-serif",
+      fontFamilyBody: "'Source Serif Pro', Georgia, serif",
     },
     spatialRhythm: {
       baseUnit: 18,
-      scaleRatio: 1.3
+      scaleRatio: 1.3,
     },
     shape: {
       radiusSize: enums.RadiusSizes.medium,
-      borderWidth: enums.BorderWidths.medium
-    }
+      borderWidth: enums.BorderWidths.medium,
+    },
   },
   "contrast-pro": {
     id: "contrast-pro",
@@ -307,33 +315,36 @@ export const presets = {
         // has strong contrast against the very-dark surface. The generator
         // will still pick appropriate darker fill shades for buttons so
         // white-on-fill contrast is preserved.
-  primary: "#d1d5db" // lighter-gray (tuned to balance outline/link contrast and white-on-fill contrast)
-      }
+        primary: "#d1d5db", // lighter-gray (tuned to balance outline/link contrast and white-on-fill contrast)
+      },
     },
     typography: {
       baseFontSize: 17,
       fontScale: 1.2,
-      fontFamilyHeadings: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
-      fontFamilyBody: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
-      fontWeightBold: 700
+      fontFamilyHeadings:
+        "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+      fontFamilyBody:
+        "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+      fontWeightBold: 700,
     },
     spatialRhythm: {
       baseUnit: 14, // compact, data-dense
-      scaleRatio: 1.2
+      scaleRatio: 1.2,
     },
     shape: {
       radiusSize: enums.RadiusSizes.small,
-      borderWidth: enums.BorderWidths.thick
+      borderWidth: enums.BorderWidths.thick,
     },
     behavior: {
       transitionSpeed: enums.TransitionSpeeds.fast,
-      focusRingWidth: 4
-    }
+      focusRingWidth: 4,
+    },
   },
   "pastel-play": {
     id: "pastel-play",
     name: "Pastel Play",
-    description: "Playful pastels with soft surfaces and friendly rounded shapes",
+    description:
+      "Playful pastels with soft surfaces and friendly rounded shapes",
     colors: {
       primary: "#db2777", // raspberry
       secondary: "#a78bfa", // lavender
@@ -342,33 +353,34 @@ export const presets = {
       darkMode: {
         background: "#1a1016",
         secondary: "#c4b5fd",
-        primary: "#9d174d" // deeper for white text contrast
-      }
+        primary: "#9d174d", // deeper for white text contrast
+      },
     },
     typography: {
       baseFontSize: 16,
       fontScale: 1.333,
       fontFamilyHeadings: "'Nunito', system-ui, -apple-system, sans-serif",
       fontFamilyBody: "'Nunito', system-ui, -apple-system, sans-serif",
-      lineHeightRelaxed: enums.LineHeights.relaxed
+      lineHeightRelaxed: enums.LineHeights.relaxed,
     },
     spatialRhythm: {
       baseUnit: 20, // comfy
-      scaleRatio: 1.4
+      scaleRatio: 1.4,
     },
     shape: {
       radiusSize: enums.RadiusSizes.xxlarge,
-      borderWidth: enums.BorderWidths.thin
+      borderWidth: enums.BorderWidths.thin,
     },
     behavior: {
       transitionSpeed: enums.TransitionSpeeds.slow,
-      animationEasing: enums.AnimationEasings["ease-out"]
-    }
+      animationEasing: enums.AnimationEasings["ease-out"],
+    },
   },
   "brutalist-tech": {
     id: "brutalist-tech",
     name: "Brutalist Tech",
-    description: "Stark grayscale with engineered accents and unapologetically bold structure",
+    description:
+      "Stark grayscale with engineered accents and unapologetically bold structure",
     colors: {
       primary: "#111111",
       secondary: "#4b5563",
@@ -381,32 +393,34 @@ export const presets = {
         // - outline/link contrast on dark surface, and
         // - sufficient button fill contrast against white text.
         // Cyan signal aligns with preset accent and produces high-contrast dark fills.
-        primary: "#06b6d4"
-      }
+        primary: "#06b6d4",
+      },
     },
     typography: {
       baseFontSize: 15,
       fontScale: 1.25,
-      fontFamilyHeadings: "'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace",
+      fontFamilyHeadings:
+        "'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace",
       fontFamilyBody: "'Inter', system-ui, -apple-system, sans-serif",
-      letterSpacingTight: -0.02
+      letterSpacingTight: -0.02,
     },
     spatialRhythm: {
       baseUnit: 16,
-      scaleRatio: 1.25
+      scaleRatio: 1.25,
     },
     shape: {
       radiusSize: enums.RadiusSizes.none,
-      borderWidth: enums.BorderWidths.thick
+      borderWidth: enums.BorderWidths.thick,
     },
     behavior: {
-      transitionSpeed: enums.TransitionSpeeds.instant
-    }
+      transitionSpeed: enums.TransitionSpeeds.instant,
+    },
   },
   "zen-garden": {
     id: "zen-garden",
     name: "Zen Garden",
-    description: "Soft botanicals with contemplative spacing and balanced motion",
+    description:
+      "Soft botanicals with contemplative spacing and balanced motion",
     colors: {
       primary: "#3f6212", // deep olive
       secondary: "#6b7280", // neutral leaf shadow
@@ -415,28 +429,29 @@ export const presets = {
       darkMode: {
         background: "#0d130a",
         secondary: "#a3a3a3",
-        primary: "#365314" // deepen for white text
-      }
+        primary: "#365314", // deepen for white text
+      },
     },
     typography: {
       baseFontSize: 17,
       fontScale: 1.414,
       fontFamilyHeadings: "'Merriweather', Georgia, serif",
-      fontFamilyBody: "'Noto Sans', system-ui, -apple-system, sans-serif"
+      fontFamilyBody: "'Noto Sans', system-ui, -apple-system, sans-serif",
     },
     spatialRhythm: {
       baseUnit: 22, // airy
-      scaleRatio: 1.35
+      scaleRatio: 1.35,
     },
     shape: {
       radiusSize: enums.RadiusSizes.large,
-      borderWidth: enums.BorderWidths.medium
+      borderWidth: enums.BorderWidths.medium,
     },
     behavior: {
       transitionSpeed: enums.TransitionSpeeds.normal,
-      animationEasing: enums.AnimationEasings.ease
-    }
+      animationEasing: enums.AnimationEasings.ease,
+    },
   }
+  
 };
 
 /**
@@ -450,10 +465,10 @@ presets.default = {
   id: "default",
   name: "Default",
   description: "Base Pure DS preset",
-   options: {
-      liquidGlassEffects: true,
-      backgroundMesh: 4
-    },
+  options: {
+    liquidGlassEffects: true,
+    backgroundMesh: 4,
+  },
   colors: {
     // Palette - base colors that generate entire color palettes
     primary: "#3097c0", // Primary brand color
@@ -489,7 +504,7 @@ presets.default = {
     fontFamilyBody: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
     fontFamilyMono:
       'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace',
-    
+
     // Advanced typography options (exposed in advanced form)
     fontWeightLight: enums.FontWeights.light,
     fontWeightNormal: enums.FontWeights.normal,
@@ -507,7 +522,7 @@ presets.default = {
   spatialRhythm: {
     // Essential spacing setting (exposed in simple form)
     baseUnit: 16, // Base spacing unit in pixels (typically 16 = 1rem)
-    
+
     // Advanced spacing options
     scaleRatio: 1.25,
     maxSpacingSteps: 32,
@@ -563,7 +578,7 @@ presets.default = {
     densityComfortable: 1.2,
     buttonMinHeight: enums.TouchTargetSizes.standard,
     inputMinHeight: 40,
-    
+
     // Layout utility system
     utilities: {
       grid: true,
@@ -571,20 +586,20 @@ presets.default = {
       spacing: true,
       container: true,
     },
-    
+
     gridSystem: {
       columns: [1, 2, 3, 4, 6],
       autoFitBreakpoints: {
-        sm: '150px',
-        md: '250px',
-        lg: '350px',
-        xl: '450px',
+        sm: "150px",
+        md: "250px",
+        lg: "350px",
+        xl: "450px",
       },
       enableGapUtilities: true,
     },
-    
-    containerMaxWidth: '1400px',
-    containerPadding: 'var(--spacing-6)',
+
+    containerMaxWidth: "1400px",
+    containerPadding: "var(--spacing-6)",
   },
 
   advanced: {
@@ -596,23 +611,6 @@ presets.default = {
     minTouchTarget: enums.TouchTargetSizes.standard,
     prefersReducedMotion: true,
     focusStyle: enums.FocusStyles.ring,
-  },
-
-  components_old: {
-    toasts: true,
-    tabStrip: true,
-    customScrollbars: true,
-    drawer: true,
-    
-    // Component patterns
-    card: {
-      enabled: true,
-      variants: ['base', 'elevated', 'interactive', 'outlined'],
-    },
-    media: {
-      enabled: true,
-      gallery: true,
-    },
   },
 
   icons: {
@@ -699,7 +697,7 @@ presets.default = {
         "code",
         "folder-simple",
         "grid-four",
-        "briefcase"
+        "briefcase",
       ],
       status: [
         "info",
@@ -752,9 +750,9 @@ presets.default = {
         "squares-four",
       ],
     },
-  // Default sprite path for internal/dev use. For consumer apps, icons are exported to
-  // [config.static.root]/icons/pds-icons.svg and components should consume from there.
-  spritePath: "public/assets/pds/icons/pds-icons.svg",
+    // Default sprite path for internal/dev use. For consumer apps, icons are exported to
+    // [config.static.root]/icons/pds-icons.svg and components should consume from there.
+    spritePath: "public/assets/pds/icons/pds-icons.svg",
   },
 
   gap: 4,

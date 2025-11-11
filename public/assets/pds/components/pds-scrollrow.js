@@ -82,7 +82,8 @@ class PdsScrollrow extends HTMLElement {
 
   // Property <-> attribute reflection for ergonomic usage
   get label() {
-    return this.getAttribute("label") ?? "Titles";
+    // Return null when not set so caller can decide whether to render header
+    return this.getAttribute("label");
   }
   set label(val) {
     if (val == null) this.removeAttribute("label");
@@ -116,12 +117,29 @@ class PdsScrollrow extends HTMLElement {
     switch (name) {
       case "label": {
         const section = this.shadowRoot.querySelector("section");
-        if (section) section.setAttribute("aria-label", this.label);
-        // Update fallback heading text if no assigned slot content
-        const fallbackHeading = this.shadowRoot.querySelector(
-          "header h2 span[data-fallback]"
-        );
-        if (fallbackHeading) fallbackHeading.textContent = this.label;
+        // If label was removed, remove the header and aria-label
+        if (newValue == null) {
+          if (section) section.removeAttribute("aria-label");
+          const header = this.shadowRoot.querySelector("header");
+          if (header) header.remove();
+        } else {
+          // Add/update aria-label and header fallback text
+          if (section) section.setAttribute("aria-label", newValue);
+          const fallbackHeading = this.shadowRoot.querySelector(
+            "header h2 span[data-fallback]"
+          );
+          if (fallbackHeading) {
+            fallbackHeading.textContent = newValue;
+          } else {
+            // Header missing -> create and insert before viewport-wrap
+            const viewportWrap = this.shadowRoot.querySelector('.viewport-wrap');
+            if (viewportWrap) {
+              const header = document.createElement('header');
+              header.innerHTML = `<h2><slot name="heading"><span data-fallback>${newValue}</span></slot></h2>`;
+              viewportWrap.parentNode.insertBefore(header, viewportWrap);
+            }
+          }
+        }
         break;
       }
       case "snap": {
@@ -133,15 +151,21 @@ class PdsScrollrow extends HTMLElement {
 
   render() {
     const label = this.label;
+    const headerHtml = label
+      ? `<header>
+            <h2>
+              <slot name="heading">
+                <span data-fallback>${label}</span>
+              </slot>
+            </h2>
+          </header>`
+      : "";
+
+    const sectionOpen = label ? `<section role="region" aria-label="${label}">` : `<section role="region">`;
+
     this.shadowRoot.innerHTML = /*html*/`
-      <section role="region" aria-label="${label}">
-        <header>
-          <h2>
-            <slot name="heading">
-              <span data-fallback>${label}</span>
-            </slot>
-          </h2>
-        </header>
+      ${sectionOpen}
+        ${headerHtml}
         <div class="viewport-wrap">
           <div class="viewport" part="viewport" tabindex="0">
             <ul class="track" role="list"><slot></slot></ul>
