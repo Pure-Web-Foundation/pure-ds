@@ -336,239 +336,204 @@ tokens.replaceSync(`@layer tokens {
 
 
        }
+       
        html[data-theme="dark"] {
-  --color-surface-base: #151313;
-  --color-surface-subtle: #100e0e;
-  --color-surface-elevated: #0d0c0c;
-  --color-surface-sunken: #151313;
-  --color-surface-overlay: #1a1818;
-  --color-surface-inverse: #f3f2f2;
-  --color-surface-hover: color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%);;
-  --color-surface-fieldset-base: #0d0c0c;
-  --color-surface-fieldset-subtle: #1a1818;
-  --color-surface-fieldset-elevated: #211f1f;
-  --color-surface-fieldset-sunken: #0d0c0c;
-  --color-surface-fieldset-overlay: #262323;
-  --color-primary-50: #0b2146;
-  --color-primary-100: #113269;
-  --color-primary-200: #16438c;
-  --color-primary-300: #1b54b0;
-  --color-primary-400: #206ae3;
-  --color-primary-500: #3378e5;
-  --color-primary-600: #5a91ea;
-  --color-primary-700: #80abf0;
-  --color-primary-800: #bcd2f8;
-  --color-primary-900: #d3e2fa;
-  --color-secondary-50: #121417;
-  --color-secondary-100: #1e2227;
-  --color-secondary-200: #2f353e;
-  --color-secondary-300: #424955;
-  --color-secondary-400: #576374;
-  --color-secondary-500: #616e80;
-  --color-secondary-600: #758397;
-  --color-secondary-700: #8e99aa;
-  --color-secondary-800: #bec5cf;
-  --color-secondary-900: #dbdee1;
-  --color-accent-50: #440f29;
-  --color-accent-100: #66163e;
-  --color-accent-200: #881d52;
-  --color-accent-300: #a92466;
-  --color-accent-400: #d92d82;
-  --color-accent-500: #db3e8c;
-  --color-accent-600: #e262a2;
-  --color-accent-700: #e988b7;
-  --color-accent-800: #f5bfd9;
-  --color-accent-900: #f6d5e6;
-  --color-gray-50: #f9fafa;
-  --color-gray-100: #f1f2f4;
-  --color-gray-200: #dde0e3;
-  --color-gray-300: #c1c6cd;
-  --color-gray-400: #8f97a3;
-  --color-gray-500: #64748b;
-  --color-gray-600: #627084;
-  --color-gray-700: #495669;
-  --color-gray-800: #29313d;
-  --color-gray-900: #14181f;
-  --color-success-50: #052305;
-  --color-success-100: #083508;
-  --color-success-200: #0e580e;
-  --color-success-300: #137b13;
-  --color-success-400: #16ad16;
-  --color-success-500: #18c018;
-  --color-success-600: #20e320;
-  --color-success-700: #47e747;
-  --color-success-800: #90f490;
-  --color-success-900: #bdf6bd;
-  --color-info-50: #0b2146;
-  --color-info-100: #113269;
-  --color-info-200: #16438c;
-  --color-info-300: #1b54b0;
-  --color-info-400: #206ae3;
-  --color-info-500: #3378e5;
-  --color-info-600: #5a91ea;
-  --color-info-700: #80abf0;
-  --color-info-800: #bcd2f8;
-  --color-info-900: #d3e2fa;
-  --color-warning-50: #251c04;
-  --color-warning-100: #493908;
-  --color-warning-200: #6e560c;
-  --color-warning-300: #937210;
-  --color-warning-400: #c89a10;
-  --color-warning-500: #ddaa12;
-  --color-warning-600: #eebd2c;
-  --color-warning-700: #f1ca54;
-  --color-warning-800: #fae4a1;
-  --color-warning-900: #fcf1d1;
-  --color-danger-50: #230505;
-  --color-danger-100: #470b0b;
-  --color-danger-200: #6a1111;
-  --color-danger-300: #8d1616;
-  --color-danger-400: #c11818;
-  --color-danger-500: #d31b1b;
-  --color-danger-600: #e53434;
-  --color-danger-700: #ea5b5b;
-  --color-danger-800: #f6a6a6;
-  --color-danger-900: #fad3d3;
-  --color-semantic-surface: #151313;
-  --color-semantic-onSurface: #ffffff;
-  --color-semantic-primaryText: #5a91ea;
-  --color-semantic-primaryFill: #206ae3;
-  --color-semantic-infoFill: #206ae3;
-  /* Smart Surface Tokens (dark mode, context-aware) */
-  --surface-base-bg: #151313;
-  --surface-base-text: #ffffff;
-  --surface-base-text-secondary: #ffffff;
-  --surface-base-text-muted: #a1a1a1;
-  --surface-base-icon: #ffffff;
-  --surface-base-icon-subtle: #a1a1a1;
-  --surface-base-shadow: rgba(255, 255, 255, 0.25);
-  --surface-base-border: rgba(255, 255, 255, 0.15);
-  --surface-subtle-bg: #100e0e;
-  --surface-subtle-text: #ffffff;
-  --surface-subtle-text-secondary: #ffffff;
-  --surface-subtle-text-muted: #9f9f9f;
-  --surface-subtle-icon: #ffffff;
-  --surface-subtle-icon-subtle: #9f9f9f;
-  --surface-subtle-shadow: rgba(255, 255, 255, 0.25);
-  --surface-subtle-border: rgba(255, 255, 255, 0.15);
-  --surface-elevated-bg: #0d0c0c;
-  --surface-elevated-text: #ffffff;
-  --surface-elevated-text-secondary: #ffffff;
-  --surface-elevated-text-muted: #9e9e9e;
-  --surface-elevated-icon: #ffffff;
-  --surface-elevated-icon-subtle: #9e9e9e;
-  --surface-elevated-shadow: rgba(255, 255, 255, 0.25);
-  --surface-elevated-border: rgba(255, 255, 255, 0.15);
-  --surface-sunken-bg: #151313;
-  --surface-sunken-text: #ffffff;
-  --surface-sunken-text-secondary: #ffffff;
-  --surface-sunken-text-muted: #a1a1a1;
-  --surface-sunken-icon: #ffffff;
-  --surface-sunken-icon-subtle: #a1a1a1;
-  --surface-sunken-shadow: rgba(255, 255, 255, 0.25);
-  --surface-sunken-border: rgba(255, 255, 255, 0.15);
-  --surface-overlay-bg: #1a1818;
-  --surface-overlay-text: #ffffff;
-  --surface-overlay-text-secondary: #ffffff;
-  --surface-overlay-text-muted: #a3a3a3;
-  --surface-overlay-icon: #ffffff;
-  --surface-overlay-icon-subtle: #a3a3a3;
-  --surface-overlay-shadow: rgba(255, 255, 255, 0.25);
-  --surface-overlay-border: rgba(255, 255, 255, 0.15);
-  --surface-inverse-bg: #f3f2f2;
-  --surface-inverse-text: #000000;
-  --surface-inverse-text-secondary: #000000;
-  --surface-inverse-text-muted: #616161;
-  --surface-inverse-icon: #000000;
-  --surface-inverse-icon-subtle: #616161;
-  --surface-inverse-shadow: rgba(0, 0, 0, 0.1);
-  --surface-inverse-border: rgba(0, 0, 0, 0.1);
+    --color-surface-base: #151313;
+    --color-surface-subtle: #100e0e;
+    --color-surface-elevated: #0d0c0c;
+    --color-surface-sunken: #151313;
+    --color-surface-overlay: #1a1818;
+    --color-surface-inverse: #f3f2f2;
+    --color-surface-hover: color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%);;
+    --color-surface-fieldset-base: #0d0c0c;
+    --color-surface-fieldset-subtle: #1a1818;
+    --color-surface-fieldset-elevated: #211f1f;
+    --color-surface-fieldset-sunken: #0d0c0c;
+    --color-surface-fieldset-overlay: #262323;
+    --color-primary-50: #0b2146;
+    --color-primary-100: #113269;
+    --color-primary-200: #16438c;
+    --color-primary-300: #1b54b0;
+    --color-primary-400: #206ae3;
+    --color-primary-500: #3378e5;
+    --color-primary-600: #5a91ea;
+    --color-primary-700: #80abf0;
+    --color-primary-800: #bcd2f8;
+    --color-primary-900: #d3e2fa;
+    --color-secondary-50: #121417;
+    --color-secondary-100: #1e2227;
+    --color-secondary-200: #2f353e;
+    --color-secondary-300: #424955;
+    --color-secondary-400: #576374;
+    --color-secondary-500: #616e80;
+    --color-secondary-600: #758397;
+    --color-secondary-700: #8e99aa;
+    --color-secondary-800: #bec5cf;
+    --color-secondary-900: #dbdee1;
+    --color-accent-50: #440f29;
+    --color-accent-100: #66163e;
+    --color-accent-200: #881d52;
+    --color-accent-300: #a92466;
+    --color-accent-400: #d92d82;
+    --color-accent-500: #db3e8c;
+    --color-accent-600: #e262a2;
+    --color-accent-700: #e988b7;
+    --color-accent-800: #f5bfd9;
+    --color-accent-900: #f6d5e6;
+    --color-gray-50: #f9fafa;
+    --color-gray-100: #f1f2f4;
+    --color-gray-200: #dde0e3;
+    --color-gray-300: #c1c6cd;
+    --color-gray-400: #8f97a3;
+    --color-gray-500: #64748b;
+    --color-gray-600: #627084;
+    --color-gray-700: #495669;
+    --color-gray-800: #29313d;
+    --color-gray-900: #14181f;
+    --color-success-50: #052305;
+    --color-success-100: #083508;
+    --color-success-200: #0e580e;
+    --color-success-300: #137b13;
+    --color-success-400: #16ad16;
+    --color-success-500: #18c018;
+    --color-success-600: #20e320;
+    --color-success-700: #47e747;
+    --color-success-800: #90f490;
+    --color-success-900: #bdf6bd;
+    --color-info-50: #0b2146;
+    --color-info-100: #113269;
+    --color-info-200: #16438c;
+    --color-info-300: #1b54b0;
+    --color-info-400: #206ae3;
+    --color-info-500: #3378e5;
+    --color-info-600: #5a91ea;
+    --color-info-700: #80abf0;
+    --color-info-800: #bcd2f8;
+    --color-info-900: #d3e2fa;
+    --color-warning-50: #251c04;
+    --color-warning-100: #493908;
+    --color-warning-200: #6e560c;
+    --color-warning-300: #937210;
+    --color-warning-400: #c89a10;
+    --color-warning-500: #ddaa12;
+    --color-warning-600: #eebd2c;
+    --color-warning-700: #f1ca54;
+    --color-warning-800: #fae4a1;
+    --color-warning-900: #fcf1d1;
+    --color-danger-50: #230505;
+    --color-danger-100: #470b0b;
+    --color-danger-200: #6a1111;
+    --color-danger-300: #8d1616;
+    --color-danger-400: #c11818;
+    --color-danger-500: #d31b1b;
+    --color-danger-600: #e53434;
+    --color-danger-700: #ea5b5b;
+    --color-danger-800: #f6a6a6;
+    --color-danger-900: #fad3d3;
+    --color-semantic-surface: #151313;
+    --color-semantic-onSurface: #ffffff;
+    --color-semantic-primaryText: #5a91ea;
+    --color-semantic-primaryFill: #206ae3;
+    --color-semantic-infoFill: #206ae3;
+    /* Smart Surface Tokens (dark mode, context-aware) */
+    --surface-base-bg: #151313;
+    --surface-base-text: #ffffff;
+    --surface-base-text-secondary: #ffffff;
+    --surface-base-text-muted: #a1a1a1;
+    --surface-base-icon: #ffffff;
+    --surface-base-icon-subtle: #a1a1a1;
+    --surface-base-shadow: rgba(255, 255, 255, 0.25);
+    --surface-base-border: rgba(255, 255, 255, 0.15);
+    --surface-subtle-bg: #100e0e;
+    --surface-subtle-text: #ffffff;
+    --surface-subtle-text-secondary: #ffffff;
+    --surface-subtle-text-muted: #9f9f9f;
+    --surface-subtle-icon: #ffffff;
+    --surface-subtle-icon-subtle: #9f9f9f;
+    --surface-subtle-shadow: rgba(255, 255, 255, 0.25);
+    --surface-subtle-border: rgba(255, 255, 255, 0.15);
+    --surface-elevated-bg: #0d0c0c;
+    --surface-elevated-text: #ffffff;
+    --surface-elevated-text-secondary: #ffffff;
+    --surface-elevated-text-muted: #9e9e9e;
+    --surface-elevated-icon: #ffffff;
+    --surface-elevated-icon-subtle: #9e9e9e;
+    --surface-elevated-shadow: rgba(255, 255, 255, 0.25);
+    --surface-elevated-border: rgba(255, 255, 255, 0.15);
+    --surface-sunken-bg: #151313;
+    --surface-sunken-text: #ffffff;
+    --surface-sunken-text-secondary: #ffffff;
+    --surface-sunken-text-muted: #a1a1a1;
+    --surface-sunken-icon: #ffffff;
+    --surface-sunken-icon-subtle: #a1a1a1;
+    --surface-sunken-shadow: rgba(255, 255, 255, 0.25);
+    --surface-sunken-border: rgba(255, 255, 255, 0.15);
+    --surface-overlay-bg: #1a1818;
+    --surface-overlay-text: #ffffff;
+    --surface-overlay-text-secondary: #ffffff;
+    --surface-overlay-text-muted: #a3a3a3;
+    --surface-overlay-icon: #ffffff;
+    --surface-overlay-icon-subtle: #a3a3a3;
+    --surface-overlay-shadow: rgba(255, 255, 255, 0.25);
+    --surface-overlay-border: rgba(255, 255, 255, 0.15);
+    --surface-inverse-bg: #f3f2f2;
+    --surface-inverse-text: #000000;
+    --surface-inverse-text-secondary: #000000;
+    --surface-inverse-text-muted: #616161;
+    --surface-inverse-icon: #000000;
+    --surface-inverse-icon-subtle: #616161;
+    --surface-inverse-shadow: rgba(0, 0, 0, 0.1);
+    --surface-inverse-border: rgba(0, 0, 0, 0.1);
 
-  --color-text-primary: var(--color-gray-100);
-  --color-text-secondary: var(--color-gray-300);
-  --color-text-muted: var(--color-gray-400);
-  --color-border: var(--color-gray-700);
-  --color-input-bg: var(--color-gray-800);
-  --color-input-disabled-bg: var(--color-gray-900);
-  --color-input-disabled-text: var(--color-gray-600);
-  --color-code-bg: var(--color-gray-800);
-  /* Backdrop tokens - used for modal dialogs, drawers, overlays (dark mode) */
-  --backdrop-bg: linear-gradient(
-      135deg,
-      rgba(0, 0, 0, 0.6),
-      rgba(0, 0, 0, 0.4)
-    );
-  --backdrop-blur: 10px;
-  --backdrop-saturate: 120%;
-  --backdrop-brightness: 0.7;
-  --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));
-  --backdrop-opacity: 1;
-  
-  /* Legacy alias for backwards compatibility */
-  --backdrop-background: var(--backdrop-bg);
-
-  /* Mesh Gradient Backgrounds (Dark Mode) */
-  --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, #206ae3 20%, transparent) 0px, transparent 50%),
-    radial-gradient(at 97% 21%, color-mix(in oklab, #576374 16%, transparent) 0px, transparent 50%),
-    radial-gradient(at 52% 99%, color-mix(in oklab, #d92d82 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 29%, color-mix(in oklab, #206ae3 10%, transparent) 0px, transparent 50%);
-  
-  --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, #576374 18%, transparent) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, color-mix(in oklab, #206ae3 14%, transparent) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, color-mix(in oklab, #d92d82 12%, transparent) 0px, transparent 50%),
-    radial-gradient(at 80% 100%, color-mix(in oklab, #576374 10%, transparent) 0px, transparent 50%);
-  
-  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #d92d82 15%, transparent) 0px, transparent 50%),
-    radial-gradient(at 85% 30%, color-mix(in oklab, #206ae3 17%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 80%, color-mix(in oklab, #576374 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 90%, color-mix(in oklab, #d92d82 11%, transparent) 0px, transparent 50%);
-  
-  --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, #206ae3 14%, transparent) 0px, transparent 50%),
-    radial-gradient(at 20% 80%, color-mix(in oklab, #576374 16%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 60%, color-mix(in oklab, #d92d82 12%, transparent) 0px, transparent 50%),
-    radial-gradient(at 30% 40%, color-mix(in oklab, #206ae3 11%, transparent) 0px, transparent 50%);
-  
-  --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, #206ae3 17%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 10%, color-mix(in oklab, #d92d82 14%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 10%, color-mix(in oklab, #576374 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 90%, color-mix(in oklab, #d92d82 10%, transparent) 0px, transparent 50%);
+    --color-text-primary: var(--color-gray-100);
+    --color-text-secondary: var(--color-gray-300);
+    --color-text-muted: var(--color-gray-400);
+    --color-border: var(--color-gray-700);
+    --color-input-bg: var(--color-gray-800);
+    --color-input-disabled-bg: var(--color-gray-900);
+    --color-input-disabled-text: var(--color-gray-600);
+    --color-code-bg: var(--color-gray-800);
+    /* Backdrop tokens - dark mode */
+    --backdrop-bg: linear-gradient(
+        135deg,
+        rgba(0, 0, 0, 0.6),
+        rgba(0, 0, 0, 0.4)
+      );
+    --backdrop-blur: 10px;
+    --backdrop-saturate: 120%;
+    --backdrop-brightness: 0.7;
+    --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));
+    --backdrop-opacity: 1;
     
-  /* Alert dark mode adjustments */
-  .alert-success {
-    background-color: var(--color-success-50);
-    border-color: var(--color-success-500);
-    color: var(--color-success-900);
-  }
+    /* Legacy alias for backwards compatibility */
+    --backdrop-background: var(--backdrop-bg);
+    /* Mesh Gradient Variables (Dark Mode) */
+    --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, #206ae3 20%, transparent) 0px, transparent 50%),
+      radial-gradient(at 97% 21%, color-mix(in oklab, #576374 16%, transparent) 0px, transparent 50%),
+      radial-gradient(at 52% 99%, color-mix(in oklab, #d92d82 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 10% 29%, color-mix(in oklab, #206ae3 10%, transparent) 0px, transparent 50%);
+    
+    --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, #576374 18%, transparent) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, color-mix(in oklab, #206ae3 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, color-mix(in oklab, #d92d82 12%, transparent) 0px, transparent 50%),
+      radial-gradient(at 80% 100%, color-mix(in oklab, #576374 10%, transparent) 0px, transparent 50%);
+    
+    --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #d92d82 15%, transparent) 0px, transparent 50%),
+      radial-gradient(at 85% 30%, color-mix(in oklab, #206ae3 17%, transparent) 0px, transparent 50%),
+      radial-gradient(at 50% 80%, color-mix(in oklab, #576374 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 90%, color-mix(in oklab, #d92d82 11%, transparent) 0px, transparent 50%);
+    
+    --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, #206ae3 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 20% 80%, color-mix(in oklab, #576374 16%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 60%, color-mix(in oklab, #d92d82 12%, transparent) 0px, transparent 50%),
+      radial-gradient(at 30% 40%, color-mix(in oklab, #206ae3 11%, transparent) 0px, transparent 50%);
+    
+    --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, #206ae3 17%, transparent) 0px, transparent 50%),
+      radial-gradient(at 10% 10%, color-mix(in oklab, #d92d82 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 10%, color-mix(in oklab, #576374 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 50% 90%, color-mix(in oklab, #d92d82 10%, transparent) 0px, transparent 50%);
+             }
 
-  .alert-info {
-    background-color: var(--color-info-50);
-    border-color: var(--color-info-500);
-    color: var(--color-info-900);
-  }
-
-  .alert-warning {
-    background-color: var(--color-warning-50);
-    border-color: var(--color-warning-500);
-    color: var(--color-warning-900);
-  }
-
-  .alert-danger,
-  .alert-error {
-    background-color: var(--color-danger-50);
-    border-color: var(--color-danger-500);
-    color: var(--color-danger-900);
-  }
-
-  /* Dim images in dark mode */
-  img, video {
-    opacity: 0.8;
-    transition: opacity var(--transition-normal);
-  }
-  img:hover, video:hover {
-    opacity: 1;
-  }
-
-}
     }
 /* Non-layered dark variables fallback (ensures attribute wins) */
 html[data-theme="dark"] {
@@ -1104,239 +1069,204 @@ export const tokensCSS = `@layer tokens {
 
 
        }
+       
        html[data-theme="dark"] {
-  --color-surface-base: #151313;
-  --color-surface-subtle: #100e0e;
-  --color-surface-elevated: #0d0c0c;
-  --color-surface-sunken: #151313;
-  --color-surface-overlay: #1a1818;
-  --color-surface-inverse: #f3f2f2;
-  --color-surface-hover: color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%);;
-  --color-surface-fieldset-base: #0d0c0c;
-  --color-surface-fieldset-subtle: #1a1818;
-  --color-surface-fieldset-elevated: #211f1f;
-  --color-surface-fieldset-sunken: #0d0c0c;
-  --color-surface-fieldset-overlay: #262323;
-  --color-primary-50: #0b2146;
-  --color-primary-100: #113269;
-  --color-primary-200: #16438c;
-  --color-primary-300: #1b54b0;
-  --color-primary-400: #206ae3;
-  --color-primary-500: #3378e5;
-  --color-primary-600: #5a91ea;
-  --color-primary-700: #80abf0;
-  --color-primary-800: #bcd2f8;
-  --color-primary-900: #d3e2fa;
-  --color-secondary-50: #121417;
-  --color-secondary-100: #1e2227;
-  --color-secondary-200: #2f353e;
-  --color-secondary-300: #424955;
-  --color-secondary-400: #576374;
-  --color-secondary-500: #616e80;
-  --color-secondary-600: #758397;
-  --color-secondary-700: #8e99aa;
-  --color-secondary-800: #bec5cf;
-  --color-secondary-900: #dbdee1;
-  --color-accent-50: #440f29;
-  --color-accent-100: #66163e;
-  --color-accent-200: #881d52;
-  --color-accent-300: #a92466;
-  --color-accent-400: #d92d82;
-  --color-accent-500: #db3e8c;
-  --color-accent-600: #e262a2;
-  --color-accent-700: #e988b7;
-  --color-accent-800: #f5bfd9;
-  --color-accent-900: #f6d5e6;
-  --color-gray-50: #f9fafa;
-  --color-gray-100: #f1f2f4;
-  --color-gray-200: #dde0e3;
-  --color-gray-300: #c1c6cd;
-  --color-gray-400: #8f97a3;
-  --color-gray-500: #64748b;
-  --color-gray-600: #627084;
-  --color-gray-700: #495669;
-  --color-gray-800: #29313d;
-  --color-gray-900: #14181f;
-  --color-success-50: #052305;
-  --color-success-100: #083508;
-  --color-success-200: #0e580e;
-  --color-success-300: #137b13;
-  --color-success-400: #16ad16;
-  --color-success-500: #18c018;
-  --color-success-600: #20e320;
-  --color-success-700: #47e747;
-  --color-success-800: #90f490;
-  --color-success-900: #bdf6bd;
-  --color-info-50: #0b2146;
-  --color-info-100: #113269;
-  --color-info-200: #16438c;
-  --color-info-300: #1b54b0;
-  --color-info-400: #206ae3;
-  --color-info-500: #3378e5;
-  --color-info-600: #5a91ea;
-  --color-info-700: #80abf0;
-  --color-info-800: #bcd2f8;
-  --color-info-900: #d3e2fa;
-  --color-warning-50: #251c04;
-  --color-warning-100: #493908;
-  --color-warning-200: #6e560c;
-  --color-warning-300: #937210;
-  --color-warning-400: #c89a10;
-  --color-warning-500: #ddaa12;
-  --color-warning-600: #eebd2c;
-  --color-warning-700: #f1ca54;
-  --color-warning-800: #fae4a1;
-  --color-warning-900: #fcf1d1;
-  --color-danger-50: #230505;
-  --color-danger-100: #470b0b;
-  --color-danger-200: #6a1111;
-  --color-danger-300: #8d1616;
-  --color-danger-400: #c11818;
-  --color-danger-500: #d31b1b;
-  --color-danger-600: #e53434;
-  --color-danger-700: #ea5b5b;
-  --color-danger-800: #f6a6a6;
-  --color-danger-900: #fad3d3;
-  --color-semantic-surface: #151313;
-  --color-semantic-onSurface: #ffffff;
-  --color-semantic-primaryText: #5a91ea;
-  --color-semantic-primaryFill: #206ae3;
-  --color-semantic-infoFill: #206ae3;
-  /* Smart Surface Tokens (dark mode, context-aware) */
-  --surface-base-bg: #151313;
-  --surface-base-text: #ffffff;
-  --surface-base-text-secondary: #ffffff;
-  --surface-base-text-muted: #a1a1a1;
-  --surface-base-icon: #ffffff;
-  --surface-base-icon-subtle: #a1a1a1;
-  --surface-base-shadow: rgba(255, 255, 255, 0.25);
-  --surface-base-border: rgba(255, 255, 255, 0.15);
-  --surface-subtle-bg: #100e0e;
-  --surface-subtle-text: #ffffff;
-  --surface-subtle-text-secondary: #ffffff;
-  --surface-subtle-text-muted: #9f9f9f;
-  --surface-subtle-icon: #ffffff;
-  --surface-subtle-icon-subtle: #9f9f9f;
-  --surface-subtle-shadow: rgba(255, 255, 255, 0.25);
-  --surface-subtle-border: rgba(255, 255, 255, 0.15);
-  --surface-elevated-bg: #0d0c0c;
-  --surface-elevated-text: #ffffff;
-  --surface-elevated-text-secondary: #ffffff;
-  --surface-elevated-text-muted: #9e9e9e;
-  --surface-elevated-icon: #ffffff;
-  --surface-elevated-icon-subtle: #9e9e9e;
-  --surface-elevated-shadow: rgba(255, 255, 255, 0.25);
-  --surface-elevated-border: rgba(255, 255, 255, 0.15);
-  --surface-sunken-bg: #151313;
-  --surface-sunken-text: #ffffff;
-  --surface-sunken-text-secondary: #ffffff;
-  --surface-sunken-text-muted: #a1a1a1;
-  --surface-sunken-icon: #ffffff;
-  --surface-sunken-icon-subtle: #a1a1a1;
-  --surface-sunken-shadow: rgba(255, 255, 255, 0.25);
-  --surface-sunken-border: rgba(255, 255, 255, 0.15);
-  --surface-overlay-bg: #1a1818;
-  --surface-overlay-text: #ffffff;
-  --surface-overlay-text-secondary: #ffffff;
-  --surface-overlay-text-muted: #a3a3a3;
-  --surface-overlay-icon: #ffffff;
-  --surface-overlay-icon-subtle: #a3a3a3;
-  --surface-overlay-shadow: rgba(255, 255, 255, 0.25);
-  --surface-overlay-border: rgba(255, 255, 255, 0.15);
-  --surface-inverse-bg: #f3f2f2;
-  --surface-inverse-text: #000000;
-  --surface-inverse-text-secondary: #000000;
-  --surface-inverse-text-muted: #616161;
-  --surface-inverse-icon: #000000;
-  --surface-inverse-icon-subtle: #616161;
-  --surface-inverse-shadow: rgba(0, 0, 0, 0.1);
-  --surface-inverse-border: rgba(0, 0, 0, 0.1);
+    --color-surface-base: #151313;
+    --color-surface-subtle: #100e0e;
+    --color-surface-elevated: #0d0c0c;
+    --color-surface-sunken: #151313;
+    --color-surface-overlay: #1a1818;
+    --color-surface-inverse: #f3f2f2;
+    --color-surface-hover: color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%);;
+    --color-surface-fieldset-base: #0d0c0c;
+    --color-surface-fieldset-subtle: #1a1818;
+    --color-surface-fieldset-elevated: #211f1f;
+    --color-surface-fieldset-sunken: #0d0c0c;
+    --color-surface-fieldset-overlay: #262323;
+    --color-primary-50: #0b2146;
+    --color-primary-100: #113269;
+    --color-primary-200: #16438c;
+    --color-primary-300: #1b54b0;
+    --color-primary-400: #206ae3;
+    --color-primary-500: #3378e5;
+    --color-primary-600: #5a91ea;
+    --color-primary-700: #80abf0;
+    --color-primary-800: #bcd2f8;
+    --color-primary-900: #d3e2fa;
+    --color-secondary-50: #121417;
+    --color-secondary-100: #1e2227;
+    --color-secondary-200: #2f353e;
+    --color-secondary-300: #424955;
+    --color-secondary-400: #576374;
+    --color-secondary-500: #616e80;
+    --color-secondary-600: #758397;
+    --color-secondary-700: #8e99aa;
+    --color-secondary-800: #bec5cf;
+    --color-secondary-900: #dbdee1;
+    --color-accent-50: #440f29;
+    --color-accent-100: #66163e;
+    --color-accent-200: #881d52;
+    --color-accent-300: #a92466;
+    --color-accent-400: #d92d82;
+    --color-accent-500: #db3e8c;
+    --color-accent-600: #e262a2;
+    --color-accent-700: #e988b7;
+    --color-accent-800: #f5bfd9;
+    --color-accent-900: #f6d5e6;
+    --color-gray-50: #f9fafa;
+    --color-gray-100: #f1f2f4;
+    --color-gray-200: #dde0e3;
+    --color-gray-300: #c1c6cd;
+    --color-gray-400: #8f97a3;
+    --color-gray-500: #64748b;
+    --color-gray-600: #627084;
+    --color-gray-700: #495669;
+    --color-gray-800: #29313d;
+    --color-gray-900: #14181f;
+    --color-success-50: #052305;
+    --color-success-100: #083508;
+    --color-success-200: #0e580e;
+    --color-success-300: #137b13;
+    --color-success-400: #16ad16;
+    --color-success-500: #18c018;
+    --color-success-600: #20e320;
+    --color-success-700: #47e747;
+    --color-success-800: #90f490;
+    --color-success-900: #bdf6bd;
+    --color-info-50: #0b2146;
+    --color-info-100: #113269;
+    --color-info-200: #16438c;
+    --color-info-300: #1b54b0;
+    --color-info-400: #206ae3;
+    --color-info-500: #3378e5;
+    --color-info-600: #5a91ea;
+    --color-info-700: #80abf0;
+    --color-info-800: #bcd2f8;
+    --color-info-900: #d3e2fa;
+    --color-warning-50: #251c04;
+    --color-warning-100: #493908;
+    --color-warning-200: #6e560c;
+    --color-warning-300: #937210;
+    --color-warning-400: #c89a10;
+    --color-warning-500: #ddaa12;
+    --color-warning-600: #eebd2c;
+    --color-warning-700: #f1ca54;
+    --color-warning-800: #fae4a1;
+    --color-warning-900: #fcf1d1;
+    --color-danger-50: #230505;
+    --color-danger-100: #470b0b;
+    --color-danger-200: #6a1111;
+    --color-danger-300: #8d1616;
+    --color-danger-400: #c11818;
+    --color-danger-500: #d31b1b;
+    --color-danger-600: #e53434;
+    --color-danger-700: #ea5b5b;
+    --color-danger-800: #f6a6a6;
+    --color-danger-900: #fad3d3;
+    --color-semantic-surface: #151313;
+    --color-semantic-onSurface: #ffffff;
+    --color-semantic-primaryText: #5a91ea;
+    --color-semantic-primaryFill: #206ae3;
+    --color-semantic-infoFill: #206ae3;
+    /* Smart Surface Tokens (dark mode, context-aware) */
+    --surface-base-bg: #151313;
+    --surface-base-text: #ffffff;
+    --surface-base-text-secondary: #ffffff;
+    --surface-base-text-muted: #a1a1a1;
+    --surface-base-icon: #ffffff;
+    --surface-base-icon-subtle: #a1a1a1;
+    --surface-base-shadow: rgba(255, 255, 255, 0.25);
+    --surface-base-border: rgba(255, 255, 255, 0.15);
+    --surface-subtle-bg: #100e0e;
+    --surface-subtle-text: #ffffff;
+    --surface-subtle-text-secondary: #ffffff;
+    --surface-subtle-text-muted: #9f9f9f;
+    --surface-subtle-icon: #ffffff;
+    --surface-subtle-icon-subtle: #9f9f9f;
+    --surface-subtle-shadow: rgba(255, 255, 255, 0.25);
+    --surface-subtle-border: rgba(255, 255, 255, 0.15);
+    --surface-elevated-bg: #0d0c0c;
+    --surface-elevated-text: #ffffff;
+    --surface-elevated-text-secondary: #ffffff;
+    --surface-elevated-text-muted: #9e9e9e;
+    --surface-elevated-icon: #ffffff;
+    --surface-elevated-icon-subtle: #9e9e9e;
+    --surface-elevated-shadow: rgba(255, 255, 255, 0.25);
+    --surface-elevated-border: rgba(255, 255, 255, 0.15);
+    --surface-sunken-bg: #151313;
+    --surface-sunken-text: #ffffff;
+    --surface-sunken-text-secondary: #ffffff;
+    --surface-sunken-text-muted: #a1a1a1;
+    --surface-sunken-icon: #ffffff;
+    --surface-sunken-icon-subtle: #a1a1a1;
+    --surface-sunken-shadow: rgba(255, 255, 255, 0.25);
+    --surface-sunken-border: rgba(255, 255, 255, 0.15);
+    --surface-overlay-bg: #1a1818;
+    --surface-overlay-text: #ffffff;
+    --surface-overlay-text-secondary: #ffffff;
+    --surface-overlay-text-muted: #a3a3a3;
+    --surface-overlay-icon: #ffffff;
+    --surface-overlay-icon-subtle: #a3a3a3;
+    --surface-overlay-shadow: rgba(255, 255, 255, 0.25);
+    --surface-overlay-border: rgba(255, 255, 255, 0.15);
+    --surface-inverse-bg: #f3f2f2;
+    --surface-inverse-text: #000000;
+    --surface-inverse-text-secondary: #000000;
+    --surface-inverse-text-muted: #616161;
+    --surface-inverse-icon: #000000;
+    --surface-inverse-icon-subtle: #616161;
+    --surface-inverse-shadow: rgba(0, 0, 0, 0.1);
+    --surface-inverse-border: rgba(0, 0, 0, 0.1);
 
-  --color-text-primary: var(--color-gray-100);
-  --color-text-secondary: var(--color-gray-300);
-  --color-text-muted: var(--color-gray-400);
-  --color-border: var(--color-gray-700);
-  --color-input-bg: var(--color-gray-800);
-  --color-input-disabled-bg: var(--color-gray-900);
-  --color-input-disabled-text: var(--color-gray-600);
-  --color-code-bg: var(--color-gray-800);
-  /* Backdrop tokens - used for modal dialogs, drawers, overlays (dark mode) */
-  --backdrop-bg: linear-gradient(
-      135deg,
-      rgba(0, 0, 0, 0.6),
-      rgba(0, 0, 0, 0.4)
-    );
-  --backdrop-blur: 10px;
-  --backdrop-saturate: 120%;
-  --backdrop-brightness: 0.7;
-  --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));
-  --backdrop-opacity: 1;
-  
-  /* Legacy alias for backwards compatibility */
-  --backdrop-background: var(--backdrop-bg);
-
-  /* Mesh Gradient Backgrounds (Dark Mode) */
-  --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, #206ae3 20%, transparent) 0px, transparent 50%),
-    radial-gradient(at 97% 21%, color-mix(in oklab, #576374 16%, transparent) 0px, transparent 50%),
-    radial-gradient(at 52% 99%, color-mix(in oklab, #d92d82 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 29%, color-mix(in oklab, #206ae3 10%, transparent) 0px, transparent 50%);
-  
-  --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, #576374 18%, transparent) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, color-mix(in oklab, #206ae3 14%, transparent) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, color-mix(in oklab, #d92d82 12%, transparent) 0px, transparent 50%),
-    radial-gradient(at 80% 100%, color-mix(in oklab, #576374 10%, transparent) 0px, transparent 50%);
-  
-  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #d92d82 15%, transparent) 0px, transparent 50%),
-    radial-gradient(at 85% 30%, color-mix(in oklab, #206ae3 17%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 80%, color-mix(in oklab, #576374 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 90%, color-mix(in oklab, #d92d82 11%, transparent) 0px, transparent 50%);
-  
-  --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, #206ae3 14%, transparent) 0px, transparent 50%),
-    radial-gradient(at 20% 80%, color-mix(in oklab, #576374 16%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 60%, color-mix(in oklab, #d92d82 12%, transparent) 0px, transparent 50%),
-    radial-gradient(at 30% 40%, color-mix(in oklab, #206ae3 11%, transparent) 0px, transparent 50%);
-  
-  --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, #206ae3 17%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 10%, color-mix(in oklab, #d92d82 14%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 10%, color-mix(in oklab, #576374 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 90%, color-mix(in oklab, #d92d82 10%, transparent) 0px, transparent 50%);
+    --color-text-primary: var(--color-gray-100);
+    --color-text-secondary: var(--color-gray-300);
+    --color-text-muted: var(--color-gray-400);
+    --color-border: var(--color-gray-700);
+    --color-input-bg: var(--color-gray-800);
+    --color-input-disabled-bg: var(--color-gray-900);
+    --color-input-disabled-text: var(--color-gray-600);
+    --color-code-bg: var(--color-gray-800);
+    /* Backdrop tokens - dark mode */
+    --backdrop-bg: linear-gradient(
+        135deg,
+        rgba(0, 0, 0, 0.6),
+        rgba(0, 0, 0, 0.4)
+      );
+    --backdrop-blur: 10px;
+    --backdrop-saturate: 120%;
+    --backdrop-brightness: 0.7;
+    --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));
+    --backdrop-opacity: 1;
     
-  /* Alert dark mode adjustments */
-  .alert-success {
-    background-color: var(--color-success-50);
-    border-color: var(--color-success-500);
-    color: var(--color-success-900);
-  }
+    /* Legacy alias for backwards compatibility */
+    --backdrop-background: var(--backdrop-bg);
+    /* Mesh Gradient Variables (Dark Mode) */
+    --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, #206ae3 20%, transparent) 0px, transparent 50%),
+      radial-gradient(at 97% 21%, color-mix(in oklab, #576374 16%, transparent) 0px, transparent 50%),
+      radial-gradient(at 52% 99%, color-mix(in oklab, #d92d82 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 10% 29%, color-mix(in oklab, #206ae3 10%, transparent) 0px, transparent 50%);
+    
+    --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, #576374 18%, transparent) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, color-mix(in oklab, #206ae3 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, color-mix(in oklab, #d92d82 12%, transparent) 0px, transparent 50%),
+      radial-gradient(at 80% 100%, color-mix(in oklab, #576374 10%, transparent) 0px, transparent 50%);
+    
+    --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #d92d82 15%, transparent) 0px, transparent 50%),
+      radial-gradient(at 85% 30%, color-mix(in oklab, #206ae3 17%, transparent) 0px, transparent 50%),
+      radial-gradient(at 50% 80%, color-mix(in oklab, #576374 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 90%, color-mix(in oklab, #d92d82 11%, transparent) 0px, transparent 50%);
+    
+    --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, #206ae3 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 20% 80%, color-mix(in oklab, #576374 16%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 60%, color-mix(in oklab, #d92d82 12%, transparent) 0px, transparent 50%),
+      radial-gradient(at 30% 40%, color-mix(in oklab, #206ae3 11%, transparent) 0px, transparent 50%);
+    
+    --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, #206ae3 17%, transparent) 0px, transparent 50%),
+      radial-gradient(at 10% 10%, color-mix(in oklab, #d92d82 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 10%, color-mix(in oklab, #576374 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 50% 90%, color-mix(in oklab, #d92d82 10%, transparent) 0px, transparent 50%);
+             }
 
-  .alert-info {
-    background-color: var(--color-info-50);
-    border-color: var(--color-info-500);
-    color: var(--color-info-900);
-  }
-
-  .alert-warning {
-    background-color: var(--color-warning-50);
-    border-color: var(--color-warning-500);
-    color: var(--color-warning-900);
-  }
-
-  .alert-danger,
-  .alert-error {
-    background-color: var(--color-danger-50);
-    border-color: var(--color-danger-500);
-    color: var(--color-danger-900);
-  }
-
-  /* Dim images in dark mode */
-  img, video {
-    opacity: 0.8;
-    transition: opacity var(--transition-normal);
-  }
-  img:hover, video:hover {
-    opacity: 1;
-  }
-
-}
     }
 /* Non-layered dark variables fallback (ensures attribute wins) */
 html[data-theme="dark"] {

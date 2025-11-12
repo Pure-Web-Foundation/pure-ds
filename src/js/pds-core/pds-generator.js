@@ -924,6 +924,7 @@ ${this.#generateFormStyles()}
 
 ${this.#generateTableStyles()}
 ${this.#generateAlertStyles()}
+${this.#generateDarkModeComponentRules()}
 ${this.#generateToastStyles()}
 ${this.#generateBadgeStyles()}
 ${this.#generateDialogStyles()}
@@ -1204,52 +1205,11 @@ ${this.#generateMediaQueries()}
     // Generate dark mode mesh gradients
     const meshVars = this.#generateMeshGradientsDark(colors);
 
-    const rules = /*css*/ `/* Alert dark mode adjustments */
-.alert-success {
-  background-color: var(--color-success-50);
-  border-color: var(--color-success-500);
-  color: var(--color-success-900);
-}
-
-.alert-info {
-  background-color: var(--color-info-50);
-  border-color: var(--color-info-500);
-  color: var(--color-info-900);
-}
-
-.alert-warning {
-  background-color: var(--color-warning-50);
-  border-color: var(--color-warning-500);
-  color: var(--color-warning-900);
-}
-
-.alert-danger,
-.alert-error {
-  background-color: var(--color-danger-50);
-  border-color: var(--color-danger-500);
-  color: var(--color-danger-900);
-}
-
-/* Dim images in dark mode */
-img, video {
-  opacity: 0.8;
-  transition: opacity var(--transition-normal);
-}
-img:hover, video:hover {
-  opacity: 1;
-}
-`;
-
     // Scope rules using native CSS nesting by wrapping inside html[data-theme="dark"]
     // This yields: html[data-theme="dark"] .selector { ... }
     let css = "";
     css += `html[data-theme="dark"] {\n${vars}${smartSurfaceVars}${semanticVars}${backdropVars}${meshVars}`;
-    // indent nested rule block for readability
-    const nested = rules
-      .split("\n")
-      .map((line) => (line.length ? `  ${line}` : line))
-      .join("\n");
-    css += `\n${nested}\n}`;
+    css += `\n}`;
 
     return css;
   }
@@ -1304,7 +1264,94 @@ img:hover, video:hover {
 
     const mesh = this.#generateMeshGradientsDark(colors);
 
+    // Return ONLY variables, no component rules
     return `html[data-theme="dark"] {\n${vars}${smart}${semantic}${backdrop}${mesh}}\n`;
+  }
+
+  // Generate ONLY dark mode variables for the tokens layer (no wrapper, no component rules)
+  #generateDarkVariablesForTokensLayer(colors) {
+    if (!colors?.dark) return "";
+
+    let vars = "";
+    const generateNested = (obj, prefix = "") => {
+      Object.entries(obj).forEach(([key, value]) => {
+        if (typeof value === "object" && value !== null) {
+          generateNested(value, `${prefix}${key}-`);
+        } else if (typeof value === "string") {
+          vars += `    --color-${prefix}${key}: ${value};\n`;
+        }
+      });
+    };
+
+    Object.entries(colors.dark).forEach(([category, values]) => {
+      if (category === "surfaceSmart") return;
+      if (typeof values === "object" && values !== null) {
+        generateNested(values, `${category}-`);
+      }
+    });
+
+    // Smart surface tokens
+    let smart = "";
+    if (colors.dark.surfaceSmart) {
+      smart += `    /* Smart Surface Tokens (dark mode, context-aware) */\n`;
+      Object.entries(colors.dark.surfaceSmart).forEach(
+        ([surfaceKey, tokens]) => {
+          smart += `    --surface-${surfaceKey}-bg: ${tokens.bg};\n`;
+          smart += `    --surface-${surfaceKey}-text: ${tokens.text};\n`;
+          smart += `    --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`;
+          smart += `    --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`;
+          smart += `    --surface-${surfaceKey}-icon: ${tokens.icon};\n`;
+          smart += `    --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`;
+          smart += `    --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`;
+          smart += `    --surface-${surfaceKey}-border: ${tokens.border};\n`;
+        }
+      );
+      smart += `\n`;
+    }
+
+    const semantic = `    --color-text-primary: var(--color-gray-100);\n    --color-text-secondary: var(--color-gray-300);\n    --color-text-muted: var(--color-gray-400);\n    --color-border: var(--color-gray-700);\n    --color-input-bg: var(--color-gray-800);\n    --color-input-disabled-bg: var(--color-gray-900);\n    --color-input-disabled-text: var(--color-gray-600);\n    --color-code-bg: var(--color-gray-800);\n`;
+
+    const backdrop = `    /* Backdrop tokens - dark mode */\n    --backdrop-bg: linear-gradient(\n        135deg,\n        rgba(0, 0, 0, 0.6),\n        rgba(0, 0, 0, 0.4)\n      );\n    --backdrop-blur: 10px;\n    --backdrop-saturate: 120%;\n    --backdrop-brightness: 0.7;\n    --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));\n    --backdrop-opacity: 1;\n    \n    /* Legacy alias for backwards compatibility */\n    --backdrop-background: var(--backdrop-bg);\n`;
+
+    const mesh = this.#generateMeshGradientsDarkVariablesOnly(colors);
+
+    return `\n       html[data-theme="dark"] {\n${vars}${smart}${semantic}${backdrop}${mesh}       }\n`;
+  }
+
+  // Generate only mesh gradient variables for dark mode (for tokens layer)
+  #generateMeshGradientsDarkVariablesOnly(colors) {
+    // Create darker, more subtle mesh gradients for dark mode
+    const dark = colors.dark || colors;
+    const primary = dark.primary?.[400] || "#60a5fa";
+    const secondary = dark.secondary?.[400] || "#a78bfa";
+    const accent = dark.accent?.[400] || "#fbbf24";
+
+    return `    /* Mesh Gradient Variables (Dark Mode) */
+    --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 20%, transparent) 0px, transparent 50%),
+      radial-gradient(at 97% 21%, color-mix(in oklab, ${secondary} 16%, transparent) 0px, transparent 50%),
+      radial-gradient(at 52% 99%, color-mix(in oklab, ${accent} 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 10% 29%, color-mix(in oklab, ${primary} 10%, transparent) 0px, transparent 50%);
+    
+    --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, ${secondary} 18%, transparent) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, color-mix(in oklab, ${primary} 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, color-mix(in oklab, ${accent} 12%, transparent) 0px, transparent 50%),
+      radial-gradient(at 80% 100%, color-mix(in oklab, ${secondary} 10%, transparent) 0px, transparent 50%);
+    
+    --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, ${accent} 15%, transparent) 0px, transparent 50%),
+      radial-gradient(at 85% 30%, color-mix(in oklab, ${primary} 17%, transparent) 0px, transparent 50%),
+      radial-gradient(at 50% 80%, color-mix(in oklab, ${secondary} 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 90%, color-mix(in oklab, ${accent} 11%, transparent) 0px, transparent 50%);
+    
+    --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, ${primary} 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 20% 80%, color-mix(in oklab, ${secondary} 16%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 60%, color-mix(in oklab, ${accent} 12%, transparent) 0px, transparent 50%),
+      radial-gradient(at 30% 40%, color-mix(in oklab, ${primary} 11%, transparent) 0px, transparent 50%);
+    
+    --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, ${primary} 17%, transparent) 0px, transparent 50%),
+      radial-gradient(at 10% 10%, color-mix(in oklab, ${accent} 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 10%, color-mix(in oklab, ${secondary} 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 50% 90%, color-mix(in oklab, ${accent} 10%, transparent) 0px, transparent 50%);
+      `;
   }
 
   #generateMeshGradientsDark(colors) {
@@ -1341,6 +1388,49 @@ img:hover, video:hover {
     radial-gradient(at 90% 10%, color-mix(in oklab, ${secondary} 13%, transparent) 0px, transparent 50%),
     radial-gradient(at 50% 90%, color-mix(in oklab, ${accent} 10%, transparent) 0px, transparent 50%);
     `;
+  }
+
+  // Generate dark mode component adjustments (for components layer)
+  #generateDarkModeComponentRules() {
+    const rules = /*css*/ `/* Alert dark mode adjustments */
+html[data-theme="dark"] .alert-success {
+  background-color: var(--color-success-50);
+  border-color: var(--color-success-500);
+  color: var(--color-success-900);
+}
+
+html[data-theme="dark"] .alert-info {
+  background-color: var(--color-info-50);
+  border-color: var(--color-info-500);
+  color: var(--color-info-900);
+}
+
+html[data-theme="dark"] .alert-warning {
+  background-color: var(--color-warning-50);
+  border-color: var(--color-warning-500);
+  color: var(--color-warning-900);
+}
+
+html[data-theme="dark"] .alert-danger,
+html[data-theme="dark"] .alert-error {
+  background-color: var(--color-danger-50);
+  border-color: var(--color-danger-500);
+  color: var(--color-danger-900);
+}
+
+/* Dim images in dark mode */
+html[data-theme="dark"] img, 
+html[data-theme="dark"] video {
+  opacity: 0.8;
+  transition: opacity var(--transition-normal);
+}
+
+html[data-theme="dark"] img:hover, 
+html[data-theme="dark"] video:hover {
+  opacity: 1;
+}`;
+
+    return rules;
   }
 
   // If the config specifies options.backgroundMesh (1-5), apply the mesh to body.
@@ -3980,7 +4070,7 @@ nav[data-dropdown][data-mode="auto"] menu {
           ${this.#generateZIndexVariables(zIndex)}
           ${this.#generateIconVariables(icons)}
        }
-       ${this.#generateDarkModeCSS(colors)}
+       ${this.#generateDarkVariablesForTokensLayer(colors)}
     }`;
 
     // Important: emit a non-layered dark variables block so that manual
@@ -4313,6 +4403,8 @@ ${this.#generateTableStyles()}
 }
 
 ${this.#generateScrollbarStyles()}
+
+${this.#generateDarkModeComponentRules()}
 
 }\n`;
   }

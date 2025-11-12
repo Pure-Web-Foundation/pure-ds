@@ -1660,6 +1660,44 @@ tbody {
 
 
 
+/* Alert dark mode adjustments */
+html[data-theme="dark"] .alert-success {
+  background-color: var(--color-success-50);
+  border-color: var(--color-success-500);
+  color: var(--color-success-900);
+}
+
+html[data-theme="dark"] .alert-info {
+  background-color: var(--color-info-50);
+  border-color: var(--color-info-500);
+  color: var(--color-info-900);
+}
+
+html[data-theme="dark"] .alert-warning {
+  background-color: var(--color-warning-50);
+  border-color: var(--color-warning-500);
+  color: var(--color-warning-900);
+}
+
+html[data-theme="dark"] .alert-danger,
+html[data-theme="dark"] .alert-error {
+  background-color: var(--color-danger-50);
+  border-color: var(--color-danger-500);
+  color: var(--color-danger-900);
+}
+
+/* Dim images in dark mode */
+html[data-theme="dark"] img, 
+html[data-theme="dark"] video {
+  opacity: 0.8;
+  transition: opacity var(--transition-normal);
+}
+
+html[data-theme="dark"] img:hover, 
+html[data-theme="dark"] video:hover {
+  opacity: 1;
+}
+
 }
 `);
 
@@ -3320,6 +3358,44 @@ tbody {
 }
 
 
+
+/* Alert dark mode adjustments */
+html[data-theme="dark"] .alert-success {
+  background-color: var(--color-success-50);
+  border-color: var(--color-success-500);
+  color: var(--color-success-900);
+}
+
+html[data-theme="dark"] .alert-info {
+  background-color: var(--color-info-50);
+  border-color: var(--color-info-500);
+  color: var(--color-info-900);
+}
+
+html[data-theme="dark"] .alert-warning {
+  background-color: var(--color-warning-50);
+  border-color: var(--color-warning-500);
+  color: var(--color-warning-900);
+}
+
+html[data-theme="dark"] .alert-danger,
+html[data-theme="dark"] .alert-error {
+  background-color: var(--color-danger-50);
+  border-color: var(--color-danger-500);
+  color: var(--color-danger-900);
+}
+
+/* Dim images in dark mode */
+html[data-theme="dark"] img, 
+html[data-theme="dark"] video {
+  opacity: 0.8;
+  transition: opacity var(--transition-normal);
+}
+
+html[data-theme="dark"] img:hover, 
+html[data-theme="dark"] video:hover {
+  opacity: 1;
+}
 
 }
 `;
