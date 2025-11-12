@@ -648,6 +648,11 @@ export class Generator {
       maxSpacingSteps = 32,
     } = spatialConfig;
 
+    // Validate and convert to numbers, with fallbacks
+    const validBaseUnit = Number.isFinite(Number(baseUnit)) ? Number(baseUnit) : 16;
+    const validScaleRatio = Number.isFinite(Number(scaleRatio)) ? Number(scaleRatio) : 1.25;
+    const validMaxSpacingSteps = Number.isFinite(Number(maxSpacingSteps)) ? Number(maxSpacingSteps) : 32;
+
     const spacing = { 0: "0" };
 
     // Generate standard spacing scale
@@ -656,13 +661,17 @@ export class Generator {
     ];
     standardSteps.forEach((multiplier, index) => {
       const step = index + 1;
-      spacing[step] = `${Math.round(baseUnit * multiplier)}px`;
+      const value = Math.round(validBaseUnit * multiplier);
+      // Ensure the calculated value is valid
+      spacing[step] = Number.isFinite(value) ? `${value}px` : "0px";
     });
 
     // Generate additional steps up to maxSpacingSteps using scale ratio
-    for (let i = standardSteps.length + 1; i <= maxSpacingSteps; i++) {
-      const multiplier = Math.pow(scaleRatio, i - 8); // Start scaling from step 8
-      spacing[i] = `${Math.round(baseUnit * multiplier)}px`;
+    for (let i = standardSteps.length + 1; i <= validMaxSpacingSteps; i++) {
+      const multiplier = Math.pow(validScaleRatio, i - 8); // Start scaling from step 8
+      const value = Math.round(validBaseUnit * multiplier);
+      // Ensure the calculated value is valid
+      spacing[i] = Number.isFinite(value) ? `${value}px` : "0px";
     }
 
     return spacing;
@@ -685,13 +694,16 @@ export class Generator {
       baseRadius = enums.RadiusSizes.medium;
     }
 
+    // Validate and convert baseRadius to a number
+    const validBaseRadius = Number.isFinite(Number(baseRadius)) ? Number(baseRadius) : enums.RadiusSizes.medium;
+
     return {
       none: "0",
-      xs: `${Math.round(baseRadius * 0.25)}px`,
-      sm: `${Math.round(baseRadius * 0.5)}px`,
-      md: `${baseRadius}px`,
-      lg: `${Math.round(baseRadius * 1.5)}px`,
-      xl: `${Math.round(baseRadius * 2)}px`,
+      xs: `${Number.isFinite(validBaseRadius * 0.25) ? Math.round(validBaseRadius * 0.25) : 0}px`,
+      sm: `${Number.isFinite(validBaseRadius * 0.5) ? Math.round(validBaseRadius * 0.5) : 0}px`,
+      md: `${validBaseRadius}px`,
+      lg: `${Number.isFinite(validBaseRadius * 1.5) ? Math.round(validBaseRadius * 1.5) : 0}px`,
+      xl: `${Number.isFinite(validBaseRadius * 2) ? Math.round(validBaseRadius * 2) : 0}px`,
       full: "9999px",
     };
   }
@@ -713,6 +725,10 @@ export class Generator {
       lineHeightRelaxed = enums.LineHeights.relaxed,
     } = typographyConfig;
 
+    // Validate numeric values to prevent NaN
+    const validBaseFontSize = Number.isFinite(Number(baseFontSize)) ? Number(baseFontSize) : 16;
+    const validFontScale = Number.isFinite(Number(fontScale)) ? Number(fontScale) : 1.2;
+
     return {
       fontFamily: {
         headings: fontFamilyHeadings,
@@ -720,14 +736,14 @@ export class Generator {
         mono: fontFamilyMono,
       },
       fontSize: {
-        xs: `${Math.round(baseFontSize * 0.75)}px`,
-        sm: `${Math.round(baseFontSize * 0.875)}px`,
-        base: `${baseFontSize}px`,
-        lg: `${Math.round(baseFontSize * 1.125)}px`,
-        xl: `${Math.round(baseFontSize * fontScale)}px`,
-        "2xl": `${Math.round(baseFontSize * Math.pow(fontScale, 2))}px`,
-        "3xl": `${Math.round(baseFontSize * Math.pow(fontScale, 3))}px`,
-        "4xl": `${Math.round(baseFontSize * Math.pow(fontScale, 4))}px`,
+        xs: `${Number.isFinite(validBaseFontSize * 0.75) ? Math.round(validBaseFontSize * 0.75) : 12}px`,
+        sm: `${Number.isFinite(validBaseFontSize * 0.875) ? Math.round(validBaseFontSize * 0.875) : 14}px`,
+        base: `${validBaseFontSize}px`,
+        lg: `${Number.isFinite(validBaseFontSize * 1.125) ? Math.round(validBaseFontSize * 1.125) : 18}px`,
+        xl: `${Number.isFinite(validBaseFontSize * validFontScale) ? Math.round(validBaseFontSize * validFontScale) : 19}px`,
+        "2xl": `${Number.isFinite(validBaseFontSize * Math.pow(validFontScale, 2)) ? Math.round(validBaseFontSize * Math.pow(validFontScale, 2)) : 23}px`,
+        "3xl": `${Number.isFinite(validBaseFontSize * Math.pow(validFontScale, 3)) ? Math.round(validBaseFontSize * Math.pow(validFontScale, 3)) : 28}px`,
+        "4xl": `${Number.isFinite(validBaseFontSize * Math.pow(validFontScale, 4)) ? Math.round(validBaseFontSize * Math.pow(validFontScale, 4)) : 33}px`,
       },
       fontWeight: {
         light: fontWeightLight?.toString() || "300",
@@ -1067,7 +1083,11 @@ ${this.#generateMediaQueries()}
   #generateSpacingVariables(spacing) {
     let css = "  /* Spacing */\n";
     Object.entries(spacing).forEach(([key, value]) => {
-      css += `  --spacing-${key}: ${value};\n`;
+      // Validate the key and value before generating CSS
+      if (key !== null && key !== undefined && key !== 'NaN' && 
+          value !== null && value !== undefined && !value.includes('NaN')) {
+        css += `  --spacing-${key}: ${value};\n`;
+      }
     });
     return css + "\n";
   }
@@ -1871,6 +1891,7 @@ figcaption {
     const buttonPaddingValue = buttonPadding || 1.0;
     const focusWidth = focusRingWidth || 3;
     const borderWidth = borderWidthThin || 1;
+    const gapValue = gap || 1.0;
     const sectionSpacingValue = sectionSpacing || 2.0;
     const minButtonHeight = buttonMinHeight || 44;
     const minInputHeight = inputMinHeight || 40;
@@ -1882,7 +1903,7 @@ form {
 }
 
 fieldset {
-  margin: 0 0 var(--spacing-${Math.round((gap * sectionSpacingValue) / 4)}) 0;
+  margin: 0 0 var(--spacing-${Number.isFinite(Math.round((gapValue * sectionSpacingValue) / 4)) ? Math.round((gapValue * sectionSpacingValue) / 4) : 1}) 0;
   padding: var(--spacing-5);
   width: 100%;
   background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);

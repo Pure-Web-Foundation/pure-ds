@@ -1165,7 +1165,7 @@ form {
 }
 
 fieldset {
-  margin: 0 0 var(--spacing-NaN) 0;
+  margin: 0 0 var(--spacing-1) 0;
   padding: var(--spacing-5);
   width: 100%;
   background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
@@ -4389,7 +4389,7 @@ form {
 }
 
 fieldset {
-  margin: 0 0 var(--spacing-NaN) 0;
+  margin: 0 0 var(--spacing-1) 0;
   padding: var(--spacing-5);
   width: 100%;
   background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
