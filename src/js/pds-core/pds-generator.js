@@ -643,35 +643,34 @@ export class Generator {
    */
   generateSpacingTokens(spatialConfig) {
     const {
-      baseUnit = 16,
+      baseUnit = 4,
       scaleRatio = 1.25,
-      maxSpacingSteps = 32,
+      maxSpacingSteps = 12, // Trim to realistic range
     } = spatialConfig;
 
     // Validate and convert to numbers, with fallbacks
-    const validBaseUnit = Number.isFinite(Number(baseUnit)) ? Number(baseUnit) : 16;
+    const validBaseUnit = Number.isFinite(Number(baseUnit)) ? Number(baseUnit) : 4;
     const validScaleRatio = Number.isFinite(Number(scaleRatio)) ? Number(scaleRatio) : 1.25;
-    const validMaxSpacingSteps = Number.isFinite(Number(maxSpacingSteps)) ? Number(maxSpacingSteps) : 32;
+    const validMaxSpacingSteps = Math.min(Number.isFinite(Number(maxSpacingSteps)) ? Number(maxSpacingSteps) : 12, 12);
 
     const spacing = { 0: "0" };
 
-    // Generate standard spacing scale
-    const standardSteps = [
-      0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3, 4, 5, 6, 8,
-    ];
-    standardSteps.forEach((multiplier, index) => {
+    // Generate rational modular spacing scale
+    // Use consistent 1.25x ("minor third") ratio throughout
+    
+    // Phase 1: Linear base for precision (1-4)
+    const baseSteps = [1, 2, 3, 4]; // 4, 8, 12, 16px
+    baseSteps.forEach((multiplier, index) => {
       const step = index + 1;
-      const value = Math.round(validBaseUnit * multiplier);
-      // Ensure the calculated value is valid
-      spacing[step] = Number.isFinite(value) ? `${value}px` : "0px";
+      spacing[step] = `${validBaseUnit * multiplier}px`;
     });
 
-    // Generate additional steps up to maxSpacingSteps using scale ratio
-    for (let i = standardSteps.length + 1; i <= validMaxSpacingSteps; i++) {
-      const multiplier = Math.pow(validScaleRatio, i - 8); // Start scaling from step 8
-      const value = Math.round(validBaseUnit * multiplier);
-      // Ensure the calculated value is valid
-      spacing[i] = Number.isFinite(value) ? `${value}px` : "0px";
+    // Phase 2: Modular scale from step 5 onwards
+    // Start from 20px (5 * 4px) and apply consistent 1.25 ratio
+    let currentValue = validBaseUnit * 5; // 20px
+    for (let i = 5; i <= validMaxSpacingSteps; i++) {
+      spacing[i] = `${Math.round(currentValue)}px`;
+      currentValue = currentValue * validScaleRatio;
     }
 
     return spacing;
@@ -714,7 +713,7 @@ export class Generator {
       fontFamilyBody = "system-ui, -apple-system, sans-serif",
       fontFamilyMono = 'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace',
       baseFontSize = 16,
-      fontScale = 1.2,
+      fontScale = 1.25, // Use consistent 1.25x minor third ratio
       fontWeightLight = enums.FontWeights.light,
       fontWeightNormal = enums.FontWeights.normal,
       fontWeightMedium = enums.FontWeights.medium,
@@ -727,7 +726,7 @@ export class Generator {
 
     // Validate numeric values to prevent NaN
     const validBaseFontSize = Number.isFinite(Number(baseFontSize)) ? Number(baseFontSize) : 16;
-    const validFontScale = Number.isFinite(Number(fontScale)) ? Number(fontScale) : 1.2;
+    const validFontScale = Number.isFinite(Number(fontScale)) ? Number(fontScale) : 1.25;
 
     return {
       fontFamily: {
@@ -736,14 +735,15 @@ export class Generator {
         mono: fontFamilyMono,
       },
       fontSize: {
-        xs: `${Number.isFinite(validBaseFontSize * 0.75) ? Math.round(validBaseFontSize * 0.75) : 12}px`,
-        sm: `${Number.isFinite(validBaseFontSize * 0.875) ? Math.round(validBaseFontSize * 0.875) : 14}px`,
-        base: `${validBaseFontSize}px`,
-        lg: `${Number.isFinite(validBaseFontSize * 1.125) ? Math.round(validBaseFontSize * 1.125) : 18}px`,
-        xl: `${Number.isFinite(validBaseFontSize * validFontScale) ? Math.round(validBaseFontSize * validFontScale) : 19}px`,
-        "2xl": `${Number.isFinite(validBaseFontSize * Math.pow(validFontScale, 2)) ? Math.round(validBaseFontSize * Math.pow(validFontScale, 2)) : 23}px`,
-        "3xl": `${Number.isFinite(validBaseFontSize * Math.pow(validFontScale, 3)) ? Math.round(validBaseFontSize * Math.pow(validFontScale, 3)) : 28}px`,
-        "4xl": `${Number.isFinite(validBaseFontSize * Math.pow(validFontScale, 4)) ? Math.round(validBaseFontSize * Math.pow(validFontScale, 4)) : 33}px`,
+        // Consistent modular scale using 1.25 ratio (minor third)
+        xs: `${Math.round(validBaseFontSize / Math.pow(validFontScale, 2))}px`,   // 16 / 1.25² = 10px
+        sm: `${Math.round(validBaseFontSize / validFontScale)}px`,                // 16 / 1.25 = 13px  
+        base: `${validBaseFontSize}px`,                                          // 16px
+        lg: `${Math.round(validBaseFontSize * validFontScale)}px`,               // 16 × 1.25 = 20px
+        xl: `${Math.round(validBaseFontSize * Math.pow(validFontScale, 2))}px`,  // 16 × 1.25² = 25px
+        "2xl": `${Math.round(validBaseFontSize * Math.pow(validFontScale, 3))}px`, // 16 × 1.25³ = 31px
+        "3xl": `${Math.round(validBaseFontSize * Math.pow(validFontScale, 4))}px`, // 16 × 1.25⁴ = 39px
+        "4xl": `${Math.round(validBaseFontSize * Math.pow(validFontScale, 5))}px`, // 16 × 1.25⁵ = 49px
       },
       fontWeight: {
         light: fontWeightLight?.toString() || "300",
@@ -822,6 +822,13 @@ export class Generator {
         lg: ${breakpoints.lg}px,
         xl: ${breakpoints.xl}px,
       }`,
+      // Semantic spacing tokens for large layouts
+      // Use these instead of numbered spacing beyond --spacing-12
+      pageMargin: "120px",      // For page-level margins
+      sectionGap: "160px",      // Between major page sections  
+      containerGap: "200px",    // Between container blocks
+      heroSpacing: "240px",     // For hero/banner areas
+      footerSpacing: "160px",   // Before footer sections
     };
   }
 

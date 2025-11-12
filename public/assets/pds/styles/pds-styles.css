@@ -220,33 +220,13 @@
   --spacing-3: 12px;
   --spacing-4: 16px;
   --spacing-5: 20px;
-  --spacing-6: 24px;
-  --spacing-7: 32px;
-  --spacing-8: 40px;
-  --spacing-9: 48px;
-  --spacing-10: 64px;
-  --spacing-11: 80px;
-  --spacing-12: 96px;
-  --spacing-13: 128px;
-  --spacing-14: 61px;
-  --spacing-15: 76px;
-  --spacing-16: 95px;
-  --spacing-17: 119px;
-  --spacing-18: 149px;
-  --spacing-19: 186px;
-  --spacing-20: 233px;
-  --spacing-21: 291px;
-  --spacing-22: 364px;
-  --spacing-23: 455px;
-  --spacing-24: 568px;
-  --spacing-25: 711px;
-  --spacing-26: 888px;
-  --spacing-27: 1110px;
-  --spacing-28: 1388px;
-  --spacing-29: 1735px;
-  --spacing-30: 2168px;
-  --spacing-31: 2711px;
-  --spacing-32: 3388px;
+  --spacing-6: 25px;
+  --spacing-7: 31px;
+  --spacing-8: 39px;
+  --spacing-9: 49px;
+  --spacing-10: 61px;
+  --spacing-11: 76px;
+  --spacing-12: 95px;
 
 
             /* Border Radius */
@@ -263,14 +243,14 @@
   --font-family-headings: system-ui, -apple-system, sans-serif;
   --font-family-body: system-ui, -apple-system, sans-serif;
   --font-family-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
-  --font-size-xs: 12px;
-  --font-size-sm: 14px;
+  --font-size-xs: 10px;
+  --font-size-sm: 13px;
   --font-size-base: 16px;
-  --font-size-lg: 18px;
-  --font-size-xl: 19px;
-  --font-size-2xl: 23px;
-  --font-size-3xl: 28px;
-  --font-size-4xl: 33px;
+  --font-size-lg: 20px;
+  --font-size-xl: 25px;
+  --font-size-2xl: 31px;
+  --font-size-3xl: 39px;
+  --font-size-4xl: 49px;
   --font-weight-light: 300;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
@@ -300,6 +280,11 @@
         lg: 1024px,
         xl: 1280px,
       };
+  --layout-pageMargin: 120px;
+  --layout-sectionGap: 160px;
+  --layout-containerGap: 200px;
+  --layout-heroSpacing: 240px;
+  --layout-footerSpacing: 160px;
 
 
             /* Transitions */
