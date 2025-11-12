@@ -84,7 +84,7 @@ pds-config-form {
   border-radius: var(--radius-md);
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
-  font-weight: var(--font-fontWeight-medium);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: all var(--transition-fast);
   width: 100%;
@@ -101,7 +101,7 @@ pds-config-form {
   background: var(--color-primary-100);
   border-color: var(--color-primary-500);
   color: var(--color-primary-700);
-  font-weight: var(--font-fontWeight-semibold);
+  font-weight: var(--font-weight-semibold);
 }
 
 .inspector-toggle.active:hover {
@@ -395,7 +395,7 @@ pds-demo {
 .showcase-hero h1 {
   margin: 0 0 var(--spacing-4) 0;
   font-size: var(--font-size-4xl);
-  font-weight: var(--font-fontWeight-bold);
+  font-weight: var(--font-weight-bold);
   color: white;
 }
 
@@ -425,13 +425,13 @@ pds-demo {
   gap: var(--spacing-3);
   margin: 0 0 var(--spacing-6) 0;
   font-size: var(--font-size-2xl);
-  font-weight: var(--font-fontWeight-bold);
+  font-weight: var(--font-weight-bold);
 }
 
 .showcase-section h3 {
   margin: var(--spacing-6) 0 var(--spacing-4) 0;
   font-size: var(--font-size-xl);
-  font-weight: var(--font-fontWeight-semibold);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
@@ -468,7 +468,7 @@ pds-demo {
   justify-content: center;
   color: white;
   font-size: var(--font-size-2xl);
-  font-weight: var(--font-fontWeight-semibold);
+  font-weight: var(--font-weight-semibold);
 }
 
 .color-card-body {
@@ -602,7 +602,7 @@ pds-demo {
 }
 
 .form-demo legend {
-  font-weight: var(--font-fontWeight-semibold);
+  font-weight: var(--font-weight-semibold);
   margin-bottom: var(--spacing-4);
 }
 
@@ -740,7 +740,7 @@ pds-demo {
 }
 
 .form-group legend {
-  font-weight: var(--font-fontWeight-semibold);
+  font-weight: var(--font-weight-semibold);
   margin-bottom: var(--spacing-3);
 }
 
@@ -960,7 +960,7 @@ pds-demo {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
-  font-weight: var(--font-fontWeight-semibold);
+  font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-lg);
   flex: 1;
 }
@@ -971,7 +971,7 @@ pds-demo {
   background: var(--color-primary-100);
   color: var(--color-primary-700);
   border-radius: var(--radius-sm);
-  font-weight: var(--font-fontWeight-medium);
+  font-weight: var(--font-weight-medium);
 }
 
 .copy-code-btn {
@@ -983,7 +983,7 @@ pds-demo {
   color: white;
   border: none;
   border-radius: var(--radius-md);
-  font-weight: var(--font-fontWeight-medium);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
@@ -1015,7 +1015,7 @@ pds-demo {
 .lit-properties h4 {
   margin: 0 0 var(--spacing-3) 0;
   font-size: var(--font-size-md);
-  font-weight: var(--font-fontWeight-semibold);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   display: flex;
   align-items: center;
@@ -1038,7 +1038,7 @@ pds-demo {
 }
 
 .prop-name {
-  font-weight: var(--font-fontWeight-semibold);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-primary-600);
   font-family: var(--font-fontFamily-mono);
   font-size: var(--font-size-sm);

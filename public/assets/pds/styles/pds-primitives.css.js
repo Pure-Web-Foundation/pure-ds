@@ -11,7 +11,7 @@ primitives.replaceSync(`@layer primitives {
   :where(html) {
     font-family: var(--font-family-body);
     font-size: var(--font-size-base);
-    line-height: var(--font-lineHeight-normal);
+    line-height: var(--font-line-height-normal);
     color: var(--color-text-primary);
     background-color: var(--color-surface-base);
     -webkit-text-size-adjust: 100%;
@@ -30,7 +30,7 @@ primitives.replaceSync(`@layer primitives {
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    min-height: var(--layout-minHeight, 100vh);
+    min-height: var(--layout-min-height, 100vh);
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
   }
@@ -157,7 +157,7 @@ primitives.replaceSync(`@layer primitives {
     color: var(--color-text-primary);
     margin: 0 0 var(--spacing-3) 0;
     border: none;
-    line-height: var(--font-lineHeight-tight);
+    line-height: var(--font-line-height-tight);
     padding: 0 var(--spacing-3);
     font-size: var(--font-size-lg);
     background: transparent; /* avoid browser default notch behavior */
@@ -188,7 +188,7 @@ primitives.replaceSync(`@layer primitives {
   :where(h1, h2, h3, h4, h5, h6) {
     font-family: var(--font-family-headings);
     font-weight: var(--font-weight-bold);
-    line-height: var(--font-lineHeight-tight);
+    line-height: var(--font-line-height-tight);
     margin: var(--spacing-4) 0 var(--spacing-3) 0;
     color: var(--color-text-primary);
     word-wrap: break-word;
@@ -216,7 +216,7 @@ primitives.replaceSync(`@layer primitives {
 
   :where(p) {
     margin: var(--spacing-3) 0;
-    line-height: var(--font-lineHeight-relaxed);
+    line-height: var(--font-line-height-relaxed);
     color: var(--color-text-primary);
   }
 
@@ -259,7 +259,7 @@ primitives.replaceSync(`@layer primitives {
     margin-top: var(--spacing-3);
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
-    line-height: var(--font-lineHeight-relaxed);
+    line-height: var(--font-line-height-relaxed);
   }
 }
 `);
@@ -273,7 +273,7 @@ export const primitivesCSS = `@layer primitives {
   :where(html) {
     font-family: var(--font-family-body);
     font-size: var(--font-size-base);
-    line-height: var(--font-lineHeight-normal);
+    line-height: var(--font-line-height-normal);
     color: var(--color-text-primary);
     background-color: var(--color-surface-base);
     -webkit-text-size-adjust: 100%;
@@ -292,7 +292,7 @@ export const primitivesCSS = `@layer primitives {
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    min-height: var(--layout-minHeight, 100vh);
+    min-height: var(--layout-min-height, 100vh);
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
   }
@@ -419,7 +419,7 @@ export const primitivesCSS = `@layer primitives {
     color: var(--color-text-primary);
     margin: 0 0 var(--spacing-3) 0;
     border: none;
-    line-height: var(--font-lineHeight-tight);
+    line-height: var(--font-line-height-tight);
     padding: 0 var(--spacing-3);
     font-size: var(--font-size-lg);
     background: transparent; /* avoid browser default notch behavior */
@@ -450,7 +450,7 @@ export const primitivesCSS = `@layer primitives {
   :where(h1, h2, h3, h4, h5, h6) {
     font-family: var(--font-family-headings);
     font-weight: var(--font-weight-bold);
-    line-height: var(--font-lineHeight-tight);
+    line-height: var(--font-line-height-tight);
     margin: var(--spacing-4) 0 var(--spacing-3) 0;
     color: var(--color-text-primary);
     word-wrap: break-word;
@@ -478,7 +478,7 @@ export const primitivesCSS = `@layer primitives {
 
   :where(p) {
     margin: var(--spacing-3) 0;
-    line-height: var(--font-lineHeight-relaxed);
+    line-height: var(--font-line-height-relaxed);
     color: var(--color-text-primary);
   }
 
@@ -521,7 +521,7 @@ export const primitivesCSS = `@layer primitives {
     margin-top: var(--spacing-3);
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
-    line-height: var(--font-lineHeight-relaxed);
+    line-height: var(--font-line-height-relaxed);
   }
 }
 `;

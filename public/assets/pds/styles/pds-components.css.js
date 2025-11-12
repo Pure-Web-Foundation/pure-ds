@@ -106,7 +106,7 @@ components.replaceSync(`@layer components {
 
 :where(address) {
   font-style: normal;
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
   margin: 0 0 var(--spacing-4) 0;
 }
 
@@ -260,7 +260,7 @@ label {
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
-  line-height: var(--font-lineHeight-normal);
+  line-height: var(--font-line-height-normal);
 }
 
 [data-label] {
@@ -275,7 +275,7 @@ label {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   margin-top: var(--spacing-1);
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
 }
 
 input, textarea, select {
@@ -286,7 +286,7 @@ input, textarea, select {
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
-  line-height: var(--font-lineHeight-normal);
+  line-height: var(--font-line-height-normal);
   background-color: var(--color-input-bg);
   color: var(--color-text-primary);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
@@ -699,7 +699,7 @@ textarea {
   min-height: calc(var(--spacing-4) * 5);
   padding: var(--spacing-3) var(--spacing-4);
   resize: vertical;
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
 }
 
 /* Select dropdowns */
@@ -938,7 +938,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   align-items: flex-start;
   gap: var(--spacing-3);
   font-size: var(--font-size-sm);
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
   
   & > *:last-child {
     margin-bottom: 0;
@@ -1805,7 +1805,7 @@ export const componentsCSS = `@layer components {
 
 :where(address) {
   font-style: normal;
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
   margin: 0 0 var(--spacing-4) 0;
 }
 
@@ -1959,7 +1959,7 @@ label {
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
-  line-height: var(--font-lineHeight-normal);
+  line-height: var(--font-line-height-normal);
 }
 
 [data-label] {
@@ -1974,7 +1974,7 @@ label {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   margin-top: var(--spacing-1);
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
 }
 
 input, textarea, select {
@@ -1985,7 +1985,7 @@ input, textarea, select {
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
-  line-height: var(--font-lineHeight-normal);
+  line-height: var(--font-line-height-normal);
   background-color: var(--color-input-bg);
   color: var(--color-text-primary);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
@@ -2398,7 +2398,7 @@ textarea {
   min-height: calc(var(--spacing-4) * 5);
   padding: var(--spacing-3) var(--spacing-4);
   resize: vertical;
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
 }
 
 /* Select dropdowns */
@@ -2637,7 +2637,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   align-items: flex-start;
   gap: var(--spacing-3);
   font-size: var(--font-size-sm);
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
   
   & > *:last-child {
     margin-bottom: 0;

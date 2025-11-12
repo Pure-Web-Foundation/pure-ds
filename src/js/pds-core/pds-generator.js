@@ -1110,12 +1110,18 @@ ${this.#generateMediaQueries()}
   #generateTypographyVariables(typography) {
     let css = "  /* Typography */\n";
     Object.entries(typography).forEach(([category, values]) => {
-      // Remove "font" prefix from category names (fontFamily -> family, fontSize -> size, etc.)
+      // Remove "font" prefix from category names and convert to kebab-case
+      // fontFamily -> family, fontSize -> size, fontWeight -> weight, lineHeight -> line-height
       const cleanCategory = category
         .replace(/^font/, "")
-        .replace(/^(.)/, (m) => m.toLowerCase());
+        .replace(/^(.)/, (m) => m.toLowerCase())
+        .replace(/([A-Z])/g, '-$1')
+        .toLowerCase();
+      
       Object.entries(values).forEach(([key, value]) => {
-        css += `  --font-${cleanCategory}-${key}: ${value};\n`;
+        // Convert camelCase keys to kebab-case
+        const kebabKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+        css += `  --font-${cleanCategory}-${kebabKey}: ${value};\n`;
       });
     });
     return css + "\n";
@@ -1132,7 +1138,9 @@ ${this.#generateMediaQueries()}
   #generateLayoutVariables(layout) {
     let css = "  /* Layout */\n";
     Object.entries(layout).forEach(([key, value]) => {
-      css += `  --layout-${key}: ${value};\n`;
+      // Convert camelCase keys to kebab-case
+      const kebabKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+      css += `  --layout-${kebabKey}: ${value};\n`;
     });
     return css + "\n";
   }
@@ -1536,7 +1544,7 @@ html[data-theme="dark"] video:hover {
 html {
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
-  line-height: var(--font-lineHeight-normal);
+  line-height: var(--font-line-height-normal);
   color: var(--color-text-primary);
   background-color: var(--color-surface-base);
   -webkit-text-size-adjust: 100%;
@@ -1550,7 +1558,7 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  min-height: var(--layout-minHeight);
+  min-height: var(--layout-min-height);
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 }
@@ -1560,7 +1568,7 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0 0 var(--spacing-4) 0;
   font-family: var(--font-family-headings);
   font-weight: var(--font-weight-semibold);
-  line-height: var(--font-lineHeight-normal);
+  line-height: var(--font-line-height-normal);
   word-wrap: break-word;
   hyphens: auto;
   overflow-wrap: break-word;
@@ -1656,7 +1664,7 @@ li {
 code, pre {
   font-family: var(--font-family-mono);
   font-size: var(--font-size-sm);
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
 }
 
 code {
@@ -1695,7 +1703,7 @@ figcaption {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   text-align: left;
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
   padding: 0 var(--spacing-2);
   
   @media (min-width: ${breakpoints.sm}px) {
@@ -1821,7 +1829,7 @@ figcaption {
 
 :where(address) {
   font-style: normal;
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
   margin: 0 0 var(--spacing-4) 0;
 }
 
@@ -1998,7 +2006,7 @@ label {
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
-  line-height: var(--font-lineHeight-normal);
+  line-height: var(--font-line-height-normal);
 }
 
 [data-label] {
@@ -2013,7 +2021,7 @@ label {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   margin-top: var(--spacing-1);
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
 }
 
 input, textarea, select {
@@ -2024,7 +2032,7 @@ input, textarea, select {
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
-  line-height: var(--font-lineHeight-normal);
+  line-height: var(--font-line-height-normal);
   background-color: var(--color-input-bg);
   color: var(--color-text-primary);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
@@ -2439,7 +2447,7 @@ textarea {
   min-height: calc(var(--spacing-4) * 5);
   padding: var(--spacing-3) var(--spacing-4);
   resize: vertical;
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
 }
 
 /* Select dropdowns */
@@ -2771,7 +2779,7 @@ tbody {
   align-items: flex-start;
   gap: var(--spacing-3);
   font-size: var(--font-size-sm);
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
   
   & > *:last-child {
     margin-bottom: 0;
@@ -4134,7 +4142,7 @@ nav[data-dropdown][data-mode="auto"] menu {
   :where(html) {
     font-family: var(--font-family-body);
     font-size: var(--font-size-base);
-    line-height: var(--font-lineHeight-normal);
+    line-height: var(--font-line-height-normal);
     color: var(--color-text-primary);
     background-color: var(--color-surface-base);
     -webkit-text-size-adjust: 100%;
@@ -4153,7 +4161,7 @@ nav[data-dropdown][data-mode="auto"] menu {
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    min-height: var(--layout-minHeight, 100vh);
+    min-height: var(--layout-min-height, 100vh);
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
   }
@@ -4280,7 +4288,7 @@ nav[data-dropdown][data-mode="auto"] menu {
     color: var(--color-text-primary);
     margin: 0 0 var(--spacing-3) 0;
     border: none;
-    line-height: var(--font-lineHeight-tight);
+    line-height: var(--font-line-height-tight);
     padding: 0 var(--spacing-3);
     font-size: var(--font-size-lg);
     background: transparent; /* avoid browser default notch behavior */
@@ -4311,7 +4319,7 @@ nav[data-dropdown][data-mode="auto"] menu {
   :where(h1, h2, h3, h4, h5, h6) {
     font-family: var(--font-family-headings);
     font-weight: var(--font-weight-bold);
-    line-height: var(--font-lineHeight-tight);
+    line-height: var(--font-line-height-tight);
     margin: var(--spacing-4) 0 var(--spacing-3) 0;
     color: var(--color-text-primary);
     word-wrap: break-word;
@@ -4339,7 +4347,7 @@ nav[data-dropdown][data-mode="auto"] menu {
 
   :where(p) {
     margin: var(--spacing-3) 0;
-    line-height: var(--font-lineHeight-relaxed);
+    line-height: var(--font-line-height-relaxed);
     color: var(--color-text-primary);
   }
 
@@ -4382,7 +4390,7 @@ nav[data-dropdown][data-mode="auto"] menu {
     margin-top: var(--spacing-3);
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
-    line-height: var(--font-lineHeight-relaxed);
+    line-height: var(--font-line-height-relaxed);
   }
 }
 `;

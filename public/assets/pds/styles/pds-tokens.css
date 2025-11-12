@@ -256,9 +256,9 @@
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  --font-lineHeight-tight: 1.25;
-  --font-lineHeight-normal: 1.5;
-  --font-lineHeight-relaxed: 1.75;
+  --font-line-height-tight: 1.25;
+  --font-line-height-normal: 1.5;
+  --font-line-height-relaxed: 1.75;
 
 
             /* Shadows */
@@ -271,20 +271,20 @@
 
 
             /* Layout */
-  --layout-maxWidth: 1200px;
-  --layout-minHeight: 100vh;
-  --layout-containerPadding: 16px;
+  --layout-max-width: 1200px;
+  --layout-min-height: 100vh;
+  --layout-container-padding: 16px;
   --layout-breakpoints: {
         sm: 640px,
         md: 768px,
         lg: 1024px,
         xl: 1280px,
       };
-  --layout-pageMargin: 120px;
-  --layout-sectionGap: 160px;
-  --layout-containerGap: 200px;
-  --layout-heroSpacing: 240px;
-  --layout-footerSpacing: 160px;
+  --layout-page-margin: 120px;
+  --layout-section-gap: 160px;
+  --layout-container-gap: 200px;
+  --layout-hero-spacing: 240px;
+  --layout-footer-spacing: 160px;
 
 
             /* Transitions */

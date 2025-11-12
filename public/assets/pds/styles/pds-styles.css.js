@@ -260,9 +260,9 @@ styles.replaceSync(`@layer tokens {
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  --font-lineHeight-tight: 1.25;
-  --font-lineHeight-normal: 1.5;
-  --font-lineHeight-relaxed: 1.75;
+  --font-line-height-tight: 1.25;
+  --font-line-height-normal: 1.5;
+  --font-line-height-relaxed: 1.75;
 
 
             /* Shadows */
@@ -275,20 +275,20 @@ styles.replaceSync(`@layer tokens {
 
 
             /* Layout */
-  --layout-maxWidth: 1200px;
-  --layout-minHeight: 100vh;
-  --layout-containerPadding: 16px;
+  --layout-max-width: 1200px;
+  --layout-min-height: 100vh;
+  --layout-container-padding: 16px;
   --layout-breakpoints: {
         sm: 640px,
         md: 768px,
         lg: 1024px,
         xl: 1280px,
       };
-  --layout-pageMargin: 120px;
-  --layout-sectionGap: 160px;
-  --layout-containerGap: 200px;
-  --layout-heroSpacing: 240px;
-  --layout-footerSpacing: 160px;
+  --layout-page-margin: 120px;
+  --layout-section-gap: 160px;
+  --layout-container-gap: 200px;
+  --layout-hero-spacing: 240px;
+  --layout-footer-spacing: 160px;
 
 
             /* Transitions */
@@ -728,7 +728,7 @@ html[data-theme="dark"] {
   :where(html) {
     font-family: var(--font-family-body);
     font-size: var(--font-size-base);
-    line-height: var(--font-lineHeight-normal);
+    line-height: var(--font-line-height-normal);
     color: var(--color-text-primary);
     background-color: var(--color-surface-base);
     -webkit-text-size-adjust: 100%;
@@ -747,7 +747,7 @@ html[data-theme="dark"] {
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    min-height: var(--layout-minHeight, 100vh);
+    min-height: var(--layout-min-height, 100vh);
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
   }
@@ -874,7 +874,7 @@ html[data-theme="dark"] {
     color: var(--color-text-primary);
     margin: 0 0 var(--spacing-3) 0;
     border: none;
-    line-height: var(--font-lineHeight-tight);
+    line-height: var(--font-line-height-tight);
     padding: 0 var(--spacing-3);
     font-size: var(--font-size-lg);
     background: transparent; /* avoid browser default notch behavior */
@@ -905,7 +905,7 @@ html[data-theme="dark"] {
   :where(h1, h2, h3, h4, h5, h6) {
     font-family: var(--font-family-headings);
     font-weight: var(--font-weight-bold);
-    line-height: var(--font-lineHeight-tight);
+    line-height: var(--font-line-height-tight);
     margin: var(--spacing-4) 0 var(--spacing-3) 0;
     color: var(--color-text-primary);
     word-wrap: break-word;
@@ -933,7 +933,7 @@ html[data-theme="dark"] {
 
   :where(p) {
     margin: var(--spacing-3) 0;
-    line-height: var(--font-lineHeight-relaxed);
+    line-height: var(--font-line-height-relaxed);
     color: var(--color-text-primary);
   }
 
@@ -976,7 +976,7 @@ html[data-theme="dark"] {
     margin-top: var(--spacing-3);
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
-    line-height: var(--font-lineHeight-relaxed);
+    line-height: var(--font-line-height-relaxed);
   }
 }
 
@@ -1084,7 +1084,7 @@ html[data-theme="dark"] {
 
 :where(address) {
   font-style: normal;
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
   margin: 0 0 var(--spacing-4) 0;
 }
 
@@ -1238,7 +1238,7 @@ label {
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
-  line-height: var(--font-lineHeight-normal);
+  line-height: var(--font-line-height-normal);
 }
 
 [data-label] {
@@ -1253,7 +1253,7 @@ label {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   margin-top: var(--spacing-1);
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
 }
 
 input, textarea, select {
@@ -1264,7 +1264,7 @@ input, textarea, select {
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
-  line-height: var(--font-lineHeight-normal);
+  line-height: var(--font-line-height-normal);
   background-color: var(--color-input-bg);
   color: var(--color-text-primary);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
@@ -1677,7 +1677,7 @@ textarea {
   min-height: calc(var(--spacing-4) * 5);
   padding: var(--spacing-3) var(--spacing-4);
   resize: vertical;
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
 }
 
 /* Select dropdowns */
@@ -1916,7 +1916,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   align-items: flex-start;
   gap: var(--spacing-3);
   font-size: var(--font-size-sm);
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
   
   & > *:last-child {
     margin-bottom: 0;
@@ -3469,9 +3469,9 @@ export const stylesCSS = `@layer tokens {
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  --font-lineHeight-tight: 1.25;
-  --font-lineHeight-normal: 1.5;
-  --font-lineHeight-relaxed: 1.75;
+  --font-line-height-tight: 1.25;
+  --font-line-height-normal: 1.5;
+  --font-line-height-relaxed: 1.75;
 
 
             /* Shadows */
@@ -3484,20 +3484,20 @@ export const stylesCSS = `@layer tokens {
 
 
             /* Layout */
-  --layout-maxWidth: 1200px;
-  --layout-minHeight: 100vh;
-  --layout-containerPadding: 16px;
+  --layout-max-width: 1200px;
+  --layout-min-height: 100vh;
+  --layout-container-padding: 16px;
   --layout-breakpoints: {
         sm: 640px,
         md: 768px,
         lg: 1024px,
         xl: 1280px,
       };
-  --layout-pageMargin: 120px;
-  --layout-sectionGap: 160px;
-  --layout-containerGap: 200px;
-  --layout-heroSpacing: 240px;
-  --layout-footerSpacing: 160px;
+  --layout-page-margin: 120px;
+  --layout-section-gap: 160px;
+  --layout-container-gap: 200px;
+  --layout-hero-spacing: 240px;
+  --layout-footer-spacing: 160px;
 
 
             /* Transitions */
@@ -3937,7 +3937,7 @@ html[data-theme="dark"] {
   :where(html) {
     font-family: var(--font-family-body);
     font-size: var(--font-size-base);
-    line-height: var(--font-lineHeight-normal);
+    line-height: var(--font-line-height-normal);
     color: var(--color-text-primary);
     background-color: var(--color-surface-base);
     -webkit-text-size-adjust: 100%;
@@ -3956,7 +3956,7 @@ html[data-theme="dark"] {
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    min-height: var(--layout-minHeight, 100vh);
+    min-height: var(--layout-min-height, 100vh);
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
   }
@@ -4083,7 +4083,7 @@ html[data-theme="dark"] {
     color: var(--color-text-primary);
     margin: 0 0 var(--spacing-3) 0;
     border: none;
-    line-height: var(--font-lineHeight-tight);
+    line-height: var(--font-line-height-tight);
     padding: 0 var(--spacing-3);
     font-size: var(--font-size-lg);
     background: transparent; /* avoid browser default notch behavior */
@@ -4114,7 +4114,7 @@ html[data-theme="dark"] {
   :where(h1, h2, h3, h4, h5, h6) {
     font-family: var(--font-family-headings);
     font-weight: var(--font-weight-bold);
-    line-height: var(--font-lineHeight-tight);
+    line-height: var(--font-line-height-tight);
     margin: var(--spacing-4) 0 var(--spacing-3) 0;
     color: var(--color-text-primary);
     word-wrap: break-word;
@@ -4142,7 +4142,7 @@ html[data-theme="dark"] {
 
   :where(p) {
     margin: var(--spacing-3) 0;
-    line-height: var(--font-lineHeight-relaxed);
+    line-height: var(--font-line-height-relaxed);
     color: var(--color-text-primary);
   }
 
@@ -4185,7 +4185,7 @@ html[data-theme="dark"] {
     margin-top: var(--spacing-3);
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
-    line-height: var(--font-lineHeight-relaxed);
+    line-height: var(--font-line-height-relaxed);
   }
 }
 
@@ -4293,7 +4293,7 @@ html[data-theme="dark"] {
 
 :where(address) {
   font-style: normal;
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
   margin: 0 0 var(--spacing-4) 0;
 }
 
@@ -4447,7 +4447,7 @@ label {
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
-  line-height: var(--font-lineHeight-normal);
+  line-height: var(--font-line-height-normal);
 }
 
 [data-label] {
@@ -4462,7 +4462,7 @@ label {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   margin-top: var(--spacing-1);
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
 }
 
 input, textarea, select {
@@ -4473,7 +4473,7 @@ input, textarea, select {
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
-  line-height: var(--font-lineHeight-normal);
+  line-height: var(--font-line-height-normal);
   background-color: var(--color-input-bg);
   color: var(--color-text-primary);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
@@ -4886,7 +4886,7 @@ textarea {
   min-height: calc(var(--spacing-4) * 5);
   padding: var(--spacing-3) var(--spacing-4);
   resize: vertical;
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
 }
 
 /* Select dropdowns */
@@ -5125,7 +5125,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   align-items: flex-start;
   gap: var(--spacing-3);
   font-size: var(--font-size-sm);
-  line-height: var(--font-lineHeight-relaxed);
+  line-height: var(--font-line-height-relaxed);
   
   & > *:last-child {
     margin-bottom: 0;
