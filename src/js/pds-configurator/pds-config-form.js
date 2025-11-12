@@ -293,7 +293,7 @@ customElements.define(
         try {
           await loadTypographyFonts(baseConfig.typography);
         } catch (ex) {
-          console.warn("Failed to load some fonts:", ex);
+          console.warn("Failed to load some fonts from Google Fonts:", ex);
           // Continue anyway - the system will fall back to default fonts
         }
       }
