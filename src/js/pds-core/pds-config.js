@@ -33,7 +33,7 @@ export const presets = {
         'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
     },
     spatialRhythm: {
-      baseUnit: 20, // More spacious
+      baseUnit: 6, // More spacious
       scaleRatio: 1.4,
     },
     shape: {
@@ -64,7 +64,7 @@ export const presets = {
       fontWeightSemibold: 600,
     },
     spatialRhythm: {
-      baseUnit: 16,
+      baseUnit: 4,
       scaleRatio: 1.25,
     },
     shape: {
@@ -94,7 +94,7 @@ export const presets = {
       fontFamilyBody: "'Space Grotesk', system-ui, sans-serif",
     },
     spatialRhythm: {
-      baseUnit: 16,
+      baseUnit: 4,
       scaleRatio: 1.5,
     },
     shape: {
@@ -128,7 +128,7 @@ export const presets = {
       fontWeightBold: 700,
     },
     spatialRhythm: {
-      baseUnit: 12, // Tight, compact
+      baseUnit: 3, // Tight, compact
       scaleRatio: 1.2,
     },
     shape: {
@@ -163,7 +163,7 @@ export const presets = {
       fontFamilyBody: "'Quicksand', 'Comfortaa', sans-serif",
     },
     spatialRhythm: {
-      baseUnit: 20, // Relaxed, vacation vibes
+      baseUnit: 6, // Relaxed, vacation vibes
       scaleRatio: 1.5,
     },
     shape: {
@@ -195,7 +195,7 @@ export const presets = {
       fontWeightBold: 700,
     },
     spatialRhythm: {
-      baseUnit: 16,
+      baseUnit: 4,
       scaleRatio: 1.25,
     },
     shape: {
@@ -227,7 +227,7 @@ export const presets = {
       fontFamilyBody: "'Merriweather', 'Georgia', serif",
     },
     spatialRhythm: {
-      baseUnit: 18,
+      baseUnit: 6,
       scaleRatio: 1.3,
     },
     shape: {
@@ -258,7 +258,7 @@ export const presets = {
       fontWeightSemibold: 600,
     },
     spatialRhythm: {
-      baseUnit: 16,
+      baseUnit: 4,
       scaleRatio: 1.333,
     },
     shape: {
@@ -291,7 +291,7 @@ export const presets = {
       fontFamilyBody: "'Source Serif Pro', Georgia, serif",
     },
     spatialRhythm: {
-      baseUnit: 18,
+      baseUnit: 6,
       scaleRatio: 1.3,
     },
     shape: {
@@ -328,7 +328,7 @@ export const presets = {
       fontWeightBold: 700,
     },
     spatialRhythm: {
-      baseUnit: 14, // compact, data-dense
+      baseUnit: 3, // compact, data-dense
       scaleRatio: 1.2,
     },
     shape: {
@@ -364,7 +364,7 @@ export const presets = {
       lineHeightRelaxed: enums.LineHeights.relaxed,
     },
     spatialRhythm: {
-      baseUnit: 20, // comfy
+      baseUnit: 6, // comfy
       scaleRatio: 1.4,
     },
     shape: {
@@ -405,7 +405,7 @@ export const presets = {
       letterSpacingTight: -0.02,
     },
     spatialRhythm: {
-      baseUnit: 16,
+      baseUnit: 4,
       scaleRatio: 1.25,
     },
     shape: {
@@ -439,7 +439,7 @@ export const presets = {
       fontFamilyBody: "'Noto Sans', system-ui, -apple-system, sans-serif",
     },
     spatialRhythm: {
-      baseUnit: 22, // airy
+      baseUnit: 6, // airy
       scaleRatio: 1.35,
     },
     shape: {
@@ -521,7 +521,7 @@ presets.default = {
 
   spatialRhythm: {
     // Essential spacing setting (exposed in simple form)
-    baseUnit: 16, // Base spacing unit in pixels (typically 16 = 1rem)
+    baseUnit: 4, // Base spacing unit in pixels (typically 16 = 1rem)
 
     // Advanced spacing options
     scaleRatio: 1.25,

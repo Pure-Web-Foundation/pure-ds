@@ -650,27 +650,14 @@ export class Generator {
 
     // Validate and convert to numbers, with fallbacks
     const validBaseUnit = Number.isFinite(Number(baseUnit)) ? Number(baseUnit) : 4;
-    const validScaleRatio = Number.isFinite(Number(scaleRatio)) ? Number(scaleRatio) : 1.25;
     const validMaxSpacingSteps = Math.min(Number.isFinite(Number(maxSpacingSteps)) ? Number(maxSpacingSteps) : 12, 12);
 
     const spacing = { 0: "0" };
 
-    // Generate rational modular spacing scale
-    // Use consistent 1.25x ("minor third") ratio throughout
-    
-    // Phase 1: Linear base for precision (1-4)
-    const baseSteps = [1, 2, 3, 4]; // 4, 8, 12, 16px
-    baseSteps.forEach((multiplier, index) => {
-      const step = index + 1;
-      spacing[step] = `${validBaseUnit * multiplier}px`;
-    });
-
-    // Phase 2: Modular scale from step 5 onwards
-    // Start from 20px (5 * 4px) and apply consistent 1.25 ratio
-    let currentValue = validBaseUnit * 5; // 20px
-    for (let i = 5; i <= validMaxSpacingSteps; i++) {
-      spacing[i] = `${Math.round(currentValue)}px`;
-      currentValue = currentValue * validScaleRatio;
+    // Generate simple 4px incremental spacing scale
+    // spacing-1: 4px, spacing-2: 8px, spacing-3: 12px, etc.
+    for (let i = 1; i <= validMaxSpacingSteps; i++) {
+      spacing[i] = `${validBaseUnit * i}px`;
     }
 
     return spacing;

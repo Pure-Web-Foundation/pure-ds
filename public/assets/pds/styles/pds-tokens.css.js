@@ -224,13 +224,13 @@ tokens.replaceSync(`@layer tokens {
   --spacing-3: 12px;
   --spacing-4: 16px;
   --spacing-5: 20px;
-  --spacing-6: 25px;
-  --spacing-7: 31px;
-  --spacing-8: 39px;
-  --spacing-9: 49px;
-  --spacing-10: 61px;
-  --spacing-11: 76px;
-  --spacing-12: 95px;
+  --spacing-6: 24px;
+  --spacing-7: 28px;
+  --spacing-8: 32px;
+  --spacing-9: 36px;
+  --spacing-10: 40px;
+  --spacing-11: 44px;
+  --spacing-12: 48px;
 
 
             /* Border Radius */
@@ -942,13 +942,13 @@ export const tokensCSS = `@layer tokens {
   --spacing-3: 12px;
   --spacing-4: 16px;
   --spacing-5: 20px;
-  --spacing-6: 25px;
-  --spacing-7: 31px;
-  --spacing-8: 39px;
-  --spacing-9: 49px;
-  --spacing-10: 61px;
-  --spacing-11: 76px;
-  --spacing-12: 95px;
+  --spacing-6: 24px;
+  --spacing-7: 28px;
+  --spacing-8: 32px;
+  --spacing-9: 36px;
+  --spacing-10: 40px;
+  --spacing-11: 44px;
+  --spacing-12: 48px;
 
 
             /* Border Radius */
