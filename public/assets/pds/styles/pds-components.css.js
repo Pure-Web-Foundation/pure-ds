@@ -297,7 +297,7 @@ input, textarea, select {
   &:focus {
     outline: none;
     border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px var(--color-primary-500)4d;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
     background-color: var(--color-surface-base);
   }
   
@@ -313,7 +313,7 @@ input, textarea, select {
     border-color: var(--color-danger-500);
     
     &:focus {
-      box-shadow: 0 0 0 3px var(--color-danger-500)4d;
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-danger-500) 30%, transparent);
     }
   }
 }
@@ -516,7 +516,7 @@ label:has(input[type="checkbox"]:focus):not(fieldset[role="group"] label):not(la
 input[type="radio"]:focus + label,
 input[type="checkbox"]:focus + label:not(fieldset[role="group"] label):not(label[data-toggle]) {
   outline: none;
-  box-shadow: 0 0 0 3px var(--color-primary-500)4d;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
 }
 
 /* Disabled states */
@@ -742,7 +742,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px var(--color-primary-500)4d;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
   }
   
   &:disabled {
@@ -772,7 +772,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   }
   
   &:focus {
-    box-shadow: 0 0 0 3px var(--color-primary-500)4d;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
   }
   
   &:disabled {
@@ -1958,7 +1958,7 @@ input, textarea, select {
   &:focus {
     outline: none;
     border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px var(--color-primary-500)4d;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
     background-color: var(--color-surface-base);
   }
   
@@ -1974,7 +1974,7 @@ input, textarea, select {
     border-color: var(--color-danger-500);
     
     &:focus {
-      box-shadow: 0 0 0 3px var(--color-danger-500)4d;
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-danger-500) 30%, transparent);
     }
   }
 }
@@ -2177,7 +2177,7 @@ label:has(input[type="checkbox"]:focus):not(fieldset[role="group"] label):not(la
 input[type="radio"]:focus + label,
 input[type="checkbox"]:focus + label:not(fieldset[role="group"] label):not(label[data-toggle]) {
   outline: none;
-  box-shadow: 0 0 0 3px var(--color-primary-500)4d;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
 }
 
 /* Disabled states */
@@ -2403,7 +2403,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px var(--color-primary-500)4d;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
   }
   
   &:disabled {
@@ -2433,7 +2433,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   }
   
   &:focus {
-    box-shadow: 0 0 0 3px var(--color-primary-500)4d;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
   }
   
   &:disabled {

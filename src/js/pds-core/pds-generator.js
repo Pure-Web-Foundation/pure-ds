@@ -1780,9 +1780,6 @@ figcaption {
     const inputPaddingValue = inputPadding || 0.75;
     const buttonPaddingValue = buttonPadding || 1.0;
     const focusWidth = focusRingWidth || 3;
-    const focusOpacity = Math.round((focusRingOpacity || 0.3) * 255)
-      .toString(16)
-      .padStart(2, "0");
     const borderWidth = borderWidthThin || 1;
     const sectionSpacingValue = sectionSpacing || 2.0;
     const minButtonHeight = buttonMinHeight || 44;
@@ -1920,7 +1917,7 @@ input, textarea, select {
   &:focus {
     outline: none;
     border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 ${focusWidth}px var(--color-primary-500)${focusOpacity};
+    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round((focusRingOpacity || 0.3) * 100)}%, transparent);
     background-color: var(--color-surface-base);
   }
   
@@ -1936,7 +1933,7 @@ input, textarea, select {
     border-color: var(--color-danger-500);
     
     &:focus {
-      box-shadow: 0 0 0 ${focusWidth}px var(--color-danger-500)${focusOpacity};
+      box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-danger-500) ${Math.round((focusRingOpacity || 0.3) * 100)}%, transparent);
     }
   }
 }
@@ -2141,7 +2138,7 @@ label:has(input[type="checkbox"]:focus):not(fieldset[role="group"] label):not(la
 input[type="radio"]:focus + label,
 input[type="checkbox"]:focus + label:not(fieldset[role="group"] label):not(label[data-toggle]) {
   outline: none;
-  box-shadow: 0 0 0 ${focusWidth}px var(--color-primary-500)${focusOpacity};
+  box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round((focusRingOpacity || 0.3) * 100)}%, transparent);
 }
 
 /* Disabled states */
@@ -2367,7 +2364,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 ${focusWidth}px var(--color-primary-500)${focusOpacity};
+    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round((focusRingOpacity || 0.3) * 100)}%, transparent);
   }
   
   &:disabled {
@@ -2397,7 +2394,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   }
   
   &:focus {
-    box-shadow: 0 0 0 ${focusWidth}px var(--color-primary-500)${focusOpacity};
+    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round((focusRingOpacity || 0.3) * 100)}%, transparent);
   }
   
   &:disabled {
