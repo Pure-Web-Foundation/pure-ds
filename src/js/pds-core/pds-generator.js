@@ -106,107 +106,6 @@ export class Generator {
       surface: this.#generateBackgroundShades(background),
     };
 
-    // Semantic tokens: compute onPrimary/onSurface/onBackground if not provided
-    colors.semantic = colors.semantic || {};
-    colors.semantic.primary = colors.semantic.primary || primary;
-    colors.semantic.onPrimary =
-      colors.semantic.onPrimary ||
-      this.#findReadableOnColor(colors.semantic.primary);
-    colors.semantic.surface = colors.semantic.surface || colors.surface.base;
-    colors.semantic.onSurface =
-      colors.semantic.onSurface ||
-      this.#findReadableOnColor(colors.semantic.surface);
-    colors.semantic.background = colors.semantic.background || background;
-    colors.semantic.onBackground =
-      colors.semantic.onBackground ||
-      this.#findReadableOnColor(colors.semantic.background);
-
-    // New: Choose a primaryText shade that meets AA contrast on the base surface
-    try {
-      colors.semantic.primaryText =
-        colors.semantic.primaryText ||
-        this.#pickReadablePrimaryOnSurface(
-          colors.primary,
-          colors.surface.base,
-          4.5
-        );
-      // Pick a fill shade for components with white text (buttons/badges)
-      colors.semantic.primaryFill =
-        colors.semantic.primaryFill ||
-        this.#pickFillShadeForWhite(colors.primary, 4.5);
-      // Info fill (used by badges), derived from info scale
-      colors.semantic.infoFill =
-        colors.semantic.infoFill ||
-        this.#pickFillShadeForWhite(colors.info, 4.5);
-      // Compute readable foregrounds for fills and interaction states.
-      // We pick hover/active backgrounds by mixing slightly toward black (darker)
-      // and then ensure the on-color for each state meets AA contrast.
-      try {
-        const base = colors.semantic.primaryFill;
-        if (base && typeof base === "string") {
-          const onBase = this.#findReadableOnColor(base, 4.5);
-          const hover = this.#mixTowards(base, "#000000", 0.12);
-          const active = this.#mixTowards(base, "#000000", 0.22);
-          const onHover = this.#findReadableOnColor(hover, 4.5);
-          const onActive = this.#findReadableOnColor(active, 4.5);
-          colors.semantic.onPrimaryFill = onBase;
-          colors.semantic.primaryFillHover = hover;
-          colors.semantic.onPrimaryFillHover = onHover;
-          colors.semantic.primaryFillActive = active;
-          colors.semantic.onPrimaryFillActive = onActive;
-        }
-      } catch (e) {
-        // swallow - generator should not crash on token computation
-      }
-    } catch {}
-
-    // Ensure we always emit usable semantic fill tokens. If any computation
-    // failed above, fall back to reasonable defaults so CSS variables are
-    // always defined (prevents undefined var(...) in runtime).
-    try {
-      if (
-        !colors.semantic.primaryFill ||
-        typeof colors.semantic.primaryFill !== "string"
-      ) {
-        colors.semantic.primaryFill =
-          colors.primary?.[600] ||
-          colors.primary?.[500] ||
-          Object.values(colors.primary || {})[0] ||
-          "#000000";
-      }
-      colors.semantic.onPrimaryFill =
-        colors.semantic.onPrimaryFill ||
-        this.#findReadableOnColor(colors.semantic.primaryFill, 4.5);
-
-      if (
-        !colors.semantic.primaryFillHover ||
-        typeof colors.semantic.primaryFillHover !== "string"
-      ) {
-        colors.semantic.primaryFillHover = this.#mixTowards(
-          colors.semantic.primaryFill,
-          "#000000",
-          0.12
-        );
-      }
-      colors.semantic.onPrimaryFillHover =
-        colors.semantic.onPrimaryFillHover ||
-        this.#findReadableOnColor(colors.semantic.primaryFillHover, 4.5);
-
-      if (
-        !colors.semantic.primaryFillActive ||
-        typeof colors.semantic.primaryFillActive !== "string"
-      ) {
-        colors.semantic.primaryFillActive = this.#mixTowards(
-          colors.semantic.primaryFill,
-          "#000000",
-          0.22
-        );
-      }
-      colors.semantic.onPrimaryFillActive =
-        colors.semantic.onPrimaryFillActive ||
-        this.#findReadableOnColor(colors.semantic.primaryFillActive, 4.5);
-    } catch (e) {}
-
     // Add adaptive fieldset colors to surface
     colors.surface.fieldset = this.#generateFieldsetAdaptiveColors(
       colors.surface
@@ -228,6 +127,19 @@ export class Generator {
         colors.dark.surface
       );
     }
+
+    // NEW: Generate interactive semantic tokens for buttons vs links/outlines
+    // Use purpose-specific shade selection for optimal contrast
+    colors.interactive = {
+      light: {
+        fill: this.#pickFillShadeForWhite(colors.primary, 4.5), // For button fills with white text
+        text: colors.primary[600], // For links/outlines on light backgrounds
+      },
+      dark: {
+        fill: this.#pickFillShadeForWhite(colors.dark.primary, 4.5), // For button fills with white text
+        text: this.#pickReadablePrimaryOnSurface(colors.dark.primary, colors.dark.surface.base, 4.5), // For links/outlines on dark backgrounds
+      },
+    };
 
     return colors;
   }
@@ -360,36 +272,10 @@ export class Generator {
 
     const darkSurface = this.#generateBackgroundShades(darkBackgroundBase);
 
-    // Compute dark semantic tokens
-    const darkSemantic = {
-      surface: darkSurface.base,
-      onSurface: this.#findReadableOnColor(darkSurface.base, 4.5),
-    };
-
     // Determine a readable primary text shade for outline/link on dark surfaces
     const derivedPrimaryScale = overrides.primary
       ? this.#generateColorScale(overrides.primary)
       : this.#adjustColorsForDarkMode(lightColors.primary);
-    try {
-      darkSemantic.primaryText = this.#pickReadablePrimaryOnSurface(
-        derivedPrimaryScale,
-        darkSurface.base,
-        4.5
-      );
-    } catch {}
-
-    // Fill shades for dark mode components with white text
-    try {
-      darkSemantic.primaryFill = this.#pickFillShadeForWhite(
-        derivedPrimaryScale,
-        4.5
-      );
-      const derivedInfoScale = this.#adjustColorsForDarkMode(lightColors.info);
-      darkSemantic.infoFill = this.#pickFillShadeForWhite(
-        derivedInfoScale,
-        4.5
-      );
-    } catch {}
 
     return {
       surface: {
@@ -409,12 +295,11 @@ export class Generator {
       gray: overrides.secondary
         ? this.#generateGrayScale(overrides.secondary)
         : lightColors.gray,
-      // IMPORTANT: Also adjust semantic colors for dark mode!
+      // Adjust semantic colors for dark mode
       success: this.#adjustColorsForDarkMode(lightColors.success),
       info: this.#adjustColorsForDarkMode(lightColors.info),
       warning: this.#adjustColorsForDarkMode(lightColors.warning),
       danger: this.#adjustColorsForDarkMode(lightColors.danger),
-      semantic: darkSemantic,
     };
   }
 
@@ -978,6 +863,7 @@ ${this.#generateMediaQueries()}
     Object.entries(colors).forEach(([category, values]) => {
       if (category === "dark") return; // handled elsewhere
       if (category === "surfaceSmart") return; // handled below
+      if (category === "interactive") return; // handled below with semantic tokens
       if (typeof values === "object" && values !== null) {
         generateNestedColors(values, `${category}-`);
       }
@@ -1015,6 +901,13 @@ ${this.#generateMediaQueries()}
     chunks.push(`  --color-input-disabled-bg: var(--color-gray-50);\n`);
     chunks.push(`  --color-input-disabled-text: var(--color-gray-500);\n`);
     chunks.push(`  --color-code-bg: var(--color-gray-100);\n`);
+    
+    // Interactive color tokens - separate shades for different purposes (light mode)
+    if (colors.interactive && colors.interactive.light) {
+      chunks.push(`  /* Interactive Colors - optimized for specific use cases */\n`);
+      chunks.push(`  --color-primary-fill: ${colors.interactive.light.fill}; /* For button backgrounds with white text */\n`);
+      chunks.push(`  --color-primary-text: ${colors.interactive.light.text}; /* For links and outline buttons on light surfaces */\n`);
+    }
 
     // Translucent surface tokens
     chunks.push(`  /* Translucent Surface Tokens */\n`);
@@ -1205,7 +1098,8 @@ ${this.#generateMediaQueries()}
       smartSurfaceVars += `\n`;
     }
 
-    const semanticVars = /*css*/ `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n`;
+    // Interactive color tokens for dark mode - use precomputed tokens
+    const semanticVars = /*css*/ `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n  /* Interactive Colors - optimized for specific use cases (dark mode) */\n  --color-primary-fill: ${colors.interactive.dark.fill}; /* For button backgrounds with white text */\n  --color-primary-text: ${colors.interactive.dark.text}; /* For links and outline buttons on dark surfaces */\n`;
 
     // Backdrop tokens for dark mode
     const backdropVars = /*css*/ `  /* Backdrop tokens - used for modal dialogs, drawers, overlays (dark mode) */
@@ -1331,7 +1225,15 @@ ${this.#generateMediaQueries()}
       smart += `\n`;
     }
 
-    const semantic = `    --color-text-primary: var(--color-gray-100);\n    --color-text-secondary: var(--color-gray-300);\n    --color-text-muted: var(--color-gray-400);\n    --color-border: var(--color-gray-700);\n    --color-input-bg: var(--color-gray-800);\n    --color-input-disabled-bg: var(--color-gray-900);\n    --color-input-disabled-text: var(--color-gray-600);\n    --color-code-bg: var(--color-gray-800);\n`;
+    // Interactive dark mode tokens
+    let interactiveTokens = "";
+    if (colors.interactive && colors.interactive.dark) {
+      interactiveTokens = `    /* Interactive Colors - optimized for specific use cases (dark mode) */\n`;
+      interactiveTokens += `    --color-primary-fill: ${colors.interactive.dark.fill}; /* For button backgrounds with white text */\n`;
+      interactiveTokens += `    --color-primary-text: ${colors.interactive.dark.text}; /* For links and outline buttons on dark surfaces */\n`;
+    }
+    
+    const semantic = `    --color-text-primary: var(--color-gray-100);\n    --color-text-secondary: var(--color-gray-300);\n    --color-text-muted: var(--color-gray-400);\n    --color-border: var(--color-gray-700);\n    --color-input-bg: var(--color-gray-800);\n    --color-input-disabled-bg: var(--color-gray-900);\n    --color-input-disabled-text: var(--color-gray-600);\n    --color-code-bg: var(--color-gray-800);\n${interactiveTokens}`;
 
     const backdrop = `    /* Backdrop tokens - dark mode */\n    --backdrop-bg: linear-gradient(\n        135deg,\n        rgba(0, 0, 0, 0.6),\n        rgba(0, 0, 0, 0.4)\n      );\n    --backdrop-blur: 10px;\n    --backdrop-saturate: 120%;\n    --backdrop-brightness: 0.7;\n    --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));\n    --backdrop-opacity: 1;\n    \n    /* Legacy alias for backwards compatibility */\n    --backdrop-background: var(--backdrop-bg);\n`;
 
@@ -1615,18 +1517,18 @@ p {
 }
 
 a {
-  color: var(--color-primary-600);
+  color: var(--color-primary-text);
   text-decoration: underline;
   transition: color var(--transition-fast);
   touch-action: manipulation;
   ${linkDisplayStyles}
   
   &:hover {
-    color: var(--color-primary-700);
+    color: color-mix(in oklab, var(--color-primary-text) 85%, black 15%);
   }
   
   &:focus {
-    outline: 2px solid var(--color-primary-500);
+    outline: 2px solid var(--color-primary-text);
     outline-offset: 2px;
   }
   
@@ -2185,7 +2087,7 @@ input[type="checkbox"] + label:not(fieldset[role="group"] label):not(label[data-
   justify-content: center;
   min-height: ${minButtonHeight}px;
   padding: calc(var(--spacing-1) * ${buttonPaddingValue}) var(--spacing-4);
-  border: ${borderWidth}px solid var(--color-semantic-primaryText);
+  border: ${borderWidth}px solid var(--color-text-primary);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -2197,7 +2099,7 @@ input[type="checkbox"] + label:not(fieldset[role="group"] label):not(label[data-
   touch-action: manipulation;
   user-select: none;
   background-color: transparent;
-  color: var(--color-semantic-primaryText);
+  color: var(--color-text-primary);
   margin: 0;
   flex: 0 1 auto;
   white-space: nowrap;
@@ -2220,8 +2122,8 @@ label:has(input[type="radio"]:not(:disabled)):hover,
 label:has(input[type="checkbox"]:not(:disabled)):hover:not(fieldset[role="group"] label):not(label[data-toggle]),
 input[type="radio"]:not(:disabled) + label:hover,
 input[type="checkbox"]:not(:disabled) + label:hover:not(fieldset[role="group"] label):not(label[data-toggle]) {
-  background-color: color-mix(in oklab, var(--color-semantic-primaryText) 10%, transparent);
-  border-color: var(--color-semantic-primaryText);
+  background-color: color-mix(in oklab, var(--color-text-primary) 10%, transparent);
+  border-color: var(--color-text-primary);
 }
 
 /* Checked state = primary button */
@@ -2230,9 +2132,9 @@ label:has(input[type="radio"]:checked),
 label:has(input[type="checkbox"]:checked):not(fieldset[role="group"] label):not(label[data-toggle]),
 input[type="radio"]:checked + label,
 input[type="checkbox"]:checked + label:not(fieldset[role="group"] label):not(label[data-toggle]) {
-  background-color: var(--color-semantic-primaryFill);
+  background-color: var(--color-primary-600);
   color: white;
-  border-color: var(--color-semantic-primaryFill);
+  border-color: var(--color-primary-600);
 }
 
 fieldset[role="radiogroup"] label:has(input[type="radio"]:checked):hover,
@@ -2240,8 +2142,8 @@ label:has(input[type="radio"]:checked:not(:disabled)):hover,
 label:has(input[type="checkbox"]:checked:not(:disabled)):hover:not(fieldset[role="group"] label):not(label[data-toggle]),
 input[type="radio"]:checked:not(:disabled) + label:hover,
 input[type="checkbox"]:checked:not(:disabled) + label:hover:not(fieldset[role="group"] label):not(label[data-toggle]) {
-  background-color: color-mix(in oklab, var(--color-semantic-primaryFill) 90%, black 10%);
-  border-color: color-mix(in oklab, var(--color-semantic-primaryFill) 90%, black 10%);
+  background-color: color-mix(in oklab, var(--color-primary-600) 90%, black 10%);
+  border-color: color-mix(in oklab, var(--color-primary-600) 90%, black 10%);
 }
 
 /* Focus states */
@@ -2490,20 +2392,20 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .btn-primary {
-  background-color: var(--color-semantic-primaryFill);
-  color: var(--color-semantic-onPrimaryFill);
-  border-color: var(--color-semantic-primaryFill);
+  background-color: var(--color-primary-fill);
+  color: white;
+  border-color: var(--color-primary-fill);
   
   &:hover {
-    background-color: var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill));
-    border-color: var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill));
-    color: var(--color-semantic-onPrimaryFillHover, var(--color-semantic-onPrimaryFill));
+    background-color: color-mix(in oklab, var(--color-primary-fill) 90%, black 10%);
+    border-color: color-mix(in oklab, var(--color-primary-fill) 90%, black 10%);
+    color: white;
   }
 
   &:active {
-    background-color: var(--color-semantic-primaryFillActive, var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill)));
-    border-color: var(--color-semantic-primaryFillActive, var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill)));
-    color: var(--color-semantic-onPrimaryFillActive, var(--color-semantic-onPrimaryFillHover, var(--color-semantic-onPrimaryFill)));
+    background-color: color-mix(in oklab, var(--color-primary-fill) 80%, black 20%);
+    border-color: color-mix(in oklab, var(--color-primary-fill) 80%, black 20%);
+    color: white;
   }
   
   &:focus {
@@ -2529,11 +2431,11 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 
 .btn-outline {
   background-color: transparent;
-  color: var(--color-semantic-primaryText);
-  border-color: var(--color-semantic-primaryText);
+  color: var(--color-text-primary);
+  border-color: var(--color-text-primary);
   
   &:hover {
-    background-color: var(--color-semantic-primaryText);
+    background-color: var(--color-text-primary);
     color: white;
   }
 }
@@ -2944,7 +2846,7 @@ tbody {
 }
 
 .badge-primary {
-  background-color: var(--color-semantic-primaryFill);
+  background-color: var(--color-primary-600);
   color: white;
 }
 
@@ -2959,7 +2861,7 @@ tbody {
 }
 
 .badge-info {
-  background-color: var(--color-semantic-infoFill);
+  background-color: var(--color-info-600);
   color: white;
 }
 
@@ -2979,7 +2881,7 @@ tbody {
 }
 
 .badge-outline.badge-primary {
-  color: var(--color-semantic-primaryText);
+  color: var(--color-text-primary);
 }
 
 .badge-outline.badge-secondary {
@@ -2991,7 +2893,7 @@ tbody {
 }
 
 .badge-outline.badge-info {
-  color: var(--color-semantic-infoFill);
+  color: var(--color-info-600);
 }
 
 .badge-outline.badge-warning {
@@ -4409,17 +4311,17 @@ ${this.#generateTableStyles()}
   padding: var(--spacing-4);
 }
 
-.card--elevated, .card-elevated {
+.card-elevated {
   background: var(--color-surface-elevated);
   box-shadow: var(--shadow-md);
 }
 
-.card--outlined, .card-basic {
+.card-outlined, .card-basic {
   background: var(--color-surface-base);
   border: 1px solid var(--color-border);
 }
 
-.card--interactive:hover {
+.card-interactive:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
@@ -4450,36 +4352,36 @@ ${this.#generateLiquidGlassUtility()}
   background-color: var(--color-surface-base);
 }
 
-.surface--subtle {
+.surface-subtle {
   background-color: var(--color-surface-subtle);
 }
 
-.surface--elevated {
+.surface-elevated {
   background-color: var(--color-surface-elevated);
 }
 
-.surface--sunken {
+.surface-sunken {
   background-color: var(--color-surface-sunken);
 }
 
-.surface--overlay {
+.surface-overlay {
   background-color: var(--color-surface-overlay);
 }
 
 /* Translucent semantic variants */
-.surface--translucent {
+.surface-translucent {
   background-color: var(--color-surface-translucent-50);
 }
 
-.surface--translucent-25 {
+.surface-translucent-25 {
   background-color: var(--color-surface-translucent-25);
 }
 
-.surface--translucent-50 {
+.surface-translucent-50 {
   background-color: var(--color-surface-translucent-50);
 }
 
-.surface--translucent-75 {
+.surface-translucent-75 {
   background-color: var(--color-surface-translucent-75);
 }
 

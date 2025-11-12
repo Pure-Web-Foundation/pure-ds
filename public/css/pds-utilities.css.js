@@ -193,6 +193,15 @@ a.icon-only {
 .grid-auto-lg { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
 .grid-auto-xl { grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); }
 
+/* Gap utilities */
+.gap-0 { gap: 0; }
+.gap-xs { gap: var(--spacing-1); }
+.gap-sm { gap: var(--spacing-2); }
+.gap-md { gap: var(--spacing-4); }
+.gap-lg { gap: var(--spacing-6); }
+.gap-xl { gap: var(--spacing-8); }
+
+
 /* Flexbox System */
 .flex {
   display: flex;
@@ -281,7 +290,7 @@ a.icon-only {
 /* - Liquid glass utility class */
 /* Optional background mesh applied from config */
 body {
-  background: var(--background-mesh-01);
+  background: var(--background-mesh-04);
   background-attachment: fixed;
 }
 /* Liquid glass utility (opt-in via options.liquidGlassEffects) */
@@ -726,6 +735,15 @@ a.icon-only {
 .grid-auto-lg { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
 .grid-auto-xl { grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); }
 
+/* Gap utilities */
+.gap-0 { gap: 0; }
+.gap-xs { gap: var(--spacing-1); }
+.gap-sm { gap: var(--spacing-2); }
+.gap-md { gap: var(--spacing-4); }
+.gap-lg { gap: var(--spacing-6); }
+.gap-xl { gap: var(--spacing-8); }
+
+
 /* Flexbox System */
 .flex {
   display: flex;
@@ -814,7 +832,7 @@ a.icon-only {
 /* - Liquid glass utility class */
 /* Optional background mesh applied from config */
 body {
-  background: var(--background-mesh-01);
+  background: var(--background-mesh-04);
   background-attachment: fixed;
 }
 /* Liquid glass utility (opt-in via options.liquidGlassEffects) */

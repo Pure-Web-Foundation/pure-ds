@@ -172,7 +172,7 @@ form {
 }
 
 fieldset {
-  margin: 0 0 var(--spacing-1) 0;
+  margin: 0 0 var(--spacing-2) 0;
   padding: var(--spacing-5);
   width: 100%;
   background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
@@ -755,19 +755,19 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .btn-primary {
-  background-color: var(--color-primary-600);
+  background-color: var(--color-primary-fill);
   color: white;
-  border-color: var(--color-primary-600);
+  border-color: var(--color-primary-fill);
   
   &:hover {
-    background-color: color-mix(in oklab, var(--color-primary-600) 90%, black 10%);
-    border-color: color-mix(in oklab, var(--color-primary-600) 90%, black 10%);
+    background-color: color-mix(in oklab, var(--color-primary-fill) 90%, black 10%);
+    border-color: color-mix(in oklab, var(--color-primary-fill) 90%, black 10%);
     color: white;
   }
 
   &:active {
-    background-color: color-mix(in oklab, var(--color-primary-600) 80%, black 20%);
-    border-color: color-mix(in oklab, var(--color-primary-600) 80%, black 20%);
+    background-color: color-mix(in oklab, var(--color-primary-fill) 80%, black 20%);
+    border-color: color-mix(in oklab, var(--color-primary-fill) 80%, black 20%);
     color: white;
   }
   
@@ -1871,7 +1871,7 @@ form {
 }
 
 fieldset {
-  margin: 0 0 var(--spacing-1) 0;
+  margin: 0 0 var(--spacing-2) 0;
   padding: var(--spacing-5);
   width: 100%;
   background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
@@ -2454,19 +2454,19 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .btn-primary {
-  background-color: var(--color-primary-600);
+  background-color: var(--color-primary-fill);
   color: white;
-  border-color: var(--color-primary-600);
+  border-color: var(--color-primary-fill);
   
   &:hover {
-    background-color: color-mix(in oklab, var(--color-primary-600) 90%, black 10%);
-    border-color: color-mix(in oklab, var(--color-primary-600) 90%, black 10%);
+    background-color: color-mix(in oklab, var(--color-primary-fill) 90%, black 10%);
+    border-color: color-mix(in oklab, var(--color-primary-fill) 90%, black 10%);
     color: white;
   }
 
   &:active {
-    background-color: color-mix(in oklab, var(--color-primary-600) 80%, black 20%);
-    border-color: color-mix(in oklab, var(--color-primary-600) 80%, black 20%);
+    background-color: color-mix(in oklab, var(--color-primary-fill) 80%, black 20%);
+    border-color: color-mix(in oklab, var(--color-primary-fill) 80%, black 20%);
     color: white;
   }
   

@@ -97,20 +97,6 @@ tokens.replaceSync(`@layer tokens {
   --color-surface-fieldset-elevated: #f0efef;
   --color-surface-fieldset-sunken: #e4e3e3;
   --color-surface-fieldset-overlay: #f5f4f4;
-  --color-semantic-primary: #3b82f6;
-  --color-semantic-onPrimary: #000000;
-  --color-semantic-surface: #ffffff;
-  --color-semantic-onSurface: #000000;
-  --color-semantic-background: #ffffff;
-  --color-semantic-onBackground: #000000;
-  --color-semantic-primaryText: #0b63f3;
-  --color-semantic-primaryFill: #0b63f3;
-  --color-semantic-infoFill: #0b63f3;
-  --color-semantic-onPrimaryFill: #ffffff;
-  --color-semantic-primaryFillHover: #0a57d6;
-  --color-semantic-onPrimaryFillHover: #ffffff;
-  --color-semantic-primaryFillActive: #094dbe;
-  --color-semantic-onPrimaryFillActive: #ffffff;
   /* Smart Surface Tokens (context-aware) */
   --surface-base-bg: #ffffff;
   --surface-base-text: #000000;
@@ -415,11 +401,6 @@ tokens.replaceSync(`@layer tokens {
     --color-danger-700: #ea5b5b;
     --color-danger-800: #f6a6a6;
     --color-danger-900: #fad3d3;
-    --color-semantic-surface: #151313;
-    --color-semantic-onSurface: #ffffff;
-    --color-semantic-primaryText: #5a91ea;
-    --color-semantic-primaryFill: #206ae3;
-    --color-semantic-infoFill: #206ae3;
     /* Smart Surface Tokens (dark mode, context-aware) */
     --surface-base-bg: #151313;
     --surface-base-text: #ffffff;
@@ -614,11 +595,6 @@ html[data-theme="dark"] {
   --color-danger-700: #ea5b5b;
   --color-danger-800: #f6a6a6;
   --color-danger-900: #fad3d3;
-  --color-semantic-surface: #151313;
-  --color-semantic-onSurface: #ffffff;
-  --color-semantic-primaryText: #5a91ea;
-  --color-semantic-primaryFill: #206ae3;
-  --color-semantic-infoFill: #206ae3;
   /* Smart Surface Tokens (dark mode, context-aware) */
   --surface-base-bg: #151313;
   --surface-base-text: #ffffff;
@@ -815,20 +791,6 @@ export const tokensCSS = `@layer tokens {
   --color-surface-fieldset-elevated: #f0efef;
   --color-surface-fieldset-sunken: #e4e3e3;
   --color-surface-fieldset-overlay: #f5f4f4;
-  --color-semantic-primary: #3b82f6;
-  --color-semantic-onPrimary: #000000;
-  --color-semantic-surface: #ffffff;
-  --color-semantic-onSurface: #000000;
-  --color-semantic-background: #ffffff;
-  --color-semantic-onBackground: #000000;
-  --color-semantic-primaryText: #0b63f3;
-  --color-semantic-primaryFill: #0b63f3;
-  --color-semantic-infoFill: #0b63f3;
-  --color-semantic-onPrimaryFill: #ffffff;
-  --color-semantic-primaryFillHover: #0a57d6;
-  --color-semantic-onPrimaryFillHover: #ffffff;
-  --color-semantic-primaryFillActive: #094dbe;
-  --color-semantic-onPrimaryFillActive: #ffffff;
   /* Smart Surface Tokens (context-aware) */
   --surface-base-bg: #ffffff;
   --surface-base-text: #000000;
@@ -1133,11 +1095,6 @@ export const tokensCSS = `@layer tokens {
     --color-danger-700: #ea5b5b;
     --color-danger-800: #f6a6a6;
     --color-danger-900: #fad3d3;
-    --color-semantic-surface: #151313;
-    --color-semantic-onSurface: #ffffff;
-    --color-semantic-primaryText: #5a91ea;
-    --color-semantic-primaryFill: #206ae3;
-    --color-semantic-infoFill: #206ae3;
     /* Smart Surface Tokens (dark mode, context-aware) */
     --surface-base-bg: #151313;
     --surface-base-text: #ffffff;
@@ -1332,11 +1289,6 @@ html[data-theme="dark"] {
   --color-danger-700: #ea5b5b;
   --color-danger-800: #f6a6a6;
   --color-danger-900: #fad3d3;
-  --color-semantic-surface: #151313;
-  --color-semantic-onSurface: #ffffff;
-  --color-semantic-primaryText: #5a91ea;
-  --color-semantic-primaryFill: #206ae3;
-  --color-semantic-infoFill: #206ae3;
   /* Smart Surface Tokens (dark mode, context-aware) */
   --surface-base-bg: #151313;
   --surface-base-text: #ffffff;

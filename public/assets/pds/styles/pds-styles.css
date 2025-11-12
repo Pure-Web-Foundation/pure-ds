@@ -93,20 +93,6 @@
   --color-surface-fieldset-elevated: #f0efef;
   --color-surface-fieldset-sunken: #e4e3e3;
   --color-surface-fieldset-overlay: #f5f4f4;
-  --color-semantic-primary: #3b82f6;
-  --color-semantic-onPrimary: #000000;
-  --color-semantic-surface: #ffffff;
-  --color-semantic-onSurface: #000000;
-  --color-semantic-background: #ffffff;
-  --color-semantic-onBackground: #000000;
-  --color-semantic-primaryText: #0b63f3;
-  --color-semantic-primaryFill: #0b63f3;
-  --color-semantic-infoFill: #0b63f3;
-  --color-semantic-onPrimaryFill: #ffffff;
-  --color-semantic-primaryFillHover: #0a57d6;
-  --color-semantic-onPrimaryFillHover: #ffffff;
-  --color-semantic-primaryFillActive: #094dbe;
-  --color-semantic-onPrimaryFillActive: #ffffff;
   /* Smart Surface Tokens (context-aware) */
   --surface-base-bg: #ffffff;
   --surface-base-text: #000000;
@@ -411,11 +397,6 @@
     --color-danger-700: #ea5b5b;
     --color-danger-800: #f6a6a6;
     --color-danger-900: #fad3d3;
-    --color-semantic-surface: #151313;
-    --color-semantic-onSurface: #ffffff;
-    --color-semantic-primaryText: #5a91ea;
-    --color-semantic-primaryFill: #206ae3;
-    --color-semantic-infoFill: #206ae3;
     /* Smart Surface Tokens (dark mode, context-aware) */
     --surface-base-bg: #151313;
     --surface-base-text: #ffffff;
@@ -610,11 +591,6 @@ html[data-theme="dark"] {
   --color-danger-700: #ea5b5b;
   --color-danger-800: #f6a6a6;
   --color-danger-900: #fad3d3;
-  --color-semantic-surface: #151313;
-  --color-semantic-onSurface: #ffffff;
-  --color-semantic-primaryText: #5a91ea;
-  --color-semantic-primaryFill: #206ae3;
-  --color-semantic-infoFill: #206ae3;
   /* Smart Surface Tokens (dark mode, context-aware) */
   --surface-base-bg: #151313;
   --surface-base-text: #ffffff;
@@ -1426,7 +1402,7 @@ input[type="checkbox"] + label:not(fieldset[role="group"] label):not(label[data-
   justify-content: center;
   min-height: 44px;
   padding: calc(var(--spacing-1) * 1) var(--spacing-4);
-  border: 1px solid var(--color-semantic-primaryText);
+  border: 1px solid var(--color-text-primary);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -1438,7 +1414,7 @@ input[type="checkbox"] + label:not(fieldset[role="group"] label):not(label[data-
   touch-action: manipulation;
   user-select: none;
   background-color: transparent;
-  color: var(--color-semantic-primaryText);
+  color: var(--color-text-primary);
   margin: 0;
   flex: 0 1 auto;
   white-space: nowrap;
@@ -1459,8 +1435,8 @@ label:has(input[type="radio"]:not(:disabled)):hover,
 label:has(input[type="checkbox"]:not(:disabled)):hover:not(fieldset[role="group"] label):not(label[data-toggle]),
 input[type="radio"]:not(:disabled) + label:hover,
 input[type="checkbox"]:not(:disabled) + label:hover:not(fieldset[role="group"] label):not(label[data-toggle]) {
-  background-color: color-mix(in oklab, var(--color-semantic-primaryText) 10%, transparent);
-  border-color: var(--color-semantic-primaryText);
+  background-color: color-mix(in oklab, var(--color-text-primary) 10%, transparent);
+  border-color: var(--color-text-primary);
 }
 
 /* Checked state = primary button */
@@ -1469,9 +1445,9 @@ label:has(input[type="radio"]:checked),
 label:has(input[type="checkbox"]:checked):not(fieldset[role="group"] label):not(label[data-toggle]),
 input[type="radio"]:checked + label,
 input[type="checkbox"]:checked + label:not(fieldset[role="group"] label):not(label[data-toggle]) {
-  background-color: var(--color-semantic-primaryFill);
+  background-color: var(--color-primary-600);
   color: white;
-  border-color: var(--color-semantic-primaryFill);
+  border-color: var(--color-primary-600);
 }
 
 fieldset[role="radiogroup"] label:has(input[type="radio"]:checked):hover,
@@ -1479,8 +1455,8 @@ label:has(input[type="radio"]:checked:not(:disabled)):hover,
 label:has(input[type="checkbox"]:checked:not(:disabled)):hover:not(fieldset[role="group"] label):not(label[data-toggle]),
 input[type="radio"]:checked:not(:disabled) + label:hover,
 input[type="checkbox"]:checked:not(:disabled) + label:hover:not(fieldset[role="group"] label):not(label[data-toggle]) {
-  background-color: color-mix(in oklab, var(--color-semantic-primaryFill) 90%, black 10%);
-  border-color: color-mix(in oklab, var(--color-semantic-primaryFill) 90%, black 10%);
+  background-color: color-mix(in oklab, var(--color-primary-600) 90%, black 10%);
+  border-color: color-mix(in oklab, var(--color-primary-600) 90%, black 10%);
 }
 
 /* Focus states */
@@ -1729,20 +1705,20 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .btn-primary {
-  background-color: var(--color-semantic-primaryFill);
-  color: var(--color-semantic-onPrimaryFill);
-  border-color: var(--color-semantic-primaryFill);
+  background-color: var(--color-primary-600);
+  color: white;
+  border-color: var(--color-primary-600);
   
   &:hover {
-    background-color: var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill));
-    border-color: var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill));
-    color: var(--color-semantic-onPrimaryFillHover, var(--color-semantic-onPrimaryFill));
+    background-color: color-mix(in oklab, var(--color-primary-600) 90%, black 10%);
+    border-color: color-mix(in oklab, var(--color-primary-600) 90%, black 10%);
+    color: white;
   }
 
   &:active {
-    background-color: var(--color-semantic-primaryFillActive, var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill)));
-    border-color: var(--color-semantic-primaryFillActive, var(--color-semantic-primaryFillHover, var(--color-semantic-primaryFill)));
-    color: var(--color-semantic-onPrimaryFillActive, var(--color-semantic-onPrimaryFillHover, var(--color-semantic-onPrimaryFill)));
+    background-color: color-mix(in oklab, var(--color-primary-600) 80%, black 20%);
+    border-color: color-mix(in oklab, var(--color-primary-600) 80%, black 20%);
+    color: white;
   }
   
   &:focus {
@@ -1768,11 +1744,11 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 
 .btn-outline {
   background-color: transparent;
-  color: var(--color-semantic-primaryText);
-  border-color: var(--color-semantic-primaryText);
+  color: var(--color-text-primary);
+  border-color: var(--color-text-primary);
   
   &:hover {
-    background-color: var(--color-semantic-primaryText);
+    background-color: var(--color-text-primary);
     color: white;
   }
 }
@@ -2007,7 +1983,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .badge-primary {
-  background-color: var(--color-semantic-primaryFill);
+  background-color: var(--color-primary-600);
   color: white;
 }
 
@@ -2022,7 +1998,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .badge-info {
-  background-color: var(--color-semantic-infoFill);
+  background-color: var(--color-info-600);
   color: white;
 }
 
@@ -2042,7 +2018,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .badge-outline.badge-primary {
-  color: var(--color-semantic-primaryText);
+  color: var(--color-text-primary);
 }
 
 .badge-outline.badge-secondary {
@@ -2054,7 +2030,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .badge-outline.badge-info {
-  color: var(--color-semantic-infoFill);
+  color: var(--color-info-600);
 }
 
 .badge-outline.badge-warning {
@@ -2553,17 +2529,17 @@ tbody {
   padding: var(--spacing-4);
 }
 
-.card--elevated, .card-elevated {
+.card-elevated {
   background: var(--color-surface-elevated);
   box-shadow: var(--shadow-md);
 }
 
-.card--outlined, .card-basic {
+.card-outlined, .card-basic {
   background: var(--color-surface-base);
   border: 1px solid var(--color-border);
 }
 
-.card--interactive:hover {
+.card-interactive:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
@@ -2999,36 +2975,36 @@ body {
   background-color: var(--color-surface-base);
 }
 
-.surface--subtle {
+.surface-subtle {
   background-color: var(--color-surface-subtle);
 }
 
-.surface--elevated {
+.surface-elevated {
   background-color: var(--color-surface-elevated);
 }
 
-.surface--sunken {
+.surface-sunken {
   background-color: var(--color-surface-sunken);
 }
 
-.surface--overlay {
+.surface-overlay {
   background-color: var(--color-surface-overlay);
 }
 
 /* Translucent semantic variants */
-.surface--translucent {
+.surface-translucent {
   background-color: var(--color-surface-translucent-50);
 }
 
-.surface--translucent-25 {
+.surface-translucent-25 {
   background-color: var(--color-surface-translucent-25);
 }
 
-.surface--translucent-50 {
+.surface-translucent-50 {
   background-color: var(--color-surface-translucent-50);
 }
 
-.surface--translucent-75 {
+.surface-translucent-75 {
   background-color: var(--color-surface-translucent-75);
 }
 

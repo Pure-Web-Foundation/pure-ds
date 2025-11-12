@@ -514,17 +514,16 @@ function validateDesign(designConfig = {}, options = {}) {
     const gen = new PDS.Generator(structuredClone(designConfig));
     const c = gen.tokens.colors;
 
-    // Light theme checks
+    // Light theme checks - use computed interactive tokens
     const light = {
-      surfaceBg: c.surface?.base || c.semantic?.background,
-      surfaceText: c.semantic?.onSurface,
-      primary600:
-        c.primary?.[600] || c.primary?.[500] || designConfig.colors?.primary,
+      surfaceBg: c.surface?.base,
+      surfaceText: c.gray?.[900] || "#000000",
+      primaryFill: c.interactive?.light?.fill || c.primary?.[600],
+      primaryText: c.interactive?.light?.text || c.primary?.[600],
     };
 
-    // Primary button (light): prefer semantic primaryFill, else primary600; text white
-    const lightPrimaryFill = c.semantic?.primaryFill || light.primary600;
-    const lightBtnRatio = contrast(lightPrimaryFill, "#ffffff");
+    // Primary button (light): check button fill with white text
+    const lightBtnRatio = contrast(light.primaryFill, "#ffffff");
     if (lightBtnRatio < MIN) {
       issues.push({
         path: "/colors/primary",
@@ -537,7 +536,7 @@ function validateDesign(designConfig = {}, options = {}) {
       });
     }
 
-    // Surface text (light): onSurface vs surface base
+    // Surface text (light): text vs surface base
     const lightTextRatio = contrast(light.surfaceBg, light.surfaceText);
     if (lightTextRatio < MIN) {
       issues.push({
@@ -551,31 +550,31 @@ function validateDesign(designConfig = {}, options = {}) {
       });
     }
 
-    // Prefer semantic primaryText if available for outline/link; fallback to primary600
-    const lightPrimaryText = c.semantic?.primaryText || light.primary600;
-    const lightOutlineRatio = contrast(lightPrimaryText, light.surfaceBg);
+    // Primary text for outline/link: check link text on surface
+    const lightOutlineRatio = contrast(light.primaryText, light.surfaceBg);
     if (lightOutlineRatio < MIN) {
       issues.push({
         path: "/colors/primary",
         message: `Primary text on surface is too low for outline/link styles (light) (${lightOutlineRatio.toFixed(
           2
-        )} < ${MIN}). Choose a darker primary, lighter surface, or adjust semantic.primaryText.`,
+        )} < ${MIN}). Choose a darker primary or lighter surface.`,
         ratio: lightOutlineRatio,
         min: MIN,
         context: "light/outline",
       });
     }
 
-    // Dark theme checks
+    // Dark theme checks - use computed interactive tokens
     const d = c.dark;
     if (d) {
       const dark = {
-        surfaceBg:
-          d.surface?.base || d.semantic?.background || c.surface?.inverse,
-        primary600: d.primary?.[600] || d.primary?.[500] || c.primary?.[600],
+        surfaceBg: d.surface?.base || c.surface?.inverse,
+        primaryFill: c.interactive?.dark?.fill || d.primary?.[600],
+        primaryText: c.interactive?.dark?.text || d.primary?.[600],
       };
-      const darkPrimaryFill = d.semantic?.primaryFill || dark.primary600;
-      const darkBtnRatio = contrast(darkPrimaryFill, "#ffffff");
+      
+      // Primary button (dark): check button fill with white text
+      const darkBtnRatio = contrast(dark.primaryFill, "#ffffff");
       if (darkBtnRatio < MIN) {
         issues.push({
           path: "/colors/darkMode/primary",
@@ -588,15 +587,14 @@ function validateDesign(designConfig = {}, options = {}) {
         });
       }
 
-      // Outline/link style in dark: primary text on dark surface (AA target)
-      const darkPrimaryText = d.semantic?.primaryText || dark.primary600;
-      const darkOutlineRatio = contrast(darkPrimaryText, dark.surfaceBg);
+      // Outline/link style in dark: check link text on dark surface
+      const darkOutlineRatio = contrast(dark.primaryText, dark.surfaceBg);
       if (darkOutlineRatio < MIN) {
         issues.push({
           path: "/colors/darkMode/primary",
           message: `Primary text on surface is too low for outline/link styles (dark) (${darkOutlineRatio.toFixed(
             2
-          )} < ${MIN}). Override darkMode.primary/background or adjust semantic.primaryText.`,
+          )} < ${MIN}). Override darkMode.primary/background.`,
           ratio: darkOutlineRatio,
           min: MIN,
           context: "dark/outline",

@@ -323,36 +323,36 @@ body {
   background-color: var(--color-surface-base);
 }
 
-.surface--subtle {
+.surface-subtle {
   background-color: var(--color-surface-subtle);
 }
 
-.surface--elevated {
+.surface-elevated {
   background-color: var(--color-surface-elevated);
 }
 
-.surface--sunken {
+.surface-sunken {
   background-color: var(--color-surface-sunken);
 }
 
-.surface--overlay {
+.surface-overlay {
   background-color: var(--color-surface-overlay);
 }
 
 /* Translucent semantic variants */
-.surface--translucent {
+.surface-translucent {
   background-color: var(--color-surface-translucent-50);
 }
 
-.surface--translucent-25 {
+.surface-translucent-25 {
   background-color: var(--color-surface-translucent-25);
 }
 
-.surface--translucent-50 {
+.surface-translucent-50 {
   background-color: var(--color-surface-translucent-50);
 }
 
-.surface--translucent-75 {
+.surface-translucent-75 {
   background-color: var(--color-surface-translucent-75);
 }
 
