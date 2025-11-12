@@ -4,6 +4,7 @@ import { Generator } from "../pds-core/pds-generator.js";
 import { presets } from "../pds-core/pds-config.js";
 import { PDS, validateDesign } from "../pds";
 import { deepMerge } from "../common/common";
+import { loadTypographyFonts } from "../common/font-loader.js";
 
 const STORAGE_KEY = "pure-ds-config";
 
@@ -278,13 +279,23 @@ customElements.define(
       }
     }
 
-    applyStyles(useUserConfig = false) {
+    async applyStyles(useUserConfig = false) {
       // Runtime baseline: if using user config, build from preset base + overrides; else default
       let baseConfig = structuredClone(presets.default);
       if (useUserConfig && this.config) {
         const presetId = (this._stored && this._stored.preset) || "default";
         const presetBase = this._resolvePresetBase(presetId);
         baseConfig = deepMerge(presetBase, this.config);
+      }
+
+      // Load fonts from Google Fonts if needed (before validation and style generation)
+      if (baseConfig.typography) {
+        try {
+          await loadTypographyFonts(baseConfig.typography);
+        } catch (ex) {
+          console.warn("Failed to load some fonts:", ex);
+          // Continue anyway - the system will fall back to default fonts
+        }
       }
 
       // Validate before generating/applying styles
