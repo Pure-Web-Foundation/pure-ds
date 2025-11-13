@@ -2037,7 +2037,6 @@ input[type="range"]:active::-moz-range-thumb {
 
 input[type="color"] {
   -webkit-appearance: none;
-  border: none;
   padding: 0;
   width: 3rem;
   height: 3rem;

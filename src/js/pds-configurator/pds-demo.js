@@ -1168,6 +1168,9 @@ customElements.define(
     get autoCompleteSettings() {
       return {
         //debug: true,
+        iconHandler: (item) => {
+          return item.icon ? `<pds-icon icon="${item.icon}"></pds-icon>` : null;
+        },
         categories: {
           Sections: {
             action: (options) => {

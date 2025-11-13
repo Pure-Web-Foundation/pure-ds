@@ -259,7 +259,7 @@ label:has(input[type="color"]) {
 
 .preset-info strong {
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-text-primary);
 }
 
 .preset-info small {
@@ -315,6 +315,18 @@ pds-demo {
 
   .ac-suggestion {
     background-color: var(--color-surface-elevated);
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .showcase-toc {
+    top: 50px;
+    &:has(input:focus) {
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0
+    }
   }
 }
 
@@ -1014,7 +1026,7 @@ pds-demo {
 
 .lit-properties h4 {
   margin: 0 0 var(--spacing-3) 0;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   display: flex;
@@ -1040,13 +1052,13 @@ pds-demo {
 .prop-name {
   font-weight: var(--font-weight-semibold);
   color: var(--color-primary-600);
-  font-family: var(--font-fontFamily-mono);
+  font-family: var(--font-family-mono);
   font-size: var(--font-size-sm);
 }
 
 .prop-value {
   color: var(--color-text-secondary);
-  font-family: var(--font-fontFamily-mono);
+  font-family: var(--font-family-mono);
   font-size: var(--font-size-sm);
 }
 
@@ -1064,7 +1076,7 @@ pds-demo {
   background: var(--color-surface-muted);
   color: var(--color-text-primary);
   font-family: var(
-    --font-fontFamily-mono,
+    --font-family-mono,
     "Consolas",
     "Monaco",
     "Courier New",

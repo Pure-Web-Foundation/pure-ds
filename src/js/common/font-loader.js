@@ -94,7 +94,6 @@ export async function loadGoogleFont(fontFamily, options = {}) {
   
   // Check if font is already available
   if (isFontAvailable(primaryFont)) {
-    console.log(`Font "${primaryFont}" is already available`);
     return Promise.resolve();
   }
   
