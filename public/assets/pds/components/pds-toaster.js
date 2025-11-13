@@ -31,7 +31,7 @@ export class AppToaster extends HTMLElement {
           margin-bottom: var(--spacing-3);
           position: relative;
           pointer-events: auto;
-          __max-height: 200px;
+          max-height: 500px;
           overflow: hidden;
           transition: transform var(--transition-normal, 0.3s) cubic-bezier(0.175, 0.885, 0.32, 1.275),
                       opacity var(--transition-normal, 0.3s) ease-out,
@@ -49,9 +49,11 @@ export class AppToaster extends HTMLElement {
           margin-bottom: 0;
           max-height: 0;
           opacity: 0;
-          transition: margin-bottom var(--transition-fast, 0.2s) ease-out,
-                      max-height var(--transition-fast, 0.2s) ease-out,
-                      opacity var(--transition-fast, 0.2s) ease-out;
+          transform: translateX(100%);
+          transition: transform var(--transition-normal, 0.3s) ease-out,
+                      opacity var(--transition-normal, 0.3s) ease-out,
+                      margin-bottom var(--transition-normal, 0.3s) ease-out,
+                      max-height var(--transition-normal, 0.3s) ease-out;
         }
 
         /* Toast progress bar */
