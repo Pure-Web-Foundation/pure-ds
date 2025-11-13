@@ -159,7 +159,7 @@ export class DrawerPanel extends HTMLElement {
     if (!this.shadowRoot) this.attachShadow({ mode: "open" });
 
     // Compose shadow DOM
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot.innerHTML = /*html*/`
       <div class="backdrop" part="backdrop"></div>
       <div class="layer" id="layer" aria-hidden="true">
         <aside part="panel" tabindex="-1">
@@ -608,8 +608,9 @@ export class DrawerPanel extends HTMLElement {
 
   // Whether to show the close icon button
   #shouldShowClose() {
-    // Always show for side drawers; for top/bottom obey showClose flag
+    // Always show for side drawers; hide by default for top/bottom unless showClose flag is set
     if (this._position === "left" || this._position === "right") return true;
+    if (this._position === "top" || this._position === "bottom") return !!this._showClose;
     return !!this._showClose;
   }
 

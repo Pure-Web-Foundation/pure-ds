@@ -871,8 +871,6 @@ html[data-theme="dark"] {
 
   }
 
-
-
   /* List primitives */
   :where(ul, ol) {
     padding-left: var(--spacing-6);
@@ -960,7 +958,13 @@ html[data-theme="dark"] {
     color: var(--color-text-secondary);
     line-height: var(--font-line-height-relaxed);
   }
+
+  
+  [hidden] {
+    display: none !important;
+  }
 }
+
 
 @layer components {
 
@@ -4146,8 +4150,6 @@ html[data-theme="dark"] {
 
   }
 
-
-
   /* List primitives */
   :where(ul, ol) {
     padding-left: var(--spacing-6);
@@ -4235,7 +4237,13 @@ html[data-theme="dark"] {
     color: var(--color-text-secondary);
     line-height: var(--font-line-height-relaxed);
   }
+
+  
+  [hidden] {
+    display: none !important;
+  }
 }
+
 
 @layer components {
 

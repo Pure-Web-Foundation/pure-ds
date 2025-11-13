@@ -172,8 +172,6 @@ primitives.replaceSync(`@layer primitives {
 
   }
 
-
-
   /* List primitives */
   :where(ul, ol) {
     padding-left: var(--spacing-6);
@@ -261,7 +259,13 @@ primitives.replaceSync(`@layer primitives {
     color: var(--color-text-secondary);
     line-height: var(--font-line-height-relaxed);
   }
+
+  
+  [hidden] {
+    display: none !important;
+  }
 }
+
 `);
 
 export const primitivesCSS = `@layer primitives {
@@ -434,8 +438,6 @@ export const primitivesCSS = `@layer primitives {
 
   }
 
-
-
   /* List primitives */
   :where(ul, ol) {
     padding-left: var(--spacing-6);
@@ -523,5 +525,11 @@ export const primitivesCSS = `@layer primitives {
     color: var(--color-text-secondary);
     line-height: var(--font-line-height-relaxed);
   }
+
+  
+  [hidden] {
+    display: none !important;
+  }
 }
+
 `;

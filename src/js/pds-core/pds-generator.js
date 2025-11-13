@@ -3923,8 +3923,6 @@ nav[data-dropdown][data-mode="auto"] menu {
 
   }
 
-
-
   /* List primitives */
   :where(ul, ol) {
     padding-left: var(--spacing-6);
@@ -4012,7 +4010,13 @@ nav[data-dropdown][data-mode="auto"] menu {
     color: var(--color-text-secondary);
     line-height: var(--font-line-height-relaxed);
   }
+
+  
+  [hidden] {
+    display: none !important;
+  }
 }
+
 `;
   }
 
