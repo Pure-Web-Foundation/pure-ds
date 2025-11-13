@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { generateFromFile, generate, watch as watchConfig } from '../../../src/pds-core/pds-api.js';
-import { writeFilesAtomic } from '../../../src/lib/fs-writer.js';
+import { writeFilesAtomic } from '../lib/fs-writer.js';
 import fs from 'fs';
 import path from 'path';
 

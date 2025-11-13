@@ -16,7 +16,7 @@ PDS ships a simple, sprite‑based icon solution and a lightweight `<pds-icon>` 
 
 - `public/assets/pds/icons/icons.svg` — SVG sprite sheet consumed at runtime
 - `public/auto-define/pds-icon.js` — auto‑defined component that renders icons from the sprite
-- `scripts/build-icons.mjs` — script to (re)generate the sprite
+- `packages/pds-cli/bin/pds-build-icons.js` — CLI tool to (re)generate the sprite
 - Demo: `public/_test/icons-demo.html`
 
 ## Rebuild the sprite

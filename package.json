@@ -45,7 +45,6 @@
     "public/auto-define/",
     "public/pds/components/",
   "public/assets/pds/icons/pds-icons.svg",
-    "public/exports/",
     "packages/pds-cli/bin/",
     "src/js/pds.d.ts",
     "src/js/pds.js",
@@ -59,7 +58,7 @@
     "build": "node esbuild-build.js",
     "postinstall": "node packages/pds-cli/bin/postinstall.js",
     "pds:export": "node packages/pds-cli/bin/pds-static.js",
-    "pds:build-icons": "node scripts/build-icons.mjs"
+    "pds:build-icons": "node packages/pds-cli/bin/pds-build-icons.js"
   },
   "author": "Marc van Neerven",
   "license": "ISC",

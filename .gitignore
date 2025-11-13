@@ -19,6 +19,5 @@ Thumbs.db
 *.d.ts
 build-meta.json
 yarn.lock
-/public/exports/
 public/readme.md
 

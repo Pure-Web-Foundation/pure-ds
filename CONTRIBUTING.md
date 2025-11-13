@@ -16,8 +16,8 @@ Thanks for your interest in contributing! We welcome issues, discussions, and pu
 
 - Core sources: `src/js/**`
 - Public runtime bundle: `public/assets/js/pds.js`
-- Static exports (for hosting): `public/exports/` and `public/auto-define/`
-- Scripts: `scripts/*.mjs`
+- Static exports (for hosting): `public/pds/` (components, styles, icons)
+- CLI tools: `packages/pds-cli/bin/`
 
 ## Making changes
 
