@@ -54,6 +54,9 @@ import { presets } from "./pds-core/pds-config.js";
 import { enums } from "./pds-core/pds-enums.js";
 import { ask } from "./common/ask.js";
 
+// Font loading utilities
+import { loadTypographyFonts } from "./common/font-loader.js";
+
 /** Generator class — use to programmatically create design system assets from a config */
 PDS.Generator = Generator;
 
@@ -1064,6 +1067,16 @@ async function live(config) {
     }
 
     const generator = new PDS.Generator(generatorConfig);
+
+    // 3) Load fonts from Google Fonts if needed (before applying styles)
+    if (generatorConfig.typography) {
+      try {
+        await loadTypographyFonts(generatorConfig.typography);
+      } catch (ex) {
+        console.warn("Failed to load some fonts from Google Fonts:", ex);
+        // Continue anyway - the system will fall back to default fonts
+      }
+    }
 
     // 4) Preload critical styles synchronously to prevent flash
     if (preloadStyles && typeof window !== "undefined" && document.head) {
