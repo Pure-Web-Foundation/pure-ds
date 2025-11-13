@@ -215,11 +215,11 @@ pds-config-form {
 }
 
 pds-jsonform form > fieldset {
-  padding: 0;
+  _padding: 0;
   margin: 0;
 
   > legend {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-xl);
   }
 }
 
