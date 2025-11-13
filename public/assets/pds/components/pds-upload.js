@@ -55,7 +55,7 @@ class UploadArea extends HTMLElement {
   async _adoptStyles() {
     // Component-specific styles (button styles come from primitives)
     const componentStyles = PDS.createStylesheet(/*css*/`
-      @layer components {
+      @layer upload {
         :host {
           display: block;
           font-family: var(--font-family-body, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial);

@@ -45,14 +45,21 @@
             "background": {
               "type": "string",
               "format": "color",
-              "title": "Dark Background",
+              "title": "Background",
               "description": "Background color for dark mode.",
               "default": "#16171a"
+            },
+            "primary": {
+              "type": "string",
+              "format": "color",
+              "title": "Primary",
+              "description": "Optional: custom primary color for dark mode.",
+              "default": "#8b9199"
             },
             "secondary": {
               "type": "string",
               "format": "color",
-              "title": "Dark Secondary (Optional)",
+              "title": "Secondary",
               "description": "Optional: custom secondary/gray tone for dark mode.",
               "default": "#8b9199"
             }

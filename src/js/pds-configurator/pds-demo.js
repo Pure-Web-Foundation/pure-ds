@@ -1696,16 +1696,6 @@ customElements.define(
                 </label>
 
                 <label>
-                  <span>Color</span>
-                  <input type="color" value="#2d9dc9" />
-                </label>
-
-                <label>
-                  <span>Search</span>
-                  <input type="search" placeholder="Search..." />
-                </label>
-
-                <label>
                   <span>URL</span>
                   <input type="url" placeholder="https://example.com" />
                 </label>

@@ -1013,85 +1013,86 @@ export class Generator {
     return css + "\n";
   }
 
-  #generateDarkModeCSS(colors) {
-    if (!colors.dark) return "";
+//   #generateDarkModeCSS(colors) {
+//     if (!colors.dark) return "";
 
-    // Always emit dark-mode variables and rules scoped to html[data-theme="dark"].
-    // We avoid relying on prefers-color-scheme media queries so the runtime
-    // can simply toggle the attribute on <html> to switch modes.
-    let vars = "";
-    const generateNestedDarkColors = (obj, prefix = "") => {
-      Object.entries(obj).forEach(([key, value]) => {
-        if (typeof value === "object" && value !== null) {
-          generateNestedDarkColors(value, `${prefix}${key}-`);
-        } else if (typeof value === "string") {
-          vars += `  --color-${prefix}${key}: ${value};\n`;
-        }
-      });
-    };
+//     // Always emit dark-mode variables and rules scoped to html[data-theme="dark"].
+//     // We avoid relying on prefers-color-scheme media queries so the runtime
+//     // can simply toggle the attribute on <html> to switch modes.
+//     let vars = "";
+//     const generateNestedDarkColors = (obj, prefix = "") => {
+//       Object.entries(obj).forEach(([key, value]) => {
+//         if (typeof value === "object" && value !== null) {
+//           generateNestedDarkColors(value, `${prefix}${key}-`);
+//         } else if (typeof value === "string") {
+//           vars += `  --color-${prefix}${key}: ${value};\n`;
+//         }
+//       });
+//     };
 
-    Object.entries(colors.dark).forEach(([category, values]) => {
-      if (category === "surfaceSmart") return; // Handle smart tokens separately
-      if (typeof values === "object" && values !== null) {
-        generateNestedDarkColors(values, `${category}-`);
-      }
-    });
+//     Object.entries(colors.dark).forEach(([category, values]) => {
+//       if (category === "surfaceSmart") return; // Handle smart tokens separately
+//       if (typeof values === "object" && values !== null) {
+//         generateNestedDarkColors(values, `${category}-`);
+//       }
+//     });
 
-    // Generate smart surface tokens for dark mode
-    let smartSurfaceVars = "";
-    if (colors.dark.surfaceSmart) {
-      smartSurfaceVars += `  /* Smart Surface Tokens (dark mode, context-aware) */\n`;
-      Object.entries(colors.dark.surfaceSmart).forEach(
-        ([surfaceKey, tokens]) => {
-          smartSurfaceVars += `  --surface-${surfaceKey}-bg: ${tokens.bg};\n`;
-          smartSurfaceVars += `  --surface-${surfaceKey}-text: ${tokens.text};\n`;
-          smartSurfaceVars += `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`;
-          smartSurfaceVars += `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`;
-          smartSurfaceVars += `  --surface-${surfaceKey}-icon: ${tokens.icon};\n`;
-          smartSurfaceVars += `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`;
-          smartSurfaceVars += `  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`;
-          smartSurfaceVars += `  --surface-${surfaceKey}-border: ${tokens.border};\n`;
-        }
-      );
-      smartSurfaceVars += `\n`;
-    }
+//     // Generate smart surface tokens for dark mode
+//     let smartSurfaceVars = "";
+//     if (colors.dark.surfaceSmart) {
+//       smartSurfaceVars += `  /* Smart Surface Tokens (dark mode, context-aware) */\n`;
+//       Object.entries(colors.dark.surfaceSmart).forEach(
+//         ([surfaceKey, tokens]) => {
+//           smartSurfaceVars += `  --surface-${surfaceKey}-bg: ${tokens.bg};\n`;
+//           smartSurfaceVars += `  --surface-${surfaceKey}-text: ${tokens.text};\n`;
+//           smartSurfaceVars += `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`;
+//           smartSurfaceVars += `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`;
+//           smartSurfaceVars += `  --surface-${surfaceKey}-icon: ${tokens.icon};\n`;
+//           smartSurfaceVars += `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`;
+//           smartSurfaceVars += `  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`;
+//           smartSurfaceVars += `  --surface-${surfaceKey}-border: ${tokens.border};\n`;
+//         }
+//       );
+//       smartSurfaceVars += `\n`;
+//     }
 
-    // Interactive color tokens for dark mode - use precomputed tokens
-    const semanticVars = /*css*/ `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n  /* Interactive Colors - optimized for specific use cases (dark mode) */\n  --color-primary-fill: ${colors.interactive.dark.fill}; /* For button backgrounds with white text */\n  --color-primary-text: ${colors.interactive.dark.text}; /* For links and outline buttons on dark surfaces */\n`;
+//     // Interactive color tokens for dark mode - use precomputed tokens
+//     const semanticVars = /*css*/ `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n  /* Interactive Colors - optimized for specific use cases (dark mode) */\n  --color-primary-fill: ${colors.interactive.dark.fill}; /* For button backgrounds with white text */\n  --color-primary-text: ${colors.interactive.dark.text}; /* For links and outline buttons on dark surfaces */\n`;
 
-    // Backdrop tokens for dark mode
-    const backdropVars = /*css*/ `  /* Backdrop tokens - used for modal dialogs, drawers, overlays (dark mode) */
-  --backdrop-bg: linear-gradient(
-      135deg,
-      rgba(0, 0, 0, 0.6),
-      rgba(0, 0, 0, 0.4)
-    );
-  --backdrop-blur: 10px;
-  --backdrop-saturate: 120%;
-  --backdrop-brightness: 0.7;
-  --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));
-  --backdrop-opacity: 1;
+//     // Backdrop tokens for dark mode
+//     const backdropVars = /*css*/ `  /* Backdrop tokens - used for modal dialogs, drawers, overlays (dark mode) */
+//   --backdrop-bg: linear-gradient(
+//       135deg,
+//       rgba(0, 0, 0, 0.6),
+//       rgba(0, 0, 0, 0.4)
+//     );
+//   --backdrop-blur: 10px;
+//   --backdrop-saturate: 120%;
+//   --backdrop-brightness: 0.7;
+//   --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));
+//   --backdrop-opacity: 1;
   
-  /* Legacy alias for backwards compatibility */
-  --backdrop-background: var(--backdrop-bg);
-`;
+//   /* Legacy alias for backwards compatibility */
+//   --backdrop-background: var(--backdrop-bg);
+// `;
 
-    // Generate dark mode mesh gradients
-    const meshVars = this.#generateMeshGradientsDark(colors);
+//     // Generate dark mode mesh gradients
+//     const meshVars = this.#generateMeshGradientsDark(colors);
 
-    // Scope rules using native CSS nesting by wrapping inside html[data-theme="dark"]
-    // This yields: html[data-theme="dark"] .selector { ... }
-    let css = "";
-    css += `html[data-theme="dark"] {\n${vars}${smartSurfaceVars}${semanticVars}${backdropVars}${meshVars}`;
-    css += `\n}`;
+//     // Scope rules using native CSS nesting by wrapping inside html[data-theme="dark"]
+//     // This yields: html[data-theme="dark"] .selector { ... }
+//     let css = "";
+//     css += `html[data-theme="dark"] {\n${vars}${smartSurfaceVars}${semanticVars}${backdropVars}${meshVars}`;
+//     css += `\n}`;
 
-    return css;
-  }
+//     return css;
+//   }
 
   // Generate ONLY the dark-mode variable overrides (no component rules),
   // and do NOT wrap them in any @layer. This ensures that when a page has
   // older unlayered CSS loaded, the explicit html[data-theme="dark"]
   // variables here will take precedence and correctly flip the theme.
+  
   #generateDarkVariablesOnly(colors) {
     if (!colors?.dark) return "";
 
@@ -2345,7 +2346,6 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   align-items: center;
   gap: var(--spacing-3);
   width: 100%;
-  padding: 0 var(--spacing-3);
   background: var(--color-input-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -4083,10 +4083,12 @@ nav[data-dropdown][data-mode="auto"] menu {
   }
 
   legend::after {
-    content: "";
-    display: block;
-    margin-bottom: var(--spacing-3);
-
+      content: "";
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: var(--color-border);
+      margin-bottom: var(--spacing-4);
   }
 
   /* List primitives */

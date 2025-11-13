@@ -5,6 +5,7 @@ import { presets } from "../pds-core/pds-config.js";
 import { PDS, validateDesign } from "../pds";
 import { deepMerge } from "../common/common";
 import { loadTypographyFonts } from "../common/font-loader.js";
+import { AutoComplete } from "pure-web/ac";
 
 const STORAGE_KEY = "pure-ds-config";
 
@@ -816,6 +817,17 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
                 `;
               })()}
             </fieldset>
+
+            <fieldset>
+              <legend>Preset</legend>
+              <div class="input-icon">
+                <pds-icon icon="magnifying-glass"></pds-icon>
+                <input @focus=${(e) =>
+                  AutoComplete.connect(e, this.presetAutoCompleteSettings)} id="preset-search" type="search" placeholder="Search presets..." autocomplete="off">
+              </div>
+            </fieldset>
+
+
           </div>
 
           <div class="designer-form-container">
@@ -952,6 +964,63 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
           </div>
         </div>
       `;
+    }
+
+    get presetAutoCompleteSettings(){
+      
+      return {
+        //debug: true,
+        iconHandler: (item) => {
+          return item.icon ? `<pds-icon icon="${item.icon}"></pds-icon>` : null;
+        },
+        categories: {
+          Presets: {
+            action: (options) => {
+              this.applyPreset(options.id);
+            },
+            trigger: (options) => options.search.length === 0,
+            getItems: (options) => {
+              const all = Object.values(PDS.presets)
+              return all.map(preset => ({
+                id: preset.id,
+                text: preset.label ?? preset.name,
+                description: preset.description,
+                icon: "palette",
+              }));
+            }
+                  // .map(
+                  //   (preset) => html`
+                  //     <li>
+                  //       <a
+                  //         href="#"
+                  //         @click=${(e) => {
+                  //           e.preventDefault();
+                            
+                  //         }}
+                  //       >
+                  //         <span class="preset-colors">
+                  //           <span
+                  //             style="background-color: ${preset.colors.primary}"
+                  //           ></span>
+                  //           <span
+                  //             style="background-color: ${preset.colors
+                  //               .secondary}"
+                  //           ></span>
+                  //           <span
+                  //             style="background-color: ${preset.colors.accent}"
+                  //           ></span>
+                  //         </span>
+                  //         <span class="preset-info">
+                  //           <strong>${preset.name}</strong>
+                  //           <small>${preset.description}</small>
+                  //         </span>
+                  //       </a>
+                  //     </li>
+                  //   `
+                  // )}
+            },
+          }
+      }
     }
 
     // Provide a uiSchema to customize widgets for designer UX (datalists for fonts, ranges for numeric values)

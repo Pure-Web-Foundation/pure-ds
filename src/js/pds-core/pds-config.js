@@ -456,6 +456,335 @@ export const presets = {
       transitionSpeed: enums.TransitionSpeeds.normal,
       animationEasing: enums.AnimationEasings.ease,
     },
+  },
+  "fitness-pro": {
+    id: "fitness-pro",
+    name: "Fitness Pro",
+    description:
+      "Health and fitness tracking aesthetic with data-driven dark surfaces and vibrant accent rings",
+    options: {
+      liquidGlassEffects: false,
+      backgroundMesh: 0,
+    },
+    colors: {
+      primary: "#e91e63", // vibrant pink-magenta for data highlights
+      secondary: "#78909c", // cool gray for secondary data
+      accent: "#ab47bc", // purple accent for premium features
+      background: "#fafafa",
+      darkMode: {
+        background: "#1a1d21", // deep charcoal like WHOOP
+        secondary: "#78909c",
+        primary: "#0a4ca4",
+      },
+    },
+    typography: {
+      baseFontSize: 15,
+      fontScale: 1.25,
+      fontFamilyHeadings:
+        "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      fontFamilyBody:
+        "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      fontWeightNormal: 400,
+      fontWeightMedium: 500,
+      fontWeightSemibold: 600,
+      fontWeightBold: 700,
+      lineHeightNormal: enums.LineHeights.tight,
+    },
+    spatialRhythm: {
+      baseUnit: 4,
+      scaleRatio: 1.25,
+      containerPadding: 1.25,
+      sectionSpacing: 2.5,
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.large, // smooth cards and buttons
+      borderWidth: enums.BorderWidths.thin,
+    },
+    layers: {
+      shadowDepth: "medium",
+      blurMedium: 12,
+    },
+    behavior: {
+      transitionSpeed: enums.TransitionSpeeds.fast,
+      animationEasing: enums.AnimationEasings["ease-out"],
+      focusRingWidth: 2,
+    },
+  },
+  "travel-market": {
+    id: "travel-market",
+    name: "Travel Market",
+    description:
+      "Hospitality marketplace design with clean cards, subtle shadows, and trust-building neutrals",
+    options: {
+      liquidGlassEffects: false,
+      backgroundMesh: 0,
+    },
+    colors: {
+      primary: "#ff385c", // Airbnb-inspired coral red
+      secondary: "#717171", // neutral gray for text
+      accent: "#144990", // teal for experiences/verified
+      background: "#ffffff",
+      darkMode: {
+        background: "#222222",
+        secondary: "#b0b0b0",
+        primary: "#ff385c",
+      },
+    },
+    typography: {
+      baseFontSize: 16,
+      fontScale: 1.2,
+      fontFamilyHeadings:
+        "'Circular', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      fontFamilyBody:
+        "'Circular', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      fontWeightNormal: 400,
+      fontWeightMedium: 500,
+      fontWeightSemibold: 600,
+      fontWeightBold: 700,
+      lineHeightRelaxed: enums.LineHeights.relaxed,
+    },
+    spatialRhythm: {
+      baseUnit: 4,
+      scaleRatio: 1.25,
+      containerMaxWidth: 1440,
+      containerPadding: 1.5,
+      sectionSpacing: 3.0,
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.medium,
+      borderWidth: enums.BorderWidths.thin,
+    },
+    layers: {
+      shadowDepth: "light",
+      blurLight: 8,
+    },
+    behavior: {
+      transitionSpeed: enums.TransitionSpeeds.normal,
+      animationEasing: enums.AnimationEasings["ease-in-out"],
+      hoverOpacity: 0.9,
+    },
+  },
+  "mobility-app": {
+    id: "mobility-app",
+    name: "Mobility App",
+    description:
+      "On-demand service platform with bold typography, map-ready colors, and action-driven UI",
+    options: {
+      liquidGlassEffects: false,
+      backgroundMesh: 0,
+    },
+    colors: {
+      primary: "#000000", // Uber-inspired black for trust and sophistication
+      secondary: "#545454", // mid-gray for secondary elements
+      accent: "#06c167", // green for success/confirmation
+      background: "#f6f6f6",
+      darkMode: {
+        background: "#0f0f0f",
+        secondary: "#8a8a8a",
+        primary: "#ffffff", // inverted for dark mode
+      },
+    },
+    typography: {
+      baseFontSize: 16,
+      fontScale: 1.3,
+      fontFamilyHeadings:
+        "'UberMove', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      fontFamilyBody:
+        "'UberMove', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      fontWeightNormal: 400,
+      fontWeightMedium: 500,
+      fontWeightSemibold: 600,
+      fontWeightBold: 700,
+    },
+    spatialRhythm: {
+      baseUnit: 4,
+      scaleRatio: 1.25,
+      buttonPadding: 1.25,
+      inputPadding: 1.0,
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.small, // subtle, professional
+      borderWidth: enums.BorderWidths.medium,
+    },
+    behavior: {
+      transitionSpeed: enums.TransitionSpeeds.fast,
+      animationEasing: enums.AnimationEasings["ease-out"],
+      focusRingWidth: 3,
+    },
+    a11y: {
+      minTouchTarget: enums.TouchTargetSizes.comfortable,
+      focusStyle: enums.FocusStyles.ring,
+    },
+  },
+  "fintech-secure": {
+    id: "fintech-secure",
+    name: "Fintech Secure",
+    description:
+      "Financial services UI with trust-building blues, precise spacing, and security-first design",
+    options: {
+      liquidGlassEffects: false,
+      backgroundMesh: 0,
+    },
+    colors: {
+      primary: "#0a2540", // deep navy for trust and security
+      secondary: "#425466", // slate for secondary content
+      accent: "#00d4ff", // bright cyan for CTAs
+      background: "#f7fafc",
+      darkMode: {
+        background: "#0a1929",
+        secondary: "#8796a5",
+        primary: "#00d4ff",
+      },
+    },
+    typography: {
+      baseFontSize: 16,
+      fontScale: 1.25,
+      fontFamilyHeadings:
+        "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      fontFamilyBody:
+        "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      fontFamilyMono:
+        "'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace",
+      fontWeightNormal: 400,
+      fontWeightMedium: 500,
+      fontWeightSemibold: 600,
+      fontWeightBold: 700,
+    },
+    spatialRhythm: {
+      baseUnit: 4,
+      scaleRatio: 1.25,
+      containerMaxWidth: 1280,
+      sectionSpacing: 2.5,
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.medium,
+      borderWidth: enums.BorderWidths.thin,
+    },
+    layers: {
+      shadowDepth: "light",
+      blurLight: 6,
+    },
+    behavior: {
+      transitionSpeed: enums.TransitionSpeeds.fast,
+      animationEasing: enums.AnimationEasings["ease-in-out"],
+      focusRingWidth: 3,
+      focusRingOpacity: 0.4,
+    },
+    a11y: {
+      minTouchTarget: enums.TouchTargetSizes.standard,
+      focusStyle: enums.FocusStyles.ring,
+    },
+  },
+  "social-feed": {
+    id: "social-feed",
+    name: "Social Feed",
+    description:
+      "Content-first social platform with minimal chrome, bold actions, and vibrant media presentation",
+    options: {
+      liquidGlassEffects: false,
+      backgroundMesh: 0,
+    },
+    colors: {
+      primary: "#1877f2", // social blue for links and primary actions
+      secondary: "#65676b", // neutral gray for secondary text
+      accent: "#fe2c55", // vibrant pink-red for likes/hearts
+      background: "#ffffff",
+      darkMode: {
+        background: "#18191a",
+        secondary: "#b0b3b8",
+        primary: "#2d88ff",
+      },
+    },
+    typography: {
+      baseFontSize: 15,
+      fontScale: 1.2,
+      fontFamilyHeadings:
+        "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+      fontFamilyBody:
+        "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+      fontWeightNormal: 400,
+      fontWeightMedium: 500,
+      fontWeightSemibold: 600,
+      fontWeightBold: 700,
+      lineHeightNormal: enums.LineHeights.relaxed,
+    },
+    spatialRhythm: {
+      baseUnit: 4,
+      scaleRatio: 1.25,
+      containerMaxWidth: 680,
+      sectionSpacing: 1.5,
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.medium,
+      borderWidth: enums.BorderWidths.thin,
+    },
+    behavior: {
+      transitionSpeed: enums.TransitionSpeeds.fast,
+      animationEasing: enums.AnimationEasings["ease-out"],
+      hoverOpacity: 0.85,
+    },
+  },
+  "enterprise-dash": {
+    id: "enterprise-dash",
+    name: "Enterprise Dashboard",
+    description:
+      "Data-dense business intelligence interface with organized hierarchy and professional polish",
+    options: {
+      liquidGlassEffects: false,
+      backgroundMesh: 0,
+    },
+    colors: {
+      primary: "#0066cc", // corporate blue for primary actions
+      secondary: "#5f6368", // neutral gray for text and chrome
+      accent: "#1a73e8", // bright blue for highlights
+      background: "#ffffff",
+      success: "#34a853",
+      warning: "#fbbc04",
+      danger: "#ea4335",
+      darkMode: {
+        background: "#202124",
+        secondary: "#9aa0a6",
+        primary: "#8ab4f8",
+      },
+    },
+    typography: {
+      baseFontSize: 14,
+      fontScale: 1.2,
+      fontFamilyHeadings:
+        "'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      fontFamilyBody:
+        "'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      fontFamilyMono: "'Roboto Mono', ui-monospace, Consolas, monospace",
+      fontWeightNormal: 400,
+      fontWeightMedium: 500,
+      fontWeightSemibold: 600,
+      fontWeightBold: 700,
+      lineHeightNormal: enums.LineHeights.tight,
+    },
+    spatialRhythm: {
+      baseUnit: 4,
+      scaleRatio: 1.2,
+      containerMaxWidth: 1600,
+      containerPadding: 1.5,
+      sectionSpacing: 2.0,
+    },
+    shape: {
+      radiusSize: enums.RadiusSizes.small,
+      borderWidth: enums.BorderWidths.thin,
+    },
+    layers: {
+      shadowDepth: "light",
+      blurLight: 4,
+    },
+    behavior: {
+      transitionSpeed: enums.TransitionSpeeds.fast,
+      animationEasing: enums.AnimationEasings["ease-in-out"],
+      focusRingWidth: 2,
+    },
+    layout: {
+      densityCompact: 0.85,
+      gridColumns: 12,
+    },
   }
   
 };

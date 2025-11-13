@@ -1,7 +1,7 @@
 {
   "name": "pure-ds",
   "shortname": "pds",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "description": "Pure Design System - Why develop a Design System when you can generate one?",
   "repository": {
     "type": "git",
