@@ -53,6 +53,8 @@ import { findComponentForElement } from "./pds-core/pds-ontology.js";
 import { presets } from "./pds-core/pds-config.js";
 import { enums } from "./pds-core/pds-enums.js";
 import { ask } from "./common/ask.js";
+
+// Font loading utilities
 import { loadTypographyFonts } from "./common/font-loader.js";
 
 /** Generator class — use to programmatically create design system assets from a config */
