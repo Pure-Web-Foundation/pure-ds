@@ -1377,6 +1377,7 @@ customElements.define(
     }
 
     render() {
+
       const components = this.config?.components || {};
       // Determine current theme from DOM so section copy can adapt
       const theme =
@@ -2491,6 +2492,22 @@ customElements.define(
                 <p>--shadow-lg</p>
               </div>
             </div>
+
+
+            <h3>Surface Borders</h3>
+            <article class="card border-gradient">
+                <p>
+                  A card with a border gradient
+                </p>
+            </article>
+
+            <article class="card border-gradient-glow">
+                <p>
+                  A card with a glowing border gradient
+                </p>
+            </article>
+
+
           </section>
 
           <!-- Nested Surfaces Section -->

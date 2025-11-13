@@ -54,6 +54,7 @@ export class Generator {
       colors: this.#generateColorTokens(config.colors || {}),
       spacing: this.generateSpacingTokens(config.spatialRhythm || {}),
       radius: this.#generateRadiusTokens(config.shape || {}),
+      borderWidths: this.#generateBorderWidthTokens(config.shape || {}),
       typography: this.generateTypographyTokens(config.typography || {}),
       shadows: this.#generateShadowTokens(config.layers || {}),
       layout: this.#generateLayoutTokens(config.layout || {}),
@@ -572,6 +573,30 @@ export class Generator {
     };
   }
 
+  #generateBorderWidthTokens(shapeConfig) {
+    const {
+      borderWidth = "medium",
+    } = shapeConfig;
+
+    // Support string enum keys, numeric values, or default to medium
+    let baseBorderWidth;
+    if (typeof borderWidth === "number") {
+      baseBorderWidth = borderWidth;
+    } else if (typeof borderWidth === "string") {
+      baseBorderWidth = enums.BorderWidths[borderWidth] ?? enums.BorderWidths.medium;
+    } else {
+      baseBorderWidth = enums.BorderWidths.medium;
+    }
+
+    // Generate a scale of border widths based on the enums
+    return {
+      hairline: `${enums.BorderWidths.hairline}px`,
+      thin: `${enums.BorderWidths.thin}px`,
+      medium: `${enums.BorderWidths.medium}px`,
+      thick: `${enums.BorderWidths.thick}px`,
+    };
+  }
+
   generateTypographyTokens(typographyConfig) {
     const {
       fontFamilyHeadings = "system-ui, -apple-system, sans-serif",
@@ -908,6 +933,14 @@ export class Generator {
     let css = "  /* Border Radius */\n";
     Object.entries(radius).forEach(([key, value]) => {
       css += `  --radius-${key}: ${value};\n`;
+    });
+    return css + "\n";
+  }
+
+  #generateBorderWidthVariables(borderWidths) {
+    let css = "  /* Border Widths */\n";
+    Object.entries(borderWidths).forEach(([key, value]) => {
+      css += `  --border-width-${key}: ${value};\n`;
     });
     return css + "\n";
   }
@@ -1313,6 +1346,137 @@ html[data-theme="dark"] video:hover {
     } catch {
       return "";
     }
+  }
+
+  // Generate border gradient utilities for WHOOP-style card outlines
+  // Creates reusable utilities for standard cards, gradient borders, and glow effects
+  #generateBorderGradientUtilities() {
+    return /*css*/`/* ============================================================================
+   Border Gradient Utilities
+   WHOOP-style card outlines with gradient borders and glow effects
+   ============================================================================ */
+
+
+/* Gradient border utility - premium/promo card style */
+.border-gradient {
+  border: var(--border-width-medium) solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-400),
+      var(--color-accent-400)
+    ) border-box;
+}
+
+/* Gradient border variants - different color combinations */
+.border-gradient-primary {
+  border: var(--border-width-medium) solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-300),
+      var(--color-primary-600)
+    ) border-box;
+}
+
+.border-gradient-accent {
+  border: var(--border-width-medium) solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-accent-300),
+      var(--color-accent-600)
+    ) border-box;
+}
+
+.border-gradient-secondary {
+  border: var(--border-width-medium) solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-secondary-300),
+      var(--color-secondary-600)
+    ) border-box;
+}
+
+/* Gradient border with different strengths/thickness */
+.border-gradient-soft {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-400),
+      var(--color-accent-400)
+    ) border-box;
+}
+
+.border-gradient-medium {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-400),
+      var(--color-accent-400)
+    ) border-box;
+}
+
+.border-gradient-strong {
+  border: 3px solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-400),
+      var(--color-accent-400)
+    ) border-box;
+}
+
+/* Glow effect utility - for callouts and active states */
+.border-glow {
+  box-shadow: 0 0 12px var(--color-primary-500);
+}
+
+.border-glow-sm {
+  box-shadow: 0 0 6px var(--color-primary-500);
+}
+
+.border-glow-lg {
+  box-shadow: 0 0 20px var(--color-primary-500);
+}
+
+/* Combined gradient + glow for premium effects */
+.border-gradient-glow {
+  border: var(--border-width-medium) solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-400),
+      var(--color-accent-400)
+    ) border-box;
+  box-shadow: 0 0 12px var(--color-primary-500);
+}
+
+/* Semantic glow variants */
+.border-glow-primary {
+  box-shadow: 0 0 12px var(--color-primary-500);
+}
+
+.border-glow-accent {
+  box-shadow: 0 0 12px var(--color-accent-500);
+}
+
+.border-glow-success {
+  box-shadow: 0 0 12px var(--color-success-500);
+}
+
+.border-glow-warning {
+  box-shadow: 0 0 12px var(--color-warning-500);
+}
+
+.border-glow-danger {
+  box-shadow: 0 0 12px var(--color-danger-500);
+}
+
+`;
   }
 
   #generateLightModeCSS(colors) {
@@ -3706,6 +3870,7 @@ nav[data-dropdown][data-mode="auto"] menu {
       colors,
       spacing,
       radius,
+      borderWidths,
       typography,
       shadows,
       layout,
@@ -3719,6 +3884,7 @@ nav[data-dropdown][data-mode="auto"] menu {
           ${this.#generateColorVariables(colors)}
           ${this.#generateSpacingVariables(spacing)}
           ${this.#generateRadiusVariables(radius)}
+          ${this.#generateBorderWidthVariables(borderWidths)}
           ${this.#generateTypographyVariables(typography)}
           ${this.#generateShadowVariables(shadows)}
           ${this.#generateLayoutVariables(layout)}
@@ -4082,6 +4248,8 @@ ${this.#generateLayoutUtilities()}
 /* - Liquid glass utility class */
 ${this.#generateBodyBackgroundMeshRule()}
 ${this.#generateLiquidGlassUtility()}
+
+${this.#generateBorderGradientUtilities()}
 
 /* Surface utilities */
 

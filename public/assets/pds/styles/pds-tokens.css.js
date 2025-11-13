@@ -232,6 +232,13 @@ tokens.replaceSync(`@layer tokens {
   --radius-full: 9999px;
 
 
+            /* Border Widths */
+  --border-width-hairline: 0.5px;
+  --border-width-thin: 1px;
+  --border-width-medium: 2px;
+  --border-width-thick: 3px;
+
+
             /* Typography */
   --font-family-headings: system-ui, -apple-system, sans-serif;
   --font-family-body: system-ui, -apple-system, sans-serif;
@@ -930,6 +937,13 @@ export const tokensCSS = `@layer tokens {
   --radius-lg: 12px;
   --radius-xl: 16px;
   --radius-full: 9999px;
+
+
+            /* Border Widths */
+  --border-width-hairline: 0.5px;
+  --border-width-thin: 1px;
+  --border-width-medium: 2px;
+  --border-width-thick: 3px;
 
 
             /* Typography */

@@ -321,6 +321,133 @@ body {
 }
 
 
+/* ============================================================================
+   Border Gradient Utilities
+   WHOOP-style card outlines with gradient borders and glow effects
+   ============================================================================ */
+
+
+/* Gradient border utility - premium/promo card style */
+.border-gradient {
+  border: var(--border-width-medium) solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-400),
+      var(--color-accent-400)
+    ) border-box;
+}
+
+/* Gradient border variants - different color combinations */
+.border-gradient-primary {
+  border: var(--border-width-medium) solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-300),
+      var(--color-primary-600)
+    ) border-box;
+}
+
+.border-gradient-accent {
+  border: var(--border-width-medium) solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-accent-300),
+      var(--color-accent-600)
+    ) border-box;
+}
+
+.border-gradient-secondary {
+  border: var(--border-width-medium) solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-secondary-300),
+      var(--color-secondary-600)
+    ) border-box;
+}
+
+/* Gradient border with different strengths/thickness */
+.border-gradient-soft {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-400),
+      var(--color-accent-400)
+    ) border-box;
+}
+
+.border-gradient-medium {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-400),
+      var(--color-accent-400)
+    ) border-box;
+}
+
+.border-gradient-strong {
+  border: 3px solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-400),
+      var(--color-accent-400)
+    ) border-box;
+}
+
+/* Glow effect utility - for callouts and active states */
+.border-glow {
+  box-shadow: 0 0 12px var(--color-primary-500);
+}
+
+.border-glow-sm {
+  box-shadow: 0 0 6px var(--color-primary-500);
+}
+
+.border-glow-lg {
+  box-shadow: 0 0 20px var(--color-primary-500);
+}
+
+/* Combined gradient + glow for premium effects */
+.border-gradient-glow {
+  border: var(--border-width-medium) solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-400),
+      var(--color-accent-400)
+    ) border-box;
+  box-shadow: 0 0 12px var(--color-primary-500);
+}
+
+/* Semantic glow variants */
+.border-glow-primary {
+  box-shadow: 0 0 12px var(--color-primary-500);
+}
+
+.border-glow-accent {
+  box-shadow: 0 0 12px var(--color-accent-500);
+}
+
+.border-glow-success {
+  box-shadow: 0 0 12px var(--color-success-500);
+}
+
+.border-glow-warning {
+  box-shadow: 0 0 12px var(--color-warning-500);
+}
+
+.border-glow-danger {
+  box-shadow: 0 0 12px var(--color-danger-500);
+}
+
+
+
 /* Surface utilities */
 
 .surface {
@@ -852,6 +979,133 @@ body {
       0 10px 24px rgba(0,0,0,0.08);
   }
 }
+
+
+/* ============================================================================
+   Border Gradient Utilities
+   WHOOP-style card outlines with gradient borders and glow effects
+   ============================================================================ */
+
+
+/* Gradient border utility - premium/promo card style */
+.border-gradient {
+  border: var(--border-width-medium) solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-400),
+      var(--color-accent-400)
+    ) border-box;
+}
+
+/* Gradient border variants - different color combinations */
+.border-gradient-primary {
+  border: var(--border-width-medium) solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-300),
+      var(--color-primary-600)
+    ) border-box;
+}
+
+.border-gradient-accent {
+  border: var(--border-width-medium) solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-accent-300),
+      var(--color-accent-600)
+    ) border-box;
+}
+
+.border-gradient-secondary {
+  border: var(--border-width-medium) solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-secondary-300),
+      var(--color-secondary-600)
+    ) border-box;
+}
+
+/* Gradient border with different strengths/thickness */
+.border-gradient-soft {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-400),
+      var(--color-accent-400)
+    ) border-box;
+}
+
+.border-gradient-medium {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-400),
+      var(--color-accent-400)
+    ) border-box;
+}
+
+.border-gradient-strong {
+  border: 3px solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-400),
+      var(--color-accent-400)
+    ) border-box;
+}
+
+/* Glow effect utility - for callouts and active states */
+.border-glow {
+  box-shadow: 0 0 12px var(--color-primary-500);
+}
+
+.border-glow-sm {
+  box-shadow: 0 0 6px var(--color-primary-500);
+}
+
+.border-glow-lg {
+  box-shadow: 0 0 20px var(--color-primary-500);
+}
+
+/* Combined gradient + glow for premium effects */
+.border-gradient-glow {
+  border: var(--border-width-medium) solid transparent;
+  background:
+    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(135deg,
+      var(--color-primary-400),
+      var(--color-accent-400)
+    ) border-box;
+  box-shadow: 0 0 12px var(--color-primary-500);
+}
+
+/* Semantic glow variants */
+.border-glow-primary {
+  box-shadow: 0 0 12px var(--color-primary-500);
+}
+
+.border-glow-accent {
+  box-shadow: 0 0 12px var(--color-accent-500);
+}
+
+.border-glow-success {
+  box-shadow: 0 0 12px var(--color-success-500);
+}
+
+.border-glow-warning {
+  box-shadow: 0 0 12px var(--color-warning-500);
+}
+
+.border-glow-danger {
+  box-shadow: 0 0 12px var(--color-danger-500);
+}
+
 
 
 /* Surface utilities */

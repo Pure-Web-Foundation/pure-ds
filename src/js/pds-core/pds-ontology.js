@@ -51,7 +51,26 @@ export const ontology = {
     { id: "media-grid", name: "Media Grid", selectors: [".media-grid"], description: "Grid for media elements" },
   ],
 
-  utilities: [".btn-group", ".demo-grid", ".color-scale", ".gap-*", ".items-*", ".justify-*"],
+  utilities: [
+    ".btn-group", 
+    ".demo-grid", 
+    ".color-scale", 
+    ".gap-*", 
+    ".items-*", 
+    ".justify-*",
+    ".border-gradient",
+    ".border-gradient-primary",
+    ".border-gradient-accent",
+    ".border-gradient-secondary",
+    ".border-gradient-soft",
+    ".border-gradient-medium",
+    ".border-gradient-strong",
+    ".border-glow",
+    ".border-glow-sm",
+    ".border-glow-lg",
+    ".border-gradient-glow",
+    ".border-glow-*"
+  ],
 
   styles: {
     typography: ["headings", "body", "code"],
