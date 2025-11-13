@@ -152,6 +152,9 @@
   --color-input-disabled-bg: var(--color-gray-50);
   --color-input-disabled-text: var(--color-gray-500);
   --color-code-bg: var(--color-gray-100);
+  /* Interactive Colors - optimized for specific use cases */
+  --color-primary-fill: #0b63f3; /* For button backgrounds with white text */
+  --color-primary-text: #0b63f3; /* For links and outline buttons on light surfaces */
   /* Translucent Surface Tokens */
   --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);
   --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
@@ -455,6 +458,9 @@
     --color-input-disabled-bg: var(--color-gray-900);
     --color-input-disabled-text: var(--color-gray-600);
     --color-code-bg: var(--color-gray-800);
+    /* Interactive Colors - optimized for specific use cases (dark mode) */
+    --color-primary-fill: #206ae3; /* For button backgrounds with white text */
+    --color-primary-text: #5a91ea; /* For links and outline buttons on dark surfaces */
     /* Backdrop tokens - dark mode */
     --backdrop-bg: linear-gradient(
         135deg,
@@ -1352,7 +1358,6 @@ input[type="range"]:active::-moz-range-thumb {
 
 input[type="color"] {
   -webkit-appearance: none;
-  border: none;
   padding: 0;
   width: 3rem;
   height: 3rem;
@@ -1705,19 +1710,19 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .btn-primary {
-  background-color: var(--color-primary-600);
+  background-color: var(--color-primary-fill);
   color: white;
-  border-color: var(--color-primary-600);
+  border-color: var(--color-primary-fill);
   
   &:hover {
-    background-color: color-mix(in oklab, var(--color-primary-600) 90%, black 10%);
-    border-color: color-mix(in oklab, var(--color-primary-600) 90%, black 10%);
+    background-color: color-mix(in oklab, var(--color-primary-fill) 90%, black 10%);
+    border-color: color-mix(in oklab, var(--color-primary-fill) 90%, black 10%);
     color: white;
   }
 
   &:active {
-    background-color: color-mix(in oklab, var(--color-primary-600) 80%, black 20%);
-    border-color: color-mix(in oklab, var(--color-primary-600) 80%, black 20%);
+    background-color: color-mix(in oklab, var(--color-primary-fill) 80%, black 20%);
+    border-color: color-mix(in oklab, var(--color-primary-fill) 80%, black 20%);
     color: white;
   }
   
@@ -2252,6 +2257,91 @@ dialog.dialog-full {
   }
 }
 
+
+
+/* Accordion (details/summary) */
+
+.accordion {
+  --_acc-radius: var(--radius-md);
+  --_acc-border: 1px solid var(--color-border);
+  --_acc-bg: var(--color-surface-base);
+}
+
+.accordion details {
+  border: var(--_acc-border);
+  border-radius: var(--_acc-radius);
+  background: var(--_acc-bg);
+  margin: 0 0 var(--spacing-3) 0;
+}
+
+.accordion summary {
+  cursor: pointer;
+  padding: var(--spacing-3) var(--spacing-4);
+  list-style: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+.accordion summary::-webkit-details-marker { display: none; }
+
+/* Chevron indicator */
+.accordion summary::after {
+  content: "";
+  margin-inline-start: auto;
+  inline-size: 0.7em;
+  block-size: 0.7em;
+  border-inline-end: 2px solid currentColor;
+  border-block-end: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--transition-normal);
+}
+.accordion details[open] > summary::after { transform: rotate(45deg); }
+
+/* Modern smooth open/close using ::details-content */
+@supports selector(details::details-content) {
+  .accordion details::details-content {
+    transition: block-size var(--transition-normal) ease, content-visibility var(--transition-normal) ease;
+    transition-behavior: allow-discrete;
+    block-size: 0;
+    overflow: clip;
+    content-visibility: hidden;
+  }
+  .accordion details[open]::details-content { 
+    block-size: auto; 
+    content-visibility: visible;
+  }
+  
+  /* Starting style for smooth opening */
+  @starting-style {
+    .accordion details[open]::details-content {
+      block-size: 0;
+      content-visibility: hidden;
+    }
+  }
+
+  /* inner spacing for content */
+  .accordion details > *:not(summary) {
+    padding-inline: var(--spacing-4);
+    padding-block: var(--spacing-3);
+  }
+}
+
+/* Fallback: works with any wrapper element (div, etc.) */
+@supports not (selector(details::details-content)) {
+  .accordion details > :not(summary) {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--transition-normal) ease;
+    overflow: hidden;
+  }
+  .accordion details[open] > :not(summary) { grid-template-rows: 1fr; }
+  .accordion details > :not(summary) > * { min-block-size: 0; }
+  .accordion details > :not(summary) {
+    padding-inline: var(--spacing-4);
+    padding-block: var(--spacing-3);
+  }
+}
 
 
 /* Dropdown Component */

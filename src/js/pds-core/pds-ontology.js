@@ -15,7 +15,6 @@ export const ontology = {
     "nav[data-dropdown]",
     "label[data-toggle]",
     "[data-tabs]",
-    "[data-accordion]",
     "[data-modal]",
     "[data-tooltip]",
   ],

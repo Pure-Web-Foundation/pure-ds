@@ -156,6 +156,9 @@ tokens.replaceSync(`@layer tokens {
   --color-input-disabled-bg: var(--color-gray-50);
   --color-input-disabled-text: var(--color-gray-500);
   --color-code-bg: var(--color-gray-100);
+  /* Interactive Colors - optimized for specific use cases */
+  --color-primary-fill: #0b63f3; /* For button backgrounds with white text */
+  --color-primary-text: #0b63f3; /* For links and outline buttons on light surfaces */
   /* Translucent Surface Tokens */
   --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);
   --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
@@ -459,6 +462,9 @@ tokens.replaceSync(`@layer tokens {
     --color-input-disabled-bg: var(--color-gray-900);
     --color-input-disabled-text: var(--color-gray-600);
     --color-code-bg: var(--color-gray-800);
+    /* Interactive Colors - optimized for specific use cases (dark mode) */
+    --color-primary-fill: #206ae3; /* For button backgrounds with white text */
+    --color-primary-text: #5a91ea; /* For links and outline buttons on dark surfaces */
     /* Backdrop tokens - dark mode */
     --backdrop-bg: linear-gradient(
         135deg,
@@ -850,6 +856,9 @@ export const tokensCSS = `@layer tokens {
   --color-input-disabled-bg: var(--color-gray-50);
   --color-input-disabled-text: var(--color-gray-500);
   --color-code-bg: var(--color-gray-100);
+  /* Interactive Colors - optimized for specific use cases */
+  --color-primary-fill: #0b63f3; /* For button backgrounds with white text */
+  --color-primary-text: #0b63f3; /* For links and outline buttons on light surfaces */
   /* Translucent Surface Tokens */
   --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);
   --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
@@ -1153,6 +1162,9 @@ export const tokensCSS = `@layer tokens {
     --color-input-disabled-bg: var(--color-gray-900);
     --color-input-disabled-text: var(--color-gray-600);
     --color-code-bg: var(--color-gray-800);
+    /* Interactive Colors - optimized for specific use cases (dark mode) */
+    --color-primary-fill: #206ae3; /* For button backgrounds with white text */
+    --color-primary-text: #5a91ea; /* For links and outline buttons on dark surfaces */
     /* Backdrop tokens - dark mode */
     --backdrop-bg: linear-gradient(
         135deg,

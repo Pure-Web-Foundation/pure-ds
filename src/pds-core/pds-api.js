@@ -14,7 +14,7 @@ export async function generate(config, opts = {}) {
 
   // generator produces tokens and css during construction in this repo
   const tokens = gen.tokens || {};
-  const css = gen.css || '';
+  const css = gen.layeredCSS || '';
 
   const modules = {};
 

@@ -416,7 +416,6 @@ customElements.define(
         "nav[data-dropdown]",
         "label[data-toggle]",
         "[data-tabs]",
-        "[data-accordion]",
         "[data-modal]",
         "[data-tooltip]",
       ];
@@ -441,7 +440,6 @@ customElements.define(
       if (element.matches("nav[data-dropdown]")) return "dropdown menu";
       if (element.matches("label[data-toggle]")) return "toggle switch";
       if (element.matches("[data-tabs]")) return "tab component";
-      if (element.matches("[data-accordion]")) return "accordion";
       if (element.matches("[data-modal]")) return "modal dialog";
       if (element.matches("[data-tooltip]")) return "tooltip";
 

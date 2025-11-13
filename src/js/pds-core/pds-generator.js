@@ -22,13 +22,6 @@ export class Generator {
     if (this.options.debug) {
       console.log("Generated tokens:", this.tokens);
     }
-    this.css = this.#generateCSS();
-    //console.log(this.css);
-
-    if (this.options.debug) {
-      console.log("Generated CSS length:", this.css.length);
-      console.log("CSS preview:", this.css.substring(0, 500));
-    }
 
     // NEW: Generate separate layers for modern architecture
     this.#generateLayers();
@@ -775,74 +768,6 @@ export class Generator {
     };
   }
 
-  #generateCSS() {
-    const {
-      colors,
-      spacing,
-      radius,
-      typography,
-      shadows,
-      layout,
-      transitions,
-      zIndex,
-      icons,
-    } = this.tokens;
-
-    // Components are always included; component toggles are removed.
-
-    const css = `
-:root {
-
-  --focus-ring-width: 3px;
-  --focus-ring-color: color-mix(in oklab, var(--color-primary-500) 35%, transparent);
-  --focus-ring-danger: color-mix(in oklab, var(--color-danger-500) 35%, transparent);
-
-  ${this.#generateColorVariables(colors)}
-  ${this.#generateSpacingVariables(spacing)}
-  ${this.#generateRadiusVariables(radius)}
-  ${this.#generateTypographyVariables(typography)}
-  ${this.#generateShadowVariables(shadows)}
-  ${this.#generateLayoutVariables(layout)}
-  ${this.#generateTransitionVariables(transitions)}
-  ${this.#generateZIndexVariables(zIndex)}
-  ${this.#generateIconVariables(icons)}
-}
-
-${this.#generateLightModeCSS(colors)}
-${this.#generateDarkModeCSS(colors)}
-
-${this.#generateBaseStyles()}
-
-${this.#generateSemanticHTMLStyles()}
-
-${this.#generateFormStyles()}
-
-${this.#generateTableStyles()}
-${this.#generateAlertStyles()}
-${this.#generateDarkModeComponentRules()}
-${this.#generateToastStyles()}
-${this.#generateBadgeStyles()}
-${this.#generateDialogStyles()}
-${this.#generateAccordionStyles()}
-${this.#generateTabStripStyles()}
-${this.#generateScrollbarStyles()}
-
-${this.#generateIconStyles()}
-
-${this.#generateLayoutUtilities()}
-
-${this.#generateMediaUtilities()}
-
-${this.#generateBodyBackgroundMeshRule()}
-
-${this.#generateLiquidGlassUtility()}
-
-${this.#generateMediaQueries()}
-`;
-
-    return css;
-  }
-
   #generateColorVariables(colors) {
     const chunks = [];
 
@@ -1402,208 +1327,7 @@ html[data-theme="dark"] video:hover {
     }
   }
 
-  #generateBaseStyles() {
-    const { advanced = {}, a11y = {}, layout = {} } = this.options;
-    const tabSize = advanced.tabSize || enums.TabSizes.standard;
-    const linkStyle = advanced.linkStyle || enums.LinkStyles.inline;
-    const minTouchTarget =
-      a11y.minTouchTarget || enums.TouchTargetSizes.standard;
-    const breakpoints = layout.breakpoints || {
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280,
-    };
-
-    // Link styles based on configuration
-    const linkDisplayStyles =
-      linkStyle === enums.LinkStyles.button
-        ? `display: inline-flex;
-  align-items: center;
-  min-height: ${minTouchTarget}px;`
-        : linkStyle === enums.LinkStyles.block
-        ? `display: block;`
-        : `display: inline;`;
-
-    return /*css*/ `/* Mobile-First Base Styles */
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
-html {
-  font-family: var(--font-family-body);
-  font-size: var(--font-size-base);
-  line-height: var(--font-line-height-normal);
-  color: var(--color-text-primary);
-  background-color: var(--color-surface-base);
-  -webkit-text-size-adjust: 100%;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  tab-size: ${tabSize};
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  min-height: var(--layout-min-height);
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Mobile-first Typography */
-h1, h2, h3, h4, h5, h6 {
-  margin: 0 0 var(--spacing-4) 0;
-  font-family: var(--font-family-headings);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--font-line-height-normal);
-  word-wrap: break-word;
-  hyphens: auto;
-  overflow-wrap: break-word;
-}
-
-h1 { 
-  font-size: var(--font-size-2xl);
-  
-  @media (min-width: ${breakpoints.sm}px) {
-    font-size: var(--font-size-3xl);
-  }
-}
-
-h2 { 
-  font-size: var(--font-size-xl);
-  
-  @media (min-width: ${breakpoints.sm}px) {
-    font-size: var(--font-size-2xl);
-  }
-}
-
-h3 { 
-  font-size: var(--font-size-lg);
-  
-  @media (min-width: ${breakpoints.sm}px) {
-    font-size: var(--font-size-xl);
-  }
-}
-
-h4 { 
-  font-size: var(--font-size-base);
-  
-  @media (min-width: ${breakpoints.sm}px) {
-    font-size: var(--font-size-lg);
-  }
-}
-
-h5 { 
-  font-size: var(--font-size-sm);
-  
-  @media (min-width: ${breakpoints.sm}px) {
-    font-size: var(--font-size-base);
-  }
-}
-
-h6 { 
-  font-size: var(--font-size-xs);
-  
-  @media (min-width: ${breakpoints.sm}px) {
-    font-size: var(--font-size-sm);
-  }
-}
-
-p {
-  margin: 0 0 var(--spacing-4) 0;
-  word-wrap: break-word;
-}
-
-a {
-  color: var(--color-primary-text);
-  text-decoration: underline;
-  transition: color var(--transition-fast);
-  touch-action: manipulation;
-  ${linkDisplayStyles}
-  
-  &:hover {
-    color: color-mix(in oklab, var(--color-primary-text) 85%, black 15%);
-  }
-  
-  &:focus {
-    outline: 2px solid var(--color-primary-text);
-    outline-offset: 2px;
-  }
-  
-  &.btn-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: ${minTouchTarget}px;
-    text-decoration: none;
-  }
-}
-
-ul, ol {
-  margin: 0 0 var(--spacing-4) 0;
-  padding-left: var(--spacing-6);
-}
-
-li {
-  margin-bottom: var(--spacing-1);
-}
-
-code, pre {
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-sm);
-  line-height: var(--font-line-height-relaxed);
-}
-
-code {
-  background-color: var(--color-code-bg);
-  padding: var(--spacing-1) var(--spacing-2);
-  border-radius: var(--radius-sm);
-}
-
-pre {
-  background-color: var(--color-code-bg);
-  padding: var(--spacing-4);
-  border-radius: var(--radius-md);
-  overflow-x: auto;
-  
-  code {
-    background-color: transparent;
-    padding: 0;
-    border-radius: 0;
-  }
-}
-
-img, video {
-  max-width: 100%;
-  height: auto;
-  border-radius: var(--radius-sm);
-  transition: opacity var(--transition-normal);
-}
-
-figure {
-  margin: 0 0 var(--spacing-6) 0;
-  text-align: center;
-}
-
-figcaption {
-  margin-top: var(--spacing-3);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  text-align: left;
-  line-height: var(--font-line-height-relaxed);
-  padding: 0 var(--spacing-2);
-  
-  @media (min-width: ${breakpoints.sm}px) {
-    font-size: var(--font-size-base);
-  }
-}
-
-/* Dialog styles moved to #generateDialogStyles() */
-
-`;
-  }
+  // Legacy #generateBaseStyles() removed - all content moved to #generatePrimitivesLayer()
 
   #generateSemanticHTMLStyles() {
     const { layout = {} } = this.options;
@@ -2786,14 +2510,25 @@ tbody {
 
 /* Modern smooth open/close using ::details-content */
 @supports selector(details::details-content) {
-  .accordion details { overflow: clip; }
   .accordion details::details-content {
-    transition: block-size var(--transition-normal) ease;
+    transition: block-size var(--transition-normal) ease, content-visibility var(--transition-normal) ease;
     transition-behavior: allow-discrete;
     block-size: 0;
     overflow: clip;
+    content-visibility: hidden;
   }
-  .accordion details[open]::details-content { block-size: auto; }
+  .accordion details[open]::details-content { 
+    block-size: auto; 
+    content-visibility: visible;
+  }
+  
+  /* Starting style for smooth opening */
+  @starting-style {
+    .accordion details[open]::details-content {
+      block-size: 0;
+      content-visibility: hidden;
+    }
+  }
 
   /* inner spacing for content */
   .accordion details > *:not(summary) {
@@ -2802,17 +2537,17 @@ tbody {
   }
 }
 
-/* Fallback (no ::details-content): requires .accordion__content wrapper */
+/* Fallback: works with any wrapper element (div, etc.) */
 @supports not (selector(details::details-content)) {
-  .accordion details > .accordion__content {
+  .accordion details > :not(summary) {
     display: grid;
     grid-template-rows: 0fr;
     transition: grid-template-rows var(--transition-normal) ease;
     overflow: hidden;
   }
-  .accordion details[open] > .accordion__content { grid-template-rows: 1fr; }
-  .accordion details > .accordion__content > * { min-block-size: 0; }
-  .accordion details > .accordion__content {
+  .accordion details[open] > :not(summary) { grid-template-rows: 1fr; }
+  .accordion details > :not(summary) > * { min-block-size: 0; }
+  .accordion details > :not(summary) {
     padding-inline: var(--spacing-4);
     padding-block: var(--spacing-3);
   }
@@ -2820,10 +2555,7 @@ tbody {
 `;
   }
 
-  #generateToastStyles() {
-    return /*css*/ `/* Toast Notification Styles - Updated */
-`;
-  }
+  // Legacy #generateToastStyles() removed - was empty/unused
 
   #generateBadgeStyles() {
     return /*css*/ `/* Badge/Pill Styles */
@@ -3940,7 +3672,7 @@ nav[data-dropdown][data-mode="auto"] menu {
 
   // Method to export CSS (useful for build processes)
   exportCSS() {
-    return this.css;
+    return this.layeredCSS;
   }
 
   // ========================================================================
@@ -4295,6 +4027,8 @@ ${this.#generateAlertStyles()}
 ${this.#generateBadgeStyles()}
 
 ${this.#generateDialogStyles()}
+
+${this.#generateAccordionStyles()}
 
 ${this.#generateDropdownStyles()}
 
