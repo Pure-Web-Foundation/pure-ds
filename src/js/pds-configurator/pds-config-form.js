@@ -67,7 +67,7 @@ customElements.define(
       }
 
       this.updateForm();
-      
+
       // Apply host-level CSS variable overrides from the default design config
       // so the designer UI doesn't visually change when user edits are applied
       // elsewhere (these variables remain fixed for the designer element).
@@ -822,12 +822,16 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
               <legend>Preset</legend>
               <div class="input-icon">
                 <pds-icon icon="magnifying-glass"></pds-icon>
-                <input @focus=${(e) =>
-                  AutoComplete.connect(e, this.presetAutoCompleteSettings)} id="preset-search" type="search" placeholder="Search presets..." autocomplete="off">
+                <input
+                  @focus=${(e) =>
+                    AutoComplete.connect(e, this.presetAutoCompleteSettings)}
+                  id="preset-search"
+                  type="search"
+                  placeholder="Start typing to search all presets..."
+                  autocomplete="off"
+                />
               </div>
             </fieldset>
-
-
           </div>
 
           <div class="designer-form-container">
@@ -844,7 +848,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
           </div>
 
           <div class="designer-actions">
-            <nav data-dropdown>
+            <!--nav data-dropdown>
               <button class="btn-secondary" style="width: 100%;">
                 <pds-icon icon="palette" size="sm"></pds-icon>
                 <span>Load Preset</span>
@@ -911,7 +915,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
                     `
                   )}
               </menu>
-            </nav>
+            </nav-->
 
             <nav data-dropdown>
               <button class="btn-primary" style="width: 100%;">
@@ -966,61 +970,60 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
       `;
     }
 
-    get presetAutoCompleteSettings(){
-      
+    get presetAutoCompleteSettings() {
       return {
+        direction: "down",
         //debug: true,
         iconHandler: (item) => {
-          return item.icon ? `<pds-icon icon="${item.icon}"></pds-icon>` : null;
+          const preset = PDS.presets[item.id];
+          return /*html*/ `<span class="preset-colors">
+                    <span style="background-color: ${preset.colors.primary}"></span>
+                    <span style="background-color: ${preset.colors.secondary}"></span>
+                    <span style="background-color: ${preset.colors.accent}"></span>
+                  </span>`;
         },
         categories: {
           Presets: {
             action: (options) => {
-              this.applyPreset(options.id);
+              const preset = PDS.presets[options.id];
+              this.applyPreset(preset);
             },
-            trigger: (options) => options.search.length === 0,
             getItems: (options) => {
-              const all = Object.values(PDS.presets)
-              return all.map(preset => ({
-                id: preset.id,
-                text: preset.label ?? preset.name,
-                description: preset.description,
-                icon: "palette",
-              }));
-            }
-                  // .map(
-                  //   (preset) => html`
-                  //     <li>
-                  //       <a
-                  //         href="#"
-                  //         @click=${(e) => {
-                  //           e.preventDefault();
-                            
-                  //         }}
-                  //       >
-                  //         <span class="preset-colors">
-                  //           <span
-                  //             style="background-color: ${preset.colors.primary}"
-                  //           ></span>
-                  //           <span
-                  //             style="background-color: ${preset.colors
-                  //               .secondary}"
-                  //           ></span>
-                  //           <span
-                  //             style="background-color: ${preset.colors.accent}"
-                  //           ></span>
-                  //         </span>
-                  //         <span class="preset-info">
-                  //           <strong>${preset.name}</strong>
-                  //           <small>${preset.description}</small>
-                  //         </span>
-                  //       </a>
-                  //     </li>
-                  //   `
-                  // )}
+              const maxPresets = 10;
+              const all = Object.values(PDS.presets);
+              let filtered = [];
+
+              if (options.search.length > 0) {
+                let n = 0;
+                filtered = all.filter((preset) => {
+                  n++;
+                  return (
+                    (n <= maxPresets &&
+                      preset.name
+                        .toLowerCase()
+                        .includes(options.search.toLowerCase())) ||
+                    (preset.description &&
+                      preset.description
+                        .toLowerCase()
+                        .includes(options.search.toLowerCase()))
+                  );
+                });
+              } else {
+                filtered = all.filter(preset => preset.tags?.includes("featured")).slice(0, maxPresets);
+              }
+
+              return filtered.map((preset) => {
+                return {
+                  id: preset.id,
+                  text: preset.name,
+                  description: preset.description,
+                  icon: "palette",
+                };
+              });
             },
-          }
-      }
+          },
+        },
+      };
     }
 
     // Provide a uiSchema to customize widgets for designer UX (datalists for fonts, ranges for numeric values)

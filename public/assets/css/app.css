@@ -238,16 +238,13 @@ label:has(input[type="color"]) {
 /* Preset color swatches */
 .preset-colors {
   display: flex;
-  gap: 4px;
+  gap: 1px;
   flex-shrink: 0;
 }
 
 .preset-colors span {
-  width: 20px;
+  width: 10px;
   height: 20px;
-  border-radius: 4px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .preset-info {
@@ -313,9 +310,7 @@ pds-demo {
     }
   }
 
-  .ac-suggestion {
-    background-color: var(--color-surface-elevated);
-  }
+  
 }
 
 @media screen and (max-width: 1023px) {
@@ -1179,13 +1174,16 @@ fieldset[data-path="/components"] {
 }
 
 .ac-suggestion.ac-active {
+  backdrop-filter: blur(10px) saturate(180%) contrast(85%);
   background: color-mix(in srgb, var(--color-surface-elevated) 90%, transparent);
   box-shadow: var(--shadow-lg);
   padding: var(--spacing-2);
   border-radius: var(--radius-md);
+  z-index: 1
 }
 
 .ac-suggestion .ac-itm {
+  min-width: 300px;
   cursor: pointer;
   padding: var(--spacing-2) 0;
   display: grid;

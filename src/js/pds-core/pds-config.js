@@ -111,6 +111,7 @@ export const presets = {
   "paper-and-ink": {
     id: "paper-and-ink",
     name: "Paper & Ink",
+    tags: ["app", "featured"],
     description: "Ultra-minimal design with focus on typography and whitespace",
     colors: {
       primary: "#171717",
@@ -460,6 +461,7 @@ export const presets = {
   "fitness-pro": {
     id: "fitness-pro",
     name: "Fitness Pro",
+    tags: ["app", "featured"],
     description:
       "Health and fitness tracking aesthetic with data-driven dark surfaces and vibrant accent rings",
     options: {
@@ -567,6 +569,7 @@ export const presets = {
   "mobility-app": {
     id: "mobility-app",
     name: "Mobility App",
+    tags: ["app", "featured"],
     description:
       "On-demand service platform with bold typography, map-ready colors, and action-driven UI",
     options: {
@@ -620,7 +623,7 @@ export const presets = {
     id: "fintech-secure",
     name: "Fintech Secure",
     description:
-      "Financial services UI with trust-building blues, precise spacing, and security-first design",
+      "Financial services app UI with trust-building blues, precise spacing, and security-first design",
     options: {
       liquidGlassEffects: false,
       backgroundMesh: 0,
@@ -678,6 +681,7 @@ export const presets = {
   "social-feed": {
     id: "social-feed",
     name: "Social Feed",
+    tags: ["app", "featured"],
     description:
       "Content-first social platform with minimal chrome, bold actions, and vibrant media presentation",
     options: {
@@ -726,9 +730,10 @@ export const presets = {
   },
   "enterprise-dash": {
     id: "enterprise-dash",
+    tags: ["app", "featured"],
     name: "Enterprise Dashboard",
     description:
-      "Data-dense business intelligence interface with organized hierarchy and professional polish",
+      "Data-dense business intelligence app interface with organized hierarchy and professional polish",
     options: {
       liquidGlassEffects: false,
       backgroundMesh: 0,
@@ -799,7 +804,8 @@ export const presets = {
 presets.default = {
   id: "default",
   name: "Default",
-  description: "Base Pure DS preset",
+  tags: ["app", "featured"],
+  description: "Fresh and modern design system with balanced aesthetics and usability",
   options: {
     liquidGlassEffects: true,
     backgroundMesh: 4,

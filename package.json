@@ -74,6 +74,6 @@
   },
   "dependencies": {
     "lit": "^3.3.1",
-    "pure-web": "^1.1.23"
+    "pure-web": "1.1.28"
   }
 }

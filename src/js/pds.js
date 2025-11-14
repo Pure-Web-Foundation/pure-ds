@@ -458,7 +458,7 @@ PDS.defaultEnhancers = [
         // insert legend for asterisk meaning if not already present
         if (form && !form.querySelector(".required-legend")) {
           const legend = document.createElement("div");
-          legend.classList.add("required-legend", "badge", "badge-danger");
+          legend.classList.add("required-legend", "pill", "pill-outline");
           legend.style.fontSize = "0.9em";
           legend.style.marginBottom = "8px";
           legend.textContent = "* Required fields";

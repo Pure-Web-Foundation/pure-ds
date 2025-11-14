@@ -1780,7 +1780,7 @@ fieldset fieldset fieldset > legend { font-size: var(--font-size-sm); }
 
 label {
   display: block;
-  margin-bottom: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
