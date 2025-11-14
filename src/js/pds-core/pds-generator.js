@@ -4426,6 +4426,165 @@ ${this.#generateMediaQueries()}
     }\n${this.#layers.utilities}`;
   }
 
+  /**
+   * Get a complete compiled representation of the design system state.
+   * This provides structured access to all generated tokens, scales, layers, and metadata.
+   * Linked to ontology and enums for introspection and tooling.
+   * 
+   * @returns {Object} Compiled design system state with tokens, layers, metadata, and references
+   */
+  get compiled() {
+    return {
+      // Core token groups - the source data used to generate CSS
+      tokens: {
+        colors: this.tokens.colors,
+        spacing: this.tokens.spacing,
+        radius: this.tokens.radius,
+        borderWidths: this.tokens.borderWidths,
+        typography: this.tokens.typography,
+        shadows: this.tokens.shadows,
+        layout: this.tokens.layout,
+        transitions: this.tokens.transitions,
+        zIndex: this.tokens.zIndex,
+        icons: this.tokens.icons,
+      },
+
+      // Layer information - CSS content and metadata
+      layers: {
+        tokens: {
+          css: this.#layers?.tokens || "",
+          size: this.#layers?.tokens?.length || 0,
+          sizeKB: ((this.#layers?.tokens?.length || 0) / 1024).toFixed(2),
+        },
+        primitives: {
+          css: this.#layers?.primitives || "",
+          size: this.#layers?.primitives?.length || 0,
+          sizeKB: ((this.#layers?.primitives?.length || 0) / 1024).toFixed(2),
+        },
+        components: {
+          css: this.#layers?.components || "",
+          size: this.#layers?.components?.length || 0,
+          sizeKB: ((this.#layers?.components?.length || 0) / 1024).toFixed(2),
+        },
+        utilities: {
+          css: this.#layers?.utilities || "",
+          size: this.#layers?.utilities?.length || 0,
+          sizeKB: ((this.#layers?.utilities?.length || 0) / 1024).toFixed(2),
+        },
+        combined: {
+          css: this.layeredCSS,
+          size: this.layeredCSS?.length || 0,
+          sizeKB: ((this.layeredCSS?.length || 0) / 1024).toFixed(2),
+        },
+      },
+
+      // Configuration snapshot - what was used to generate this state
+      config: {
+        design: this.options.design || {},
+        preset: this.options.preset || null,
+        debug: this.options.debug || false,
+      },
+
+      // Runtime capabilities and environment
+      capabilities: {
+        constructableStylesheets: typeof CSSStyleSheet !== "undefined",
+        blobURLs: typeof Blob !== "undefined" && typeof URL !== "undefined",
+        shadowDOM: typeof ShadowRoot !== "undefined",
+      },
+
+      // References to design system metadata
+      references: {
+        // Link to ontology for component/primitive definitions
+        ontology: typeof ontology !== "undefined" ? ontology : null,
+        // Link to enums for valid values
+        enums: typeof enums !== "undefined" ? enums : null,
+      },
+
+      // Computed metadata about the generated design system
+      meta: {
+        generatedAt: new Date().toISOString(),
+        totalSize: (
+          (this.#layers?.tokens?.length || 0) +
+          (this.#layers?.primitives?.length || 0) +
+          (this.#layers?.components?.length || 0) +
+          (this.#layers?.utilities?.length || 0)
+        ),
+        totalSizeKB: (
+          (
+            (this.#layers?.tokens?.length || 0) +
+            (this.#layers?.primitives?.length || 0) +
+            (this.#layers?.components?.length || 0) +
+            (this.#layers?.utilities?.length || 0)
+          ) / 1024
+        ).toFixed(2),
+        layerCount: 4,
+        tokenGroups: Object.keys(this.tokens).length,
+      },
+
+      // Introspection helpers - methods to query the compiled state
+      helpers: {
+        /**
+         * Get all color scales as a flat array
+         */
+        getColorScales: () => {
+          const scales = [];
+          const colors = this.tokens.colors;
+          for (const [name, scale] of Object.entries(colors)) {
+            if (typeof scale === "object" && scale !== null) {
+              scales.push({ name, scale });
+            }
+          }
+          return scales;
+        },
+
+        /**
+         * Get a specific color scale by name
+         */
+        getColorScale: (name) => {
+          return this.tokens.colors[name] || null;
+        },
+
+        /**
+         * Get all spacing values as an array
+         */
+        getSpacingValues: () => {
+          return Object.entries(this.tokens.spacing).map(([key, value]) => ({
+            key,
+            value,
+          }));
+        },
+
+        /**
+         * Get typography configuration
+         */
+        getTypography: () => {
+          return this.tokens.typography;
+        },
+
+        /**
+         * Get the CSS for a specific layer
+         */
+        getLayerCSS: (layer) => {
+          const validLayers = ["tokens", "primitives", "components", "utilities"];
+          if (!validLayers.includes(layer)) {
+            throw new Error(`Invalid layer: ${layer}. Must be one of ${validLayers.join(", ")}`);
+          }
+          return this.#layers?.[layer] || "";
+        },
+
+        /**
+         * Check if a specific enum value is used in the current configuration
+         */
+        usesEnumValue: (enumGroup, value) => {
+          const config = this.options.design || {};
+          // Simple check - can be expanded for more sophisticated detection
+          const configStr = JSON.stringify(config);
+          return configStr.includes(value);
+        },
+      },
+    };
+  }
+
   // Constructable stylesheets (browser only)
   get tokensStylesheet() {
     return this.#stylesheets?.tokens;
@@ -4692,3 +4851,4 @@ export function isLiveMode() {
   return pdsRegistry.isLive;
 }
 import { enums } from "./pds-enums.js";
+import { ontology } from "./pds-ontology.js";

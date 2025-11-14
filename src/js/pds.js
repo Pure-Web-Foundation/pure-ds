@@ -96,6 +96,32 @@ Object.defineProperty(PDS, "currentConfig", {
   configurable: false,
 });
 
+/** 
+ * Compiled design system state - provides structured access to all generated tokens, 
+ * layers, and metadata. Available in live mode when a generator is active.
+ * Returns the generator's compiled representation or null if not in live mode.
+ * 
+ * Structure includes:
+ * - tokens: All generated token groups (colors, spacing, typography, etc.)
+ * - layers: CSS content and metadata for each layer (tokens, primitives, components, utilities)
+ * - config: Configuration snapshot used to generate the current state
+ * - capabilities: Runtime environment capabilities
+ * - references: Links to ontology and enums for introspection
+ * - meta: Computed metadata about the design system
+ * - helpers: Utility methods to query the compiled state
+ */
+Object.defineProperty(PDS, "compiled", {
+  get() {
+    // Only available in live mode when we have a generator
+    if (PDS.registry?.isLive && PDS.registry?._designer) {
+      return PDS.registry._designer.compiled;
+    }
+    return null;
+  },
+  enumerable: true,
+  configurable: false,
+});
+
 // Always expose PDS on the window in browser contexts so consumers can access it in both live and static modes
 if (typeof window !== "undefined") {
   // @ts-ignore
