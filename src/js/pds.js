@@ -942,8 +942,16 @@ function __normalizeInitConfig(inputConfig = {}, options = {}) {
     }
     
     // Build structured config with design nested
+    // Exclude runtime-specific properties that shouldn't be passed to Generator
+    const { 
+      mode, autoDefine, applyGlobalStyles, manageTheme, 
+      themeStorageKey, preloadStyles, criticalLayers, 
+      preset: _preset, design: _design, enhancers: _enhancers,
+      ...otherProps 
+    } = inputConfig;
+    
     generatorConfig = {
-      ...inputConfig, // Keep all top-level properties (mode, autoDefine, etc.)
+      ...otherProps, // Keep only generator-relevant properties
       design: mergedDesign,
       preset: presetInfo.name,
     };
@@ -1315,9 +1323,11 @@ async function live(config) {
     const resolvedConfig = generator?.options || generatorConfig;
 
     // Expose current config as frozen read-only on PDS, preserving input shape
+    // Exclude non-cloneable properties (functions) from config
+    const { autoDefine: _autoDefine, ...cloneableConfig } = config;
     PDS.currentConfig = Object.freeze({
       mode: "live",
-      ...structuredClone(config),
+      ...structuredClone(cloneableConfig),
       design: structuredClone(normalized.generatorConfig.design),
       preset: normalized.generatorConfig.preset,
       theme: resolvedTheme,
@@ -1502,9 +1512,11 @@ async function staticInit(config) {
     }
 
     // Expose current config as frozen read-only on PDS, preserving input shape
+    // Exclude non-cloneable properties (functions) from config
+    const { autoDefine: _autoDefine, ...cloneableConfig } = config;
     PDS.currentConfig = Object.freeze({
       mode: "static",
-      ...structuredClone(config),
+      ...structuredClone(cloneableConfig),
       design: structuredClone(normalized.generatorConfig.design),
       preset: normalized.generatorConfig.preset,
       theme: resolvedTheme,
