@@ -1187,6 +1187,71 @@ customElements.define(
               });
             },
           },
+          Query: {
+            action: (options) => {
+              // For query results, display the code/value or scroll to relevant section
+              if (options.code) {
+                // If there's code, copy to clipboard
+                if (navigator.clipboard) {
+                  navigator.clipboard.writeText(options.code).then(() => {
+                    PDS.dispatchEvent(new CustomEvent('pds:toast', {
+                      detail: { 
+                        message: 'Code copied to clipboard',
+                        type: 'success',
+                        duration: 2000
+                      }
+                    }));
+                  });
+                }
+              }
+              // Also try to navigate to relevant section if available
+              const category = options.category?.toLowerCase() || '';
+              let sectionId = null;
+              
+              if (category.includes('color') || category.includes('surface')) {
+                sectionId = 'color-system';
+              } else if (category.includes('utility') || category.includes('layout')) {
+                sectionId = 'utilities';
+              } else if (category.includes('component')) {
+                sectionId = 'components';
+              } else if (category.includes('typography')) {
+                sectionId = 'typography';
+              } else if (category.includes('spacing')) {
+                sectionId = 'spacing';
+              }
+              
+              if (sectionId) {
+                const el = document.querySelector(`[data-section="${sectionId}"]`);
+                if (el) {
+                  el.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+              }
+            },
+            trigger: (options) => options.search.length >= 2,
+            getItems: async (options) => {
+              const q = (options.search || "").trim();
+              if (!q) return [];
+              
+              try {
+                const results = await PDS.query(q);
+                
+                return results.map((result) => {
+                  return {
+                    text: result.text,
+                    id: result.value,
+                    icon: result.icon || "magnifying-glass",
+                    category: result.category,
+                    code: result.code,
+                    cssVar: result.cssVar,
+                    description: result.description
+                  };
+                });
+              } catch (err) {
+                console.error('Query error:', err);
+                return [];
+              }
+            },
+          },
           Search: {
             action: (options) => {
               // When a user selects an item, try to resolve it to a showcase section

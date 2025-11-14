@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDS Query System Test</title>
+  <link rel="stylesheet" href="/assets/pds/styles/pds-styles.css">
+  <style>
+    body {
+      padding: var(--spacing-8);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .test-container {
+      margin-top: var(--spacing-6);
+    }
+    .query-result {
+      margin-top: var(--spacing-4);
+      padding: var(--spacing-4);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      background: var(--surface-bg);
+    }
+    .result-item {
+      padding: var(--spacing-3);
+      margin: var(--spacing-2) 0;
+      border-left: 3px solid var(--color-primary-500);
+      background: var(--surface-bg);
+    }
+    .result-code {
+      background: var(--surface-text);
+      color: var(--surface-bg);
+      padding: var(--spacing-2);
+      border-radius: var(--radius-sm);
+      font-family: monospace;
+      font-size: 0.9em;
+      margin-top: var(--spacing-2);
+      overflow-x: auto;
+    }
+    .test-query {
+      margin-top: var(--spacing-4);
+    }
+    button {
+      margin-right: var(--spacing-2);
+      margin-bottom: var(--spacing-2);
+    }
+  </style>
+</head>
+<body>
+  <h1>PDS Query System Test</h1>
+  <p>Test the smart query interface with various design system questions.</p>
+
+  <div class="test-container">
+    <h2>Test Queries</h2>
+    <div class="test-query">
+      <button class="btn-primary" onclick="testQuery('what is the focus border color on inputs?')">
+        Focus Border Color
+      </button>
+      <button class="btn-primary" onclick="testQuery('what foreground color should I use on this surface?')">
+        Foreground on Surface
+      </button>
+      <button class="btn-primary" onclick="testQuery('what are the utility classes for borders?')">
+        Border Utilities
+      </button>
+      <button class="btn-primary" onclick="testQuery('how can I group stuff in containers?')">
+        Container Grouping
+      </button>
+      <button class="btn-primary" onclick="testQuery('how do I create an icon-only button?')">
+        Icon-Only Button
+      </button>
+      <button class="btn-secondary" onclick="testQuery('button hover color')">
+        Button Hover
+      </button>
+      <button class="btn-secondary" onclick="testQuery('spacing tokens')">
+        Spacing
+      </button>
+      <button class="btn-secondary" onclick="testQuery('flex layout utilities')">
+        Flex Layout
+      </button>
+    </div>
+
+    <div id="results" class="query-result" style="display:none;">
+      <h3>Results:</h3>
+      <div id="results-content"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { PDS } from '/assets/js/pds.js';
+    import { config } from '/pds.config.js';
+
+    // Initialize PDS
+    await PDS.start(config);
+
+    // Make testQuery available globally
+    window.testQuery = async (question) => {
+      console.log('Testing query:', question);
+      const resultsDiv = document.getElementById('results');
+      const contentDiv = document.getElementById('results-content');
+      
+      resultsDiv.style.display = 'block';
+      contentDiv.innerHTML = `<p>Searching for: <strong>${question}</strong></p><p>Loading...</p>`;
+      
+      try {
+        const results = await PDS.query(question);
+        console.log('Query results:', results);
+        
+        if (results.length === 0) {
+          contentDiv.innerHTML = `<p>No results found for: <strong>${question}</strong></p>`;
+          return;
+        }
+        
+        let html = `<p>Found ${results.length} results for: <strong>${question}</strong></p>`;
+        
+        results.forEach((result, index) => {
+          html += `
+            <div class="result-item">
+              <div><strong>${index + 1}. ${result.text}</strong></div>
+              <div><small>Category: ${result.category} | Score: ${result.score}</small></div>
+              ${result.description ? `<div><em>${result.description}</em></div>` : ''}
+              ${result.cssVar ? `<div class="result-code">${result.cssVar}</div>` : ''}
+              ${result.code ? `<pre class="result-code">${result.code}</pre>` : ''}
+            </div>
+          `;
+        });
+        
+        contentDiv.innerHTML = html;
+      } catch (err) {
+        console.error('Query error:', err);
+        contentDiv.innerHTML = `<p style="color: var(--color-danger-600);">Error: ${err.message}</p>`;
+      }
+    };
+
+    console.log('PDS Query Test page ready. PDS.query is available.');
+    console.log('Try: await PDS.query("what is the focus border color on inputs?")');
+  </script>
+</body>
+</html>

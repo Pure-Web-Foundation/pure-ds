@@ -53,6 +53,7 @@ import { findComponentForElement } from "./pds-core/pds-ontology.js";
 import { presets } from "./pds-core/pds-config.js";
 import { enums } from "./pds-core/pds-enums.js";
 import { ask } from "./common/ask.js";
+import { PDSQuery } from "./pds-core/pds-query.js";
 
 // Font loading utilities
 import { loadTypographyFonts } from "./common/font-loader.js";
@@ -87,6 +88,19 @@ PDS.presets = presets;
 
 /** Find a component definition (ontology) for a given DOM element */
 PDS.findComponentForElement = findComponentForElement;
+
+/** 
+ * Smart query interface for design system questions
+ * @param {string} question - Natural language query about tokens, components, utilities, or patterns
+ * @returns {Promise<Array>} Array of results with text, value, icon, category, code examples
+ * @example
+ * const results = await PDS.query("what is the focus border color on inputs?");
+ * const results = await PDS.query("how do I create an icon-only button?");
+ */
+PDS.query = async function(question) {
+  const queryEngine = new PDSQuery(PDS);
+  return await queryEngine.search(question);
+};
 
 /** Current configuration (set after PDS.start() completes) - read-only, frozen after initialization */
 Object.defineProperty(PDS, "currentConfig", {
