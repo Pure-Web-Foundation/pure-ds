@@ -166,10 +166,12 @@ primitives.replaceSync(`@layer primitives {
   }
 
   legend::after {
-    content: "";
-    display: block;
-    margin-bottom: var(--spacing-3);
-
+      content: "";
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: var(--color-border);
+      margin-bottom: var(--spacing-4);
   }
 
   /* List primitives */
@@ -432,10 +434,12 @@ export const primitivesCSS = `@layer primitives {
   }
 
   legend::after {
-    content: "";
-    display: block;
-    margin-bottom: var(--spacing-3);
-
+      content: "";
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: var(--color-border);
+      margin-bottom: var(--spacing-4);
   }
 
   /* List primitives */

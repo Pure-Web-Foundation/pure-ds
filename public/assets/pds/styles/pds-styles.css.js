@@ -274,12 +274,6 @@ styles.replaceSync(`@layer tokens {
   --layout-max-width: 1200px;
   --layout-min-height: 100vh;
   --layout-container-padding: 16px;
-  --layout-breakpoints: {
-        sm: 640px,
-        md: 768px,
-        lg: 1024px,
-        xl: 1280px,
-      };
   --layout-page-margin: 120px;
   --layout-section-gap: 160px;
   --layout-container-gap: 200px;
@@ -872,10 +866,12 @@ html[data-theme="dark"] {
   }
 
   legend::after {
-    content: "";
-    display: block;
-    margin-bottom: var(--spacing-3);
-
+      content: "";
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: var(--color-border);
+      margin-bottom: var(--spacing-4);
   }
 
   /* List primitives */
@@ -1227,7 +1223,7 @@ fieldset fieldset fieldset > legend { font-size: var(--font-size-sm); }
 
 label {
   display: block;
-  margin-bottom: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
@@ -1791,7 +1787,6 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   align-items: center;
   gap: var(--spacing-3);
   width: 100%;
-  padding: 0 var(--spacing-3);
   background: var(--color-input-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -3032,46 +3027,7 @@ a.icon-only {
 /* Optional utilities/features controlled by config options */
 /* - Body background mesh rule (applies one of the generated mesh vars) */
 /* - Liquid glass utility class */
-/* Optional background mesh applied from config */
-body {
-  background: var(--background-mesh-01);
-  background-attachment: fixed;
-}
-/* Liquid glass utility (opt-in via options.liquidGlassEffects) */
-.liquid-glass {
-  position: relative;
-  border-radius: var(--radius-lg);
-  /* Subtle translucent fill blended with surface */
-  background: color-mix(in oklab, var(--color-surface-subtle) 45%, transparent);
-  background-image: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.35),
-    rgba(255,255,255,0.12)
-  );
-  /* Frosted glass blur + saturation */
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
-  backdrop-filter: blur(12px) saturate(140%);
-  /* Soft inner highlight and outer depth */
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.6),
-    inset 0 -40px 80px rgba(255,255,255,0.12),
-    0 10px 30px rgba(0,0,0,0.10);
-  /* Glossy border with slight light and dark edges */
-  border: 1px solid color-mix(in oklab, var(--color-primary-500) 22%, transparent);
-  outline: 1px solid color-mix(in oklab, #ffffff 18%, transparent);
-  outline-offset: -1px;
-}
 
-/* Fallback when backdrop-filter isn't supported */
-@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .liquid-glass {
-    /* Strengthen fill a bit to compensate for lack of blur */
-    background: color-mix(in oklab, var(--color-surface-subtle) 70%, rgba(255,255,255,0.4));
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.6),
-      0 10px 24px rgba(0,0,0,0.08);
-  }
-}
 
 
 /* ============================================================================
@@ -3687,12 +3643,6 @@ export const stylesCSS = `@layer tokens {
   --layout-max-width: 1200px;
   --layout-min-height: 100vh;
   --layout-container-padding: 16px;
-  --layout-breakpoints: {
-        sm: 640px,
-        md: 768px,
-        lg: 1024px,
-        xl: 1280px,
-      };
   --layout-page-margin: 120px;
   --layout-section-gap: 160px;
   --layout-container-gap: 200px;
@@ -4285,10 +4235,12 @@ html[data-theme="dark"] {
   }
 
   legend::after {
-    content: "";
-    display: block;
-    margin-bottom: var(--spacing-3);
-
+      content: "";
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: var(--color-border);
+      margin-bottom: var(--spacing-4);
   }
 
   /* List primitives */
@@ -4640,7 +4592,7 @@ fieldset fieldset fieldset > legend { font-size: var(--font-size-sm); }
 
 label {
   display: block;
-  margin-bottom: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
@@ -5204,7 +5156,6 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   align-items: center;
   gap: var(--spacing-3);
   width: 100%;
-  padding: 0 var(--spacing-3);
   background: var(--color-input-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -6445,46 +6396,7 @@ a.icon-only {
 /* Optional utilities/features controlled by config options */
 /* - Body background mesh rule (applies one of the generated mesh vars) */
 /* - Liquid glass utility class */
-/* Optional background mesh applied from config */
-body {
-  background: var(--background-mesh-01);
-  background-attachment: fixed;
-}
-/* Liquid glass utility (opt-in via options.liquidGlassEffects) */
-.liquid-glass {
-  position: relative;
-  border-radius: var(--radius-lg);
-  /* Subtle translucent fill blended with surface */
-  background: color-mix(in oklab, var(--color-surface-subtle) 45%, transparent);
-  background-image: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.35),
-    rgba(255,255,255,0.12)
-  );
-  /* Frosted glass blur + saturation */
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
-  backdrop-filter: blur(12px) saturate(140%);
-  /* Soft inner highlight and outer depth */
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.6),
-    inset 0 -40px 80px rgba(255,255,255,0.12),
-    0 10px 30px rgba(0,0,0,0.10);
-  /* Glossy border with slight light and dark edges */
-  border: 1px solid color-mix(in oklab, var(--color-primary-500) 22%, transparent);
-  outline: 1px solid color-mix(in oklab, #ffffff 18%, transparent);
-  outline-offset: -1px;
-}
 
-/* Fallback when backdrop-filter isn't supported */
-@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .liquid-glass {
-    /* Strengthen fill a bit to compensate for lack of blur */
-    background: color-mix(in oklab, var(--color-surface-subtle) 70%, rgba(255,255,255,0.4));
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.6),
-      0 10px 24px rgba(0,0,0,0.08);
-  }
-}
 
 
 /* ============================================================================

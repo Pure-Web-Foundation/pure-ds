@@ -711,12 +711,12 @@ export class Generator {
       maxWidth: `${maxWidth}px`,
       minHeight: "100vh",
       containerPadding: `${containerPadding}px`,
-      breakpoints: `{
-        sm: ${breakpoints.sm}px,
-        md: ${breakpoints.md}px,
-        lg: ${breakpoints.lg}px,
-        xl: ${breakpoints.xl}px,
-      }`,
+      breakpoints: {
+        sm: `${breakpoints.sm}px`,
+        md: `${breakpoints.md}px`,
+        lg: `${breakpoints.lg}px`,
+        xl: `${breakpoints.xl}px`,
+      },
       // Semantic spacing tokens for large layouts
       // Use these instead of numbered spacing beyond --spacing-12
       pageMargin: "120px",      // For page-level margins
@@ -983,6 +983,13 @@ export class Generator {
     Object.entries(layout).forEach(([key, value]) => {
       // Convert camelCase keys to kebab-case
       const kebabKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+      
+      // Skip breakpoints object - it's used in JS but doesn't belong in CSS variables
+      // Breakpoints are used in @media queries, not as CSS custom properties
+      if (key === 'breakpoints') {
+        return;
+      }
+      
       css += `  --layout-${kebabKey}: ${value};\n`;
     });
     return css + "\n";

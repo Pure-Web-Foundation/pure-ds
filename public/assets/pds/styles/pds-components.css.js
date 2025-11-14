@@ -256,7 +256,7 @@ fieldset fieldset fieldset > legend { font-size: var(--font-size-sm); }
 
 label {
   display: block;
-  margin-bottom: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
@@ -820,7 +820,6 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   align-items: center;
   gap: var(--spacing-3);
   width: 100%;
-  padding: 0 var(--spacing-3);
   background: var(--color-input-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -2039,7 +2038,7 @@ fieldset fieldset fieldset > legend { font-size: var(--font-size-sm); }
 
 label {
   display: block;
-  margin-bottom: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
@@ -2603,7 +2602,6 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   align-items: center;
   gap: var(--spacing-3);
   width: 100%;
-  padding: 0 var(--spacing-3);
   background: var(--color-input-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
