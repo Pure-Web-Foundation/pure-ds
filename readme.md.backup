@@ -1,0 +1,555 @@
+# Pure Design System (PDS)
+
+> ⚠️ **Alpha Status (pre-1.0)**
+> 
+> Pure Design System is in active development. APIs may change between 0.x releases.
+> 
+> - Pin specific versions in production: `"pure-ds": "~0.1.29"`
+> - Breaking changes noted in [CHANGELOG](./CHANGELOG.md)
+> - Feedback welcome → [Issues](https://github.com/mvneerven/pure-ds/issues) • [Discussions](https://github.com/mvneerven/pure-ds/discussions)
+
+[![CI](https://github.com/mvneerven/pure-ds/actions/workflows/ci.yml/badge.svg)](https://github.com/mvneerven/pure-ds/actions/workflows/ci.yml)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](#license)
+[![npm version](https://img.shields.io/npm/v/pure-ds.svg)](https://www.npmjs.com/package/pure-ds)
+
+**Why build a design system when you can generate one?**
+
+Pure Design System is a JavaScript-config-first design system that generates complete, production-ready CSS and components from a minimal configuration. Write your design intent once, get tokens, primitives, components, and utilities automatically.
+
+```javascript
+import { PDS } from 'pure-ds';
+
+await PDS.start({
+  design: {
+    colors: { primary: '#007acc', secondary: '#5c2d91' },
+    typography: { baseFontSize: 16, fontScale: 1.25 },
+    spatialRhythm: { baseUnit: 8, scaleRatio: 1.5 }
+  }
+});
+```
+
+**Key Features:**
+
+- 🎨 **Token-First**: Single source of truth for colors, spacing, typography, shadows, and more
+- 🚀 **Live or Static**: Generate at runtime (live mode) or export for hosting (static mode)
+- 🎯 **Framework Agnostic**: Works with vanilla HTML, Web Components, Lit, React, Vue, Svelte
+- 🌐 **Web Platform Native**: EventTarget-based, Constructable Stylesheets, Shadow DOM ready
+- 🧩 **Progressive Enhancement**: Start with semantic HTML, enhance with utilities and components
+- 🔍 **Smart Query System**: Natural language search across tokens, components, and utilities
+- ♿ **Accessibility Built-in**: Automatic contrast validation, WCAG AA compliance checks
+- 📦 **Zero Build Required**: Works directly in browsers via import maps
+
+---
+
+## Table of Contents
+
+- [What is This?](#what-is-this)
+- [Who is it For?](#who-is-it-for)
+- [Getting Started](#getting-started)
+- [Core Architecture](#core-architecture)
+  - [1. Style Generation & Injection](#1-style-generation--injection)
+  - [2. Progressive Enhancements](#2-progressive-enhancements)
+  - [3. Web Components](#3-web-components)
+- [Styling Layers](#styling-layers)
+- [Shadow DOM Adoption](#shadow-dom-adoption)
+- [Advanced Features](#advanced-features)
+- [API Reference](#api-reference)
+- [Extending PDS](#extending-pds)
+- [Using from CDN](#using-from-cdn)
+- [Framework Integration](#framework-integration)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## What is This?
+
+Pure Design System (PDS) is a **design token generator and runtime styling engine** that transforms a JavaScript configuration object into a complete design system. Unlike traditional design systems that ship pre-built CSS and components, PDS generates everything from your configuration at runtime (live mode) or build time (static mode).
+
+**The Three Pillars:**
+
+1. **Generated Styles** - Tokens, primitives, components, and utilities generated from config
+2. **Progressive Enhancements** - Lightweight DOM enhancements for common patterns (dropdowns, toggles, range sliders)
+3. **Web Components** - Optional rich UI components (drawers, tabs, uploads, icons) loaded on demand
+
+### How It Works
+
+```
+Configuration → Generator → Tokens + CSS Layers + Components
+     ↓
+Your config defines:      PDS generates:
+- colors                  - Color scales (50-900)
+- typography             - Font families, sizes, weights
+- spacing                - Spacing tokens (0-12)
+- borders                - Border widths, radius tokens
+- shadows                - Shadow depth tokens
+- layout                 - Grid, flex utilities
+                         - Surface semantics
+                         - Interactive states
+                         - Accessibility tokens
+```
+
+### Live vs Static Mode
+
+**Live Mode** - Generate styles in the browser at runtime:
+- Perfect for design tools, configurators, and prototyping
+- CSS updates instantly when config changes
+- Full introspection via `PDS.compiled` object model
+- Includes the Smart Query system for design questions
+
+**Static Mode** - Pre-generate and bundle styles:
+- Production-optimized for performance
+- Host on any CDN or static server
+- No runtime generation overhead
+- Constructable stylesheets for instant adoption
+
+---
+
+## Who is it For?
+
+### Design System Teams
+- **Generate variants** from a base config without maintaining multiple CSS files
+- **A/B test design directions** by swapping presets
+- **Maintain consistency** with single-source-of-truth tokens
+- **Validate accessibility** automatically with built-in WCAG checks
+
+### Product Teams
+- **Ship faster** with generated primitives and utilities
+- **Customize easily** with JavaScript config instead of SASS variables
+- **Stay flexible** with framework-agnostic web standards
+- **Reduce bundle size** with on-demand component loading
+
+### Design Tool Builders
+- **Build configurators** with live preview and regeneration
+- **Export artifacts** as static bundles for production
+- **Query the system** with natural language search
+- **Introspect everything** via the complete object model
+
+### Developers
+- **Learn by doing** with interactive showcase and documentation
+- **Adopt incrementally** starting with just tokens or specific layers
+- **Extend freely** with custom enhancers and components
+- **Debug easily** with structured CSS layers and clear naming
+
+---
+
+
+## Key concepts
+
+- Unified runtime: A singleton `PDS` that acts as both your API surface and the event bus (extends EventTarget).
+- Two modes, single entry point:
+  - live mode: generate CSS from config in the browser; auto‑define web components when they appear.
+  - static mode: adopt prebuilt constructable stylesheets and auto‑define components from your hosted bundle.
+- Layered CSS architecture: `tokens`, `primitives`, `components`, `utilities`, `styles`.
+- Auto‑Define: lazy register `<pds-*>` elements on demand; plug in your own components too.
+- Theming: built‑in theme attribute management and programmatic switching, with system preference support.
+
+
+## Install
+
+```bash
+npm install pure-ds
+```
+
+Most apps also sync web assets (components, icons, etc.) to your public folder during install via an included script. If needed, run it manually:
+
+```bash
+node node_modules/pure-ds/packages/pds-cli/bin/postinstall.js
+```
+
+
+## Lit without hardcoding paths
+
+PDS recommends importing Lit from a virtual specifier so consumers can choose how to resolve it:
+
+```js
+import { html, css, LitElement } from '#pds/lit';
+```
+
+- In the browser (no bundler), map `#pds/lit` to a shim shipped with this repo:
+
+```html
+<script type="importmap">
+{
+  "imports": { "#pds/lit": "/assets/js/lit.js" }
+}
+</script>
+```
+
+- In bundlers, alias `#pds/lit` to the real `lit` package.
+
+
+## Getting Started
+
+### Installation
+
+```js
+import { PDS } from 'pure-ds';
+
+await PDS.start({
+  mode: 'live',
+  preset: 'default',
+  design: {
+    colors: { primary: '#007acc' }
+  },
+  autoDefine: {
+    baseURL: '/auto-define/',
+    predefine: ['pds-icon'],
+    // mapper: (tag) => `${tag}.js`, // customize if your files differ
+  },
+  applyGlobalStyles: true,
+  manageTheme: true,
+  themeStorageKey: 'pure-ds-theme',
+  preloadStyles: false,
+  criticalLayers: ['tokens','primitives']
+});
+
+// Use components directly — AutoDefiner will lazy‑load the module when a tag appears
+// <pds-icon name="star"></pds-icon>
+```
+
+
+## Quick start (static mode)
+
+1) Generate static assets into your web root (defaults to `pds/` unless configured):
+
+```bash
+npm run pds:static
+```
+
+This produces:
+
+- `pds/icons/pds-icons.svg`
+- `pds/auto-define/*.js` (web components)
+- `pds/css/pds-*.css` and `pds/css/pds-*.css.js` (constructable styles)
+- docs copied alongside when enabled (README.md, GETTING-STARTED.md, …)
+
+2) Initialize:
+
+```js
+import { PDS } from 'pure-ds';
+
+await PDS.start({
+  mode: 'static',
+  preset: 'default',
+  staticPaths: {
+    tokens: '/pds/css/pds-tokens.css.js',
+    primitives: '/pds/css/pds-primitives.css.js',
+    components: '/pds/css/pds-components.css.js',
+    utilities: '/pds/css/pds-utilities.css.js',
+    styles: '/pds/css/pds-styles.css.js'
+  },
+  autoDefine: { baseURL: '/pds/auto-define/' },
+  applyGlobalStyles: true,
+  manageTheme: true
+});
+```
+
+Optional: change the base folder name in your project’s `pds-config.js`:
+
+```js
+export default { staticBase: 'design-system' } // default is 'pds'
+```
+
+
+## Unified event bus
+
+`PDS` is an EventTarget you can subscribe to for all runtime signals. Listen on `PDS` instead of `window`/`document`.
+
+Core events and their `detail` payloads:
+
+- pds:ready — fired when PDS has initialized
+  - detail: { mode: 'live' | 'static', generator?, config, theme, autoDefiner? }
+- pds:error — initialization or runtime errors surfaced by PDS
+  - detail: { error }
+- pds:theme:changed — theme resolved or changed
+  - detail: { theme, requested?, source: 'system' | 'programmatic' }
+- pds:design:updated — configurator emits when a new design config is applied
+  - detail: { config, designer? }
+- pds:design:field:changed — configurator field changed
+  - detail: { field, config }
+- pds:inspector:mode:changed — configurator code inspector toggled
+  - detail: { active: boolean }
+- pds:inspector:deactivate — request to turn off inspector (e.g., from showcase)
+  - detail: {}
+- pds:docs:view — request the configurator to render a docs file
+  - detail: { file: string }
+
+Example:
+
+```js
+PDS.addEventListener('pds:ready', (e) => {
+  console.log('PDS ready in', e.detail.mode, 'theme:', e.detail.theme);
+});
+
+PDS.dispatchEvent(new CustomEvent('pds:docs:view', {
+  detail: { file: 'GETTING-STARTED.md' }
+}));
+```
+
+TypeScript consumers get strong typings via `PDSEventMap` in `src/js/pds.d.ts`.
+
+
+## CSS layer architecture
+
+PDS outputs CSS in layers to keep styles modular and predictable:
+
+- tokens: variables for colors, spacing, typography, shadows, etc.
+- primitives: base elements and primitives (buttons, surfaces, badges, alerts, …)
+- components: richer UI (drawers, tabstrip, upload, …)
+- utilities: small, composable utility classes
+- styles: combined bundle for quick adoption
+
+Adopt them in Shadow DOM:
+
+```js
+// For components that just need primitives
+await PDS.adoptPrimitives(this.shadowRoot);
+
+// Or adopt multiple layers
+await PDS.adoptLayers(this.shadowRoot, ['primitives','components']);
+```
+
+See LAYER-ARCHITECTURE.md for details.
+
+
+## Auto‑Define and Enhancers
+
+Auto‑Define observes the DOM and automatically registers Web Components as their tags appear. It also applies lightweight progressive enhancements, which you can extend/override.
+
+```js
+await PDS.start({
+  autoDefine: {
+    baseURL: '/auto-define/',
+    predefine: ['pds-icon','pds-drawer'],
+    mapper: (tag) => tag === 'pds-tabpanel' ? 'pds-tabstrip.js' : `${tag}.js`,
+    // Optional flags:
+    // scanExisting: true, observeShadows: true, patchAttachShadow: true, debounceMs: 16
+  },
+  enhancers: [
+    { selector: 'nav[data-dropdown]', run: (el) => {/* … */} },
+  ]
+});
+```
+
+### Custom mapper and built‑in fallback
+
+In many apps you’ll want to map your own components while letting PDS handle all `pds-*` tags without hardcoding PDS internals. The custom `autoDefine.mapper` supports a fallback contract:
+
+- PDS calls your custom mapper first.
+- If your mapper returns `undefined`, `null`, `false`, or an empty string `''`, PDS falls back to its internal default mapper for that tag.
+- If your mapper throws, PDS also falls back to the default mapper.
+
+Default PDS mapper behavior:
+
+- If the tag is already defined via `customElements.get(tag)`, it returns `null` (no action).
+- Otherwise it resolves to `${tag}.js`, except for `pds-tabpanel` which maps to `pds-tabstrip.js`.
+
+Where the path is resolved from (baseURL rules):
+
+1) If you set `autoDefine.baseURL`, it is used as‑is.
+2) Else if you set `static.root`, PDS derives a URL root and uses `${static.root}/components/` as the base.
+   - Example: `static.root: "public/assets/pds/"` → base becomes `/assets/pds/components/`.
+3) Else the default base is `/auto-define/`.
+
+These rules apply in both live and static modes. Note that components and icons are static assets by default; only styles are generated in live mode.
+
+Minimal example that handles only your own tags and delegates all `pds-*` to PDS automatically:
+
+```js
+await PDS.start({
+  mode: 'live',
+  static: { root: 'public/assets/pds/' }, // so PDS resolves to /assets/pds/components/
+  autoDefine: {
+    mapper: (tag) => {
+      if (tag.startsWith('my-')) return `/auto-define/${tag}.js`;
+      // return nothing → PDS maps pds-* using its default and derived baseURL
+    }
+  }
+});
+```
+
+
+## Theming and critical CSS
+
+Automatically manage the theme attribute (`html[data-theme]`) and persist the preference. PDS supports `light`, `dark`, and `system`.
+
+```jsF
+await PDS.start({ mode: 'live', manageTheme: true, themeStorageKey: 'pure-ds-theme' });
+await PDS.setTheme('dark');             // or 'light' | 'system'
+```
+
+Prevent flashes by preloading minimal CSS very early:
+
+```js
+PDS.preloadCritical({ colors: { primary: '#007acc' } }, {
+  theme: 'system',
+  layers: ['tokens']
+});
+```
+
+PDS dispatches `pds:theme:changed` both for programmatic changes and system preference changes when `manageTheme` is enabled.
+
+
+## Presets, validation, and ontology
+
+- Presets: choose a named preset and override it with your own `design` partials.
+- Validation: basic accessibility checks ensure common text and primary actions meet AA contrast.
+
+```js
+const result = PDS.validateDesign({ /* your design */ }, { minContrast: 4.5 });
+if (!result.ok) console.table(result.issues);
+```
+
+- Ontology: metadata about primitives/components and helpers like `findComponentForElement(el)` to power inspector‑like tooling.
+
+
+## API reference (essentials)
+
+- PDS.start(config)
+  - Unified entry point. Starts in live or static mode.
+  - config: `{ mode?: 'live'|'static' = 'live', preset?, design?, autoDefine?, applyGlobalStyles?, manageTheme?, themeStorageKey?, preloadStyles?, criticalLayers?, staticPaths?, enhancers? }`
+  - returns: `Promise<{ generator?, config, theme, autoDefiner? }>`
+
+- PDS.setTheme(theme, options?)
+  - Change theme programmatically; `theme`: `'light'|'dark'|'system'`.
+
+- PDS.preloadCritical(config, options?)
+  - Inject minimal CSS synchronously to prevent flash.
+
+- PDS.validateDesign(config, options?)
+  - Validate a design for basic accessibility/contrast issues.
+
+- PDS.adoptLayers(shadowRoot, layers?, additionalSheets?)
+  - Adopt one or more constructable stylesheets into Shadow DOM.
+
+- PDS.adoptPrimitives(shadowRoot, additionalSheets?)
+  - Convenience to adopt just primitives.
+
+- PDS.createStylesheet(css)
+  - Return a constructable CSSStyleSheet from a string.
+
+- PDS.registry
+  - Runtime registry with `setDesigner()`, `setStaticMode()`, `getStylesheet(layer)`, `getBlobURL(layer)`, and flags `mode`, `isLive`, `hasDesigner`.
+
+- PDS.presets / PDS.ontology / PDS.enums / PDS.ask
+  - Useful runtime helpers and metadata.
+
+Types live in `src/js/pds.d.ts` and are exported for consumers.
+
+
+## Framework integration
+
+- Vite
+  - Alias `#pds/lit` to `lit`, then `await PDS.start({ mode:'live', preset:'default' })` in your app entry.
+- Next.js
+  - Call `PDS.start` in a `useEffect` in your root layout.
+- Vanilla HTML
+  - Use an import map for `#pds/lit` and import `/assets/js/pds.js` directly.
+
+See GETTING-STARTED.md for copy‑pasteable snippets.
+
+
+## Configurator and docs viewer
+
+The configurator emits unified events (pds:design:updated, pds:design:field:changed, pds:inspector:mode:changed, pds:inspector:deactivate). It can also display Markdown docs on request:
+
+```js
+PDS.dispatchEvent(new CustomEvent('pds:docs:view', { detail: { file: 'GETTING-STARTED.md' } }));
+// Optionally set a custom base
+window.PDS_DOCS_BASE = '/design-system';
+```
+
+
+## Static export and CLI
+
+Package scripts:
+
+- pds:static — export static assets (CSS constructable modules, components, icons, docs)
+- sync-assets — copy shipped assets into your web root (also run by postinstall)
+- build-icons — regenerate icon sprite (internal script)
+
+```bash
+npm run pds:static
+npm run sync-assets
+```
+
+Notes on icons:
+
+- When your `pds.config.js` defines custom icons (any change to `icons.set`, `icons.weight`, or `icons.include`), `pds:static` will automatically build the sprite into `[static.root]/icons/pds-icons.svg`.
+- If no custom icons are defined, `pds:static` copies the stock sprite shipped with the package to the same location.
+- You can also rebuild explicitly via `pds:build-icons` (used internally by the export flow).
+
+
+## Troubleshooting
+
+- Components not loading
+  1) Ensure your components directory exists (default `/auto-define/` or `/pds/auto-define/` in static mode).
+  2) If using import maps, confirm the `#pds/lit` mapping points at a valid file (e.g., `/assets/js/lit.js`).
+  3) Manually sync assets if needed:
+
+  ```bash
+  node node_modules/pure-ds/packages/pds-cli/bin/postinstall.js
+  ```
+
+- Flash of unstyled content
+  - Call `PDS.preloadCritical()` as early as possible and/or enable `preloadStyles` with `criticalLayers` in `PDS.start()`.
+
+- Theme doesn’t change
+  - If `manageTheme` is off, you are responsible for updating `html[data-theme]` or call `PDS.setTheme()`.
+
+
+## Migration notes
+
+- Unified start API
+  - Use `PDS.start({ mode: 'live'|'static', ... })` instead of `PDS.live()` / `PDS.static()`.
+- Unified event bus
+  - Old names like `pds-live-ready`, `pds-static-ready`, `pds-theme-changed`, and local configurator events (`design-*`, `inspector-*`, `pds-view-docs`) are now:
+    - pds:ready, pds:error, pds:theme:changed, pds:design:updated, pds:design:field:changed, pds:inspector:mode:changed, pds:inspector:deactivate, pds:docs:view
+  - Listen/emit on `PDS` rather than `window` or `document`.
+
+Backwards compatibility shims are intentionally not included.
+
+
+## Project structure (typical)
+
+```
+your-project/
+├─ public/
+│  ├─ auto-define/          # PDS components (hosted for the browser)
+│  ├─ assets/
+│  │  ├─ js/lit.js          # Lit shim for import maps
+│  │  └─ (optional) other assets
+│  ├─ pds/
+│  │  ├─ components/        # Exported PDS components
+│  │  ├─ styles/            # Exported PDS CSS and .css.js
+│  │  └─ pds-icons.svg      # PDS icons sprite (exported)
+│  └─ index.html
+├─ src/
+│  └─ main.js               # Your PDS initialization
+└─ package.json
+```
+
+See also:
+
+- GETTING-STARTED.md — in‑depth setup and examples
+- ICON-SYSTEM.md — icon tokens and sprite usage
+- LAYER-ARCHITECTURE.md — layer ordering and adoption patterns
+- LAYOUT-UTILITIES-PLAN.md — utilities strategy and plan
+
+
+## License and support
+
+- License: ISC
+- Issues: https://github.com/mvneerven/pure-ds/issues
+- Discussions: https://github.com/mvneerven/pure-ds/discussions
+
+Made with ❤️ for the open web.
+
+
+---
+
+**Made with ❤️ for the open web**
+
+
