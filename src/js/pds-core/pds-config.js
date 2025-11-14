@@ -686,7 +686,7 @@ export const presets = {
       "Content-first social platform with minimal chrome, bold actions, and vibrant media presentation",
     options: {
       liquidGlassEffects: false,
-      backgroundMesh: 0,
+      backgroundMesh: 4,
     },
     colors: {
       primary: "#1877f2", // social blue for links and primary actions
@@ -736,7 +736,7 @@ export const presets = {
       "Data-dense business intelligence app interface with organized hierarchy and professional polish",
     options: {
       liquidGlassEffects: false,
-      backgroundMesh: 0,
+      backgroundMesh: 2,
     },
     colors: {
       primary: "#0066cc", // corporate blue for primary actions

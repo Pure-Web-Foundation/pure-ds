@@ -36,9 +36,9 @@
  * PDS is now an EventTarget so consumers can subscribe to a single, consistent
  * event bus instead of listening on window/document or individual elements.
  */
-class __PDS_EventBus extends EventTarget {}
-/** @type {PDSAPI & __PDS_EventBus} */
-const PDS = new __PDS_EventBus();
+class PDSBase extends EventTarget {}
+/** @type {PDSAPI & PDSBase} */
+const PDS = new PDSBase();
 
 import {
   Generator,
@@ -88,6 +88,14 @@ PDS.presets = presets;
 /** Find a component definition (ontology) for a given DOM element */
 PDS.findComponentForElement = findComponentForElement;
 
+/** Current configuration (set after PDS.start() completes) - read-only, frozen after initialization */
+Object.defineProperty(PDS, "currentConfig", {
+  value: null,
+  writable: true,
+  enumerable: true,
+  configurable: false,
+});
+
 // Always expose PDS on the window in browser contexts so consumers can access it in both live and static modes
 if (typeof window !== "undefined") {
   // @ts-ignore
@@ -119,11 +127,14 @@ if (typeof document !== "undefined") {
 // document.documentElement[data-theme] to an explicit 'light'|'dark' value
 // and emits a `pds:theme:changed` event. Reading the property returns the
 // raw stored preference (or null if none).
-PDS._themeStorageKey = "pure-ds-theme";
-PDS._themeMQ = null;
-PDS._themeMQListener = null;
 
-PDS._applyResolvedTheme = function (raw) {
+// Private module-level variables for theme management
+const __themeStorageKey = "pure-ds-theme";
+let __themeMQ = null;
+let __themeMQListener = null;
+
+// Private: Apply resolved theme to document
+function __applyResolvedTheme(raw) {
   try {
     if (typeof document === "undefined") return;
     let resolved = "light";
@@ -145,20 +156,21 @@ PDS._applyResolvedTheme = function (raw) {
     }
     document.documentElement.setAttribute("data-theme", resolved);
   } catch (e) {}
-};
+}
 
-PDS._setupSystemListenerIfNeeded = function (raw) {
+// Private: Setup system theme change listener when needed
+function __setupSystemListenerIfNeeded(raw) {
   try {
     // Remove any existing listener first
-    if (PDS._themeMQ && PDS._themeMQListener) {
+    if (__themeMQ && __themeMQListener) {
       try {
-        if (typeof PDS._themeMQ.removeEventListener === "function")
-          PDS._themeMQ.removeEventListener("change", PDS._themeMQListener);
-        else if (typeof PDS._themeMQ.removeListener === "function")
-          PDS._themeMQ.removeListener(PDS._themeMQListener);
+        if (typeof __themeMQ.removeEventListener === "function")
+          __themeMQ.removeEventListener("change", __themeMQListener);
+        else if (typeof __themeMQ.removeListener === "function")
+          __themeMQ.removeListener(__themeMQListener);
       } catch (e) {}
-      PDS._themeMQ = null;
-      PDS._themeMQListener = null;
+      __themeMQ = null;
+      __themeMQListener = null;
     }
 
     if (
@@ -179,20 +191,20 @@ PDS._setupSystemListenerIfNeeded = function (raw) {
           );
         } catch (ex) {}
       };
-      PDS._themeMQ = mq;
-      PDS._themeMQListener = listener;
+      __themeMQ = mq;
+      __themeMQListener = listener;
       if (typeof mq.addEventListener === "function")
         mq.addEventListener("change", listener);
       else if (typeof mq.addListener === "function") mq.addListener(listener);
     }
   } catch (e) {}
-};
+}
 
 Object.defineProperty(PDS, "theme", {
   get() {
     try {
       if (typeof window === "undefined") return null;
-      return localStorage.getItem(PDS._themeStorageKey) || null;
+      return localStorage.getItem(__themeStorageKey) || null;
     } catch (e) {
       return null;
     }
@@ -201,15 +213,15 @@ Object.defineProperty(PDS, "theme", {
     try {
       if (typeof window === "undefined") return;
       if (value === null || value === undefined) {
-        localStorage.removeItem(PDS._themeStorageKey);
+        localStorage.removeItem(__themeStorageKey);
       } else {
-        localStorage.setItem(PDS._themeStorageKey, value);
+        localStorage.setItem(__themeStorageKey, value);
       }
 
       // Apply resolved (light/dark) value to document
-      PDS._applyResolvedTheme(value);
+      __applyResolvedTheme(value);
       // Setup system change listener only when 'system' is selected
-      PDS._setupSystemListenerIfNeeded(value);
+      __setupSystemListenerIfNeeded(value);
 
       // Emit a notification with the raw preference (value may be 'system')
       PDS.dispatchEvent(
@@ -532,7 +544,7 @@ function validateDesign(designConfig = {}, options = {}) {
   const issues = [];
   try {
     // Build tokens from the candidate config
-    const gen = new PDS.Generator(structuredClone(designConfig));
+    const gen = new PDS.Generator({ design: structuredClone(designConfig) });
     const c = gen.tokens.colors;
 
     // Light theme checks - use computed interactive tokens
@@ -793,8 +805,8 @@ function __resolveThemeAndApply({ manageTheme, themeStorageKey }) {
 
     // Apply the resolved theme and ensure system listener exists when needed
     try {
-      PDS._applyResolvedTheme(storedTheme);
-      PDS._setupSystemListenerIfNeeded(storedTheme);
+      __applyResolvedTheme(storedTheme);
+      __setupSystemListenerIfNeeded(storedTheme);
     } catch (e) {}
 
     // Compute explicit resolvedTheme to return
@@ -897,14 +909,23 @@ function __normalizeInitConfig(inputConfig = {}, options = {}) {
       name: found.name || found.id || String(effectivePreset),
     };
 
-    let base = structuredClone(found);
+    // Merge preset with design overrides
+    let mergedDesign = structuredClone(found);
     if (designOverrides && typeof designOverrides === "object") {
-      base = __deepMerge(base, structuredClone(designOverrides));
+      mergedDesign = __deepMerge(mergedDesign, structuredClone(designOverrides));
     }
-    generatorConfig = base;
+    
+    // Build structured config with design nested
+    generatorConfig = {
+      ...inputConfig, // Keep all top-level properties (mode, autoDefine, etc.)
+      design: mergedDesign,
+      preset: presetInfo.name,
+    };
   } else if (hasDesignKeys) {
-    // Back-compat: treat the provided object as the full config
-    generatorConfig = structuredClone(inputConfig);
+    // Back-compat: treat the provided object as the full design, wrap it
+    generatorConfig = {
+      design: structuredClone(inputConfig),
+    };
   } else {
     // Nothing recognizable: use default preset
     const foundDefault =
@@ -915,7 +936,10 @@ function __normalizeInitConfig(inputConfig = {}, options = {}) {
       id: foundDefault.id || "default",
       name: foundDefault.name || "Default",
     };
-    generatorConfig = structuredClone(foundDefault);
+    generatorConfig = {
+      design: structuredClone(foundDefault),
+      preset: presetInfo.name,
+    };
   }
 
   return { generatorConfig, enhancers, presetInfo };
@@ -1115,9 +1139,9 @@ async function live(config) {
     const generator = new PDS.Generator(generatorConfig);
 
     // 3) Load fonts from Google Fonts if needed (before applying styles)
-    if (generatorConfig.typography) {
+    if (generatorConfig.design?.typography) {
       try {
-        await loadTypographyFonts(generatorConfig.typography);
+        await loadTypographyFonts(generatorConfig.design.typography);
       } catch (ex) {
         console.warn("Failed to load some fonts from Google Fonts:", ex);
         // Continue anyway - the system will fall back to default fonts
@@ -1263,6 +1287,15 @@ async function live(config) {
 
     // Determine resolved config to expose (generator stores input as options)
     const resolvedConfig = generator?.options || generatorConfig;
+
+    // Expose current config as frozen read-only on PDS, preserving input shape
+    PDS.currentConfig = Object.freeze({
+      mode: "live",
+      ...structuredClone(config),
+      design: structuredClone(normalized.generatorConfig.design),
+      preset: normalized.generatorConfig.preset,
+      theme: resolvedTheme,
+    });
 
     // Emit event to notify that PDS is ready (unified)
     PDS.dispatchEvent(
@@ -1442,6 +1475,15 @@ async function staticInit(config) {
       );
     }
 
+    // Expose current config as frozen read-only on PDS, preserving input shape
+    PDS.currentConfig = Object.freeze({
+      mode: "static",
+      ...structuredClone(config),
+      design: structuredClone(normalized.generatorConfig.design),
+      preset: normalized.generatorConfig.preset,
+      theme: resolvedTheme,
+    });
+
     // 6) Emit ready event (unified)
     PDS.dispatchEvent(
       new CustomEvent("pds:ready", {
@@ -1582,7 +1624,10 @@ function preloadCritical(config, options = {}) {
     document.documentElement.setAttribute("data-theme", resolvedTheme);
 
     // Generate minimal CSS synchronously
-    const tempConfig = { ...config, theme: resolvedTheme };
+    // Normalize config to ensure design property exists
+    const tempConfig = config.design 
+      ? { ...config, theme: resolvedTheme }
+      : { design: config, theme: resolvedTheme };
     const tempGenerator = new PDS.Generator(tempConfig);
 
     const criticalCSS = layers
@@ -1618,6 +1663,7 @@ function preloadCritical(config, options = {}) {
 /** Preload minimal CSS to prevent flash of unstyled content */
 PDS.preloadCritical = preloadCritical;
 
-Object.freeze(PDS);
+// Note: PDS object is not frozen to allow runtime properties like currentConfig
+// to be set during initialization. The config object itself is frozen for immutability.
 
 export { PDS, validateDesign };

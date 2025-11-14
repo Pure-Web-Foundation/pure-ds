@@ -14,6 +14,11 @@ export class Generator {
       debug: false,
       ...options,
     };
+    
+    // Ensure design is always present for internal access
+    if (!this.options.design) {
+      this.options.design = {};
+    }
 
     if (this.options.debug) {
       console.log("Generator options:", this.options);
@@ -47,8 +52,8 @@ export class Generator {
   }
 
   #generateTokens() {
-    // Use config directly - no more seeds normalization layer
-    const config = this.options || {};
+    // Access design configuration from options.design
+    const config = this.options.design || {};
 
     return {
       colors: this.#generateColorTokens(config.colors || {}),
@@ -1323,7 +1328,7 @@ html[data-theme="dark"] video:hover {
       const meshOption =
         this.options?.options?.backgroundMesh ?? this.options?.backgroundMesh;
       const num = Number(meshOption);
-      if (!Number.isFinite(num)) return "";
+      if (!Number.isFinite(num) || num === 0) return "";
       const idx = Math.max(1, Math.min(5, Math.floor(num)));
       return `/* Optional background mesh applied from config */\nbody {\n  background: var(--background-mesh-0${idx});\n  background-attachment: fixed;\n}`;
     } catch {
@@ -1495,7 +1500,7 @@ html[data-theme="dark"] video:hover {
   // Legacy #generateBaseStyles() removed - all content moved to #generatePrimitivesLayer()
 
   #generateSemanticHTMLStyles() {
-    const { layout = {} } = this.options;
+    const { layout = {} } = this.options.design;
     const breakpoints = layout.breakpoints || {
       sm: 640,
       md: 768,
@@ -1678,7 +1683,7 @@ html[data-theme="dark"] video:hover {
       sectionSpacing,
       buttonMinHeight,
       inputMinHeight,
-    } = this.options;
+    } = this.options.design;
 
     const inputPaddingValue = inputPadding || 0.75;
     const buttonPaddingValue = buttonPadding || 1.0;
@@ -2452,7 +2457,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   }
 
   #generateTableStyles() {
-    const { layout = {} } = this.options;
+    const { layout = {} } = this.options.design;
     const breakpoints = layout.breakpoints || {
       sm: 640,
       md: 768,
@@ -2818,7 +2823,7 @@ tbody {
   }
 
   #generateDialogStyles() {
-    const { layout = {}, behavior = {} } = this.options;
+    const { layout = {}, behavior = {} } = this.options.design;
     const breakpoints = layout.breakpoints || {
       sm: 640,
       md: 768,
@@ -3024,7 +3029,7 @@ dialog.dialog-full {
   }
 
   #generateTabStripStyles() {
-    const { layout = {} } = this.options;
+    const { layout = {} } = this.options.design;
     const breakpoints = layout.breakpoints || {
       sm: 640,
       md: 768,
@@ -3218,7 +3223,7 @@ pds-tabstrip > pds-tabpanel[data-tabpanel] {
   }
 
   #generateIconStyles() {
-    const { a11y = {} } = this.options;
+    const { a11y = {} } = this.options.design;
     const minTouchTarget =
       a11y.minTouchTarget || enums.TouchTargetSizes.standard;
 
@@ -3451,7 +3456,7 @@ nav[data-dropdown][data-mode="auto"] menu {
   }
 
   #generateLayoutUtilities() {
-    const { layout = {} } = this.options;
+    const { layout = {} } = this.options.design;
     const breakpoints = layout.breakpoints || {
       sm: 640,
       md: 768,
@@ -3650,7 +3655,7 @@ nav[data-dropdown][data-mode="auto"] menu {
   }
 
   #generateMediaQueries() {
-    const { layout = {}, a11y = {} } = this.options;
+    const { layout = {}, a11y = {} } = this.options.design;
     const breakpoints = layout.breakpoints || {
       sm: 640,
       md: 768,
@@ -3906,7 +3911,7 @@ nav[data-dropdown][data-mode="auto"] menu {
   }
 
   #generatePrimitivesLayer() {
-    const { advanced = {}, a11y = {}, layout = {} } = this.options;
+    const { advanced = {}, a11y = {}, layout = {} } = this.options.design;
     const tabSize = advanced.tabSize || enums.TabSizes.standard;
     const minTouchTarget =
       a11y.minTouchTarget || enums.TouchTargetSizes.standard;

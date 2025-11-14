@@ -33,7 +33,7 @@ export async function ask(message, options = {}) {
     // Create native dialog element
     const dialog = document.createElement("dialog");
     
-    if(config.options.liquidGlassEffects)
+    if(config.options?.liquidGlassEffects)
       dialog.classList.add("liquid-glass");
     
     // Add optional CSS classes

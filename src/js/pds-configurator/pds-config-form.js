@@ -96,7 +96,7 @@ customElements.define(
     applyDefaultHostVariables() {
       try {
         const baseConfig = structuredClone(presets.default);
-        const tmpDesigner = new Generator(baseConfig);
+        const tmpDesigner = new Generator({ design: baseConfig });
 
         // Spacing tokens (keys are numeric strings 1..N)
         const spacing = tmpDesigner.generateSpacingTokens(
@@ -333,7 +333,7 @@ customElements.define(
       // scoping (html[data-theme] vs prefers-color-scheme).
       const storedTheme = PDS.theme || null;
 
-      const generatorOptions = structuredClone(baseConfig);
+      const generatorOptions = { design: structuredClone(baseConfig) };
       if (storedTheme) generatorOptions.theme = storedTheme;
 
       this.designer = new Generator(generatorOptions);
