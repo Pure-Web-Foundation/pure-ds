@@ -1,3 +1,4 @@
+
 export const config = {
   mode: "live",
   preset: "default",
@@ -8,4 +9,5 @@ export const config = {
   static: {
     root: "public/assets/pds/"
   }
+  
 };

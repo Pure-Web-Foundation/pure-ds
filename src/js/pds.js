@@ -881,6 +881,31 @@ function __slugify(str = "") {
     .replace(/^-+|-+$/g, "");
 }
 
+// Internal: recursively remove functions from an object to make it cloneable
+function __stripFunctions(obj) {
+  if (obj === null || obj === undefined) return obj;
+  if (typeof obj === "function") return undefined;
+  if (typeof obj !== "object") return obj;
+  
+  if (Array.isArray(obj)) {
+    return obj.map(item => __stripFunctions(item)).filter(item => item !== undefined);
+  }
+  
+  const result = {};
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      const value = obj[key];
+      if (typeof value !== "function") {
+        const stripped = __stripFunctions(value);
+        if (stripped !== undefined) {
+          result[key] = stripped;
+        }
+      }
+    }
+  }
+  return result;
+}
+
 // Internal: normalize first-arg config to a full generator config and extract enhancers if provided inline
 function __normalizeInitConfig(inputConfig = {}, options = {}) {
   // If caller passed a plain design config (legacy), keep as-is
@@ -1323,8 +1348,8 @@ async function live(config) {
     const resolvedConfig = generator?.options || generatorConfig;
 
     // Expose current config as frozen read-only on PDS, preserving input shape
-    // Exclude non-cloneable properties (functions) from config
-    const { autoDefine: _autoDefine, ...cloneableConfig } = config;
+    // Strip functions before cloning to avoid DataCloneError
+    const cloneableConfig = __stripFunctions(config);
     PDS.currentConfig = Object.freeze({
       mode: "live",
       ...structuredClone(cloneableConfig),
@@ -1512,8 +1537,8 @@ async function staticInit(config) {
     }
 
     // Expose current config as frozen read-only on PDS, preserving input shape
-    // Exclude non-cloneable properties (functions) from config
-    const { autoDefine: _autoDefine, ...cloneableConfig } = config;
+    // Strip functions before cloning to avoid DataCloneError
+    const cloneableConfig = __stripFunctions(config);
     PDS.currentConfig = Object.freeze({
       mode: "static",
       ...structuredClone(cloneableConfig),
