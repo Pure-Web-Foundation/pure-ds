@@ -95,6 +95,24 @@ if (typeof window !== "undefined") {
 }
 
 // ---------------------------------------------------------------------------
+// FOUC Prevention: Add pds-ready class when PDS is fully initialized in live mode
+// This works in conjunction with CSS injected by the live() function
+if (typeof document !== "undefined") {
+  PDS.addEventListener("pds:ready", (event) => {
+    const mode = event.detail?.mode;
+    if (mode) {
+      // Add mode-specific class (pds-live or pds-static)
+      document.documentElement.classList.add(`pds-${mode}`);
+      
+      // Only add pds-ready class in live mode for FOUC prevention
+      if (mode === "live") {
+        document.documentElement.classList.add("pds-ready");
+      }
+    }
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Theme management (centralized on PDS.theme)
 // Consumers may read/write `PDS.theme` with values: 'system' | 'light' | 'dark'
 // Setting the property persists to localStorage (when available), updates
@@ -1036,6 +1054,34 @@ async function live(config) {
     );
   }
 
+  // FOUC Prevention: Use constructable stylesheet for synchronous, immediate effect
+  if (typeof document !== "undefined" && document.adoptedStyleSheets) {
+    const css = /*css*/`
+          html { opacity: 0; }
+          html.pds-ready { opacity: 1; transition: opacity 0.3s ease-in; }
+        `
+    try {
+      // Check if we've already added the FOUC prevention sheet
+      const hasFoucSheet = document.adoptedStyleSheets.some(sheet => sheet._pdsFouc);
+      if (!hasFoucSheet) {
+        const foucSheet = new CSSStyleSheet();
+        foucSheet.replaceSync(css);
+        foucSheet._pdsFouc = true;
+        document.adoptedStyleSheets = [foucSheet, ...document.adoptedStyleSheets];
+      }
+    } catch (e) {
+      // Fallback for browsers that don't support constructable stylesheets
+      console.warn("Constructable stylesheets not supported, using <style> tag fallback:", e);
+      const existingFoucStyle = document.head.querySelector("style[data-pds-fouc]");
+      if (!existingFoucStyle) {
+        const foucStyle = document.createElement("style");
+        foucStyle.setAttribute("data-pds-fouc", "");
+        foucStyle.textContent = css;
+        document.head.insertBefore(foucStyle, document.head.firstChild);
+      }
+    }
+  }
+
   // PDS is exposed on window at module init for both modes
 
   // Extract runtime flags directly from unified config
@@ -1265,7 +1311,6 @@ async function start(config) {
 /** Primary unified entry point */
 PDS.start = start;
 
-// Note: PDS.live is not exported. Use PDS.start({ mode: 'live', ... }).
 
 /**
  * Initialize PDS in static mode with the same unified configuration shape as live mode.

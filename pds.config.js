@@ -1,5 +1,5 @@
 export const config = {
-  mode: "static",
+  mode: "live",
   preset: "default",
   options: {
     liquidGlassEffects: true,

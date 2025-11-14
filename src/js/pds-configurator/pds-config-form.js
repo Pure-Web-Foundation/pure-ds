@@ -848,75 +848,6 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
           </div>
 
           <div class="designer-actions">
-            <!--nav data-dropdown>
-              <button class="btn-secondary" style="width: 100%;">
-                <pds-icon icon="palette" size="sm"></pds-icon>
-                <span>Load Preset</span>
-                <pds-icon icon="caret-down" size="sm"></pds-icon>
-              </button>
-
-              <menu>
-                <li>
-                  <a
-                    href="#"
-                    @click=${(e) => {
-                      e.preventDefault();
-                      this.handleReset();
-                    }}
-                  >
-                    <span class="preset-colors">
-                      <span style="background-color: #2d9dc9"></span>
-                      <span style="background-color: #a99b95"></span>
-                      <span style="background-color: #e54271"></span>
-                    </span>
-                    <span class="preset-info">
-                      <strong>Default</strong>
-                      <small
-                        >Original Pure DS balanced design with proven color
-                        harmony</small
-                      >
-                    </span>
-                  </a>
-                </li>
-                ${Object.values(PDS.presets)
-                  .filter(
-                    (preset) =>
-                      (preset.id || preset.name || "").toLowerCase() !==
-                      "default"
-                  )
-                  .map(
-                    (preset) => html`
-                      <li>
-                        <a
-                          href="#"
-                          @click=${(e) => {
-                            e.preventDefault();
-                            this.applyPreset(preset);
-                          }}
-                        >
-                          <span class="preset-colors">
-                            <span
-                              style="background-color: ${preset.colors.primary}"
-                            ></span>
-                            <span
-                              style="background-color: ${preset.colors
-                                .secondary}"
-                            ></span>
-                            <span
-                              style="background-color: ${preset.colors.accent}"
-                            ></span>
-                          </span>
-                          <span class="preset-info">
-                            <strong>${preset.name}</strong>
-                            <small>${preset.description}</small>
-                          </span>
-                        </a>
-                      </li>
-                    `
-                  )}
-              </menu>
-            </nav-->
-
             <nav data-dropdown>
               <button class="btn-primary" style="width: 100%;">
                 <pds-icon icon="download" size="sm"></pds-icon>
@@ -1009,7 +940,9 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
                   );
                 });
               } else {
-                filtered = all.filter(preset => preset.tags?.includes("featured")).slice(0, maxPresets);
+                filtered = all
+                  .filter((preset) => preset.tags?.includes("featured"))
+                  .slice(0, maxPresets);
               }
 
               return filtered.map((preset) => {
