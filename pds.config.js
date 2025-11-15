@@ -1,5 +1,5 @@
-
 export const config = {
+  debug: true,
   mode: "live",
   preset: "default",
   // options: {
@@ -7,7 +7,12 @@ export const config = {
   //   backgroundMesh: 1,
   // },
   static: {
-    root: "public/assets/pds/"
-  }
-  
+    root: "public/assets/pds/",
+  },
+
+  log(level, message, ...data) {
+    //if (level === 'error') {
+    console[level](message, ...data);
+    //}
+  },
 };

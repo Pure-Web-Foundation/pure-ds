@@ -21,11 +21,11 @@ export class Generator {
     }
 
     if (this.options.debug) {
-      console.log("Generator options:", this.options);
+      this.options.log?.("debug", "Generator options:", this.options);
     }
     this.tokens = this.#generateTokens();
     if (this.options.debug) {
-      console.log("Generated tokens:", this.tokens);
+      this.options.log?.("debug", "Generated tokens:", this.tokens);
     }
 
     // NEW: Generate separate layers for modern architecture
@@ -37,14 +37,15 @@ export class Generator {
       this.#createBlobURLs();
 
       if (this.options.debug) {
-        console.log("[Generator] Created BLOB URLs:", {
+        this.options.log?.("debug", "[Generator] Created BLOB URLs:", {
           styles: this.#blobURLs?.styles,
           primitives: this.#blobURLs?.primitives,
         });
       }
     } else {
       if (this.options.debug) {
-        console.log(
+        this.options.log?.(
+          "debug",
           "[Generator] Skipping browser features (CSSStyleSheet not available)"
         );
       }
@@ -3868,7 +3869,7 @@ nav[data-dropdown][data-mode="auto"] menu {
     };
 
     if (this.options.debug) {
-      console.log("[Generator] Layer sizes:", {
+      this.options.log?.("debug", "[Generator] Layer sizes:", {
         tokens: `${(this.#layers.tokens.length / 1024).toFixed(2)} KB`,
         primitives: `${(this.#layers.primitives.length / 1024).toFixed(2)} KB`,
         components: `${(this.#layers.components.length / 1024).toFixed(2)} KB`,
@@ -4370,7 +4371,8 @@ ${this.#generateMediaQueries()}
   #recreateBlobURLs() {
     // Safety check
     if (!this.#layers) {
-      console.error(
+      this.options.log?.(
+        "error",
         "[Generator] Cannot create BLOB URLs: layers not generated"
       );
       return;
@@ -4396,7 +4398,8 @@ ${this.#generateMediaQueries()}
     this.#blobURLs.styles = this.#createBlobURL(combined);
 
     if (this.options.debug) {
-      console.log(
+      this.options.log?.(
+        "debug",
         "[Generator] Created BLOB URL for combined styles:",
         this.#blobURLs.styles
       );
@@ -4674,7 +4677,7 @@ export const ${name}CSS = \`${escapedCSS}\`;
   static applyStyles(designer) {
     // Validate parameter
     if (!designer || typeof designer !== "object") {
-      console.error("[Generator] applyStyles requires a designer object");
+      designer?.options?.log?.("error", "[Generator] applyStyles requires a designer object");
       return;
     }
 
@@ -4682,15 +4685,15 @@ export const ${name}CSS = \`${escapedCSS}\`;
     // are available in light DOM (ensures primitives like :where(button):active apply)
     const cssText = designer.layeredCSS || designer.css || "";
     if (!cssText) {
-      console.warn("[Generator] No CSS available on designer to apply");
+      designer?.options?.log?.("warn", "[Generator] No CSS available on designer to apply");
       return;
     }
 
     // Install/update runtime styles atomically to avoid flicker caused by
     // creating/removing <link> or swapping blob URLs.
     Generator.installRuntimeStyles(cssText);
-    if (designer && designer.#blobURLs && this.options?.debug) {
-      console.log("[Generator] Applied live styles via in-place stylesheet");
+    if (designer && designer.#blobURLs && designer.options?.debug) {
+      designer.options?.log?.("debug", "[Generator] Applied live styles via in-place stylesheet");
     }
   }
 
@@ -4741,6 +4744,7 @@ export const ${name}CSS = \`${escapedCSS}\`;
       // Update the stylesheet content in place
       el.textContent = cssText;
     } catch (err) {
+      // No access to config here in static method, fall back to console
       console.warn("Generator.installRuntimeStyles failed:", err);
     }
   }
@@ -4785,6 +4789,7 @@ export async function adoptPrimitives(shadowRoot, additionalSheets = []) {
     }
   } catch (error) {
     const componentName = shadowRoot.host?.tagName?.toLowerCase() || "unknown";
+    // No access to config in this context, fall back to console
     console.error(
       `[PDS Adopter] <${componentName}> failed to adopt primitives:`,
       error
@@ -4826,6 +4831,7 @@ export async function adoptLayers(
     }
   } catch (error) {
     const componentName = shadowRoot.host?.tagName?.toLowerCase() || "unknown";
+    // No access to config in this context, fall back to console
     console.error(
       `[PDS Adopter] <${componentName}> failed to adopt layers:`,
       error

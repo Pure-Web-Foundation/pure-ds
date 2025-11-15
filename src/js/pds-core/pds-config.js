@@ -1101,3 +1101,24 @@ presets.default = {
   debug: false,
 };
 // Note: presets is now a stable object keyed by id
+
+/**
+ * Default logging method - can be overridden at config root level
+ * This is exported separately so it can be added to the root config object
+ * @param {string} level - log level: 'log', 'warn', 'error', 'debug', 'info'
+ * @param {string} message - primary message to log
+ * @param {...any} data - additional data to log
+ */
+export function defaultLog(level = "log", message, ...data) {
+  // Access debug from 'this' context when called as method, or check for common locations
+  const debug = this?.debug || this?.design?.debug || false;
+  
+  if (debug || level === "error" || level === "warn") {
+    const method = console[level] || console.log;
+    if (data.length > 0) {
+      method(message, ...data);
+    } else {
+      method(message);
+    }
+  }
+}

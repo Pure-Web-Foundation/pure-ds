@@ -24,9 +24,9 @@ class PDSRegistry {
     this._mode = "live";
     const presetName = meta?.presetName;
     if (presetName) {
-      console.log(`PDS live with preset "${presetName}"`);
+      designer?.options?.log?.("log", `PDS live with preset "${presetName}"`);
     } else {
-      console.log("PDS live with custom config");
+      designer?.options?.log?.("log", "PDS live with custom config");
     }
   }
 
@@ -37,6 +37,7 @@ class PDSRegistry {
   setStaticMode(paths = {}) {
     this._mode = "static";
     this._staticPaths = { ...this._staticPaths, ...paths };
+    // Note: No access to config in static mode, using console
     console.log("[PDS Registry] Switched to STATIC mode", this._staticPaths);
   }
 
@@ -57,7 +58,7 @@ class PDSRegistry {
         case "utilities":
           return this._designer.utilitiesStylesheet;
         default:
-          console.warn(`[PDS Registry] Unknown layer: ${layer}`);
+          this._designer?.options?.log?.("warn", `[PDS Registry] Unknown layer: ${layer}`);
           return null;
       }
     } else {
@@ -66,6 +67,7 @@ class PDSRegistry {
         const module = await import(this._staticPaths[layer]);
         return module[layer]; // Return exported stylesheet
       } catch (error) {
+        // No access to config in static mode, fall back to console
         console.error(`[PDS Registry] Failed to load static ${layer}:`, error);
         // Return empty stylesheet as fallback
         const fallback = new CSSStyleSheet();

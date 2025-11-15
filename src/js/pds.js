@@ -50,7 +50,7 @@ import {
 import { registry } from "./pds-core/pds-registry.js";
 import ontology from "./pds-core/pds-ontology.js";
 import { findComponentForElement } from "./pds-core/pds-ontology.js";
-import { presets } from "./pds-core/pds-config.js";
+import { presets, defaultLog } from "./pds-core/pds-config.js";
 import { enums } from "./pds-core/pds-enums.js";
 import { ask } from "./common/ask.js";
 import { PDSQuery } from "./pds-core/pds-query.js";
@@ -977,7 +977,9 @@ function __normalizeInitConfig(inputConfig = {}, options = {}) {
     // Merge preset with design overrides
     let mergedDesign = structuredClone(found);
     if (designOverrides && typeof designOverrides === "object") {
-      mergedDesign = __deepMerge(mergedDesign, structuredClone(designOverrides));
+      // Strip functions before cloning to avoid DataCloneError
+      const cloneableDesign = __stripFunctions(designOverrides);
+      mergedDesign = __deepMerge(mergedDesign, structuredClone(cloneableDesign));
     }
     
     // Build structured config with design nested
@@ -986,6 +988,7 @@ function __normalizeInitConfig(inputConfig = {}, options = {}) {
       mode, autoDefine, applyGlobalStyles, manageTheme, 
       themeStorageKey, preloadStyles, criticalLayers, 
       preset: _preset, design: _design, enhancers: _enhancers,
+      log: userLog,  // Extract log if provided at root
       ...otherProps 
     } = inputConfig;
     
@@ -993,11 +996,16 @@ function __normalizeInitConfig(inputConfig = {}, options = {}) {
       ...otherProps, // Keep only generator-relevant properties
       design: mergedDesign,
       preset: presetInfo.name,
+      // Add log method at root level (use user's or default)
+      log: userLog || defaultLog,
     };
   } else if (hasDesignKeys) {
     // Back-compat: treat the provided object as the full design, wrap it
+    // Extract log before cloning to avoid DataCloneError
+    const { log: userLog, ...designConfig } = inputConfig;
     generatorConfig = {
-      design: structuredClone(inputConfig),
+      design: structuredClone(designConfig),
+      log: userLog || defaultLog,
     };
   } else {
     // Nothing recognizable: use default preset
@@ -1012,6 +1020,7 @@ function __normalizeInitConfig(inputConfig = {}, options = {}) {
     generatorConfig = {
       design: structuredClone(foundDefault),
       preset: presetInfo.name,
+      log: defaultLog,
     };
   }
 
@@ -1036,6 +1045,7 @@ async function __setupAutoDefinerAndEnhancers(options) {
         method: "HEAD",
       });
       if (!response.ok) {
+        // No config available in this context, using console
         console.warn("⚠️ PDS components not found in auto-define directory.");
       }
     }
@@ -1059,6 +1069,7 @@ async function __setupAutoDefinerAndEnhancers(options) {
       AutoDefinerCtor =
         mod?.AutoDefiner || mod?.default?.AutoDefiner || mod?.default || null;
     } catch (e) {
+      // No config available in this context, using console
       console.warn("AutoDefiner not available:", e?.message || e);
     }
 
@@ -1087,6 +1098,7 @@ async function __setupAutoDefinerAndEnhancers(options) {
       enhancers: mergedEnhancers,
       onError: (tag, err) => {
         if (typeof tag === "string" && tag.startsWith("pds-")) {
+          // No config available in this context, using console
           console.warn(
             `⚠️ PDS component <${tag}> not found. Assets may not be installed.`
           );
@@ -1168,6 +1180,7 @@ async function live(config) {
       }
     } catch (e) {
       // Fallback for browsers that don't support constructable stylesheets
+      // No config available here, using console
       console.warn("Constructable stylesheets not supported, using <style> tag fallback:", e);
       const existingFoucStyle = document.head.querySelector("style[data-pds-fouc]");
       if (!existingFoucStyle) {
@@ -1204,7 +1217,11 @@ async function live(config) {
     // 2) Normalize first-arg API: support { preset, design, enhancers }
     const normalized = __normalizeInitConfig(config, {});
     const userEnhancers = normalized.enhancers;
-    const generatorConfig = structuredClone(normalized.generatorConfig);
+    // Extract log function before cloning to avoid DataCloneError
+    const { log: logFn, ...configToClone } = normalized.generatorConfig;
+    const generatorConfig = structuredClone(configToClone);
+    // Add log back after cloning
+    generatorConfig.log = logFn;
     if (manageTheme) {
       generatorConfig.theme = resolvedTheme;
     }
@@ -1216,7 +1233,7 @@ async function live(config) {
       try {
         await loadTypographyFonts(generatorConfig.design.typography);
       } catch (ex) {
-        console.warn("Failed to load some fonts from Google Fonts:", ex);
+        generatorConfig?.log?.("warn", "Failed to load some fonts from Google Fonts:", ex);
         // Continue anyway - the system will fall back to default fonts
       }
     }
@@ -1230,7 +1247,8 @@ async function live(config) {
             try {
               return generator.css?.[layer] || "";
             } catch (e) {
-              console.warn(
+              generatorConfig?.log?.(
+                "warn",
                 `Failed to generate critical CSS for layer "${layer}":`,
                 e
               );
@@ -1268,7 +1286,7 @@ async function live(config) {
           }
         }
       } catch (error) {
-        console.warn("Failed to preload critical styles:", error);
+        generatorConfig?.log?.("warn", "Failed to preload critical styles:", error);
         // Continue without critical styles - better than crashing
       }
     }
@@ -1355,7 +1373,7 @@ async function live(config) {
       });
       autoDefiner = res.autoDefiner;
     } catch (error) {
-      console.error("❌ Failed to initialize AutoDefiner/Enhancers:", error);
+      generatorConfig?.log?.("error", "❌ Failed to initialize AutoDefiner/Enhancers:", error);
     }
 
     // Determine resolved config to expose (generator stores input as options)
@@ -1528,6 +1546,7 @@ async function staticInit(config) {
           document.adoptedStyleSheets = [...others, stylesSheet];
         }
       } catch (e) {
+        // No config available in static mode, using console
         console.warn("Failed to apply static styles:", e);
       }
     }
@@ -1544,6 +1563,7 @@ async function staticInit(config) {
       });
       autoDefiner = res.autoDefiner;
     } catch (error) {
+      // No config available in static mode, using console
       console.error(
         "❌ Failed to initialize AutoDefiner/Enhancers (static):",
         error
@@ -1639,7 +1659,7 @@ async function setTheme(theme, options = {}) {
         await PDS.Generator.applyStyles(currentDesigner);
       }
     } catch (error) {
-      console.warn("Failed to update styles for new theme:", error);
+      currentDesigner?.options?.log?.("warn", "Failed to update styles for new theme:", error);
     }
   }
 
@@ -1733,6 +1753,7 @@ function preloadCritical(config, options = {}) {
     }
   } catch (error) {
     // Fail silently - better than blocking page load
+    // No config available in this context, using console
     console.warn("PDS preload failed:", error);
   }
 }
