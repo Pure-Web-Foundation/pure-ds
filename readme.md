@@ -67,10 +67,12 @@ await PDS.start({
 
 ## What is This?
 
-Pure Design System transforms configuration into complete design systems using three integrated pillars:
+Pure Design System is based on the [Pure Web Manifesto](https://pureweb.dev/manifesto).
+
+It transforms configuration into complete design systems using three integrated pillars:
 
 ### 1. **Generated Styles** (Tokens → CSS)
-Your config defines design intent. PDS generates:
+Your config defines design intent. PDS generates (in a deterministic way):
 - **Color scales** (50-900 shades from base colors)
 - **Surface semantics** (bg, text, border, shadow, interactive states)
 - **Spacing tokens** (mathematical progression)
@@ -86,7 +88,7 @@ Semantic HTML gets enhanced with JavaScript:
 - **Required fields** - Automatic asterisks and validation hints
 - **Custom enhancements** - Extensible system for your patterns
 
-### 3. **Web Components** (Rich UI, lazy-loaded)
+### 3. **Web Components** (Rich UI, lazy-loaded using [AutoDefiner](https://www.npmjs.com/package/pure-web#user-content-autodefiner))
 Optional components loaded on demand:
 - `<pds-icon>` - SVG sprite icons
 - `<pds-drawer>` - Slide-out panels
@@ -102,16 +104,16 @@ Optional components loaded on demand:
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│ Configuration                                                 │
+│ Configuration                                                │
 │ ─────────────                                                │
 │ colors: { primary: '#007acc' }                               │
-│ typography: { baseFontSize: 16, fontScale: 1.25 }           │
-│ spatialRhythm: { baseUnit: 8 }                              │
+│ typography: { baseFontSize: 16, fontScale: 1.25 }            │
+│ spatialRhythm: { baseUnit: 8 }                               │
 └─────────────────────┬────────────────────────────────────────┘
                       │
                       ▼
 ┌──────────────────────────────────────────────────────────────┐
-│ Generator (Live or Static)                                    │
+│ Generator (Live or Static)                                   │
 │ ──────────────────────────                                   │
 │ • Generates color scales (primary-50 → primary-900)          │
 │ • Creates surface tokens (bg, text, border, shadow)          │
@@ -123,12 +125,12 @@ Optional components loaded on demand:
                       │
                       ▼
 ┌──────────────────────────────────────────────────────────────┐
-│ Output                                                        │
+│ Output                                                       │
 │ ──────                                                       │
-│ Tokens:      --color-primary-500, --spacing-4               │
-│ Primitives:  .btn-primary, .card, .badge                    │
-│ Components:  <pds-drawer>, <pds-icon>                       │
-│ Utilities:   .flex, .gap-4, .border-gradient                │
+│ Tokens:      --color-primary-500, --spacing-4                │
+│ Primitives:  .btn-primary, .card, .badge                     │
+│ Components:  <pds-drawer>, <pds-icon>                        │
+│ Utilities:   .flex, .gap-4, .border-gradient                 │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -232,14 +234,8 @@ await PDS.start({
   
   // Component auto-loading
   autoDefine: {
-    baseURL: '/auto-define/',
     predefine: ['pds-icon'] // Eagerly load these
-  },
-  
-  // Runtime options
-  applyGlobalStyles: true,
-  manageTheme: true,
-  themeStorageKey: 'my-app-theme'
+  }
 });
 
 // Use components - they'll lazy-load automatically
@@ -277,13 +273,6 @@ await PDS.start({
     utilities: '/pds/styles/pds-utilities.css.js',
     styles: '/pds/styles/pds-styles.css.js'
   },
-  
-  autoDefine: {
-    baseURL: '/pds/components/'
-  },
-  
-  applyGlobalStyles: true,
-  manageTheme: true
 });
 ```
 
@@ -471,44 +460,6 @@ Adds value bubble that appears on interaction.
 ```
 
 Automatically adds asterisk to label.
-
-**Accordion** - `<details>`
-
-```html
-<details>
-  <summary>Click to expand</summary>
-  <p>Hidden content</p>
-</details>
-```
-
-Enhanced animation and styling.
-
-**Tabs** - `[data-tabs]`
-
-```html
-<div data-tabs>
-  <nav>
-    <button>Tab 1</button>
-    <button>Tab 2</button>
-  </nav>
-  <div>Content 1</div>
-  <div>Content 2</div>
-</div>
-```
-
-Simple tab switching without Web Components.
-
-**Modal Triggers** - `[data-modal]`
-
-```html
-<button data-modal="my-modal">Open Modal</button>
-<dialog id="my-modal">
-  <p>Modal content</p>
-  <button data-close>Close</button>
-</dialog>
-```
-
-Connects buttons to native `<dialog>` elements.
 
 #### Custom Enhancers
 
