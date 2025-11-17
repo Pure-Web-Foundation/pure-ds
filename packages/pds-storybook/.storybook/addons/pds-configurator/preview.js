@@ -24,7 +24,7 @@ async function initializeConfigurator() {
   
   // Create header
   const header = document.createElement('div');
-  header.slot = 'header';
+  header.slot = 'drawer-header';
   header.innerHTML = `
     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
       <h3 style="margin: 0;">PDS Configurator</h3>
@@ -37,9 +37,11 @@ async function initializeConfigurator() {
 
   // Create configurator content container
   const content = document.createElement('div');
+  content.slot = 'drawer-content';
   content.id = 'configurator-content';
   content.style.height = '60vh';
   content.style.overflow = 'auto';
+  content.style.padding = 'var(--spacing-4)';
   content.innerHTML = `<p style="padding: 1rem;">Loading configurator...</p>`;
   drawerElement.appendChild(content);
 
@@ -104,13 +106,21 @@ if (typeof window !== 'undefined') {
   const channel = addons.getChannel();
   
   channel.on(EVENTS.OPEN_CONFIGURATOR, async () => {
+    console.log('🎯 OPEN_CONFIGURATOR event received in preview');
+    console.log('Current drawerElement:', drawerElement);
     await initializeConfigurator();
+    console.log('After init, drawerElement:', drawerElement);
     if (drawerElement) {
+      console.log('Setting drawer.open = true');
       drawerElement.open = true;
+      console.log('Drawer open attribute:', drawerElement.hasAttribute('open'));
+    } else {
+      console.error('❌ drawerElement is null or undefined!');
     }
   });
 
   channel.on(EVENTS.CLOSE_CONFIGURATOR, () => {
+    console.log('🎯 CLOSE_CONFIGURATOR event received in preview');
     if (drawerElement) {
       drawerElement.open = false;
     }

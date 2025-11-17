@@ -9,7 +9,7 @@ export const Tool = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
 
-  const emit = useChannel({
+  const channel = useChannel({
     [EVENTS.DESIGN_UPDATED]: (data) => {
       console.log('Design updated in addon:', data);
     }
@@ -17,9 +17,12 @@ export const Tool = () => {
 
   const toggleConfigurator = useCallback(() => {
     const newState = !isOpen;
+    console.log('Toggle configurator - current isOpen:', isOpen, 'newState:', newState);
+    const eventToEmit = newState ? EVENTS.OPEN_CONFIGURATOR : EVENTS.CLOSE_CONFIGURATOR;
+    console.log('Emitting event:', eventToEmit);
+    channel.emit(eventToEmit);
     setIsOpen(newState);
-    emit(newState ? EVENTS.OPEN_CONFIGURATOR : EVENTS.CLOSE_CONFIGURATOR);
-  }, [isOpen, emit]);
+  }, [isOpen, channel]);
 
   const handleSearch = useCallback(async (query) => {
     setSearchQuery(query);
@@ -30,14 +33,14 @@ export const Tool = () => {
     }
 
     // Execute PDS query in the preview iframe
-    emit(EVENTS.QUERY_EXECUTED, { query });
+    channel.emit(EVENTS.QUERY_EXECUTED, { query });
     
     // Results will come back via channel (implemented in preview)
     // For now, show placeholder
     setSearchResults([
       { id: '1', title: `Searching for: ${query}...`, onClick: () => {} }
     ]);
-  }, [emit]);
+  }, [channel]);
 
   const searchLinks = searchResults.map(result => ({
     id: result.id,
