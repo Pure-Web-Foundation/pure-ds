@@ -75,13 +75,52 @@ export const AllIcons = () => {
   return html`
     <div style="padding: var(--spacing-4);">
       <h2>All Available Icons</h2>
-      <p style="margin-bottom: var(--spacing-6); opacity: 0.8;">
+      <p style="margin-bottom: var(--spacing-4); opacity: 0.8;">
         Complete icon set from Phosphor Icons, organized by category. 
         Click any icon name to copy it to clipboard.
       </p>
       
+      <label style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-2); margin-bottom: var(--spacing-6);">
+        <span data-label style="font-weight: 600;">Filter icons</span>
+        <input 
+          type="search" 
+          placeholder="Type to filter..." 
+          style="
+            width: 100%;
+            max-width: 400px;
+            padding: var(--spacing-3);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            text-align: center;
+          "
+          @input="${(e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const categories = e.target.closest('div').querySelectorAll('.icon-category');
+            
+            categories.forEach(category => {
+              const items = category.querySelectorAll('.icon-item');
+              let visibleCount = 0;
+              
+              items.forEach(item => {
+                const iconName = item.dataset.iconName;
+                if (iconName.includes(searchTerm)) {
+                  item.style.display = 'flex';
+                  visibleCount++;
+                } else {
+                  item.style.display = 'none';
+                }
+              });
+              
+              // Hide category if no visible icons
+              category.style.display = visibleCount > 0 ? 'block' : 'none';
+            });
+          }}"
+        />
+      </label>
+      
       ${Object.entries(iconConfig).map(([category, icons]) => html`
-        <article class="card" style="margin-bottom: var(--spacing-6);">
+        <article class="card icon-category" style="margin-bottom: var(--spacing-6);">
           <h3 style="text-transform: capitalize; margin-bottom: var(--spacing-4);">
             ${category.replace(/([A-Z])/g, ' $1').trim()}
             <span style="font-size: 0.85rem; font-weight: normal; opacity: 0.6; margin-left: var(--spacing-2);">
@@ -93,6 +132,7 @@ export const AllIcons = () => {
             ${icons.map(icon => html`
               <div 
                 class="icon-item"
+                data-icon-name="${icon}"
                 style="
                   display: flex;
                   flex-direction: column;

@@ -25,7 +25,7 @@ export default {
 export const Horizontal = {
   render: (args) => html`
     <pds-splitpanel orientation="${args.orientation}" default-split="${args.defaultSplit}" style="height: 500px;">
-      <div slot="start" style="padding: var(--spacing-4); background: var(--surface-bg); overflow: auto;">
+      <div slot="left" style="padding: var(--spacing-4); background: var(--surface-bg); overflow: auto;">
         <h3>File Browser</h3>
         <p style="opacity: 0.8; margin-bottom: var(--spacing-4);">Resize by dragging the handle</p>
         
@@ -53,7 +53,7 @@ export const Horizontal = {
         </div>
       </div>
       
-      <div slot="end" style="padding: var(--spacing-4); background: var(--surface-bg-secondary); overflow: auto;">
+      <div slot="right" style="padding: var(--spacing-4); background: var(--surface-bg-secondary); overflow: auto;">
         <div style="display: flex; align-items: center; gap: var(--spacing-3); margin-bottom: var(--spacing-4);">
           <pds-icon icon="file-text" size="lg" style="color: var(--color-primary);"></pds-icon>
           <div>
@@ -105,7 +105,7 @@ export const Horizontal = {
 
 export const Vertical = () => html`
   <pds-splitpanel orientation="vertical" default-split="250px" style="height: 600px;">
-    <div slot="start" style="padding: var(--spacing-4); overflow: auto;">
+    <div slot="left" style="padding: var(--spacing-4); overflow: auto;">
       <h3>Email Preview</h3>
       
       <article class="card" style="margin-top: var(--spacing-3);">
@@ -135,7 +135,7 @@ export const Vertical = () => html`
       </div>
     </div>
     
-    <div slot="end" style="padding: var(--spacing-4); overflow: auto; background: var(--surface-bg-secondary);">
+    <div slot="right" style="padding: var(--spacing-4); overflow: auto; background: var(--surface-bg-secondary);">
       <h3>Full Email Content</h3>
       
       <article class="card" style="margin-top: var(--spacing-3);">
@@ -193,7 +193,7 @@ export const Vertical = () => html`
 
 export const CodeEditorLayout = () => html`
   <pds-splitpanel orientation="horizontal" default-split="50%" style="height: 600px;">
-    <div slot="start" style="padding: var(--spacing-4); background: var(--surface-bg); overflow: auto;">
+    <div slot="left" style="padding: var(--spacing-4); background: var(--surface-bg); overflow: auto;">
       <h3>Code Editor</h3>
       <article class="card surface-elevated" style="margin-top: var(--spacing-3);">
         <pre style="margin: 0; overflow: auto;"><code>function greet(name) {
@@ -215,7 +215,7 @@ greet('World');</code></pre>
       </div>
     </div>
     
-    <div slot="end" style="padding: var(--spacing-4); background: var(--surface-bg-secondary); overflow: auto;">
+    <div slot="right" style="padding: var(--spacing-4); background: var(--surface-bg-secondary); overflow: auto;">
       <h3>Output Console</h3>
       <article class="card" style="margin-top: var(--spacing-3); font-family: monospace; background: #1e1e1e; color: #d4d4d4; padding: var(--spacing-3);">
         <div style="color: #4ec9b0;">$ node script.js</div>
@@ -230,7 +230,7 @@ CodeEditorLayout.storyName = 'Code Editor Layout';
 
 export const DashboardLayout = () => html`
   <pds-splitpanel orientation="horizontal" default-split="250px" style="height: 700px;">
-    <div slot="start" style="padding: var(--spacing-4); background: var(--surface-bg); overflow: auto;">
+    <div slot="left" style="padding: var(--spacing-4); background: var(--surface-bg); overflow: auto;">
       <h3 style="margin-bottom: var(--spacing-4);">Navigation</h3>
       
       <div style="display: flex; flex-direction: column; gap: var(--spacing-2);">
@@ -253,7 +253,7 @@ export const DashboardLayout = () => html`
       </div>
     </div>
     
-    <div slot="end" style="padding: var(--spacing-4); overflow: auto;">
+    <div slot="right" style="padding: var(--spacing-4); overflow: auto;">
       <h2>Dashboard Overview</h2>
       
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-4); margin-top: var(--spacing-4);">
@@ -298,3 +298,4 @@ export const DashboardLayout = () => html`
 `;
 
 DashboardLayout.storyName = 'Dashboard Layout';
+

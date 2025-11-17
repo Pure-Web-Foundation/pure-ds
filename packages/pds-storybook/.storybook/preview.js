@@ -319,10 +319,34 @@ const preview = {
       defaultValue: initialPreset, // Use the preset loaded from storage
       toolbar: {
         icon: 'paintbrush',
-        items: Object.keys(presets).map(key => ({
-          value: key,
-          title: presets[key].name || key
-        })),
+        items: Object.keys(presets)
+          .sort((a, b) => {
+            const aPreset = presets[a];
+            const bPreset = presets[b];
+            const aTags = aPreset.tags || [];
+            const bTags = bPreset.tags || [];
+            
+            // Check if featured
+            const aFeatured = aTags.includes('featured');
+            const bFeatured = bTags.includes('featured');
+            
+            if (aFeatured && !bFeatured) return -1;
+            if (!aFeatured && bFeatured) return 1;
+            
+            // Check if has any tags
+            const aHasTags = aTags.length > 0;
+            const bHasTags = bTags.length > 0;
+            
+            if (aHasTags && !bHasTags) return -1;
+            if (!aHasTags && bHasTags) return 1;
+            
+            // Alphabetical by name
+            return (aPreset.name || a).localeCompare(bPreset.name || b);
+          })
+          .map(key => ({
+            value: key,
+            title: presets[key].name || key
+          })),
         dynamicTitle: true
       }
     }

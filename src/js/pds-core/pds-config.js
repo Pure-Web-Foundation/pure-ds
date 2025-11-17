@@ -8,6 +8,7 @@ export const presets = {
   "ocean-breeze": {
     id: "ocean-breeze",
     name: "Ocean Breeze",
+    tags: ["playful"],
     description:
       "Fresh and calming ocean-inspired palette with professional undertones",
     options: {
@@ -35,7 +36,7 @@ export const presets = {
     },
     spatialRhythm: {
       baseUnit: 6, // More spacious
-      scaleRatio: 1.4,
+      scaleRatio: 1.2,
     },
     shape: {
       radiusSize: enums.RadiusSizes.xxlarge, // Soft, flowing
