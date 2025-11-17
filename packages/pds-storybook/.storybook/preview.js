@@ -91,7 +91,7 @@ const withPDS = (story, context) => {
   const storyResult = story();
   
   // After render, ensure shadow roots get PDS styles and run enhancers
-  // Use MutationObserver to continuously adopt primitives when components update
+  // Use MutationObserver to continuously adopt layers when components update
   const adoptAllShadowStyles = async () => {
     const container = document.querySelector('#storybook-root');
     if (!container) return;
@@ -106,16 +106,52 @@ const withPDS = (story, context) => {
     const shadowRoots = [];
     while (node = walker.nextNode()) {
       if (node.shadowRoot) {
-        shadowRoots.push(node.shadowRoot);
+        shadowRoots.push({ root: node.shadowRoot, host: node.tagName });
       }
     }
     
-    // Adopt primitives into each shadow root
-    for (const shadowRoot of shadowRoots) {
+    if (shadowRoots.length > 0) {
+      console.log(`🎭 Adopting PDS layers for ${shadowRoots.length} shadow components`);
+    }
+    
+    // Check if shadow roots need PDS styles adoption
+    // DON'T re-adopt if they already have styles - this preserves component internal stylesheets
+    for (const { root, host } of shadowRoots) {
       try {
-        await PDS.adoptPrimitives(shadowRoot);
+        const currentSheets = root.adoptedStyleSheets || [];
+        
+        // Check if this shadow root already has PDS sheets
+        const hasPDSSheets = currentSheets.some(sheet => {
+          try {
+            // Check if it's a PDS sheet by looking for PDS-specific selectors
+            return Array.from(sheet.cssRules || []).some(rule => 
+              rule.selectorText?.includes(':where') || 
+              rule.cssText?.includes('--color-') ||
+              rule.cssText?.includes('--spacing-')
+            );
+          } catch {
+            return false;
+          }
+        });
+        
+        if (hasPDSSheets && currentSheets.length > 0) {
+          console.log(`⏭️  <${host.toLowerCase()}> already has ${currentSheets.length} sheets - skipping`);
+          continue;
+        }
+        
+        // Only adopt if the component doesn't have PDS styles yet
+        // Get existing adopted sheets that aren't PDS sheets (preserve component styles)
+        const existingSheets = currentSheets.filter(sheet => !sheet._pds);
+        
+        console.log(`🎨 Adopting layers for <${host.toLowerCase()}> (had ${currentSheets.length} sheets, ${existingSheets.length} non-PDS)...`);
+        
+        // Adopt full layer stack: primitives, components, utilities
+        await PDS.adoptLayers(root, ['primitives', 'components', 'utilities'], existingSheets);
+        
+        console.log(`✅ Adopted layers for <${host.toLowerCase()}> (now ${root.adoptedStyleSheets.length} sheets)`);
       } catch (err) {
-        console.warn('Failed to adopt PDS styles:', err);
+        console.error(`❌ Failed to adopt PDS layers for <${host.toLowerCase()}>:`, err);
+        console.error(err.stack);
       }
     }
     
@@ -125,8 +161,10 @@ const withPDS = (story, context) => {
     }
   };
   
-  // Initial adoption
+  // Initial adoption - run multiple times to catch lazy components
   setTimeout(adoptAllShadowStyles, 0);
+  setTimeout(adoptAllShadowStyles, 100);
+  setTimeout(adoptAllShadowStyles, 300);
   
   // Re-adopt on any DOM changes (for re-renders) with debouncing
   let adoptTimeout;
@@ -135,7 +173,10 @@ const withPDS = (story, context) => {
     if (container && !container._pdsObserver) {
       const debouncedAdopt = () => {
         clearTimeout(adoptTimeout);
-        adoptTimeout = setTimeout(adoptAllShadowStyles, 50);
+        adoptTimeout = setTimeout(() => {
+          console.log('🔄 DOM changed - re-adopting primitives');
+          adoptAllShadowStyles();
+        }, 100); // Increased debounce to 100ms
       };
       
       const observer = new MutationObserver(debouncedAdopt);
@@ -147,21 +188,78 @@ const withPDS = (story, context) => {
       });
       container._pdsObserver = observer;
       
-      // Also re-adopt periodically as fallback (every 2 seconds)
+      // Also re-adopt periodically as fallback (every 1 second)
       setInterval(() => {
         if (document.contains(container)) {
           adoptAllShadowStyles();
         }
-      }, 2000);
+      }, 1000);
     }
   }, 100);
   
   return storyResult;
 };
 
+// Add a decorator that has access to context.globals to handle preset/theme changes
+const withGlobalsHandler = (story, context) => {
+  const { globals } = context;
+  
+  // Handle preset changes via decorator (has access to globals)
+  if (globals?.preset && globals.preset !== window.__pdsCurrentPreset) {
+    console.log('🔄 Decorator detected preset change:', window.__pdsCurrentPreset, '→', globals.preset);
+    
+    // Apply preset asynchronously
+    (async () => {
+      try {
+        window.__pdsCurrentPreset = globals.preset;
+        
+        // Store for persistence
+        try {
+          sessionStorage.setItem('storybook-pds-preset', globals.preset);
+          localStorage.setItem('storybook-pds-preset', globals.preset);
+        } catch (e) {}
+        
+        // Load and apply preset
+        const { presets } = await import('../../../src/js/pds-core/pds-config.js');
+        const presetConfig = presets[globals.preset];
+        
+        if (presetConfig) {
+          console.log(`🎨 Applying preset via decorator: ${presetConfig.name || globals.preset}`);
+          
+          const generatorOptions = { 
+            design: structuredClone(presetConfig),
+            log: (...args) => console.log('🟦 [Generator]', ...args)
+          };
+          
+          if (PDS.theme) generatorOptions.theme = PDS.theme;
+          
+          const newDesigner = new PDS.Generator(generatorOptions);
+          await PDS.Generator.applyStyles(newDesigner);
+          
+          PDS.registry._designer = newDesigner;
+          window.__pdsDesigner = newDesigner;
+          
+          console.log(`✅ Preset applied via decorator: ${globals.preset}`);
+        }
+      } catch (err) {
+        console.error('❌ Failed to apply preset via decorator:', err);
+      }
+    })();
+  }
+  
+  // Handle theme changes
+  if (globals?.theme && globals.theme !== document.body.getAttribute('data-theme')) {
+    console.log('🌙 Decorator detected theme change:', globals.theme);
+    document.body.setAttribute('data-theme', globals.theme);
+    PDS.theme = globals.theme;
+  }
+  
+  return story();
+};
+
 /** @type { import('@storybook/web-components').Preview } */
 const preview = {
-  decorators: [withPDS],
+  decorators: [withGlobalsHandler, withPDS],
   parameters: {
     controls: {
       matchers: {
@@ -223,8 +321,13 @@ const preview = {
 
 // Listen to theme and preset changes from toolbar
 if (typeof window !== 'undefined') {
+  console.log('👂 Setting up message listener for toolbar changes...');
+  
   window.addEventListener('message', async (event) => {
+    console.log('📨 Message received:', event.data?.type, event.data);
+    
     if (event.data?.type === 'SET_GLOBALS') {
+      console.log('✅ SET_GLOBALS detected, globals:', event.data.globals);
       const { globals } = event.data;
       
       if (globals?.theme) {
@@ -240,6 +343,15 @@ if (typeof window !== 'undefined') {
       }
       
       if (globals?.preset) {
+        console.log('🔔 SET_GLOBALS message received with preset:', globals.preset);
+        console.log('📦 Current stored preset:', window.__pdsCurrentPreset);
+        
+        // Skip if already on this preset
+        if (globals.preset === window.__pdsCurrentPreset) {
+          console.log('⏭️ Preset unchanged, skipping');
+          return;
+        }
+        
         try {
           console.log('📦 Preset change requested:', globals.preset);
           
@@ -247,12 +359,17 @@ if (typeof window !== 'undefined') {
           try {
             sessionStorage.setItem('storybook-pds-preset', globals.preset);
             localStorage.setItem('storybook-pds-preset', globals.preset);
+            console.log('💾 Preset stored in storage');
           } catch (e) {
-            console.warn('Failed to store preset:', e);
+            console.warn('⚠️ Failed to store preset:', e);
           }
           
           // Load preset from PDS presets and create new designer
-          const { presets } = await import('../../../src/js/pds-core/pds-config.js');
+          console.log('📥 Importing pds-config...');
+          const configModule = await import('../../../src/js/pds-core/pds-config.js');
+          console.log('✅ Config module loaded:', configModule);
+          
+          const { presets } = configModule;
           const presetId = globals.preset;
           const presetConfig = presets[presetId];
           
@@ -262,32 +379,40 @@ if (typeof window !== 'undefined') {
           
           if (presetConfig) {
             console.log(`🎨 Applying preset: ${presetConfig.name || presetId}`);
+            console.log('📝 Preset config:', presetConfig);
             
             // Create new designer with preset config (same as pds-config-form does)
             const generatorOptions = { 
               design: structuredClone(presetConfig),
-              log: console.log
+              log: (...args) => console.log('🟦 [Generator]', ...args)
             };
             const storedTheme = PDS.theme || null;
-            if (storedTheme) generatorOptions.theme = storedTheme;
+            if (storedTheme) {
+              generatorOptions.theme = storedTheme;
+              console.log('🌙 Applying stored theme:', storedTheme);
+            }
             
-            console.log('🏗️ Creating new Generator with options:', generatorOptions);
+            console.log('🏗️ Creating new Generator...');
             const newDesigner = new PDS.Generator(generatorOptions);
+            console.log('✅ Generator created');
             
             console.log('🎨 Applying styles to document...');
             await PDS.Generator.applyStyles(newDesigner);
+            console.log('✅ Styles applied to document');
             
             // Update BOTH registry designer AND global reference
             PDS.registry._designer = newDesigner;
             window.__pdsDesigner = newDesigner;
             window.__pdsCurrentPreset = presetId;
             
-            console.log(`✅ Preset applied successfully: ${presetConfig.name || presetId}`);
+            console.log(`✅✅✅ Preset applied successfully: ${presetConfig.name || presetId}`);
           } else {
-            console.warn(`⚠️ Preset not found: ${presetId}`);
+            console.error(`❌ Preset not found: ${presetId}`);
+            console.error('❌ Available presets:', Object.keys(presets));
           }
         } catch (err) {
-          console.error('❌ Failed to apply preset:', err, err.stack);
+          console.error('❌❌❌ Failed to apply preset:', err);
+          console.error('❌ Stack trace:', err.stack);
         }
       }
     }

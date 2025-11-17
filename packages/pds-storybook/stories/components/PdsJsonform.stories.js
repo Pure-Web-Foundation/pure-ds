@@ -72,24 +72,59 @@ const complexSchema = {
   }
 };
 
-export const SimpleForm = () => html`
-  <pds-jsonform 
-    schema='${JSON.stringify(simpleSchema)}'
-    @submit="${(e) => console.log('Form data:', e.detail)}">
-  </pds-jsonform>
-`;
+export const SimpleForm = () => {
+  setTimeout(() => {
+    const form = document.querySelector('#simple-jsonform');
+    if (form) {
+      form.jsonSchema = simpleSchema;
+      form.addEventListener('pw:submit', (e) => {
+        console.log('✅ Form submitted:', e.detail);
+      });
+    }
+  }, 0);
+  
+  return html`
+    <pds-jsonform id="simple-jsonform"></pds-jsonform>
+  `;
+};
 
-export const ComplexForm = () => html`
-  <pds-jsonform 
-    schema='${JSON.stringify(complexSchema)}'
-    @submit="${(e) => console.log('Form data:', e.detail)}">
-  </pds-jsonform>
-`;
+export const ComplexForm = () => {
+  setTimeout(() => {
+    const form = document.querySelector('#complex-jsonform');
+    if (form) {
+      form.jsonSchema = complexSchema;
+      form.addEventListener('pw:submit', (e) => {
+        console.log('✅ Form submitted:', e.detail);
+      });
+    }
+  }, 0);
+  
+  return html`
+    <pds-jsonform id="complex-jsonform"></pds-jsonform>
+  `;
+};
 
-export const WithInitialData = () => html`
-  <pds-jsonform 
-    schema='${JSON.stringify(simpleSchema)}'
-    value='{"name":"John Doe","email":"john@example.com","age":25,"newsletter":true}'
-    @change="${(e) => console.log('Changed:', e.detail)}">
-  </pds-jsonform>
-`;
+export const WithInitialData = () => {
+  setTimeout(() => {
+    const form = document.querySelector('#initial-data-jsonform');
+    if (form) {
+      form.jsonSchema = simpleSchema;
+      form.values = {
+        name: 'John Doe',
+        email: 'john@example.com',
+        age: 25,
+        newsletter: true
+      };
+      form.addEventListener('pw:value-change', (e) => {
+        console.log('🔄 Value changed:', e.detail);
+      });
+      form.addEventListener('pw:submit', (e) => {
+        console.log('✅ Form submitted:', e.detail);
+      });
+    }
+  }, 0);
+  
+  return html`
+    <pds-jsonform id="initial-data-jsonform"></pds-jsonform>
+  `;
+};
