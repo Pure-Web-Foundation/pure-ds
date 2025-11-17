@@ -1334,12 +1334,27 @@ html[data-theme="dark"] video:hover {
   #generateBodyBackgroundMeshRule() {
     try {
       const meshOption =
-        this.options?.options?.backgroundMesh ?? this.options?.backgroundMesh;
+        this.options?.design?.options?.backgroundMesh ?? 
+        this.options?.options?.backgroundMesh ?? 
+        this.options?.backgroundMesh;
+      
+      if (this.options.debug) {
+        this.options.log?.("debug", "backgroundMesh check:", {
+          "design.options.backgroundMesh": this.options?.design?.options?.backgroundMesh,
+          "options.backgroundMesh": this.options?.options?.backgroundMesh,
+          "backgroundMesh": this.options?.backgroundMesh,
+          meshOption,
+        });
+      }
+      
       const num = Number(meshOption);
       if (!Number.isFinite(num) || num === 0) return "";
       const idx = Math.max(1, Math.min(5, Math.floor(num)));
       return `/* Optional background mesh applied from config */\nbody {\n  background: var(--background-mesh-0${idx});\n  background-attachment: fixed;\n}`;
-    } catch {
+    } catch (e) {
+      if (this.options.debug) {
+        this.options.log?.("error", "Error in generateBodyBackgroundMeshRule:", e);
+      }
       return "";
     }
   }
@@ -1349,6 +1364,7 @@ html[data-theme="dark"] video:hover {
   #generateLiquidGlassUtility() {
     try {
       const enabled =
+        this.options?.design?.options?.liquidGlassEffects ??
         this.options?.options?.liquidGlassEffects ??
         this.options?.liquidGlassEffects;
       if (!enabled) return "";

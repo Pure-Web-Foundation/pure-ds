@@ -3434,9 +3434,10 @@ customElements.define(
 
     // Mesh gradient preview methods
     previewMesh(meshNumber) {
-      const originalBg = document.body.style.backgroundImage;
+      const originalBg = document.body.style.background;
       this._originalBodyBg = originalBg;
-      document.body.style.backgroundImage = `var(--background-mesh-${meshNumber})`;
+      document.body.style.background = `var(--background-mesh-${meshNumber})`;
+      document.body.style.backgroundAttachment = "fixed";
 
       // Dim all content to make the mesh background more visible
       const mainContent = document.querySelector("pds-demo");
@@ -3449,7 +3450,12 @@ customElements.define(
 
     clearMeshPreview() {
       if (this._originalBodyBg !== undefined) {
-        document.body.style.backgroundImage = this._originalBodyBg;
+        if (this._originalBodyBg) {
+          document.body.style.background = this._originalBodyBg;
+        } else {
+          document.body.style.removeProperty("background");
+          document.body.style.removeProperty("background-attachment");
+        }
         this._originalBodyBg = undefined;
       }
 

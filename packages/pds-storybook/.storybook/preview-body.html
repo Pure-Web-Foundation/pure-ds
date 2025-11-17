@@ -1,9 +1,10 @@
-<!-- Override Storybook's background to let PDS control it -->
+<!-- Let PDS control backgrounds - remove Storybook's white background override -->
 <style>
-  /* Fix Storybook forcing white background which breaks icons using currentColor */
-  body.sb-show-main {
-    background: var(--surface-bg) !important;
-    color: var(--text-primary) !important;
+  /* Don't override background at all - let PDS utilities layer apply mesh backgrounds via body rule */
+  /* Only set text color to use PDS variable */
+  body.sb-show-main,
+  .sb-show-main {
+    color: var(--color-text-primary) !important;
   }
   
   /* Ensure story container inherits PDS styles */
@@ -12,3 +13,36 @@
     color: inherit;
   }
 </style>
+
+<script>
+  // Remove Storybook's injected background styles that override PDS
+  const observer = new MutationObserver(() => {
+    const styleEls = document.querySelectorAll('style');
+    styleEls.forEach(style => {
+      if (style.textContent.includes('.sb-show-main') && 
+          style.textContent.includes('background') && 
+          style.textContent.includes('#ffffff')) {
+        console.log('🧹 Removing Storybook background override:', style.textContent.substring(0, 100));
+        style.remove();
+      }
+    });
+  });
+  
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+  
+  // Initial cleanup
+  setTimeout(() => {
+    const styleEls = document.querySelectorAll('style');
+    styleEls.forEach(style => {
+      if (style.textContent.includes('.sb-show-main') && 
+          style.textContent.includes('background') && 
+          style.textContent.includes('#ffffff')) {
+        console.log('🧹 Initial cleanup - removing:', style.textContent.substring(0, 100));
+        style.remove();
+      }
+    });
+  }, 100);
+</script>
