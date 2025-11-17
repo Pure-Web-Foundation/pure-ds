@@ -1,0 +1,24 @@
+{
+  "name": "@pure-ds/storybook",
+  "version": "0.1.0",
+  "description": "Storybook showcase for Pure Design System with live configuration",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "generate-stories": "node scripts/generate-stories.js",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "storybook:dev": "npm run generate-stories && npm run storybook",
+    "storybook:build": "npm run generate-stories && npm run build-storybook"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "^8.3.0",
+    "@storybook/addon-links": "^8.3.0",
+    "@storybook/blocks": "^8.3.0",
+    "@storybook/web-components": "^8.3.0",
+    "@storybook/web-components-vite": "^8.3.0",
+    "lit": "^3.3.1",
+    "storybook": "^8.3.0",
+    "vite": "^5.4.0"
+  }
+}

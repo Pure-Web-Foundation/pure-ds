@@ -1038,18 +1038,18 @@ async function __setupAutoDefinerAndEnhancers(options) {
     autoDefineOverrides = null,
   } = options;
 
-  // Warn if assets not present (best-effort)
-  try {
-    if (typeof window !== "undefined") {
-      const response = await fetch(`${autoDefineBaseURL}pds-icon.js`, {
-        method: "HEAD",
-      });
-      if (!response.ok) {
-        // No config available in this context, using console
-        console.warn("⚠️ PDS components not found in auto-define directory.");
-      }
-    }
-  } catch {}
+  // // Warn if assets not present (best-effort)
+  // try {
+  //   if (typeof window !== "undefined") {
+  //     const response = await fetch(`${autoDefineBaseURL}pds-icon.js`, {
+  //       method: "HEAD",
+  //     });
+  //     if (!response.ok) {
+  //       // No config available in this context, using console
+  //       console.warn("⚠️ PDS components not found in auto-define directory.");
+  //     }
+  //   }
+  // } catch {}
 
   // Merge defaults with user enhancers (user overrides by selector)
   const mergedEnhancers = (() => {

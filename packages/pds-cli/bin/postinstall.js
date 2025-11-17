@@ -19,6 +19,28 @@ const normalizePath = (p) => {
   return isWin ? resolved.toLowerCase() : resolved;
 };
 
+/**
+ * Check if we're installing within the pure-ds repo itself (not a consumer)
+ */
+function isInstallingWithinPureDsRepo() {
+  try {
+    const cwd = process.cwd();
+    const initCwd = process.env.INIT_CWD || cwd;
+    
+    // Normalize paths for comparison
+    const normalizedInitCwd = normalizePath(initCwd);
+    const normalizedRepoRoot = normalizePath(repoRoot);
+    
+    // Check if we're inside the pure-ds repo structure
+    // Either at repo root or in any packages subfolder
+    return normalizedInitCwd === normalizedRepoRoot || 
+           normalizedInitCwd.startsWith(normalizedRepoRoot + path.sep);
+  } catch (err) {
+    console.log('⚠️  Error checking repo location:', err.message);
+    return false;
+  }
+}
+
 function isNpmLinkInvocation() {
   try {
     const argvRaw = process.env.npm_config_argv;
@@ -193,10 +215,14 @@ async function copyPdsAssets() {
     // If running inside the package repo itself (e.g., during `npm link`), skip
     const inRepo = normalizePath(consumerRoot) === normalizePath(repoRoot);
     const linkInvocation = isNpmLinkInvocation();
-    if (inRepo || linkInvocation) {
+    const withinPureDs = isInstallingWithinPureDsRepo();
+    
+    if (inRepo || linkInvocation || withinPureDs) {
       const reason = inRepo
         ? 'inside the package repo'
-        : 'detected npm link invocation';
+        : linkInvocation
+        ? 'detected npm link invocation'
+        : 'installing within pure-ds repository';
       console.log(`🛑 Skipping PDS postinstall (${reason}).`);
       return;
     }

@@ -1,0 +1,67 @@
+import { html } from 'lit';
+
+export default {
+  title: 'PDS/Enhancements/Dropdowns',
+  parameters: {
+    docs: {
+      description: {
+        component: 'Progressive enhancement for dropdown menus using data-dropdown attribute'
+      }
+    }
+  }
+};
+
+export const BasicDropdown = () => html`
+  <nav data-dropdown>
+    <button class="btn-primary">Open Menu</button>
+    <menu>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </menu>
+  </nav>
+`;
+
+export const RightAligned = () => html`
+  <div style="text-align: right;">
+    <nav data-dropdown class="align-right">
+      <button class="btn-secondary">User Menu</button>
+      <menu>
+        <li><a href="#profile">Profile</a></li>
+        <li><a href="#settings">Settings</a></li>
+        <li><hr></li>
+        <li><a href="#logout">Logout</a></li>
+      </menu>
+    </nav>
+  </div>
+`;
+
+export const WithIcons = () => html`
+  <nav data-dropdown>
+    <button class="btn-outline">
+      <pds-icon icon="menu" size="sm"></pds-icon>
+      Actions
+    </button>
+    <menu>
+      <li>
+        <a href="#edit">
+          <pds-icon icon="pencil" size="sm"></pds-icon>
+          Edit
+        </a>
+      </li>
+      <li>
+        <a href="#copy">
+          <pds-icon icon="copy" size="sm"></pds-icon>
+          Copy
+        </a>
+      </li>
+      <li>
+        <a href="#delete">
+          <pds-icon icon="trash" size="sm"></pds-icon>
+          Delete
+        </a>
+      </li>
+    </menu>
+  </nav>
+`;

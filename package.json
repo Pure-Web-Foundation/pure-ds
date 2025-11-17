@@ -58,7 +58,10 @@
     "build": "node esbuild-build.js",
     "postinstall": "node packages/pds-cli/bin/postinstall.js",
     "pds:export": "node packages/pds-cli/bin/pds-static.js",
-    "pds:build-icons": "node packages/pds-cli/bin/pds-build-icons.js"
+    "pds:build-icons": "node packages/pds-cli/bin/pds-build-icons.js",
+    "storybook:generate": "cd packages/pds-storybook && npm run generate-stories",
+    "storybook:dev": "cd packages/pds-storybook && npm run storybook:dev",
+    "storybook:build": "cd packages/pds-storybook && npm run storybook:build"
   },
   "author": "Marc van Neerven",
   "license": "ISC",

@@ -1,0 +1,104 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="PDS/Getting Started" />
+
+# Pure Design System - Storybook
+
+Welcome to the **Pure Design System** Storybook! This is a comprehensive showcase of the configuration-driven design system that generates complete design systems from JavaScript configuration.
+
+## 🎨 What You're Looking At
+
+This Storybook instance demonstrates:
+
+- **Live Configuration** - Use the PDS Configurator button in the toolbar to change the design in real-time
+- **Multiple Presets** - Switch between design presets using the toolbar
+- **Theme Switching** - Toggle between light and dark themes
+- **Quick Search** - Use the search icon to query tokens and components
+
+## 🚀 Quick Start
+
+### 1. Try the Configurator
+
+Click the **PDS Configurator** button in the toolbar (circle icon) to open the configuration panel at the bottom of the screen. From there you can:
+
+- Change colors, typography, spacing
+- Toggle effects like liquid glass
+- Export your configuration
+- See changes applied instantly across all stories
+
+### 2. Browse Stories
+
+Stories are organized by best practices:
+
+- **Foundations** - Design tokens (colors, typography, spacing, icons)
+- **Primitives** - Basic UI elements (buttons, forms, cards, badges)
+- **Components** - Web Components (pds-icon, pds-drawer, pds-tabstrip, etc.)
+- **Patterns** - Layout patterns and utilities
+- **Enhancements** - Progressive enhancements for semantic HTML
+
+### 3. Use Quick Search
+
+Click the search icon in the toolbar to query the design system:
+
+- "what is the focus border color on inputs?"
+- "button hover color"
+- "how do I create a card?"
+
+## 📚 Story Features
+
+Each story includes:
+
+- **Interactive controls** - Use the Controls panel to customize
+- **Preset selection** - Try different design presets
+- **Color overrides** - Override primary/secondary colors per story
+- **Live updates** - Changes apply immediately
+
+## 🎯 Key Features
+
+### Configuration-Driven
+
+```javascript
+await PDS.start({
+  design: {
+    colors: { primary: '#007acc', secondary: '#5c2d91' },
+    typography: { baseFontSize: 16, fontScale: 1.25 },
+    spatialRhythm: { baseUnit: 8, scaleRatio: 1.5 }
+  }
+});
+```
+
+### Live Mode
+
+This Storybook runs PDS in **live mode**, meaning:
+- Styles are generated at runtime
+- Configuration changes apply instantly
+- Full access to `PDS.compiled` object model
+- Automatic font loading from Google Fonts
+
+### Framework Agnostic
+
+While this Storybook uses Vite + Web Components, PDS works with:
+- Vanilla JavaScript
+- Lit
+- React
+- Vue
+- Svelte
+- Next.js
+
+## 🔗 Resources
+
+- [GitHub](https://github.com/mvneerven/pure-ds)
+- [NPM Package](https://www.npmjs.com/package/pure-ds)
+- [Documentation](https://puredesignsystem.z6.web.core.windows.net/)
+
+## 💡 Tips
+
+1. **Start with Foundations** - Understand the token system first
+2. **Experiment with Presets** - See how different designs look
+3. **Open the Configurator** - Try changing values live
+4. **Use Quick Search** - Find tokens and components quickly
+5. **Check Controls** - Each story has customizable parameters
+
+---
+
+**Made with ❤️ for the open web**
