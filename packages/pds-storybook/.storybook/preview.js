@@ -1,4 +1,5 @@
 import { PDS } from '../../../src/js/pds.js';
+import { presets } from '../../../src/js/pds-core/pds-config.js';
 import './addons/pds-configurator/preview.js';
 
 // Get initial preset from storage or URL or default
@@ -274,6 +275,27 @@ const preview = {
         { name: 'dark', value: '#1a1a1a' },
         { name: 'surface', value: 'var(--surface-bg)' }
       ]
+    },
+    options: {
+      storySort: {
+        order: [
+          'General',
+          ['What is PDS', 'Getting Started'],
+          'Foundations',
+          ['Colors', 'Typography', 'Icons', 'Spacing', 'Smart Surfaces'],
+          'Primitives',
+          ['Buttons', 'Forms', 'Form Groups', 'Alerts', 'Badges', 'Cards', 'Tables', 'Media', 'Accordion'],
+          'Utilities',
+          ['Grid System'],
+          'Patterns',
+          ['Layout', 'Border Effects', 'Utilities'],
+          'Enhancements',
+          ['Mesh Gradients', 'Interactive States', 'Toggles', 'Dropdowns', 'Range Sliders', 'Required Fields'],
+          'Components',
+          ['Pds Jsonform', 'Pds Icon', 'Pds Drawer', 'Pds Toaster', 'Pds Tabstrip', 'Pds Splitpanel', 'Pds Scrollrow', 'Pds Richtext', 'Pds Upload'],
+          '*'
+        ]
+      }
     }
   },
   globalTypes: {
@@ -297,22 +319,10 @@ const preview = {
       defaultValue: initialPreset, // Use the preset loaded from storage
       toolbar: {
         icon: 'paintbrush',
-        items: [
-          { value: 'default', title: 'Default' },
-          { value: 'ocean-breeze', title: 'Ocean Breeze' },
-          { value: 'midnight-steel', title: 'Midnight Steel' },
-          { value: 'neural-glow', title: 'Neural Glow' },
-          { value: 'paper-and-ink', title: 'Paper & Ink' },
-          { value: 'sunset-paradise', title: 'Sunset Paradise' },
-          { value: 'retro-wave', title: 'Retro Wave' },
-          { value: 'forest-canopy', title: 'Forest Canopy' },
-          { value: 'ruby-elegance', title: 'Ruby Elegance' },
-          { value: 'desert-dawn', title: 'Desert Dawn' },
-          { value: 'contrast-pro', title: 'Contrast Pro' },
-          { value: 'pastel-play', title: 'Pastel Play' },
-          { value: 'brutalist-tech', title: 'Brutalist Tech' },
-          { value: 'zen-garden', title: 'Zen Garden' }
-        ],
+        items: Object.keys(presets).map(key => ({
+          value: key,
+          title: presets[key].name || key
+        })),
         dynamicTitle: true
       }
     }

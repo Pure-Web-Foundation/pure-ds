@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'PDS/Enhancements/RangeSliders',
+  title: 'Enhancements/Range Sliders',
   parameters: {
     docs: {
       description: {

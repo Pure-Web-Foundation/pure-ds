@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'PDS/Enhancements/Dropdowns',
+  title: 'Enhancements/Dropdowns',
   parameters: {
     docs: {
       description: {

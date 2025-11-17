@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'PDS/Components/pds-upload',
+  title: 'Components/Pds Upload',
   parameters: {
     docs: {
       description: {

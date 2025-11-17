@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'PDS/Enhancements/Toggles',
+  title: 'Enhancements/Toggles',
   parameters: {
     docs: {
       description: {

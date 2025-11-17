@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'PDS/Enhancements/RequiredFields',
+  title: 'Enhancements/Required Fields',
   parameters: {
     docs: {
       description: {

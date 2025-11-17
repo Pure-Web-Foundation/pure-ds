@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'PDS/Primitives/Alerts',
+  title: 'Primitives/Alerts',
   parameters: {
     docs: {
       description: {

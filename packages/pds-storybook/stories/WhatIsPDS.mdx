@@ -1,0 +1,105 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="General/What is PDS" />
+
+# What is Pure Design System?
+
+**Pure Design System (PDS)** is a revolutionary approach to design systems that generates complete, cohesive design tokens from minimal configuration.
+
+## 🎯 The Problem PDS Solves
+
+Traditional design systems require manually creating hundreds of CSS variables, color shades, spacing scales, and component styles. When you want to change your brand color, you need to update dozens of related values and hope everything still looks good.
+
+## ✨ The PDS Approach
+
+With PDS, you provide just a few key inputs:
+
+```javascript
+{
+  colors: {
+    primary: "#0891b2",
+    secondary: "#64748b",
+    accent: "#06b6d4"
+  },
+  typography: {
+    baseFontSize: 16,
+    fontScale: 1.2
+  }
+}
+```
+
+And PDS automatically generates:
+- **9-step color scales** (50-800) for every color
+- **Semantic colors** (success, warning, danger, info)
+- **Smart surfaces** with auto-contrast
+- **Typography scale** with proper hierarchy
+- **Spacing system** with consistent rhythm
+- **Component styles** that adapt to your theme
+- **Dark mode** with intelligent color adjustments
+- **Mesh gradients** from your palette
+
+## 🎨 Live Configuration
+
+This Storybook is powered by PDS in **live mode** - changes you make in the configurator apply instantly across all components.
+
+### Try It Now:
+
+1. Click the **PDS Configurator** button in the toolbar (🎨 circle icon)
+2. Change the primary color
+3. Watch every component update in real-time
+4. Toggle dark mode to see automatic adaptations
+
+## 🚀 Key Features
+
+### 1. Generative Color System
+- Input 1 color → Get 9 perfectly balanced shades
+- Automatic semantic color derivation
+- WCAG AA contrast guaranteed
+- Dark mode color inversions
+
+### 2. Smart Surfaces
+- Text and icons auto-adjust for contrast
+- Shadows adapt to light/dark mode
+- Nested surfaces maintain hierarchy
+- Elevation system with opacity
+
+### 3. Configuration-Driven
+- Everything controlled by JavaScript config
+- Export/import presets
+- Version control your design
+- Programmatic customization
+
+### 4. Zero Manual CSS
+- No handwritten color values
+- No manual dark mode overrides
+- No contrast calculations
+- No component-specific styling
+
+### 5. Design Tokens
+- CSS Custom Properties for everything
+- Semantic naming conventions
+- Composable utilities
+- Framework agnostic
+
+## 📚 Learn More
+
+Explore the rest of this Storybook to see:
+- **Foundations**: Core design tokens and systems
+- **Primitives**: Basic styled HTML elements
+- **Components**: Powerful web components
+- **Patterns**: Common UI patterns
+- **Enhancements**: Progressive enhancement techniques
+
+## 🎁 20 Built-in Presets
+
+Use the **Preset** dropdown in the toolbar to try different themes:
+- Ocean Breeze - Fresh and calming
+- Midnight Steel - Bold industrial
+- Neural Glow - AI-inspired futuristic
+- Fitness Pro - Health tracking app
+- Travel Market - Hospitality marketplace
+- And 15 more!
+
+---
+
+**Why build a design system if you can generate it?** 🚀

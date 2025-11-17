@@ -1,11 +1,32 @@
 import { html } from 'lit';
 
 export default {
-  title: 'PDS/Components/pds-jsonform',
+  title: 'Components/Pds Jsonform',
   parameters: {
     docs: {
       description: {
-        component: 'Dynamic form generation from JSON Schema with validation'
+        component: `**⭐ Recommended for modern applications** - Automatically generate complete forms from JSON Schema definitions.
+
+### Key Features
+- 🎯 **Zero boilerplate** - Define form structure in JSON, get a working form with validation
+- ✅ **Built-in validation** - Automatic validation based on schema rules (required, min/max, patterns, etc.)
+- 🔄 **Data binding** - Two-way data binding with form state management
+- 🎨 **PDS styled** - Uses all PDS design tokens automatically
+- 📱 **Responsive** - Mobile-friendly layouts out of the box
+- 🧩 **Conditional logic** - Show/hide fields based on other field values
+- 🌐 **Nested objects** - Support for complex nested data structures
+- 🔧 **Extensible** - Custom field types and validators
+
+### Why JSON Schema Forms?
+Instead of manually writing HTML for every form field, validation rule, and error message, you define your data schema once and get:
+- Form UI generation
+- Client-side validation
+- Server-side validation (same schema)
+- API documentation
+- Type definitions
+- Database schemas
+
+See the examples below to get started, or check the [primitive forms](/story/primitives-forms--default) for manual form building.`
       }
     }
   }

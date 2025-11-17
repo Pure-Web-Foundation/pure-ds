@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'PDS/Patterns/BorderEffects',
+  title: 'Patterns/Border Effects',
   parameters: {
     docs: {
       description: {

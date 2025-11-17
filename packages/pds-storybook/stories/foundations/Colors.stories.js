@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'PDS/Foundations/Colors',
+  title: 'Foundations/Colors',
   parameters: {
     docs: {
       description: {

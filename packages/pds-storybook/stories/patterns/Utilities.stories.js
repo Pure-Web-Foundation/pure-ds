@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'PDS/Patterns/Utilities',
+  title: 'Patterns/Utilities',
   parameters: {
     docs: {
       description: {

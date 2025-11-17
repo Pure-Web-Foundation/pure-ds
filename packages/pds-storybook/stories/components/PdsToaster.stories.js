@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'PDS/Components/pds-toaster',
+  title: 'Components/Pds Toaster',
   parameters: {
     docs: {
       description: {

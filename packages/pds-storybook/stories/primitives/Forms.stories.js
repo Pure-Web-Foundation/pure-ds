@@ -1,11 +1,15 @@
 import { html } from 'lit';
 
 export default {
-  title: 'PDS/Primitives/Forms',
+  title: 'Primitives/Forms',
   parameters: {
     docs: {
       description: {
-        component: 'Basic UI elements - buttons, forms, cards, badges'
+        component: `Standard HTML form controls styled by PDS. 
+
+**💡 For modern apps, consider using [pds-jsonform](/story/components-pds-jsonform--simple-form)** - a powerful web component that automatically generates forms from JSON Schema with built-in validation, conditional logic, and data binding.
+
+These primitive form controls provide the foundation for manual form building when you need full control over the markup.`
       }
     }
   },

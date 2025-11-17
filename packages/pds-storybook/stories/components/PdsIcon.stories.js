@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'PDS/Components/pds-icon',
+  title: 'Components/Pds Icon',
   parameters: {
     docs: {
       description: {

@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'PDS/Primitives/Badges',
+  title: 'Primitives/Badges',
   parameters: {
     docs: {
       description: {

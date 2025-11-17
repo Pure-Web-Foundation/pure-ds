@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'PDS/Foundations/Spacing',
+  title: 'Foundations/Spacing',
   parameters: {
     docs: {
       description: {
