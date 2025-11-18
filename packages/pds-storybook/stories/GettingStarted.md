@@ -1,7 +1,3 @@
-import { Meta } from '@storybook/blocks';
-
-<Meta title="General/Getting Started" />
-
 # Getting Started with PDS Storybook
 
 Welcome to the **Pure Design System** Storybook! This is a comprehensive showcase of the configuration-driven design system that generates complete design systems from JavaScript configuration.
@@ -98,7 +94,3 @@ While this Storybook uses Vite + Web Components, PDS works with:
 3. **Open the Configurator** - Try changing values live
 4. **Use Quick Search** - Find tokens and components quickly
 5. **Check Controls** - Each story has customizable parameters
-
----
-
-**Made with ❤️ for the open web**

@@ -283,6 +283,8 @@ const preview = {
     options: {
       storySort: {
         order: [
+          'General',
+          ['What is PDS', 'Getting Started'],
           'Foundations',
           ['Colors', 'Typography', 'Icons', 'Spacing', 'Smart Surfaces'],
           'Primitives',

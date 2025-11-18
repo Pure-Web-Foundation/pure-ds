@@ -1,7 +1,3 @@
-import { Meta } from '@storybook/blocks';
-
-<Meta title="General/What is PDS" />
-
 # What is Pure Design System?
 
 **Pure Design System (PDS)** is a revolutionary approach to design systems that generates complete, cohesive design tokens from minimal configuration.
@@ -98,8 +94,4 @@ Use the **Preset** dropdown in the toolbar to try different themes:
 - Neural Glow - AI-inspired futuristic
 - Fitness Pro - Health tracking app
 - Travel Market - Hospitality marketplace
-- And 15 more!
-
----
-
-**Why build a design system if you can generate it?** 🚀
+- ...and 15 more!
