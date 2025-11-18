@@ -1,0 +1,89 @@
+/* HTML Source Preview Styles */
+
+.html-source-section {
+  border-top: 1px solid var(--color-border);
+}
+
+.html-source-details {
+  margin: var(--spacing-4, 1rem);
+}
+
+.html-source-summary {
+  padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
+  cursor: pointer;
+  font-weight: 600;
+  user-select: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: var(--radius-md, 4px);
+}
+
+.html-source-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2, 0.5rem);
+}
+
+.html-source-icon {
+  font-size: 1.25rem;
+}
+
+.html-source-content {
+  padding: var(--spacing-4, 1rem);
+}
+
+.html-source-pre {
+  margin: 0;
+  padding: var(--spacing-4, 1rem);
+  border-radius: var(--radius-md, 4px);
+  overflow-x: auto;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  tab-size: 2;
+}
+
+/* Syntax highlighting colors - work in both light and dark modes */
+:root {
+  --code-bg: #282c34;
+  --code-text: #abb2bf;
+  --code-tag: #e06c75;
+  --code-attr: #d19a66;
+  --code-value: #98c379;
+  --code-comment: #5c6370;
+}
+
+[data-theme="dark"] {
+  --code-bg: #1e1e1e;
+  --code-text: #d4d4d4;
+  --code-tag: #569cd6;
+  --code-attr: #9cdcfe;
+  --code-value: #ce9178;
+  --code-comment: #6a9955;
+}
+
+.html-source-pre {
+  background: var(--code-bg);
+}
+
+.html-source-code {
+  color: var(--code-text);
+}
+
+.html-token-tag {
+  color: var(--code-tag);
+}
+
+.html-token-attr {
+  color: var(--code-attr);
+}
+
+.html-token-value {
+  color: var(--code-value);
+}
+
+.html-token-comment {
+  color: var(--code-comment);
+  font-style: italic;
+}

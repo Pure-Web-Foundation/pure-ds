@@ -7,7 +7,8 @@ const config = {
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
-    './addons/pds-configurator/register.js'
+    './addons/pds-configurator/register.js',
+    './addons/html-preview/register.js'
   ],
   framework: {
     name: '@storybook/web-components-vite',

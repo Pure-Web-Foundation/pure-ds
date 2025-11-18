@@ -1,6 +1,8 @@
 import { PDS } from '../../../src/js/pds.js';
 import { presets } from '../../../src/js/pds-core/pds-config.js';
 import './addons/pds-configurator/preview.js';
+import { withHTMLExtractor } from './addons/html-preview/preview.js';
+import './htmlPreview.css';
 
 // Get initial preset from storage or URL or default
 const getInitialPreset = () => {
@@ -260,12 +262,18 @@ const withGlobalsHandler = (story, context) => {
 
 /** @type { import('@storybook/web-components').Preview } */
 const preview = {
-  decorators: [withGlobalsHandler, withPDS],
+  decorators: [withGlobalsHandler, withPDS, withHTMLExtractor],
   parameters: {
     controls: {
       matchers: {
         color: /(background|color)$/i,
         date: /Date$/i
+      }
+    },
+    docs: {
+      source: {
+        type: 'dynamic',
+        language: 'html'
       }
     },
     backgrounds: {
