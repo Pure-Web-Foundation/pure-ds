@@ -1,14 +1,15 @@
 /** @type { import('@storybook/web-components-vite').StorybookConfig } */
 const config = {
   stories: [
-    '../stories/**/*.mdx',
     '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'
   ],
   addons: [
     '@storybook/addon-links',
-    '@storybook/addon-essentials',
+    '@storybook/addon-controls',
+    '@storybook/addon-actions',
     './addons/pds-configurator/register.js',
-    './addons/html-preview/register.js'
+    './addons/html-preview/register.js',
+    './addons/description/register.js'
   ],
   framework: {
     name: '@storybook/web-components-vite',

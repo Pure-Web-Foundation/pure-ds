@@ -1,0 +1,35 @@
+/* Custom Docs page styling - hide all examples, show only description */
+
+/* Hide ALL story previews and interactive elements in Docs */
+.docs-story,
+.sbdocs-preview,
+.sb-unstyled,
+.docblock-canvas-wrapper,
+.docblock-canvas,
+.docblock-argstable-wrapper,
+.docblock-argstable,
+.docblock-source-wrapper,
+.docblock-source,
+.sbdocs-preview-wrapper,
+.sb-story,
+[id*="story--"],
+[class*="story-wrapper"] {
+  display: none !important;
+}
+
+/* Show only the description block */
+.sbdocs-wrapper {
+  background: var(--surface-bg);
+  color: var(--color-text-primary);
+}
+
+.sbdocs .sbdocs-title,
+.sbdocs .sbdocs-subtitle {
+  color: var(--color-text-primary);
+}
+
+.sbdocs-description,
+.sbdocs .sbdocs-p {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}

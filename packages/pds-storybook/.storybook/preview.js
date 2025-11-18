@@ -2,6 +2,7 @@ import { PDS } from '../../../src/js/pds.js';
 import { presets } from '../../../src/js/pds-core/pds-config.js';
 import './addons/pds-configurator/preview.js';
 import { withHTMLExtractor } from './addons/html-preview/preview.js';
+import { withDescription } from './addons/description/preview.js';
 import './htmlPreview.css';
 
 // Get initial preset from storage or URL or default
@@ -262,8 +263,7 @@ const withGlobalsHandler = (story, context) => {
 
 /** @type { import('@storybook/web-components').Preview } */
 const preview = {
-  tags: ['autodocs'],
-  decorators: [withGlobalsHandler, withPDS, withHTMLExtractor],
+  decorators: [withGlobalsHandler, withPDS, withHTMLExtractor, withDescription],
   parameters: {
     controls: {
       matchers: {
@@ -271,12 +271,7 @@ const preview = {
         date: /Date$/i
       }
     },
-    docs: {
-      source: {
-        type: 'dynamic',
-        language: 'html'
-      }
-    },
+
     backgrounds: {
       default: 'light',
       values: [
@@ -288,8 +283,6 @@ const preview = {
     options: {
       storySort: {
         order: [
-          'General',
-          ['What is PDS', 'Getting Started'],
           'Foundations',
           ['Colors', 'Typography', 'Icons', 'Spacing', 'Smart Surfaces'],
           'Primitives',
