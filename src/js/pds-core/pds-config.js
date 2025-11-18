@@ -467,7 +467,7 @@ export const presets = {
       "Health and fitness tracking aesthetic with data-driven dark surfaces and vibrant accent rings",
     options: {
       liquidGlassEffects: false,
-      backgroundMesh: 0,
+      backgroundMesh: 2,
     },
     colors: {
       primary: "#e91e63", // vibrant pink-magenta for data highlights
@@ -520,7 +520,7 @@ export const presets = {
       "Hospitality marketplace design with clean cards, subtle shadows, and trust-building neutrals",
     options: {
       liquidGlassEffects: false,
-      backgroundMesh: 0,
+      backgroundMesh: 3,
     },
     colors: {
       primary: "#ff385c", // Airbnb-inspired coral red

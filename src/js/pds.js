@@ -532,7 +532,7 @@ PDS.defaultEnhancers = [
           legend.style.fontSize = "0.9em";
           legend.style.marginBottom = "8px";
           legend.textContent = "* Required fields";
-          form.insertBefore(legend, form.lastChild);
+          form.insertBefore(legend, form.querySelector(".form-actions") || form.lastElementChild);
         }
       }
     },
