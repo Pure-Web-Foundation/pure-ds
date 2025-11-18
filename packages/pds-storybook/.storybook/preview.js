@@ -36,8 +36,8 @@ console.log('🎨 Starting PDS initialization with preset:', initialPreset);
     mode: 'live',
     preset: initialPreset,
     autoDefine: {
-      baseURL: '/pds/components/',
-      predefine: ['pds-icon', 'pds-drawer', 'pds-toaster', 'pds-jsonform', 'pds-scrollrow', 'pds-tabstrip', 'pds-splitpanel', 'pds-richtext', 'pds-upload'],
+      baseURL: '/assets/pds/components/',
+      predefine: ['pds-icon'],
       scanExisting: true,
       observeShadows: true,
       patchAttachShadow: true
