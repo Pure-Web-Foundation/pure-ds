@@ -5,8 +5,7 @@ const config = {
   ],
   addons: [
     '@storybook/addon-links',
-    '@storybook/addon-controls',
-    '@storybook/addon-actions',
+    '@storybook/addon-essentials',
     './addons/pds-configurator/register.js',
     './addons/html-preview/register.js',
     './addons/description/register.js'
