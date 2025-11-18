@@ -55,10 +55,11 @@ export const ContainerLayout = () => html`
 `;
 
 export const ResponsiveGrid = () => html`
-  <div class="demo-grid">
+  <div class="grid grid-auto-md gap-md">
     ${Array.from({ length: 12 }, (_, i) => html`
-      <div style="background: var(--color-primary-500); color: white; padding: var(--spacing-3); border-radius: var(--radius-sm); text-align: center;">
-        ${i + 1}
+      <div class="card" style="padding: var(--spacing-4); text-align: center;">
+        <h4>Item ${i + 1}</h4>
+        <p>Auto-responsive grid cell</p>
       </div>
     `)}
   </div>
