@@ -480,35 +480,88 @@ PDS.defaultEnhancers = [
     },
     run: (elem) => {
       if (elem.dataset.enhancedRange) return;
-      let container = elem.closest(".range-container");
-      if (!container) {
-        container = document.createElement("div");
-        container.className = "range-container";
-        elem.parentNode?.insertBefore(container, elem);
-        container.appendChild(elem);
+      
+      const label = elem.closest("label");
+      const hasRangeOutputClass = label?.classList.contains("range-output");
+      
+      // Generate unique IDs for accessibility
+      const inputId = elem.id || `range-${Math.random().toString(36).substr(2, 9)}`;
+      const outputId = `${inputId}-output`;
+      elem.id = inputId;
+      
+      if (hasRangeOutputClass) {
+        // Handle label.range-output: inline output display
+        const labelSpan = label.querySelector("span");
+        if (labelSpan && !labelSpan.classList.contains("range-output-wrapper")) {
+          // Wrap existing content in flex container
+          const wrapper = document.createElement("span");
+          wrapper.className = "range-output-wrapper";
+          wrapper.style.display = "flex";
+          wrapper.style.justifyContent = "space-between";
+          wrapper.style.alignItems = "center";
+          
+          // Move label text into wrapper
+          const textSpan = document.createElement("span");
+          textSpan.textContent = labelSpan.textContent;
+          wrapper.appendChild(textSpan);
+          
+          // Create output element
+          const output = document.createElement("output");
+          output.id = outputId;
+          output.setAttribute("for", inputId);
+          output.style.color = "var(--surface-text-secondary, var(--color-text-secondary))";
+          output.style.fontSize = "0.875rem";
+          output.textContent = elem.value;
+          wrapper.appendChild(output);
+          
+          // Replace labelSpan content with wrapper
+          labelSpan.textContent = "";
+          labelSpan.appendChild(wrapper);
+          
+          // Update output on input
+          const updateOutput = () => {
+            output.textContent = elem.value;
+          };
+          elem.addEventListener("input", updateOutput);
+        }
+      } else {
+        // Handle standard case: floating bubble
+        let container = elem.closest(".range-container");
+        if (!container) {
+          container = document.createElement("div");
+          container.className = "range-container";
+          elem.parentNode?.insertBefore(container, elem);
+          container.appendChild(elem);
+        }
+        container.style.position = "relative";
+        
+        // Use semantic <output> instead of <div>
+        const bubble = document.createElement("output");
+        bubble.id = outputId;
+        bubble.setAttribute("for", inputId);
+        bubble.className = "range-bubble";
+        bubble.setAttribute("aria-live", "polite");
+        container.appendChild(bubble);
+        
+        const updateBubble = () => {
+          const min = parseFloat(elem.min) || 0;
+          const max = parseFloat(elem.max) || 100;
+          const value = parseFloat(elem.value);
+          const pct = (value - min) / (max - min);
+          bubble.style.left = `calc(${pct * 100}% )`;
+          bubble.textContent = String(value);
+        };
+        const show = () => bubble.classList.add("visible");
+        const hide = () => bubble.classList.remove("visible");
+        elem.addEventListener("input", updateBubble);
+        elem.addEventListener("pointerdown", show);
+        elem.addEventListener("pointerup", hide);
+        elem.addEventListener("pointerleave", hide);
+        elem.addEventListener("focus", show);
+        elem.addEventListener("blur", hide);
+        updateBubble();
       }
-      container.style.position = "relative";
-      const bubble = document.createElement("div");
-      bubble.className = "range-bubble";
-      bubble.setAttribute("aria-hidden", "true");
-      container.appendChild(bubble);
-      const updateBubble = () => {
-        const min = parseFloat(elem.min) || 0;
-        const max = parseFloat(elem.max) || 100;
-        const value = parseFloat(elem.value);
-        const pct = (value - min) / (max - min);
-        bubble.style.left = `calc(${pct * 100}% )`;
-        bubble.textContent = String(value);
-      };
-      const show = () => bubble.classList.add("visible");
-      const hide = () => bubble.classList.remove("visible");
-      elem.addEventListener("input", updateBubble);
-      elem.addEventListener("pointerdown", show);
-      elem.addEventListener("pointerup", hide);
-      elem.addEventListener("pointerleave", hide);
-      elem.addEventListener("focus", show);
-      elem.addEventListener("blur", hide);
-      updateBubble();
+      
       elem.dataset.enhancedRange = "1";
     },
   },

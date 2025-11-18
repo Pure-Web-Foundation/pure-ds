@@ -445,10 +445,20 @@ Creates styled toggle switches from standard checkboxes.
 **Range Sliders** - `<input type="range">`
 
 ```html
-<input type="range" min="0" max="100" value="50">
+<!-- Standard mode: floating bubble on interaction -->
+<label>
+  <span>Volume</span>
+  <input type="range" min="0" max="100" value="50">
+</label>
+
+<!-- Inline output mode: persistent value display -->
+<label class="range-output">
+  <span>Volume</span>
+  <input type="range" min="0" max="100" value="50">
+</label>
 ```
 
-Adds value bubble that appears on interaction.
+Enhances range inputs with automatic value display. Use `range-output` class for inline output with semantic `<output>` element.
 
 **Required Field Indicators** - `form [required]`
 
