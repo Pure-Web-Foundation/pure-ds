@@ -262,6 +262,7 @@ const withGlobalsHandler = (story, context) => {
 
 /** @type { import('@storybook/web-components').Preview } */
 const preview = {
+  tags: ['autodocs'],
   decorators: [withGlobalsHandler, withPDS, withHTMLExtractor],
   parameters: {
     controls: {

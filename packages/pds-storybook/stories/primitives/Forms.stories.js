@@ -2,6 +2,7 @@ import { html } from 'lit';
 
 export default {
   title: 'Primitives/Forms',
+  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {

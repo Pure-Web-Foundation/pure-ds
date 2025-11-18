@@ -310,7 +310,7 @@ export const SettingsDrawer = () => {
       <div slot="drawer-content" style="padding: var(--spacing-4);">
         <article class="card" style="margin-bottom: var(--spacing-4);">
           <h4>Profile Settings</h4>
-          <div style="margin-top: var(--spacing-3);">
+          <div class="card">
             <label for="username-input" style="display: block; margin-bottom: var(--spacing-2); font-weight: 600;">
               Username
             </label>

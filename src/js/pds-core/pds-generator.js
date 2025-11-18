@@ -1640,7 +1640,7 @@ html[data-theme="dark"] video:hover {
   margin: 0 0 var(--spacing-4) 0;
 }
 
-:where(details) {
+:where(details):not(.accordion *) {
   margin: 0 0 var(--spacing-2) 0;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -2164,9 +2164,9 @@ fieldset[role="group"] input[type="checkbox"]:focus {
 
 /* Toggle switches - enhanced checkboxes with data-toggle attribute */
 label[data-toggle] {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  display: inline-flex;
+  align-items: normal;
+  
   gap: var(--spacing-3);
   cursor: pointer;
   user-select: none;
@@ -2177,11 +2177,6 @@ label[data-toggle] {
   font-weight: var(--font-weight-normal);
 }
 
-label[data-toggle] {
-  display: inline-flex;
-  justify-content: flex-end;
-  flex-flow: row-reverse;
-}
 /* Hide the original checkbox in toggle switches */
 label[data-toggle] input[type="checkbox"] {
   display: none;
@@ -2701,49 +2696,40 @@ tbody {
 }
 .accordion details[open] > summary::after { transform: rotate(45deg); }
 
-/* Modern smooth open/close using ::details-content */
-@supports selector(details::details-content) {
-  .accordion details::details-content {
-    transition: block-size var(--transition-normal) ease, content-visibility var(--transition-normal) ease;
-    transition-behavior: allow-discrete;
-    block-size: 0;
-    overflow: clip;
-    content-visibility: hidden;
-  }
-  .accordion details[open]::details-content { 
-    block-size: auto; 
-    content-visibility: visible;
-  }
-  
-  /* Starting style for smooth opening */
-  @starting-style {
-    .accordion details[open]::details-content {
-      block-size: 0;
-      content-visibility: hidden;
-    }
-  }
-
-  /* inner spacing for content */
-  .accordion details > *:not(summary) {
-    padding-inline: var(--spacing-4);
-    padding-block: var(--spacing-3);
-  }
+/* Modern approach: animate block-size with ::details-content */
+.accordion details::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition: block-size var(--transition-normal) ease, content-visibility var(--transition-normal);
+  transition-behavior: allow-discrete;
 }
 
-/* Fallback: works with any wrapper element (div, etc.) */
-@supports not (selector(details::details-content)) {
+.accordion details[open]::details-content {
+  block-size: auto;
+}
+
+/* Fallback: grid trick for browsers without ::details-content support */
+@supports not selector(::details-content) {
   .accordion details > :not(summary) {
     display: grid;
     grid-template-rows: 0fr;
     transition: grid-template-rows var(--transition-normal) ease;
     overflow: hidden;
   }
-  .accordion details[open] > :not(summary) { grid-template-rows: 1fr; }
-  .accordion details > :not(summary) > * { min-block-size: 0; }
-  .accordion details > :not(summary) {
-    padding-inline: var(--spacing-4);
-    padding-block: var(--spacing-3);
+
+  .accordion details[open] > :not(summary) { 
+    grid-template-rows: 1fr; 
   }
+
+  .accordion details > :not(summary) > * { 
+    min-block-size: 0;
+  }
+}
+
+/* Content padding (works for both approaches) */
+.accordion details > :not(summary) > * {
+  padding-inline: var(--spacing-4);
+  padding-block: var(--spacing-3);
 }
 `;
   }
@@ -3549,7 +3535,7 @@ nav[data-dropdown][data-mode="auto"] menu {
     }
 
     // Generate gap utilities
-    if (gridSystem.enableGapUtilities) {
+    
       css += /*css*/ `
 /* Gap utilities */
 .gap-0 { gap: 0; }
@@ -3560,7 +3546,7 @@ nav[data-dropdown][data-mode="auto"] menu {
 .gap-xl { gap: var(--spacing-8); }
 
 `;
-    }
+    
 
     css += /*css*/ `
 /* Flexbox System */
@@ -3972,6 +3958,7 @@ nav[data-dropdown][data-mode="auto"] menu {
   }
 
   :where(html) {
+    interpolate-size: allow-keywords;
     font-family: var(--font-family-body);
     font-size: var(--font-size-base);
     line-height: var(--font-line-height-normal);

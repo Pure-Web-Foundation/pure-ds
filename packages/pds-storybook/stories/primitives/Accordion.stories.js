@@ -46,7 +46,7 @@ export const AccordionWithRichContent = () => html`
     <section class="accordion" aria-label="Features">
       <details open>
         <summary id="feature1">Getting Started</summary>
-        <div role="region" aria-labelledby="feature1">
+        <div class="card" role="region" aria-labelledby="feature1">
           <h4>Welcome to Pure Design System</h4>
           <p>Pure DS is a generative design system that creates complete design tokens from just a few base colors.</p>
           <ul>
@@ -211,8 +211,8 @@ export const SingleExpandAccordion = () => html`
           <pds-icon icon="user" size="sm"></pds-icon>
           <span>Profile Settings</span>
         </summary>
-        <div role="region" aria-labelledby="set1">
-          <form style="padding: var(--spacing-2) 0;">
+        <div class="card" role="region" aria-labelledby="set1">
+          <form method="post" action="#">
             <label>
               <span>Display Name</span>
               <input type="text" value="John Doe" />

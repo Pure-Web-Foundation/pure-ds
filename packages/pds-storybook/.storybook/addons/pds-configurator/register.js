@@ -6,7 +6,7 @@ addons.register(ADDON_ID, () => {
   addons.add(TOOL_ID, {
     type: types.TOOL,
     title: 'PDS Configurator',
-    match: ({ viewMode, tabId }) => !tabId && viewMode === 'story',
+    match: ({ viewMode, tabId }) => !tabId && (viewMode === 'story' || viewMode === 'docs'),
     render: Tool
   });
 });
