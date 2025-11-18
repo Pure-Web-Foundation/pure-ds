@@ -82,8 +82,8 @@ export const withHTMLExtractor = (storyFn, context) => {
   const story = storyFn();
   const channel = addons.getChannel();
   
-  // Extract and send HTML after render
-  setTimeout(async () => {
+  // Function to extract and send HTML
+  const extractAndSendHTML = async () => {
     let html = '';
     
     // Try to get HTML from the story container
@@ -99,7 +99,12 @@ export const withHTMLExtractor = (storyFn, context) => {
         channel.emit(EVENTS.UPDATE_HTML, html);
       }
     }
-  }, 100);
+  };
+  
+  // Extract and send HTML after render (multiple times to catch async renders)
+  setTimeout(extractAndSendHTML, 50);
+  setTimeout(extractAndSendHTML, 150);
+  setTimeout(extractAndSendHTML, 300);
   
   return story;
 };

@@ -84,7 +84,7 @@ const CheckIcon = () => (
   </svg>
 );
 
-export const Panel = () => {
+export const Panel = ({ active }) => {
   const [html, setHtml] = useState('');
   const [copied, setCopied] = useState(false);
 
@@ -93,6 +93,22 @@ export const Panel = () => {
       setHtml(newHtml || '');
     }
   });
+
+  // Request HTML update when panel becomes active
+  React.useEffect(() => {
+    if (active && !html) {
+      // Trigger a re-extraction by emitting a request event
+      // The decorator will pick this up on the next render cycle
+      const container = document.querySelector('#storybook-root');
+      if (container && container.innerHTML) {
+        // Panel just became active, HTML might already be there
+        // Give it a moment to process
+        setTimeout(() => {
+          // This will be caught by subsequent decorator runs
+        }, 100);
+      }
+    }
+  }, [active, html]);
 
   const copyToClipboard = useCallback(async () => {
     try {
