@@ -9,6 +9,7 @@ primitives.replaceSync(`@layer primitives {
   }
 
   :where(html) {
+    interpolate-size: allow-keywords;
     font-family: var(--font-family-body);
     font-size: var(--font-size-base);
     line-height: var(--font-line-height-normal);
@@ -139,6 +140,84 @@ primitives.replaceSync(`@layer primitives {
     margin-bottom: var(--spacing-2);
     color: var(--color-text-primary);
     font-size: var(--font-size-sm);
+  }
+
+  /* Checkbox enhancement - visually hide native input but keep accessible
+     Excludes button-style checkboxes in fieldsets and special containers */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]) input[type="checkbox"]) {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  /* Style label container for checkbox */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"])) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-left: calc(var(--spacing-5) + var(--spacing-3));
+  }
+
+  /* Custom checkbox box using PDS tokens - works with or without span wrapper */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"])::before) {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+    border: var(--border-width-md) solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-base);
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+  }
+
+  /* Checkmark */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:checked)::after) {
+    content: "";
+    position: absolute;
+    left: var(--spacing-2);
+    top: 50%;
+    transform: translateY(-60%) rotate(45deg);
+    width: var(--spacing-1-5);
+    height: var(--spacing-3);
+    border: solid var(--color-primary-contrast, white);
+    border-width: 0 2px 2px 0;
+  }
+
+  /* Checked state */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:checked)::before) {
+    background: var(--color-primary-600);
+    border-color: var(--color-primary-600);
+  }
+
+  /* Focus styles for accessibility */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:focus)::before) {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+
+  /* Hover effects */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:not(:disabled)):hover::before) {
+    border-color: var(--color-primary-600);
+    background: var(--color-surface-subtle);
+  }
+
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:checked:not(:disabled)):hover::before) {
+    background: var(--color-primary-700);
+    border-color: var(--color-primary-700);
+  }
+
+  /* Disabled state */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:disabled)) {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   :where(fieldset) {
@@ -277,6 +356,7 @@ export const primitivesCSS = `@layer primitives {
   }
 
   :where(html) {
+    interpolate-size: allow-keywords;
     font-family: var(--font-family-body);
     font-size: var(--font-size-base);
     line-height: var(--font-line-height-normal);
@@ -407,6 +487,84 @@ export const primitivesCSS = `@layer primitives {
     margin-bottom: var(--spacing-2);
     color: var(--color-text-primary);
     font-size: var(--font-size-sm);
+  }
+
+  /* Checkbox enhancement - visually hide native input but keep accessible
+     Excludes button-style checkboxes in fieldsets and special containers */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]) input[type="checkbox"]) {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  /* Style label container for checkbox */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"])) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-left: calc(var(--spacing-5) + var(--spacing-3));
+  }
+
+  /* Custom checkbox box using PDS tokens - works with or without span wrapper */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"])::before) {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+    border: var(--border-width-md) solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-base);
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+  }
+
+  /* Checkmark */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:checked)::after) {
+    content: "";
+    position: absolute;
+    left: var(--spacing-2);
+    top: 50%;
+    transform: translateY(-60%) rotate(45deg);
+    width: var(--spacing-1-5);
+    height: var(--spacing-3);
+    border: solid var(--color-primary-contrast, white);
+    border-width: 0 2px 2px 0;
+  }
+
+  /* Checked state */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:checked)::before) {
+    background: var(--color-primary-600);
+    border-color: var(--color-primary-600);
+  }
+
+  /* Focus styles for accessibility */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:focus)::before) {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+
+  /* Hover effects */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:not(:disabled)):hover::before) {
+    border-color: var(--color-primary-600);
+    background: var(--color-surface-subtle);
+  }
+
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:checked:not(:disabled)):hover::before) {
+    background: var(--color-primary-700);
+    border-color: var(--color-primary-700);
+  }
+
+  /* Disabled state */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:disabled)) {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   :where(fieldset) {

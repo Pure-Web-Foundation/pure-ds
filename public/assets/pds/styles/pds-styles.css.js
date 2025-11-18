@@ -709,6 +709,7 @@ html[data-theme="dark"] {
   }
 
   :where(html) {
+    interpolate-size: allow-keywords;
     font-family: var(--font-family-body);
     font-size: var(--font-size-base);
     line-height: var(--font-line-height-normal);
@@ -839,6 +840,84 @@ html[data-theme="dark"] {
     margin-bottom: var(--spacing-2);
     color: var(--color-text-primary);
     font-size: var(--font-size-sm);
+  }
+
+  /* Checkbox enhancement - visually hide native input but keep accessible
+     Excludes button-style checkboxes in fieldsets and special containers */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]) input[type="checkbox"]) {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  /* Style label container for checkbox */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"])) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-left: calc(var(--spacing-5) + var(--spacing-3));
+  }
+
+  /* Custom checkbox box using PDS tokens - works with or without span wrapper */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"])::before) {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+    border: var(--border-width-md) solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-base);
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+  }
+
+  /* Checkmark */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:checked)::after) {
+    content: "";
+    position: absolute;
+    left: var(--spacing-2);
+    top: 50%;
+    transform: translateY(-60%) rotate(45deg);
+    width: var(--spacing-1-5);
+    height: var(--spacing-3);
+    border: solid var(--color-primary-contrast, white);
+    border-width: 0 2px 2px 0;
+  }
+
+  /* Checked state */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:checked)::before) {
+    background: var(--color-primary-600);
+    border-color: var(--color-primary-600);
+  }
+
+  /* Focus styles for accessibility */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:focus)::before) {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+
+  /* Hover effects */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:not(:disabled)):hover::before) {
+    border-color: var(--color-primary-600);
+    background: var(--color-surface-subtle);
+  }
+
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:checked:not(:disabled)):hover::before) {
+    background: var(--color-primary-700);
+    border-color: var(--color-primary-700);
+  }
+
+  /* Disabled state */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:disabled)) {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   :where(fieldset) {
@@ -1077,7 +1156,7 @@ html[data-theme="dark"] {
   margin: 0 0 var(--spacing-4) 0;
 }
 
-:where(details) {
+:where(details):not(.accordion *) {
   margin: 0 0 var(--spacing-2) 0;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -1299,62 +1378,74 @@ input[type="range"] {
   width: 100%;
 }
 
-/* Track and thumb styling for WebKit */
-input[type="range"]::-webkit-slider-runnable-track {
-  height: var(--range-track-height, 8px);
-  background: var(--color-input-bg);
-  border-radius: var(--radius-full);
-}
+/* Track and thumb styling - using CSS nesting to reduce repetition */
+input[type="range"] {
+  /* WebKit track */
+  &::-webkit-slider-runnable-track {
+    height: var(--range-track-height, 8px);
+    background: var(--color-input-bg);
+    border-radius: var(--radius-full);
+  }
 
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: var(--range-thumb-size, 28px);
-  height: var(--range-thumb-size, 28px);
-  margin-top: calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2);
-  background: var(--color-surface-base);
-  border-radius: 50%;
-  box-shadow: var(--shadow-sm);
-  cursor: grab;
-  border: 1px solid var(--color-border);
-}
+  /* WebKit thumb */
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: var(--range-thumb-size, 28px);
+    height: var(--range-thumb-size, 28px);
+    margin-top: calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2);
+    background: color-mix(in srgb, var(--color-primary-500) 15%, var(--color-surface-base));
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+    cursor: grab;
+    border: 1px solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
+  }
 
-/* Track and thumb styling for Firefox */
-input[type="range"]::-moz-range-track {
-  height: var(--range-track-height, 8px);
-  background: var(--color-input-bg);
-  border-radius: var(--radius-full);
-}
+  /* Mozilla track */
+  &::-moz-range-track {
+    height: var(--range-track-height, 8px);
+    background: var(--color-input-bg);
+    border-radius: var(--radius-full);
+  }
 
-input[type="range"]::-moz-range-thumb {
-  width: var(--range-thumb-size, 28px);
-  height: var(--range-thumb-size, 28px);
-  background: var(--color-surface-base);
-  border-radius: 50%;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-border);
-  transform: translateY(calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2));
-}
+  /* Mozilla thumb */
+  &::-moz-range-thumb {
+    width: var(--range-thumb-size, 28px);
+    height: var(--range-thumb-size, 28px);
+    background: color-mix(in srgb, var(--color-primary-500) 15%, var(--color-surface-base));
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
+    transform: translateY(calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2));
+  }
 
-/* Hover and active states */
-input[type="range"]:hover::-webkit-slider-thumb,
-input[type="range"]:focus-visible::-webkit-slider-thumb {
-  cursor: grabbing;
-  background: var(--color-primary-500);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  border-color: var(--color-primary-600);
-}
+  /* Hover and focus states for WebKit */
+  &:hover::-webkit-slider-thumb,
+  &:focus-visible::-webkit-slider-thumb {
+    cursor: grabbing;
+    background: var(--color-primary-500);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    border-color: var(--color-primary-600);
+  }
 
-input[type="range"]:active::-webkit-slider-thumb {
-  background: var(--color-primary-600);
-}
+  /* Active state for WebKit */
+  &:active::-webkit-slider-thumb {
+    background: var(--color-primary-600);
+  }
 
-input[type="range"]:hover::-moz-range-thumb,
-input[type="range"]:focus-visible::-moz-range-thumb {
-  background: var(--color-primary-500);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  border-color: var(--color-primary-600);
-  cursor: grabbing;
+  /* Hover and focus states for Mozilla */
+  &:hover::-moz-range-thumb,
+  &:focus-visible::-moz-range-thumb {
+    background: var(--color-primary-500);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    border-color: var(--color-primary-600);
+    cursor: grabbing;
+  }
+
+  /* Active state for Mozilla */
+  &:active::-moz-range-thumb {
+    background: var(--color-primary-600);
+  }
 }
 
 /* Focus style for container to match input focus */
@@ -1375,18 +1466,18 @@ input[type="color"] {
   border-radius: 0.75rem; /* your radius */
   overflow: hidden; /* important */
   cursor: pointer;
-}
 
-/* The wrapper */
-input[type="color"]::-webkit-color-swatch-wrapper {
-  padding: 0;
-  border-radius: inherit;
-}
+  /* The wrapper */
+  &::-webkit-color-swatch-wrapper {
+    padding: 0;
+    border-radius: inherit;
+  }
 
-/* The swatch (the actual color box) */
-input[type="color"]::-webkit-color-swatch {
-  border: none;
-  border-radius: inherit;
+  /* The swatch (the actual color box) */
+  &::-webkit-color-swatch {
+    border: none;
+    border-radius: inherit;
+  }
 }
 
 /* Awesome button-style radio and checkbox inputs */
@@ -1576,9 +1667,8 @@ fieldset[role="group"] input[type="checkbox"]:focus {
 
 /* Toggle switches - enhanced checkboxes with data-toggle attribute */
 label[data-toggle] {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  display: inline-flex;
+  align-items: normal;
   gap: var(--spacing-3);
   cursor: pointer;
   user-select: none;
@@ -1587,72 +1677,64 @@ label[data-toggle] {
   border: none;
   min-height: auto;
   font-weight: var(--font-weight-normal);
-}
 
-label[data-toggle] {
-  display: inline-flex;
-  justify-content: flex-end;
-  flex-flow: row-reverse;
-}
-/* Hide the original checkbox in toggle switches */
-label[data-toggle] input[type="checkbox"] {
-  display: none;
-}
+  /* Hide the original checkbox in toggle switches */
+  input[type="checkbox"] {
+    display: none;
+  }
 
+  /* Toggle switch container */
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    background-color: var(--color-gray-300);
+    border-radius: var(--radius-full);
+    transition: background-color 200ms ease;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
 
+  /* Toggle switch knob */
+  .toggle-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: left 200ms ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
 
-/* Toggle switch container */
-label[data-toggle] .toggle-switch {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
-  background-color: var(--color-gray-300);
-  border-radius: var(--radius-full);
-  transition: background-color 200ms ease;
-  cursor: pointer;
-  flex-shrink: 0;
-}
+  /* Toggle switch when checked - using :has() selector */
+  &:has(input[type="checkbox"]:checked) .toggle-switch {
+    background-color: var(--color-accent-500);
+  }
 
-/* Toggle switch when checked - using :has() selector */
-label[data-toggle]:has(input[type="checkbox"]:checked) .toggle-switch {
-  background-color: var(--color-accent-500);
-}
+  /* Toggle knob when checked */
+  &:has(input[type="checkbox"]:checked) .toggle-knob {
+    left: 22px;
+  }
 
+  /* Focus state for toggle switch */
+  &:has(input[type="checkbox"]:focus) .toggle-switch {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
 
-/* Toggle switch knob */
-label[data-toggle] .toggle-knob {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 20px;
-  height: 20px;
-  background-color: #ffffff;
-  border-radius: 50%;
-  transition: left 200ms ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
+  /* Disabled state */
+  &:has(input[type="checkbox"]:disabled) {
+    cursor: not-allowed;
+    opacity: 0.6;
 
-/* Toggle knob when checked */
-label[data-toggle]:has(input[type="checkbox"]:checked) .toggle-knob {
-  left: 22px;
-}
-
-/* Focus state for toggle switch */
-label[data-toggle]:has(input[type="checkbox"]:focus) .toggle-switch {
-  outline: 2px solid var(--color-primary-500);
-  outline-offset: 2px;
-}
-
-/* Disabled state */
-label[data-toggle]:has(input[type="checkbox"]:disabled) {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-label[data-toggle]:has(input[type="checkbox"]:disabled) .toggle-switch {
-  opacity: 0.5;
-  cursor: not-allowed;
+    .toggle-switch {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
 }
 
 input[type="file"] {
@@ -1791,11 +1873,10 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   min-height: var(--input-min-height, 40px);
-  align-items: center;
   position: relative;
 
   input[type="range"] {
-    border: none
+    border: none;
   }
 }
 
@@ -1814,10 +1895,10 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   opacity: 0;
   pointer-events: none;
   transition: opacity 150ms ease, transform 150ms ease;
-}
 
-.range-bubble.visible {
-  opacity: 1;
+  &.visible {
+    opacity: 1;
+  }
 }
 
 /* Anchor bubble to the thumb position using left (set by enhancer)
@@ -1837,15 +1918,21 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface-base);
-}
 
-.array-item fieldset {
-  background-color: transparent;
-  margin-bottom: var(--spacing-3);
-}
+  fieldset {
+    background-color: transparent;
+    margin-bottom: var(--spacing-3);
 
-.array-item fieldset:last-of-type {
-  margin-bottom: 0;
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+
+  .array-controls {
+    padding-top: var(--spacing-3);
+    border-top: 1px solid var(--color-border);
+    margin-top: var(--spacing-4);
+  }
 }
 
 .array-controls {
@@ -1853,18 +1940,12 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   gap: var(--spacing-2);
   margin-top: var(--spacing-3);
   flex-wrap: wrap;
-}
 
-.array-item .array-controls {
-  padding-top: var(--spacing-3);
-  border-top: 1px solid var(--color-border);
-  margin-top: var(--spacing-4);
-}
-
-.array-controls button {
-  padding: var(--spacing-2) var(--spacing-3);
-  font-size: var(--font-size-sm);
-  min-height: auto;
+  button {
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+    min-height: auto;
+  }
 }
 
 .range-value {
@@ -1881,12 +1962,12 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   align-items: center;
   gap: var(--spacing-2);
   flex-wrap: wrap;
-}
 
-.checkbox-container input[type="checkbox"],
-.checkbox-container input[type="radio"] {
-  position: absolute;
-  opacity: 0;
+  input[type="checkbox"],
+  input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+  }
 }
 
 
@@ -2030,30 +2111,30 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 .badge-outline {
   background-color: transparent;
   border: 1px solid currentColor;
-}
 
-.badge-outline.badge-primary {
-  color: var(--color-text-primary);
-}
+  &.badge-primary {
+    color: var(--color-text-primary);
+  }
 
-.badge-outline.badge-secondary {
-  color: var(--color-secondary-600);
-}
+  &.badge-secondary {
+    color: var(--color-secondary-600);
+  }
 
-.badge-outline.badge-success {
-  color: var(--color-success-600);
-}
+  &.badge-success {
+    color: var(--color-success-600);
+  }
 
-.badge-outline.badge-info {
-  color: var(--color-info-600);
-}
+  &.badge-info {
+    color: var(--color-info-600);
+  }
 
-.badge-outline.badge-warning {
-  color: var(--color-warning-600);
-}
+  &.badge-warning {
+    color: var(--color-warning-600);
+  }
 
-.badge-outline.badge-danger {
-  color: var(--color-danger-600);
+  &.badge-danger {
+    color: var(--color-danger-600);
+  }
 }
 
 .badge-sm {
@@ -2151,73 +2232,73 @@ dialog form {
 }
 
 /* Dialog header */
-dialog header,
-dialog form > header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-4);
-  padding: var(--spacing-6);
-  border-bottom: 1px solid var(--surface-overlay-border);
-  flex-shrink: 0;
-}
+dialog {
+  header,
+  form > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-4);
+    padding: var(--spacing-6);
+    border-bottom: 1px solid var(--surface-overlay-border);
+    flex-shrink: 0;
 
-dialog header h2,
-dialog header h3,
-dialog form > header h2,
-dialog form > header h3 {
-  margin: 0;
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--surface-overlay-text);
-  flex: 1;
-}
+    h2,
+    h3 {
+      margin: 0;
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--surface-overlay-text);
+      flex: 1;
+    }
 
-/* Close button in header */
-dialog header button[value="cancel"],
-dialog header .dialog-close {
-  background: none;
-  border: none;
-  padding: var(--spacing-2);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  color: var(--surface-overlay-icon);
-  transition: background-color var(--transition-fast);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  
-  &:hover {
-    background-color: var(--color-surface-subtle);
+    /* Close button in header */
+    button[value="cancel"],
+    .dialog-close {
+      background: none;
+      border: none;
+      padding: var(--spacing-2);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--surface-overlay-icon);
+      transition: background-color var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        background-color: var(--color-surface-subtle);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-focus-ring);
+        outline-offset: 2px;
+      }
+    }
   }
-  
-  &:focus-visible {
-    outline: 2px solid var(--color-focus-ring);
-    outline-offset: 2px;
+
+  /* Dialog body - scrollable content */
+  article,
+  form > article,
+  .dialog-body {
+    flex: 1;
+    padding: var(--spacing-6);
+    overflow-y: auto;
+    overflow-x: hidden;
   }
-}
 
-/* Dialog body - scrollable content */
-dialog article,
-dialog form > article,
-dialog .dialog-body {
-  flex: 1;
-  padding: var(--spacing-6);
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-/* Dialog footer - actions */
-dialog footer,
-dialog form > footer {
-  display: flex;
-  flex-direction: row;
-  gap: var(--spacing-3);
-  justify-content: flex-end;
-  align-items: center;
-  padding: var(--spacing-6);
-  border-top: 1px solid var(--surface-overlay-border);
-  flex-shrink: 0;
+  /* Dialog footer - actions */
+  footer,
+  form > footer {
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-3);
+    justify-content: flex-end;
+    align-items: center;
+    padding: var(--spacing-6);
+    border-top: 1px solid var(--surface-overlay-border);
+    flex-shrink: 0;
+  }
 }
 
 /* Dialog size modifiers */
@@ -2275,81 +2356,82 @@ dialog.dialog-full {
   --_acc-radius: var(--radius-md);
   --_acc-border: 1px solid var(--color-border);
   --_acc-bg: var(--color-surface-base);
-}
 
-.accordion details {
-  border: var(--_acc-border);
-  border-radius: var(--_acc-radius);
-  background: var(--_acc-bg);
-  margin: 0 0 var(--spacing-3) 0;
-}
+  details {
+    border: var(--_acc-border);
+    border-radius: var(--_acc-radius);
+    background: var(--_acc-bg);
+    margin: 0 0 var(--spacing-3) 0;
 
-.accordion summary {
-  cursor: pointer;
-  padding: var(--spacing-3) var(--spacing-4);
-  list-style: none;
-  outline: none;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-}
-.accordion summary::-webkit-details-marker { display: none; }
+    &[open] {
+      & > summary::after {
+        transform: rotate(45deg);
+      }
 
-/* Chevron indicator */
-.accordion summary::after {
-  content: "";
-  margin-inline-start: auto;
-  inline-size: 0.7em;
-  block-size: 0.7em;
-  border-inline-end: 2px solid currentColor;
-  border-block-end: 2px solid currentColor;
-  transform: rotate(-45deg);
-  transition: transform var(--transition-normal);
-}
-.accordion details[open] > summary::after { transform: rotate(45deg); }
+      &::details-content {
+        block-size: auto;
+      }
+    }
 
-/* Modern smooth open/close using ::details-content */
-@supports selector(details::details-content) {
-  .accordion details::details-content {
-    transition: block-size var(--transition-normal) ease, content-visibility var(--transition-normal) ease;
-    transition-behavior: allow-discrete;
-    block-size: 0;
-    overflow: clip;
-    content-visibility: hidden;
-  }
-  .accordion details[open]::details-content { 
-    block-size: auto; 
-    content-visibility: visible;
-  }
-  
-  /* Starting style for smooth opening */
-  @starting-style {
-    .accordion details[open]::details-content {
+    /* Modern approach: animate block-size with ::details-content */
+    &::details-content {
       block-size: 0;
-      content-visibility: hidden;
+      overflow: hidden;
+      transition: block-size var(--transition-normal) ease, content-visibility var(--transition-normal);
+      transition-behavior: allow-discrete;
+    }
+
+    /* Content padding (works for both approaches) */
+    & > :not(summary) > * {
+      padding-inline: var(--spacing-4);
+      padding-block: var(--spacing-3);
     }
   }
 
-  /* inner spacing for content */
-  .accordion details > *:not(summary) {
-    padding-inline: var(--spacing-4);
-    padding-block: var(--spacing-3);
+  summary {
+    cursor: pointer;
+    padding: var(--spacing-3) var(--spacing-4);
+    list-style: none;
+    outline: none;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    /* Chevron indicator */
+    &::after {
+      content: "";
+      margin-inline-start: auto;
+      inline-size: 0.7em;
+      block-size: 0.7em;
+      border-inline-end: 2px solid currentColor;
+      border-block-end: 2px solid currentColor;
+      transform: rotate(-45deg);
+      transition: transform var(--transition-normal);
+    }
   }
 }
 
-/* Fallback: works with any wrapper element (div, etc.) */
-@supports not (selector(details::details-content)) {
-  .accordion details > :not(summary) {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows var(--transition-normal) ease;
-    overflow: hidden;
-  }
-  .accordion details[open] > :not(summary) { grid-template-rows: 1fr; }
-  .accordion details > :not(summary) > * { min-block-size: 0; }
-  .accordion details > :not(summary) {
-    padding-inline: var(--spacing-4);
-    padding-block: var(--spacing-3);
+/* Fallback: grid trick for browsers without ::details-content support */
+@supports not selector(::details-content) {
+  .accordion details {
+    & > :not(summary) {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows var(--transition-normal) ease;
+      overflow: hidden;
+
+      & > * {
+        min-block-size: 0;
+      }
+    }
+
+    &[open] > :not(summary) {
+      grid-template-rows: 1fr;
+    }
   }
 }
 
@@ -2360,66 +2442,83 @@ dialog.dialog-full {
 nav[data-dropdown] {
   position: relative;
   padding: 0;
-}
 
-nav[data-dropdown] menu {
-  position: absolute;
-  list-style: none;
-  padding: var(--spacing-2);
-  margin: 0;
-  background: var(--color-surface-overlay);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  /* Default drop direction: down (top anchored). JavaScript enhancer may
-     override for data-mode="auto" by switching to bottom:100% when needed. */
-  top: 100%;
-  bottom: auto;
-  left: 0;
-  right: 0;
-  margin-top: var(--spacing-2);
-  display: none;
-}
+  menu {
+    position: absolute;
+    list-style: none;
+    padding: var(--spacing-2);
+    margin: 0;
+    background: var(--color-surface-overlay);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    /* Default drop direction: down (top anchored). JavaScript enhancer may
+       override for data-mode="auto" by switching to bottom:100% when needed. */
+    top: 100%;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    margin-top: var(--spacing-2);
+    display: none;
+  }
 
-nav[data-dropdown] li {
-  padding: var(--spacing-2) 0;
-}
+  li {
+    padding: var(--spacing-2) 0;
 
-nav[data-dropdown] li + li {
-  border-top: 1px solid var(--color-border);
-  margin-top: var(--spacing-2);
-}
+    & + li {
+      border-top: 1px solid var(--color-border);
+      margin-top: var(--spacing-2);
+    }
 
-nav[data-dropdown] a {
-  display: flex;
-  color: var(--color-text-primary);
-  text-decoration: none;
-  align-items: center;
-  gap: var(--spacing-2);
-}
+    &:has(> hr) {
+      border-top: none;
+      margin-top: 0;
+      padding: 0;
 
-nav[data-dropdown] a.danger {
-  color: var(--color-danger-600);
-}
+      & + li {
+        border-top: none;
+        margin-top: 0;
+      }
+    }
 
-/* Explicit direction modifiers */
-nav[data-dropdown][data-mode="up"] menu {
-  top: auto;
-  bottom: 100%;
-  margin-bottom: var(--spacing-2);
-}
+    & > hr {
+      border: none;
+      border-top: 3px solid var(--color-border);
+      margin: var(--spacing-2) 0;
+    }
+  }
 
-nav[data-dropdown][data-mode="down"] menu {
-  top: 100%;
-  bottom: auto;
-  margin-top: var(--spacing-2);
-}
+  a {
+    display: flex;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    align-items: center;
+    gap: var(--spacing-2);
 
-/* Auto acts like down by default; the enhancer will calculate at runtime
-   and set inline top/bottom when necessary to avoid overflow. */
-nav[data-dropdown][data-mode="auto"] menu {
-  top: 100%;
-  bottom: auto;
+    &.danger {
+      color: var(--color-danger-600);
+    }
+  }
+
+  /* Explicit direction modifiers */
+  &[data-mode="up"] menu {
+    top: auto;
+    bottom: 100%;
+    margin-bottom: var(--spacing-2);
+  }
+
+  &[data-mode="down"] menu {
+    top: 100%;
+    bottom: auto;
+    margin-top: var(--spacing-2);
+  }
+
+  /* Auto acts like down by default; the enhancer will calculate at runtime
+     and set inline top/bottom when necessary to avoid overflow. */
+  &[data-mode="auto"] menu {
+    top: 100%;
+    bottom: auto;
+  }
 }
 
 
@@ -2429,77 +2528,83 @@ nav[data-dropdown][data-mode="auto"] menu {
 
 pds-tabstrip {
   margin-top: var(--spacing-6);
-}
-pds-tabstrip > nav {
-  display: flex;
-  gap: var(--spacing-1);
-  border-bottom: 2px solid var(--color-border);
-  margin-bottom: var(--spacing-6);
-  position: relative;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-}
 
-pds-tabstrip > nav::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
-}
+  & > nav {
+    display: flex;
+    gap: var(--spacing-1);
+    border-bottom: 2px solid var(--color-border);
+    margin-bottom: var(--spacing-6);
+    position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
 
-/* Tab links */
-pds-tabstrip > nav > a {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-3) var(--spacing-4);
-  font-family: var(--font-family-body);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-  text-decoration: none;
-  white-space: nowrap;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  transition: color var(--transition-fast);
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px; /* Overlap the nav border */
-}
+    &::-webkit-scrollbar {
+      display: none; /* Chrome/Safari */
+    }
 
-pds-tabstrip > nav > a:hover {
-  color: var(--color-text-primary);
-  background-color: var(--color-surface-hover);
-}
+    /* Tab links */
+    & > a {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      padding: var(--spacing-3) var(--spacing-4);
+      font-family: var(--font-family-body);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      white-space: nowrap;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: color var(--transition-fast);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px; /* Overlap the nav border */
 
-pds-tabstrip > nav > a:focus-visible {
-  outline: var(--focus-ring-width, 2px) solid var(--color-primary-500);
-  outline-offset: -2px;
-  border-radius: var(--radius-sm);
-  z-index: 1;
-}
+      &:hover {
+        color: var(--color-text-primary);
+        background-color: var(--color-surface-hover);
+      }
 
-/* Active tab */
-pds-tabstrip > nav > a[aria-current="page"] {
-  color: var(--color-primary-600);
-  font-weight: var(--font-weight-semibold);
-  border-bottom-color: var(--color-primary-600);
-}
+      &:focus-visible {
+        outline: var(--focus-ring-width, 2px) solid var(--color-primary-500);
+        outline-offset: -2px;
+        border-radius: var(--radius-sm);
+        z-index: 1;
+      }
 
-pds-tabstrip > nav > a[aria-current="page"]:hover {
-  color: var(--color-primary-700);
-  border-bottom-color: var(--color-primary-700);
-  background-color: var(--color-primary-50);
-}
+      /* Active tab */
+      &[aria-current="page"] {
+        color: var(--color-primary-600);
+        font-weight: var(--font-weight-semibold);
+        border-bottom-color: var(--color-primary-600);
 
-/* Tab panel */
-pds-tabstrip > pds-tabpanel {
-  display: block;
-  margin-top: var(--spacing-4);
-}
+        &:hover {
+          color: var(--color-primary-700);
+          border-bottom-color: var(--color-primary-700);
+          background-color: var(--color-primary-50);
+        }
+      }
+    }
+  }
 
-pds-tabstrip > pds-tabpanel[data-tabpanel] {
-  animation: tabFadeIn var(--transition-normal) ease-out;
+  /* Tab panel */
+  & > pds-tabpanel {
+    display: block;
+    margin-top: var(--spacing-4);
+
+    &[data-tabpanel] {
+      animation: tabFadeIn var(--transition-normal) ease-out;
+      padding: var(--spacing-4) 0;
+
+      &[hidden] {
+        display: none;
+      }
+    }
+  }
 }
 
 @keyframes tabFadeIn {
@@ -2511,15 +2616,6 @@ pds-tabstrip > pds-tabpanel[data-tabpanel] {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-pds-tabstrip > pds-tabpanel[data-tabpanel][hidden] {
-  display: none;
-}
-
-/* Tab content styling */
-pds-tabstrip > pds-tabpanel[data-tabpanel] {
-  padding: var(--spacing-4) 0;
 }
 
 /* Mobile responsive */
@@ -2601,8 +2697,10 @@ tbody {
   }
 }
 
-.table-striped tbody tr:nth-child(even) {
-  background-color: var(--color-surface-subtle);
+.table-striped {
+  tbody tr:nth-child(even) {
+    background-color: var(--color-surface-subtle);
+  }
 }
 
 .table-bordered {
@@ -2627,22 +2725,23 @@ tbody {
   background: var(--color-surface-base);
   border-radius: var(--radius-md);
   padding: var(--spacing-4);
-}
 
-.card-elevated {
-  background: var(--color-surface-elevated);
-  box-shadow: var(--shadow-md);
-}
+  &-elevated {
+    background: var(--color-surface-elevated);
+    box-shadow: var(--shadow-md);
+  }
 
-.card-outlined, .card-basic {
-  background: var(--color-surface-base);
-  border: 1px solid var(--color-border);
-}
+  &-outlined,
+  &-basic {
+    background: var(--color-surface-base);
+    border: 1px solid var(--color-border);
+  }
 
-.card-interactive:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  &-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  }
 }
 
 /* Custom Scrollbars */
@@ -2862,20 +2961,20 @@ pds-icon.subtle {
 }
 
 /* Button icon utilities */
-button pds-icon,
-a pds-icon {
-  flex-shrink: 0;
-}
+button, a {
+  pds-icon {
+    flex-shrink: 0;
+  }
 
-button.icon-only,
-a.icon-only {
-  padding: var(--spacing-2);
-  min-width: 44px;
-  width: 44px;
-  height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  &.icon-only {
+    padding: var(--spacing-2);
+    min-width: 44px;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 /* Icon in inputs */
@@ -2883,27 +2982,29 @@ a.icon-only {
   position: relative;
   display: flex;
   align-items: center;
-}
 
-.input-icon pds-icon {
-  position: absolute;
-  left: var(--spacing-3);
-  color: var(--color-text-muted);
-  pointer-events: none;
-}
+  pds-icon {
+    position: absolute;
+    left: var(--spacing-3);
+    color: var(--color-text-muted);
+    pointer-events: none;
+  }
 
-.input-icon input {
-  padding-left: calc(var(--icon-size) + var(--spacing-5));
-}
+  input {
+    padding-left: calc(var(--icon-size) + var(--spacing-5));
+  }
 
-.input-icon-end pds-icon {
-  left: auto;
-  right: var(--spacing-3);
-}
+  &-end {
+    pds-icon {
+      left: auto;
+      right: var(--spacing-3);
+    }
 
-.input-icon-end input {
-  padding-left: var(--spacing-3);
-  padding-right: calc(var(--icon-size) + var(--spacing-5));
+    input {
+      padding-left: var(--spacing-3);
+      padding-right: calc(var(--icon-size) + var(--spacing-5));
+    }
+  }
 }
 
 
@@ -2940,6 +3041,15 @@ a.icon-only {
 .grid-auto-md { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
 .grid-auto-lg { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
 .grid-auto-xl { grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); }
+
+/* Gap utilities */
+.gap-0 { gap: 0; }
+.gap-xs { gap: var(--spacing-1); }
+.gap-sm { gap: var(--spacing-2); }
+.gap-md { gap: var(--spacing-4); }
+.gap-lg { gap: var(--spacing-6); }
+.gap-xl { gap: var(--spacing-8); }
+
 
 /* Flexbox System */
 .flex {
@@ -2993,34 +3103,34 @@ a.icon-only {
   pointer-events: none;
   transition: opacity 0.2s ease;
   z-index: var(--z-modal, 1040);
-}
 
-.backdrop.active {
-  opacity: var(--backdrop-opacity, 1);
-  pointer-events: auto;
-}
+  &.active {
+    opacity: var(--backdrop-opacity, 1);
+    pointer-events: auto;
+  }
 
-/* Backdrop variants */
-.backdrop-light {
-  --backdrop-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
-  --backdrop-brightness: 1.1;
-}
+  /* Backdrop variants */
+  &-light {
+    --backdrop-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+    --backdrop-brightness: 1.1;
+  }
 
-.backdrop-dark {
-  --backdrop-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
-  --backdrop-brightness: 0.6;
-}
+  &-dark {
+    --backdrop-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+    --backdrop-brightness: 0.6;
+  }
 
-.backdrop-blur-sm {
-  --backdrop-blur: 5px;
-}
+  &-blur-sm {
+    --backdrop-blur: 5px;
+  }
 
-.backdrop-blur-md {
-  --backdrop-blur: 10px;
-}
+  &-blur-md {
+    --backdrop-blur: 10px;
+  }
 
-.backdrop-blur-lg {
-  --backdrop-blur: 20px;
+  &-blur-lg {
+    --backdrop-blur: 20px;
+  }
 }
 
 
@@ -3217,10 +3327,39 @@ a.icon-only {
   --color-surface-muted: rgba(255, 255, 255, 0.08);
   /* Optional: adjust borders/shadows if utilities/components read these */
   --color-border: var(--surface-inverse-border);
+
+  pds-icon {
+    color: var(--surface-inverse-icon);
+  }
 }
 
-.surface-inverse pds-icon {
-  color: var(--surface-inverse-icon);
+/* Shadow utilities */
+.shadow-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+.shadow-base, .shadow {
+  box-shadow: var(--shadow-base);
+}
+
+.shadow-md {
+  box-shadow: var(--shadow-md);
+}
+
+.shadow-lg {
+  box-shadow: var(--shadow-lg);
+}
+
+.shadow-xl {
+  box-shadow: var(--shadow-xl);
+}
+
+.shadow-inner {
+  box-shadow: var(--shadow-inner);
+}
+
+.shadow-none {
+  box-shadow: none;
 }
 
 
@@ -3314,12 +3453,16 @@ a.icon-only {
   }
   
   /* Disable hover effects on touch devices */
-  .card:hover {
-    box-shadow: var(--shadow-base);
+  .card {
+    &:hover {
+      box-shadow: var(--shadow-base);
+    }
   }
   
-  a:hover {
-    color: var(--color-primary-600);
+  a {
+    &:hover {
+      color: var(--color-primary-600);
+    }
   }
 }
 
@@ -4078,6 +4221,7 @@ html[data-theme="dark"] {
   }
 
   :where(html) {
+    interpolate-size: allow-keywords;
     font-family: var(--font-family-body);
     font-size: var(--font-size-base);
     line-height: var(--font-line-height-normal);
@@ -4208,6 +4352,84 @@ html[data-theme="dark"] {
     margin-bottom: var(--spacing-2);
     color: var(--color-text-primary);
     font-size: var(--font-size-sm);
+  }
+
+  /* Checkbox enhancement - visually hide native input but keep accessible
+     Excludes button-style checkboxes in fieldsets and special containers */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]) input[type="checkbox"]) {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  /* Style label container for checkbox */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"])) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-left: calc(var(--spacing-5) + var(--spacing-3));
+  }
+
+  /* Custom checkbox box using PDS tokens - works with or without span wrapper */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"])::before) {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+    border: var(--border-width-md) solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-base);
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+  }
+
+  /* Checkmark */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:checked)::after) {
+    content: "";
+    position: absolute;
+    left: var(--spacing-2);
+    top: 50%;
+    transform: translateY(-60%) rotate(45deg);
+    width: var(--spacing-1-5);
+    height: var(--spacing-3);
+    border: solid var(--color-primary-contrast, white);
+    border-width: 0 2px 2px 0;
+  }
+
+  /* Checked state */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:checked)::before) {
+    background: var(--color-primary-600);
+    border-color: var(--color-primary-600);
+  }
+
+  /* Focus styles for accessibility */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:focus)::before) {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+
+  /* Hover effects */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:not(:disabled)):hover::before) {
+    border-color: var(--color-primary-600);
+    background: var(--color-surface-subtle);
+  }
+
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:checked:not(:disabled)):hover::before) {
+    background: var(--color-primary-700);
+    border-color: var(--color-primary-700);
+  }
+
+  /* Disabled state */
+  :where(label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"]:disabled)) {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   :where(fieldset) {
@@ -4446,7 +4668,7 @@ html[data-theme="dark"] {
   margin: 0 0 var(--spacing-4) 0;
 }
 
-:where(details) {
+:where(details):not(.accordion *) {
   margin: 0 0 var(--spacing-2) 0;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -4668,62 +4890,74 @@ input[type="range"] {
   width: 100%;
 }
 
-/* Track and thumb styling for WebKit */
-input[type="range"]::-webkit-slider-runnable-track {
-  height: var(--range-track-height, 8px);
-  background: var(--color-input-bg);
-  border-radius: var(--radius-full);
-}
+/* Track and thumb styling - using CSS nesting to reduce repetition */
+input[type="range"] {
+  /* WebKit track */
+  &::-webkit-slider-runnable-track {
+    height: var(--range-track-height, 8px);
+    background: var(--color-input-bg);
+    border-radius: var(--radius-full);
+  }
 
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: var(--range-thumb-size, 28px);
-  height: var(--range-thumb-size, 28px);
-  margin-top: calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2);
-  background: var(--color-surface-base);
-  border-radius: 50%;
-  box-shadow: var(--shadow-sm);
-  cursor: grab;
-  border: 1px solid var(--color-border);
-}
+  /* WebKit thumb */
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: var(--range-thumb-size, 28px);
+    height: var(--range-thumb-size, 28px);
+    margin-top: calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2);
+    background: color-mix(in srgb, var(--color-primary-500) 15%, var(--color-surface-base));
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+    cursor: grab;
+    border: 1px solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
+  }
 
-/* Track and thumb styling for Firefox */
-input[type="range"]::-moz-range-track {
-  height: var(--range-track-height, 8px);
-  background: var(--color-input-bg);
-  border-radius: var(--radius-full);
-}
+  /* Mozilla track */
+  &::-moz-range-track {
+    height: var(--range-track-height, 8px);
+    background: var(--color-input-bg);
+    border-radius: var(--radius-full);
+  }
 
-input[type="range"]::-moz-range-thumb {
-  width: var(--range-thumb-size, 28px);
-  height: var(--range-thumb-size, 28px);
-  background: var(--color-surface-base);
-  border-radius: 50%;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-border);
-  transform: translateY(calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2));
-}
+  /* Mozilla thumb */
+  &::-moz-range-thumb {
+    width: var(--range-thumb-size, 28px);
+    height: var(--range-thumb-size, 28px);
+    background: color-mix(in srgb, var(--color-primary-500) 15%, var(--color-surface-base));
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
+    transform: translateY(calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2));
+  }
 
-/* Hover and active states */
-input[type="range"]:hover::-webkit-slider-thumb,
-input[type="range"]:focus-visible::-webkit-slider-thumb {
-  cursor: grabbing;
-  background: var(--color-primary-500);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  border-color: var(--color-primary-600);
-}
+  /* Hover and focus states for WebKit */
+  &:hover::-webkit-slider-thumb,
+  &:focus-visible::-webkit-slider-thumb {
+    cursor: grabbing;
+    background: var(--color-primary-500);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    border-color: var(--color-primary-600);
+  }
 
-input[type="range"]:active::-webkit-slider-thumb {
-  background: var(--color-primary-600);
-}
+  /* Active state for WebKit */
+  &:active::-webkit-slider-thumb {
+    background: var(--color-primary-600);
+  }
 
-input[type="range"]:hover::-moz-range-thumb,
-input[type="range"]:focus-visible::-moz-range-thumb {
-  background: var(--color-primary-500);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  border-color: var(--color-primary-600);
-  cursor: grabbing;
+  /* Hover and focus states for Mozilla */
+  &:hover::-moz-range-thumb,
+  &:focus-visible::-moz-range-thumb {
+    background: var(--color-primary-500);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    border-color: var(--color-primary-600);
+    cursor: grabbing;
+  }
+
+  /* Active state for Mozilla */
+  &:active::-moz-range-thumb {
+    background: var(--color-primary-600);
+  }
 }
 
 /* Focus style for container to match input focus */
@@ -4744,18 +4978,18 @@ input[type="color"] {
   border-radius: 0.75rem; /* your radius */
   overflow: hidden; /* important */
   cursor: pointer;
-}
 
-/* The wrapper */
-input[type="color"]::-webkit-color-swatch-wrapper {
-  padding: 0;
-  border-radius: inherit;
-}
+  /* The wrapper */
+  &::-webkit-color-swatch-wrapper {
+    padding: 0;
+    border-radius: inherit;
+  }
 
-/* The swatch (the actual color box) */
-input[type="color"]::-webkit-color-swatch {
-  border: none;
-  border-radius: inherit;
+  /* The swatch (the actual color box) */
+  &::-webkit-color-swatch {
+    border: none;
+    border-radius: inherit;
+  }
 }
 
 /* Awesome button-style radio and checkbox inputs */
@@ -4945,9 +5179,8 @@ fieldset[role="group"] input[type="checkbox"]:focus {
 
 /* Toggle switches - enhanced checkboxes with data-toggle attribute */
 label[data-toggle] {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  display: inline-flex;
+  align-items: normal;
   gap: var(--spacing-3);
   cursor: pointer;
   user-select: none;
@@ -4956,72 +5189,64 @@ label[data-toggle] {
   border: none;
   min-height: auto;
   font-weight: var(--font-weight-normal);
-}
 
-label[data-toggle] {
-  display: inline-flex;
-  justify-content: flex-end;
-  flex-flow: row-reverse;
-}
-/* Hide the original checkbox in toggle switches */
-label[data-toggle] input[type="checkbox"] {
-  display: none;
-}
+  /* Hide the original checkbox in toggle switches */
+  input[type="checkbox"] {
+    display: none;
+  }
 
+  /* Toggle switch container */
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    background-color: var(--color-gray-300);
+    border-radius: var(--radius-full);
+    transition: background-color 200ms ease;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
 
+  /* Toggle switch knob */
+  .toggle-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: left 200ms ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
 
-/* Toggle switch container */
-label[data-toggle] .toggle-switch {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
-  background-color: var(--color-gray-300);
-  border-radius: var(--radius-full);
-  transition: background-color 200ms ease;
-  cursor: pointer;
-  flex-shrink: 0;
-}
+  /* Toggle switch when checked - using :has() selector */
+  &:has(input[type="checkbox"]:checked) .toggle-switch {
+    background-color: var(--color-accent-500);
+  }
 
-/* Toggle switch when checked - using :has() selector */
-label[data-toggle]:has(input[type="checkbox"]:checked) .toggle-switch {
-  background-color: var(--color-accent-500);
-}
+  /* Toggle knob when checked */
+  &:has(input[type="checkbox"]:checked) .toggle-knob {
+    left: 22px;
+  }
 
+  /* Focus state for toggle switch */
+  &:has(input[type="checkbox"]:focus) .toggle-switch {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
 
-/* Toggle switch knob */
-label[data-toggle] .toggle-knob {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 20px;
-  height: 20px;
-  background-color: #ffffff;
-  border-radius: 50%;
-  transition: left 200ms ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
+  /* Disabled state */
+  &:has(input[type="checkbox"]:disabled) {
+    cursor: not-allowed;
+    opacity: 0.6;
 
-/* Toggle knob when checked */
-label[data-toggle]:has(input[type="checkbox"]:checked) .toggle-knob {
-  left: 22px;
-}
-
-/* Focus state for toggle switch */
-label[data-toggle]:has(input[type="checkbox"]:focus) .toggle-switch {
-  outline: 2px solid var(--color-primary-500);
-  outline-offset: 2px;
-}
-
-/* Disabled state */
-label[data-toggle]:has(input[type="checkbox"]:disabled) {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-label[data-toggle]:has(input[type="checkbox"]:disabled) .toggle-switch {
-  opacity: 0.5;
-  cursor: not-allowed;
+    .toggle-switch {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
 }
 
 input[type="file"] {
@@ -5160,11 +5385,10 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   min-height: var(--input-min-height, 40px);
-  align-items: center;
   position: relative;
 
   input[type="range"] {
-    border: none
+    border: none;
   }
 }
 
@@ -5183,10 +5407,10 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   opacity: 0;
   pointer-events: none;
   transition: opacity 150ms ease, transform 150ms ease;
-}
 
-.range-bubble.visible {
-  opacity: 1;
+  &.visible {
+    opacity: 1;
+  }
 }
 
 /* Anchor bubble to the thumb position using left (set by enhancer)
@@ -5206,15 +5430,21 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface-base);
-}
 
-.array-item fieldset {
-  background-color: transparent;
-  margin-bottom: var(--spacing-3);
-}
+  fieldset {
+    background-color: transparent;
+    margin-bottom: var(--spacing-3);
 
-.array-item fieldset:last-of-type {
-  margin-bottom: 0;
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+
+  .array-controls {
+    padding-top: var(--spacing-3);
+    border-top: 1px solid var(--color-border);
+    margin-top: var(--spacing-4);
+  }
 }
 
 .array-controls {
@@ -5222,18 +5452,12 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   gap: var(--spacing-2);
   margin-top: var(--spacing-3);
   flex-wrap: wrap;
-}
 
-.array-item .array-controls {
-  padding-top: var(--spacing-3);
-  border-top: 1px solid var(--color-border);
-  margin-top: var(--spacing-4);
-}
-
-.array-controls button {
-  padding: var(--spacing-2) var(--spacing-3);
-  font-size: var(--font-size-sm);
-  min-height: auto;
+  button {
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+    min-height: auto;
+  }
 }
 
 .range-value {
@@ -5250,12 +5474,12 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   align-items: center;
   gap: var(--spacing-2);
   flex-wrap: wrap;
-}
 
-.checkbox-container input[type="checkbox"],
-.checkbox-container input[type="radio"] {
-  position: absolute;
-  opacity: 0;
+  input[type="checkbox"],
+  input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+  }
 }
 
 
@@ -5399,30 +5623,30 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 .badge-outline {
   background-color: transparent;
   border: 1px solid currentColor;
-}
 
-.badge-outline.badge-primary {
-  color: var(--color-text-primary);
-}
+  &.badge-primary {
+    color: var(--color-text-primary);
+  }
 
-.badge-outline.badge-secondary {
-  color: var(--color-secondary-600);
-}
+  &.badge-secondary {
+    color: var(--color-secondary-600);
+  }
 
-.badge-outline.badge-success {
-  color: var(--color-success-600);
-}
+  &.badge-success {
+    color: var(--color-success-600);
+  }
 
-.badge-outline.badge-info {
-  color: var(--color-info-600);
-}
+  &.badge-info {
+    color: var(--color-info-600);
+  }
 
-.badge-outline.badge-warning {
-  color: var(--color-warning-600);
-}
+  &.badge-warning {
+    color: var(--color-warning-600);
+  }
 
-.badge-outline.badge-danger {
-  color: var(--color-danger-600);
+  &.badge-danger {
+    color: var(--color-danger-600);
+  }
 }
 
 .badge-sm {
@@ -5520,73 +5744,73 @@ dialog form {
 }
 
 /* Dialog header */
-dialog header,
-dialog form > header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-4);
-  padding: var(--spacing-6);
-  border-bottom: 1px solid var(--surface-overlay-border);
-  flex-shrink: 0;
-}
+dialog {
+  header,
+  form > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-4);
+    padding: var(--spacing-6);
+    border-bottom: 1px solid var(--surface-overlay-border);
+    flex-shrink: 0;
 
-dialog header h2,
-dialog header h3,
-dialog form > header h2,
-dialog form > header h3 {
-  margin: 0;
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--surface-overlay-text);
-  flex: 1;
-}
+    h2,
+    h3 {
+      margin: 0;
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--surface-overlay-text);
+      flex: 1;
+    }
 
-/* Close button in header */
-dialog header button[value="cancel"],
-dialog header .dialog-close {
-  background: none;
-  border: none;
-  padding: var(--spacing-2);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  color: var(--surface-overlay-icon);
-  transition: background-color var(--transition-fast);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  
-  &:hover {
-    background-color: var(--color-surface-subtle);
+    /* Close button in header */
+    button[value="cancel"],
+    .dialog-close {
+      background: none;
+      border: none;
+      padding: var(--spacing-2);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--surface-overlay-icon);
+      transition: background-color var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        background-color: var(--color-surface-subtle);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-focus-ring);
+        outline-offset: 2px;
+      }
+    }
   }
-  
-  &:focus-visible {
-    outline: 2px solid var(--color-focus-ring);
-    outline-offset: 2px;
+
+  /* Dialog body - scrollable content */
+  article,
+  form > article,
+  .dialog-body {
+    flex: 1;
+    padding: var(--spacing-6);
+    overflow-y: auto;
+    overflow-x: hidden;
   }
-}
 
-/* Dialog body - scrollable content */
-dialog article,
-dialog form > article,
-dialog .dialog-body {
-  flex: 1;
-  padding: var(--spacing-6);
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-/* Dialog footer - actions */
-dialog footer,
-dialog form > footer {
-  display: flex;
-  flex-direction: row;
-  gap: var(--spacing-3);
-  justify-content: flex-end;
-  align-items: center;
-  padding: var(--spacing-6);
-  border-top: 1px solid var(--surface-overlay-border);
-  flex-shrink: 0;
+  /* Dialog footer - actions */
+  footer,
+  form > footer {
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-3);
+    justify-content: flex-end;
+    align-items: center;
+    padding: var(--spacing-6);
+    border-top: 1px solid var(--surface-overlay-border);
+    flex-shrink: 0;
+  }
 }
 
 /* Dialog size modifiers */
@@ -5644,81 +5868,82 @@ dialog.dialog-full {
   --_acc-radius: var(--radius-md);
   --_acc-border: 1px solid var(--color-border);
   --_acc-bg: var(--color-surface-base);
-}
 
-.accordion details {
-  border: var(--_acc-border);
-  border-radius: var(--_acc-radius);
-  background: var(--_acc-bg);
-  margin: 0 0 var(--spacing-3) 0;
-}
+  details {
+    border: var(--_acc-border);
+    border-radius: var(--_acc-radius);
+    background: var(--_acc-bg);
+    margin: 0 0 var(--spacing-3) 0;
 
-.accordion summary {
-  cursor: pointer;
-  padding: var(--spacing-3) var(--spacing-4);
-  list-style: none;
-  outline: none;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-}
-.accordion summary::-webkit-details-marker { display: none; }
+    &[open] {
+      & > summary::after {
+        transform: rotate(45deg);
+      }
 
-/* Chevron indicator */
-.accordion summary::after {
-  content: "";
-  margin-inline-start: auto;
-  inline-size: 0.7em;
-  block-size: 0.7em;
-  border-inline-end: 2px solid currentColor;
-  border-block-end: 2px solid currentColor;
-  transform: rotate(-45deg);
-  transition: transform var(--transition-normal);
-}
-.accordion details[open] > summary::after { transform: rotate(45deg); }
+      &::details-content {
+        block-size: auto;
+      }
+    }
 
-/* Modern smooth open/close using ::details-content */
-@supports selector(details::details-content) {
-  .accordion details::details-content {
-    transition: block-size var(--transition-normal) ease, content-visibility var(--transition-normal) ease;
-    transition-behavior: allow-discrete;
-    block-size: 0;
-    overflow: clip;
-    content-visibility: hidden;
-  }
-  .accordion details[open]::details-content { 
-    block-size: auto; 
-    content-visibility: visible;
-  }
-  
-  /* Starting style for smooth opening */
-  @starting-style {
-    .accordion details[open]::details-content {
+    /* Modern approach: animate block-size with ::details-content */
+    &::details-content {
       block-size: 0;
-      content-visibility: hidden;
+      overflow: hidden;
+      transition: block-size var(--transition-normal) ease, content-visibility var(--transition-normal);
+      transition-behavior: allow-discrete;
+    }
+
+    /* Content padding (works for both approaches) */
+    & > :not(summary) > * {
+      padding-inline: var(--spacing-4);
+      padding-block: var(--spacing-3);
     }
   }
 
-  /* inner spacing for content */
-  .accordion details > *:not(summary) {
-    padding-inline: var(--spacing-4);
-    padding-block: var(--spacing-3);
+  summary {
+    cursor: pointer;
+    padding: var(--spacing-3) var(--spacing-4);
+    list-style: none;
+    outline: none;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    /* Chevron indicator */
+    &::after {
+      content: "";
+      margin-inline-start: auto;
+      inline-size: 0.7em;
+      block-size: 0.7em;
+      border-inline-end: 2px solid currentColor;
+      border-block-end: 2px solid currentColor;
+      transform: rotate(-45deg);
+      transition: transform var(--transition-normal);
+    }
   }
 }
 
-/* Fallback: works with any wrapper element (div, etc.) */
-@supports not (selector(details::details-content)) {
-  .accordion details > :not(summary) {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows var(--transition-normal) ease;
-    overflow: hidden;
-  }
-  .accordion details[open] > :not(summary) { grid-template-rows: 1fr; }
-  .accordion details > :not(summary) > * { min-block-size: 0; }
-  .accordion details > :not(summary) {
-    padding-inline: var(--spacing-4);
-    padding-block: var(--spacing-3);
+/* Fallback: grid trick for browsers without ::details-content support */
+@supports not selector(::details-content) {
+  .accordion details {
+    & > :not(summary) {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows var(--transition-normal) ease;
+      overflow: hidden;
+
+      & > * {
+        min-block-size: 0;
+      }
+    }
+
+    &[open] > :not(summary) {
+      grid-template-rows: 1fr;
+    }
   }
 }
 
@@ -5729,66 +5954,83 @@ dialog.dialog-full {
 nav[data-dropdown] {
   position: relative;
   padding: 0;
-}
 
-nav[data-dropdown] menu {
-  position: absolute;
-  list-style: none;
-  padding: var(--spacing-2);
-  margin: 0;
-  background: var(--color-surface-overlay);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  /* Default drop direction: down (top anchored). JavaScript enhancer may
-     override for data-mode="auto" by switching to bottom:100% when needed. */
-  top: 100%;
-  bottom: auto;
-  left: 0;
-  right: 0;
-  margin-top: var(--spacing-2);
-  display: none;
-}
+  menu {
+    position: absolute;
+    list-style: none;
+    padding: var(--spacing-2);
+    margin: 0;
+    background: var(--color-surface-overlay);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    /* Default drop direction: down (top anchored). JavaScript enhancer may
+       override for data-mode="auto" by switching to bottom:100% when needed. */
+    top: 100%;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    margin-top: var(--spacing-2);
+    display: none;
+  }
 
-nav[data-dropdown] li {
-  padding: var(--spacing-2) 0;
-}
+  li {
+    padding: var(--spacing-2) 0;
 
-nav[data-dropdown] li + li {
-  border-top: 1px solid var(--color-border);
-  margin-top: var(--spacing-2);
-}
+    & + li {
+      border-top: 1px solid var(--color-border);
+      margin-top: var(--spacing-2);
+    }
 
-nav[data-dropdown] a {
-  display: flex;
-  color: var(--color-text-primary);
-  text-decoration: none;
-  align-items: center;
-  gap: var(--spacing-2);
-}
+    &:has(> hr) {
+      border-top: none;
+      margin-top: 0;
+      padding: 0;
 
-nav[data-dropdown] a.danger {
-  color: var(--color-danger-600);
-}
+      & + li {
+        border-top: none;
+        margin-top: 0;
+      }
+    }
 
-/* Explicit direction modifiers */
-nav[data-dropdown][data-mode="up"] menu {
-  top: auto;
-  bottom: 100%;
-  margin-bottom: var(--spacing-2);
-}
+    & > hr {
+      border: none;
+      border-top: 3px solid var(--color-border);
+      margin: var(--spacing-2) 0;
+    }
+  }
 
-nav[data-dropdown][data-mode="down"] menu {
-  top: 100%;
-  bottom: auto;
-  margin-top: var(--spacing-2);
-}
+  a {
+    display: flex;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    align-items: center;
+    gap: var(--spacing-2);
 
-/* Auto acts like down by default; the enhancer will calculate at runtime
-   and set inline top/bottom when necessary to avoid overflow. */
-nav[data-dropdown][data-mode="auto"] menu {
-  top: 100%;
-  bottom: auto;
+    &.danger {
+      color: var(--color-danger-600);
+    }
+  }
+
+  /* Explicit direction modifiers */
+  &[data-mode="up"] menu {
+    top: auto;
+    bottom: 100%;
+    margin-bottom: var(--spacing-2);
+  }
+
+  &[data-mode="down"] menu {
+    top: 100%;
+    bottom: auto;
+    margin-top: var(--spacing-2);
+  }
+
+  /* Auto acts like down by default; the enhancer will calculate at runtime
+     and set inline top/bottom when necessary to avoid overflow. */
+  &[data-mode="auto"] menu {
+    top: 100%;
+    bottom: auto;
+  }
 }
 
 
@@ -5798,77 +6040,83 @@ nav[data-dropdown][data-mode="auto"] menu {
 
 pds-tabstrip {
   margin-top: var(--spacing-6);
-}
-pds-tabstrip > nav {
-  display: flex;
-  gap: var(--spacing-1);
-  border-bottom: 2px solid var(--color-border);
-  margin-bottom: var(--spacing-6);
-  position: relative;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-}
 
-pds-tabstrip > nav::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
-}
+  & > nav {
+    display: flex;
+    gap: var(--spacing-1);
+    border-bottom: 2px solid var(--color-border);
+    margin-bottom: var(--spacing-6);
+    position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
 
-/* Tab links */
-pds-tabstrip > nav > a {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-3) var(--spacing-4);
-  font-family: var(--font-family-body);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-  text-decoration: none;
-  white-space: nowrap;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  transition: color var(--transition-fast);
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px; /* Overlap the nav border */
-}
+    &::-webkit-scrollbar {
+      display: none; /* Chrome/Safari */
+    }
 
-pds-tabstrip > nav > a:hover {
-  color: var(--color-text-primary);
-  background-color: var(--color-surface-hover);
-}
+    /* Tab links */
+    & > a {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      padding: var(--spacing-3) var(--spacing-4);
+      font-family: var(--font-family-body);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      white-space: nowrap;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: color var(--transition-fast);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px; /* Overlap the nav border */
 
-pds-tabstrip > nav > a:focus-visible {
-  outline: var(--focus-ring-width, 2px) solid var(--color-primary-500);
-  outline-offset: -2px;
-  border-radius: var(--radius-sm);
-  z-index: 1;
-}
+      &:hover {
+        color: var(--color-text-primary);
+        background-color: var(--color-surface-hover);
+      }
 
-/* Active tab */
-pds-tabstrip > nav > a[aria-current="page"] {
-  color: var(--color-primary-600);
-  font-weight: var(--font-weight-semibold);
-  border-bottom-color: var(--color-primary-600);
-}
+      &:focus-visible {
+        outline: var(--focus-ring-width, 2px) solid var(--color-primary-500);
+        outline-offset: -2px;
+        border-radius: var(--radius-sm);
+        z-index: 1;
+      }
 
-pds-tabstrip > nav > a[aria-current="page"]:hover {
-  color: var(--color-primary-700);
-  border-bottom-color: var(--color-primary-700);
-  background-color: var(--color-primary-50);
-}
+      /* Active tab */
+      &[aria-current="page"] {
+        color: var(--color-primary-600);
+        font-weight: var(--font-weight-semibold);
+        border-bottom-color: var(--color-primary-600);
 
-/* Tab panel */
-pds-tabstrip > pds-tabpanel {
-  display: block;
-  margin-top: var(--spacing-4);
-}
+        &:hover {
+          color: var(--color-primary-700);
+          border-bottom-color: var(--color-primary-700);
+          background-color: var(--color-primary-50);
+        }
+      }
+    }
+  }
 
-pds-tabstrip > pds-tabpanel[data-tabpanel] {
-  animation: tabFadeIn var(--transition-normal) ease-out;
+  /* Tab panel */
+  & > pds-tabpanel {
+    display: block;
+    margin-top: var(--spacing-4);
+
+    &[data-tabpanel] {
+      animation: tabFadeIn var(--transition-normal) ease-out;
+      padding: var(--spacing-4) 0;
+
+      &[hidden] {
+        display: none;
+      }
+    }
+  }
 }
 
 @keyframes tabFadeIn {
@@ -5880,15 +6128,6 @@ pds-tabstrip > pds-tabpanel[data-tabpanel] {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-pds-tabstrip > pds-tabpanel[data-tabpanel][hidden] {
-  display: none;
-}
-
-/* Tab content styling */
-pds-tabstrip > pds-tabpanel[data-tabpanel] {
-  padding: var(--spacing-4) 0;
 }
 
 /* Mobile responsive */
@@ -5970,8 +6209,10 @@ tbody {
   }
 }
 
-.table-striped tbody tr:nth-child(even) {
-  background-color: var(--color-surface-subtle);
+.table-striped {
+  tbody tr:nth-child(even) {
+    background-color: var(--color-surface-subtle);
+  }
 }
 
 .table-bordered {
@@ -5996,22 +6237,23 @@ tbody {
   background: var(--color-surface-base);
   border-radius: var(--radius-md);
   padding: var(--spacing-4);
-}
 
-.card-elevated {
-  background: var(--color-surface-elevated);
-  box-shadow: var(--shadow-md);
-}
+  &-elevated {
+    background: var(--color-surface-elevated);
+    box-shadow: var(--shadow-md);
+  }
 
-.card-outlined, .card-basic {
-  background: var(--color-surface-base);
-  border: 1px solid var(--color-border);
-}
+  &-outlined,
+  &-basic {
+    background: var(--color-surface-base);
+    border: 1px solid var(--color-border);
+  }
 
-.card-interactive:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  &-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  }
 }
 
 /* Custom Scrollbars */
@@ -6231,20 +6473,20 @@ pds-icon.subtle {
 }
 
 /* Button icon utilities */
-button pds-icon,
-a pds-icon {
-  flex-shrink: 0;
-}
+button, a {
+  pds-icon {
+    flex-shrink: 0;
+  }
 
-button.icon-only,
-a.icon-only {
-  padding: var(--spacing-2);
-  min-width: 44px;
-  width: 44px;
-  height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  &.icon-only {
+    padding: var(--spacing-2);
+    min-width: 44px;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 /* Icon in inputs */
@@ -6252,27 +6494,29 @@ a.icon-only {
   position: relative;
   display: flex;
   align-items: center;
-}
 
-.input-icon pds-icon {
-  position: absolute;
-  left: var(--spacing-3);
-  color: var(--color-text-muted);
-  pointer-events: none;
-}
+  pds-icon {
+    position: absolute;
+    left: var(--spacing-3);
+    color: var(--color-text-muted);
+    pointer-events: none;
+  }
 
-.input-icon input {
-  padding-left: calc(var(--icon-size) + var(--spacing-5));
-}
+  input {
+    padding-left: calc(var(--icon-size) + var(--spacing-5));
+  }
 
-.input-icon-end pds-icon {
-  left: auto;
-  right: var(--spacing-3);
-}
+  &-end {
+    pds-icon {
+      left: auto;
+      right: var(--spacing-3);
+    }
 
-.input-icon-end input {
-  padding-left: var(--spacing-3);
-  padding-right: calc(var(--icon-size) + var(--spacing-5));
+    input {
+      padding-left: var(--spacing-3);
+      padding-right: calc(var(--icon-size) + var(--spacing-5));
+    }
+  }
 }
 
 
@@ -6309,6 +6553,15 @@ a.icon-only {
 .grid-auto-md { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
 .grid-auto-lg { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
 .grid-auto-xl { grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); }
+
+/* Gap utilities */
+.gap-0 { gap: 0; }
+.gap-xs { gap: var(--spacing-1); }
+.gap-sm { gap: var(--spacing-2); }
+.gap-md { gap: var(--spacing-4); }
+.gap-lg { gap: var(--spacing-6); }
+.gap-xl { gap: var(--spacing-8); }
+
 
 /* Flexbox System */
 .flex {
@@ -6362,34 +6615,34 @@ a.icon-only {
   pointer-events: none;
   transition: opacity 0.2s ease;
   z-index: var(--z-modal, 1040);
-}
 
-.backdrop.active {
-  opacity: var(--backdrop-opacity, 1);
-  pointer-events: auto;
-}
+  &.active {
+    opacity: var(--backdrop-opacity, 1);
+    pointer-events: auto;
+  }
 
-/* Backdrop variants */
-.backdrop-light {
-  --backdrop-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
-  --backdrop-brightness: 1.1;
-}
+  /* Backdrop variants */
+  &-light {
+    --backdrop-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+    --backdrop-brightness: 1.1;
+  }
 
-.backdrop-dark {
-  --backdrop-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
-  --backdrop-brightness: 0.6;
-}
+  &-dark {
+    --backdrop-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+    --backdrop-brightness: 0.6;
+  }
 
-.backdrop-blur-sm {
-  --backdrop-blur: 5px;
-}
+  &-blur-sm {
+    --backdrop-blur: 5px;
+  }
 
-.backdrop-blur-md {
-  --backdrop-blur: 10px;
-}
+  &-blur-md {
+    --backdrop-blur: 10px;
+  }
 
-.backdrop-blur-lg {
-  --backdrop-blur: 20px;
+  &-blur-lg {
+    --backdrop-blur: 20px;
+  }
 }
 
 
@@ -6586,10 +6839,39 @@ a.icon-only {
   --color-surface-muted: rgba(255, 255, 255, 0.08);
   /* Optional: adjust borders/shadows if utilities/components read these */
   --color-border: var(--surface-inverse-border);
+
+  pds-icon {
+    color: var(--surface-inverse-icon);
+  }
 }
 
-.surface-inverse pds-icon {
-  color: var(--surface-inverse-icon);
+/* Shadow utilities */
+.shadow-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+.shadow-base, .shadow {
+  box-shadow: var(--shadow-base);
+}
+
+.shadow-md {
+  box-shadow: var(--shadow-md);
+}
+
+.shadow-lg {
+  box-shadow: var(--shadow-lg);
+}
+
+.shadow-xl {
+  box-shadow: var(--shadow-xl);
+}
+
+.shadow-inner {
+  box-shadow: var(--shadow-inner);
+}
+
+.shadow-none {
+  box-shadow: none;
 }
 
 
@@ -6683,12 +6965,16 @@ a.icon-only {
   }
   
   /* Disable hover effects on touch devices */
-  .card:hover {
-    box-shadow: var(--shadow-base);
+  .card {
+    &:hover {
+      box-shadow: var(--shadow-base);
+    }
   }
   
-  a:hover {
-    color: var(--color-primary-600);
+  a {
+    &:hover {
+      color: var(--color-primary-600);
+    }
   }
 }
 

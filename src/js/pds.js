@@ -451,6 +451,16 @@ PDS.defaultEnhancers = [
       elem.dataset.enhancedToggle = "true";
       const checkbox = elem.querySelector('input[type="checkbox"]');
       if (!checkbox) return;
+      
+      // Make the label keyboard accessible
+      if (!elem.hasAttribute('tabindex')) {
+        elem.setAttribute('tabindex', '0');
+      }
+      
+      // Set ARIA attributes for proper screen reader support
+      elem.setAttribute('role', 'switch');
+      elem.setAttribute('aria-checked', checkbox.checked ? 'true' : 'false');
+      
       const toggleSwitch = document.createElement("span");
       toggleSwitch.className = "toggle-switch";
       toggleSwitch.setAttribute("role", "presentation");
@@ -461,11 +471,31 @@ PDS.defaultEnhancers = [
       const labelSpan = elem.querySelector("span[data-label]");
       if (labelSpan) elem.insertBefore(toggleSwitch, labelSpan);
       else elem.appendChild(toggleSwitch);
-      elem.addEventListener("click", (e) => {
+      
+      // Toggle function
+      const toggle = () => {
         if (checkbox.disabled) return;
-        e.preventDefault();
         checkbox.checked = !checkbox.checked;
+        elem.setAttribute('aria-checked', checkbox.checked ? 'true' : 'false');
         checkbox.dispatchEvent(new Event("change", { bubbles: true }));
+      };
+      
+      elem.addEventListener("click", (e) => {
+        e.preventDefault();
+        toggle();
+      });
+      
+      // Keyboard accessibility
+      elem.addEventListener("keydown", (e) => {
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          toggle();
+        }
+      });
+      
+      // Update aria-checked when checkbox changes programmatically
+      checkbox.addEventListener("change", () => {
+        elem.setAttribute('aria-checked', checkbox.checked ? 'true' : 'false');
       });
     },
   },
