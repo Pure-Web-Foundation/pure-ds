@@ -38,7 +38,7 @@ class PdsScrollrow extends HTMLElement {
     :host(.can-scroll-left) .viewport { --mask-left: rgba(0,0,0,0); }
     :host(.can-scroll-right) .viewport { --mask-right: rgba(0,0,0,0); }
     ul.track { display:flex; gap:var(--row-gap, var(--row-gap-def)); list-style:none; padding:0; margin:0; }
-    ::slotted(li) {
+    ::slotted(*) {
       scroll-snap-align: var(--snap-align, start);
       flex:0 0 auto;
       min-inline-size: var(--tile-min, var(--tile-min-def));
@@ -47,7 +47,7 @@ class PdsScrollrow extends HTMLElement {
       --tile-radius:14px; --tile-bg: var(--color-mostly-trans); --tile-shadow: 0 1px 0 rgba(0,0,0,.06), 0 6px 14px rgba(0,0,0,.12);
       border-radius:var(--tile-radius); overflow:clip; background:var(--tile-bg); box-shadow:var(--tile-shadow); isolation:isolate; overflow:hidden;
     }
-    ::slotted(li :focus) { outline-offset:2px; }
+    ::slotted(* :focus) { outline-offset:2px; }
     .control { position:absolute; top:50%; transform:translateY(-50%); display:none; place-items:center; inline-size:auto; pointer-events:none; z-index:2; }
     @media (hover:hover) and (pointer:fine) {
       .control { display:grid; opacity:0; transition:opacity .18s ease; }

@@ -37,7 +37,7 @@ export const WithImages = () => html`
 export const ProductGallery = () => html`
   <div style="padding: var(--spacing-4);">
     <h3>Featured Products</h3>
-    <pds-scrollrow>
+    <pds-scrollrow snap="start">
       ${Array.from({ length: 8 }, (_, i) => html`
         <article class="card" style="min-width: 280px;">
           <img 
