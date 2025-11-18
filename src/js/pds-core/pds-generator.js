@@ -2362,12 +2362,25 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 
 .btn-outline {
   background-color: transparent;
-  color: var(--color-text-primary);
-  border-color: var(--color-text-primary);
+  color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
   
   &:hover {
-    background-color: var(--color-text-primary);
-    color: white;
+    background-color: var(--color-primary-500);
+    color: var(--color-primary-contrast);
+    border-color: var(--color-primary-500);
+  }
+
+  &:active {
+    background-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
+    border-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
+    color: var(--color-primary-contrast);
+  }
+  
+  &:disabled {
+    background-color: transparent;
+    color: var(--color-input-disabled-text);
+    border-color: var(--color-input-disabled-bg);
   }
 }
 
