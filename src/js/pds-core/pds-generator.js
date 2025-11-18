@@ -1898,11 +1898,11 @@ input[type="range"]::-webkit-slider-thumb {
   width: var(--range-thumb-size, 28px);
   height: var(--range-thumb-size, 28px);
   margin-top: calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2);
-  background: var(--color-surface-base);
+  background: color-mix(in srgb, var(--color-primary-500) 15%, var(--color-surface-base));
   border-radius: 50%;
   box-shadow: var(--shadow-sm);
   cursor: grab;
-  border: 1px solid var(--color-border);
+  border: 1px solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
 }
 
 /* Track and thumb styling for Firefox */
@@ -1915,10 +1915,10 @@ input[type="range"]::-moz-range-track {
 input[type="range"]::-moz-range-thumb {
   width: var(--range-thumb-size, 28px);
   height: var(--range-thumb-size, 28px);
-  background: var(--color-surface-base);
+  background: color-mix(in srgb, var(--color-primary-500) 15%, var(--color-surface-base));
   border-radius: 50%;
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-border);
+  border: 1px solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
   transform: translateY(calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2));
 }
 

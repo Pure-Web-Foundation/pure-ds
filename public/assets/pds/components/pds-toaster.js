@@ -33,6 +33,7 @@ export class AppToaster extends HTMLElement {
           pointer-events: auto;
           max-height: 500px;
           overflow: hidden;
+          box-shadow: var(--shadow-lg);
           transition: transform var(--transition-normal, 0.3s) cubic-bezier(0.175, 0.885, 0.32, 1.275),
                       opacity var(--transition-normal, 0.3s) ease-out,
                       margin-bottom var(--transition-normal, 0.3s) ease-out,
