@@ -13,8 +13,18 @@ let configFormLoaded = false;
 async function initializeConfigurator() {
   if (drawerElement) return;
 
-  // Ensure pds-drawer is defined
-  await customElements.whenDefined('pds-drawer');
+  // Force-load pds-drawer by triggering AutoDefiner
+  // Create a temporary element to force the component to load
+  if (!customElements.get('pds-drawer')) {
+    const temp = document.createElement('pds-drawer');
+    temp.style.display = 'none';
+    document.body.appendChild(temp);
+    try {
+      await customElements.whenDefined('pds-drawer');
+    } finally {
+      temp.remove();
+    }
+  }
 
   // Create drawer for configurator
   drawerElement = document.createElement('pds-drawer');
@@ -63,8 +73,18 @@ async function loadConfigForm() {
   if (configFormLoaded) return;
 
   try {
-    // Import the config form component
-    await import('../../../../../src/js/pds-configurator/pds-config-form.js');
+    // Import the config form component with timeout
+    const importTimeout = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Config form import timeout')), 3000)
+    );
+    
+    await Promise.race([
+      import('../../../../../src/js/pds-configurator/pds-config-form.js'),
+      importTimeout
+    ]);
+    
+    // Wait for component to be defined
+    await customElements.whenDefined('pds-config-form');
     
     const content = document.getElementById('configurator-content');
     if (content) {
@@ -107,15 +127,24 @@ if (typeof window !== 'undefined') {
   
   channel.on(EVENTS.OPEN_CONFIGURATOR, async () => {
     console.log('🎯 OPEN_CONFIGURATOR event received in preview');
-    console.log('Current drawerElement:', drawerElement);
-    await initializeConfigurator();
-    console.log('After init, drawerElement:', drawerElement);
-    if (drawerElement) {
-      console.log('Setting drawer.open = true');
-      drawerElement.open = true;
-      console.log('Drawer open attribute:', drawerElement.hasAttribute('open'));
-    } else {
-      console.error('❌ drawerElement is null or undefined!');
+    try {
+      // Add timeout to prevent hanging forever
+      const timeout = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Configurator initialization timeout')), 5000)
+      );
+      
+      await Promise.race([initializeConfigurator(), timeout]);
+      
+      if (drawerElement) {
+        console.log('✅ Opening configurator drawer');
+        drawerElement.open = true;
+      } else {
+        throw new Error('Drawer element failed to initialize');
+      }
+    } catch (error) {
+      console.error('❌ Failed to open configurator:', error);
+      // Show user-friendly error
+      alert(`Failed to open PDS Configurator: ${error.message}\n\nPlease refresh the page and try again.`);
     }
   });
 

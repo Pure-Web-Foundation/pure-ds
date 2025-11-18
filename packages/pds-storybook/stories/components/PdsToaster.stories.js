@@ -5,7 +5,7 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: 'Toast notification system with auto-dismiss and stacking'
+        component: 'Toast notification system with auto-dismiss and stacking. Toast notifications appear in the top-right corner and auto-dismiss after a few seconds based on message length.'
       }
     }
   }
@@ -16,37 +16,75 @@ export const Default = () => {
     const toaster = document.getElementById('demo-toaster');
     
     document.getElementById('toast-success')?.addEventListener('click', () => {
-      toaster?.toast('Success!', { type: 'success', duration: 3000 });
+      toaster?.toast('Your changes have been saved successfully!', { 
+        type: 'success'
+      });
     });
     
     document.getElementById('toast-info')?.addEventListener('click', () => {
-      toaster?.toast('Information', { type: 'info', duration: 3000 });
+      toaster?.toast('This is an informational message with helpful context.', { 
+        type: 'info'
+      });
     });
     
     document.getElementById('toast-warning')?.addEventListener('click', () => {
-      toaster?.toast('Warning!', { type: 'warning', duration: 3000 });
+      toaster?.toast('Warning: This action cannot be undone!', { 
+        type: 'warning'
+      });
     });
     
-    document.getElementById('toast-danger')?.addEventListener('click', () => {
-      toaster?.toast('Error occurred', { type: 'danger', duration: 5000 });
+    document.getElementById('toast-error')?.addEventListener('click', () => {
+      toaster?.toast('Error: Something went wrong. Please try again.', { 
+        type: 'error'
+      });
+    });
+    
+    document.getElementById('toast-long')?.addEventListener('click', () => {
+      toaster?.toast(
+        'This is a longer toast notification message that demonstrates how the duration is automatically calculated based on the message length. The toast will stay visible longer to give you enough time to read the entire message.',
+        { type: 'info' }
+      );
+    });
+    
+    document.getElementById('toast-persistent')?.addEventListener('click', () => {
+      toaster?.toast(
+        'This is a persistent toast that won\'t auto-dismiss. Click the × to close it.',
+        { type: 'info', persistent: true }
+      );
     });
   }, 0);
   
   return html`
     <pds-toaster id="demo-toaster"></pds-toaster>
     
-    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-      <button id="toast-success" class="btn-primary">
-        Success Toast
+    <p style="margin-bottom: var(--spacing-4);">
+      Toast notifications appear in the top-right corner and auto-dismiss after a few seconds. Click the buttons below to see them in action:
+    </p>
+    
+    <div class="flex flex-wrap gap-md">
+      <button id="toast-success" class="btn-primary btn-sm">
+        <pds-icon icon="check-circle" size="sm"></pds-icon>
+        Success
       </button>
-      <button id="toast-info" class="btn-secondary">
-        Info Toast
+      <button id="toast-info" class="btn-secondary btn-sm">
+        <pds-icon icon="info" size="sm"></pds-icon>
+        Info
       </button>
-      <button id="toast-warning" class="btn-outline">
-        Warning Toast
+      <button id="toast-warning" class="btn-warning btn-sm">
+        <pds-icon icon="warning" size="sm"></pds-icon>
+        Warning
       </button>
-      <button id="toast-danger" class="btn-ghost">
-        Error Toast
+      <button id="toast-error" class="btn-danger btn-sm">
+        <pds-icon icon="x-circle" size="sm"></pds-icon>
+        Error
+      </button>
+      <button id="toast-long" class="btn-outline btn-sm">
+        <pds-icon icon="clock" size="sm"></pds-icon>
+        Long
+      </button>
+      <button id="toast-persistent" class="btn-outline btn-sm">
+        <pds-icon icon="bell" size="sm"></pds-icon>
+        Persistent
       </button>
     </div>
   `;
@@ -58,13 +96,37 @@ export const ViaEvents = () => {
     
     document.getElementById('event-success')?.addEventListener('click', () => {
       PDS?.dispatchEvent(new CustomEvent('pds:toast', {
-        detail: { message: 'Operation completed', type: 'success', duration: 3000 }
+        detail: { 
+          message: 'Operation completed successfully!', 
+          type: 'success'
+        }
+      }));
+    });
+    
+    document.getElementById('event-info')?.addEventListener('click', () => {
+      PDS?.dispatchEvent(new CustomEvent('pds:toast', {
+        detail: { 
+          message: 'New updates are available for your application.', 
+          type: 'info'
+        }
       }));
     });
     
     document.getElementById('event-warning')?.addEventListener('click', () => {
       PDS?.dispatchEvent(new CustomEvent('pds:toast', {
-        detail: { message: 'Please review', type: 'warning', duration: 3000 }
+        detail: { 
+          message: 'Please review your changes before continuing.', 
+          type: 'warning'
+        }
+      }));
+    });
+    
+    document.getElementById('event-error')?.addEventListener('click', () => {
+      PDS?.dispatchEvent(new CustomEvent('pds:toast', {
+        detail: { 
+          message: 'Failed to connect to server. Check your network connection.', 
+          type: 'error'
+        }
       }));
     });
   }, 0);
@@ -72,12 +134,26 @@ export const ViaEvents = () => {
   return html`
     <pds-toaster id="event-toaster"></pds-toaster>
     
-    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-      <button id="event-success" class="btn-primary">
-        Show Success
+    <p style="margin-bottom: var(--spacing-4);">
+      Toast notifications can also be triggered via PDS events. This is useful for global notifications from anywhere in your application.
+    </p>
+    
+    <div class="flex flex-wrap gap-md">
+      <button id="event-success" class="btn-primary btn-sm">
+        <pds-icon icon="check-circle" size="sm"></pds-icon>
+        Success Event
       </button>
-      <button id="event-warning" class="btn-outline">
-        Show Warning
+      <button id="event-info" class="btn-secondary btn-sm">
+        <pds-icon icon="info" size="sm"></pds-icon>
+        Info Event
+      </button>
+      <button id="event-warning" class="btn-warning btn-sm">
+        <pds-icon icon="warning" size="sm"></pds-icon>
+        Warning Event
+      </button>
+      <button id="event-error" class="btn-danger btn-sm">
+        <pds-icon icon="x-circle" size="sm"></pds-icon>
+        Error Event
       </button>
     </div>
   `;
