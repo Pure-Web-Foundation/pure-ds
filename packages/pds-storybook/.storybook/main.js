@@ -15,15 +15,24 @@ const config = {
     options: {}
   },
   staticDirs: [
-    { from: '../../../public/assets/pds', to: '/pds' },
-    { from: '../../../public/assets', to: '/assets' }
+    { from: '../../../public/assets/pds', to: 'pds' },
+    { from: '../../../public/assets', to: 'assets' }
   ],
+  core: {
+    builder: '@storybook/builder-vite'
+  },
   viteFinal: async (config) => {
     // Ensure Lit import alias is resolved
     config.resolve.alias = {
       ...config.resolve.alias,
       '#pds/lit': 'lit'
     };
+    
+    // Set base path for production builds
+    if (config.mode === 'production') {
+      config.base = '/storybook/';
+    }
+    
     return config;
   }
 };

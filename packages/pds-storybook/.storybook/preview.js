@@ -30,26 +30,29 @@ const getInitialPreset = () => {
 const initialPreset = getInitialPreset();
 console.log('🎨 Starting PDS initialization with preset:', initialPreset);
 
-await PDS.start({
-  mode: 'live',
-  preset: initialPreset,
-  autoDefine: {
-    baseURL: '/pds/components/',
-    predefine: ['pds-icon', 'pds-drawer', 'pds-toaster', 'pds-jsonform', 'pds-scrollrow', 'pds-tabstrip', 'pds-splitpanel', 'pds-richtext', 'pds-upload'],
-    scanExisting: true,
-    observeShadows: true,
-    patchAttachShadow: true
-  },
-  applyGlobalStyles: true,
-  manageTheme: true
-});
+// Wrap top-level await in IIFE for production build compatibility
+(async () => {
+  await PDS.start({
+    mode: 'live',
+    preset: initialPreset,
+    autoDefine: {
+      baseURL: '/pds/components/',
+      predefine: ['pds-icon', 'pds-drawer', 'pds-toaster', 'pds-jsonform', 'pds-scrollrow', 'pds-tabstrip', 'pds-splitpanel', 'pds-richtext', 'pds-upload'],
+      scanExisting: true,
+      observeShadows: true,
+      patchAttachShadow: true
+    },
+    applyGlobalStyles: true,
+    manageTheme: true
+  });
 
-console.log('✨ PDS initialized in live mode for Storybook');
-console.log('📦 AutoDefiner active at:', PDS.autoDefiner?.config?.baseURL);
+  console.log('✨ PDS initialized in live mode for Storybook');
+  console.log('📦 AutoDefiner active at:', PDS.autoDefiner?.config?.baseURL);
 
-// Store PDS designer globally for reuse
-window.__pdsDesigner = PDS.registry._designer;
-window.__pdsCurrentPreset = initialPreset;
+  // Store PDS designer globally for reuse
+  window.__pdsDesigner = PDS.registry._designer;
+  window.__pdsCurrentPreset = initialPreset;
+})();
 
 // Set up persistent style protection - monitor and restore PDS sheets if cleared
 let protectionActive = false;
