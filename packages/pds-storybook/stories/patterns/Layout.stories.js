@@ -43,7 +43,7 @@ export const ContainerLayout = () => html`
   <div style="max-width: 1200px; margin: 0 auto; padding: var(--spacing-4);">
     <h2>Centered Container</h2>
     <p>Content is constrained to a maximum width and centered.</p>
-    <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: var(--spacing-4); margin-top: var(--spacing-4);">
+    <div class="grid grid-cols-3 gap-md" style="margin-top: var(--spacing-4);">
       ${Array.from({ length: 3 }, (_, i) => html`
         <div class="card">
           <h4>Column ${i + 1}</h4>

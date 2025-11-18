@@ -25,23 +25,23 @@ export const BorderGradient = () => html`
 `;
 
 export const BorderGlow = () => html`
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-6); padding: var(--spacing-4); background: var(--color-gray-900);">
-    <div class="border-glow" style="padding: var(--spacing-4); background: var(--color-gray-800); color: white;">
+  <div class="grid gap-md" >
+    <div class="card border-glow" >
       <h3>Glowing Border</h3>
-      <p>Subtle glow effect that pulses.</p>
+      <p>Subtle glow effect.</p>
     </div>
-    <div class="border-glow" style="padding: var(--spacing-4); background: var(--color-gray-800); color: white; --glow-color: var(--color-accent-500);">
-      <h3>Custom Color</h3>
-      <p>Customize glow color with CSS variables.</p>
+    <div class="card border-glow border-gradient" >
+      <h3>Glow + Gradient</h3>
+      <p>Combined glow and gradient border effects.</p>
     </div>
   </div>
 `;
 
 export const Combined = () => html`
-  <article class="card border-gradient" style="padding: var(--spacing-5);">
+  <article class="card border-gradient">
     <h2>Premium Feature Card</h2>
     <p>Combining card primitive with gradient border effect.</p>
-    <div style="display: flex; gap: var(--spacing-2); margin-top: var(--spacing-4);">
+    <div class="flex gap-sm" style="margin-top: var(--spacing-4);">
       <button class="btn-primary">Get Started</button>
       <button class="btn-outline">Learn More</button>
     </div>

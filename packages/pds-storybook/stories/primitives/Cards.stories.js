@@ -14,7 +14,7 @@ export default {
 export const BasicCards = () => html`
   <div style="padding: var(--spacing-4);">
     <h3>Basic Cards</h3>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-4);">
+    <div class="grid gap-md" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
       <article class="card">
         <h3>Default Card</h3>
         <p>Card content goes here. This is a basic card primitive with automatic theming.</p>
@@ -23,8 +23,8 @@ export const BasicCards = () => html`
       
       <article class="card">
         <h3>With Icon</h3>
-        <div style="display: flex; align-items: start; gap: var(--spacing-3);">
-          <pds-icon icon="star" size="lg" style="color: var(--color-primary);"></pds-icon>
+        <div class="flex items-start gap-sm">
+          <pds-icon icon="star" size="lg" class="icon-primary"></pds-icon>
           <div>
             <p>Cards can contain icons, buttons, forms, and any other content.</p>
           </div>
@@ -35,7 +35,7 @@ export const BasicCards = () => html`
       <article class="card">
         <h3>Interactive Card</h3>
         <p>With multiple actions and rich content.</p>
-        <div style="display: flex; gap: var(--spacing-2); margin-top: var(--spacing-3);">
+        <div class="flex gap-sm" style="margin-top: var(--spacing-3);">
           <button class="btn-primary btn-sm">
             <pds-icon icon="heart" size="sm"></pds-icon>
             Like
@@ -62,7 +62,7 @@ export const SurfaceVariants = () => html`
       Different surface levels create visual hierarchy
     </p>
     
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-4);">
+    <div class="grid gap-md" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
       <article class="card">
         <h4>Default Surface</h4>
         <p>Standard card surface level. Use for most content containers.</p>
@@ -121,8 +121,8 @@ NestedCards.storyName = 'Nested Cards';
 export const CardLayouts = () => html`
   <div style="padding: var(--spacing-4);">
     <h3>Horizontal Card</h3>
-    <article class="card" style="display: flex; gap: var(--spacing-4); max-width: 600px; margin-bottom: var(--spacing-6);">
-      <div style="flex-shrink: 0; width: 120px; height: 120px; background: var(--color-primary); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+    <article class="card flex gap-md" style="max-width: 600px; margin-bottom: var(--spacing-6);">
+      <div style="flex-shrink: 0; width: 120px; height: 120px; background: var(--color-primary); border-radius: var(--radius-md);" class="flex items-center justify-center">
         <pds-icon icon="image" size="xl" style="color: white; opacity: 0.6;"></pds-icon>
       </div>
       <div style="flex: 1;">
@@ -133,7 +133,7 @@ export const CardLayouts = () => html`
     </article>
 
     <h3>Card Grid</h3>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-3);">
+    <div class="grid gap-sm" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
       <article class="card">
         <div style="height: 100px; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); border-radius: var(--radius-sm); margin-bottom: var(--spacing-3);"></div>
         <h4>Card 1</h4>
@@ -158,11 +158,11 @@ CardLayouts.storyName = 'Card Layouts';
 export const ComplexCards = () => html`
   <div style="padding: var(--spacing-4);">
     <h3>Complex Card Examples</h3>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--spacing-4);">
+    <div class="grid gap-md" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
       
       <article class="card">
-        <div style="display: flex; align-items: center; gap: var(--spacing-3); margin-bottom: var(--spacing-4);">
-          <div style="width: 48px; height: 48px; background: var(--color-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+        <div class="flex items-center gap-sm" style="margin-bottom: var(--spacing-4);">
+          <div class="flex items-center justify-center" style="width: 48px; height: 48px; background: var(--color-primary); border-radius: 50%;">
             <pds-icon icon="user" style="color: white;"></pds-icon>
           </div>
           <div>
@@ -171,14 +171,14 @@ export const ComplexCards = () => html`
           </div>
         </div>
         <p>Profile description goes here with some interesting details about the user.</p>
-        <div style="display: flex; gap: var(--spacing-2); margin-top: var(--spacing-4);">
+        <div class="flex gap-sm" style="margin-top: var(--spacing-4);">
           <button class="btn-primary btn-sm">Follow</button>
           <button class="btn-outline btn-sm">Message</button>
         </div>
       </article>
 
       <article class="card surface-elevated">
-        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--spacing-3);">
+        <div class="flex justify-between items-start" style="margin-bottom: var(--spacing-3);">
           <h4>Premium Feature</h4>
           <span style="padding: var(--spacing-1) var(--spacing-2); background: var(--color-primary); color: white; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 600;">PRO</span>
         </div>
@@ -196,7 +196,7 @@ export const ComplexCards = () => html`
 
       <article class="card">
         <h4>Stats Card</h4>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-4); margin: var(--spacing-4) 0;">
+        <div class="grid grid-cols-2 gap-md" style="margin: var(--spacing-4) 0;">
           <div>
             <div style="font-size: 2rem; font-weight: 700; color: var(--color-primary);">1.2K</div>
             <div style="font-size: 0.85rem; opacity: 0.7;">Followers</div>

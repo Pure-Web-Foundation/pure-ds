@@ -83,7 +83,7 @@ export const AccordionWithRichContent = () => html`
         <div role="region" aria-labelledby="feature3">
           <h4>Automatic Contrast Management</h4>
           <p>Surfaces automatically adjust text, icons, and shadow colors to maintain WCAG AA contrast ratios.</p>
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-3); margin-top: var(--spacing-3);">
+          <div class="grid grid-cols-2 gap-sm" style="margin-top: var(--spacing-3);">
             <div class="surface-elevated" style="padding: var(--spacing-4); border-radius: var(--radius-md); text-align: center;">
               <pds-icon icon="sun" size="lg"></pds-icon>
               <p style="margin-top: var(--spacing-2);">Elevated Surface</p>

@@ -204,18 +204,56 @@ export const BorderGradients = () => html`
   <div style="padding: var(--spacing-4);">
     <h2>Surface Border Effects</h2>
     <p style="margin-bottom: var(--spacing-6);">
-      Advanced border gradient effects for standout surfaces.
+      Advanced border gradient effects for standout surfaces. All gradients are animated and adapt to your theme.
     </p>
     
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-6);">
       <article class="card border-gradient" style="padding: var(--spacing-6);">
-        <h3>Border Gradient</h3>
+        <h3>Default Gradient</h3>
         <p>A card with a subtle animated border gradient that follows your color palette.</p>
+        <code style="font-size: var(--font-size-sm); opacity: 0.7;">.border-gradient</code>
+      </article>
+
+      <article class="card border-gradient-primary" style="padding: var(--spacing-6);">
+        <h3>Primary Gradient</h3>
+        <p>Border gradient using the primary color scheme for brand emphasis.</p>
+        <code style="font-size: var(--font-size-sm); opacity: 0.7;">.border-gradient-primary</code>
+      </article>
+
+      <article class="card border-gradient-accent" style="padding: var(--spacing-6);">
+        <h3>Accent Gradient</h3>
+        <p>Border gradient using the accent color for highlights and attention.</p>
+        <code style="font-size: var(--font-size-sm); opacity: 0.7;">.border-gradient-accent</code>
+      </article>
+
+      <article class="card border-gradient-secondary" style="padding: var(--spacing-6);">
+        <h3>Secondary Gradient</h3>
+        <p>Border gradient using the secondary color palette for variety.</p>
+        <code style="font-size: var(--font-size-sm); opacity: 0.7;">.border-gradient-secondary</code>
+      </article>
+
+      <article class="card border-gradient-soft" style="padding: var(--spacing-6);">
+        <h3>Soft Gradient</h3>
+        <p>A gentle, subdued border gradient for subtle visual interest.</p>
+        <code style="font-size: var(--font-size-sm); opacity: 0.7;">.border-gradient-soft</code>
+      </article>
+
+      <article class="card border-gradient-medium" style="padding: var(--spacing-6);">
+        <h3>Medium Gradient</h3>
+        <p>A balanced border gradient with moderate intensity and presence.</p>
+        <code style="font-size: var(--font-size-sm); opacity: 0.7;">.border-gradient-medium</code>
+      </article>
+
+      <article class="card border-gradient-strong" style="padding: var(--spacing-6);">
+        <h3>Strong Gradient</h3>
+        <p>A bold, vibrant border gradient for maximum visual impact.</p>
+        <code style="font-size: var(--font-size-sm); opacity: 0.7;">.border-gradient-strong</code>
       </article>
 
       <article class="card border-gradient-glow" style="padding: var(--spacing-6);">
         <h3>Glowing Border</h3>
         <p>A card with a glowing border gradient effect for emphasis and visual interest.</p>
+        <code style="font-size: var(--font-size-sm); opacity: 0.7;">.border-gradient-glow</code>
       </article>
     </div>
   </div>

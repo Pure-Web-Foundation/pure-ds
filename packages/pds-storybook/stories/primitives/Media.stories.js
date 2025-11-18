@@ -13,7 +13,7 @@ export default {
 
 export const ResponsiveImages = () => html`
   <div style="padding: var(--spacing-4);">
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-6);">
+    <div class="grid gap-lg" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
       <figure class="media-figure">
         <img
           class="media-image"
@@ -46,7 +46,7 @@ ResponsiveImages.storyName = 'Responsive Images';
 export const ImageGallery = () => html`
   <div style="padding: var(--spacing-4);">
     <h3>Image Gallery Grid</h3>
-    <div class="gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--spacing-3);">
+    <div class="gallery-grid grid gap-sm" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
       ${Array.from({ length: 8 }, (_, i) => html`
         <img
           class="gallery-image"

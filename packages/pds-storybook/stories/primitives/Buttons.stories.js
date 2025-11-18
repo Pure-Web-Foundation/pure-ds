@@ -14,7 +14,7 @@ export default {
 export const ButtonVariants = () => html`
   <div style="padding: var(--spacing-4);">
     <h3>Button Variants</h3>
-    <div style="display: flex; gap: var(--spacing-3); flex-wrap: wrap;">
+    <div class="flex gap-sm flex-wrap">
       <button class="btn-primary">Primary</button>
       <button class="btn-secondary">Secondary</button>
       <button class="btn-outline">Outline</button>
@@ -28,7 +28,7 @@ ButtonVariants.storyName = 'Button Variants';
 export const ButtonSizes = () => html`
   <div style="padding: var(--spacing-4);">
     <h3>Button Sizes</h3>
-    <div style="display: flex; gap: var(--spacing-3); flex-wrap: wrap; align-items: center;">
+    <div class="flex gap-sm flex-wrap items-center">
       <button class="btn-primary btn-sm">Small</button>
       <button class="btn-primary">Default</button>
       <button class="btn-primary btn-lg">Large</button>
@@ -41,7 +41,7 @@ ButtonSizes.storyName = 'Button Sizes';
 export const IconButtons = () => html`
   <div style="padding: var(--spacing-4);">
     <h3>Buttons with Icons</h3>
-    <div style="display: flex; gap: var(--spacing-3); flex-wrap: wrap;">
+    <div class="flex gap-sm flex-wrap">
       <button class="btn-primary">
         <pds-icon icon="download"></pds-icon>
         <span>Download</span>
@@ -61,7 +61,7 @@ export const IconButtons = () => html`
     </div>
 
     <h3 style="margin-top: var(--spacing-6);">Icon on Right</h3>
-    <div style="display: flex; gap: var(--spacing-3); flex-wrap: wrap;">
+    <div class="flex gap-sm flex-wrap">
       <button class="btn-primary">
         <span>Next</span>
         <pds-icon icon="arrow-right"></pds-icon>
@@ -83,7 +83,7 @@ export const IconOnlyButtons = () => html`
       Use <code>.icon-only</code> class for square icon buttons
     </p>
     
-    <div style="display: flex; gap: var(--spacing-3); flex-wrap: wrap;">
+    <div class="flex gap-sm flex-wrap">
       <button class="icon-only btn-primary">
         <pds-icon icon="gear" label="Settings"></pds-icon>
       </button>
@@ -105,7 +105,7 @@ export const IconOnlyButtons = () => html`
     </div>
 
     <h3 style="margin-top: var(--spacing-6);">Icon-Only Sizes</h3>
-    <div style="display: flex; gap: var(--spacing-3); flex-wrap: wrap; align-items: center;">
+    <div class="flex gap-sm flex-wrap items-center">
       <button class="icon-only btn-primary btn-sm">
         <pds-icon icon="plus" size="sm" label="Add"></pds-icon>
       </button>
@@ -155,7 +155,7 @@ ButtonGroups.storyName = 'Button Groups';
 export const AllSizesCombinations = () => html`
   <div style="padding: var(--spacing-4);">
     <h3>Small Buttons</h3>
-    <div style="display: flex; gap: var(--spacing-2); flex-wrap: wrap; margin-bottom: var(--spacing-4);">
+    <div class="flex gap-sm flex-wrap" style="margin-bottom: var(--spacing-4);">
       <button class="btn-primary btn-sm">Primary</button>
       <button class="btn-secondary btn-sm">Secondary</button>
       <button class="btn-outline btn-sm">Outline</button>
@@ -169,7 +169,7 @@ export const AllSizesCombinations = () => html`
     </div>
 
     <h3>Default Buttons</h3>
-    <div style="display: flex; gap: var(--spacing-3); flex-wrap: wrap; margin-bottom: var(--spacing-4);">
+    <div class="flex gap-sm flex-wrap" style="margin-bottom: var(--spacing-4);">
       <button class="btn-primary">Primary</button>
       <button class="btn-secondary">Secondary</button>
       <button class="btn-outline">Outline</button>
@@ -183,7 +183,7 @@ export const AllSizesCombinations = () => html`
     </div>
 
     <h3>Large Buttons</h3>
-    <div style="display: flex; gap: var(--spacing-3); flex-wrap: wrap;">
+    <div class="flex gap-sm flex-wrap">
       <button class="btn-primary btn-lg">Primary</button>
       <button class="btn-secondary btn-lg">Secondary</button>
       <button class="btn-outline btn-lg">Outline</button>

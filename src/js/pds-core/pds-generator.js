@@ -1392,7 +1392,7 @@ html[data-theme="dark"] video:hover {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -1403,7 +1403,7 @@ html[data-theme="dark"] video:hover {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-300),
       var(--color-primary-600)
     ) border-box;
@@ -1413,7 +1413,7 @@ html[data-theme="dark"] video:hover {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-accent-300),
       var(--color-accent-600)
     ) border-box;
@@ -1423,7 +1423,7 @@ html[data-theme="dark"] video:hover {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-secondary-300),
       var(--color-secondary-600)
     ) border-box;
@@ -1434,7 +1434,7 @@ html[data-theme="dark"] video:hover {
   border: 1px solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -1444,7 +1444,7 @@ html[data-theme="dark"] video:hover {
   border: 2px solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -1454,7 +1454,7 @@ html[data-theme="dark"] video:hover {
   border: 3px solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;

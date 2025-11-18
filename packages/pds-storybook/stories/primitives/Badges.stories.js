@@ -31,7 +31,7 @@ export const DefaultBadges = {
     return html`
       <div class="story-container" style="padding: 2rem;">
         <h3>Default Badges</h3>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+        <div class="flex gap-md flex-wrap items-center">
           <span class="badge">Default</span>
           <span class="badge badge-primary">Primary</span>
           <span class="badge badge-secondary">Secondary</span>
@@ -74,7 +74,7 @@ export const BadgeSizes = {
     return html`
       <div class="story-container" style="padding: 2rem;">
         <h3>Badge Sizes</h3>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+        <div class="flex gap-md flex-wrap items-center">
           <span class="badge badge-primary badge-sm">Small</span>
           <span class="badge badge-primary">Default</span>
           <span class="badge badge-primary badge-lg">Large</span>

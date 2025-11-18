@@ -26,7 +26,7 @@ export const PreChecked = () => html`
 `;
 
 export const MultipleToggles = () => html`
-  <form style="display: flex; flex-direction: column; gap: var(--spacing-3); max-width: 400px;">
+  <form class="flex flex-col gap-sm" style="max-width: 400px;">
     <label data-toggle>
       <span data-label>Email notifications</span>
       <input type="checkbox" checked>
@@ -52,7 +52,7 @@ export const InCard = () => html`
     <p style="color: var(--surface-text-secondary); margin-bottom: var(--spacing-4);">
       Control your privacy preferences
     </p>
-    <div style="display: flex; flex-direction: column; gap: var(--spacing-3);">
+    <div class="flex flex-col gap-sm">
       <label data-toggle>
         <span data-label>Profile visibility</span>
         <input type="checkbox" checked>
