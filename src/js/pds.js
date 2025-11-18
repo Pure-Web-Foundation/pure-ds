@@ -299,6 +299,9 @@ PDS.defaultEnhancers = [
       const menu = elem.querySelector("menu");
       if (!menu) return;
 
+      // Ensure toggle button doesn't submit forms by default
+      const btn = elem.querySelector("button");
+
       // Ensure positioning context and predictable absolute placement for the menu
       try {
         const cs = getComputedStyle(elem);
@@ -313,9 +316,15 @@ PDS.defaultEnhancers = [
         menu.style.left = "0";
         menu.style.right = "auto";
       }
-
-      // Ensure toggle button doesn't submit forms by default
-      const btn = elem.querySelector("button");
+      // Set minimum width to match the button width
+      if (btn) {
+        try {
+          const btnWidth = btn.offsetWidth;
+          if (btnWidth > 0) {
+            menu.style.minWidth = `${btnWidth}px`;
+          }
+        } catch {}
+      }
       if (btn && !btn.hasAttribute("type")) {
         btn.setAttribute("type", "button");
       }

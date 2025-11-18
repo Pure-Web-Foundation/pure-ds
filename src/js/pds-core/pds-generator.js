@@ -3445,6 +3445,23 @@ nav[data-dropdown] li + li {
   margin-top: var(--spacing-2);
 }
 
+nav[data-dropdown] li:has(> hr) {
+  border-top: none;
+  margin-top: 0;
+  padding: 0;
+}
+
+nav[data-dropdown] li:has(> hr) + li {
+  border-top: none;
+  margin-top: 0;
+}
+
+nav[data-dropdown] li > hr {
+  border: none;
+  border-top: 3px solid var(--color-border);
+  margin: var(--spacing-2) 0;
+}
+
 nav[data-dropdown] a {
   display: flex;
   color: var(--color-text-primary);

@@ -35,7 +35,7 @@ export const Default = {
     
     return html`
       <button id="open-drawer-btn" class="btn-primary">
-        <pds-icon icon="menu"></pds-icon>
+        <pds-icon icon="list"></pds-icon>
         Open Drawer (${args.position})
       </button>
       
@@ -229,7 +229,7 @@ export const NavigationDrawer = () => {
   
   return html`
     <button id="open-nav-drawer" class="btn-primary">
-      <pds-icon icon="menu"></pds-icon>
+      <pds-icon icon="list"></pds-icon>
       Open Navigation
     </button>
     

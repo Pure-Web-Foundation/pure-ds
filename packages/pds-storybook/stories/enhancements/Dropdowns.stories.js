@@ -40,7 +40,7 @@ export const RightAligned = () => html`
 export const WithIcons = () => html`
   <nav data-dropdown>
     <button class="btn-outline">
-      <pds-icon icon="menu" size="sm"></pds-icon>
+      <pds-icon icon="list" size="sm"></pds-icon>
       Actions
     </button>
     <menu>
