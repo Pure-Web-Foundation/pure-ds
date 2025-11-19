@@ -1179,36 +1179,38 @@ fieldset[data-path="/components"] {
   box-shadow: var(--shadow-lg);
   padding: var(--spacing-2);
   border-radius: var(--radius-md);
-  z-index: 1
+  z-index: 1;
+
+   .ac-itm {
+      min-width: 300px;
+      cursor: pointer;
+      padding: var(--spacing-2) 0;
+      display: grid;
+      grid-template-columns: 45px 1fr 80px;
+
+      .text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      pds-icon {
+        position: relative;
+        left: unset;
+      }
+
+      .category {
+        float: right;
+        opacity: 0.6;
+        font-size: small;
+      }
+
+      &.selected,
+      &:hover {
+        background-color: var(--color-surface-overlay);
+      }
+    }
 }
 
-.ac-suggestion .ac-itm {
-  min-width: 300px;
-  cursor: pointer;
-  padding: var(--spacing-2) 0;
-  display: grid;
-  grid-template-columns: 45px 1fr 80px;
 
-  .text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  pds-icon {
-    position: relative;
-    left: unset;
-  }
-
-  .category {
-    float: right;
-    opacity: 0.6;
-    font-size: small;
-  }
-
-  &.selected,
-  &:hover {
-    background-color: var(--color-surface-overlay);
-  }
-}
 
