@@ -1239,7 +1239,11 @@ async function __setupAutoDefinerAndEnhancers(options) {
         autoDefinePreload.length > 0 &&
         typeof AutoDefinerCtor.define === "function"
       ) {
-        await AutoDefinerCtor.define(autoDefinePreload);
+        await AutoDefinerCtor.define(...autoDefinePreload, {
+          baseURL: autoDefineBaseURL,
+          mapper: autoDefineConfig.mapper,
+          onError: autoDefineConfig.onError,
+        });
       }
     }
   }

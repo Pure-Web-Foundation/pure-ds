@@ -10,6 +10,10 @@ export const config = {
     root: "public/assets/pds/",
   },
 
+  autoDefine: {
+    predefine: ["pds-icon", "pds-drawer", "pds-toaster"]
+  },
+
   log(level, message, ...data) {
     //if (level === 'error') {
     console[level](message, ...data);
