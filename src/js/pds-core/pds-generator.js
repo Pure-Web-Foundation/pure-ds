@@ -3777,13 +3777,35 @@ nav[data-dropdown] {
 
 /* Touch device optimizations */
 @media (hover: none) and (pointer: coarse) {
-  /* Touch devices - larger touch targets */
-  button, a, input, select, textarea {
+  /* Touch devices - larger touch targets for interactive elements */
+  button, a, select, textarea,
+  input:not([type="radio"]):not([type="checkbox"]) {
     min-height: ${minTouchTarget}px;
     min-width: ${minTouchTarget}px;
   }
   
-  /* Disable hover effects on touch devices */
+  /* Radio and checkbox inputs: keep reasonable size but ensure label tap area is large */
+  input[type="radio"],
+  input[type="checkbox"] {
+    /* Keep native size - labels provide the touch target */
+    min-height: unset;
+    min-width: unset;
+  }
+  
+  /* Ensure labels with radio/checkbox have adequate touch targets */
+  /* Exclude button-style fieldsets which already have proper sizing */
+  label:has(input[type="radio"]):not(fieldset.buttons label),
+  label:has(input[type="checkbox"]):not(fieldset.buttons label),
+  fieldset[role="radiogroup"]:not(.buttons) label,
+  fieldset[role="group"]:not(.buttons) label {
+    min-height: ${minTouchTarget}px;
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-2) 0;
+  }
+  
+  /* Disable hover effects
+   on touch devices */
   .card {
     &:hover {
       box-shadow: var(--shadow-base);

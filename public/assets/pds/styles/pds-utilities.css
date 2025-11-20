@@ -608,10 +608,30 @@ button, a {
 
 /* Touch device optimizations */
 @media (hover: none) and (pointer: coarse) {
-  /* Touch devices - larger touch targets */
-  button, a, input, select, textarea {
+  /* Touch devices - larger touch targets for interactive elements */
+  button, a, select, textarea,
+  input:not([type="radio"]):not([type="checkbox"]) {
     min-height: 44px;
     min-width: 44px;
+  }
+  
+  /* Radio and checkbox inputs: keep reasonable size but ensure label tap area is large */
+  input[type="radio"],
+  input[type="checkbox"] {
+    /* Keep native size - labels provide the touch target */
+    min-height: unset;
+    min-width: unset;
+  }
+  
+  /* Ensure labels with radio/checkbox have adequate touch targets */
+  label:has(input[type="radio"]),
+  label:has(input[type="checkbox"]),
+  fieldset[role="radiogroup"] label,
+  fieldset[role="group"] label {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-2) 0;
   }
   
   /* Disable hover effects on touch devices */
