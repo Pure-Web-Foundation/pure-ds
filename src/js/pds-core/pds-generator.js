@@ -4239,7 +4239,7 @@ nav[data-dropdown] {
     box-sizing: border-box;
   }
 
-  legend::after {
+  legend:not(:empty)::after {
       content: "";
       display: block;
       width: 100%;

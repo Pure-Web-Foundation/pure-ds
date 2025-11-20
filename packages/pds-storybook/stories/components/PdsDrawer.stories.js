@@ -36,17 +36,17 @@ export const Default = {
     return html`
       <button id="open-drawer-btn" class="btn-primary">
         <pds-icon icon="list"></pds-icon>
-        Open Drawer (${args.position})
+        <span>Open Drawer (${args.position})</span>
       </button>
       
       <pds-drawer id="demo-drawer" position="${args.position}">
-        <div slot="drawer-header" style="display: flex; align-items: center; gap: var(--spacing-3);">
+        <div slot="drawer-header" class="flex items-center gap-md">
           <pds-icon icon="info" size="lg"></pds-icon>
-          <h2 style="margin: 0;">Drawer from ${args.position}</h2>
+          <h2>Drawer from ${args.position}</h2>
         </div>
         
-        <div slot="drawer-content" style="padding: var(--spacing-4);">
-          <article class="card" style="margin-bottom: var(--spacing-4);">
+        <div slot="drawer-content" class="flex flex-col gap-md">
+          <article class="card">
             <h4>About this Drawer</h4>
             <p>This drawer slides from the <strong>${args.position}</strong> edge of the screen. Drawers are perfect for:</p>
             <ul>
@@ -57,27 +57,27 @@ export const Default = {
             </ul>
           </article>
 
-          <article class="card surface-elevated" style="margin-bottom: var(--spacing-4);">
+          <article class="card surface-elevated">
             <h4>Quick Actions</h4>
-            <div style="display: flex; flex-direction: column; gap: var(--spacing-2); margin-top: var(--spacing-3);">
-              <button class="btn-outline" style="justify-content: flex-start;">
+            <nav class="flex flex-col gap-sm">
+              <button class="btn-outline">
                 <pds-icon icon="download"></pds-icon>
-                Download Report
+                <span>Download Report</span>
               </button>
-              <button class="btn-outline" style="justify-content: flex-start;">
+              <button class="btn-outline">
                 <pds-icon icon="share"></pds-icon>
-                Share with Team
+                <span>Share with Team</span>
               </button>
-              <button class="btn-outline" style="justify-content: flex-start;">
+              <button class="btn-outline">
                 <pds-icon icon="printer"></pds-icon>
-                Print Document
+                <span>Print Document</span>
               </button>
-            </div>
+            </nav>
           </article>
 
-          <button id="close-drawer-btn" class="btn-primary" style="width: 100%;">
+          <button id="close-drawer-btn" class="btn-primary">
             <pds-icon icon="x"></pds-icon>
-            Close Drawer
+            <span>Close Drawer</span>
           </button>
         </div>
       </pds-drawer>
@@ -105,109 +105,244 @@ export const AllPositions = () => {
   }, 0);
   
   return html`
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
-      <button id="open-drawer-left" class="btn-primary">Open Left</button>
-      <button id="open-drawer-right" class="btn-primary">Open Right</button>
-      <button id="open-drawer-top" class="btn-primary">Open Top</button>
-      <button id="open-drawer-bottom" class="btn-primary">Open Bottom</button>
+    <div class="grid grid-auto-sm gap-md">
+      <button id="open-drawer-bottom" class="btn-primary">
+        <pds-icon icon="sidebar" rotate="-90" size="sm"></pds-icon>
+        <span>Bottom Drawer</span>
+      </button>
+      <button id="open-drawer-left" class="btn-secondary">
+        <pds-icon icon="sidebar" size="sm"></pds-icon>
+        <span>Left Drawer</span>
+      </button>
+      <button id="open-drawer-right" class="btn-secondary">
+        <pds-icon icon="sidebar" rotate="180" size="sm"></pds-icon>
+        <span>Right Drawer</span>
+      </button>
+      <button id="open-drawer-top" class="btn-secondary">
+        <pds-icon icon="sidebar" rotate="90" size="sm"></pds-icon>
+        <span>Top Drawer</span>
+      </button>
     </div>
     
     <pds-drawer id="drawer-left" position="left">
-      <div slot="drawer-header" style="display: flex; align-items: center; gap: var(--spacing-2);">
-        <pds-icon icon="arrow-left"></pds-icon>
-        <h2 style="margin: 0;">Left Navigation</h2>
+      <div slot="drawer-header" class="flex items-center gap-md">
+        <pds-icon icon="list" size="lg"></pds-icon>
+        <h2>Main Navigation</h2>
       </div>
-      <div slot="drawer-content" style="padding: var(--spacing-4);">
-        <p style="margin-bottom: var(--spacing-4);">Common for main navigation menus</p>
-        <div style="display: flex; flex-direction: column; gap: var(--spacing-2);">
-          <button class="btn-outline" style="justify-content: flex-start;">
-            <pds-icon icon="home"></pds-icon>
-            Dashboard
+      <div slot="drawer-content" class="flex flex-col gap-md">
+        <p>
+          <strong>Use case:</strong> Primary navigation menu for web applications
+        </p>
+        
+        <nav class="flex flex-col gap-sm">
+          <button class="btn-outline">
+            <pds-icon icon="house"></pds-icon>
+            <span>Dashboard</span>
           </button>
-          <button class="btn-outline" style="justify-content: flex-start;">
-            <pds-icon icon="file-text"></pds-icon>
-            Documents
+          <button class="btn-outline">
+            <pds-icon icon="folder"></pds-icon>
+            <span>Projects</span>
           </button>
-          <button class="btn-outline" style="justify-content: flex-start;">
+          <button class="btn-outline">
             <pds-icon icon="users"></pds-icon>
-            Team
+            <span>Team</span>
           </button>
-        </div>
-        <button id="close-drawer-left" class="btn-secondary" style="margin-top: var(--spacing-4); width: 100%;">Close</button>
+          <button class="btn-outline">
+            <pds-icon icon="calendar"></pds-icon>
+            <span>Schedule</span>
+          </button>
+          <button class="btn-outline">
+            <pds-icon icon="chart-bar"></pds-icon>
+            <span>Analytics</span>
+          </button>
+        </nav>
+        
+        <hr>
+        
+        <button class="btn-outline">
+          <pds-icon icon="gear"></pds-icon>
+          <span>Settings</span>
+        </button>
+        
+        <button id="close-drawer-left" class="btn-secondary">
+          <pds-icon icon="x"></pds-icon>
+          <span>Close</span>
+        </button>
       </div>
     </pds-drawer>
     
     <pds-drawer id="drawer-right" position="right">
-      <div slot="drawer-header" style="display: flex; align-items: center; justify-content: space-between;">
-        <h2 style="margin: 0;">Details Panel</h2>
-        <pds-icon icon="arrow-right"></pds-icon>
+      <div slot="drawer-header" class="flex items-center justify-between">
+        <h2>Filter & Sort</h2>
+        <button id="close-drawer-right" class="icon-only btn-outline btn-sm">
+          <pds-icon icon="x" label="Close"></pds-icon>
+        </button>
       </div>
-      <div slot="drawer-content" style="padding: var(--spacing-4);">
-        <p style="margin-bottom: var(--spacing-4);">Perfect for details, filters, or settings</p>
+      <div slot="drawer-content" class="flex flex-col gap-md">
+        <p>
+          <strong>Use case:</strong> Filters, detail panels, or property inspectors
+        </p>
+        
         <article class="card">
-          <h4>Item Details</h4>
-          <div style="margin-top: var(--spacing-3); font-size: 0.9rem;">
-            <div style="display: grid; grid-template-columns: 80px 1fr; gap: var(--spacing-2);">
-              <strong>Status:</strong> <span>Active</span>
-              <strong>Created:</strong> <span>Nov 17, 2025</span>
-              <strong>Modified:</strong> <span>2 hours ago</span>
-            </div>
-          </div>
+          <fieldset role="group">
+            <legend>Filter by Status</legend>
+            <label data-toggle>
+              <input type="checkbox" checked>
+              <span>Active</span>
+            </label>
+            <label data-toggle>
+              <input type="checkbox" checked>
+              <span>In Progress</span>
+            </label>
+            <label data-toggle>
+              <input type="checkbox">
+              <span>Completed</span>
+            </label>
+            <label data-toggle>
+              <input type="checkbox">
+              <span>Archived</span>
+            </label>
+          </fieldset>
         </article>
-        <button id="close-drawer-right" class="btn-secondary" style="margin-top: var(--spacing-4); width: 100%;">Close</button>
+        
+        <article class="card surface-elevated">
+          <label>
+            <span>Sort By</span>
+            <select>
+              <option>Date Created (Newest)</option>
+              <option>Date Created (Oldest)</option>
+              <option>Name (A-Z)</option>
+              <option>Name (Z-A)</option>
+              <option>Priority</option>
+            </select>
+          </label>
+        </article>
+        
+        <div class="flex gap-sm">
+          <button class="btn-primary">
+            <pds-icon icon="check"></pds-icon>
+            <span>Apply</span>
+          </button>
+          <button class="btn-outline">
+            <pds-icon icon="arrow-counter-clockwise"></pds-icon>
+            <span>Reset</span>
+          </button>
+        </div>
       </div>
     </pds-drawer>
     
     <pds-drawer id="drawer-top" position="top">
-      <div slot="drawer-header" style="display: flex; align-items: center; gap: var(--spacing-2);">
-        <pds-icon icon="arrow-up"></pds-icon>
-        <h2 style="margin: 0;">Notification Center</h2>
+      <div slot="drawer-header" class="flex items-center gap-md">
+        <pds-icon icon="bell-ringing" size="lg"></pds-icon>
+        <h2>Notifications</h2>
+        <span class="badge badge-primary">3 new</span>
       </div>
-      <div slot="drawer-content" style="padding: var(--spacing-4);">
-        <p style="margin-bottom: var(--spacing-4);">Great for notifications and alerts</p>
-        <div style="display: flex; flex-direction: column; gap: var(--spacing-2);">
-          ${Array.from({ length: 3 }, (_, i) => html`
-            <article class="card surface-elevated">
-              <div style="display: flex; gap: var(--spacing-2); align-items: start;">
-                <pds-icon icon="bell" style="color: var(--color-primary); flex-shrink: 0;"></pds-icon>
-                <div style="flex: 1;">
-                  <strong>Notification ${i + 1}</strong>
-                  <p style="margin: var(--spacing-1) 0 0; font-size: 0.85rem; opacity: 0.8;">New activity in your account</p>
-                </div>
+      <div slot="drawer-content" class="flex flex-col gap-md">
+        <p>
+          <strong>Use case:</strong> Notification center or announcement banners
+        </p>
+        
+        <div class="flex flex-col gap-md">
+          <article class="card surface-elevated">
+            <div class="flex gap-md items-start">
+              <div class="badge badge-success">
+                <pds-icon icon="check-circle"></pds-icon>
               </div>
-            </article>
-          `)}
+              <div>
+                <div class="flex justify-between items-start gap-md">
+                  <strong>Deployment Successful</strong>
+                  <small>2m ago</small>
+                </div>
+                <p>
+                  Your application has been deployed to production successfully.
+                </p>
+              </div>
+            </div>
+          </article>
+          
+          <article class="card surface-elevated">
+            <div class="flex gap-md items-start">
+              <div class="badge badge-info">
+                <pds-icon icon="user-plus"></pds-icon>
+              </div>
+              <div>
+                <div class="flex justify-between items-start gap-md">
+                  <strong>New Team Member</strong>
+                  <small>1h ago</small>
+                </div>
+                <p>
+                  Sarah Johnson joined the Design Team.
+                </p>
+              </div>
+            </div>
+          </article>
+          
+          <article class="card surface-elevated">
+            <div class="flex gap-md items-start">
+              <div class="badge badge-warning">
+                <pds-icon icon="warning"></pds-icon>
+              </div>
+              <div>
+                <div class="flex justify-between items-start gap-md">
+                  <strong>API Rate Limit Warning</strong>
+                  <small>3h ago</small>
+                </div>
+                <p>
+                  You're approaching 80% of your API rate limit.
+                </p>
+              </div>
+            </div>
+          </article>
         </div>
-        <button id="close-drawer-top" class="btn-secondary" style="margin-top: var(--spacing-4);">Close</button>
+        
+        <button id="close-drawer-top" class="btn-secondary">
+          <pds-icon icon="check"></pds-icon>
+          <span>Mark All as Read</span>
+        </button>
       </div>
     </pds-drawer>
     
     <pds-drawer id="drawer-bottom" position="bottom">
-      <div slot="drawer-header" style="display: flex; align-items: center; gap: var(--spacing-2);">
-        <pds-icon icon="arrow-down"></pds-icon>
-        <h2 style="margin: 0;">Quick Actions</h2>
+      <div slot="drawer-header" class="flex items-center gap-md">
+        <pds-icon icon="toolbox" size="lg"></pds-icon>
+        <h2>Quick Actions</h2>
       </div>
-      <div slot="drawer-content" style="padding: var(--spacing-4);">
-        <p style="margin-bottom: var(--spacing-4);">Ideal for contextual actions or toolbars</p>
-        <div style="display: flex; gap: var(--spacing-2); flex-wrap: wrap;">
+      <div slot="drawer-content" class="flex flex-col gap-md">
+        <p>
+          <strong>Use case:</strong> Command palette, quick actions, or contextual toolbars
+        </p>
+        
+        <div class="flex gap-md flex-wrap justify-center">
           <button class="btn-primary">
             <pds-icon icon="plus"></pds-icon>
-            New Item
+            <span>New Document</span>
           </button>
           <button class="btn-secondary">
             <pds-icon icon="upload"></pds-icon>
-            Upload
+            <span>Upload Files</span>
+          </button>
+          <button class="btn-secondary">
+            <pds-icon icon="folder-plus"></pds-icon>
+            <span>Create Folder</span>
+          </button>
+          <button class="btn-outline">
+            <pds-icon icon="link"></pds-icon>
+            <span>Share Link</span>
           </button>
           <button class="btn-outline">
             <pds-icon icon="download"></pds-icon>
-            Download
+            <span>Export Data</span>
           </button>
           <button class="btn-outline">
-            <pds-icon icon="share"></pds-icon>
-            Share
+            <pds-icon icon="printer"></pds-icon>
+            <span>Print</span>
           </button>
         </div>
-        <button id="close-drawer-bottom" class="btn-secondary" style="margin-top: var(--spacing-4);">Close</button>
+        
+        <button id="close-drawer-bottom" class="btn-secondary">
+          <pds-icon icon="x"></pds-icon>
+          <span>Close</span>
+        </button>
       </div>
     </pds-drawer>
   `;
@@ -230,51 +365,51 @@ export const NavigationDrawer = () => {
   return html`
     <button id="open-nav-drawer" class="btn-primary">
       <pds-icon icon="list"></pds-icon>
-      Open Navigation
+      <span>Open Navigation</span>
     </button>
     
     <pds-drawer id="nav-drawer" position="left">
-      <div slot="drawer-header" style="display: flex; align-items: center; gap: var(--spacing-3);">
+      <div slot="drawer-header" class="flex items-center gap-md">
         <pds-icon icon="compass" size="lg"></pds-icon>
-        <h2 style="margin: 0;">Navigation</h2>
+        <h2>Navigation</h2>
       </div>
       
-      <div slot="drawer-content" style="padding: var(--spacing-4); display: flex; flex-direction: column; gap: var(--spacing-2);">
-        <button class="btn-outline" style="justify-content: flex-start;">
+      <nav slot="drawer-content" class="flex flex-col gap-sm">
+        <button class="btn-outline">
           <pds-icon icon="home"></pds-icon>
-          Home
+          <span>Home</span>
         </button>
-        <button class="btn-outline" style="justify-content: flex-start;">
+        <button class="btn-outline">
           <pds-icon icon="user"></pds-icon>
-          Profile
+          <span>Profile</span>
         </button>
-        <button class="btn-outline" style="justify-content: flex-start;">
+        <button class="btn-outline">
           <pds-icon icon="bell"></pds-icon>
-          Notifications
+          <span>Notifications</span>
         </button>
-        <button class="btn-outline" style="justify-content: flex-start;">
+        <button class="btn-outline">
           <pds-icon icon="gear"></pds-icon>
-          Settings
+          <span>Settings</span>
         </button>
         
-        <hr style="margin: var(--spacing-4) 0; border: none; border-top: 1px solid var(--color-border);">
+        <hr>
         
-        <button class="btn-outline" style="justify-content: flex-start;">
+        <button class="btn-outline">
           <pds-icon icon="book-open"></pds-icon>
-          Documentation
+          <span>Documentation</span>
         </button>
-        <button class="btn-outline" style="justify-content: flex-start;">
+        <button class="btn-outline">
           <pds-icon icon="message-circle"></pds-icon>
-          Support
+          <span>Support</span>
         </button>
         
-        <hr style="margin: var(--spacing-4) 0; border: none; border-top: 1px solid var(--color-border);">
+        <hr>
         
         <button id="close-nav-drawer" class="btn-primary">
           <pds-icon icon="x"></pds-icon>
-          Close Menu
+          <span>Close Menu</span>
         </button>
-      </div>
+      </nav>
     </pds-drawer>
   `;
 };
@@ -298,71 +433,70 @@ export const SettingsDrawer = () => {
   return html`
     <button id="open-settings-drawer" class="btn-primary">
       <pds-icon icon="gear"></pds-icon>
-      Open Settings
+      <span>Open Settings</span>
     </button>
     
     <pds-drawer id="settings-drawer" position="right">
-      <div slot="drawer-header" style="display: flex; align-items: center; gap: var(--spacing-3);">
+      <div slot="drawer-header" class="flex items-center gap-md">
         <pds-icon icon="gear" size="lg"></pds-icon>
-        <h2 style="margin: 0;">Settings</h2>
+        <h2>Settings</h2>
       </div>
       
-      <div slot="drawer-content" style="padding: var(--spacing-4);">
-        <article class="card" style="margin-bottom: var(--spacing-4);">
-          <h4>Profile Settings</h4>
-          <div class="card">
-            <label for="username-input" style="display: block; margin-bottom: var(--spacing-2); font-weight: 600;">
-              Username
+      <div slot="drawer-content" class="flex flex-col gap-md">
+        <article class="card">
+          <fieldset>
+            <legend>Profile Settings</legend>
+            <label>
+              <span>Username</span>
+              <input type="text" value="john_doe">
             </label>
-            <input id="username-input" type="text" value="john_doe" style="width: 100%; padding: var(--spacing-2); border: 1px solid var(--color-border); border-radius: var(--radius-sm);">
-          </div>
-          
-          <div style="margin-top: var(--spacing-3);">
-            <label for="email-input" style="display: block; margin-bottom: var(--spacing-2); font-weight: 600;">
-              Email
+            <label>
+              <span>Email</span>
+              <input type="email" value="john@example.com">
             </label>
-            <input id="email-input" type="email" value="john@example.com" style="width: 100%; padding: var(--spacing-2); border: 1px solid var(--color-border); border-radius: var(--radius-sm);">
-          </div>
+          </fieldset>
         </article>
 
-        <article class="card" style="margin-bottom: var(--spacing-4);">
-          <h4>Notifications</h4>
-          <div style="display: flex; flex-direction: column; gap: var(--spacing-3); margin-top: var(--spacing-3);">
-            <label style="display: flex; align-items: center; gap: var(--spacing-2); cursor: pointer;">
+        <article class="card">
+          <fieldset role="group">
+            <legend>Notifications</legend>
+            <label data-toggle>
               <input type="checkbox" checked>
               <span>Email notifications</span>
             </label>
-            <label style="display: flex; align-items: center; gap: var(--spacing-2); cursor: pointer;">
+            <label data-toggle>
               <input type="checkbox" checked>
               <span>Push notifications</span>
             </label>
-            <label style="display: flex; align-items: center; gap: var(--spacing-2); cursor: pointer;">
+            <label data-toggle>
               <input type="checkbox">
               <span>SMS notifications</span>
             </label>
-          </div>
+          </fieldset>
         </article>
 
         <article class="card surface-elevated">
-          <h4>Privacy</h4>
-          <div style="display: flex; flex-direction: column; gap: var(--spacing-3); margin-top: var(--spacing-3);">
-            <label style="display: flex; align-items: center; gap: var(--spacing-2); cursor: pointer;">
+          <fieldset role="group">
+            <legend>Privacy</legend>
+            <label data-toggle>
               <input type="checkbox" checked>
               <span>Public profile</span>
             </label>
-            <label style="display: flex; align-items: center; gap: var(--spacing-2); cursor: pointer;">
+            <label data-toggle>
               <input type="checkbox">
               <span>Show email address</span>
             </label>
-          </div>
+          </fieldset>
         </article>
 
-        <div style="display: flex; gap: var(--spacing-3); margin-top: var(--spacing-4);">
+        <div class="flex gap-md">
           <button class="btn-primary">
             <pds-icon icon="check"></pds-icon>
-            Save Changes
+            <span>Save Changes</span>
           </button>
-          <button id="close-settings-drawer" class="btn-outline">Cancel</button>
+          <button id="close-settings-drawer" class="btn-outline">
+            <span>Cancel</span>
+          </button>
         </div>
       </div>
     </pds-drawer>
@@ -388,74 +522,74 @@ export const DetailDrawer = () => {
   return html`
     <button id="open-detail-drawer" class="btn-primary">
       <pds-icon icon="eye"></pds-icon>
-      View Details
+      <span>View Details</span>
     </button>
     
     <pds-drawer id="detail-drawer" position="right">
-      <div slot="drawer-header" style="display: flex; align-items: center; justify-content: space-between;">
-        <h2 style="margin: 0;">Project Details</h2>
+      <div slot="drawer-header" class="flex items-center justify-between">
+        <h2>Project Details</h2>
         <button id="close-detail-drawer" class="icon-only btn-outline">
           <pds-icon icon="x" label="Close"></pds-icon>
         </button>
       </div>
       
-      <div slot="drawer-content" style="padding: var(--spacing-4);">
-        <div style="height: 200px; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); border-radius: var(--radius-md); margin-bottom: var(--spacing-4); display: flex; align-items: center; justify-content: center;">
-          <pds-icon icon="image" size="xl" style="color: white; opacity: 0.4;"></pds-icon>
+      <div slot="drawer-content" class="flex flex-col gap-md">
+        <div class="card border-gradient flex items-center justify-center">
+          <pds-icon icon="image" size="xl"></pds-icon>
         </div>
 
         <h3>Modern Web Dashboard</h3>
-        <p style="opacity: 0.8; margin-bottom: var(--spacing-4);">A comprehensive dashboard application built with modern web technologies and PDS.</p>
+        <p>A comprehensive dashboard application built with modern web technologies and PDS.</p>
 
-        <article class="card" style="margin-bottom: var(--spacing-4);">
+        <article class="card">
           <h4>Project Info</h4>
-          <div style="display: grid; grid-template-columns: 100px 1fr; gap: var(--spacing-2); margin-top: var(--spacing-3); font-size: 0.9rem;">
-            <strong>Status:</strong>
-            <span>In Progress</span>
-            <strong>Team:</strong>
-            <span>8 members</span>
-            <strong>Due Date:</strong>
-            <span>Dec 31, 2024</span>
-            <strong>Priority:</strong>
-            <span style="color: var(--color-primary); font-weight: 600;">High</span>
-          </div>
+          <dl class="grid grid-cols-2 gap-sm">
+            <dt>Status:</dt>
+            <dd>In Progress</dd>
+            <dt>Team:</dt>
+            <dd>8 members</dd>
+            <dt>Due Date:</dt>
+            <dd>Dec 31, 2024</dd>
+            <dt>Priority:</dt>
+            <dd><span class="badge badge-primary">High</span></dd>
+          </dl>
         </article>
 
         <article class="card surface-elevated">
           <h4>Recent Activity</h4>
-          <div style="margin-top: var(--spacing-3); display: flex; flex-direction: column; gap: var(--spacing-3);">
-            <div style="display: flex; gap: var(--spacing-2); font-size: 0.85rem;">
-              <pds-icon icon="check" style="color: var(--color-primary); flex-shrink: 0;"></pds-icon>
+          <div class="flex flex-col gap-md">
+            <div class="flex gap-sm">
+              <pds-icon icon="check" class="icon-primary"></pds-icon>
               <div>
                 <strong>Task completed</strong>
-                <div style="opacity: 0.7;">2 hours ago</div>
+                <div><small>2 hours ago</small></div>
               </div>
             </div>
-            <div style="display: flex; gap: var(--spacing-2); font-size: 0.85rem;">
-              <pds-icon icon="message-circle" style="color: var(--color-secondary); flex-shrink: 0;"></pds-icon>
+            <div class="flex gap-sm">
+              <pds-icon icon="message-circle" class="icon-secondary"></pds-icon>
               <div>
                 <strong>New comment</strong>
-                <div style="opacity: 0.7;">5 hours ago</div>
+                <div><small>5 hours ago</small></div>
               </div>
             </div>
-            <div style="display: flex; gap: var(--spacing-2); font-size: 0.85rem;">
-              <pds-icon icon="upload" style="color: var(--color-accent); flex-shrink: 0;"></pds-icon>
+            <div class="flex gap-sm">
+              <pds-icon icon="upload" class="icon-accent"></pds-icon>
               <div>
                 <strong>File uploaded</strong>
-                <div style="opacity: 0.7;">1 day ago</div>
+                <div><small>1 day ago</small></div>
               </div>
             </div>
           </div>
         </article>
 
-        <div style="display: flex; gap: var(--spacing-2); margin-top: var(--spacing-4);">
+        <div class="flex gap-sm">
           <button class="btn-primary">
             <pds-icon icon="pencil"></pds-icon>
-            Edit Project
+            <span>Edit Project</span>
           </button>
           <button class="btn-outline">
             <pds-icon icon="share"></pds-icon>
-            Share
+            <span>Share</span>
           </button>
         </div>
       </div>
