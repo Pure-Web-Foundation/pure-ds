@@ -399,7 +399,7 @@ export const NavigationDrawer = () => {
           <span>Documentation</span>
         </button>
         <button class="btn-outline">
-          <pds-icon icon="message-circle"></pds-icon>
+          <pds-icon icon="chat-circle"></pds-icon>
           <span>Support</span>
         </button>
         
@@ -572,7 +572,7 @@ export const DetailDrawer = () => {
               </div>
             </div>
             <div class="flex gap-sm">
-              <pds-icon icon="message-circle" class="icon-secondary"></pds-icon>
+              <pds-icon icon="chat-circle" class="icon-secondary"></pds-icon>
               <div>
                 <strong>New comment</strong>
                 <div><small>5 hours ago</small></div>

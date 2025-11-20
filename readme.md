@@ -511,7 +511,7 @@ Rich, reusable UI components built with Lit. Lazy-loaded automatically via the *
 ```html
 <pds-icon icon="heart"></pds-icon>
 <pds-icon icon="star" size="lg"></pds-icon>
-<pds-icon icon="menu" size="32" color="red"></pds-icon>
+<pds-icon icon="list" size="32" color="red"></pds-icon>
 <pds-icon icon="info" label="Information"></pds-icon>
 ```
 
@@ -848,11 +848,11 @@ PDS uses SVG sprites for efficient icon rendering.
 <pds-icon icon="star" size="32"></pds-icon>
 
 <!-- Colored icons -->
-<pds-icon icon="alert" color="red"></pds-icon>
+<pds-icon icon="warning" color="red"></pds-icon>
 <pds-icon icon="info" color="var(--color-primary-500)"></pds-icon>
 
 <!-- Accessible icons -->
-<pds-icon icon="menu" label="Open navigation menu"></pds-icon>
+<pds-icon icon="list" label="Open navigation menu"></pds-icon>
 ```
 
 ### Configuration

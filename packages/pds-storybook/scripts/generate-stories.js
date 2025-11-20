@@ -207,7 +207,7 @@ function generateFoundationStories() {
       <pds-icon icon="star" size="lg"></pds-icon>
       <pds-icon icon="user" size="lg"></pds-icon>
       <pds-icon icon="bell" size="lg"></pds-icon>
-      <pds-icon icon="search" size="lg"></pds-icon>
+      <pds-icon icon="magnifying-glass" size="lg"></pds-icon>
       <pds-icon icon="list" size="lg"></pds-icon>
       <pds-icon icon="x" size="lg"></pds-icon>
       <pds-icon icon="check" size="lg"></pds-icon>

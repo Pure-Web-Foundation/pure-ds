@@ -7,7 +7,7 @@
  * <pds-icon icon="house"></pds-icon>
  * <pds-icon icon="gear" size="32"></pds-icon>
  * <pds-icon icon="heart" color="red" label="Favorite"></pds-icon>
- * <pds-icon icon="menu" size="lg"></pds-icon>
+ * <pds-icon icon="list" size="lg"></pds-icon>
  */
 
 export class SvgIcon extends HTMLElement {

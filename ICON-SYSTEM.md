@@ -46,7 +46,7 @@ Examples:
 <pds-icon icon="house"></pds-icon>
 <pds-icon icon="gear" size="lg"></pds-icon>
 <pds-icon icon="heart" size="32"></pds-icon>
-<pds-icon icon="menu" label="Open menu"></pds-icon>
+<pds-icon icon="list" label="Open menu"></pds-icon>
 ```
 
 The component points to the sprite at `/assets/pds/icons/icons.svg` by default.

@@ -131,7 +131,7 @@ export const CommentEditor = () => html`
       </pds-richtext>
       <div style="display: flex; gap: var(--spacing-2);">
         <button class="btn-primary">
-          <pds-icon icon="message-circle"></pds-icon>
+          <pds-icon icon="chat-circle"></pds-icon>
           Post Comment
         </button>
         <button class="btn-outline">Cancel</button>

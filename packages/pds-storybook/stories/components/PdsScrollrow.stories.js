@@ -74,7 +74,7 @@ export const UserProfiles = () => html`
           <h4 style="margin-bottom: var(--spacing-1);">Team Member ${i + 1}</h4>
           <p style="font-size: 0.85rem; opacity: 0.7; margin-bottom: var(--spacing-3);">Role Title</p>
           <button class="btn-outline btn-sm">
-            <pds-icon icon="message-circle" size="sm"></pds-icon>
+            <pds-icon icon="chat-circle" size="sm"></pds-icon>
             Message
           </button>
         </article>
