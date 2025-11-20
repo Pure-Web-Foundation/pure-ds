@@ -154,10 +154,13 @@ render(template, document.getElementById('app'));
 ```javascript
 {
   type: "string",
-  minLength: 3,           // Minimum characters
-  maxLength: 100,         // Maximum characters
-  pattern: "^[A-Z].*",    // Regex pattern
-  format: "email",        // email, url, date, time, color, etc.
+  title: "Full Name",         // Field label
+  description: "Help text",   // Field description/help
+  examples: ["John Doe"],     // Placeholder text (first example used)
+  minLength: 3,              // Minimum characters
+  maxLength: 100,            // Maximum characters
+  pattern: "^[A-Z].*",       // Regex pattern
+  format: "email",           // email, url, date, time, color, etc.
   enum: ["small", "medium", "large"]  // Fixed choices
 }
 ```
@@ -321,33 +324,44 @@ const uiSchema = {
   },
   
   "/address": {
-    "ui:layout": "grid",         // Use grid layout
-    "ui:columns": 2,              // 2-column grid
-    "ui:gap": "lg"                // Large gap between items
+    "ui:layout": "grid",                    // Use grid layout
+    "ui:layoutOptions": {
+      columns: 2,                           // 2-column grid
+      gap: "lg"                             // Large gap between items
+    }
   },
   
   "/settings": {
-    "ui:layout": "flex",          // Use flexbox
-    "ui:wrap": true,              // Allow wrapping
-    "ui:gap": "md"                // Medium gap
+    "ui:layout": "flex",                    // Use flexbox
+    "ui:layoutOptions": {
+      wrap: true,                           // Allow wrapping
+      gap: "md",                            // Medium gap
+      direction: "row"                      // "row" or "column"
+    }
   },
   
   "/advanced": {
-    "ui:accordion": true,         // Render as accordion
-    "ui:defaultOpen": [0]         // First item open by default
+    "ui:layout": "accordion",               // Render as accordion
+    "ui:layoutOptions": {
+      openFirst: true                       // First item open by default
+    }
   },
   
   "/sections": {
-    "ui:tabs": true               // Render as tabbed interface
+    "ui:layout": "tabs"                     // Render as tabbed interface (uses pds-tabstrip)
   },
   
   "/profile": {
-    "ui:surface": "card"          // Wrap in card surface
+    "ui:surface": "card"                    // Wrap in card surface
   },
   
   "/wizard": {
-    "ui:dialog": true,            // Collect in dialog instead of inline
-    "ui:dialogButton": "Configure..."  // Button label
+    "ui:dialog": true,                      // Collect in dialog instead of inline
+    "ui:dialogOptions": {
+      buttonLabel: "Configure...",          // Button label
+      dialogTitle: "Configuration",         // Dialog title
+      icon: "gear"                          // Optional icon for button
+    }
   }
 };
 ```
@@ -357,8 +371,8 @@ const uiSchema = {
 ```javascript
 const uiSchema = {
   "/name": {
-    "ui:help": "Enter your full legal name",  // Help text
-    "ui:placeholder": "John Doe",              // Placeholder
+    "ui:help": "Enter your full legal name",  // Help text (overrides description)
+    "ui:placeholder": "John Doe",              // Placeholder (overrides examples)
     "ui:icon": "user",                         // Add icon (requires pds-icon)
     "ui:iconPosition": "start"                 // "start" or "end"
   },
@@ -374,13 +388,17 @@ const uiSchema = {
   
   "/bio": {
     "ui:widget": "textarea",
-    "ui:rows": 6                              // Textarea rows
+    "ui:options": {
+      rows: 6                                   // Textarea rows
+    }
   },
   
   "/volume": {
-    "ui:widget": "range",
-    "ui:min": 0,
-    "ui:max": 100
+    "ui:widget": "input-range",                // Range slider
+    "ui:options": {
+      min: 0,
+      max: 100
+    }
   },
   
   "/country": {
@@ -388,6 +406,7 @@ const uiSchema = {
   },
   
   "/password": {
+    "ui:widget": "password",                   // Password input
     "ui:autocomplete": "new-password"          // Password autocomplete hint
   }
 };
@@ -424,7 +443,7 @@ const schema = {
 };
 ```
 
-#### File Upload
+#### File Upload (pds-upload)
 
 ```javascript
 const schema = {
@@ -432,22 +451,27 @@ const schema = {
   properties: {
     avatar: {
       type: "string",
-      format: "upload",
-      title: "Profile Picture"
+      title: "Profile Picture",
+      description: "Upload your profile photo (JPG, PNG)",
+      contentMediaType: "image/*",      // MIME type constraint
+      contentEncoding: "base64"         // Encoding format
     }
   }
 };
 
 const uiSchema = {
   "/avatar": {
-    "ui:accept": "image/*",
-    "ui:maxSize": 5000000,      // 5MB
-    "ui:maxFiles": 1
+    "ui:options": {
+      accept: "image/jpeg,image/png",  // File type filter
+      maxSize: 5242880,                // 5MB in bytes
+      multiple: false,                 // Single file
+      label: "Choose photo"            // Upload button label
+    }
   }
 };
 ```
 
-#### Rich Text
+#### Rich Text Editor (pds-richtext)
 
 ```javascript
 const schema = {
@@ -455,16 +479,20 @@ const schema = {
   properties: {
     content: {
       type: "string",
-      format: "richtext",
-      title: "Article Content"
+      title: "Article Content",
+      examples: ["Write your article..."]
     }
   }
 };
 
 const uiSchema = {
   "/content": {
-    "ui:submitOnEnter": false,
-    "ui:spellcheck": true
+    "ui:widget": "richtext",
+    "ui:options": {
+      toolbar: "standard",             // "minimal", "standard", or "full"
+      submitOnEnter: false,
+      spellcheck: true
+    }
   }
 };
 ```
@@ -555,57 +583,88 @@ const options = {
 
 ## PDS Components Integration
 
-### File Upload
+### File Upload (pds-upload)
 
 ```javascript
 const schema = {
   type: "object",
   properties: {
+    profilePicture: {
+      type: "string",
+      title: "Profile Picture",
+      description: "Upload your profile photo (JPG, PNG)",
+      contentMediaType: "image/*",
+      contentEncoding: "base64"
+    },
     documents: {
       type: "string",
-      format: "upload",
-      title: "Upload Documents"
+      title: "Documents",
+      description: "Upload multiple files",
+      contentMediaType: "application/pdf,image/*",
+      contentEncoding: "base64"
     }
   }
 };
 
 const uiSchema = {
+  "/profilePicture": {
+    "ui:options": {
+      accept: "image/jpeg,image/png",
+      maxSize: 5242880,           // 5MB
+      label: "Choose photo"
+    }
+  },
   "/documents": {
-    "ui:widget": "upload",        // Explicit widget (or use format: "upload")
-    "ui:accept": ".pdf,.doc,.docx",
-    "ui:multiple": true,
-    "ui:maxFiles": 5,
-    "ui:maxSize": 10000000        // 10MB per file
+    "ui:options": {
+      accept: "application/pdf,image/*",
+      multiple: true,
+      maxSize: 10485760,          // 10MB per file
+      label: "Choose files"
+    }
   }
 };
 ```
 
 The `pds-upload` component provides:
 - Drag & drop support
-- File type validation
-- Size validation
+- File type validation (via `accept` and `contentMediaType`)
+- Size validation (via `maxSize`)
 - Image previews
 - Multiple file selection
+- Base64 encoding for form submission
 
-### Rich Text Editor
+### Rich Text Editor (pds-richtext)
 
 ```javascript
 const schema = {
   type: "object",
   properties: {
-    message: {
+    bio: {
       type: "string",
-      format: "richtext",
-      title: "Message"
+      title: "Biography",
+      description: "Tell us about yourself",
+      examples: ["Write your biography..."]
+    },
+    coverLetter: {
+      type: "string",
+      title: "Cover Letter",
+      examples: ["Write your cover letter..."]
     }
   }
 };
 
 const uiSchema = {
-  "/message": {
-    "ui:placeholder": "Type your message...",
-    "ui:submitOnEnter": false,    // Shift+Enter for newline, Enter submits
-    "ui:spellcheck": true
+  "/bio": {
+    "ui:widget": "richtext",
+    "ui:options": {
+      toolbar: "minimal"          // "minimal", "standard", "full"
+    }
+  },
+  "/coverLetter": {
+    "ui:widget": "richtext",
+    "ui:options": {
+      toolbar: "standard"
+    }
   }
 };
 ```
@@ -613,9 +672,9 @@ const uiSchema = {
 The `pds-richtext` component features:
 - Slack-style contenteditable
 - Markdown cleaning
-- Toolbar for formatting
+- Configurable toolbar (minimal/standard/full)
 - Paste as plain text
-- Form integration
+- Form integration with proper value binding
 
 ### Icon-Enhanced Inputs
 
@@ -652,12 +711,30 @@ Renders as:
 ### Flex Layout
 
 ```javascript
+const schema = {
+  type: "object",
+  properties: {
+    contactInfo: {
+      type: "object",
+      title: "Contact Information",
+      properties: {
+        firstName: { type: "string", title: "First Name" },
+        lastName: { type: "string", title: "Last Name" },
+        email: { type: "string", format: "email" },
+        phone: { type: "string", title: "Phone" }
+      }
+    }
+  }
+};
+
 const uiSchema = {
   "/contactInfo": {
     "ui:layout": "flex",
-    "ui:gap": "md",           // xs, sm, md, lg, xl
-    "ui:wrap": true,          // Allow wrapping
-    "ui:direction": "row"     // "row" (default) or "column"
+    "ui:layoutOptions": {
+      gap: "md",              // xs, sm, md, lg, xl
+      wrap: true,             // Allow wrapping
+      direction: "row"        // "row" (default) or "column"
+    }
   }
 };
 ```
@@ -665,17 +742,41 @@ const uiSchema = {
 ### Grid Layout
 
 ```javascript
+const schema = {
+  type: "object",
+  properties: {
+    productInfo: {
+      type: "object",
+      title: "Product Information",
+      properties: {
+        name: { type: "string", title: "Product Name" },
+        sku: { type: "string", title: "SKU" },
+        price: { type: "number", title: "Price" },
+        quantity: { type: "integer", title: "Quantity" },
+        category: { type: "string", title: "Category" },
+        brand: { type: "string", title: "Brand" }
+      }
+    }
+  }
+};
+
 const uiSchema = {
-  "/details": {
+  "/productInfo": {
     "ui:layout": "grid",
-    "ui:columns": 3,          // Fixed columns: 1, 2, 3, 4, 6
-    "ui:gap": "lg"
+    "ui:layoutOptions": {
+      columns: 3,             // Fixed columns: 1, 2, 3, 4, 6
+      gap: "md"               // xs, sm, md, lg, xl
+    }
   },
   
-  "/responsive": {
+  // Responsive auto-sizing grid
+  "/anotherSection": {
     "ui:layout": "grid",
-    "ui:columns": "auto",     // Responsive auto-fit
-    "ui:autoSize": "md"       // sm, md, lg, xl (min column width)
+    "ui:layoutOptions": {
+      columns: "auto",        // Responsive auto-fit
+      autoSize: "md",         // sm, md, lg, xl (min column width)
+      gap: "md"
+    }
   }
 };
 ```
@@ -688,22 +789,26 @@ Collapsible sections with semantic `<details>` elements:
 const schema = {
   type: "object",
   properties: {
+    name: { type: "string", title: "Full Name" },
+    email: { type: "string", format: "email" },
     settings: {
       type: "object",
       title: "Settings",
       properties: {
-        general: {
+        displaySettings: {
           type: "object",
-          title: "General",
+          title: "Display Settings",
           properties: {
-            theme: { type: "string", enum: ["light", "dark"] }
+            theme: { type: "string", enum: ["Light", "Dark", "Auto"] },
+            fontSize: { type: "number", title: "Font Size", minimum: 12, maximum: 24 }
           }
         },
-        advanced: {
+        notificationSettings: {
           type: "object",
-          title: "Advanced",
+          title: "Notification Settings",
           properties: {
-            debugMode: { type: "boolean" }
+            email: { type: "boolean", title: "Email Notifications" },
+            push: { type: "boolean", title: "Push Notifications" }
           }
         }
       }
@@ -713,13 +818,12 @@ const schema = {
 
 const uiSchema = {
   "/settings": {
-    "ui:accordion": true,
-    "ui:defaultOpen": [0]     // Open first section by default
+    "ui:layout": "accordion"    // Nested objects become accordion sections
   }
 };
 ```
 
-### Tabs
+### Tabs (pds-tabstrip)
 
 Multi-page interface using `<pds-tabstrip>`:
 
@@ -727,22 +831,32 @@ Multi-page interface using `<pds-tabstrip>`:
 const schema = {
   type: "object",
   properties: {
-    profile: {
+    userSettings: {
       type: "object",
-      title: "User Profile",
+      title: "User Settings",
       properties: {
-        personal: {
+        account: {
           type: "object",
-          title: "Personal Info",
+          title: "Account",
           properties: {
-            name: { type: "string" }
+            username: { type: "string", title: "Username" },
+            email: { type: "string", format: "email" }
           }
         },
-        security: {
+        profile: {
           type: "object",
-          title: "Security",
+          title: "Profile",
           properties: {
-            password: { type: "string", format: "password" }
+            displayName: { type: "string", title: "Display Name" },
+            bio: { type: "string", title: "Bio" }
+          }
+        },
+        privacy: {
+          type: "object",
+          title: "Privacy",
+          properties: {
+            publicProfile: { type: "boolean", title: "Public Profile" },
+            showEmail: { type: "boolean", title: "Show Email" }
           }
         }
       }
@@ -751,20 +865,59 @@ const schema = {
 };
 
 const uiSchema = {
-  "/profile": {
-    "ui:tabs": true           // Each child becomes a tab
+  "/userSettings": {
+    "ui:layout": "tabs"         // Each nested object becomes a tab
   }
 };
 ```
 
 ### Cards and Surfaces
 
-Wrap fieldsets in styled containers:
+Wrap fieldsets in styled containers using PDS surface tokens:
 
 ```javascript
+const schema = {
+  type: "object",
+  properties: {
+    cardGroups: {
+      type: "object",
+      title: "Products",
+      properties: {
+        product1: {
+          type: "object",
+          title: "Premium Membership",
+          properties: {
+            name: { type: "string", title: "Product Name" },
+            price: { type: "number", title: "Price" }
+          }
+        },
+        product2: {
+          type: "object",
+          title: "Enterprise Solution",
+          properties: {
+            name: { type: "string", title: "Product Name" },
+            seats: { type: "integer", title: "Seats" }
+          }
+        }
+      }
+    }
+  }
+};
+
 const uiSchema = {
-  "/billing": {
-    "ui:surface": "card"      // "card", "elevated", "dialog"
+  "/cardGroups": {
+    "ui:layout": "grid",
+    "ui:layoutOptions": {
+      columns: "auto",
+      autoSize: "md",
+      gap: "md"
+    }
+  },
+  "/cardGroups/product1": {
+    "ui:surface": "surface-sunken"    // Surface token from PDS
+  },
+  "/cardGroups/product2": {
+    "ui:surface": "surface-inverse"   // Other options: "card", "elevated"
   }
 };
 ```
