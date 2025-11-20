@@ -37,17 +37,20 @@ const simpleSchema = {
   properties: {
     name: {
       type: 'string',
-      title: 'Full Name'
+      title: 'Full Name',
+      examples: ['John Doe']
     },
     email: {
       type: 'string',
       format: 'email',
-      title: 'Email Address'
+      title: 'Email Address',
+      examples: ['john.doe@example.com']
     },
     age: {
       type: 'number',
       title: 'Age',
-      minimum: 18
+      minimum: 18,
+      examples: [25]
     },
     newsletter: {
       type: 'boolean',
@@ -64,8 +67,8 @@ const complexSchema = {
       type: 'object',
       title: 'Personal Information',
       properties: {
-        firstName: { type: 'string', title: 'First Name' },
-        lastName: { type: 'string', title: 'Last Name' },
+        firstName: { type: 'string', title: 'First Name', examples: ['John'] },
+        lastName: { type: 'string', title: 'Last Name', examples: ['Doe'] },
         dateOfBirth: { type: 'string', format: 'date', title: 'Date of Birth' }
       }
     },
@@ -73,8 +76,8 @@ const complexSchema = {
       type: 'object',
       title: 'Address',
       properties: {
-        street: { type: 'string', title: 'Street' },
-        city: { type: 'string', title: 'City' },
+        street: { type: 'string', title: 'Street', examples: ['123 Main Street'] },
+        city: { type: 'string', title: 'City', examples: ['New York'] },
         country: {
           type: 'string',
           title: 'Country',
@@ -267,29 +270,35 @@ export const WithIcons = {
       properties: {
         username: {
           type: 'string',
-          title: 'Username'
+          title: 'Username',
+          examples: ['Enter your username']
         },
         email: {
           type: 'string',
           format: 'email',
-          title: 'Email'
+          title: 'Email',
+          examples: ['your.email@example.com']
         },
         password: {
           type: 'string',
-          title: 'Password'
+          title: 'Password',
+          examples: ['••••••••']
         },
         website: {
           type: 'string',
           format: 'uri',
-          title: 'Website'
+          title: 'Website',
+          examples: ['https://yourwebsite.com']
         },
         phone: {
           type: 'string',
-          title: 'Phone'
+          title: 'Phone',
+          examples: ['+1 (555) 123-4567']
         },
         location: {
           type: 'string',
-          title: 'Location'
+          title: 'Location',
+          examples: ['City, Country']
         }
       },
       required: ['username', 'email', 'password']
@@ -406,16 +415,19 @@ export const WithPdsRichtext = {
         bio: {
           type: 'string',
           title: 'Biography',
-          description: 'Tell us about yourself'
+          description: 'Tell us about yourself',
+          examples: ['Write your biography...']
         },
         coverLetter: {
           type: 'string',
           title: 'Cover Letter',
-          description: 'Write your cover letter'
+          description: 'Write your cover letter',
+          examples: ['Write your cover letter...']
         },
         jobDescription: {
           type: 'string',
-          title: 'Job Description'
+          title: 'Job Description',
+          examples: ['Describe the position...']
         }
       }
     };
@@ -424,22 +436,19 @@ export const WithPdsRichtext = {
       bio: {
         'ui:widget': 'richtext',
         'ui:options': {
-          toolbar: 'minimal',
-          placeholder: 'Write your biography...'
+          toolbar: 'minimal'
         }
       },
       coverLetter: {
         'ui:widget': 'richtext',
         'ui:options': {
-          toolbar: 'standard',
-          placeholder: 'Write your cover letter...'
+          toolbar: 'standard'
         }
       },
       jobDescription: {
         'ui:widget': 'richtext',
         'ui:options': {
-          toolbar: 'full',
-          placeholder: 'Describe the position...'
+          toolbar: 'full'
         }
       }
     };
@@ -464,10 +473,10 @@ export const WithFlexLayout = {
           type: 'object',
           title: 'Contact Information',
           properties: {
-            firstName: { type: 'string', title: 'First Name' },
-            lastName: { type: 'string', title: 'Last Name' },
-            email: { type: 'string', format: 'email', title: 'Email' },
-            phone: { type: 'string', title: 'Phone' }
+            firstName: { type: 'string', title: 'First Name', examples: ['Jane'] },
+            lastName: { type: 'string', title: 'Last Name', examples: ['Smith'] },
+            email: { type: 'string', format: 'email', title: 'Email', examples: ['jane.smith@example.com'] },
+            phone: { type: 'string', title: 'Phone', examples: ['+1 (555) 987-6543'] }
           }
         }
       }
@@ -504,14 +513,14 @@ export const WithGridLayout = {
           type: 'object',
           title: 'Product Information',
           properties: {
-            name: { type: 'string', title: 'Product Name' },
-            sku: { type: 'string', title: 'SKU' },
-            price: { type: 'number', title: 'Price' },
-            quantity: { type: 'integer', title: 'Quantity' },
+            name: { type: 'string', title: 'Product Name', examples: ['Wireless Headphones'] },
+            sku: { type: 'string', title: 'SKU', examples: ['WH-1000XM4'] },
+            price: { type: 'number', title: 'Price', examples: [299.99] },
+            quantity: { type: 'integer', title: 'Quantity', examples: [50] },
             category: { type: 'string', title: 'Category', enum: ['Electronics', 'Clothing', 'Books', 'Home', 'Sports', 'Garden'] },
-            brand: { type: 'string', title: 'Brand' },
-            weight: { type: 'number', title: 'Weight (kg)' },
-            dimensions: { type: 'string', title: 'Dimensions' }
+            brand: { type: 'string', title: 'Brand', examples: ['Sony'] },
+            weight: { type: 'number', title: 'Weight (kg)', examples: [0.25] },
+            dimensions: { type: 'string', title: 'Dimensions', examples: ['20 x 18 x 8 cm'] }
           }
         }
       }
@@ -545,12 +554,14 @@ export const WithAccordionLayout = {
       properties: {
         name: {
           type: 'string',
-          title: 'Full Name'
+          title: 'Full Name',
+          examples: ['Alex Rodriguez']
         },
         email: {
           type: 'string',
           format: 'email',
-          title: 'Email'
+          title: 'Email',
+          examples: ['alex.rodriguez@example.com']
         },
         settings: {
           type: 'object',
@@ -620,19 +631,19 @@ export const WithTabsLayout = {
               type: 'object',
               title: 'Account',
               properties: {
-                username: { type: 'string', title: 'Username' },
-                email: { type: 'string', format: 'email', title: 'Email' },
-                password: { type: 'string', title: 'New Password' }
+                username: { type: 'string', title: 'Username', examples: ['coolguy123'] },
+                email: { type: 'string', format: 'email', title: 'Email', examples: ['user@example.com'] },
+                password: { type: 'string', title: 'New Password', examples: ['••••••••'] }
               }
             },
             profile: {
               type: 'object',
               title: 'Profile',
               properties: {
-                displayName: { type: 'string', title: 'Display Name' },
-                bio: { type: 'string', title: 'Bio' },
-                location: { type: 'string', title: 'Location' },
-                website: { type: 'string', format: 'uri', title: 'Website' }
+                displayName: { type: 'string', title: 'Display Name', examples: ['Cool Guy'] },
+                bio: { type: 'string', title: 'Bio', examples: ['Tell us about yourself...'] },
+                location: { type: 'string', title: 'Location', examples: ['San Francisco, CA'] },
+                website: { type: 'string', format: 'uri', title: 'Website', examples: ['https://mywebsite.com'] }
               }
             },
             privacy: {
@@ -678,8 +689,8 @@ export const WithSurfaces = {
               type: 'object',
               title: 'Premium Membership',
               properties: {
-                name: { type: 'string', title: 'Product Name', default: 'Premium Plan' },
-                price: { type: 'number', title: 'Price (USD)', default: 29.99, minimum: 0 },
+                name: { type: 'string', title: 'Product Name', default: 'Premium Plan', examples: ['Premium Plan'] },
+                price: { type: 'number', title: 'Price (USD)', default: 29.99, minimum: 0, examples: [29.99] },
                 billing: { type: 'string', title: 'Billing Cycle', enum: ['Monthly', 'Quarterly', 'Yearly'], default: 'Monthly' },
                 autoRenew: { type: 'boolean', title: 'Auto-Renew', default: true }
               }
@@ -688,8 +699,8 @@ export const WithSurfaces = {
               type: 'object',
               title: 'Enterprise Solution',
               properties: {
-                name: { type: 'string', title: 'Product Name', default: 'Enterprise' },
-                seats: { type: 'integer', title: 'Number of Seats', default: 10, minimum: 1 },
+                name: { type: 'string', title: 'Product Name', default: 'Enterprise', examples: ['Enterprise'] },
+                seats: { type: 'integer', title: 'Number of Seats', default: 10, minimum: 1, examples: [10] },
                 support: { type: 'string', title: 'Support Level', enum: ['Standard', 'Priority', '24/7'], default: 'Priority' },
                 sla: { type: 'boolean', title: 'SLA Agreement', default: true }
               }
@@ -698,9 +709,9 @@ export const WithSurfaces = {
               type: 'object',
               title: 'Developer Tools',
               properties: {
-                name: { type: 'string', title: 'Product Name', default: 'Dev Tools Pro' },
-                apiCalls: { type: 'integer', title: 'API Calls/Month', default: 100000, minimum: 1000 },
-                environments: { type: 'integer', title: 'Environments', default: 3, minimum: 1, maximum: 10 },
+                name: { type: 'string', title: 'Product Name', default: 'Dev Tools Pro', examples: ['Dev Tools Pro'] },
+                apiCalls: { type: 'integer', title: 'API Calls/Month', default: 100000, minimum: 1000, examples: [100000] },
+                environments: { type: 'integer', title: 'Environments', default: 3, minimum: 1, maximum: 10, examples: [3] },
                 monitoring: { type: 'boolean', title: 'Performance Monitoring', default: true }
               }
             },
@@ -708,9 +719,9 @@ export const WithSurfaces = {
               type: 'object',
               title: 'Storage Package',
               properties: {
-                name: { type: 'string', title: 'Product Name', default: 'Cloud Storage+' },
-                storage: { type: 'number', title: 'Storage (TB)', default: 5, minimum: 1, maximum: 100 },
-                bandwidth: { type: 'number', title: 'Bandwidth (TB)', default: 10, minimum: 1 },
+                name: { type: 'string', title: 'Product Name', default: 'Cloud Storage+', examples: ['Cloud Storage+'] },
+                storage: { type: 'number', title: 'Storage (TB)', default: 5, minimum: 1, maximum: 100, examples: [5] },
+                bandwidth: { type: 'number', title: 'Bandwidth (TB)', default: 10, minimum: 1, examples: [10] },
                 backup: { type: 'boolean', title: 'Automated Backup', default: true }
               }
             }
@@ -767,27 +778,28 @@ export const WithDialogForms = {
       properties: {
         projectName: {
           type: 'string',
-          title: 'Project Name'
+          title: 'Project Name',
+          examples: ['Digital Transformation Initiative']
         },
         teamLead: {
           type: 'object',
           title: 'Team Lead',
           properties: {
-            name: { type: 'string', title: 'Full Name' },
-            email: { type: 'string', format: 'email', title: 'Email Address' },
-            phone: { type: 'string', title: 'Phone Number' },
-            department: { type: 'string', title: 'Department' },
-            location: { type: 'string', title: 'Office Location' }
+            name: { type: 'string', title: 'Full Name', examples: ['Sarah Johnson'] },
+            email: { type: 'string', format: 'email', title: 'Email Address', examples: ['sarah.johnson@company.com'] },
+            phone: { type: 'string', title: 'Phone Number', examples: ['+1-555-0123'] },
+            department: { type: 'string', title: 'Department', examples: ['Engineering'] },
+            location: { type: 'string', title: 'Office Location', examples: ['New York Office'] }
           }
         },
         budget: {
           type: 'object',
           title: 'Budget Details',
           properties: {
-            amount: { type: 'number', title: 'Budget Amount' },
+            amount: { type: 'number', title: 'Budget Amount', examples: [250000] },
             currency: { type: 'string', title: 'Currency', enum: ['USD', 'EUR', 'GBP', 'JPY', 'AUD'] },
-            fiscalYear: { type: 'string', title: 'Fiscal Year' },
-            department: { type: 'string', title: 'Cost Center' },
+            fiscalYear: { type: 'string', title: 'Fiscal Year', examples: ['2025'] },
+            department: { type: 'string', title: 'Cost Center', examples: ['IT-001'] },
             approved: { type: 'boolean', title: 'Budget Approved' }
           }
         },
@@ -797,7 +809,7 @@ export const WithDialogForms = {
           properties: {
             startDate: { type: 'string', format: 'date', title: 'Start Date' },
             endDate: { type: 'string', format: 'date', title: 'End Date' },
-            milestones: { type: 'integer', title: 'Number of Milestones', minimum: 1, maximum: 20 },
+            milestones: { type: 'integer', title: 'Number of Milestones', minimum: 1, maximum: 20, examples: [8] },
             status: { type: 'string', title: 'Status', enum: ['Planning', 'In Progress', 'On Hold', 'Completed'], default: 'Planning' }
           }
         }
@@ -893,19 +905,23 @@ export const WithDatalistAutocomplete = {
       properties: {
         country: {
           type: 'string',
-          title: 'Country'
+          title: 'Country',
+          examples: ['United States']
         },
         city: {
           type: 'string',
-          title: 'City'
+          title: 'City',
+          examples: ['New York']
         },
         skillset: {
           type: 'string',
-          title: 'Primary Skill'
+          title: 'Primary Skill',
+          examples: ['JavaScript']
         },
         company: {
           type: 'string',
-          title: 'Company'
+          title: 'Company',
+          examples: ['Microsoft']
         }
       }
     };
@@ -949,10 +965,10 @@ export const ComprehensiveExample = {
               type: 'object',
               title: 'Personal Information',
               properties: {
-                firstName: { type: 'string', title: 'First Name' },
-                lastName: { type: 'string', title: 'Last Name' },
-                email: { type: 'string', format: 'email', title: 'Email' },
-                phone: { type: 'string', title: 'Phone' },
+                firstName: { type: 'string', title: 'First Name', examples: ['John'] },
+                lastName: { type: 'string', title: 'Last Name', examples: ['Doe'] },
+                email: { type: 'string', format: 'email', title: 'Email', examples: ['john.doe@example.com'] },
+                phone: { type: 'string', title: 'Phone', examples: ['+1 (555) 123-4567'] },
                 dateOfBirth: { type: 'string', format: 'date', title: 'Date of Birth' }
               },
               required: ['firstName', 'lastName', 'email']
@@ -994,8 +1010,8 @@ export const ComprehensiveExample = {
               contentMediaType: 'image/*',
               contentEncoding: 'base64'
             },
-            bio: { type: 'string', title: 'Biography' },
-            website: { type: 'string', format: 'uri', title: 'Website' }
+            bio: { type: 'string', title: 'Biography', examples: ['Tell us about yourself...'] },
+            website: { type: 'string', format: 'uri', title: 'Website', examples: ['https://yourwebsite.com'] }
           }
         }
       }
@@ -1019,6 +1035,7 @@ export const ComprehensiveExample = {
           },
           preferences: {
             'ui:surface': 'sunken',
+            theme: { 'ui:class': 'buttons' },
             fontSize: { 'ui:widget': 'input-range' },
             lineHeight: { 'ui:widget': 'input-range' }
           }
@@ -1040,8 +1057,7 @@ export const ComprehensiveExample = {
         bio: {
           'ui:widget': 'richtext',
           'ui:options': {
-            toolbar: 'standard',
-            placeholder: 'Tell us about yourself...'
+            toolbar: 'standard'
           }
         },
         website: { 'ui:icon': 'globe', 'ui:iconPosition': 'start' }

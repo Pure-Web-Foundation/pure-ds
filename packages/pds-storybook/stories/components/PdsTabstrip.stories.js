@@ -184,6 +184,7 @@ export const Default = () => html`
               <input
                 type="text"
                 value="My Awesome Product"
+                placeholder="Enter product name"
                 style="width: 100%; padding: var(--spacing-2); border: 1px solid var(--color-border); border-radius: var(--radius-sm);"
               />
             </label>

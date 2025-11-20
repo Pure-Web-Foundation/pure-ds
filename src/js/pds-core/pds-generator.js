@@ -1730,14 +1730,8 @@ fieldset {
   width: 100%;
   background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
   
-  &[role="radiogroup"] {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-2);
-    padding: var(--spacing-3);
-    background-color: transparent;
-  }
-  
+  /* Unified styling for radio groups and checkbox groups */
+  &[role="radiogroup"],
   &[role="group"] {
     display: flex;
     flex-direction: column;
@@ -1745,28 +1739,24 @@ fieldset {
     padding: 0;
     background-color: transparent;
     
-    &:has(label:nth-child(6)) {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: var(--spacing-2);
-    }
-    
     label {
       display: flex;
       align-items: center;
       gap: var(--spacing-3);
-      padding: var(--spacing-2) 0;
+      padding: var(--spacing-1) 0;
       cursor: pointer;
       min-height: auto;
       border: none;
       background: none;
       font-weight: var(--font-weight-normal);
+      margin-bottom: 0;
       
       &:hover {
         color: var(--color-primary-700);
       }
     }
     
+    input[type="radio"],
     input[type="checkbox"] {
       position: static;
       opacity: 1;
@@ -1787,6 +1777,7 @@ fieldset {
       }
     }
   }
+  
 }
 
 
@@ -1987,10 +1978,7 @@ input[type="color"] {
   }
 }
 
-/* Awesome button-style radio and checkbox inputs */
-/* Hide the actual input element */
-fieldset[role="radiogroup"] input[type="radio"],
-fieldset input[type="checkbox"]:not(fieldset[role="group"] input[type="checkbox"]),
+/* Button-style checkbox inputs outside of fieldsets */
 .checkbox-container input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
@@ -2004,24 +1992,19 @@ fieldset input[type="checkbox"]:not(fieldset[role="group"] input[type="checkbox"
   pointer-events: none;
 }
 
-/* Style the label as a button (for inputs inside labels or adjacent) */
-fieldset[role="radiogroup"] label,
-fieldset[role="radiogroup"] label:has(input[type="radio"]),
-label:has(input[type="radio"]),
-label:has(input[type="checkbox"]):not(fieldset[role="group"] label):not(label[data-toggle]),
-input[type="radio"] + label,
-input[type="checkbox"] + label:not(fieldset[role="group"] label):not(label[data-toggle]) {
+label:has(input[type="checkbox"]):not(fieldset label):not(label[data-toggle]),
+input[type="checkbox"] + label:not(fieldset label):not(label[data-toggle]) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: ${minButtonHeight}px;
-  padding: calc(var(--spacing-1) * ${buttonPaddingValue}) var(--spacing-4);
-  border: ${borderWidth}px solid var(--color-text-primary);
+  min-height: calc(${minButtonHeight}px * 0.75);
+  padding: calc(var(--spacing-1) * ${buttonPaddingValue * 0.6}) calc(var(--spacing-4) * 0.85);
+  border: ${borderWidth}px solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  line-height: 1;
+  line-height: 1.2;
   cursor: pointer;
   transition: all var(--transition-fast);
   text-decoration: none;
@@ -2032,64 +2015,35 @@ input[type="checkbox"] + label:not(fieldset[role="group"] label):not(label[data-
   margin: 0;
   flex: 0 1 auto;
   white-space: nowrap;
+  
+  &:hover {
+    background-color: var(--color-surface-subtle);
+    border-color: var(--color-primary-500);
+  }
 }
 
-/* Radio group labels - reduced padding to distinguish from regular buttons */
-fieldset[role="radiogroup"] label,
-fieldset[role="radiogroup"] label:has(input[type="radio"]) {
-  padding: calc(var(--spacing-1) * ${
-    buttonPaddingValue * 0.5
-  }) calc(var(--spacing-4) * 0.75);
-  min-height: calc(${minButtonHeight}px * 0.85);
-  flex: 0 1 auto;
-  white-space: nowrap;
+label:has(input[type="checkbox"]:checked):not(fieldset label):not(label[data-toggle]),
+input[type="checkbox"]:checked + label:not(fieldset label):not(label[data-toggle]) {
+  background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
+  color: var(--color-primary-700);
+  border-color: var(--color-primary-500);
+  border-width: 2px;
+  font-weight: var(--font-weight-semibold);
+  
+  &:hover {
+    background-color: color-mix(in oklab, var(--color-primary-500) 15%, transparent);
+    border-color: var(--color-primary-600);
+  }
 }
 
-/* Hover states */
-fieldset[role="radiogroup"] label:hover,
-label:has(input[type="radio"]:not(:disabled)):hover,
-label:has(input[type="checkbox"]:not(:disabled)):hover:not(fieldset[role="group"] label):not(label[data-toggle]),
-input[type="radio"]:not(:disabled) + label:hover,
-input[type="checkbox"]:not(:disabled) + label:hover:not(fieldset[role="group"] label):not(label[data-toggle]) {
-  background-color: color-mix(in oklab, var(--color-text-primary) 10%, transparent);
-  border-color: var(--color-text-primary);
-}
-
-/* Checked state = primary button */
-fieldset[role="radiogroup"] label:has(input[type="radio"]:checked),
-label:has(input[type="radio"]:checked),
-label:has(input[type="checkbox"]:checked):not(fieldset[role="group"] label):not(label[data-toggle]),
-input[type="radio"]:checked + label,
-input[type="checkbox"]:checked + label:not(fieldset[role="group"] label):not(label[data-toggle]) {
-  background-color: var(--color-primary-600);
-  color: white;
-  border-color: var(--color-primary-600);
-}
-
-fieldset[role="radiogroup"] label:has(input[type="radio"]:checked):hover,
-label:has(input[type="radio"]:checked:not(:disabled)):hover,
-label:has(input[type="checkbox"]:checked:not(:disabled)):hover:not(fieldset[role="group"] label):not(label[data-toggle]),
-input[type="radio"]:checked:not(:disabled) + label:hover,
-input[type="checkbox"]:checked:not(:disabled) + label:hover:not(fieldset[role="group"] label):not(label[data-toggle]) {
-  background-color: color-mix(in oklab, var(--color-primary-600) 90%, black 10%);
-  border-color: color-mix(in oklab, var(--color-primary-600) 90%, black 10%);
-}
-
-/* Focus states */
-fieldset[role="radiogroup"] label:has(input[type="radio"]:focus),
-label:has(input[type="radio"]:focus),
-label:has(input[type="checkbox"]:focus):not(fieldset[role="group"] label):not(label[data-toggle]),
-input[type="radio"]:focus + label,
-input[type="checkbox"]:focus + label:not(fieldset[role="group"] label):not(label[data-toggle]) {
+label:has(input[type="checkbox"]:focus):not(fieldset label):not(label[data-toggle]),
+input[type="checkbox"]:focus + label:not(fieldset label):not(label[data-toggle]) {
   outline: none;
   box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round((focusRingOpacity || 0.3) * 100)}%, transparent);
 }
 
-/* Disabled states */
-label:has(input[type="radio"]:disabled),
-label:has(input[type="checkbox"]:disabled):not(fieldset[role="group"] label):not(label[data-toggle]),
-input[type="radio"]:disabled + label,
-input[type="checkbox"]:disabled + label:not(fieldset[role="group"] label):not(label[data-toggle]) {
+label:has(input[type="checkbox"]:disabled):not(fieldset label):not(label[data-toggle]),
+input[type="checkbox"]:disabled + label:not(fieldset label):not(label[data-toggle]) {
   background-color: var(--color-input-disabled-bg);
   color: var(--color-input-disabled-text);
   border-color: var(--color-border);
@@ -2097,10 +2051,8 @@ input[type="checkbox"]:disabled + label:not(fieldset[role="group"] label):not(la
   opacity: 0.6;
 }
 
-label:has(input[type="radio"]:checked:disabled),
-label:has(input[type="checkbox"]:checked:disabled):not(fieldset[role="group"] label):not(label[data-toggle]),
-input[type="radio"]:checked:disabled + label,
-input[type="checkbox"]:checked:disabled + label:not(fieldset[role="group"] label):not(label[data-toggle]) {
+label:has(input[type="checkbox"]:checked:disabled):not(fieldset label):not(label[data-toggle]),
+input[type="checkbox"]:checked:disabled + label:not(fieldset label):not(label[data-toggle]) {
   background-color: var(--color-input-disabled-bg);
   color: var(--color-input-disabled-text);
   border-color: var(--color-border);
@@ -2108,7 +2060,7 @@ input[type="checkbox"]:checked:disabled + label:not(fieldset[role="group"] label
 
 /* Keep default checkbox/radio for inputs NOT in special containers */
 input[type="checkbox"]:not(fieldset input[type="checkbox"]):not(.checkbox-container input[type="checkbox"]),
-input[type="radio"]:not(fieldset[role="radiogroup"] input[type="radio"]) {
+input[type="radio"]:not(fieldset input[type="radio"]) {
   width: var(--spacing-5);
   height: var(--spacing-5);
   min-height: var(--spacing-5);
@@ -2120,58 +2072,92 @@ input[type="radio"]:not(fieldset[role="radiogroup"] input[type="radio"]) {
   -webkit-appearance: auto;
 }
 
-/* Checkbox groups - different from radio groups */
-fieldset[role="group"] {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2);
-  padding: 0;
-  background-color: transparent;
-}
-
-/* Multi-column layout for checkbox groups with more than 5 items */
-fieldset[role="group"]:has(label:nth-child(6)) {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: var(--spacing-2);
-}
-
-/* Checkbox group labels - clean, left-aligned with visible checkboxes */
-fieldset[role="group"] label {
-  display: flex;
-  align-items: center;
+/* Button-style radio and checkbox groups with .buttons class */
+fieldset[role="radiogroup"].buttons,
+fieldset[role="group"].buttons {
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: var(--spacing-3);
-  padding: var(--spacing-2) 0;
-  cursor: pointer;
-  min-height: auto;
-  border: none;
-  background: none;
-  font-weight: var(--font-weight-normal);
-}
-
-fieldset[role="group"] label:hover {
-  color: var(--color-primary-700);
-}
-
-/* Checkbox inputs in groups - visible and styled */
-fieldset[role="group"] input[type="checkbox"] {
-  position: static;
-  opacity: 1;
-  width: var(--spacing-5);
-  height: var(--spacing-5);
-  min-height: var(--spacing-5);
-  margin: 0;
-  cursor: pointer;
-  flex-shrink: 0;
-  accent-color: var(--color-primary-600);
-  appearance: auto;
-  -webkit-appearance: auto;
-  -moz-appearance: auto;
-}
-
-fieldset[role="group"] input[type="checkbox"]:focus {
-  outline: 2px solid var(--color-primary-500);
-  outline-offset: 2px;
+  
+  input[type="radio"],
+  input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
+  }
+  
+  label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(${minButtonHeight}px * 0.75);
+    padding: calc(var(--spacing-1) * ${buttonPaddingValue * 0.6}) calc(var(--spacing-4) * 0.85);
+    border: ${borderWidth}px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.2;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    touch-action: manipulation;
+    user-select: none;
+    background-color: transparent;
+    color: var(--color-text-primary);
+    margin: 0;
+    flex: 0 1 auto;
+    white-space: nowrap;
+    
+    &:hover {
+      background-color: var(--color-surface-subtle);
+      border-color: var(--color-primary-500);
+      color: var(--color-text-primary);
+    }
+  }
+  
+  label:has(input[type="radio"]:checked),
+  label:has(input[type="checkbox"]:checked) {
+    background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
+    color: var(--color-primary-700);
+    border-color: var(--color-primary-500);
+    border-width: 2px;
+    font-weight: var(--font-weight-semibold);
+    
+    &:hover {
+      background-color: color-mix(in oklab, var(--color-primary-500) 15%, transparent);
+      border-color: var(--color-primary-600);
+    }
+  }
+  
+  label:has(input[type="radio"]:focus),
+  label:has(input[type="checkbox"]:focus) {
+    outline: none;
+    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round((focusRingOpacity || 0.3) * 100)}%, transparent);
+  }
+  
+  label:has(input[type="radio"]:disabled),
+  label:has(input[type="checkbox"]:disabled) {
+    background-color: var(--color-input-disabled-bg);
+    color: var(--color-input-disabled-text);
+    border-color: var(--color-border);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  
+  label:has(input[type="radio"]:checked:disabled),
+  label:has(input[type="checkbox"]:checked:disabled) {
+    background-color: var(--color-input-disabled-bg);
+    color: var(--color-input-disabled-text);
+    border-color: var(--color-border);
+  }
 }
 
 /* Toggle switches - enhanced checkboxes with data-toggle attribute */
@@ -4037,6 +4023,7 @@ nav[data-dropdown] {
 
   :where(dialog){
     background-color: transparent;
+    min-width: 320px;
     border: none;
   }
 

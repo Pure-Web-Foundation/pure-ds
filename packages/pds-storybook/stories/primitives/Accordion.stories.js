@@ -215,13 +215,13 @@ export const SingleExpandAccordion = () => html`
           <form method="post" action="#">
             <label>
               <span>Display Name</span>
-              <input type="text" value="John Doe" />
+              <input type="text" value="John Doe" placeholder="Enter your display name" />
             </label>
             <label style="margin-top: var(--spacing-3);">
               <span>Email</span>
               <div class="input-icon">
                 <pds-icon icon="envelope"></pds-icon>
-                <input type="email" value="john@example.com" />
+                <input type="email" value="john@example.com" placeholder="your.email@example.com" />
               </div>
             </label>
             <button type="submit" class="btn-primary btn-sm" style="margin-top: var(--spacing-3);">

@@ -24,6 +24,7 @@ primitives.replaceSync(`@layer primitives {
 
   :where(dialog){
     background-color: transparent;
+    min-width: 320px;
     border: none;
   }
 
@@ -228,31 +229,22 @@ primitives.replaceSync(`@layer primitives {
   }
 
   :where(legend) {
-    display: contents;
+    display: block;
     font-weight: var(--font-weight-semibold);
-    padding: 0 var(--spacing-2);
+    padding: 0;
     color: var(--color-text-primary);
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-primary);
     margin: 0 0 var(--spacing-3) 0;
     border: none;
     line-height: var(--font-line-height-tight);
-    padding: 0 var(--spacing-3);
     font-size: var(--font-size-lg);
     background: transparent; /* avoid browser default notch behavior */
     width: auto;
     box-sizing: border-box;
   }
 
-  legend:not(:empty)::after {
-      content: "";
-      display: block;
-      width: 100%;
-      height: 1px;
-      background: var(--color-border);
-      margin-bottom: var(--spacing-4);
-  }
-
+  
   /* List primitives */
   :where(ul, ol) {
     padding-left: var(--spacing-6);
@@ -371,6 +363,7 @@ export const primitivesCSS = `@layer primitives {
 
   :where(dialog){
     background-color: transparent;
+    min-width: 320px;
     border: none;
   }
 
@@ -575,31 +568,22 @@ export const primitivesCSS = `@layer primitives {
   }
 
   :where(legend) {
-    display: contents;
+    display: block;
     font-weight: var(--font-weight-semibold);
-    padding: 0 var(--spacing-2);
+    padding: 0;
     color: var(--color-text-primary);
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-primary);
     margin: 0 0 var(--spacing-3) 0;
     border: none;
     line-height: var(--font-line-height-tight);
-    padding: 0 var(--spacing-3);
     font-size: var(--font-size-lg);
     background: transparent; /* avoid browser default notch behavior */
     width: auto;
     box-sizing: border-box;
   }
 
-  legend:not(:empty)::after {
-      content: "";
-      display: block;
-      width: 100%;
-      height: 1px;
-      background: var(--color-border);
-      margin-bottom: var(--spacing-4);
-  }
-
+  
   /* List primitives */
   :where(ul, ol) {
     padding-left: var(--spacing-6);

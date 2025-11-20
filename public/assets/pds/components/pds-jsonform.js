@@ -435,10 +435,10 @@ export class SchemaForm extends LitElement {
     `;
   }
 
-  #renderNode(node) {
+  #renderNode(node, context = {}) {
     switch (node.kind) {
       case "fieldset":
-        return this.#renderFieldset(node);
+        return this.#renderFieldset(node, context);
       case "field":
         return this.#renderField(node);
       case "array":
@@ -452,7 +452,7 @@ export class SchemaForm extends LitElement {
     }
   }
 
-  #renderFieldset(node) {
+  #renderFieldset(node, context = {}) {
     const legend = node.title ?? "Section";
     const ui = node.ui || this.#uiFor(node.path);
     
@@ -517,8 +517,8 @@ export class SchemaForm extends LitElement {
     // Render basic fieldset
     const fieldsetContent = html`
       <fieldset data-path=${node.path} class=${ifDefined(fieldsetClass)} style=${ifDefined(layoutStyle || undefined)}>
-        ${!this.hideLegend ? html`<legend>${legend}</legend>` : nothing}
-        ${node.children.map((child) => this.#renderNode(child))}
+        ${!this.hideLegend && !context.hideLegend ? html`<legend>${legend}</legend>` : nothing}
+        ${node.children.map((child) => this.#renderNode(child, context))}
       </fieldset>
     `;
     
@@ -560,7 +560,7 @@ export class SchemaForm extends LitElement {
     const openFirst = layoutOptions.openFirst ?? true;
     
     return html`
-      <section class="accordion" aria-label=${legend} data-path=${node.path}>
+      <section class="accordion" data-path=${node.path}>
         ${children.map((child, idx) => {
           const childTitle = child.title ?? `Section ${idx + 1}`;
           const childId = `${node.path}-acc-${idx}`.replace(/[^a-zA-Z0-9_-]/g, '-');
@@ -569,7 +569,7 @@ export class SchemaForm extends LitElement {
             <details ?open=${isOpen}>
               <summary id=${childId}>${childTitle}</summary>
               <div role="region" aria-labelledby=${childId}>
-                ${this.#renderNode(child)}
+                ${this.#renderNode(child, { hideLegend: true })}
               </div>
             </details>
           `;
@@ -921,8 +921,9 @@ export class SchemaForm extends LitElement {
           : node.widgetKey === "checkbox-group"
           ? "group"
           : undefined;
+      const fieldsetClass = ui?.["ui:class"];
       return html`
-        <fieldset data-path=${path} role=${ifDefined(role)}>
+        <fieldset data-path=${path} role=${ifDefined(role)} class=${ifDefined(fieldsetClass)}>
           <legend>${label}</legend>
           ${controlTpl} ${help ? html`<div data-help>${help}</div>` : nothing}
         </fieldset>
@@ -1413,18 +1414,31 @@ export class SchemaForm extends LitElement {
 
   // ===== Utilities =====
   #uiFor(path) {
-    // Try exact match first
-    if (this.uiSchema?.[path]) return this.uiSchema[path];
+    if (!this.uiSchema) return undefined;
+    
+    // Try exact match first (flat structure)
+    if (this.uiSchema[path]) return this.uiSchema[path];
     
     // Try with leading slash
     const withSlash = this.#asRel(path);
-    if (this.uiSchema?.[withSlash]) return this.uiSchema[withSlash];
+    if (this.uiSchema[withSlash]) return this.uiSchema[withSlash];
     
     // Try without leading slash for convenience
     const withoutSlash = path.startsWith("/") ? path.substring(1) : path;
-    if (this.uiSchema?.[withoutSlash]) return this.uiSchema[withoutSlash];
+    if (this.uiSchema[withoutSlash]) return this.uiSchema[withoutSlash];
     
-    return undefined;
+    // Try nested navigation (e.g., userProfile/settings/preferences/theme)
+    const parts = path.replace(/^\//, '').split('/');
+    let current = this.uiSchema;
+    for (const part of parts) {
+      if (current && typeof current === 'object' && part in current) {
+        current = current[part];
+      } else {
+        return undefined;
+      }
+    }
+    // Only return if we found a UI config object (not a nested parent)
+    return current && typeof current === 'object' ? current : undefined;
   }
   #asRel(path) {
     return path.startsWith("/") ? path : "/" + path;
@@ -1445,7 +1459,10 @@ export class SchemaForm extends LitElement {
   }
 
   #nativeConstraints(path, schema) {
-    const attrs = { placeholder: schema.placeholder };
+    // Use placeholder if explicitly set, otherwise use first example as placeholder
+    const attrs = { 
+      placeholder: schema.placeholder || (schema.examples && schema.examples.length > 0 ? schema.examples[0] : undefined)
+    };
     
     if (schema.type === "string") {
       if (schema.minLength != null) attrs.minLength = schema.minLength;

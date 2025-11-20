@@ -450,14 +450,14 @@ export const SettingsDrawer = () => {
               <span>Username</span>
               <div class="input-icon">
                 <pds-icon icon="user"></pds-icon>
-                <input type="text" value="john_doe">
+                <input type="text" value="john_doe" placeholder="Enter your username">
               </div>
             </label>
             <label>
               <span>Email</span>
               <div class="input-icon">
                 <pds-icon icon="envelope"></pds-icon>
-                <input type="email" value="john@example.com">
+                <input type="email" value="john@example.com" placeholder="your.email@example.com">
               </div>
             </label>
           </fieldset>
