@@ -1,5 +1,11 @@
-// Vanilla Web Components version (no Lit)
-
+/**
+ * @element pds-tabpanel
+ * 
+ * @attr {string} label - Label for the tab button
+ * @attr {string} id - Unique identifier for the panel (auto-generated if not provided)
+ * 
+ * @slot - Content of the tab panel
+ */
 class TabPanel extends HTMLElement {
   connectedCallback() {
     // ensure id + label
@@ -25,6 +31,18 @@ class TabPanel extends HTMLElement {
 }
 customElements.define("pds-tabpanel", TabPanel);
 
+/**
+ * @element pds-tabstrip
+ * @fires change - Fired when the active tab changes
+ * 
+ * @attr {string} label - Accessible label for the tabs navigation
+ * 
+ * @slot - Tab panels (pds-tabpanel elements)
+ * 
+ * @csspart tabs - The navigation container with tab buttons
+ * 
+ * @cssprop --color-accent-400 - Color of the active tab indicator
+ */
 class TabStrip extends HTMLElement {
   #shadow = this.attachShadow({ mode: "open" });
   #inkbar;

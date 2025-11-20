@@ -1,5 +1,24 @@
 const PDS = window.PDS;
 
+/**
+ * @element pds-drawer
+ * @fires toggle - Fired when the drawer opens or closes
+ * 
+ * @slot drawer-header - Header content for the drawer
+ * @slot drawer-content - Main content of the drawer
+ * 
+ * @cssprop --drawer-duration - Animation duration (default: var(--transition-normal))
+ * @cssprop --drawer-easing - Animation easing function (default: var(--easing-emphasized))
+ * @cssprop --drawer-max-height - Maximum height when position is top/bottom (default: 70vh)
+ * @cssprop --drawer-min-height - Minimum height when position is top/bottom (default: auto)
+ * 
+ * @csspart backdrop - The semi-transparent backdrop overlay
+ * @csspart panel - The drawer panel container
+ * @csspart header - The drawer header section
+ * @csspart close-button - The close button
+ * @csspart grab-handle - The drag handle indicator
+ * @csspart content - The drawer content section
+ */
 export class DrawerPanel extends HTMLElement {
   #isDragging = false;
   #startX = 0;
@@ -38,6 +57,12 @@ export class DrawerPanel extends HTMLElement {
   }
 
   // Attribute/property reflection
+  
+  /**
+   * Controls whether the drawer is open or closed
+   * @type {boolean}
+   * @attr open
+   */
   get open() {
     return this._open;
   }
@@ -55,6 +80,12 @@ export class DrawerPanel extends HTMLElement {
     this.#syncAria();
   }
 
+  /**
+   * Position of the drawer relative to the viewport
+   * @type {"bottom" | "top" | "left" | "right"}
+   * @attr position
+   * @default "bottom"
+   */
   get position() {
     return this._position;
   }
@@ -67,6 +98,12 @@ export class DrawerPanel extends HTMLElement {
     this.#renderCloseButtonVisibility();
   }
 
+  /**
+   * Controls drag interaction behavior
+   * @type {"header" | "none"}
+   * @attr drag
+   * @default "header"
+   */
   get drag() {
     return this._drag;
   }
@@ -77,6 +114,12 @@ export class DrawerPanel extends HTMLElement {
     this.setAttribute("drag", v);
   }
 
+  /**
+   * Maximum height for top/bottom positioned drawers (CSS value)
+   * @type {string}
+   * @attr max-height
+   * @default "70vh"
+   */
   get maxHeight() {
     return this._maxHeight;
   }
@@ -93,6 +136,12 @@ export class DrawerPanel extends HTMLElement {
     else this.removeAttribute("max-height");
   }
 
+  /**
+   * Minimum height for top/bottom positioned drawers (CSS value)
+   * @type {string}
+   * @attr min-height
+   * @default "auto"
+   */
   get minHeight() {
     return this._minHeight;
   }
@@ -109,6 +158,12 @@ export class DrawerPanel extends HTMLElement {
     else this.removeAttribute("min-height");
   }
 
+  /**
+   * Whether to show the close button in the header
+   * @type {boolean}
+   * @attr show-close
+   * @default false
+   */
   get showClose() {
     return this._showClose;
   }
@@ -348,29 +403,48 @@ export class DrawerPanel extends HTMLElement {
   }
 
   // Public API
+  
+  /**
+   * Opens the drawer
+   * @method openDrawer
+   * @public
+   */
   openDrawer() {
     this.open = true;
   }
+  
+  /**
+   * Closes the drawer
+   * @method closeDrawer
+   * @public
+   */
   closeDrawer() {
     this.open = false;
   }
+  
+  /**
+   * Toggles the drawer open/closed state
+   * @method toggleDrawer
+   * @public
+   */
   toggleDrawer() {
     this.open = !this.open;
   }
 
   /**
-   * Public convenience to configure and open the drawer in one call.
-   * Mirrors PureApp.showDrawer signature for a near drop-in replacement.
-  * @param {any|HTMLElement|string} htmlContent
-   * @param {Object} [options]
-  * @param {any|HTMLElement|string} [options.header]
-   * @param {('bottom'|'top'|'left'|'right')} [options.position]
-   * @param {string} [options.maxHeight]
-   * @param {string} [options.minHeight]
-   * @param {boolean} [options.showClose]
-   * @param {boolean} [options.waitForMedia=true]
-   * @param {number} [options.mediaTimeout=500]
-   * @returns {Promise<this>} resolves to the drawer element
+   * Configure and open the drawer in one call
+   * @method show
+   * @public
+   * @param {any|HTMLElement|string} htmlContent - The main content to display
+   * @param {Object} [options] - Configuration options
+   * @param {any|HTMLElement|string} [options.header] - Header content
+   * @param {"bottom"|"top"|"left"|"right"} [options.position] - Drawer position
+   * @param {string} [options.maxHeight] - Maximum height (CSS value)
+   * @param {string} [options.minHeight] - Minimum height (CSS value)
+   * @param {boolean} [options.showClose] - Show close button
+   * @param {boolean} [options.waitForMedia=true] - Wait for images/videos to load
+   * @param {number} [options.mediaTimeout=500] - Media load timeout in ms
+   * @returns {Promise<this>} Resolves to the drawer element
    */
   async show(htmlContent, options = {}) {
     // Apply provided options to this instance
@@ -407,6 +481,14 @@ export class DrawerPanel extends HTMLElement {
    * Set drawer content using slots
   * @param {any|HTMLElement|string} bodyContent - Content for drawer body (HTMLElement or string; Lit templates supported if runtime available)
   * @param {any|HTMLElement|string} headerContent - Optional content for drawer header
+   */
+  /**
+   * Set the content of the drawer
+   * @method setContent
+   * @public
+   * @param {any|HTMLElement|string} bodyContent - Content for the drawer body
+   * @param {any|HTMLElement|string} [headerContent] - Optional header content
+   * @returns {Promise<void>}
    */
   async setContent(bodyContent, headerContent = null) {
     // Clear existing slotted content
@@ -467,6 +549,8 @@ export class DrawerPanel extends HTMLElement {
 
   /**
    * Clear drawer content (removes all slotted content)
+   * @method clearContent
+   * @public
    */
   clearContent() {
     this.querySelectorAll('[slot="drawer-content"], [slot="drawer-header"]').forEach(el => el.remove());

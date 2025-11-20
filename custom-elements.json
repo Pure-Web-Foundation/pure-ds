@@ -1,0 +1,1775 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-drawer.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "DrawerPanel",
+          "cssProperties": [
+            {
+              "description": "Animation duration (default: var(--transition-normal))",
+              "name": "--drawer-duration"
+            },
+            {
+              "description": "Animation easing function (default: var(--easing-emphasized))",
+              "name": "--drawer-easing"
+            },
+            {
+              "description": "Maximum height when position is top/bottom (default: 70vh)",
+              "name": "--drawer-max-height"
+            },
+            {
+              "description": "Minimum height when position is top/bottom (default: auto)",
+              "name": "--drawer-min-height"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "The semi-transparent backdrop overlay",
+              "name": "backdrop"
+            },
+            {
+              "description": "The drawer panel container",
+              "name": "panel"
+            },
+            {
+              "description": "The drawer header section",
+              "name": "header"
+            },
+            {
+              "description": "The close button",
+              "name": "close-button"
+            },
+            {
+              "description": "The drag handle indicator",
+              "name": "grab-handle"
+            },
+            {
+              "description": "The drawer content section",
+              "name": "content"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Header content for the drawer",
+              "name": "drawer-header"
+            },
+            {
+              "description": "Main content of the drawer",
+              "name": "drawer-content"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "description": "Controls whether the drawer is open or closed",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "position",
+              "description": "Position of the drawer relative to the viewport",
+              "type": {
+                "text": "\"bottom\" | \"top\" | \"left\" | \"right\""
+              },
+              "default": "\"bottom\"",
+              "attribute": "position"
+            },
+            {
+              "kind": "field",
+              "name": "drag",
+              "description": "Controls drag interaction behavior",
+              "type": {
+                "text": "\"header\" | \"none\""
+              },
+              "default": "\"header\"",
+              "attribute": "drag"
+            },
+            {
+              "kind": "field",
+              "name": "maxHeight",
+              "description": "Maximum height for top/bottom positioned drawers (CSS value)",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"70vh\"",
+              "attribute": "max-height"
+            },
+            {
+              "kind": "field",
+              "name": "minHeight",
+              "description": "Minimum height for top/bottom positioned drawers (CSS value)",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"auto\"",
+              "attribute": "min-height"
+            },
+            {
+              "kind": "field",
+              "name": "showClose",
+              "description": "Whether to show the close button in the header",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "show-close"
+            },
+            {
+              "kind": "method",
+              "name": "openDrawer",
+              "description": "Opens the drawer",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "closeDrawer",
+              "description": "Closes the drawer",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "toggleDrawer",
+              "description": "Toggles the drawer open/closed state",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "show",
+              "parameters": [
+                {
+                  "name": "htmlContent",
+                  "description": "The main content to display",
+                  "type": {
+                    "text": "any|HTMLElement|string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Configuration options",
+                  "optional": true,
+                  "type": {
+                    "text": "@param {any|HTMLElement|string} [options.header] - Header content\n   * @param {\"bottom\"|\"top\"|\"left\"|\"right\"} [options.position] - Drawer position\n   * @param {string} [options.maxHeight] - Maximum height (CSS value)\n   * @param {string} [options.minHeight] - Minimum height (CSS value)\n   * @param {boolean} [options.showClose] - Show close button\n   * @param {boolean} [options.waitForMedia=true] - Wait for images/videos to load\n   * @param {number} [options.mediaTimeout=500] - Media load timeout in ms\n   * "
+                  }
+                }
+              ],
+              "description": "Configure and open the drawer in one call",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "Promise<this>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setContent",
+              "parameters": [
+                {
+                  "name": "bodyContent",
+                  "description": "Content for the drawer body",
+                  "type": {
+                    "text": "any|HTMLElement|string"
+                  }
+                },
+                {
+                  "name": "headerContent",
+                  "default": "null",
+                  "description": "Optional header content",
+                  "type": {
+                    "text": "any|HTMLElement|string"
+                  },
+                  "optional": true
+                }
+              ],
+              "description": "Set the content of the drawer",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "clearContent",
+              "description": "Clear drawer content (removes all slotted content)",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "_open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_position",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"bottom\""
+            },
+            {
+              "kind": "field",
+              "name": "_drag",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"header\""
+            },
+            {
+              "kind": "field",
+              "name": "_maxHeight",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_minHeight",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_showClose",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when the drawer opens or closes",
+              "name": "toggle"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "description": "Controls whether the drawer is open or closed",
+              "type": {
+                "text": "boolean"
+              },
+              "fieldName": "open"
+            },
+            {
+              "name": "position",
+              "description": "Position of the drawer relative to the viewport",
+              "type": {
+                "text": "\"bottom\" | \"top\" | \"left\" | \"right\""
+              },
+              "default": "\"bottom\"",
+              "fieldName": "position"
+            },
+            {
+              "name": "drag",
+              "description": "Controls drag interaction behavior",
+              "type": {
+                "text": "\"header\" | \"none\""
+              },
+              "default": "\"header\"",
+              "fieldName": "drag"
+            },
+            {
+              "name": "max-height",
+              "description": "Maximum height for top/bottom positioned drawers (CSS value)",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"70vh\"",
+              "fieldName": "maxHeight"
+            },
+            {
+              "name": "min-height",
+              "description": "Minimum height for top/bottom positioned drawers (CSS value)",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"auto\"",
+              "fieldName": "minHeight"
+            },
+            {
+              "name": "show-close",
+              "description": "Whether to show the close button in the header",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "showClose"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-drawer",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "DrawerPanel",
+          "declaration": {
+            "name": "DrawerPanel",
+            "module": "public/assets/pds/components/pds-drawer.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-drawer",
+          "declaration": {
+            "name": "DrawerPanel",
+            "module": "public/assets/pds/components/pds-drawer.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-icon.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "SVG Icon Web Component",
+          "name": "SvgIcon",
+          "members": [
+            {
+              "kind": "field",
+              "name": "fallbackIcons",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{\n    'x': '<path d=\"M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z\" fill=\"currentColor\"/>',\n    \n    'house': '<path d=\"M218.83,103.77l-80-75.48a1.14,1.14,0,0,1-.11-.11,16,16,0,0,0-21.53,0l-.11.11L37.17,103.77A16,16,0,0,0,32,115.55V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V160h32v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V115.55A16,16,0,0,0,218.83,103.77ZM208,208H160V160a16,16,0,0,0-16-16H112a16,16,0,0,0-16,16v48H48V115.55l.11-.1L128,40l79.9,75.43.11.1Z\" fill=\"currentColor\"/>',\n    \n    'list': '<path d=\"M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z\" fill=\"currentColor\"/>',\n    \n    'gear': '<path d=\"M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z\" fill=\"currentColor\"/>',\n    \n    'magnifying-glass': '<path d=\"M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z\" fill=\"currentColor\"/>',\n    \n    'info': '<path d=\"M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z\" fill=\"currentColor\"/>',\n    \n    'check-circle': '<path d=\"M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z\" fill=\"currentColor\"/>',\n    \n    'warning': '<path d=\"M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM222.93,203.8a8.5,8.5,0,0,1-7.48,4.2H40.55a8.5,8.5,0,0,1-7.48-4.2,7.59,7.59,0,0,1,0-7.72L120.52,44.21a8.75,8.75,0,0,1,15,0l87.45,151.87A7.59,7.59,0,0,1,222.93,203.8ZM120,144V104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z\" fill=\"currentColor\"/>',\n    \n    'missing': '<circle cx=\"128\" cy=\"128\" r=\"96\" stroke=\"currentColor\" fill=\"none\" stroke-width=\"16\"/>',\n  }"
+            },
+            {
+              "kind": "method",
+              "name": "getFallbackIcon",
+              "parameters": [
+                {
+                  "name": "name"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "spriteAvailable",
+              "description": "Check if sprite sheet is available",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "icon",
+              "type": {
+                "text": "string"
+              },
+              "description": "Icon name from the sprite sheet"
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "string|number"
+              },
+              "description": "Icon size in pixels or named size (xs, sm, md, lg, xl, 2xl)"
+            },
+            {
+              "name": "color",
+              "type": {
+                "text": "string"
+              },
+              "description": "Icon color (CSS color value, default: currentColor)"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Accessible label for the icon (adds role=\"img\")"
+            },
+            {
+              "name": "rotate",
+              "type": {
+                "text": "number"
+              },
+              "description": "Rotation angle in degrees"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Override sprite sheet path",
+              "name": "sprite"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Force fallback icon rendering",
+              "name": "no-sprite"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-icon",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SvgIcon",
+          "declaration": {
+            "name": "SvgIcon",
+            "module": "public/assets/pds/components/pds-icon.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-icon",
+          "declaration": {
+            "name": "SvgIcon",
+            "module": "public/assets/pds/components/pds-icon.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-jsonform.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "<pds-jsonform>\n\nForm Actions:\nBy default, the form includes Submit and Reset buttons inside the <form> element.\n\nUsage options:\n1. Default buttons:\n   <pds-jsonform .jsonSchema=${schema}></pds-jsonform>\n\n2. Customize labels:\n   <pds-jsonform .jsonSchema=${schema} submit-label=\"Save\" reset-label=\"Clear\"></pds-jsonform>\n\n3. Hide reset button:\n   <pds-jsonform .jsonSchema=${schema} hide-reset></pds-jsonform>\n\n4. Add extra buttons (slot):\n   <pds-jsonform .jsonSchema=${schema}>\n     <button type=\"button\" slot=\"actions\"",
+          "name": "SchemaForm",
+          "members": [
+            {
+              "kind": "method",
+              "name": "defineRenderer",
+              "parameters": [
+                {
+                  "name": "widgetKey"
+                },
+                {
+                  "name": "fn"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "useValidator",
+              "parameters": [
+                {
+                  "name": "fn"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getValuesFlat"
+            },
+            {
+              "kind": "method",
+              "name": "serialize"
+            },
+            {
+              "kind": "method",
+              "name": "submit"
+            },
+            {
+              "kind": "field",
+              "name": "jsonSchema",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "attribute": "json-schema"
+            },
+            {
+              "kind": "field",
+              "name": "uiSchema",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "attribute": "ui-schema"
+            },
+            {
+              "kind": "field",
+              "name": "options",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "attribute": "options"
+            },
+            {
+              "kind": "field",
+              "name": "values",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "attribute": "values"
+            },
+            {
+              "kind": "field",
+              "name": "method",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"post\"",
+              "attribute": "method"
+            },
+            {
+              "kind": "field",
+              "name": "hideActions",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "hide-actions"
+            },
+            {
+              "kind": "field",
+              "name": "submitLabel",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"Submit\"",
+              "attribute": "submit-label"
+            },
+            {
+              "kind": "field",
+              "name": "resetLabel",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"Reset\"",
+              "attribute": "reset-label"
+            },
+            {
+              "kind": "field",
+              "name": "hideReset",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "hide-reset"
+            },
+            {
+              "kind": "field",
+              "name": "hideLegend",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "hide-legend"
+            },
+            {
+              "kind": "field",
+              "name": "action",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "attribute": "action"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "hideSubmit",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "hide-submit"
+            }
+          ],
+          "events": [
+            {
+              "name": "name",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "json-schema",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "fieldName": "jsonSchema"
+            },
+            {
+              "name": "ui-schema",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "fieldName": "uiSchema"
+            },
+            {
+              "name": "options",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "fieldName": "options"
+            },
+            {
+              "name": "values",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "fieldName": "values"
+            },
+            {
+              "name": "action",
+              "type": {
+                "text": "string"
+              },
+              "fieldName": "action"
+            },
+            {
+              "name": "method",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"post\"",
+              "fieldName": "method"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "fieldName": "disabled"
+            },
+            {
+              "name": "hide-actions",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "hideActions"
+            },
+            {
+              "name": "submit-label",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"Submit\"",
+              "fieldName": "submitLabel"
+            },
+            {
+              "name": "reset-label",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"Reset\"",
+              "fieldName": "resetLabel"
+            },
+            {
+              "name": "hide-reset",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "hideReset"
+            },
+            {
+              "name": "hide-submit",
+              "type": {
+                "text": "boolean"
+              },
+              "fieldName": "hideSubmit"
+            },
+            {
+              "name": "hide-legend",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "hideLegend"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "module": "/public/assets/pds/components/pds-jsonform.js"
+          },
+          "tagName": "pds-jsonform",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SchemaForm",
+          "declaration": {
+            "name": "SchemaForm",
+            "module": "public/assets/pds/components/pds-jsonform.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-jsonform",
+          "declaration": {
+            "name": "SchemaForm",
+            "module": "public/assets/pds/components/pds-jsonform.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-richtext.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "RichText",
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "name"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "required"
+            },
+            {
+              "kind": "field",
+              "name": "submitOnEnter"
+            },
+            {
+              "kind": "field",
+              "name": "spellcheck"
+            },
+            {
+              "kind": "field",
+              "name": "toolbar"
+            },
+            {
+              "kind": "field",
+              "name": "value"
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity"
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity"
+            },
+            {
+              "kind": "field",
+              "name": "_submitOnEnter",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_toolbar",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "_spellcheck",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "_value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_placeholder",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_required",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            }
+          ],
+          "events": [
+            {
+              "name": "input",
+              "type": {
+                "text": "InputEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "name"
+            },
+            {
+              "name": "placeholder"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "required"
+            },
+            {
+              "name": "submit-on-enter"
+            },
+            {
+              "name": "spellcheck"
+            },
+            {
+              "name": "toolbar"
+            },
+            {
+              "name": "value"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-richtext",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RichText",
+          "declaration": {
+            "name": "RichText",
+            "module": "public/assets/pds/components/pds-richtext.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-richtext",
+          "declaration": {
+            "name": "RichText",
+            "module": "public/assets/pds/components/pds-richtext.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-scrollrow.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsScrollrow",
+          "members": [
+            {
+              "kind": "field",
+              "name": "label"
+            },
+            {
+              "kind": "field",
+              "name": "snap"
+            },
+            {
+              "kind": "method",
+              "name": "doPage",
+              "parameters": [
+                {
+                  "name": "e"
+                }
+              ]
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label"
+            },
+            {
+              "name": "snap"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-scrollrow",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-scrollrow",
+          "declaration": {
+            "name": "PdsScrollrow",
+            "module": "public/assets/pds/components/pds-scrollrow.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-splitpanel.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "anonymous_0",
+          "members": [
+            {
+              "kind": "field",
+              "name": "layout"
+            },
+            {
+              "kind": "field",
+              "name": "defaultSplit"
+            },
+            {
+              "kind": "field",
+              "name": "breakpoint"
+            },
+            {
+              "kind": "field",
+              "name": "open"
+            },
+            {
+              "kind": "method",
+              "name": "_render"
+            },
+            {
+              "kind": "method",
+              "name": "_adoptStyles"
+            },
+            {
+              "kind": "method",
+              "name": "updateLayout"
+            },
+            {
+              "kind": "method",
+              "name": "startDragging",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "drag",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "stopDragging"
+            },
+            {
+              "kind": "method",
+              "name": "toggleMobileView"
+            },
+            {
+              "kind": "method",
+              "name": "closeMobileView"
+            },
+            {
+              "kind": "method",
+              "name": "_updateToggleButton"
+            },
+            {
+              "kind": "field",
+              "name": "_layout",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"horizontal\""
+            },
+            {
+              "kind": "field",
+              "name": "_defaultSplit",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"450px\""
+            },
+            {
+              "kind": "field",
+              "name": "_breakpoint",
+              "type": {
+                "text": "number"
+              },
+              "default": "1024"
+            },
+            {
+              "kind": "field",
+              "name": "_open"
+            },
+            {
+              "kind": "field",
+              "name": "isDragging",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_onResize"
+            },
+            {
+              "kind": "field",
+              "name": "_onMouseMove"
+            },
+            {
+              "kind": "field",
+              "name": "_onMouseUp"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "layout"
+            },
+            {
+              "name": "defaultsplit"
+            },
+            {
+              "name": "breakpoint"
+            },
+            {
+              "name": "open"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-splitpanel",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-splitpanel",
+          "declaration": {
+            "name": "anonymous_0",
+            "module": "public/assets/pds/components/pds-splitpanel.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-tabstrip.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TabPanel",
+          "slots": [
+            {
+              "description": "Content of the tab panel",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "section",
+              "readonly": true
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Label for the tab button",
+              "name": "label"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Unique identifier for the panel (auto-generated if not provided)",
+              "name": "id"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-tabpanel",
+          "customElement": true
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TabStrip",
+          "cssProperties": [
+            {
+              "description": "Color of the active tab indicator",
+              "name": "--color-accent-400"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "The navigation container with tab buttons",
+              "name": "tabs"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Tab panels (pds-tabpanel elements)",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "innerHTML",
+              "default": "`\n      <style>\n        :host{display:block}\n        nav{\n          position:relative; display:inline-flex; gap:.5rem; align-items:flex-end;\n          \n          --pad-x:.5rem; --pad-y:.25rem;\n        }\n        nav a{\n          color: currentColor;\n          display:inline-block; padding:var(--pad-y) var(--pad-x);\n          text-decoration:none; line-height:1.2; border-bottom:2px solid transparent;\n          cursor:pointer;\n        }\n        nav a[aria-current=\"page\"]{ font-weight:600; }\n        nav a:focus-visible{ outline:auto; outline-offset:2px; }\n        .inkbar{\n          position:absolute; inset-inline-start:0; bottom:-1px; height:2px; width:0;\n          transform:translateX(0); transition:transform .25s ease, width .25s ease;\n          background-color: var(--color-accent-400); pointer-events:none;\n        }\n      </style>\n      <nav part=\"tabs\" aria-label=\"${\n        this.getAttribute(\"label\") || \"Tabs\"\n      }\"></nav>\n      <slot></slot>\n    `"
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when the active tab changes",
+              "name": "change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Accessible label for the tabs navigation",
+              "name": "label"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-tabstrip",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-tabpanel",
+          "declaration": {
+            "name": "TabPanel",
+            "module": "public/assets/pds/components/pds-tabstrip.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-tabstrip",
+          "declaration": {
+            "name": "TabStrip",
+            "module": "public/assets/pds/components/pds-tabstrip.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-toaster.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "AppToaster",
+          "cssProperties": [
+            {
+              "description": "Z-index for toast positioning (default: 9999)",
+              "name": "--z-notification"
+            },
+            {
+              "description": "Animation duration for toasts",
+              "name": "--transition-normal"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Toast messages are dynamically added to the shadow DOM",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "method",
+              "name": "toast",
+              "parameters": [
+                {
+                  "name": "message",
+                  "description": "The message to display",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Toast configuration",
+                  "optional": true,
+                  "type": {
+                    "text": "@param {\"information\"|\"success\"|\"warning\"|\"error\"} [options.type=\"information\"] - Toast type\n   * @param {number} [options.duration] - Duration in ms (auto-calculated if not provided)\n   * @param {boolean} [options.closable=true] - Whether toast can be closed manually\n   * @param {boolean} [options.persistent=false] - If true, toast doesn't auto-dismiss\n   * "
+                  }
+                }
+              ],
+              "description": "Display a toast notification",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "showToast",
+              "parameters": [
+                {
+                  "name": "message"
+                },
+                {
+                  "name": "config"
+                },
+                {
+                  "name": "duration"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "createToastElement",
+              "parameters": [
+                {
+                  "name": "id"
+                },
+                {
+                  "name": "message"
+                },
+                {
+                  "name": "type"
+                },
+                {
+                  "name": "closable"
+                },
+                {
+                  "name": "duration"
+                },
+                {
+                  "name": "persistent"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "dismissToast",
+              "parameters": [
+                {
+                  "name": "toastId",
+                  "description": "The ID of the toast to dismiss",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Dismiss a toast by ID",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "dismissAll"
+            },
+            {
+              "kind": "method",
+              "name": "handleCloseClick",
+              "parameters": [
+                {
+                  "name": "toastId"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "handleAnimationEnd",
+              "parameters": [
+                {
+                  "name": "toastId"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getToastIcon",
+              "parameters": [
+                {
+                  "name": "type"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getToastTitle",
+              "parameters": [
+                {
+                  "name": "type"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getAlertClass",
+              "parameters": [
+                {
+                  "name": "type"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "toastSuccess",
+              "parameters": [
+                {
+                  "name": "message",
+                  "description": "The message to display",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Toast configuration options",
+                  "optional": true,
+                  "type": {
+                    "text": "Object"
+                  }
+                }
+              ],
+              "description": "Display a success toast",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "toastWarning",
+              "parameters": [
+                {
+                  "name": "message",
+                  "description": "The message to display",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Toast configuration options",
+                  "optional": true,
+                  "type": {
+                    "text": "Object"
+                  }
+                }
+              ],
+              "description": "Display a warning toast",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "toastError",
+              "parameters": [
+                {
+                  "name": "message",
+                  "description": "The message to display",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Toast configuration options",
+                  "optional": true,
+                  "type": {
+                    "text": "Object"
+                  }
+                }
+              ],
+              "description": "Display an error toast",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "toastInfo",
+              "parameters": [
+                {
+                  "name": "message",
+                  "description": "The message to display",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Toast configuration options",
+                  "optional": true,
+                  "type": {
+                    "text": "Object"
+                  }
+                }
+              ],
+              "description": "Display an information toast",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "toasts",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            }
+          ],
+          "events": [
+            {
+              "description": "Global event for creating toasts",
+              "name": "pds:toast"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-toaster",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "AppToaster",
+          "declaration": {
+            "name": "AppToaster",
+            "module": "public/assets/pds/components/pds-toaster.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-toaster",
+          "declaration": {
+            "name": "AppToaster",
+            "module": "public/assets/pds/components/pds-toaster.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-upload.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "UploadArea",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_renderStructure"
+            },
+            {
+              "kind": "method",
+              "name": "_adoptStyles"
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "value"
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity"
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity"
+            },
+            {
+              "kind": "method",
+              "name": "clear"
+            },
+            {
+              "kind": "method",
+              "name": "getFiles"
+            },
+            {
+              "kind": "method",
+              "name": "clear"
+            },
+            {
+              "kind": "method",
+              "name": "_upgradeProperty",
+              "parameters": [
+                {
+                  "name": "prop"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_applyAttributesToInput"
+            },
+            {
+              "kind": "method",
+              "name": "_addFiles",
+              "parameters": [
+                {
+                  "name": "fileListLike"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_fileMatchesAccept",
+              "parameters": [
+                {
+                  "name": "file"
+                },
+                {
+                  "name": "acceptList"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_updateInputFiles"
+            },
+            {
+              "kind": "method",
+              "name": "_renderTiles"
+            },
+            {
+              "kind": "method",
+              "name": "_removeFileAtIndex",
+              "parameters": [
+                {
+                  "name": "i"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_emitFilesChanged"
+            },
+            {
+              "kind": "method",
+              "name": "_formatBytes",
+              "parameters": [
+                {
+                  "name": "bytes"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_fileIconSvg"
+            },
+            {
+              "kind": "method",
+              "name": "_revokeAllObjectUrls"
+            },
+            {
+              "kind": "method",
+              "name": "_revokeUnusedObjectUrls"
+            }
+          ],
+          "events": [
+            {
+              "name": "files-changed",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "accept"
+            },
+            {
+              "name": "multiple"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "max-files"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-upload",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-upload",
+          "declaration": {
+            "name": "UploadArea",
+            "module": "public/assets/pds/components/pds-upload.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UploadArea",
+            "module": "public/assets/pds/components/pds-upload.js"
+          }
+        }
+      ]
+    }
+  ]
+}

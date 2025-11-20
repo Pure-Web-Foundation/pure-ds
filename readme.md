@@ -37,6 +37,7 @@ await PDS.start({
 - 🎛️ **Interactive Configurator** - Visual design tool with live preview
 - 🔤 **Automatic Font Loading** - Google Fonts loaded on demand
 - 📦 **Zero Build Required** - Works directly in browsers
+- 📋 **Custom Elements Manifest** - Full IDE integration with autocomplete and type checking
 
 ---
 
@@ -59,6 +60,7 @@ await PDS.start({
 - [Extending PDS](#extending-pds)
 - [Using from CDN](#using-from-cdn)
 - [CLI & Export](#cli--export)
+- [Custom Elements Manifest](#custom-elements-manifest)
 - [Framework Integration](#framework-integration)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
@@ -256,6 +258,7 @@ This creates:
 - `pds/styles/pds-*.css` and `pds-*.css.js` (Constructable Stylesheets)
 - `pds/components/*.js` (Web Components)
 - `pds/icons/pds-icons.svg` (Icon sprite)
+- `pds/custom-elements.json` (Custom Elements Manifest for IDE integration)
 
 **2. Initialize in static mode:**
 
@@ -1487,6 +1490,69 @@ npm run pds:build-icons
 ```bash
 npm run sync-assets
 ```
+
+---
+
+## Custom Elements Manifest
+
+PDS automatically generates a [Custom Elements Manifest](https://github.com/webcomponents/custom-elements-manifest) (`custom-elements.json`) with comprehensive documentation for all web components.
+
+### What's Included
+
+The manifest documents:
+- **Properties & Attributes** - All public properties with types, descriptions, and defaults
+- **Methods** - Public methods with parameters and return types
+- **Events** - Custom events fired by components
+- **Slots** - Named and unnamed slots for content projection
+- **CSS Custom Properties** - Themeable CSS variables
+- **CSS Parts** - Shadow DOM parts for external styling
+
+### IDE Integration
+
+The manifest enables powerful IDE features:
+- **IntelliSense/Autocomplete** - Property and method suggestions in VS Code, WebStorm
+- **Type Checking** - Validate attributes in HTML and JSX
+- **Hover Documentation** - View component docs inline
+
+### Generation
+
+The manifest is automatically created during export:
+
+```bash
+npm run pds:export
+```
+
+Or generate independently:
+
+```bash
+npm run pds:manifest
+```
+
+### Location
+
+After export, find the manifest at:
+```
+public/assets/pds/custom-elements.json
+```
+
+### Example Usage
+
+```html
+<!-- IDE will provide autocomplete for attributes -->
+<pds-drawer open position="right" max-height="80vh">
+  <div slot="drawer-header">Settings</div>
+  <div slot="drawer-content">Content here</div>
+</pds-drawer>
+```
+
+```javascript
+// IDE will show method signatures and documentation
+const drawer = document.querySelector('pds-drawer');
+drawer.openDrawer();  // ← Autocomplete + docs on hover
+drawer.setContent('<p>New content</p>');
+```
+
+For detailed information, see [CUSTOM-ELEMENTS-MANIFEST.md](./CUSTOM-ELEMENTS-MANIFEST.md).
 
 ---
 

@@ -1,7 +1,15 @@
 /**
  * SVG Icon Web Component
  * 
- * Displays icons from SVG sprite sheet with automatic fallbacks
+ * @element pds-icon
+ * 
+ * @attr {string} icon - Icon name from the sprite sheet
+ * @attr {string|number} size - Icon size in pixels or named size (xs, sm, md, lg, xl, 2xl)
+ * @attr {string} color - Icon color (CSS color value, default: currentColor)
+ * @attr {string} label - Accessible label for the icon (adds role="img")
+ * @attr {string} sprite - Override sprite sheet path
+ * @attr {number} rotate - Rotation angle in degrees
+ * @attr {boolean} no-sprite - Force fallback icon rendering
  * 
  * @example
  * <pds-icon icon="house"></pds-icon>
@@ -111,7 +119,9 @@ export class SvgIcon extends HTMLElement {
   
   /**
    * Check if sprite sheet is available
-   * Override this method if you want different detection logic
+   * @method spriteAvailable
+   * @public
+   * @returns {boolean} True if sprite sheet should be used
    */
   spriteAvailable() {
     // Simple heuristic: assume sprite is available unless explicitly disabled

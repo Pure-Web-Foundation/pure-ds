@@ -624,17 +624,19 @@ button, a {
   }
   
   /* Ensure labels with radio/checkbox have adequate touch targets */
-  label:has(input[type="radio"]),
-  label:has(input[type="checkbox"]),
-  fieldset[role="radiogroup"] label,
-  fieldset[role="group"] label {
+  /* Exclude button-style fieldsets which already have proper sizing */
+  label:has(input[type="radio"]):not(fieldset.buttons label),
+  label:has(input[type="checkbox"]):not(fieldset.buttons label),
+  fieldset[role="radiogroup"]:not(.buttons) label,
+  fieldset[role="group"]:not(.buttons) label {
     min-height: 44px;
     display: inline-flex;
     align-items: center;
     padding: var(--spacing-2) 0;
   }
   
-  /* Disable hover effects on touch devices */
+  /* Disable hover effects
+   on touch devices */
   .card {
     &:hover {
       box-shadow: var(--shadow-base);

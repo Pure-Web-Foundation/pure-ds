@@ -44,12 +44,14 @@
     "public/assets/pds/components/",
     "public/auto-define/",
     "public/pds/components/",
-  "public/assets/pds/icons/pds-icons.svg",
+    "public/assets/pds/icons/pds-icons.svg",
     "packages/pds-cli/bin/",
     "src/js/pds.d.ts",
     "src/js/pds.js",
     "src/js/pds-core/",
     "src/js/pds-configurator/",
+    "custom-elements.json",
+    "custom-elements-manifest.config.js",
     "readme.md"
   ],
   "scripts": {
@@ -59,6 +61,7 @@
     "postinstall": "node packages/pds-cli/bin/postinstall.js",
     "pds:export": "node packages/pds-cli/bin/pds-static.js",
     "pds:build-icons": "node packages/pds-cli/bin/pds-build-icons.js",
+    "pds:manifest": "node packages/pds-cli/bin/generate-manifest.js",
     "storybook:generate": "cd packages/pds-storybook && npm run generate-stories",
     "storybook:dev": "cd packages/pds-storybook && npm run storybook:dev",
     "storybook:build": "cd packages/pds-storybook && npm run storybook:build"
@@ -72,11 +75,13 @@
     "access": "public"
   },
   "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.9.9",
     "esbuild": "^0.19.0",
     "fs-extra": "^11.1.1"
   },
   "dependencies": {
     "lit": "^3.3.1",
     "pure-web": "1.1.28"
-  }
+  },
+  "customElements": "custom-elements.json"
 }

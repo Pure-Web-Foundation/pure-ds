@@ -12,6 +12,7 @@
     "storybook:build": "npm run generate-stories && npm run build-storybook"
   },
   "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.11.0",
     "@storybook/addon-docs": "^8.3.0",
     "@storybook/addon-essentials": "^8.3.0",
     "@storybook/addon-links": "^8.3.0",

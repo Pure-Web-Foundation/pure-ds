@@ -1,4 +1,23 @@
-
+/**
+ * @element pds-toaster
+ * @fires pds:toast - Global event for creating toasts
+ * 
+ * @slot - Toast messages are dynamically added to the shadow DOM
+ * 
+ * @cssprop --z-notification - Z-index for toast positioning (default: 9999)
+ * @cssprop --transition-normal - Animation duration for toasts
+ * 
+ * @example
+ * <pds-toaster></pds-toaster>
+ * 
+ * // Show toast via API
+ * toaster.toast('Hello!', { type: 'success' });
+ * 
+ * // Show toast via event
+ * PDS.dispatchEvent(new CustomEvent('pds:toast', {
+ *   detail: { message: 'Hello!', type: 'success' }
+ * }));
+ */
 export class AppToaster extends HTMLElement {
   constructor() {
     super();
@@ -138,7 +157,18 @@ export class AppToaster extends HTMLElement {
     }
   }
 
-  // Main toast method
+  /**
+   * Display a toast notification
+   * @method toast
+   * @public
+   * @param {string} message - The message to display
+   * @param {Object} [options] - Toast configuration
+   * @param {"information"|"success"|"warning"|"error"} [options.type="information"] - Toast type
+   * @param {number} [options.duration] - Duration in ms (auto-calculated if not provided)
+   * @param {boolean} [options.closable=true] - Whether toast can be closed manually
+   * @param {boolean} [options.persistent=false] - If true, toast doesn't auto-dismiss
+   * @returns {string} Toast ID
+   */
   toast(message, options = {}) {
     const defaults = {
       type: "information", // information, success, warning, error
@@ -245,6 +275,12 @@ export class AppToaster extends HTMLElement {
     return toast;
   }
 
+  /**
+   * Dismiss a toast by ID
+   * @method dismissToast
+   * @public
+   * @param {string} toastId - The ID of the toast to dismiss
+   */
   dismissToast(toastId) {
     const toastElement = this.shadowRoot.querySelector(
       `[data-toast-id="${toastId}"]`
@@ -316,19 +352,50 @@ export class AppToaster extends HTMLElement {
     return classMap[type] || "alert-info";
   }
 
-  // Convenience methods for different toast types
+  /**
+   * Display a success toast
+   * @method toastSuccess
+   * @public
+   * @param {string} message - The message to display
+   * @param {Object} [options] - Toast configuration options
+   * @returns {string} Toast ID
+   */
   toastSuccess(message, options = {}) {
     return this.toast(message, { ...options, type: "success" });
   }
 
+  /**
+   * Display a warning toast
+   * @method toastWarning
+   * @public
+   * @param {string} message - The message to display
+   * @param {Object} [options] - Toast configuration options
+   * @returns {string} Toast ID
+   */
   toastWarning(message, options = {}) {
     return this.toast(message, { ...options, type: "warning" });
   }
 
+  /**
+   * Display an error toast
+   * @method toastError
+   * @public
+   * @param {string} message - The message to display
+   * @param {Object} [options] - Toast configuration options
+   * @returns {string} Toast ID
+   */
   toastError(message, options = {}) {
     return this.toast(message, { ...options, type: "error" });
   }
 
+  /**
+   * Display an information toast
+   * @method toastInfo
+   * @public
+   * @param {string} message - The message to display
+   * @param {Object} [options] - Toast configuration options
+   * @returns {string} Toast ID
+   */
   toastInfo(message, options = {}) {
     return this.toast(message, { ...options, type: "information" });
   }
