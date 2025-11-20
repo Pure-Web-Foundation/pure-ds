@@ -1,3 +1,5 @@
+const PDS = window.PDS;
+
 export class DrawerPanel extends HTMLElement {
   #isDragging = false;
   #startX = 0;
@@ -158,21 +160,26 @@ export class DrawerPanel extends HTMLElement {
   async connectedCallback() {
     if (!this.shadowRoot) this.attachShadow({ mode: "open" });
 
+    // Set default position attribute if not explicitly set
+    if (!this.hasAttribute('position')) {
+      this.setAttribute('position', 'bottom');
+    }
+
     // Compose shadow DOM
     this.shadowRoot.innerHTML = /*html*/`
       <div class="backdrop" part="backdrop"></div>
       <div class="layer" id="layer" aria-hidden="true">
         <aside part="panel" tabindex="-1">
           <header part="header">
-            <div class="grab-handle" part="grab-handle" aria-hidden="true"></div>
             <button class="close-btn" part="close-button" aria-label="Close drawer" hidden>
               <pds-icon icon="x" size="sm"></pds-icon>
             </button>
             <slot name="drawer-header"></slot>
+            <div class="grab-handle" part="grab-handle" aria-hidden="true"></div>
           </header>
-          <main part="content">
+          <div part="content">
             <slot name="drawer-content"></slot>
-          </main>
+          </div>
         </aside>
       </div>
     `;
@@ -183,98 +190,109 @@ export class DrawerPanel extends HTMLElement {
         :host { position: fixed; inset: 0; display: contents; contain: layout style size; }
 
         /* Timing tokens */
-        :host { --_dur: var(--drawer-duration, var(--transition-normal, 280ms)); }
+        :host { --_dur: var(--drawer-duration, var(--transition-normal)); }
         :host { --_easing: var(--drawer-easing, var(--easing-emphasized, cubic-bezier(0.25,1,0.5,1))); }
+
+        ::slotted(*) { 
+          padding: var(--spacing-4);
+          background-color: var(--color-surface-overlay);
+        }
 
         /* Backdrop */
         .backdrop {
           position: fixed; inset: 0;
           background: var(--backdrop-bg, var(--color-scrim, color-mix(in oklab, CanvasText 20%, Canvas 80%)));
           backdrop-filter: var(--backdrop-filter, none);
-          opacity: 0; pointer-events: none;
-          transition: opacity var(--_dur) var(--_easing);
-          z-index: var(--z-modal, 1040);
+          opacity: 0; pointer-events: none; visibility: hidden;
+          transition: opacity var(--_dur) var(--_easing), visibility 0s var(--_dur);
+          z-index: var(--z-modal);
         }
-        :host([open]) .backdrop { opacity: var(--backdrop-opacity, .6); pointer-events: auto; }
+        :host([open]) .backdrop { opacity: var(--backdrop-opacity); pointer-events: auto; visibility: visible; transition-delay: 0s; }
 
         /* Layer container */
         .layer {
-          position: fixed; left: 50%; width: min(100vw, 100%); max-width: 100%; translate: -50% 0;
-          contain: layout paint style; will-change: transform; transform: translateY(var(--_y, 100%));
-          z-index: var(--z-drawer, 1050);
+          position: fixed; left: 0; right: 0; width: 100%; max-width: 100%;
+          contain: layout paint style; will-change: transform;
+          z-index: var(--z-drawer);
+          display: flex; align-items: flex-end;
+          pointer-events: none; visibility: hidden;
+          transition: visibility 0s var(--_dur);
         }
-        :host([position="bottom"]) .layer { bottom: 0; }
-        :host([position="top"]) .layer { top: 0; }
+        :host([open]) .layer { pointer-events: auto; visibility: visible; transition-delay: 0s; }
+        :host([position="bottom"]) .layer { bottom: 0; height: auto; }
+        :host([position="top"]) .layer { top: 0; height: auto; align-items: flex-start; }
 
         /* Left/Right layout */
         :host([position="left"]) .layer, :host([position="right"]) .layer {
           top: 0; bottom: 0; translate: none;
-          width: var(--drawer-width, min(90vw, 420px));
-          max-width: var(--drawer-width, min(90vw, 420px));
+          width: var(--drawer-width, min(90vw, 28rem));
+          max-width: var(--drawer-width, min(90vw, 28rem));
         }
         :host([position="left"]) .layer { left: 0; right: auto; }
         :host([position="right"]) .layer { right: 0; left: auto; }
 
         /* Panel */
         aside {
-          display: grid; grid-template-rows: auto minmax(0,1fr);
+          display: flex; flex-direction: column;
           background: var(--drawer-bg, var(--color-surface-overlay, Canvas));
-          box-shadow: var(--drawer-shadow, var(--shadow-xl, var(--elevation-3, none))));
+          box-shadow: var(--drawer-shadow, var(--shadow-xl));
           max-height: var(--drawer-max-height, 70vh);
           min-height: var(--drawer-min-height, auto);
           width: 100%; max-width: 100%;
-          border-top-left-radius: var(--drawer-radius, var(--radius-lg, 16px));
-          border-top-right-radius: var(--drawer-radius, var(--radius-lg, 16px));
+          margin: 0;
+          border-radius: var(--drawer-radius, var(--radius-lg));
           overflow: clip; contain: layout paint style; will-change: transform;
           touch-action: none;
           outline: none;
         }
+        :host([position="bottom"]) aside {
+          border-bottom-left-radius: 0; border-bottom-right-radius: 0;
+        }
         :host([position="top"]) aside {
+          flex-direction: column-reverse;
           border-top-left-radius: 0; border-top-right-radius: 0;
-          border-bottom-left-radius: var(--drawer-radius, var(--radius-lg, 16px));
-          border-bottom-right-radius: var(--drawer-radius, var(--radius-lg, 16px));
         }
         :host([position="left"]) aside {
           border-top-left-radius: 0; border-bottom-left-radius: 0;
-          border-top-right-radius: var(--drawer-radius, var(--radius-lg, 16px));
-          border-bottom-right-radius: var(--drawer-radius, var(--radius-lg, 16px));
           max-height: 100vh; height: 100%; width: 100%;
         }
         :host([position="right"]) aside {
           border-top-right-radius: 0; border-bottom-right-radius: 0;
-          border-top-left-radius: var(--drawer-radius, var(--radius-lg, 16px));
-          border-bottom-left-radius: var(--drawer-radius, var(--radius-lg, 16px));
           max-height: 100vh; height: 100%; width: 100%;
         }
 
         header {
-          position: relative; display: grid; align-items: center; justify-items: center;
-          min-block-size: var(--drawer-header-min-hit, var(--control-min-height, 40px));
+          position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+          min-block-size: var(--drawer-header-min-hit, var(--control-min-height, var(--spacing-10)));
         }
         .grab-handle {
-          inline-size: var(--drawer-handle-width, var(--size-9, 36px));
-          block-size: var(--drawer-handle-height, var(--size-1, 4px));
-          border-radius: var(--drawer-handle-radius, var(--radius-full, 999px));
-          background: var(--drawer-handle-bg, color-mix(in oklab, CanvasText 20%, Canvas 80%));
-          opacity: .9; pointer-events: none; user-select: none;
+          order: -1; /* Put grab handle first (top) by default */
+          inline-size: var(--drawer-handle-width, var(--size-9, var(--spacing-9)));
+          block-size: var(--drawer-handle-height, var(--size-1, var(--spacing-1)));
+          border-radius: var(--drawer-handle-radius, var(--radius-full));
+          background: var(--drawer-handle-bg, var(--color-border));
+          opacity: 0.9; pointer-events: none; user-select: none;
         }
         :host([position="left"]) .grab-handle, :host([position="right"]) .grab-handle { display:none; }
+        :host([position="top"]) .grab-handle { order: 1; } /* Put grab handle last (bottom visually) for top position */
 
         .close-btn {
-          position: absolute; right: var(--spacing-2,8px); top: 50%; transform: translateY(-50%);
+          position: absolute; right: var(--spacing-2); top: 50%; transform: translateY(-50%);
           display: inline-flex; align-items: center; justify-content: center;
-          width: var(--size-8, 32px); height: var(--size-8, 32px);
+          width: var(--size-8, var(--spacing-8)); height: var(--size-8, var(--spacing-8));
           border-radius: var(--radius-sm);
           border: none; background: transparent; color: inherit; cursor: pointer;
         }
-        .close-btn:hover { opacity: .85; }
+        .close-btn:hover { opacity: 0.85; }
         .close-btn:focus { outline: var(--focus-outline, none); }
-        ::slotted([slot="drawer-header"]) { inline-size: 100%; display: block; min-block-size: var(--drawer-header-min-hit, var(--control-min-height, 40px)); }
+        ::slotted([slot="drawer-header"]) { inline-size: 100%; display: block; min-block-size: var(--drawer-header-min-hit, var(--control-min-height, var(--spacing-10))); }
+
+        [part="content"] { flex: 1; min-height: 0; overflow: auto; -webkit-overflow-scrolling: touch; contain: layout paint style; }
 
         main { overflow: auto; -webkit-overflow-scrolling: touch; contain: layout paint style; transition: height var(--_dur) var(--_easing); }
 
         @media (min-width: 800px) {
-          aside { width: 100%; max-width: 800px; margin-inline: auto; border-radius: var(--drawer-radius, var(--radius-lg, 16px)); overflow: hidden; }
+          aside { width: 100%; max-width: 800px; margin-inline: auto; border-radius: var(--drawer-radius, var(--radius-lg)); overflow: hidden; }
         }
       }
     `);
@@ -398,7 +416,7 @@ export class DrawerPanel extends HTMLElement {
     if (bodyContent) {
       const bodyWrapper = document.createElement('div');
       bodyWrapper.setAttribute('slot', 'drawer-content');
-      bodyWrapper.className = 'surface-overlay';
+      //bodyWrapper.className = 'surface-overlay';
 
       // Best-effort support for Lit templates only if lit renderer is available at runtime
       if (bodyContent && bodyContent._$litType$) {
@@ -421,7 +439,7 @@ export class DrawerPanel extends HTMLElement {
     if (headerContent) {
       const headerWrapper = document.createElement('div');
       headerWrapper.setAttribute('slot', 'drawer-header');
-      headerWrapper.className = 'surface-overlay';
+      //headerWrapper.className = 'surface-overlay';
 
       if (headerContent && headerContent._$litType$) {
         try {
@@ -482,7 +500,7 @@ export class DrawerPanel extends HTMLElement {
     if (e.target?.setPointerCapture && e.pointerId != null) {
       try {
         e.target.setPointerCapture(e.pointerId);
-      } catch {}
+      } catch { /* */}
     }
 
     cancelAnimationFrame(this.#raf);
@@ -520,9 +538,9 @@ export class DrawerPanel extends HTMLElement {
     document.documentElement.style.cursor = "";
   this.shadowRoot.querySelector("main")?.style.removeProperty("overflow");
 
-    const isVertical = this.position === "bottom" || this.position === "top";
+    //const isVertical = this.position === "bottom" || this.position === "top";
     const dir = this.position === "bottom" || this.position === "right" ? 1 : -1;
-    const throwCloseThreshold = (1.0 / 1000) * 1000; // keep var for clarity; we use 1.0 px/ms below
+    //const throwCloseThreshold = (1.0 / 1000) * 1000; // keep var for clarity; we use 1.0 px/ms below
 
     // Decide based on velocity first (positive in closing direction), else position threshold
     const fastForward = this.#velocity * dir > 1.0; // closing direction
@@ -541,7 +559,7 @@ export class DrawerPanel extends HTMLElement {
     if (e.target?.releasePointerCapture && e.pointerId != null) {
       try {
         e.target.releasePointerCapture(e.pointerId);
-      } catch {}
+      } catch {/**/}
     }
   };
 
@@ -594,15 +612,15 @@ export class DrawerPanel extends HTMLElement {
   #applyFraction(f, withTransition) {
     this.#currentFraction = this.#clamp(f, 0, 1);
     const t = withTransition ? `transform var(--_dur) var(--_easing)` : "none";
-    const layer = this.shadowRoot.getElementById("layer");
-    if (!layer) return;
-    layer.style.transition = t;
+    const aside = this.#aside;
+    if (!aside) return;
+    aside.style.transition = t;
     if (this._position === "bottom" || this._position === "top") {
       const yPct = this._position === "bottom" ? this.#currentFraction * 100 : -this.#currentFraction * 100;
-      layer.style.transform = `translateY(${yPct}%)`;
+      aside.style.transform = `translateY(${yPct}%)`;
     } else {
       const xPct = this._position === "right" ? this.#currentFraction * 100 : -this.#currentFraction * 100;
-      layer.style.transform = `translateX(${xPct}%)`;
+      aside.style.transform = `translateX(${xPct}%)`;
     }
   }
 
@@ -625,17 +643,37 @@ export class DrawerPanel extends HTMLElement {
   }
 
   #animateTo(targetFraction) {
-    const layer = this.shadowRoot.getElementById("layer");
-    if (!layer) return;
-    layer.style.transition = `transform var(--_dur) var(--_easing)`;
+    const aside = this.#aside;
+    if (!aside) return;
+    
     const clamped = this.#clamp(targetFraction, 0, 1);
+    const isOpening = clamped < this.#currentFraction;
+    
+    // On mobile, ensure the browser recognizes the starting position before animating
+    // This fixes the missing transition when opening
+    if (isOpening) {
+      // First, ensure we're at the closed position without transition
+      aside.style.transition = 'none';
+      if (this._position === "bottom" || this._position === "top") {
+        const startPct = this._position === "bottom" ? this.#currentFraction * 100 : -this.#currentFraction * 100;
+        aside.style.transform = `translateY(${startPct}%)`;
+      } else {
+        const startPct = this._position === "right" ? this.#currentFraction * 100 : -this.#currentFraction * 100;
+        aside.style.transform = `translateX(${startPct}%)`;
+      }
+      // Force reflow to ensure starting position is applied
+      void aside.offsetHeight;
+    }
+    
+    // Now apply transition and animate to target
+    aside.style.transition = `transform var(--_dur) var(--_easing)`;
     this.#currentFraction = clamped;
     if (this._position === "bottom" || this._position === "top") {
       const yPct = this._position === "bottom" ? clamped * 100 : -clamped * 100;
-      layer.style.transform = `translateY(${yPct}%)`;
+      aside.style.transform = `translateY(${yPct}%)`;
     } else {
       const xPct = this._position === "right" ? clamped * 100 : -clamped * 100;
-      layer.style.transform = `translateX(${xPct}%)`;
+      aside.style.transform = `translateX(${xPct}%)`;
     }
 
     // Update the `open` property based on the target fraction
