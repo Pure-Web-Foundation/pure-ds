@@ -678,20 +678,46 @@ The `pds-richtext` component features:
 
 ### Icon-Enhanced Inputs
 
-Add icons to any input field:
+Add icons to any input field for better visual clarity:
 
 ```javascript
+const schema = {
+  type: "object",
+  properties: {
+    username: { type: "string", title: "Username" },
+    email: { type: "string", format: "email", title: "Email" },
+    password: { type: "string", title: "Password" },
+    website: { type: "string", format: "uri", title: "Website" },
+    phone: { type: "string", title: "Phone" },
+    location: { type: "string", title: "Location" }
+  }
+};
+
 const uiSchema = {
   "/username": {
     "ui:icon": "user",
     "ui:iconPosition": "start"    // "start" (default) or "end"
   },
-  "/search": {
-    "ui:icon": "magnifying-glass",
-    "ui:iconPosition": "end"
-  },
   "/email": {
-    "ui:icon": "envelope"
+    "ui:icon": "envelope",
+    "ui:iconPosition": "start"
+  },
+  "/password": {
+    "ui:icon": "lock",
+    "ui:iconPosition": "start",
+    "ui:widget": "password"
+  },
+  "/website": {
+    "ui:icon": "globe",
+    "ui:iconPosition": "start"
+  },
+  "/phone": {
+    "ui:icon": "phone",
+    "ui:iconPosition": "start"
+  },
+  "/location": {
+    "ui:icon": "map-pin",
+    "ui:iconPosition": "start"
   }
 };
 ```
@@ -703,6 +729,130 @@ Renders as:
   <input type="text" />
 </div>
 ```
+
+**Available for:** All text-based inputs including email, url, password, search, tel, etc.
+
+### Toggle Switches vs Checkboxes
+
+Configure boolean field rendering globally or per-field:
+
+```javascript
+const schema = {
+  type: "object",
+  properties: {
+    toggles: {
+      type: "object",
+      title: "Preferences",
+      properties: {
+        emailNotifications: {
+          type: "boolean",
+          title: "Email Notifications",
+          description: "Receive notifications via email"
+        },
+        pushNotifications: {
+          type: "boolean",
+          title: "Push Notifications"
+        },
+        darkMode: {
+          type: "boolean",
+          title: "Dark Mode"
+        }
+      }
+    }
+  }
+};
+
+// Option 1: Global setting for all booleans
+const options = {
+  widgets: {
+    booleans: "toggle"    // Use toggle switches instead of checkboxes
+  }
+};
+
+// Option 2: Per-field override in uiSchema
+const uiSchema = {
+  "/emailNotifications": {
+    "ui:widget": "toggle"
+  }
+};
+```
+
+### Range Sliders with Live Output
+
+Enable live value display for range inputs:
+
+```javascript
+const schema = {
+  type: "object",
+  properties: {
+    volume: {
+      type: "number",
+      title: "Volume",
+      minimum: 0,
+      maximum: 100,
+      default: 50
+    },
+    brightness: {
+      type: "number",
+      title: "Brightness",
+      minimum: 0,
+      maximum: 100,
+      default: 75
+    }
+  }
+};
+
+const uiSchema = {
+  "/volume": { "ui:widget": "input-range" },
+  "/brightness": { "ui:widget": "input-range" }
+};
+
+const options = {
+  enhancements: {
+    rangeOutput: true    // Add live value display next to slider
+  }
+};
+```
+
+### Datalist Autocomplete
+
+Provide autocomplete suggestions for text inputs:
+
+```javascript
+const schema = {
+  type: "object",
+  properties: {
+    country: { type: "string", title: "Country" },
+    city: { type: "string", title: "City" },
+    skillset: { type: "string", title: "Primary Skill" }
+  }
+};
+
+const uiSchema = {
+  "/country": {
+    "ui:datalist": [
+      "United States",
+      "United Kingdom",
+      "Canada",
+      "Australia",
+      "Germany",
+      "France"
+    ]
+  },
+  "/city": {
+    "ui:datalist": ["New York", "London", "Tokyo", "Paris", "Berlin"]
+  },
+  "/skillset": {
+    "ui:datalist": ["JavaScript", "Python", "Java", "C++", "Go", "Rust"]
+  }
+};
+```
+
+**Features:**
+- Browser-native `<datalist>` element
+- Type to filter suggestions
+- Still allows free-form input
+- No JavaScript required for basic functionality
 
 ---
 
@@ -926,41 +1076,86 @@ const uiSchema = {
 
 ## Dialog Forms
 
-Collect complex nested data in a modal dialog:
+Collect complex nested data in a modal dialog. This is perfect for editing complex nested objects without cluttering the main form.
 
 ```javascript
 const schema = {
   type: "object",
   properties: {
-    shippingAddress: {
+    projectName: { type: "string", title: "Project Name" },
+    teamLead: {
       type: "object",
-      title: "Shipping Address",
+      title: "Team Lead",
       properties: {
-        street: { type: "string" },
-        city: { type: "string" },
-        state: { type: "string" },
-        zip: { type: "string" }
+        name: { type: "string", title: "Full Name" },
+        email: { type: "string", format: "email", title: "Email" },
+        phone: { type: "string", title: "Phone" },
+        department: { type: "string", title: "Department" }
+      }
+    },
+    budget: {
+      type: "object",
+      title: "Budget Details",
+      properties: {
+        amount: { type: "number", title: "Budget Amount" },
+        currency: { type: "string", title: "Currency", enum: ["USD", "EUR", "GBP"] },
+        fiscalYear: { type: "string", title: "Fiscal Year" }
       }
     }
   }
 };
 
 const uiSchema = {
-  "/shippingAddress": {
+  "/projectName": {
+    "ui:icon": "folder",
+    "ui:iconPosition": "start"
+  },
+  "/teamLead": {
     "ui:dialog": true,
-    "ui:dialogButton": "Edit Shipping Address",
-    "ui:dialogSize": "lg",              // sm, lg, xl, full
-    "ui:submitLabel": "Save Address",
-    "ui:cancelLabel": "Cancel"
+    "ui:dialogOptions": {
+      buttonLabel: "Edit Team Lead",      // Button label
+      dialogTitle: "Team Lead Information", // Dialog title
+      icon: "user-gear"                   // Optional button icon
+    },
+    // Style fields within the dialog
+    name: { "ui:icon": "user", "ui:iconPosition": "start" },
+    email: { "ui:icon": "envelope", "ui:iconPosition": "start" }
+  },
+  "/budget": {
+    "ui:dialog": true,
+    "ui:dialogOptions": {
+      buttonLabel: "Edit Budget",
+      dialogTitle: "Budget Details",
+      icon: "currency-dollar"
+    }
+  }
+};
+
+// With initial values - state is preserved across dialog edits
+const initialValues = {
+  projectName: "Digital Transformation",
+  teamLead: {
+    name: "Sarah Johnson",
+    email: "sarah@company.com"
+  },
+  budget: {
+    amount: 250000,
+    currency: "USD"
   }
 };
 ```
 
-This renders an "Edit Shipping Address" button. Clicking it opens a dialog with the nested form. Values are stored in a hidden input and synced when the dialog is submitted.
+**How it works:**
+1. Renders an "Edit..." button in place of the nested fieldset
+2. Clicking opens a dialog with the nested form fields
+3. Values are stored in a hidden input using FormData
+4. State is transferred via FormData when using `PDS.ask()` with `useForm: true`
+5. Dialog submission updates the main form's hidden input
+6. Main form submission includes all nested data
 
 **Events:**
 - `pw:dialog-open` - Fired when dialog opens
-- `pw:dialog-submit` - Fired when dialog form is submitted
+- `pw:dialog-submit` - Fired when dialog form is submitted with the saved values
 
 ---
 
@@ -1359,13 +1554,221 @@ form.useValidator(async (data, schema) => {
 });
 ```
 
+### All Features Combined
+
+A comprehensive example showcasing multiple features:
+
+```javascript
+const schema = {
+  type: "object",
+  properties: {
+    userProfile: {
+      type: "object",
+      title: "User Profile",
+      properties: {
+        personalInfo: {
+          type: "object",
+          title: "Personal Information",
+          properties: {
+            firstName: { 
+              type: "string", 
+              title: "First Name", 
+              examples: ["John"] 
+            },
+            lastName: { 
+              type: "string", 
+              title: "Last Name", 
+              examples: ["Doe"] 
+            },
+            email: { 
+              type: "string", 
+              format: "email", 
+              title: "Email", 
+              examples: ["john.doe@example.com"] 
+            },
+            phone: { 
+              type: "string", 
+              title: "Phone", 
+              examples: ["+1 (555) 123-4567"] 
+            }
+          },
+          required: ["firstName", "lastName", "email"]
+        },
+        settings: {
+          type: "object",
+          title: "Settings",
+          properties: {
+            accountSettings: {
+              type: "object",
+              title: "Account Settings",
+              properties: {
+                notifications: { 
+                  type: "boolean", 
+                  title: "Email Notifications" 
+                },
+                newsletter: { 
+                  type: "boolean", 
+                  title: "Newsletter Subscription" 
+                }
+              }
+            },
+            preferences: {
+              type: "object",
+              title: "Preferences",
+              properties: {
+                theme: { 
+                  type: "string", 
+                  title: "Theme", 
+                  enum: ["Light", "Dark", "Auto"] 
+                },
+                fontSize: { 
+                  type: "number", 
+                  title: "Font Size", 
+                  minimum: 12, 
+                  maximum: 20, 
+                  default: 14 
+                },
+                lineHeight: { 
+                  type: "number", 
+                  title: "Line Height", 
+                  minimum: 1.0, 
+                  maximum: 2.0, 
+                  default: 1.5 
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    profile: {
+      type: "object",
+      title: "Profile",
+      properties: {
+        avatar: { 
+          type: "string", 
+          title: "Profile Picture",
+          contentMediaType: "image/*",
+          contentEncoding: "base64"
+        },
+        bio: { 
+          type: "string", 
+          title: "Biography", 
+          examples: ["Tell us about yourself..."] 
+        },
+        website: { 
+          type: "string", 
+          format: "uri", 
+          title: "Website", 
+          examples: ["https://yourwebsite.com"] 
+        }
+      }
+    }
+  }
+};
+
+const uiSchema = {
+  "/userProfile": {
+    "ui:layout": "accordion",
+    "ui:layoutOptions": { openFirst: true },
+    "ui:surface": "elevated"
+  },
+  "/userProfile/personalInfo": {
+    "ui:layout": "grid",
+    "ui:layoutOptions": { columns: 2, gap: "md" },
+    "ui:surface": "sunken"
+  },
+  "/userProfile/personalInfo/email": { 
+    "ui:icon": "envelope", 
+    "ui:iconPosition": "start" 
+  },
+  "/userProfile/personalInfo/phone": { 
+    "ui:icon": "phone", 
+    "ui:iconPosition": "start" 
+  },
+  "/userProfile/settings/accountSettings": {
+    "ui:surface": "sunken"
+  },
+  "/userProfile/settings/preferences": {
+    "ui:surface": "sunken"
+  },
+  "/userProfile/settings/preferences/theme": { 
+    "ui:class": "buttons"  // Radio buttons styled as button group
+  },
+  "/userProfile/settings/preferences/fontSize": { 
+    "ui:widget": "input-range" 
+  },
+  "/userProfile/settings/preferences/lineHeight": { 
+    "ui:widget": "input-range" 
+  },
+  "/profile": {
+    "ui:dialog": true,
+    "ui:dialogOptions": {
+      buttonLabel: "Edit Profile",
+      dialogTitle: "Your Profile Information",
+      icon: "user-circle"
+    }
+  },
+  "/profile/avatar": {
+    "ui:options": {
+      accept: "image/*",
+      maxSize: 5242880,
+      label: "Upload Avatar"
+    }
+  },
+  "/profile/bio": {
+    "ui:widget": "richtext",
+    "ui:options": {
+      toolbar: "standard"
+    }
+  },
+  "/profile/website": { 
+    "ui:icon": "globe", 
+    "ui:iconPosition": "start" 
+  }
+};
+
+const options = {
+  widgets: {
+    booleans: "toggle"      // Use toggles for all boolean fields
+  },
+  enhancements: {
+    rangeOutput: true       // Show live values for range sliders
+  }
+};
+
+html`
+  <pds-jsonform 
+    .jsonSchema=${schema}
+    .uiSchema=${uiSchema}
+    .options=${options}
+    @pw:value-change=${(e) => console.log('Changed:', e.detail)}
+    @pw:submit=${(e) => console.log('Submitted:', e.detail)}
+  ></pds-jsonform>
+`;
+```
+
+**This example demonstrates:**
+- ✅ Accordion layout for top-level sections
+- ✅ Grid layout for personal info (2 columns)
+- ✅ Icon-enhanced inputs (email, phone, website)
+- ✅ Toggle switches for boolean preferences
+- ✅ Range sliders with live output display
+- ✅ Dialog form for profile editing
+- ✅ File upload with pds-upload
+- ✅ Rich text editor with pds-richtext
+- ✅ Surface wrapping (elevated, sunken)
+- ✅ Radio buttons styled as button group
+- ✅ Required field validation
+- ✅ Format validation (email, uri)
+
 ---
 
 ## Tips and Best Practices
 
 1. **Use JSON Pointer paths** - All uiSchema and path-specific options use JSON Pointer format (`"/property/nested"`)
 
-2. **Leverage defaults** - Set sensible defaults in schema using the `default` keyword
+2. **Leverage defaults and examples** - Set sensible defaults using the `default` keyword, and provide placeholder text using `examples` array (first example is used as placeholder)
 
 3. **Progressive enhancement** - Forms work without JavaScript, enhanced when available
 
@@ -1382,6 +1785,16 @@ form.useValidator(async (data, schema) => {
 9. **Path-based customization** - Use path-specific options for complex forms with varying needs
 
 10. **Test with real schemas** - Validate your schemas at [jsonschemavalidator.net](https://www.jsonschemavalidator.net/)
+
+11. **Use layoutOptions object** - Always use `ui:layoutOptions` object for layout configuration instead of flat properties
+
+12. **Dialog forms for complex nesting** - Use `ui:dialog` with `ui:dialogOptions` for editing complex nested objects to keep the main form clean
+
+13. **Icons for clarity** - Add icons to inputs using `ui:icon` and `ui:iconPosition` for better visual hierarchy
+
+14. **Toggle vs checkbox** - Use toggles for on/off settings, checkboxes for multi-select or consent
+
+15. **Surface wrapping** - Use `ui:surface` to visually group related fields with PDS surface tokens
 
 ---
 
