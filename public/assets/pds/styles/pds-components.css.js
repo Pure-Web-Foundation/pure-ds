@@ -679,6 +679,17 @@ label[data-toggle] {
     outline-offset: 2px;
   }
 
+  /* Focus visible state when label is focused via keyboard */
+  &:focus-visible .toggle-switch {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+
+  /* Remove default outline on label itself */
+  &:focus {
+    outline: none;
+  }
+
   /* Disabled state */
   &:has(input[type="checkbox"]:disabled) {
     cursor: not-allowed;
@@ -796,12 +807,25 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 
 .btn-outline {
   background-color: transparent;
-  color: var(--color-text-primary);
-  border-color: var(--color-text-primary);
+  color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
   
   &:hover {
-    background-color: var(--color-text-primary);
-    color: white;
+    background-color: var(--color-primary-500);
+    color: var(--color-primary-contrast);
+    border-color: var(--color-primary-500);
+  }
+
+  &:active {
+    background-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
+    border-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
+    color: var(--color-primary-contrast);
+  }
+  
+  &:disabled {
+    background-color: transparent;
+    color: var(--color-input-disabled-text);
+    border-color: var(--color-input-disabled-bg);
   }
 }
 
@@ -1185,6 +1209,11 @@ dialog form {
   margin: 0;
 }
 
+/* Dialog fields - to open pds-jsonform subforms */
+.dialog-field {
+    margin-top: var(--spacing-3);
+}
+
 /* Dialog header */
 dialog {
   header,
@@ -1195,7 +1224,7 @@ dialog {
     gap: var(--spacing-4);
     padding: var(--spacing-6);
     border-bottom: 1px solid var(--surface-overlay-border);
-    flex-shrink: 0;
+    flex-shrink: 0;   
 
     h2,
     h3 {
@@ -2481,6 +2510,17 @@ label[data-toggle] {
     outline-offset: 2px;
   }
 
+  /* Focus visible state when label is focused via keyboard */
+  &:focus-visible .toggle-switch {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+
+  /* Remove default outline on label itself */
+  &:focus {
+    outline: none;
+  }
+
   /* Disabled state */
   &:has(input[type="checkbox"]:disabled) {
     cursor: not-allowed;
@@ -2598,12 +2638,25 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 
 .btn-outline {
   background-color: transparent;
-  color: var(--color-text-primary);
-  border-color: var(--color-text-primary);
+  color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
   
   &:hover {
-    background-color: var(--color-text-primary);
-    color: white;
+    background-color: var(--color-primary-500);
+    color: var(--color-primary-contrast);
+    border-color: var(--color-primary-500);
+  }
+
+  &:active {
+    background-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
+    border-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
+    color: var(--color-primary-contrast);
+  }
+  
+  &:disabled {
+    background-color: transparent;
+    color: var(--color-input-disabled-text);
+    border-color: var(--color-input-disabled-bg);
   }
 }
 
@@ -2987,6 +3040,11 @@ dialog form {
   margin: 0;
 }
 
+/* Dialog fields - to open pds-jsonform subforms */
+.dialog-field {
+    margin-top: var(--spacing-3);
+}
+
 /* Dialog header */
 dialog {
   header,
@@ -2997,7 +3055,7 @@ dialog {
     gap: var(--spacing-4);
     padding: var(--spacing-6);
     border-bottom: 1px solid var(--surface-overlay-border);
-    flex-shrink: 0;
+    flex-shrink: 0;   
 
     h2,
     h3 {

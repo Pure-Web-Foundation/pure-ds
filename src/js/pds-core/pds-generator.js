@@ -2961,6 +2961,11 @@ dialog form {
   margin: 0;
 }
 
+/* Dialog fields - to open pds-jsonform subforms */
+.dialog-field {
+    margin-top: var(--spacing-3);
+}
+
 /* Dialog header */
 dialog {
   header,
@@ -2971,7 +2976,7 @@ dialog {
     gap: var(--spacing-4);
     padding: var(--spacing-6);
     border-bottom: 1px solid var(--surface-overlay-border);
-    flex-shrink: 0;
+    flex-shrink: 0;   
 
     h2,
     h3 {
@@ -4236,31 +4241,22 @@ nav[data-dropdown] {
   }
 
   :where(legend) {
-    display: contents;
+    display: block;
     font-weight: var(--font-weight-semibold);
-    padding: 0 var(--spacing-2);
+    padding: 0;
     color: var(--color-text-primary);
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-primary);
     margin: 0 0 var(--spacing-3) 0;
     border: none;
     line-height: var(--font-line-height-tight);
-    padding: 0 var(--spacing-3);
     font-size: var(--font-size-lg);
     background: transparent; /* avoid browser default notch behavior */
     width: auto;
     box-sizing: border-box;
   }
 
-  legend:not(:empty)::after {
-      content: "";
-      display: block;
-      width: 100%;
-      height: 1px;
-      background: var(--color-border);
-      margin-bottom: var(--spacing-4);
-  }
-
+  
   /* List primitives */
   :where(ul, ol) {
     padding-left: var(--spacing-6);

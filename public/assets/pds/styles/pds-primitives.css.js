@@ -244,7 +244,7 @@ primitives.replaceSync(`@layer primitives {
     box-sizing: border-box;
   }
 
-  legend::after {
+  legend:not(:empty)::after {
       content: "";
       display: block;
       width: 100%;
@@ -591,7 +591,7 @@ export const primitivesCSS = `@layer primitives {
     box-sizing: border-box;
   }
 
-  legend::after {
+  legend:not(:empty)::after {
       content: "";
       display: block;
       width: 100%;

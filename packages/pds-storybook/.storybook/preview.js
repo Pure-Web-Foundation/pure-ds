@@ -117,9 +117,9 @@ const withPDS = (story, context) => {
       }
     }
     
-    if (shadowRoots.length > 0) {
-      console.log(`🎭 Adopting PDS layers for ${shadowRoots.length} shadow components`);
-    }
+    // if (shadowRoots.length > 0) {
+    //   console.log(`🎭 Adopting PDS layers for ${shadowRoots.length} shadow components`);
+    // }
     
     // Check if shadow roots need PDS styles adoption
     // DON'T re-adopt if they already have styles - this preserves component internal stylesheets
@@ -142,7 +142,7 @@ const withPDS = (story, context) => {
         });
         
         if (hasPDSSheets && currentSheets.length > 0) {
-          console.log(`⏭️  <${host.toLowerCase()}> already has ${currentSheets.length} sheets - skipping`);
+          //console.log(`⏭️  <${host.toLowerCase()}> already has ${currentSheets.length} sheets - skipping`);
           continue;
         }
         
@@ -150,12 +150,12 @@ const withPDS = (story, context) => {
         // Get existing adopted sheets that aren't PDS sheets (preserve component styles)
         const existingSheets = currentSheets.filter(sheet => !sheet._pds);
         
-        console.log(`🎨 Adopting layers for <${host.toLowerCase()}> (had ${currentSheets.length} sheets, ${existingSheets.length} non-PDS)...`);
+        //console.log(`🎨 Adopting layers for <${host.toLowerCase()}> (had ${currentSheets.length} sheets, ${existingSheets.length} non-PDS)...`);
         
         // Adopt full layer stack: primitives, components, utilities
         await PDS.adoptLayers(root, ['primitives', 'components', 'utilities'], existingSheets);
         
-        console.log(`✅ Adopted layers for <${host.toLowerCase()}> (now ${root.adoptedStyleSheets.length} sheets)`);
+        //console.log(`✅ Adopted layers for <${host.toLowerCase()}> (now ${root.adoptedStyleSheets.length} sheets)`);
       } catch (err) {
         console.error(`❌ Failed to adopt PDS layers for <${host.toLowerCase()}>:`, err);
         console.error(err.stack);
@@ -365,6 +365,8 @@ if (typeof window !== 'undefined') {
   console.log('👂 Setting up message listener for toolbar changes...');
   
   window.addEventListener('message', async (event) => {
+    if(event.data?.type == null) return;
+
     console.log('📨 Message received:', event.data?.type, event.data);
     
     if (event.data?.type === 'SET_GLOBALS') {

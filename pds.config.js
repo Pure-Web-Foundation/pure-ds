@@ -1,5 +1,5 @@
 export const config = {
-  debug: true,
+  //debug: true,
   mode: "live",
   preset: "default",
   // options: {

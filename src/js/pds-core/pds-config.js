@@ -811,6 +811,29 @@ presets.default = {
     liquidGlassEffects: true,
     backgroundMesh: 4,
   },
+  
+  form: {
+    options: {
+      widgets: {
+        booleans: "toggle",      // 'toggle' | 'checkbox'
+        numbers: "input",        // 'input' | 'range'
+        selects: "standard",     // 'standard' | 'dropdown'
+      },
+      layouts: {
+        fieldsets: "default",    // 'default' | 'flex' | 'grid' | 'accordion' | 'tabs' | 'card'
+        arrays: "default",       // 'default' | 'compact'
+      },
+      enhancements: {
+        icons: true,             // Enable icon-enhanced inputs
+        datalists: true,         // Enable datalist autocomplete
+        rangeOutput: true,       // Use .range-output for ranges
+      },
+      validation: {
+        showErrors: true,        // Show validation errors inline
+        validateOnChange: false, // Validate on every change vs on submit
+      },
+    }
+  },
   colors: {
     // Palette - base colors that generate entire color palettes
     primary: "#0e7490", // Darker cyan for better contrast
@@ -1023,6 +1046,7 @@ presets.default = {
         "paper-plane-tilt",
         "user",
         "users",
+        "user-gear",
         "at",
       ],
       content: [
@@ -1047,6 +1071,7 @@ presets.default = {
         "chart-line",
         "chart-bar",
         "database",
+        "map-pin"
       ],
       status: [
         "info",

@@ -141,22 +141,35 @@ button, a {
     left: var(--spacing-3);
     color: var(--color-text-muted);
     pointer-events: none;
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
   }
 
   input {
-    padding-left: calc(var(--icon-size) + var(--spacing-5));
+    padding-left: calc(var(--icon-size-md) + var(--spacing-6));
+    width: 100%;
+  }
+}
+
+.input-icon-end {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  pds-icon {
+    position: absolute;
+    left: unset;
+    right: var(--spacing-3);
+    color: var(--color-text-muted);
+    pointer-events: none;
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
   }
 
-  &-end {
-    pds-icon {
-      left: auto;
-      right: var(--spacing-3);
-    }
-
-    input {
-      padding-left: var(--spacing-3);
-      padding-right: calc(var(--icon-size) + var(--spacing-5));
-    }
+  input {
+    padding-left: var(--spacing-4);
+    padding-right: calc(var(--icon-size-md) + var(--spacing-6));
+    width: 100%;
   }
 }
 
@@ -304,7 +317,7 @@ button, a {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -315,7 +328,7 @@ button, a {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-300),
       var(--color-primary-600)
     ) border-box;
@@ -325,7 +338,7 @@ button, a {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-accent-300),
       var(--color-accent-600)
     ) border-box;
@@ -335,7 +348,7 @@ button, a {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-secondary-300),
       var(--color-secondary-600)
     ) border-box;
@@ -346,7 +359,7 @@ button, a {
   border: 1px solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -356,7 +369,7 @@ button, a {
   border: 2px solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -366,7 +379,7 @@ button, a {
   border: 3px solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -806,22 +819,35 @@ button, a {
     left: var(--spacing-3);
     color: var(--color-text-muted);
     pointer-events: none;
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
   }
 
   input {
-    padding-left: calc(var(--icon-size) + var(--spacing-5));
+    padding-left: calc(var(--icon-size-md) + var(--spacing-6));
+    width: 100%;
+  }
+}
+
+.input-icon-end {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  pds-icon {
+    position: absolute;
+    left: unset;
+    right: var(--spacing-3);
+    color: var(--color-text-muted);
+    pointer-events: none;
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
   }
 
-  &-end {
-    pds-icon {
-      left: auto;
-      right: var(--spacing-3);
-    }
-
-    input {
-      padding-left: var(--spacing-3);
-      padding-right: calc(var(--icon-size) + var(--spacing-5));
-    }
+  input {
+    padding-left: var(--spacing-4);
+    padding-right: calc(var(--icon-size-md) + var(--spacing-6));
+    width: 100%;
   }
 }
 
@@ -969,7 +995,7 @@ button, a {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -980,7 +1006,7 @@ button, a {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-300),
       var(--color-primary-600)
     ) border-box;
@@ -990,7 +1016,7 @@ button, a {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-accent-300),
       var(--color-accent-600)
     ) border-box;
@@ -1000,7 +1026,7 @@ button, a {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-secondary-300),
       var(--color-secondary-600)
     ) border-box;
@@ -1011,7 +1037,7 @@ button, a {
   border: 1px solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -1021,7 +1047,7 @@ button, a {
   border: 2px solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -1031,7 +1057,7 @@ button, a {
   border: 3px solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;

@@ -59,30 +59,59 @@ export async function ask(message, options = {}) {
     });
 
     // Create PDS-compliant dialog structure
-    dialog.innerHTML = /*html*/ `
-      <form method="dialog">
+    // When useForm is true, don't wrap in a form - let the content provide the form
+    if (options.useForm) {
+      dialog.innerHTML = /*html*/ `
         <header>
           <h2>${options.title}</h2>
         </header>
         
         <article id="msg-container"></article>
-        
-        <footer>
-          ${buttons.join("")}
-        </footer>
-      </form>
-    `;
-
-    // Render message content
-    const article = dialog.querySelector("#msg-container");
-    if (typeof message === "object" && message._$litType$) {
-      // Lit template
-      render(message, article);
-    } else if (typeof message === "string") {
-      article.textContent = message;
+      `;
+      
+      // Render message content first
+      const article = dialog.querySelector("#msg-container");
+      if (typeof message === "object" && message._$litType$) {
+        render(message, article);
+      } else if (typeof message === "string") {
+        article.textContent = message;
+      } else {
+        render(message, article);
+      }
+      
+      // Wait for content to render, then find the form and add buttons to it
+      requestAnimationFrame(() => {
+        const form = dialog.querySelector("form");
+        if (form) {
+          const footer = document.createElement("footer");
+          footer.innerHTML = buttons.join("");
+          form.appendChild(footer);
+        }
+      });
     } else {
-      // Assume it's a Lit template or HTML
-      render(message, article);
+      dialog.innerHTML = /*html*/ `
+        <form method="dialog">
+          <header>
+            <h2>${options.title}</h2>
+          </header>
+          
+          <article id="msg-container"></article>
+          
+          <footer>
+            ${buttons.join("")}
+          </footer>
+        </form>
+      `;
+
+      // Render message content
+      const article = dialog.querySelector("#msg-container");
+      if (typeof message === "object" && message._$litType$) {
+        render(message, article);
+      } else if (typeof message === "string") {
+        article.textContent = message;
+      } else {
+        render(message, article);
+      }
     }
 
     // Handle cancel button clicks
@@ -94,17 +123,33 @@ export async function ask(message, options = {}) {
       }
     });
 
-    // Handle form submission
-    dialog.querySelector("form").addEventListener("submit", (event) => {
-      event.preventDefault();
-      
-      const result = options.useForm 
-        ? (event.submitter.value === "ok" ? new FormData(dialog.querySelector("form")) : null)
-        : (event.submitter.value === "ok");
-      
-      dialog.close();
-      resolve(result);
-    });
+    // Wait for form to exist before adding submit listener
+    const setupFormListener = () => {
+      const form = dialog.querySelector("form");
+      if (form) {
+        form.addEventListener("submit", (event) => {
+          event.preventDefault();
+          
+          let result;
+          if (options.useForm && event.submitter.value === "ok") {
+            console.log("Found form:", form);
+            console.log("Form elements:", form ? Array.from(form.elements) : "no form");
+            result = new FormData(form);
+            console.log("FormData entries:", Array.from(result.entries()));
+          } else {
+            result = (event.submitter.value === "ok");
+          }
+
+          dialog.close();
+          resolve(result);
+        });
+      } else {
+        // Form doesn't exist yet, wait and try again
+        requestAnimationFrame(setupFormListener);
+      }
+    };
+    
+    setupFormListener();
 
     // Handle dialog close event
     dialog.addEventListener("close", () => {

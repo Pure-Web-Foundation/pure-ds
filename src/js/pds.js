@@ -54,6 +54,7 @@ import { presets, defaultLog } from "./pds-core/pds-config.js";
 import { enums } from "./pds-core/pds-enums.js";
 import { ask } from "./common/ask.js";
 import { PDSQuery } from "./pds-core/pds-query.js";
+import * as common from "./common/common.js";
 
 // Font loading utilities
 import { loadTypographyFonts } from "./common/font-loader.js";
@@ -82,6 +83,9 @@ PDS.isLiveMode = isLiveMode;
 PDS.enums = enums;
 
 PDS.ask = ask;
+
+// Expose common utilities (deepMerge, isObject, etc.)
+PDS.common = common;
 
 // Expose presets object directly
 PDS.presets = presets;

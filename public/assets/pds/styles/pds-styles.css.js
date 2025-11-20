@@ -944,7 +944,7 @@ html[data-theme="dark"] {
     box-sizing: border-box;
   }
 
-  legend::after {
+  legend:not(:empty)::after {
       content: "";
       display: block;
       width: 100%;
@@ -1725,6 +1725,17 @@ label[data-toggle] {
     outline-offset: 2px;
   }
 
+  /* Focus visible state when label is focused via keyboard */
+  &:focus-visible .toggle-switch {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+
+  /* Remove default outline on label itself */
+  &:focus {
+    outline: none;
+  }
+
   /* Disabled state */
   &:has(input[type="checkbox"]:disabled) {
     cursor: not-allowed;
@@ -1842,12 +1853,25 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 
 .btn-outline {
   background-color: transparent;
-  color: var(--color-text-primary);
-  border-color: var(--color-text-primary);
+  color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
   
   &:hover {
-    background-color: var(--color-text-primary);
-    color: white;
+    background-color: var(--color-primary-500);
+    color: var(--color-primary-contrast);
+    border-color: var(--color-primary-500);
+  }
+
+  &:active {
+    background-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
+    border-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
+    color: var(--color-primary-contrast);
+  }
+  
+  &:disabled {
+    background-color: transparent;
+    color: var(--color-input-disabled-text);
+    border-color: var(--color-input-disabled-bg);
   }
 }
 
@@ -2231,6 +2255,11 @@ dialog form {
   margin: 0;
 }
 
+/* Dialog fields - to open pds-jsonform subforms */
+.dialog-field {
+    margin-top: var(--spacing-3);
+}
+
 /* Dialog header */
 dialog {
   header,
@@ -2241,7 +2270,7 @@ dialog {
     gap: var(--spacing-4);
     padding: var(--spacing-6);
     border-bottom: 1px solid var(--surface-overlay-border);
-    flex-shrink: 0;
+    flex-shrink: 0;   
 
     h2,
     h3 {
@@ -2988,22 +3017,35 @@ button, a {
     left: var(--spacing-3);
     color: var(--color-text-muted);
     pointer-events: none;
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
   }
 
   input {
-    padding-left: calc(var(--icon-size) + var(--spacing-5));
+    padding-left: calc(var(--icon-size-md) + var(--spacing-6));
+    width: 100%;
+  }
+}
+
+.input-icon-end {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  pds-icon {
+    position: absolute;
+    left: unset;
+    right: var(--spacing-3);
+    color: var(--color-text-muted);
+    pointer-events: none;
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
   }
 
-  &-end {
-    pds-icon {
-      left: auto;
-      right: var(--spacing-3);
-    }
-
-    input {
-      padding-left: var(--spacing-3);
-      padding-right: calc(var(--icon-size) + var(--spacing-5));
-    }
+  input {
+    padding-left: var(--spacing-4);
+    padding-right: calc(var(--icon-size-md) + var(--spacing-6));
+    width: 100%;
   }
 }
 
@@ -3151,7 +3193,7 @@ button, a {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -3162,7 +3204,7 @@ button, a {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-300),
       var(--color-primary-600)
     ) border-box;
@@ -3172,7 +3214,7 @@ button, a {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-accent-300),
       var(--color-accent-600)
     ) border-box;
@@ -3182,7 +3224,7 @@ button, a {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-secondary-300),
       var(--color-secondary-600)
     ) border-box;
@@ -3193,7 +3235,7 @@ button, a {
   border: 1px solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -3203,7 +3245,7 @@ button, a {
   border: 2px solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -3213,7 +3255,7 @@ button, a {
   border: 3px solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -4456,7 +4498,7 @@ html[data-theme="dark"] {
     box-sizing: border-box;
   }
 
-  legend::after {
+  legend:not(:empty)::after {
       content: "";
       display: block;
       width: 100%;
@@ -5237,6 +5279,17 @@ label[data-toggle] {
     outline-offset: 2px;
   }
 
+  /* Focus visible state when label is focused via keyboard */
+  &:focus-visible .toggle-switch {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+
+  /* Remove default outline on label itself */
+  &:focus {
+    outline: none;
+  }
+
   /* Disabled state */
   &:has(input[type="checkbox"]:disabled) {
     cursor: not-allowed;
@@ -5354,12 +5407,25 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 
 .btn-outline {
   background-color: transparent;
-  color: var(--color-text-primary);
-  border-color: var(--color-text-primary);
+  color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
   
   &:hover {
-    background-color: var(--color-text-primary);
-    color: white;
+    background-color: var(--color-primary-500);
+    color: var(--color-primary-contrast);
+    border-color: var(--color-primary-500);
+  }
+
+  &:active {
+    background-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
+    border-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
+    color: var(--color-primary-contrast);
+  }
+  
+  &:disabled {
+    background-color: transparent;
+    color: var(--color-input-disabled-text);
+    border-color: var(--color-input-disabled-bg);
   }
 }
 
@@ -5743,6 +5809,11 @@ dialog form {
   margin: 0;
 }
 
+/* Dialog fields - to open pds-jsonform subforms */
+.dialog-field {
+    margin-top: var(--spacing-3);
+}
+
 /* Dialog header */
 dialog {
   header,
@@ -5753,7 +5824,7 @@ dialog {
     gap: var(--spacing-4);
     padding: var(--spacing-6);
     border-bottom: 1px solid var(--surface-overlay-border);
-    flex-shrink: 0;
+    flex-shrink: 0;   
 
     h2,
     h3 {
@@ -6500,22 +6571,35 @@ button, a {
     left: var(--spacing-3);
     color: var(--color-text-muted);
     pointer-events: none;
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
   }
 
   input {
-    padding-left: calc(var(--icon-size) + var(--spacing-5));
+    padding-left: calc(var(--icon-size-md) + var(--spacing-6));
+    width: 100%;
+  }
+}
+
+.input-icon-end {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  pds-icon {
+    position: absolute;
+    left: unset;
+    right: var(--spacing-3);
+    color: var(--color-text-muted);
+    pointer-events: none;
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
   }
 
-  &-end {
-    pds-icon {
-      left: auto;
-      right: var(--spacing-3);
-    }
-
-    input {
-      padding-left: var(--spacing-3);
-      padding-right: calc(var(--icon-size) + var(--spacing-5));
-    }
+  input {
+    padding-left: var(--spacing-4);
+    padding-right: calc(var(--icon-size-md) + var(--spacing-6));
+    width: 100%;
   }
 }
 
@@ -6663,7 +6747,7 @@ button, a {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -6674,7 +6758,7 @@ button, a {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-300),
       var(--color-primary-600)
     ) border-box;
@@ -6684,7 +6768,7 @@ button, a {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-accent-300),
       var(--color-accent-600)
     ) border-box;
@@ -6694,7 +6778,7 @@ button, a {
   border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-secondary-300),
       var(--color-secondary-600)
     ) border-box;
@@ -6705,7 +6789,7 @@ button, a {
   border: 1px solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -6715,7 +6799,7 @@ button, a {
   border: 2px solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
@@ -6725,7 +6809,7 @@ button, a {
   border: 3px solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
-    linear-gradient(135deg,
+    linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
     ) border-box;
