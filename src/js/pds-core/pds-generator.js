@@ -3414,22 +3414,35 @@ button, a {
     left: var(--spacing-3);
     color: var(--color-text-muted);
     pointer-events: none;
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
   }
 
   input {
-    padding-left: calc(var(--icon-size) + var(--spacing-5));
+    padding-left: calc(var(--icon-size-md) + var(--spacing-6));
+    width: 100%;
+  }
+}
+
+.input-icon-end {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  pds-icon {
+    position: absolute;
+    left: unset;
+    right: var(--spacing-3);
+    color: var(--color-text-muted);
+    pointer-events: none;
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
   }
 
-  &-end {
-    pds-icon {
-      left: auto;
-      right: var(--spacing-3);
-    }
-
-    input {
-      padding-left: var(--spacing-3);
-      padding-right: calc(var(--icon-size) + var(--spacing-5));
-    }
+  input {
+    padding-left: var(--spacing-4);
+    padding-right: calc(var(--icon-size-md) + var(--spacing-6));
+    width: 100%;
   }
 }
 

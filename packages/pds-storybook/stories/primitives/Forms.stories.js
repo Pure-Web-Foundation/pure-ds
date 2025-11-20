@@ -68,3 +68,42 @@ export const Default = {
     preset: 'default'
   }
 };
+
+export const InputsWithIcons = {
+  render: (args) => {
+    return html`
+      <div class="story-container" style="padding: 2rem;">
+        <h3>Inputs with Icons</h3>
+        <p style="margin-bottom: 1.5rem;">Enhance inputs with icons for better UX. Icons can be positioned at the start or end of the input.</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 400px;">
+          <label>
+            <span>Search (Icon Start)</span>
+            <div class="input-icon">
+              <pds-icon icon="magnifying-glass"></pds-icon>
+              <input type="search" placeholder="Search..." />
+            </div>
+          </label>
+          
+          <label>
+            <span>Username (Icon End)</span>
+            <div class="input-icon input-icon-end">
+              <input type="text" placeholder="Username" />
+              <pds-icon icon="user"></pds-icon>
+            </div>
+          </label>
+        </div>
+      </div>
+    `;
+  },
+  args: {
+    preset: 'default'
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Input fields can be enhanced with icons to provide visual context. Use the `input-icon` class wrapper and position icons at the start (default) or end (`input-icon-end`) of the input.'
+      }
+    }
+  }
+};
