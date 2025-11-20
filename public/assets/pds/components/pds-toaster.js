@@ -9,6 +9,13 @@ export class AppToaster extends HTMLElement {
     // Attach shadow DOM
     this.attachShadow({ mode: "open" });
 
+    // Listen for global toast events
+    this._handleToastEvent = (e) => {
+      const { message, type, duration, closable, persistent } = e.detail;
+      this.toast(message, { type, duration, closable, persistent });
+    };
+    PDS.addEventListener('pds:toast', this._handleToastEvent);
+
     // Component-specific styles (toaster layer for animations/positioning)
     const componentStyles = PDS.createStylesheet(/*css*/ `
       @layer toaster {
@@ -121,6 +128,14 @@ export class AppToaster extends HTMLElement {
       ["primitives", "components"],
       [componentStyles]
     );
+  }
+
+  disconnectedCallback() {
+    // Clean up event listener
+    if (this._handleToastEvent) {
+      PDS.removeEventListener('pds:toast', this._handleToastEvent);
+      this._handleToastEvent = null;
+    }
   }
 
   // Main toast method
