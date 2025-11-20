@@ -11,7 +11,7 @@
  */
 
 export class SvgIcon extends HTMLElement {
-  static observedAttributes = ['icon', 'size', 'color', 'label'];
+  static observedAttributes = ['icon', 'size', 'color', 'label', 'rotate'];
   
   // Inline fallback icons for critical UI elements (when sprite fails to load)
   static fallbackIcons = {
@@ -55,6 +55,7 @@ export class SvgIcon extends HTMLElement {
     const color = this.getAttribute('color') || 'currentColor';
     const label = this.getAttribute('label');
     const spriteOverride = this.getAttribute('sprite');
+    const rotate = this.getAttribute('rotate') || '0';
     
     // Parse size - can be number (px) or named size (xs, sm, md, lg, xl, 2xl)
     const namedSizes = {
@@ -81,6 +82,9 @@ export class SvgIcon extends HTMLElement {
     // Determine if we should use sprite or fallback
     const useFallback = this.hasAttribute('no-sprite') || !this.spriteAvailable();
     
+    // Build transform string for rotation
+    const transform = rotate !== '0' ? `rotate(${rotate} 128 128)` : '';
+    
     this.shadowRoot.innerHTML = `
       <svg
         width="${size}"
@@ -91,10 +95,12 @@ export class SvgIcon extends HTMLElement {
         style="display: inline-block; vertical-align: middle; flex-shrink: 0;"
         viewBox="0 0 256 256"
       >
-        ${useFallback 
-          ? this.getFallbackIcon(icon)
-          : `<use href="${spriteHref}#${icon}"></use>`
-        }
+        <g transform="${transform}">
+          ${useFallback 
+            ? this.getFallbackIcon(icon)
+            : `<use href="${spriteHref}#${icon}"></use>`
+          }
+        </g>
       </svg>
     `;
   }

@@ -3320,17 +3320,21 @@ customElements.define(
               class="btn-group"
               style="gap: var(--spacing-3); flex-wrap: wrap;"
             >
-              <button class="btn-primary" @click=${this.openDrawer}>
-                <pds-icon icon="sidebar" size="sm"></pds-icon>
+              <button class="btn-primary" @click=${()=>this.openDrawerInPos('bottom')}>
+                <pds-icon icon="sidebar" rotate="-90" size="sm"></pds-icon>
                 Bottom Drawer
               </button>
-              <button class="btn-secondary" @click=${this.openDrawerLeft}>
+              <button class="btn-secondary" @click=${()=>this.openDrawerInPos('left')}>
                 <pds-icon icon="sidebar" size="sm"></pds-icon>
                 Left Drawer
               </button>
-              <button class="btn-secondary" @click=${this.openDrawerRight}>
-                <pds-icon icon="sidebar" size="sm"></pds-icon>
+              <button class="btn-secondary" @click=${()=>this.openDrawerInPos('right')}>
+                <pds-icon icon="sidebar" rotate="180" size="sm"></pds-icon>
                 Right Drawer
+              </button>
+              <button class="btn-secondary" @click=${()=>this.openDrawerInPos('top')}>
+                <pds-icon icon="sidebar" rotate="90" size="sm"></pds-icon>
+                Top Drawer
               </button>
             </div>
           </section>
@@ -3412,22 +3416,12 @@ customElements.define(
       );
     }
 
-    openDrawerLeft() {
+    openDrawerInPos(position) {
       const drawer = document.getElementById("global-drawer");
       if (drawer) {
         drawer.show(this.renderDrawerContent(), {
-          header: html`<h3>Example Drawer (Left)</h3>`,
-          position: "left",
-        });
-      }
-    }
-
-    openDrawerRight() {
-      const drawer = document.getElementById("global-drawer");
-      if (drawer) {
-        drawer.show(this.renderDrawerContent(), {
-          header: html`<h3>Example Drawer (Right)</h3>`,
-          position: "right",
+          header: html`<h3>Example Drawer (${position.charAt(0).toUpperCase() + position.slice(1)})</h3>`,
+          position: position,
         });
       }
     }
