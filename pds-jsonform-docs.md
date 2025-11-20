@@ -2,6 +2,28 @@
 
 A powerful, extensible JSON Schema form generator for the Pure Design System (PDS). Automatically generates accessible, styled forms from JSON Schema with extensive customization through UI schemas and options.
 
+## Overview
+
+`pds-jsonform` transforms JSON Schema definitions into fully-styled, validated forms with zero boilerplate. It leverages JSON Schema for validation and structure, while providing extensive UI customization through UI schemas.
+
+### Key Features
+
+- 🎯 **Zero Boilerplate** - Define form structure once in JSON Schema
+- ✅ **Built-in Validation** - Automatic validation based on schema (required, min/max, patterns, formats)
+- 🔄 **Two-Way Data Binding** - Reactive form state management
+- 🎨 **PDS Styled** - Uses all PDS design tokens automatically
+- 📱 **Responsive Layouts** - Flex, Grid, Accordion, Tabs out of the box
+- 🔧 **Extensible** - Custom widgets, validators, and renderers
+- 🌐 **Nested Objects** - Support for complex nested data structures
+- 🎭 **Dialog Forms** - Edit complex nested objects in modal dialogs
+- 📝 **Rich Components** - File upload (pds-upload), Rich text (pds-richtext)
+- 🎚️ **Range Sliders** - With live value output display
+- 🔘 **Toggle Switches** - Modern toggle UI for boolean fields
+- 🔍 **Datalist Autocomplete** - Native browser autocomplete for text inputs
+- 🎨 **Icon-Enhanced Inputs** - Add icons to inputs for better UX
+- 🃏 **Surface Wrapping** - Wrap sections in cards, elevated surfaces, etc.
+- ♿ **Accessible** - Proper ARIA attributes and semantic HTML
+
 ## Table of Contents
 
 - [Quick Start](#quick-start)
@@ -54,17 +76,20 @@ const schema = {
     name: {
       type: "string",
       title: "Full Name",
-      minLength: 2
+      minLength: 2,
+      examples: ["John Doe"]
     },
     email: {
       type: "string",
       format: "email",
-      title: "Email Address"
+      title: "Email Address",
+      examples: ["john.doe@example.com"]
     },
     age: {
       type: "integer",
       minimum: 18,
-      maximum: 120
+      maximum: 120,
+      examples: [25]
     },
     newsletter: {
       type: "boolean",
@@ -107,9 +132,21 @@ render(template, document.getElementById('app'));
       type: "object",
       title: "Contact Form",
       properties: {
-        name: { type: "string", title: "Name" },
-        email: { type: "string", format: "email" },
-        message: { type: "string", title: "Message" }
+        name: { 
+          type: "string", 
+          title: "Name",
+          examples: ["Your name"]
+        },
+        email: { 
+          type: "string", 
+          format: "email",
+          examples: ["you@example.com"]
+        },
+        message: { 
+          type: "string", 
+          title: "Message",
+          examples: ["Your message here..."]
+        }
       }
     };
     
@@ -170,9 +207,12 @@ render(template, document.getElementById('app'));
 ```javascript
 {
   type: "number",
+  title: "Age",
+  examples: [25],         // Placeholder value (first example used)
   minimum: 0,             // Minimum value
   maximum: 100,           // Maximum value
-  multipleOf: 5           // Must be multiple of this
+  multipleOf: 5,          // Must be multiple of this
+  default: 18             // Default/initial value
 }
 ```
 
@@ -183,10 +223,52 @@ render(template, document.getElementById('app'));
   type: "object",
   required: ["email", "name"],  // Array of required property names
   properties: {
-    email: { type: "string" },
-    name: { type: "string" }
+    email: { 
+      type: "string",
+      examples: ["user@example.com"]  // Used as placeholder
+    },
+    name: { 
+      type: "string",
+      examples: ["John Doe"]
+    }
   }
 }
+```
+
+#### Using Examples for Placeholders
+
+The `examples` array (from JSON Schema) is used to populate placeholders automatically:
+
+```javascript
+{
+  type: "object",
+  properties: {
+    username: {
+      type: "string",
+      title: "Username",
+      examples: ["john_doe123"]    // First example becomes placeholder
+    },
+    email: {
+      type: "string",
+      format: "email",
+      examples: ["john@example.com", "jane@example.com"]  // Only first is used
+    },
+    age: {
+      type: "number",
+      examples: [25]               // Works for numbers too
+    }
+  }
+}
+```
+
+You can override placeholders in uiSchema:
+
+```javascript
+const uiSchema = {
+  "/username": {
+    "ui:placeholder": "Choose a unique username"  // Overrides examples
+  }
+};
 ```
 
 ### Nested Objects and Arrays
@@ -304,7 +386,7 @@ const uiSchema = {
 
 #### Available Widgets
 
-- **Text**: `input-text`, `textarea`, `input-password`, `input-email`, `input-url`
+- **Text**: `input-text`, `textarea`, `password`, `input-email`, `input-url`
 - **Date/Time**: `input-date`, `input-time`, `input-datetime`
 - **Numbers**: `input-number`, `input-range`
 - **Color**: `input-color`
@@ -312,6 +394,46 @@ const uiSchema = {
 - **Choice**: `select`, `radio`, `checkbox-group`
 - **PDS Components**: `upload`, `richtext`
 - **Special**: `const` (read-only)
+
+#### Widget Options
+
+Many widgets accept additional configuration via `ui:options`:
+
+```javascript
+const uiSchema = {
+  "/bio": {
+    "ui:widget": "textarea",
+    "ui:options": {
+      rows: 6,                      // Textarea rows
+      cols: 50                      // Textarea columns
+    }
+  },
+  "/volume": {
+    "ui:widget": "input-range",
+    "ui:options": {
+      min: 0,
+      max: 100,
+      step: 5
+    }
+  },
+  "/avatar": {
+    "ui:widget": "upload",
+    "ui:options": {
+      accept: "image/*",
+      maxSize: 5242880,            // 5MB
+      multiple: false,
+      label: "Choose photo"
+    }
+  },
+  "/description": {
+    "ui:widget": "richtext",
+    "ui:options": {
+      toolbar: "standard",         // "minimal", "standard", "full"
+      spellcheck: true
+    }
+  }
+};
+```
 
 ### Layout Options
 
@@ -508,25 +630,31 @@ The options system provides global and per-path control over form behavior.
 ```javascript
 {
   widgets: {
-    booleans: "toggle",      // 'toggle' | 'checkbox'
-    numbers: "input",        // 'input' | 'range'
-    selects: "standard"      // 'standard' | 'dropdown'
+    booleans: "toggle",      // 'toggle' | 'checkbox' - default widget for boolean fields
+    numbers: "input",        // 'input' | 'range' - default widget for number fields
+    selects: "standard"      // 'standard' | 'dropdown' - default widget for enum fields
   },
   layouts: {
-    fieldsets: "default",    // 'default' | 'flex' | 'grid' | 'accordion' | 'tabs' | 'card'
-    arrays: "default"        // 'default' | 'compact'
+    fieldsets: "default",    // Default layout for nested objects
+    arrays: "default"        // Default layout for array fields
   },
   enhancements: {
-    icons: true,             // Enable icon-enhanced inputs
+    icons: true,             // Enable icon-enhanced inputs (requires pds-icon)
     datalists: true,         // Enable datalist autocomplete
-    rangeOutput: true        // Use .range-output for ranges
+    rangeOutput: true        // Add live value display for range sliders
   },
   validation: {
     showErrors: true,        // Show validation errors inline
-    validateOnChange: false  // Validate on every change vs on submit
+    validateOnChange: false  // Validate on every change vs on submit only
   }
 }
 ```
+
+**Enhancement Details:**
+
+- **rangeOutput**: When enabled, range sliders display their current value inline using the `.range-output` pattern from PDS
+- **icons**: Automatically adds icons to inputs when `ui:icon` is specified in uiSchema
+- **datalists**: Enables browser-native autocomplete when `ui:datalist` is specified
 
 ### Preset Integration
 
@@ -632,6 +760,17 @@ The `pds-upload` component provides:
 - Image previews
 - Multiple file selection
 - Base64 encoding for form submission
+
+**JSON Schema Properties for File Upload:**
+- `contentMediaType`: MIME type constraint (e.g., `"image/*"`, `"application/pdf"`)
+- `contentEncoding`: Encoding format (typically `"base64"`)
+- `type`: Must be `"string"` (files are encoded as base64 strings)
+
+**UI Schema Options:**
+- `accept`: File type filter for file picker dialog
+- `maxSize`: Maximum file size in bytes
+- `multiple`: Allow multiple file selection
+- `label`: Custom button label
 
 ### Rich Text Editor (pds-richtext)
 
