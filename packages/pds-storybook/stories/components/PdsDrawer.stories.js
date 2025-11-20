@@ -448,11 +448,17 @@ export const SettingsDrawer = () => {
             <legend>Profile Settings</legend>
             <label>
               <span>Username</span>
-              <input type="text" value="john_doe">
+              <div class="input-icon">
+                <pds-icon icon="user"></pds-icon>
+                <input type="text" value="john_doe">
+              </div>
             </label>
             <label>
               <span>Email</span>
-              <input type="email" value="john@example.com">
+              <div class="input-icon">
+                <pds-icon icon="envelope"></pds-icon>
+                <input type="email" value="john@example.com">
+              </div>
             </label>
           </fieldset>
         </article>

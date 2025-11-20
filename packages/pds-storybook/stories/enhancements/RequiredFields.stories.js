@@ -19,11 +19,17 @@ export const BasicRequired = () => html`
     </label>
     <label>
       <span>Email</span>
-      <input type="email" required placeholder="john@example.com">
+      <div class="input-icon">
+        <pds-icon icon="envelope"></pds-icon>
+        <input type="email" required placeholder="john@example.com">
+      </div>
     </label>
     <label>
       <span>Phone (optional)</span>
-      <input type="tel" placeholder="+1 (555) 123-4567">
+      <div class="input-icon">
+        <pds-icon icon="phone"></pds-icon>
+        <input type="tel" placeholder="+1 (555) 123-4567">
+      </div>
     </label>
     <button type="submit" class="btn-primary">Submit</button>
   </form>
@@ -35,15 +41,24 @@ export const MixedRequired = () => html`
       <legend>Account Information</legend>
       <label>
         <span>Username</span>
-        <input type="text" required placeholder="username">
+        <div class="input-icon">
+          <pds-icon icon="user"></pds-icon>
+          <input type="text" required placeholder="username">
+        </div>
       </label>
       <label>
         <span>Password</span>
-        <input type="password" required placeholder="••••••••">
+        <div class="input-icon">
+          <pds-icon icon="lock"></pds-icon>
+          <input type="password" required placeholder="••••••••">
+        </div>
       </label>
       <label>
         <span>Confirm Password</span>
-        <input type="password" required placeholder="••••••••">
+        <div class="input-icon">
+          <pds-icon icon="lock"></pds-icon>
+          <input type="password" required placeholder="••••••••">
+        </div>
       </label>
     </fieldset>
     
@@ -55,7 +70,10 @@ export const MixedRequired = () => html`
       </label>
       <label>
         <span>Website</span>
-        <input type="url" placeholder="https://example.com">
+        <div class="input-icon">
+          <pds-icon icon="globe"></pds-icon>
+          <input type="url" placeholder="https://example.com">
+        </div>
       </label>
     </fieldset>
     
@@ -69,14 +87,20 @@ export const InlineHelp = () => html`
   <form style="max-width: 500px;">
     <label>
       <span>Email Address</span>
-      <input type="email" required placeholder="you@example.com">
+      <div class="input-icon">
+        <pds-icon icon="envelope"></pds-icon>
+        <input type="email" required placeholder="you@example.com">
+      </div>
       <small style="color: var(--surface-text-secondary); display: block; margin-top: 0.25rem;">
         We'll never share your email with anyone else.
       </small>
     </label>
     <label style="margin-top: var(--spacing-3);">
       <span>Password</span>
-      <input type="password" required placeholder="••••••••">
+      <div class="input-icon">
+        <pds-icon icon="lock"></pds-icon>
+        <input type="password" required placeholder="••••••••">
+      </div>
       <small style="color: var(--surface-text-secondary); display: block; margin-top: 0.25rem;">
         Must be at least 8 characters long.
       </small>

@@ -236,7 +236,10 @@ export const UIComponents = {
             <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">
               Email Address
             </label>
-            <input type="email" placeholder="you@example.com" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;">
+            <div class="input-icon">
+              <pds-icon icon="envelope"></pds-icon>
+              <input type="email" placeholder="you@example.com" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;">
+            </div>
             <p class="text-muted" style="font-size: 0.875rem; margin-top: 0.5rem;">
               We'll never share your email with anyone else.
             </p>
@@ -246,7 +249,10 @@ export const UIComponents = {
             <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">
               Password
             </label>
-            <input type="password" placeholder="••••••••" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;">
+            <div class="input-icon">
+              <pds-icon icon="lock"></pds-icon>
+              <input type="password" placeholder="••••••••" style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px;">
+            </div>
             <p style="font-size: 0.875rem; margin-top: 0.5rem; color: var(--color-danger);">
               Password must be at least 8 characters long.
             </p>
@@ -444,7 +450,10 @@ pds build --watch</code></pre>
           
           <div>
             <div style="font-weight: 600; margin-bottom: 0.5rem;">Pre-Selected Text</div>
-            <input type="text" value="pre-selected@example.com" readonly style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px; font-family: var(--font-family-mono);" onclick="this.select()">
+            <div class="input-icon">
+              <pds-icon icon="envelope"></pds-icon>
+              <input type="text" value="pre-selected@example.com" readonly style="width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: 8px; font-family: var(--font-family-mono);" onclick="this.select()">
+            </div>
             <p class="text-muted" style="font-size: 0.875rem; margin-top: 0.5rem;">Click to select all</p>
           </div>
         </div>

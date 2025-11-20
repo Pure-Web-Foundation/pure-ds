@@ -68,7 +68,10 @@ export const EmailComposer = () => html`
     <div style="margin-top: var(--spacing-4);">
       <label style="display: block; margin-bottom: var(--spacing-2);">
         <strong>To:</strong>
-        <input type="email" placeholder="recipient@example.com" style="width: 100%; margin-top: var(--spacing-1); padding: var(--spacing-2); border: 1px solid var(--color-border); border-radius: var(--radius-sm);">
+        <div class="input-icon">
+          <pds-icon icon="envelope"></pds-icon>
+          <input type="email" placeholder="recipient@example.com" style="width: 100%; margin-top: var(--spacing-1); padding: var(--spacing-2); border: 1px solid var(--color-border); border-radius: var(--radius-sm);">
+        </div>
       </label>
       
       <label style="display: block; margin-bottom: var(--spacing-4);">

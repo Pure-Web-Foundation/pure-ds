@@ -219,7 +219,10 @@ export const SingleExpandAccordion = () => html`
             </label>
             <label style="margin-top: var(--spacing-3);">
               <span>Email</span>
-              <input type="email" value="john@example.com" />
+              <div class="input-icon">
+                <pds-icon icon="envelope"></pds-icon>
+                <input type="email" value="john@example.com" />
+              </div>
             </label>
             <button type="submit" class="btn-primary btn-sm" style="margin-top: var(--spacing-3);">
               Save Changes

@@ -44,7 +44,10 @@ export const Default = {
       </label>
       <label>
         <span>Email</span>
-        <input type="email" required placeholder="email@example.com">
+        <div class="input-icon">
+          <pds-icon icon="envelope"></pds-icon>
+          <input type="email" required placeholder="email@example.com">
+        </div>
       </label>
       <label>
         <span>Select</span>
