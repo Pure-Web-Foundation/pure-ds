@@ -53,6 +53,49 @@ async function convertToVSCodeFormat(manifest) {
     log(`⚠️  Could not load icon configuration: ${error.message}`, 'yellow');
   }
   
+  // Load enhancers for data attribute autocomplete
+  let enhancerAttributes = [];
+  try {
+    const pdsPath = path.join(repoRoot, 'src/js/pds.js');
+    const pdsModule = await import(pathToFileURL(pdsPath).href);
+    const enhancers = pdsModule?.PDS?.defaultEnhancers || [];
+    
+    for (const enhancer of enhancers) {
+      // Extract data-* attributes from selectors
+      const selectorMatch = enhancer.selector.match(/\[data-([^\]]+)\]/);
+      if (selectorMatch) {
+        const attrName = `data-${selectorMatch[1]}`;
+        let demoCode = '';
+        
+        // Get demo HTML if available
+        if (enhancer.demoHtml) {
+          try {
+            demoCode = typeof enhancer.demoHtml === 'function' 
+              ? enhancer.demoHtml() 
+              : enhancer.demoHtml;
+            // Clean up the demo code
+            demoCode = demoCode.trim().replace(/\n\s+/g, '\n').replace(/\n{3,}/g, '\n\n');
+          } catch (e) {
+            demoCode = '';
+          }
+        }
+        
+        enhancerAttributes.push({
+          name: attrName,
+          description: enhancer.description || `Progressive enhancement: ${enhancer.selector}`,
+          demoCode: demoCode,
+          selector: enhancer.selector
+        });
+      }
+    }
+    
+    if (enhancerAttributes.length > 0) {
+      log(`🔧 Found ${enhancerAttributes.length} enhancement attributes`, 'blue');
+    }
+  } catch (error) {
+    log(`⚠️  Could not load enhancers: ${error.message}`, 'yellow');
+  }
+  
   manifest.modules?.forEach(module => {
     module.declarations?.forEach(declaration => {
       if (declaration.tagName && declaration.customElement) {
@@ -100,9 +143,23 @@ async function convertToVSCodeFormat(manifest) {
     });
   });
   
+  // Build global attributes for data-* enhancements
+  const globalAttributes = enhancerAttributes.map(attr => {
+    const description = attr.demoCode 
+      ? `${attr.description}\n\nExample:\n${attr.demoCode}`
+      : attr.description;
+    
+    return {
+      name: attr.name,
+      description: description,
+      valueSet: 'v' // Boolean-like attributes
+    };
+  });
+  
   return {
     version: 1.1,
-    tags
+    tags,
+    globalAttributes: globalAttributes.length > 0 ? globalAttributes : undefined
   };
 }
 

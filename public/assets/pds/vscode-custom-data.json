@@ -771,5 +771,17 @@
         }
       ]
     }
+  ],
+  "globalAttributes": [
+    {
+      "name": "data-dropdown",
+      "description": "Enhances a nav element with data-dropdown to function as a dropdown menu.\n\nExample:\n<nav data-dropdown>\n<button class=\"btn-primary\">Menu</button>\n<menu>\n<li><a href=\"#\">Item 1</a></li>\n<li><a href=\"#\">Item 2</a></li>\n</menu>\n</nav>",
+      "valueSet": "v"
+    },
+    {
+      "name": "data-toggle",
+      "description": "Creates a toggle switch element from a checkbox.\n\nExample:\n<label data-toggle>\n<span data-label>Enable notifications</span>\n<input type=\"checkbox\">\n</label>",
+      "valueSet": "v"
+    }
   ]
 }

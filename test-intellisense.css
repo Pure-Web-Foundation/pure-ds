@@ -1,0 +1,50 @@
+/* 
+ * Test CSS IntelliSense
+ * 
+ * ✅ This file tests that CSS IntelliSense is working
+ * 
+ * Try this:
+ * 1. Type: color: var(--
+ * 2. You should see autocomplete with 165 CSS custom properties
+ * 3. Hover over a token to see its value
+ * 
+ * If it doesn't work:
+ * - Check .vscode/settings.json has css.customData configured
+ * - Reload VS Code (Ctrl+Shift+P → Developer: Reload Window)
+ * - Run: npm run pds:dx (generates both HTML and CSS IntelliSense)
+ */
+
+.test {
+  /* Type var(-- below and you should see all CSS custom properties */
+  color: var(--color-primary-500);
+  padding: var(--spacing-4);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  font-family: var(--font-family-body);
+  transition: var(--transition-normal);
+}
+
+.test-colors {
+  /* Try different color scales */
+  background: var(--color-secondary-100);
+  color: var(--color-gray-900);
+  border-color: var(--color-accent-500);
+}
+
+.test-spacing {
+  /* Try spacing tokens */
+  margin: var(--spacing-2);
+  padding: var(--spacing-4);
+  gap: var(--spacing-6);
+}
+
+/* 
+ * ⚠️ IMPORTANT: CSS IntelliSense does NOT work in:
+ * - Inline style attributes: <div style="color: var(--)">
+ * 
+ * It ONLY works in:
+ * - CSS files (like this one)
+ * - <style> tags in HTML
+ * 
+ * See CSS-INTELLISENSE-LIMITATION.md for details
+ */

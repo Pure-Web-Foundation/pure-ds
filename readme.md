@@ -1442,6 +1442,17 @@ await PDS.start({ design: myPreset });
 
 ## CLI & Export
 
+### Available Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run pds:export` | Full export: styles, components, icons, and IntelliSense data |
+| `npm run pds:dx` | Generate all IntelliSense data (HTML + CSS) |
+| `npm run pds:manifest` | Generate HTML IntelliSense (Custom Elements Manifest) |
+| `npm run pds:css-data` | Generate CSS IntelliSense (tokens, classes, attributes) |
+| `npm run pds:build-icons` | Build custom icon sprite |
+| `npm run sync-assets` | Sync assets between locations |
+
 ### Export Static Assets
 
 ```bash
@@ -1463,9 +1474,28 @@ pds/
 │   └── pds-styles.css.js
 ├── components/
 │   └── pds-*.js (all components)
-└── icons/
-    └── pds-icons.svg
+├── icons/
+│   └── pds-icons.svg
+├── custom-elements.json         # HTML IntelliSense
+├── vscode-custom-data.json      # HTML IntelliSense (VS Code)
+├── pds.css-data.json            # CSS IntelliSense (VS Code)
+└── pds-css-complete.json        # CSS IntelliSense (all editors)
 ```
+
+### Generate IntelliSense Data
+
+For complete IDE support with autocomplete:
+
+```bash
+# Generate both HTML and CSS IntelliSense (recommended)
+npm run pds:dx
+
+# Or generate individually
+npm run pds:manifest    # HTML component autocomplete
+npm run pds:css-data    # CSS token & class autocomplete
+```
+
+See [INTELLISENSE.md](./INTELLISENSE.md) for setup instructions.
 
 ### Configuration
 
@@ -1493,111 +1523,150 @@ npm run sync-assets
 
 ---
 
-## Custom Elements Manifest
+## IntelliSense & IDE Support
 
-PDS automatically generates a [Custom Elements Manifest](https://github.com/webcomponents/custom-elements-manifest) (`custom-elements.json`) with comprehensive documentation for all web components.
+PDS provides comprehensive IntelliSense support for both HTML and CSS, dramatically improving developer experience with autocomplete, documentation, and type hints.
 
-### What's Included
+> 📖 **[Full IntelliSense Guide](./INTELLISENSE.md)** - Detailed setup for all editors
 
-The manifest documents:
-- **Properties & Attributes** - All public properties with types, descriptions, and defaults
-- **Methods** - Public methods with parameters and return types
-- **Events** - Custom events fired by components
-- **Slots** - Named and unnamed slots for content projection
-- **CSS Custom Properties** - Themeable CSS variables
-- **CSS Parts** - Shadow DOM parts for external styling
+### Quick Setup (VS Code)
 
-### IDE Integration
+Add to `.vscode/settings.json`:
 
-The manifest enables powerful IDE features:
-- **IntelliSense/Autocomplete** - Property and method suggestions in VS Code, WebStorm
-- **Type Checking** - Validate attributes in HTML and JSX
-- **Hover Documentation** - View component docs inline
+```json
+{
+  "html.customData": [
+    "node_modules/pure-ds/public/assets/pds/vscode-custom-data.json"
+  ],
+  "css.customData": [
+    "node_modules/pure-ds/public/assets/pds/pds.css-data.json"
+  ]
+}
+```
+
+Reload VS Code: **Ctrl+Shift+P** → **Developer: Reload Window**
+
+### What You Get
+
+#### HTML IntelliSense
+- ✅ Web component autocomplete (`<pds-drawer>`, `<pds-icon>`)
+- ✅ Attribute suggestions with descriptions
+- ✅ Enum value autocomplete (`position="left|right|top|bottom"`)
+- ✅ Icon name suggestions (all available icons)
+
+#### CSS IntelliSense
+- ✅ CSS token autocomplete in `.css` files and `<style>` tags
+- ✅ Token value previews on hover (`--color-primary-500`, `--spacing-4`)
+- ✅ 165 CSS custom properties with descriptions
+- ⚠️ **Note**: Inline `style` attributes don't support IntelliSense (VS Code limitation - use CSS files or `<style>` tags)
+
+> 📖 **[CSS IntelliSense Limitations](./CSS-INTELLISENSE-LIMITATION.md)** - Important info about where IntelliSense works
 
 ### Generation
 
-The manifest is automatically created during export:
+IntelliSense data is automatically generated with export:
 
 ```bash
+# Generate all IntelliSense data (HTML + CSS)
+npm run pds:dx
+
+# Or as part of full export
 npm run pds:export
+
+# Or generate individually
+npm run pds:manifest    # HTML IntelliSense only
+npm run pds:css-data    # CSS IntelliSense only
 ```
 
-Or generate independently:
+### Generated Files
 
-```bash
-npm run pds:manifest
-```
-
-This command:
-1. Generates `custom-elements.json` (Custom Elements Manifest)
-2. Converts it to `vscode-custom-data.json` (VS Code format)
-3. Creates `pds.html-data.json` in the project root
-4. Prompts you to reload VS Code to activate autocomplete
-
-### VS Code Setup
-
-To enable autocomplete for PDS components in VS Code:
-
-**Option 1: Workspace Settings (Recommended)**
-
-Add to `.vscode/settings.json`:
-```json
-{
-  "html.customData": [
-    "public/assets/pds/vscode-custom-data.json"
-  ]
-}
-```
-
-**Option 2: User Settings**
-
-Reference the generated `pds.html-data.json`:
-```json
-{
-  "html.customData": [
-    "./pds.html-data.json"
-  ]
-}
-```
-
-After adding the setting, reload VS Code (**Ctrl+Shift+P** → **Developer: Reload Window**).
-
-### Location
-
-After generation, find these files:
 ```
 public/assets/pds/
-├── custom-elements.json        # Custom Elements Manifest
-└── vscode-custom-data.json     # VS Code autocomplete data
+├── custom-elements.json        # Standard Custom Elements Manifest
+├── vscode-custom-data.json     # VS Code HTML custom data
+├── pds.css-data.json           # VS Code CSS custom data
+└── pds-css-complete.json       # Standard CSS data (all editors)
 
-pds.html-data.json               # VS Code settings reference (project root)
+# Root reference files
+pds.html-data.json               # Points to HTML custom data
+pds.css-data.json                # Points to CSS custom data
 ```
 
-### Example Usage
+### Usage Examples
 
+**HTML Autocomplete:**
 ```html
-<!-- Type <pds- to see all components with descriptions -->
-<!-- Type position=" to see available values with autocomplete -->
-<pds-drawer open position="right" max-height="80vh">
+<!-- Type <pds- to see all components -->
+<pds-drawer position="right" open>
   <div slot="drawer-header">Settings</div>
-  <div slot="drawer-content">Content here</div>
 </pds-drawer>
 
-<!-- Autocomplete suggests icon names, sizes, and all attributes -->
-<pds-icon icon="star" size="lg" color="blue"></pds-icon>
+<!-- Icon autocomplete suggests all available icons -->
+<pds-icon icon="star"></pds-icon>
 ```
 
-```javascript
-// IDE will show method signatures and documentation
-const drawer = document.querySelector('pds-drawer');
-drawer.openDrawer();  // ← Autocomplete + docs on hover
-drawer.setContent('<p>New content</p>');
+**CSS Token Autocomplete:**
+```css
+.my-component {
+  /* Type --color and see all color tokens */
+  background: var(--color-primary-500);
+  padding: var(--spacing-4);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
 ```
 
-**What you get:**
-- 🔍 **Tag autocomplete** - Type `<pds-` to see all components
-- 📝 **Attribute suggestions** - See available attributes for each component
-- 💡 **Value hints** - Enum values like `position="bottom|top|left|right"`
+**Utility Class Autocomplete:**
+```html
+<div class="flex gap-4 items-center">
+  <div class="card surface-elevated">
+    <!-- Primitives and utilities autocomplete -->
+  </div>
+</div>
+```
+
+### What's Included
+
+**150+ CSS Custom Properties:**
+- Colors: `--color-{name}-{50-900}`
+- Spacing: `--spacing-{xs|sm|md|lg|xl|...}`
+- Typography: `--font-family-*`, `--font-size-*`, `--font-weight-*`
+- Borders: `--radius-*`, `--border-width-*`
+- Shadows: `--shadow-{sm|md|lg|xl|2xl}`
+- Surfaces: `--surface-bg`, `--surface-text`, `--surface-border`
+
+**50+ CSS Classes:**
+- Primitives: `.badge`, `.card`, `.surface`, `.alert`
+- Layout: `.flex`, `.grid`, `.grid-cols-{1-6}`, `.container`
+- Utilities: `.gap-{0-12}`, `.items-*`, `.justify-*`
+- Effects: `.border-gradient`, `.border-glow`
+
+**5+ Data Enhancements:**
+- `data-dropdown`, `data-toggle`, `data-tabs`, `data-modal`, `data-tooltip`
+
+### Cross-Editor Support
+
+PDS IntelliSense works with:
+- ✅ **VS Code** - Full support (HTML + CSS)
+- ✅ **WebStorm/IntelliJ** - Automatic recognition
+- ✅ **Sublime Text** - Via LSP package
+- ✅ **Vim/Neovim** - Via coc-css/coc-html
+- ✅ **Any LSP-compliant editor**
+
+See [INTELLISENSE.md](./INTELLISENSE.md) for detailed setup instructions for each editor.
+
+---
+
+## Custom Elements Manifest
+
+PDS automatically generates a [Custom Elements Manifest](https://github.com/webcomponents/custom-elements-manifest) for web component documentation. This is part of the IntelliSense system but can be used standalone.
+
+### What's Documented
+- Properties, attributes, methods, events
+- Slots and CSS custom properties
+- CSS parts for Shadow DOM styling
+
+See the [IntelliSense Guide](./INTELLISENSE.md) for complete documentation.
 - 📖 **Hover documentation** - View descriptions without leaving your code
 
 For detailed information, see [CUSTOM-ELEMENTS-MANIFEST.md](./CUSTOM-ELEMENTS-MANIFEST.md).

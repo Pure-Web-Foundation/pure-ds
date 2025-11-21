@@ -24,6 +24,7 @@ import { fileURLToPath, pathToFileURL } from 'url';
 import { discoverWebRoot } from './postinstall.js';
 import { runPdsBuildIcons } from './pds-build-icons.js';
 import { generateManifest } from './generate-manifest.js';
+import { generateCSSData } from './generate-css-data.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -216,20 +217,28 @@ async function main() {
     log(`⚠️  Icon sprite step encountered an issue: ${e?.message || e}`, 'yellow');
   }
 
-  // 6) Generate Custom Elements Manifest
+  // 6) Generate Custom Elements Manifest (HTML IntelliSense)
   try {
     await generateManifest(targetDir);
   } catch (e) {
     log(`⚠️  Custom Elements Manifest generation failed: ${e?.message || e}`, 'yellow');
   }
 
-  // 7) Summary
+  // 7) Generate CSS Custom Data (CSS IntelliSense)
+  try {
+    await generateCSSData(targetDir);
+  } catch (e) {
+    log(`⚠️  CSS custom data generation failed: ${e?.message || e}`, 'yellow');
+  }
+
+  // 8) Summary
   log('\n────────────────────────────────────────────');
   log('✅ PDS static assets ready', 'green');
   log(`📍 Location: ${path.relative(process.cwd(), targetDir)}`);
   log('• components → components/*.js');
   log('• styles → styles/pds-*.css (+ .css.js modules)');
-  log('• manifest → custom-elements.json');
+  log('• intellisense → custom-elements.json, vscode-custom-data.json');
+  log('• intellisense → pds.css-data.json, pds-css-complete.json');
   log('────────────────────────────────────────────\n');
 
   } catch (err) {

@@ -292,7 +292,7 @@ PDS.defaultEnhancers = [
     demoHtml: () => /*html*/ `
       <nav data-dropdown>
         <button class="btn-primary">Menu</button>
-        <menu style="display:none">
+        <menu>
           <li><a href="#">Item 1</a></li>
           <li><a href="#">Item 2</a></li>
         </menu>
@@ -505,12 +505,13 @@ PDS.defaultEnhancers = [
   },
   {
     selector: 'input[type="range"]',
-    description: "Enhances range inputs with a value bubble.",
-    demoHtml: (elem) => {
-      const min = elem?.getAttribute?.("min") || 0;
-      const max = elem?.getAttribute?.("max") || 100;
-      const value = elem?.getAttribute?.("value") || elem?.value || 0;
-      return `<input type="range" min="${min}" max="${max}" value="${value}">`;
+    description: "Enhances range inputs with an attached <output>.",
+    demoHtml: (elem) => {      
+      return `
+      <label class="range-output">
+        <span data-label>Volume</span>
+        <input type="range" min="${min}" max="${max}" value="${value}">
+      </label>`;
     },
     run: (elem) => {
       if (elem.dataset.enhancedRange) return;

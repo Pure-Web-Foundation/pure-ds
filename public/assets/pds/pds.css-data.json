@@ -1,0 +1,2152 @@
+{
+  "version": 1.1,
+  "properties": [
+    {
+      "name": "--color-primary-50",
+      "description": "primary color scale - shade 50",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%2395dbee"
+        }
+      ]
+    },
+    {
+      "name": "--color-primary-100",
+      "description": "primary color scale - shade 100",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%2365ceeb"
+        }
+      ]
+    },
+    {
+      "name": "--color-primary-200",
+      "description": "primary color scale - shade 200",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%2332c3eb"
+        }
+      ]
+    },
+    {
+      "name": "--color-primary-300",
+      "description": "primary color scale - shade 300",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%2315acd6"
+        }
+      ]
+    },
+    {
+      "name": "--color-primary-400",
+      "description": "primary color scale - shade 400",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%231087a7"
+        }
+      ]
+    },
+    {
+      "name": "--color-primary-500",
+      "description": "primary color scale - shade 500",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%230e7490"
+        }
+      ]
+    },
+    {
+      "name": "--color-primary-600",
+      "description": "primary color scale - shade 600",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%230b5e74"
+        }
+      ]
+    },
+    {
+      "name": "--color-primary-700",
+      "description": "primary color scale - shade 700",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23094b5d"
+        }
+      ]
+    },
+    {
+      "name": "--color-primary-800",
+      "description": "primary color scale - shade 800",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23073846"
+        }
+      ]
+    },
+    {
+      "name": "--color-primary-900",
+      "description": "primary color scale - shade 900",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%2305252e"
+        }
+      ]
+    },
+    {
+      "name": "--color-secondary-50",
+      "description": "secondary color scale - shade 50",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23f4f2f1"
+        }
+      ]
+    },
+    {
+      "name": "--color-secondary-100",
+      "description": "secondary color scale - shade 100",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23e9e4e2"
+        }
+      ]
+    },
+    {
+      "name": "--color-secondary-200",
+      "description": "secondary color scale - shade 200",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23ddd7d5"
+        }
+      ]
+    },
+    {
+      "name": "--color-secondary-300",
+      "description": "secondary color scale - shade 300",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23c6bdb9"
+        }
+      ]
+    },
+    {
+      "name": "--color-secondary-400",
+      "description": "secondary color scale - shade 400",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23afa29c"
+        }
+      ]
+    },
+    {
+      "name": "--color-secondary-500",
+      "description": "secondary color scale - shade 500",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23a99b95"
+        }
+      ]
+    },
+    {
+      "name": "--color-secondary-600",
+      "description": "secondary color scale - shade 600",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23928079"
+        }
+      ]
+    },
+    {
+      "name": "--color-secondary-700",
+      "description": "secondary color scale - shade 700",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23776761"
+        }
+      ]
+    },
+    {
+      "name": "--color-secondary-800",
+      "description": "secondary color scale - shade 800",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%235b4f4a"
+        }
+      ]
+    },
+    {
+      "name": "--color-secondary-900",
+      "description": "secondary color scale - shade 900",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%233f3733"
+        }
+      ]
+    },
+    {
+      "name": "--color-accent-50",
+      "description": "accent color scale - shade 50",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23fbeaef"
+        }
+      ]
+    },
+    {
+      "name": "--color-accent-100",
+      "description": "accent color scale - shade 100",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23f8d3de"
+        }
+      ]
+    },
+    {
+      "name": "--color-accent-200",
+      "description": "accent color scale - shade 200",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23f4b2c5"
+        }
+      ]
+    },
+    {
+      "name": "--color-accent-300",
+      "description": "accent color scale - shade 300",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23ee85a4"
+        }
+      ]
+    },
+    {
+      "name": "--color-accent-400",
+      "description": "accent color scale - shade 400",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23e85882"
+        }
+      ]
+    },
+    {
+      "name": "--color-accent-500",
+      "description": "accent color scale - shade 500",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23e54271"
+        }
+      ]
+    },
+    {
+      "name": "--color-accent-600",
+      "description": "accent color scale - shade 600",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23d61e53"
+        }
+      ]
+    },
+    {
+      "name": "--color-accent-700",
+      "description": "accent color scale - shade 700",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23aa1742"
+        }
+      ]
+    },
+    {
+      "name": "--color-accent-800",
+      "description": "accent color scale - shade 800",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%237d1130"
+        }
+      ]
+    },
+    {
+      "name": "--color-accent-900",
+      "description": "accent color scale - shade 900",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23500b1f"
+        }
+      ]
+    },
+    {
+      "name": "--color-success-50",
+      "description": "success color scale - shade 50",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23d3f8d3"
+        }
+      ]
+    },
+    {
+      "name": "--color-success-100",
+      "description": "success color scale - shade 100",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23a4f3a4"
+        }
+      ]
+    },
+    {
+      "name": "--color-success-200",
+      "description": "success color scale - shade 200",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%2373f273"
+        }
+      ]
+    },
+    {
+      "name": "--color-success-300",
+      "description": "success color scale - shade 300",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%2344ed44"
+        }
+      ]
+    },
+    {
+      "name": "--color-success-400",
+      "description": "success color scale - shade 400",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%2316e816"
+        }
+      ]
+    },
+    {
+      "name": "--color-success-500",
+      "description": "success color scale - shade 500",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%2314d114"
+        }
+      ]
+    },
+    {
+      "name": "--color-success-600",
+      "description": "success color scale - shade 600",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%2310a210"
+        }
+      ]
+    },
+    {
+      "name": "--color-success-700",
+      "description": "success color scale - shade 700",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%230b740b"
+        }
+      ]
+    },
+    {
+      "name": "--color-success-800",
+      "description": "success color scale - shade 800",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23074607"
+        }
+      ]
+    },
+    {
+      "name": "--color-success-900",
+      "description": "success color scale - shade 900",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23042f04"
+        }
+      ]
+    },
+    {
+      "name": "--color-warning-50",
+      "description": "warning color scale - shade 50",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23fae39f"
+        }
+      ]
+    },
+    {
+      "name": "--color-warning-100",
+      "description": "warning color scale - shade 100",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23fbd76a"
+        }
+      ]
+    },
+    {
+      "name": "--color-warning-200",
+      "description": "warning color scale - shade 200",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23ffcc33"
+        }
+      ]
+    },
+    {
+      "name": "--color-warning-300",
+      "description": "warning color scale - shade 300",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23ffbf00"
+        }
+      ]
+    },
+    {
+      "name": "--color-warning-400",
+      "description": "warning color scale - shade 400",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23cc9900"
+        }
+      ]
+    },
+    {
+      "name": "--color-warning-500",
+      "description": "warning color scale - shade 500",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23B38600"
+        }
+      ]
+    },
+    {
+      "name": "--color-warning-600",
+      "description": "warning color scale - shade 600",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23806000"
+        }
+      ]
+    },
+    {
+      "name": "--color-warning-700",
+      "description": "warning color scale - shade 700",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23664c00"
+        }
+      ]
+    },
+    {
+      "name": "--color-warning-800",
+      "description": "warning color scale - shade 800",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%234d3900"
+        }
+      ]
+    },
+    {
+      "name": "--color-warning-900",
+      "description": "warning color scale - shade 900",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23332600"
+        }
+      ]
+    },
+    {
+      "name": "--color-danger-50",
+      "description": "danger color scale - shade 50",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23fbe9e9"
+        }
+      ]
+    },
+    {
+      "name": "--color-danger-100",
+      "description": "danger color scale - shade 100",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23f6bbbb"
+        }
+      ]
+    },
+    {
+      "name": "--color-danger-200",
+      "description": "danger color scale - shade 200",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23f38b8b"
+        }
+      ]
+    },
+    {
+      "name": "--color-danger-300",
+      "description": "danger color scale - shade 300",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23ef5d5d"
+        }
+      ]
+    },
+    {
+      "name": "--color-danger-400",
+      "description": "danger color scale - shade 400",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23ea2e2e"
+        }
+      ]
+    },
+    {
+      "name": "--color-danger-500",
+      "description": "danger color scale - shade 500",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23e81717"
+        }
+      ]
+    },
+    {
+      "name": "--color-danger-600",
+      "description": "danger color scale - shade 600",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23ba1212"
+        }
+      ]
+    },
+    {
+      "name": "--color-danger-700",
+      "description": "danger color scale - shade 700",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%238b0e0e"
+        }
+      ]
+    },
+    {
+      "name": "--color-danger-800",
+      "description": "danger color scale - shade 800",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%235d0909"
+        }
+      ]
+    },
+    {
+      "name": "--color-danger-900",
+      "description": "danger color scale - shade 900",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%232e0505"
+        }
+      ]
+    },
+    {
+      "name": "--color-info-50",
+      "description": "info color scale - shade 50",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%2395dbee"
+        }
+      ]
+    },
+    {
+      "name": "--color-info-100",
+      "description": "info color scale - shade 100",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%2365ceeb"
+        }
+      ]
+    },
+    {
+      "name": "--color-info-200",
+      "description": "info color scale - shade 200",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%2332c3eb"
+        }
+      ]
+    },
+    {
+      "name": "--color-info-300",
+      "description": "info color scale - shade 300",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%2315acd6"
+        }
+      ]
+    },
+    {
+      "name": "--color-info-400",
+      "description": "info color scale - shade 400",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%231087a7"
+        }
+      ]
+    },
+    {
+      "name": "--color-info-500",
+      "description": "info color scale - shade 500",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%230e7490"
+        }
+      ]
+    },
+    {
+      "name": "--color-info-600",
+      "description": "info color scale - shade 600",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%230b5e74"
+        }
+      ]
+    },
+    {
+      "name": "--color-info-700",
+      "description": "info color scale - shade 700",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23094b5d"
+        }
+      ]
+    },
+    {
+      "name": "--color-info-800",
+      "description": "info color scale - shade 800",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23073846"
+        }
+      ]
+    },
+    {
+      "name": "--color-info-900",
+      "description": "info color scale - shade 900",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%2305252e"
+        }
+      ]
+    },
+    {
+      "name": "--color-gray-50",
+      "description": "gray color scale - shade 50",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23fafaf9"
+        }
+      ]
+    },
+    {
+      "name": "--color-gray-100",
+      "description": "gray color scale - shade 100",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23f4f2f1"
+        }
+      ]
+    },
+    {
+      "name": "--color-gray-200",
+      "description": "gray color scale - shade 200",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23e3dfdd"
+        }
+      ]
+    },
+    {
+      "name": "--color-gray-300",
+      "description": "gray color scale - shade 300",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23cdc5c1"
+        }
+      ]
+    },
+    {
+      "name": "--color-gray-400",
+      "description": "gray color scale - shade 400",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23a3958f"
+        }
+      ]
+    },
+    {
+      "name": "--color-gray-500",
+      "description": "gray color scale - shade 500",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23a99b95"
+        }
+      ]
+    },
+    {
+      "name": "--color-gray-600",
+      "description": "gray color scale - shade 600",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23846c62"
+        }
+      ]
+    },
+    {
+      "name": "--color-gray-700",
+      "description": "gray color scale - shade 700",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23695349"
+        }
+      ]
+    },
+    {
+      "name": "--color-gray-800",
+      "description": "gray color scale - shade 800",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%233d2f29"
+        }
+      ]
+    },
+    {
+      "name": "--color-gray-900",
+      "description": "gray color scale - shade 900",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%231f1714"
+        }
+      ]
+    },
+    {
+      "name": "--color-surface-base",
+      "description": "surface color scale - shade base",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23e7e6de"
+        }
+      ]
+    },
+    {
+      "name": "--color-surface-subtle",
+      "description": "surface color scale - shade subtle",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23e3e2d8"
+        }
+      ]
+    },
+    {
+      "name": "--color-surface-elevated",
+      "description": "surface color scale - shade elevated",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23deddd2"
+        }
+      ]
+    },
+    {
+      "name": "--color-surface-sunken",
+      "description": "surface color scale - shade sunken",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23dad9cc"
+        }
+      ]
+    },
+    {
+      "name": "--color-surface-overlay",
+      "description": "surface color scale - shade overlay",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23ebeae4"
+        }
+      ]
+    },
+    {
+      "name": "--color-surface-inverse",
+      "description": "surface color scale - shade inverse",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%23191810"
+        }
+      ]
+    },
+    {
+      "name": "--color-surface-hover",
+      "description": "surface color scale - shade hover",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,color-mix(in%20oklab%2C%20var(--color-surface-base)%2092%25%2C%20var(--color-text-primary)%208%25)%3B"
+        }
+      ]
+    },
+    {
+      "name": "--color-surface-fieldset",
+      "description": "surface color scale - shade fieldset",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-surfaceSmart-base",
+      "description": "surfaceSmart color scale - shade base",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-surfaceSmart-subtle",
+      "description": "surfaceSmart color scale - shade subtle",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-surfaceSmart-elevated",
+      "description": "surfaceSmart color scale - shade elevated",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-surfaceSmart-sunken",
+      "description": "surfaceSmart color scale - shade sunken",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-surfaceSmart-overlay",
+      "description": "surfaceSmart color scale - shade overlay",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-surfaceSmart-inverse",
+      "description": "surfaceSmart color scale - shade inverse",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-dark-surface",
+      "description": "dark color scale - shade surface",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-dark-primary",
+      "description": "dark color scale - shade primary",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-dark-secondary",
+      "description": "dark color scale - shade secondary",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-dark-accent",
+      "description": "dark color scale - shade accent",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-dark-gray",
+      "description": "dark color scale - shade gray",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-dark-success",
+      "description": "dark color scale - shade success",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-dark-info",
+      "description": "dark color scale - shade info",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-dark-warning",
+      "description": "dark color scale - shade warning",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-dark-danger",
+      "description": "dark color scale - shade danger",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-dark-surfaceSmart",
+      "description": "dark color scale - shade surfaceSmart",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-interactive-light",
+      "description": "interactive color scale - shade light",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-interactive-dark",
+      "description": "interactive color scale - shade dark",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--spacing-0",
+      "description": "Spacing scale value 0",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,0"
+        }
+      ]
+    },
+    {
+      "name": "--spacing-1",
+      "description": "Spacing scale value 1",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,4px"
+        }
+      ]
+    },
+    {
+      "name": "--spacing-2",
+      "description": "Spacing scale value 2",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,8px"
+        }
+      ]
+    },
+    {
+      "name": "--spacing-3",
+      "description": "Spacing scale value 3",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,12px"
+        }
+      ]
+    },
+    {
+      "name": "--spacing-4",
+      "description": "Spacing scale value 4",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,16px"
+        }
+      ]
+    },
+    {
+      "name": "--spacing-5",
+      "description": "Spacing scale value 5",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,20px"
+        }
+      ]
+    },
+    {
+      "name": "--spacing-6",
+      "description": "Spacing scale value 6",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,24px"
+        }
+      ]
+    },
+    {
+      "name": "--spacing-7",
+      "description": "Spacing scale value 7",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,28px"
+        }
+      ]
+    },
+    {
+      "name": "--spacing-8",
+      "description": "Spacing scale value 8",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,32px"
+        }
+      ]
+    },
+    {
+      "name": "--spacing-9",
+      "description": "Spacing scale value 9",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,36px"
+        }
+      ]
+    },
+    {
+      "name": "--spacing-10",
+      "description": "Spacing scale value 10",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,40px"
+        }
+      ]
+    },
+    {
+      "name": "--spacing-11",
+      "description": "Spacing scale value 11",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,44px"
+        }
+      ]
+    },
+    {
+      "name": "--spacing-12",
+      "description": "Spacing scale value 12",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,48px"
+        }
+      ]
+    },
+    {
+      "name": "--radius-none",
+      "description": "Border radius none",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,0"
+        }
+      ]
+    },
+    {
+      "name": "--radius-xs",
+      "description": "Border radius xs",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,4px"
+        }
+      ]
+    },
+    {
+      "name": "--radius-sm",
+      "description": "Border radius sm",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,8px"
+        }
+      ]
+    },
+    {
+      "name": "--radius-md",
+      "description": "Border radius md",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,16px"
+        }
+      ]
+    },
+    {
+      "name": "--radius-lg",
+      "description": "Border radius lg",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,24px"
+        }
+      ]
+    },
+    {
+      "name": "--radius-xl",
+      "description": "Border radius xl",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,32px"
+        }
+      ]
+    },
+    {
+      "name": "--radius-full",
+      "description": "Border radius full",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,9999px"
+        }
+      ]
+    },
+    {
+      "name": "--border-width-hairline",
+      "description": "Border width hairline",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,0.5px"
+        }
+      ]
+    },
+    {
+      "name": "--border-width-thin",
+      "description": "Border width thin",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,1px"
+        }
+      ]
+    },
+    {
+      "name": "--border-width-medium",
+      "description": "Border width medium",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,2px"
+        }
+      ]
+    },
+    {
+      "name": "--border-width-thick",
+      "description": "Border width thick",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,3px"
+        }
+      ]
+    },
+    {
+      "name": "--shadow-sm",
+      "description": "Shadow sm",
+      "syntax": "<shadow>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,0%201px%202px%200%20rgba(0%2C%200%2C%200%2C%200.05)"
+        }
+      ]
+    },
+    {
+      "name": "--shadow-base",
+      "description": "Shadow base",
+      "syntax": "<shadow>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,0%201px%203px%200%20rgba(0%2C%200%2C%200%2C%200.1)%2C%200%201px%202px%200%20rgba(0%2C%200%2C%200%2C%200.05)"
+        }
+      ]
+    },
+    {
+      "name": "--shadow-md",
+      "description": "Shadow md",
+      "syntax": "<shadow>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,0%204px%206px%20-1px%20rgba(0%2C%200%2C%200%2C%200.1)%2C%200%202px%204px%20-1px%20rgba(0%2C%200%2C%200%2C%200.05)"
+        }
+      ]
+    },
+    {
+      "name": "--shadow-lg",
+      "description": "Shadow lg",
+      "syntax": "<shadow>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,0%2010px%2015px%20-3px%20rgba(0%2C%200%2C%200%2C%200.1)%2C%200%204px%206px%20-2px%20rgba(0%2C%200%2C%200%2C%200.05)"
+        }
+      ]
+    },
+    {
+      "name": "--shadow-xl",
+      "description": "Shadow xl",
+      "syntax": "<shadow>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,0%2020px%2025px%20-5px%20rgba(0%2C%200%2C%200%2C%200.1)%2C%200%2010px%2010px%20-5px%20rgba(0%2C%200%2C%200%2C%200.05)"
+        }
+      ]
+    },
+    {
+      "name": "--shadow-inner",
+      "description": "Shadow inner",
+      "syntax": "<shadow>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,inset%200%202px%204px%200%20rgba(0%2C%200%2C%200%2C%200.05)"
+        }
+      ]
+    },
+    {
+      "name": "--transition-fast",
+      "description": "Transition fast",
+      "syntax": "<time>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,150ms"
+        }
+      ]
+    },
+    {
+      "name": "--transition-normal",
+      "description": "Transition normal",
+      "syntax": "<time>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,250ms"
+        }
+      ]
+    },
+    {
+      "name": "--transition-slow",
+      "description": "Transition slow",
+      "syntax": "<time>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,350ms"
+        }
+      ]
+    },
+    {
+      "name": "--z-dropdown",
+      "description": "Z-index dropdown",
+      "syntax": "<integer>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,1000"
+        }
+      ]
+    },
+    {
+      "name": "--z-sticky",
+      "description": "Z-index sticky",
+      "syntax": "<integer>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,1020"
+        }
+      ]
+    },
+    {
+      "name": "--z-fixed",
+      "description": "Z-index fixed",
+      "syntax": "<integer>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,1030"
+        }
+      ]
+    },
+    {
+      "name": "--z-modal",
+      "description": "Z-index modal",
+      "syntax": "<integer>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,1040"
+        }
+      ]
+    },
+    {
+      "name": "--z-drawer",
+      "description": "Z-index drawer",
+      "syntax": "<integer>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,1050"
+        }
+      ]
+    },
+    {
+      "name": "--z-popover",
+      "description": "Z-index popover",
+      "syntax": "<integer>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,1060"
+        }
+      ]
+    },
+    {
+      "name": "--z-tooltip",
+      "description": "Z-index tooltip",
+      "syntax": "<integer>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,1070"
+        }
+      ]
+    },
+    {
+      "name": "--z-notification",
+      "description": "Z-index notification",
+      "syntax": "<integer>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,1080"
+        }
+      ]
+    },
+    {
+      "name": "--layout-maxWidth",
+      "description": "Layout maxWidth",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,1200px"
+        }
+      ]
+    },
+    {
+      "name": "--layout-minHeight",
+      "description": "Layout minHeight",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,100vh"
+        }
+      ]
+    },
+    {
+      "name": "--layout-containerPadding",
+      "description": "Layout containerPadding",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,var(--spacing-6)px"
+        }
+      ]
+    },
+    {
+      "name": "--breakpoint-sm",
+      "description": "Breakpoint sm",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,640px"
+        }
+      ]
+    },
+    {
+      "name": "--breakpoint-md",
+      "description": "Breakpoint md",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,768px"
+        }
+      ]
+    },
+    {
+      "name": "--breakpoint-lg",
+      "description": "Breakpoint lg",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,1024px"
+        }
+      ]
+    },
+    {
+      "name": "--breakpoint-xl",
+      "description": "Breakpoint xl",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,1280px"
+        }
+      ]
+    },
+    {
+      "name": "--layout-pageMargin",
+      "description": "Layout pageMargin",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,120px"
+        }
+      ]
+    },
+    {
+      "name": "--layout-sectionGap",
+      "description": "Layout sectionGap",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,160px"
+        }
+      ]
+    },
+    {
+      "name": "--layout-containerGap",
+      "description": "Layout containerGap",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,200px"
+        }
+      ]
+    },
+    {
+      "name": "--layout-heroSpacing",
+      "description": "Layout heroSpacing",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,240px"
+        }
+      ]
+    },
+    {
+      "name": "--layout-footerSpacing",
+      "description": "Layout footerSpacing",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,160px"
+        }
+      ]
+    },
+    {
+      "name": "--surface-bg",
+      "description": "Surface background color",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--surface-text",
+      "description": "Surface text color",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--surface-text-secondary",
+      "description": "Surface secondary text color",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--surface-border",
+      "description": "Surface border color",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--surface-shadow",
+      "description": "Surface shadow",
+      "syntax": "<color>"
+    },
+    {
+      "name": "--surface-hover",
+      "description": "Surface hover state",
+      "syntax": "<color>"
+    }
+  ],
+  "atDirectives": [],
+  "pseudoClasses": [
+    {
+      "name": "badge",
+      "description": "Badge / Pill primitive component"
+    },
+    {
+      "name": "pill",
+      "description": "Badge / Pill primitive component"
+    },
+    {
+      "name": "tag",
+      "description": "Badge / Pill primitive component"
+    },
+    {
+      "name": "chip",
+      "description": "Badge / Pill primitive component"
+    },
+    {
+      "name": "card",
+      "description": "Card primitive component"
+    },
+    {
+      "name": "card-basic",
+      "description": "Card primitive component"
+    },
+    {
+      "name": "card-elevated",
+      "description": "Card primitive component"
+    },
+    {
+      "name": "card-outlined",
+      "description": "Card primitive component"
+    },
+    {
+      "name": "card-interactive",
+      "description": "Card primitive component"
+    },
+    {
+      "name": "surface",
+      "description": "Surface primitive component"
+    },
+    {
+      "name": "surface-base",
+      "description": "Surface primitive component"
+    },
+    {
+      "name": "surface-raised",
+      "description": "Surface primitive component"
+    },
+    {
+      "name": "surface-overlay",
+      "description": "Surface primitive component"
+    },
+    {
+      "name": "surface-subtle",
+      "description": "Surface primitive component"
+    },
+    {
+      "name": "surface-elevated",
+      "description": "Surface primitive component"
+    },
+    {
+      "name": "surface-sunken",
+      "description": "Surface primitive component"
+    },
+    {
+      "name": "alert",
+      "description": "Alert primitive component"
+    },
+    {
+      "name": "alert-info",
+      "description": "Alert primitive component"
+    },
+    {
+      "name": "alert-success",
+      "description": "Alert primitive component"
+    },
+    {
+      "name": "alert-warning",
+      "description": "Alert primitive component"
+    },
+    {
+      "name": "alert-danger",
+      "description": "Alert primitive component"
+    },
+    {
+      "name": "dialog",
+      "description": "Dialog primitive component"
+    },
+    {
+      "name": "table-responsive",
+      "description": "Table primitive component"
+    },
+    {
+      "name": "data-table",
+      "description": "Table primitive component"
+    },
+    {
+      "name": "icon-only",
+      "description": "Button primitive component"
+    },
+    {
+      "name": "accordion",
+      "description": "Accordion primitive component"
+    },
+    {
+      "name": "accordion-item",
+      "description": "Accordion primitive component"
+    },
+    {
+      "name": "icon",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "icon-*",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "gallery",
+      "description": "Gallery primitive component"
+    },
+    {
+      "name": "gallery-grid",
+      "description": "Gallery primitive component"
+    },
+    {
+      "name": "grid",
+      "description": "CSS Grid layout container"
+    },
+    {
+      "name": "demo-grid",
+      "description": "CSS Grid layout container"
+    },
+    {
+      "name": "grid-auto-sm",
+      "description": "Responsive auto-fit grid"
+    },
+    {
+      "name": "grid-auto-md",
+      "description": "Responsive auto-fit grid"
+    },
+    {
+      "name": "grid-auto-lg",
+      "description": "Responsive auto-fit grid"
+    },
+    {
+      "name": "grid-auto-xl",
+      "description": "Responsive auto-fit grid"
+    },
+    {
+      "name": "grid-cols-1",
+      "description": "Fixed column grid"
+    },
+    {
+      "name": "grid-cols-2",
+      "description": "Fixed column grid"
+    },
+    {
+      "name": "grid-cols-3",
+      "description": "Fixed column grid"
+    },
+    {
+      "name": "grid-cols-4",
+      "description": "Fixed column grid"
+    },
+    {
+      "name": "grid-cols-6",
+      "description": "Fixed column grid"
+    },
+    {
+      "name": "flex",
+      "description": "Flexbox layout container"
+    },
+    {
+      "name": "flex-wrap",
+      "description": "Flexbox layout container"
+    },
+    {
+      "name": "container",
+      "description": "Centered max-width container"
+    },
+    {
+      "name": "media-grid",
+      "description": "Grid for media elements"
+    },
+    {
+      "name": "btn-group",
+      "description": "btn-group utility class"
+    },
+    {
+      "name": "demo-grid",
+      "description": "demo-grid utility class"
+    },
+    {
+      "name": "color-scale",
+      "description": "color-scale utility class"
+    },
+    {
+      "name": "gap-0",
+      "description": "Gap spacing of 0 units"
+    },
+    {
+      "name": "gap-1",
+      "description": "Gap spacing of 1 units"
+    },
+    {
+      "name": "gap-2",
+      "description": "Gap spacing of 2 units"
+    },
+    {
+      "name": "gap-3",
+      "description": "Gap spacing of 3 units"
+    },
+    {
+      "name": "gap-4",
+      "description": "Gap spacing of 4 units"
+    },
+    {
+      "name": "gap-5",
+      "description": "Gap spacing of 5 units"
+    },
+    {
+      "name": "gap-6",
+      "description": "Gap spacing of 6 units"
+    },
+    {
+      "name": "gap-7",
+      "description": "Gap spacing of 7 units"
+    },
+    {
+      "name": "gap-8",
+      "description": "Gap spacing of 8 units"
+    },
+    {
+      "name": "gap-9",
+      "description": "Gap spacing of 9 units"
+    },
+    {
+      "name": "gap-10",
+      "description": "Gap spacing of 10 units"
+    },
+    {
+      "name": "gap-11",
+      "description": "Gap spacing of 11 units"
+    },
+    {
+      "name": "gap-12",
+      "description": "Gap spacing of 12 units"
+    },
+    {
+      "name": "items-start",
+      "description": "Align items: start"
+    },
+    {
+      "name": "items-end",
+      "description": "Align items: end"
+    },
+    {
+      "name": "items-center",
+      "description": "Align items: center"
+    },
+    {
+      "name": "items-baseline",
+      "description": "Align items: baseline"
+    },
+    {
+      "name": "items-stretch",
+      "description": "Align items: stretch"
+    },
+    {
+      "name": "justify-start",
+      "description": "Justify content: start"
+    },
+    {
+      "name": "justify-end",
+      "description": "Justify content: end"
+    },
+    {
+      "name": "justify-center",
+      "description": "Justify content: center"
+    },
+    {
+      "name": "justify-between",
+      "description": "Justify content: between"
+    },
+    {
+      "name": "justify-around",
+      "description": "Justify content: around"
+    },
+    {
+      "name": "justify-evenly",
+      "description": "Justify content: evenly"
+    },
+    {
+      "name": "border-gradient",
+      "description": "border-gradient utility class"
+    },
+    {
+      "name": "border-gradient-primary",
+      "description": "border-gradient-primary utility class"
+    },
+    {
+      "name": "border-gradient-accent",
+      "description": "border-gradient-accent utility class"
+    },
+    {
+      "name": "border-gradient-secondary",
+      "description": "border-gradient-secondary utility class"
+    },
+    {
+      "name": "border-gradient-soft",
+      "description": "border-gradient-soft utility class"
+    },
+    {
+      "name": "border-gradient-medium",
+      "description": "border-gradient-medium utility class"
+    },
+    {
+      "name": "border-gradient-strong",
+      "description": "border-gradient-strong utility class"
+    },
+    {
+      "name": "border-glow",
+      "description": "border-glow utility class"
+    },
+    {
+      "name": "border-glow-sm",
+      "description": "border-glow-sm utility class"
+    },
+    {
+      "name": "border-glow-lg",
+      "description": "border-glow-lg utility class"
+    },
+    {
+      "name": "border-gradient-glow",
+      "description": "border-gradient-glow utility class"
+    },
+    {
+      "name": "border-glow-primary",
+      "description": "Border glow effect with primary color"
+    },
+    {
+      "name": "border-glow-secondary",
+      "description": "Border glow effect with secondary color"
+    },
+    {
+      "name": "border-glow-accent",
+      "description": "Border glow effect with accent color"
+    },
+    {
+      "name": "border-glow-success",
+      "description": "Border glow effect with success color"
+    },
+    {
+      "name": "border-glow-warning",
+      "description": "Border glow effect with warning color"
+    },
+    {
+      "name": "border-glow-danger",
+      "description": "Border glow effect with danger color"
+    },
+    {
+      "name": "border-glow-info",
+      "description": "Border glow effect with info color"
+    }
+  ],
+  "pseudoElements": []
+}

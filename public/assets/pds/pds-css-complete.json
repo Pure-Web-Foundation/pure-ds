@@ -1,0 +1,1887 @@
+{
+  "version": "1.1",
+  "cssProperties": [
+    {
+      "name": "--color-primary-50",
+      "description": "primary color scale - shade 50",
+      "syntax": "<color>",
+      "value": "#95dbee",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-primary-100",
+      "description": "primary color scale - shade 100",
+      "syntax": "<color>",
+      "value": "#65ceeb",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-primary-200",
+      "description": "primary color scale - shade 200",
+      "syntax": "<color>",
+      "value": "#32c3eb",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-primary-300",
+      "description": "primary color scale - shade 300",
+      "syntax": "<color>",
+      "value": "#15acd6",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-primary-400",
+      "description": "primary color scale - shade 400",
+      "syntax": "<color>",
+      "value": "#1087a7",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-primary-500",
+      "description": "primary color scale - shade 500",
+      "syntax": "<color>",
+      "value": "#0e7490",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-primary-600",
+      "description": "primary color scale - shade 600",
+      "syntax": "<color>",
+      "value": "#0b5e74",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-primary-700",
+      "description": "primary color scale - shade 700",
+      "syntax": "<color>",
+      "value": "#094b5d",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-primary-800",
+      "description": "primary color scale - shade 800",
+      "syntax": "<color>",
+      "value": "#073846",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-primary-900",
+      "description": "primary color scale - shade 900",
+      "syntax": "<color>",
+      "value": "#05252e",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-secondary-50",
+      "description": "secondary color scale - shade 50",
+      "syntax": "<color>",
+      "value": "#f4f2f1",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-secondary-100",
+      "description": "secondary color scale - shade 100",
+      "syntax": "<color>",
+      "value": "#e9e4e2",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-secondary-200",
+      "description": "secondary color scale - shade 200",
+      "syntax": "<color>",
+      "value": "#ddd7d5",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-secondary-300",
+      "description": "secondary color scale - shade 300",
+      "syntax": "<color>",
+      "value": "#c6bdb9",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-secondary-400",
+      "description": "secondary color scale - shade 400",
+      "syntax": "<color>",
+      "value": "#afa29c",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-secondary-500",
+      "description": "secondary color scale - shade 500",
+      "syntax": "<color>",
+      "value": "#a99b95",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-secondary-600",
+      "description": "secondary color scale - shade 600",
+      "syntax": "<color>",
+      "value": "#928079",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-secondary-700",
+      "description": "secondary color scale - shade 700",
+      "syntax": "<color>",
+      "value": "#776761",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-secondary-800",
+      "description": "secondary color scale - shade 800",
+      "syntax": "<color>",
+      "value": "#5b4f4a",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-secondary-900",
+      "description": "secondary color scale - shade 900",
+      "syntax": "<color>",
+      "value": "#3f3733",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-accent-50",
+      "description": "accent color scale - shade 50",
+      "syntax": "<color>",
+      "value": "#fbeaef",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-accent-100",
+      "description": "accent color scale - shade 100",
+      "syntax": "<color>",
+      "value": "#f8d3de",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-accent-200",
+      "description": "accent color scale - shade 200",
+      "syntax": "<color>",
+      "value": "#f4b2c5",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-accent-300",
+      "description": "accent color scale - shade 300",
+      "syntax": "<color>",
+      "value": "#ee85a4",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-accent-400",
+      "description": "accent color scale - shade 400",
+      "syntax": "<color>",
+      "value": "#e85882",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-accent-500",
+      "description": "accent color scale - shade 500",
+      "syntax": "<color>",
+      "value": "#e54271",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-accent-600",
+      "description": "accent color scale - shade 600",
+      "syntax": "<color>",
+      "value": "#d61e53",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-accent-700",
+      "description": "accent color scale - shade 700",
+      "syntax": "<color>",
+      "value": "#aa1742",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-accent-800",
+      "description": "accent color scale - shade 800",
+      "syntax": "<color>",
+      "value": "#7d1130",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-accent-900",
+      "description": "accent color scale - shade 900",
+      "syntax": "<color>",
+      "value": "#500b1f",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-success-50",
+      "description": "success color scale - shade 50",
+      "syntax": "<color>",
+      "value": "#d3f8d3",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-success-100",
+      "description": "success color scale - shade 100",
+      "syntax": "<color>",
+      "value": "#a4f3a4",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-success-200",
+      "description": "success color scale - shade 200",
+      "syntax": "<color>",
+      "value": "#73f273",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-success-300",
+      "description": "success color scale - shade 300",
+      "syntax": "<color>",
+      "value": "#44ed44",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-success-400",
+      "description": "success color scale - shade 400",
+      "syntax": "<color>",
+      "value": "#16e816",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-success-500",
+      "description": "success color scale - shade 500",
+      "syntax": "<color>",
+      "value": "#14d114",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-success-600",
+      "description": "success color scale - shade 600",
+      "syntax": "<color>",
+      "value": "#10a210",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-success-700",
+      "description": "success color scale - shade 700",
+      "syntax": "<color>",
+      "value": "#0b740b",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-success-800",
+      "description": "success color scale - shade 800",
+      "syntax": "<color>",
+      "value": "#074607",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-success-900",
+      "description": "success color scale - shade 900",
+      "syntax": "<color>",
+      "value": "#042f04",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-warning-50",
+      "description": "warning color scale - shade 50",
+      "syntax": "<color>",
+      "value": "#fae39f",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-warning-100",
+      "description": "warning color scale - shade 100",
+      "syntax": "<color>",
+      "value": "#fbd76a",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-warning-200",
+      "description": "warning color scale - shade 200",
+      "syntax": "<color>",
+      "value": "#ffcc33",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-warning-300",
+      "description": "warning color scale - shade 300",
+      "syntax": "<color>",
+      "value": "#ffbf00",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-warning-400",
+      "description": "warning color scale - shade 400",
+      "syntax": "<color>",
+      "value": "#cc9900",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-warning-500",
+      "description": "warning color scale - shade 500",
+      "syntax": "<color>",
+      "value": "#B38600",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-warning-600",
+      "description": "warning color scale - shade 600",
+      "syntax": "<color>",
+      "value": "#806000",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-warning-700",
+      "description": "warning color scale - shade 700",
+      "syntax": "<color>",
+      "value": "#664c00",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-warning-800",
+      "description": "warning color scale - shade 800",
+      "syntax": "<color>",
+      "value": "#4d3900",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-warning-900",
+      "description": "warning color scale - shade 900",
+      "syntax": "<color>",
+      "value": "#332600",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-danger-50",
+      "description": "danger color scale - shade 50",
+      "syntax": "<color>",
+      "value": "#fbe9e9",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-danger-100",
+      "description": "danger color scale - shade 100",
+      "syntax": "<color>",
+      "value": "#f6bbbb",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-danger-200",
+      "description": "danger color scale - shade 200",
+      "syntax": "<color>",
+      "value": "#f38b8b",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-danger-300",
+      "description": "danger color scale - shade 300",
+      "syntax": "<color>",
+      "value": "#ef5d5d",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-danger-400",
+      "description": "danger color scale - shade 400",
+      "syntax": "<color>",
+      "value": "#ea2e2e",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-danger-500",
+      "description": "danger color scale - shade 500",
+      "syntax": "<color>",
+      "value": "#e81717",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-danger-600",
+      "description": "danger color scale - shade 600",
+      "syntax": "<color>",
+      "value": "#ba1212",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-danger-700",
+      "description": "danger color scale - shade 700",
+      "syntax": "<color>",
+      "value": "#8b0e0e",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-danger-800",
+      "description": "danger color scale - shade 800",
+      "syntax": "<color>",
+      "value": "#5d0909",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-danger-900",
+      "description": "danger color scale - shade 900",
+      "syntax": "<color>",
+      "value": "#2e0505",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-info-50",
+      "description": "info color scale - shade 50",
+      "syntax": "<color>",
+      "value": "#95dbee",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-info-100",
+      "description": "info color scale - shade 100",
+      "syntax": "<color>",
+      "value": "#65ceeb",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-info-200",
+      "description": "info color scale - shade 200",
+      "syntax": "<color>",
+      "value": "#32c3eb",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-info-300",
+      "description": "info color scale - shade 300",
+      "syntax": "<color>",
+      "value": "#15acd6",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-info-400",
+      "description": "info color scale - shade 400",
+      "syntax": "<color>",
+      "value": "#1087a7",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-info-500",
+      "description": "info color scale - shade 500",
+      "syntax": "<color>",
+      "value": "#0e7490",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-info-600",
+      "description": "info color scale - shade 600",
+      "syntax": "<color>",
+      "value": "#0b5e74",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-info-700",
+      "description": "info color scale - shade 700",
+      "syntax": "<color>",
+      "value": "#094b5d",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-info-800",
+      "description": "info color scale - shade 800",
+      "syntax": "<color>",
+      "value": "#073846",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-info-900",
+      "description": "info color scale - shade 900",
+      "syntax": "<color>",
+      "value": "#05252e",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-gray-50",
+      "description": "gray color scale - shade 50",
+      "syntax": "<color>",
+      "value": "#fafaf9",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-gray-100",
+      "description": "gray color scale - shade 100",
+      "syntax": "<color>",
+      "value": "#f4f2f1",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-gray-200",
+      "description": "gray color scale - shade 200",
+      "syntax": "<color>",
+      "value": "#e3dfdd",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-gray-300",
+      "description": "gray color scale - shade 300",
+      "syntax": "<color>",
+      "value": "#cdc5c1",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-gray-400",
+      "description": "gray color scale - shade 400",
+      "syntax": "<color>",
+      "value": "#a3958f",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-gray-500",
+      "description": "gray color scale - shade 500",
+      "syntax": "<color>",
+      "value": "#a99b95",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-gray-600",
+      "description": "gray color scale - shade 600",
+      "syntax": "<color>",
+      "value": "#846c62",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-gray-700",
+      "description": "gray color scale - shade 700",
+      "syntax": "<color>",
+      "value": "#695349",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-gray-800",
+      "description": "gray color scale - shade 800",
+      "syntax": "<color>",
+      "value": "#3d2f29",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-gray-900",
+      "description": "gray color scale - shade 900",
+      "syntax": "<color>",
+      "value": "#1f1714",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surface-base",
+      "description": "surface color scale - shade base",
+      "syntax": "<color>",
+      "value": "#e7e6de",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surface-subtle",
+      "description": "surface color scale - shade subtle",
+      "syntax": "<color>",
+      "value": "#e3e2d8",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surface-elevated",
+      "description": "surface color scale - shade elevated",
+      "syntax": "<color>",
+      "value": "#deddd2",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surface-sunken",
+      "description": "surface color scale - shade sunken",
+      "syntax": "<color>",
+      "value": "#dad9cc",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surface-overlay",
+      "description": "surface color scale - shade overlay",
+      "syntax": "<color>",
+      "value": "#ebeae4",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surface-inverse",
+      "description": "surface color scale - shade inverse",
+      "syntax": "<color>",
+      "value": "#191810",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surface-hover",
+      "description": "surface color scale - shade hover",
+      "syntax": "<color>",
+      "value": "color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%);",
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surface-fieldset",
+      "description": "surface color scale - shade fieldset",
+      "syntax": "<color>",
+      "value": {
+        "base": "#e3e2d8",
+        "subtle": "#deddd2",
+        "elevated": "#dad9cc",
+        "sunken": "#d1d0c0",
+        "overlay": "#deddd2"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surfaceSmart-base",
+      "description": "surfaceSmart color scale - shade base",
+      "syntax": "<color>",
+      "value": {
+        "bg": "#e7e6de",
+        "text": "#000000",
+        "textSecondary": "#000000",
+        "textMuted": "#5c5c59",
+        "icon": "#000000",
+        "iconSubtle": "#5c5c59",
+        "shadow": "rgba(0, 0, 0, 0.1)",
+        "border": "rgba(0, 0, 0, 0.1)",
+        "scheme": "light"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surfaceSmart-subtle",
+      "description": "surfaceSmart color scale - shade subtle",
+      "syntax": "<color>",
+      "value": {
+        "bg": "#e3e2d8",
+        "text": "#000000",
+        "textSecondary": "#000000",
+        "textMuted": "#5b5a56",
+        "icon": "#000000",
+        "iconSubtle": "#5b5a56",
+        "shadow": "rgba(0, 0, 0, 0.1)",
+        "border": "rgba(0, 0, 0, 0.1)",
+        "scheme": "light"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surfaceSmart-elevated",
+      "description": "surfaceSmart color scale - shade elevated",
+      "syntax": "<color>",
+      "value": {
+        "bg": "#deddd2",
+        "text": "#000000",
+        "textSecondary": "#000000",
+        "textMuted": "#595854",
+        "icon": "#000000",
+        "iconSubtle": "#595854",
+        "shadow": "rgba(0, 0, 0, 0.1)",
+        "border": "rgba(0, 0, 0, 0.1)",
+        "scheme": "light"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surfaceSmart-sunken",
+      "description": "surfaceSmart color scale - shade sunken",
+      "syntax": "<color>",
+      "value": {
+        "bg": "#dad9cc",
+        "text": "#000000",
+        "textSecondary": "#000000",
+        "textMuted": "#575752",
+        "icon": "#000000",
+        "iconSubtle": "#575752",
+        "shadow": "rgba(0, 0, 0, 0.1)",
+        "border": "rgba(0, 0, 0, 0.1)",
+        "scheme": "light"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surfaceSmart-overlay",
+      "description": "surfaceSmart color scale - shade overlay",
+      "syntax": "<color>",
+      "value": {
+        "bg": "#ebeae4",
+        "text": "#000000",
+        "textSecondary": "#000000",
+        "textMuted": "#5e5e5b",
+        "icon": "#000000",
+        "iconSubtle": "#5e5e5b",
+        "shadow": "rgba(0, 0, 0, 0.1)",
+        "border": "rgba(0, 0, 0, 0.1)",
+        "scheme": "light"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surfaceSmart-inverse",
+      "description": "surfaceSmart color scale - shade inverse",
+      "syntax": "<color>",
+      "value": {
+        "bg": "#191810",
+        "text": "#ffffff",
+        "textSecondary": "#ffffff",
+        "textMuted": "#a3a39f",
+        "icon": "#ffffff",
+        "iconSubtle": "#a3a39f",
+        "shadow": "rgba(255, 255, 255, 0.25)",
+        "border": "rgba(255, 255, 255, 0.15)",
+        "scheme": "dark"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-dark-surface",
+      "description": "dark color scale - shade surface",
+      "syntax": "<color>",
+      "value": {
+        "base": "#16171a",
+        "subtle": "#111214",
+        "elevated": "#0d0d0f",
+        "sunken": "#131416",
+        "overlay": "#1b1c20",
+        "inverse": "#f2f2f3",
+        "hover": "color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%);",
+        "fieldset": {
+          "base": "#0d0d0f",
+          "subtle": "#1b1c20",
+          "elevated": "#1f1f24",
+          "sunken": "#0d0d0f",
+          "overlay": "#25272c"
+        }
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-dark-primary",
+      "description": "dark color scale - shade primary",
+      "syntax": "<color>",
+      "value": {
+        "50": "#c5f2fa",
+        "100": "#93eaf9",
+        "200": "#5fe4fa",
+        "300": "#2ddbf9",
+        "400": "#07cbed",
+        "500": "#06b6d4",
+        "600": "#058ba2",
+        "700": "#036171",
+        "800": "#02404a",
+        "900": "#012b32"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-dark-secondary",
+      "description": "dark color scale - shade secondary",
+      "syntax": "<color>",
+      "value": {
+        "50": "#f1f2f4",
+        "100": "#e2e5e9",
+        "200": "#cfd1d5",
+        "300": "#b4b8bd",
+        "400": "#999ea5",
+        "500": "#8b9199",
+        "600": "#717780",
+        "700": "#595e65",
+        "800": "#41454a",
+        "900": "#292c2f"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-dark-accent",
+      "description": "dark color scale - shade accent",
+      "syntax": "<color>",
+      "value": {
+        "50": "#3a0e1b",
+        "100": "#5b162a",
+        "200": "#7c1e3a",
+        "300": "#9c2749",
+        "400": "#ce2d5b",
+        "500": "#d53b68",
+        "600": "#dc5f84",
+        "700": "#e4839f",
+        "800": "#f4c1d0",
+        "900": "#f6d6e0"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-dark-gray",
+      "description": "dark color scale - shade gray",
+      "syntax": "<color>",
+      "value": {
+        "50": "#fafafa",
+        "100": "#f1f2f3",
+        "200": "#dee0e2",
+        "300": "#c3c6cb",
+        "400": "#9298a0",
+        "500": "#8b9199",
+        "600": "#667180",
+        "700": "#4c5766",
+        "800": "#2b323b",
+        "900": "#15191e"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-dark-success",
+      "description": "dark color scale - shade success",
+      "syntax": "<color>",
+      "value": {
+        "50": "#072207",
+        "100": "#0b330b",
+        "200": "#115411",
+        "300": "#187618",
+        "400": "#1da61d",
+        "500": "#20b820",
+        "600": "#2ad92a",
+        "700": "#4fe14f",
+        "800": "#94ee94",
+        "900": "#c1f4c1"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-dark-info",
+      "description": "dark color scale - shade info",
+      "syntax": "<color>",
+      "value": {
+        "50": "#071c22",
+        "100": "#0b2a33",
+        "200": "#0e3844",
+        "300": "#114654",
+        "400": "#145e72",
+        "500": "#176d84",
+        "600": "#1e8baa",
+        "700": "#24a9ce",
+        "800": "#5ac7e5",
+        "900": "#87d4e9"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-dark-warning",
+      "description": "dark color scale - shade warning",
+      "syntax": "<color>",
+      "value": {
+        "50": "#251c04",
+        "100": "#372b06",
+        "200": "#493908",
+        "300": "#5c480a",
+        "400": "#8d6c0b",
+        "500": "#a07c0d",
+        "600": "#c89a10",
+        "700": "#ecb718",
+        "800": "#f6d05d",
+        "900": "#f6dc8e"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-dark-danger",
+      "description": "dark color scale - shade danger",
+      "syntax": "<color>",
+      "value": {
+        "50": "#220707",
+        "100": "#440e0e",
+        "200": "#651515",
+        "300": "#871c1c",
+        "400": "#b82121",
+        "500": "#ca2424",
+        "600": "#dd3e3e",
+        "700": "#e26262",
+        "800": "#f2aaaa",
+        "900": "#f6d5d5"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-dark-surfaceSmart",
+      "description": "dark color scale - shade surfaceSmart",
+      "syntax": "<color>",
+      "value": {
+        "base": {
+          "bg": "#16171a",
+          "text": "#ffffff",
+          "textSecondary": "#ffffff",
+          "textMuted": "#a2a2a3",
+          "icon": "#ffffff",
+          "iconSubtle": "#a2a2a3",
+          "shadow": "rgba(255, 255, 255, 0.25)",
+          "border": "rgba(255, 255, 255, 0.15)",
+          "scheme": "dark"
+        },
+        "subtle": {
+          "bg": "#111214",
+          "text": "#ffffff",
+          "textSecondary": "#ffffff",
+          "textMuted": "#a0a0a1",
+          "icon": "#ffffff",
+          "iconSubtle": "#a0a0a1",
+          "shadow": "rgba(255, 255, 255, 0.25)",
+          "border": "rgba(255, 255, 255, 0.15)",
+          "scheme": "dark"
+        },
+        "elevated": {
+          "bg": "#0d0d0f",
+          "text": "#ffffff",
+          "textSecondary": "#ffffff",
+          "textMuted": "#9e9e9f",
+          "icon": "#ffffff",
+          "iconSubtle": "#9e9e9f",
+          "shadow": "rgba(255, 255, 255, 0.25)",
+          "border": "rgba(255, 255, 255, 0.15)",
+          "scheme": "dark"
+        },
+        "sunken": {
+          "bg": "#131416",
+          "text": "#ffffff",
+          "textSecondary": "#ffffff",
+          "textMuted": "#a1a1a2",
+          "icon": "#ffffff",
+          "iconSubtle": "#a1a1a2",
+          "shadow": "rgba(255, 255, 255, 0.25)",
+          "border": "rgba(255, 255, 255, 0.15)",
+          "scheme": "dark"
+        },
+        "overlay": {
+          "bg": "#1b1c20",
+          "text": "#ffffff",
+          "textSecondary": "#ffffff",
+          "textMuted": "#a4a4a6",
+          "icon": "#ffffff",
+          "iconSubtle": "#a4a4a6",
+          "shadow": "rgba(255, 255, 255, 0.25)",
+          "border": "rgba(255, 255, 255, 0.15)",
+          "scheme": "dark"
+        },
+        "inverse": {
+          "bg": "#f2f2f3",
+          "text": "#000000",
+          "textSecondary": "#000000",
+          "textMuted": "#616161",
+          "icon": "#000000",
+          "iconSubtle": "#616161",
+          "shadow": "rgba(0, 0, 0, 0.1)",
+          "border": "rgba(0, 0, 0, 0.1)",
+          "scheme": "light"
+        }
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-interactive-light",
+      "description": "interactive color scale - shade light",
+      "syntax": "<color>",
+      "value": {
+        "fill": "#0b5e74",
+        "text": "#0b5e74"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-interactive-dark",
+      "description": "interactive color scale - shade dark",
+      "syntax": "<color>",
+      "value": {
+        "fill": "#036171",
+        "text": "#06b6d4"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--spacing-0",
+      "description": "Spacing scale value 0",
+      "syntax": "<length>",
+      "value": "0",
+      "category": "Spacing Tokens"
+    },
+    {
+      "name": "--spacing-1",
+      "description": "Spacing scale value 1",
+      "syntax": "<length>",
+      "value": "4px",
+      "category": "Spacing Tokens"
+    },
+    {
+      "name": "--spacing-2",
+      "description": "Spacing scale value 2",
+      "syntax": "<length>",
+      "value": "8px",
+      "category": "Spacing Tokens"
+    },
+    {
+      "name": "--spacing-3",
+      "description": "Spacing scale value 3",
+      "syntax": "<length>",
+      "value": "12px",
+      "category": "Spacing Tokens"
+    },
+    {
+      "name": "--spacing-4",
+      "description": "Spacing scale value 4",
+      "syntax": "<length>",
+      "value": "16px",
+      "category": "Spacing Tokens"
+    },
+    {
+      "name": "--spacing-5",
+      "description": "Spacing scale value 5",
+      "syntax": "<length>",
+      "value": "20px",
+      "category": "Spacing Tokens"
+    },
+    {
+      "name": "--spacing-6",
+      "description": "Spacing scale value 6",
+      "syntax": "<length>",
+      "value": "24px",
+      "category": "Spacing Tokens"
+    },
+    {
+      "name": "--spacing-7",
+      "description": "Spacing scale value 7",
+      "syntax": "<length>",
+      "value": "28px",
+      "category": "Spacing Tokens"
+    },
+    {
+      "name": "--spacing-8",
+      "description": "Spacing scale value 8",
+      "syntax": "<length>",
+      "value": "32px",
+      "category": "Spacing Tokens"
+    },
+    {
+      "name": "--spacing-9",
+      "description": "Spacing scale value 9",
+      "syntax": "<length>",
+      "value": "36px",
+      "category": "Spacing Tokens"
+    },
+    {
+      "name": "--spacing-10",
+      "description": "Spacing scale value 10",
+      "syntax": "<length>",
+      "value": "40px",
+      "category": "Spacing Tokens"
+    },
+    {
+      "name": "--spacing-11",
+      "description": "Spacing scale value 11",
+      "syntax": "<length>",
+      "value": "44px",
+      "category": "Spacing Tokens"
+    },
+    {
+      "name": "--spacing-12",
+      "description": "Spacing scale value 12",
+      "syntax": "<length>",
+      "value": "48px",
+      "category": "Spacing Tokens"
+    },
+    {
+      "name": "--radius-none",
+      "description": "Border radius none",
+      "syntax": "<length>",
+      "value": "0",
+      "category": "Border Tokens"
+    },
+    {
+      "name": "--radius-xs",
+      "description": "Border radius xs",
+      "syntax": "<length>",
+      "value": "4px",
+      "category": "Border Tokens"
+    },
+    {
+      "name": "--radius-sm",
+      "description": "Border radius sm",
+      "syntax": "<length>",
+      "value": "8px",
+      "category": "Border Tokens"
+    },
+    {
+      "name": "--radius-md",
+      "description": "Border radius md",
+      "syntax": "<length>",
+      "value": "16px",
+      "category": "Border Tokens"
+    },
+    {
+      "name": "--radius-lg",
+      "description": "Border radius lg",
+      "syntax": "<length>",
+      "value": "24px",
+      "category": "Border Tokens"
+    },
+    {
+      "name": "--radius-xl",
+      "description": "Border radius xl",
+      "syntax": "<length>",
+      "value": "32px",
+      "category": "Border Tokens"
+    },
+    {
+      "name": "--radius-full",
+      "description": "Border radius full",
+      "syntax": "<length>",
+      "value": "9999px",
+      "category": "Border Tokens"
+    },
+    {
+      "name": "--border-width-hairline",
+      "description": "Border width hairline",
+      "syntax": "<length>",
+      "value": "0.5px",
+      "category": "Border Tokens"
+    },
+    {
+      "name": "--border-width-thin",
+      "description": "Border width thin",
+      "syntax": "<length>",
+      "value": "1px",
+      "category": "Border Tokens"
+    },
+    {
+      "name": "--border-width-medium",
+      "description": "Border width medium",
+      "syntax": "<length>",
+      "value": "2px",
+      "category": "Border Tokens"
+    },
+    {
+      "name": "--border-width-thick",
+      "description": "Border width thick",
+      "syntax": "<length>",
+      "value": "3px",
+      "category": "Border Tokens"
+    },
+    {
+      "name": "--shadow-sm",
+      "description": "Shadow sm",
+      "syntax": "<shadow>",
+      "value": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+      "category": "Shadow Tokens"
+    },
+    {
+      "name": "--shadow-base",
+      "description": "Shadow base",
+      "syntax": "<shadow>",
+      "value": "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+      "category": "Shadow Tokens"
+    },
+    {
+      "name": "--shadow-md",
+      "description": "Shadow md",
+      "syntax": "<shadow>",
+      "value": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.05)",
+      "category": "Shadow Tokens"
+    },
+    {
+      "name": "--shadow-lg",
+      "description": "Shadow lg",
+      "syntax": "<shadow>",
+      "value": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+      "category": "Shadow Tokens"
+    },
+    {
+      "name": "--shadow-xl",
+      "description": "Shadow xl",
+      "syntax": "<shadow>",
+      "value": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.05)",
+      "category": "Shadow Tokens"
+    },
+    {
+      "name": "--shadow-inner",
+      "description": "Shadow inner",
+      "syntax": "<shadow>",
+      "value": "inset 0 2px 4px 0 rgba(0, 0, 0, 0.05)",
+      "category": "Shadow Tokens"
+    },
+    {
+      "name": "--transition-fast",
+      "description": "Transition fast",
+      "syntax": "<time>",
+      "value": "150ms",
+      "category": "Transition Tokens"
+    },
+    {
+      "name": "--transition-normal",
+      "description": "Transition normal",
+      "syntax": "<time>",
+      "value": "250ms",
+      "category": "Transition Tokens"
+    },
+    {
+      "name": "--transition-slow",
+      "description": "Transition slow",
+      "syntax": "<time>",
+      "value": "350ms",
+      "category": "Transition Tokens"
+    },
+    {
+      "name": "--z-dropdown",
+      "description": "Z-index dropdown",
+      "syntax": "<integer>",
+      "value": "1000",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--z-sticky",
+      "description": "Z-index sticky",
+      "syntax": "<integer>",
+      "value": "1020",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--z-fixed",
+      "description": "Z-index fixed",
+      "syntax": "<integer>",
+      "value": "1030",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--z-modal",
+      "description": "Z-index modal",
+      "syntax": "<integer>",
+      "value": "1040",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--z-drawer",
+      "description": "Z-index drawer",
+      "syntax": "<integer>",
+      "value": "1050",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--z-popover",
+      "description": "Z-index popover",
+      "syntax": "<integer>",
+      "value": "1060",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--z-tooltip",
+      "description": "Z-index tooltip",
+      "syntax": "<integer>",
+      "value": "1070",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--z-notification",
+      "description": "Z-index notification",
+      "syntax": "<integer>",
+      "value": "1080",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--layout-maxWidth",
+      "description": "Layout maxWidth",
+      "syntax": "<length>",
+      "value": "1200px",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--layout-minHeight",
+      "description": "Layout minHeight",
+      "syntax": "<length>",
+      "value": "100vh",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--layout-containerPadding",
+      "description": "Layout containerPadding",
+      "syntax": "<length>",
+      "value": "var(--spacing-6)px",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--breakpoint-sm",
+      "description": "Breakpoint sm",
+      "syntax": "<length>",
+      "value": "640px",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--breakpoint-md",
+      "description": "Breakpoint md",
+      "syntax": "<length>",
+      "value": "768px",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--breakpoint-lg",
+      "description": "Breakpoint lg",
+      "syntax": "<length>",
+      "value": "1024px",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--breakpoint-xl",
+      "description": "Breakpoint xl",
+      "syntax": "<length>",
+      "value": "1280px",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--layout-pageMargin",
+      "description": "Layout pageMargin",
+      "syntax": "<length>",
+      "value": "120px",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--layout-sectionGap",
+      "description": "Layout sectionGap",
+      "syntax": "<length>",
+      "value": "160px",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--layout-containerGap",
+      "description": "Layout containerGap",
+      "syntax": "<length>",
+      "value": "200px",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--layout-heroSpacing",
+      "description": "Layout heroSpacing",
+      "syntax": "<length>",
+      "value": "240px",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--layout-footerSpacing",
+      "description": "Layout footerSpacing",
+      "syntax": "<length>",
+      "value": "160px",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--surface-bg",
+      "description": "Surface background color",
+      "syntax": "<color>",
+      "category": "Surface Tokens"
+    },
+    {
+      "name": "--surface-text",
+      "description": "Surface text color",
+      "syntax": "<color>",
+      "category": "Surface Tokens"
+    },
+    {
+      "name": "--surface-text-secondary",
+      "description": "Surface secondary text color",
+      "syntax": "<color>",
+      "category": "Surface Tokens"
+    },
+    {
+      "name": "--surface-border",
+      "description": "Surface border color",
+      "syntax": "<color>",
+      "category": "Surface Tokens"
+    },
+    {
+      "name": "--surface-shadow",
+      "description": "Surface shadow",
+      "syntax": "<color>",
+      "category": "Surface Tokens"
+    },
+    {
+      "name": "--surface-hover",
+      "description": "Surface hover state",
+      "syntax": "<color>",
+      "category": "Surface Tokens"
+    }
+  ],
+  "cssClasses": [
+    {
+      "name": "badge",
+      "description": "Badge / Pill primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "pill",
+      "description": "Badge / Pill primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "tag",
+      "description": "Badge / Pill primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "chip",
+      "description": "Badge / Pill primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "card",
+      "description": "Card primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "card-basic",
+      "description": "Card primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "card-elevated",
+      "description": "Card primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "card-outlined",
+      "description": "Card primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "card-interactive",
+      "description": "Card primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "surface",
+      "description": "Surface primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "surface-base",
+      "description": "Surface primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "surface-raised",
+      "description": "Surface primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "surface-overlay",
+      "description": "Surface primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "surface-subtle",
+      "description": "Surface primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "surface-elevated",
+      "description": "Surface primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "surface-sunken",
+      "description": "Surface primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "alert",
+      "description": "Alert primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "alert-info",
+      "description": "Alert primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "alert-success",
+      "description": "Alert primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "alert-warning",
+      "description": "Alert primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "alert-danger",
+      "description": "Alert primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "dialog",
+      "description": "Dialog primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "table-responsive",
+      "description": "Table primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "data-table",
+      "description": "Table primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-only",
+      "description": "Button primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "accordion",
+      "description": "Accordion primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "accordion-item",
+      "description": "Accordion primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-*",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "gallery",
+      "description": "Gallery primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "gallery-grid",
+      "description": "Gallery primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "grid",
+      "description": "CSS Grid layout container",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "demo-grid",
+      "description": "CSS Grid layout container",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "grid-auto-sm",
+      "description": "Responsive auto-fit grid",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "grid-auto-md",
+      "description": "Responsive auto-fit grid",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "grid-auto-lg",
+      "description": "Responsive auto-fit grid",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "grid-auto-xl",
+      "description": "Responsive auto-fit grid",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "grid-cols-1",
+      "description": "Fixed column grid",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "grid-cols-2",
+      "description": "Fixed column grid",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "grid-cols-3",
+      "description": "Fixed column grid",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "grid-cols-4",
+      "description": "Fixed column grid",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "grid-cols-6",
+      "description": "Fixed column grid",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "flex",
+      "description": "Flexbox layout container",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "flex-wrap",
+      "description": "Flexbox layout container",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "container",
+      "description": "Centered max-width container",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "media-grid",
+      "description": "Grid for media elements",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "btn-group",
+      "description": "btn-group utility class",
+      "category": "Utilities"
+    },
+    {
+      "name": "demo-grid",
+      "description": "demo-grid utility class",
+      "category": "Utilities"
+    },
+    {
+      "name": "color-scale",
+      "description": "color-scale utility class",
+      "category": "Utilities"
+    },
+    {
+      "name": "gap-0",
+      "description": "Gap spacing of 0 units",
+      "category": "Utilities"
+    },
+    {
+      "name": "gap-1",
+      "description": "Gap spacing of 1 units",
+      "category": "Utilities"
+    },
+    {
+      "name": "gap-2",
+      "description": "Gap spacing of 2 units",
+      "category": "Utilities"
+    },
+    {
+      "name": "gap-3",
+      "description": "Gap spacing of 3 units",
+      "category": "Utilities"
+    },
+    {
+      "name": "gap-4",
+      "description": "Gap spacing of 4 units",
+      "category": "Utilities"
+    },
+    {
+      "name": "gap-5",
+      "description": "Gap spacing of 5 units",
+      "category": "Utilities"
+    },
+    {
+      "name": "gap-6",
+      "description": "Gap spacing of 6 units",
+      "category": "Utilities"
+    },
+    {
+      "name": "gap-7",
+      "description": "Gap spacing of 7 units",
+      "category": "Utilities"
+    },
+    {
+      "name": "gap-8",
+      "description": "Gap spacing of 8 units",
+      "category": "Utilities"
+    },
+    {
+      "name": "gap-9",
+      "description": "Gap spacing of 9 units",
+      "category": "Utilities"
+    },
+    {
+      "name": "gap-10",
+      "description": "Gap spacing of 10 units",
+      "category": "Utilities"
+    },
+    {
+      "name": "gap-11",
+      "description": "Gap spacing of 11 units",
+      "category": "Utilities"
+    },
+    {
+      "name": "gap-12",
+      "description": "Gap spacing of 12 units",
+      "category": "Utilities"
+    },
+    {
+      "name": "items-start",
+      "description": "Align items: start",
+      "category": "Utilities"
+    },
+    {
+      "name": "items-end",
+      "description": "Align items: end",
+      "category": "Utilities"
+    },
+    {
+      "name": "items-center",
+      "description": "Align items: center",
+      "category": "Utilities"
+    },
+    {
+      "name": "items-baseline",
+      "description": "Align items: baseline",
+      "category": "Utilities"
+    },
+    {
+      "name": "items-stretch",
+      "description": "Align items: stretch",
+      "category": "Utilities"
+    },
+    {
+      "name": "justify-start",
+      "description": "Justify content: start",
+      "category": "Utilities"
+    },
+    {
+      "name": "justify-end",
+      "description": "Justify content: end",
+      "category": "Utilities"
+    },
+    {
+      "name": "justify-center",
+      "description": "Justify content: center",
+      "category": "Utilities"
+    },
+    {
+      "name": "justify-between",
+      "description": "Justify content: between",
+      "category": "Utilities"
+    },
+    {
+      "name": "justify-around",
+      "description": "Justify content: around",
+      "category": "Utilities"
+    },
+    {
+      "name": "justify-evenly",
+      "description": "Justify content: evenly",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-gradient",
+      "description": "border-gradient utility class",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-gradient-primary",
+      "description": "border-gradient-primary utility class",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-gradient-accent",
+      "description": "border-gradient-accent utility class",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-gradient-secondary",
+      "description": "border-gradient-secondary utility class",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-gradient-soft",
+      "description": "border-gradient-soft utility class",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-gradient-medium",
+      "description": "border-gradient-medium utility class",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-gradient-strong",
+      "description": "border-gradient-strong utility class",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-glow",
+      "description": "border-glow utility class",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-glow-sm",
+      "description": "border-glow-sm utility class",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-glow-lg",
+      "description": "border-glow-lg utility class",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-gradient-glow",
+      "description": "border-gradient-glow utility class",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-glow-primary",
+      "description": "Border glow effect with primary color",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-glow-secondary",
+      "description": "Border glow effect with secondary color",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-glow-accent",
+      "description": "Border glow effect with accent color",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-glow-success",
+      "description": "Border glow effect with success color",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-glow-warning",
+      "description": "Border glow effect with warning color",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-glow-danger",
+      "description": "Border glow effect with danger color",
+      "category": "Utilities"
+    },
+    {
+      "name": "border-glow-info",
+      "description": "Border glow effect with info color",
+      "category": "Utilities"
+    }
+  ],
+  "dataAttributes": [
+    {
+      "name": "data-dropdown",
+      "description": "Enhancement: nav[data-dropdown]",
+      "category": "Data Enhancements"
+    },
+    {
+      "name": "data-toggle",
+      "description": "Enhancement: label[data-toggle]",
+      "category": "Data Enhancements"
+    },
+    {
+      "name": "data-tabs",
+      "description": "Enhancement: [data-tabs]",
+      "category": "Data Enhancements"
+    },
+    {
+      "name": "data-modal",
+      "description": "Enhancement: [data-modal]",
+      "category": "Data Enhancements"
+    },
+    {
+      "name": "data-tooltip",
+      "description": "Enhancement: [data-tooltip]",
+      "category": "Data Enhancements"
+    }
+  ],
+  "metadata": {
+    "generator": "PDS CSS Data Generator",
+    "generatedAt": "2025-11-21T09:55:34.389Z",
+    "totalProperties": 165,
+    "totalClasses": 91,
+    "totalAttributes": 5
+  }
+}

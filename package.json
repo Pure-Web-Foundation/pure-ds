@@ -42,6 +42,9 @@
   "files": [
     "public/assets/js/",
     "public/assets/pds/components/",
+    "public/assets/pds/vscode-custom-data.json",
+    "public/assets/pds/pds.css-data.json",
+    "public/assets/pds/pds-css-complete.json",
     "public/auto-define/",
     "public/pds/components/",
     "public/assets/pds/icons/pds-icons.svg",
@@ -52,7 +55,12 @@
     "src/js/pds-configurator/",
     "custom-elements.json",
     "custom-elements-manifest.config.js",
-    "readme.md"
+    "pds.html-data.json",
+    "pds.css-data.json",
+    "readme.md",
+    "INTELLISENSE.md",
+    "CSS-INTELLISENSE-LIMITATION.md",
+    "CSS-INTELLISENSE-QUICK-REF.md"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -62,6 +70,8 @@
     "pds:export": "node packages/pds-cli/bin/pds-static.js",
     "pds:build-icons": "node packages/pds-cli/bin/pds-build-icons.js",
     "pds:manifest": "node packages/pds-cli/bin/generate-manifest.js",
+    "pds:css-data": "node packages/pds-cli/bin/generate-css-data.js",
+    "pds:dx": "node packages/pds-cli/bin/pds-dx.js",
     "storybook:generate": "cd packages/pds-storybook && npm run generate-stories",
     "storybook:dev": "cd packages/pds-storybook && npm run storybook:dev",
     "storybook:build": "cd packages/pds-storybook && npm run storybook:build"
