@@ -20,7 +20,7 @@ export async function toastFormData(data) {
     for (const [key, value] of data.entries()) {
       // Handle File objects
       if (value instanceof File) {
-        obj[key] = {
+        const fileInfo = {
           name: value.name,
           size: value.size,
           type: value.type,
@@ -28,8 +28,32 @@ export async function toastFormData(data) {
           __truncated: true,
           __note: 'Binary data not shown'
         };
+        // Handle multiple files with same name
+        if (obj[key]) {
+          obj[key] = Array.isArray(obj[key]) ? [...obj[key], fileInfo] : [obj[key], fileInfo];
+        } else {
+          obj[key] = fileInfo;
+        }
       } else {
-        obj[key] = value;
+        // Handle multiple values with same key (checkboxes, multi-select)
+        if (obj[key]) {
+          obj[key] = Array.isArray(obj[key]) ? [...obj[key], value] : [obj[key], value];
+        } else {
+          obj[key] = value;
+        }
+      }
+    }
+    
+    // Convert arrays to comma-separated strings for display
+    for (const key in obj) {
+      if (Array.isArray(obj[key])) {
+        // Check if it's an array of file objects
+        if (obj[key][0]?.__truncated) {
+          // Keep file arrays as arrays
+          continue;
+        }
+        // Convert value arrays to comma-separated string
+        obj[key] = obj[key].join(', ');
       }
     }
   }
@@ -116,4 +140,9 @@ export async function toastFormData(data) {
 
   // Also log to console for debugging
   console.log('Form data:', truncated);
+}
+
+// Make toastFormData available globally for inline event handlers
+if (typeof window !== 'undefined') {
+  window.toastFormData = toastFormData;
 }

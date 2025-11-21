@@ -1611,7 +1611,6 @@ fieldset[role="group"].buttons {
   label:has(input[type="radio"]:checked),
   label:has(input[type="checkbox"]:checked) {
     background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
-    color: var(--color-primary-700);
     border-color: var(--color-primary-500);
     border-width: 2px;
     font-weight: var(--font-weight-semibold);
@@ -5167,7 +5166,6 @@ fieldset[role="group"].buttons {
   label:has(input[type="radio"]:checked),
   label:has(input[type="checkbox"]:checked) {
     background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
-    color: var(--color-primary-700);
     border-color: var(--color-primary-500);
     border-width: 2px;
     font-weight: var(--font-weight-semibold);

@@ -1194,34 +1194,41 @@ customElements.define(
                 // If there's code, copy to clipboard
                 if (navigator.clipboard) {
                   navigator.clipboard.writeText(options.code).then(() => {
-                    PDS.dispatchEvent(new CustomEvent('pds:toast', {
-                      detail: { 
-                        message: 'Code copied to clipboard',
-                        type: 'success',
-                        duration: 2000
-                      }
-                    }));
+                    PDS.dispatchEvent(
+                      new CustomEvent("pds:toast", {
+                        detail: {
+                          message: "Code copied to clipboard",
+                          type: "success",
+                          duration: 2000,
+                        },
+                      })
+                    );
                   });
                 }
               }
               // Also try to navigate to relevant section if available
-              const category = options.category?.toLowerCase() || '';
+              const category = options.category?.toLowerCase() || "";
               let sectionId = null;
-              
-              if (category.includes('color') || category.includes('surface')) {
-                sectionId = 'color-system';
-              } else if (category.includes('utility') || category.includes('layout')) {
-                sectionId = 'utilities';
-              } else if (category.includes('component')) {
-                sectionId = 'components';
-              } else if (category.includes('typography')) {
-                sectionId = 'typography';
-              } else if (category.includes('spacing')) {
-                sectionId = 'spacing';
+
+              if (category.includes("color") || category.includes("surface")) {
+                sectionId = "color-system";
+              } else if (
+                category.includes("utility") ||
+                category.includes("layout")
+              ) {
+                sectionId = "utilities";
+              } else if (category.includes("component")) {
+                sectionId = "components";
+              } else if (category.includes("typography")) {
+                sectionId = "typography";
+              } else if (category.includes("spacing")) {
+                sectionId = "spacing";
               }
-              
+
               if (sectionId) {
-                const el = document.querySelector(`[data-section="${sectionId}"]`);
+                const el = document.querySelector(
+                  `[data-section="${sectionId}"]`
+                );
                 if (el) {
                   el.scrollIntoView({ behavior: "smooth", block: "start" });
                 }
@@ -1231,10 +1238,10 @@ customElements.define(
             getItems: async (options) => {
               const q = (options.search || "").trim();
               if (!q) return [];
-              
+
               try {
                 const results = await PDS.query(q);
-                
+
                 return results.map((result) => {
                   return {
                     text: result.text,
@@ -1243,11 +1250,11 @@ customElements.define(
                     category: result.category,
                     code: result.code,
                     cssVar: result.cssVar,
-                    description: result.description
+                    description: result.description,
                   };
                 });
               } catch (err) {
-                console.error('Query error:', err);
+                console.error("Query error:", err);
                 return [];
               }
             },
@@ -1442,7 +1449,6 @@ customElements.define(
     }
 
     render() {
-
       const components = this.config?.components || {};
       // Determine current theme from DOM so section copy can adapt
       const theme =
@@ -1493,6 +1499,25 @@ customElements.define(
               </button>
             </div>
           </section>
+
+          <form
+            @submit=${(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              console.log("Form submitted with data:");
+              for (const [key, value] of formData.entries()) {
+                console.log(`  ${key}: ${value}`);
+              }
+            }}
+          >
+            <fieldset role="group" data-open>
+              <label>
+                <span data-label>Test</span>
+                <input value="lala" name="test1" type="checkbox" />
+              </label>
+            </fieldset>
+            <button type="submit">Submit</button>
+          </form>
 
           <!-- Colors Section -->
           <section class="showcase-section" data-section="color-system">
@@ -1989,9 +2014,9 @@ customElements.define(
                 alt="Gallery image 4"
               />
             </div>
-            
+
             <h3>Netflix Row</h3>
-            
+
             <pds-scrollrow>
               ${new Array(20)
                 .fill(0)
@@ -2548,21 +2573,14 @@ customElements.define(
               </div>
             </div>
 
-
             <h3>Surface Borders</h3>
             <article class="card border-gradient">
-                <p>
-                  A card with a border gradient
-                </p>
+              <p>A card with a border gradient</p>
             </article>
 
             <article class="card border-gradient-glow">
-                <p>
-                  A card with a glowing border gradient
-                </p>
+              <p>A card with a glowing border gradient</p>
             </article>
-
-
           </section>
 
           <!-- Nested Surfaces Section -->
@@ -3320,19 +3338,31 @@ customElements.define(
               class="btn-group"
               style="gap: var(--spacing-3); flex-wrap: wrap;"
             >
-              <button class="btn-primary" @click=${()=>this.openDrawerInPos('bottom')}>
+              <button
+                class="btn-primary"
+                @click=${() => this.openDrawerInPos("bottom")}
+              >
                 <pds-icon icon="sidebar" rotate="-90" size="sm"></pds-icon>
                 Bottom Drawer
               </button>
-              <button class="btn-secondary" @click=${()=>this.openDrawerInPos('left')}>
+              <button
+                class="btn-secondary"
+                @click=${() => this.openDrawerInPos("left")}
+              >
                 <pds-icon icon="sidebar" size="sm"></pds-icon>
                 Left Drawer
               </button>
-              <button class="btn-secondary" @click=${()=>this.openDrawerInPos('right')}>
+              <button
+                class="btn-secondary"
+                @click=${() => this.openDrawerInPos("right")}
+              >
                 <pds-icon icon="sidebar" rotate="180" size="sm"></pds-icon>
                 Right Drawer
               </button>
-              <button class="btn-secondary" @click=${()=>this.openDrawerInPos('top')}>
+              <button
+                class="btn-secondary"
+                @click=${() => this.openDrawerInPos("top")}
+              >
                 <pds-icon icon="sidebar" rotate="90" size="sm"></pds-icon>
                 Top Drawer
               </button>
@@ -3420,7 +3450,10 @@ customElements.define(
       const drawer = document.getElementById("global-drawer");
       if (drawer) {
         drawer.show(this.renderDrawerContent(), {
-          header: html`<h3>Example Drawer (${position.charAt(0).toUpperCase() + position.slice(1)})</h3>`,
+          header: html`<h3>
+            Example Drawer
+            (${position.charAt(0).toUpperCase() + position.slice(1)})
+          </h3>`,
           position: position,
         });
       }

@@ -12,7 +12,7 @@ export default {
 };
 
 export const BasicRequired = () => html`
-  <form style="max-width: 400px;">
+  <form style="max-width: 400px;" onsubmit="event.preventDefault(); toastFormData(new FormData(event.target));">
     <label>
       <span>Full Name</span>
       <input type="text" required placeholder="John Doe">
@@ -36,7 +36,7 @@ export const BasicRequired = () => html`
 `;
 
 export const MixedRequired = () => html`
-  <form style="max-width: 500px;">
+  <form style="max-width: 500px;" onsubmit="event.preventDefault(); toastFormData(new FormData(event.target));">
     <fieldset>
       <legend>Account Information</legend>
       <label>
@@ -84,7 +84,7 @@ export const MixedRequired = () => html`
 `;
 
 export const InlineHelp = () => html`
-  <form style="max-width: 500px;">
+  <form style="max-width: 500px;" onsubmit="event.preventDefault(); toastFormData(new FormData(event.target));">
     <label>
       <span>Email Address</span>
       <div class="input-icon">

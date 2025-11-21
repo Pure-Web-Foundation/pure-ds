@@ -782,6 +782,11 @@
       "name": "data-toggle",
       "description": "Creates a toggle switch element from a checkbox.\n\nExample:\n<label data-toggle>\n<span data-label>Enable notifications</span>\n<input type=\"checkbox\">\n</label>",
       "valueSet": "v"
+    },
+    {
+      "name": "data-open",
+      "description": "Enhances a checkbox/radio group to be open (have a way to add and remove items).\n\nExample:\n<fieldset role=\"group\" data-open>\n<label>\n<span data-label>Test</span>\n<input value=\"lala\" name=\"test1\" type=\"radio\" />\n</label>\n</fieldset>",
+      "valueSet": "v"
     }
   ]
 }

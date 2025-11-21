@@ -17,7 +17,7 @@ const DEFAULT_OPTIONS = {
   },
   layouts: {
     fieldsets: "default",    // 'default' | 'flex' | 'grid' | 'accordion' | 'tabs' | 'card'
-    arrays: "default",       // 'default' | 'compact'
+    arrays: "default",       // 'default' | 'open' | 'compact'
   },
   enhancements: {
     icons: true,             // Enable icon-enhanced inputs
@@ -772,7 +772,64 @@ export class SchemaForm extends LitElement {
   #renderArray(node) {
     const path = node.path;
     const arr = this.#ensureArrayAtPath(path);
+    const ui = node.ui || this.#uiFor(path);
+    const itemSchema = node.item?.schema;
+    
+    // Check if this is a simple string array that should use the open group enhancement
+    const isSimpleStringArray = itemSchema?.type === "string" && 
+                                !itemSchema.format &&
+                                !itemSchema.enum &&
+                                (!itemSchema.maxLength || itemSchema.maxLength <= 100);
+    
+    // Check layout preference: use 'open' for simple string arrays by default, or if explicitly set
+    let arrayLayout = ui?.["ui:arrayLayout"];
+    if (!arrayLayout) {
+      // If not explicitly set, use global option with smart default based on array type
+      const globalDefault = this.#getOption('layouts.arrays', 'default');
+      arrayLayout = globalDefault === 'default' && isSimpleStringArray ? 'open' : globalDefault;
+    }
+    
+    const useOpenGroup = arrayLayout === 'open' && isSimpleStringArray;
+    
+    if (useOpenGroup) {
+      // Use fieldset[role=group][data-open] enhancement for simple string arrays
+      const onChange = (e) => {
+        // Get all checkboxes/radios in the group (excluding the text input)
+        const inputs = Array.from(e.currentTarget.querySelectorAll('input[type="radio"], input[type="checkbox"]'));
+        const values = inputs
+          .filter(input => input.value && input.value.trim())
+          .map(input => input.value);
+        
+        this.#setByPath(this.#data, path, values);
+        this.requestUpdate();
+        this.#emit("pw:array-change", { path, values });
+      };
+      
+      return html`
+        <fieldset 
+          role="group" 
+          data-open 
+          data-path=${path}
+          data-name=${path}
+          @change=${onChange}
+        >
+          <legend>${node.title ?? "List"}</legend>
+          ${arr.map((value, i) => html`
+            <label>
+              <span data-label>${value}</span>
+              <input 
+                type="checkbox" 
+                name=${path}
+                value=${value}
+                checked
+              />
+            </label>
+          `)}
+        </fieldset>
+      `;
+    }
 
+    // Standard array with add/remove controls for complex items
     const add = () => {
       arr.push(this.#defaultFor(node.item.schema));
       this.requestUpdate();
@@ -835,6 +892,8 @@ export class SchemaForm extends LitElement {
 
   #repath(subNode, newPath) {
     const updated = { ...subNode, path: newPath };
+    // Clear cached UI so it gets looked up with the new path
+    delete updated.ui;
     // Recursively update children paths if this is a fieldset
     if (updated.kind === "fieldset" && updated.children) {
       const oldPath = subNode.path;
@@ -1428,9 +1487,13 @@ export class SchemaForm extends LitElement {
     if (this.uiSchema[withoutSlash]) return this.uiSchema[withoutSlash];
     
     // Try nested navigation (e.g., userProfile/settings/preferences/theme)
+    // Skip array indices (numeric parts and wildcard *) when navigating UI schema
     const parts = path.replace(/^\//, '').split('/');
     let current = this.uiSchema;
     for (const part of parts) {
+      // Skip numeric array indices and wildcard in UI schema navigation
+      if (/^\d+$/.test(part) || part === '*') continue;
+      
       if (current && typeof current === 'object' && part in current) {
         current = current[part];
       } else {

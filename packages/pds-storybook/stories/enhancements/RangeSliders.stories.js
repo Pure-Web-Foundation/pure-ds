@@ -32,36 +32,38 @@ export const StandardFloatingBubble = () => html`
 StandardFloatingBubble.storyName = 'Standard (Floating Bubble)';
 
 export const MultipleRanges = () => html`
-  <form style="display: flex; flex-direction: column; gap: var(--spacing-4); max-width: 400px;">
+  <form style="display: flex; flex-direction: column; gap: var(--spacing-4); max-width: 400px;" onsubmit="event.preventDefault(); toastFormData(new FormData(event.target));">
     <label>
       <span>Brightness</span>
-      <input type="range" min="0" max="100" value="75">
+      <input type="range" name="brightness" min="0" max="100" value="75">
     </label>
     <label>
       <span>Contrast</span>
-      <input type="range" min="0" max="100" value="50">
+      <input type="range" name="contrast" min="0" max="100" value="50">
     </label>
     <label>
       <span>Saturation</span>
-      <input type="range" min="0" max="100" value="60">
+      <input type="range" name="saturation" min="0" max="100" value="60">
     </label>
     <label>
       <span>Temperature</span>
-      <input type="range" min="-100" max="100" value="0">
+      <input type="range" name="temperature" min="-100" max="100" value="0">
     </label>
+    <button type="submit" class="btn-primary" style="margin-top: var(--spacing-2);">Apply Settings</button>
   </form>
 `;
 
 export const CustomSteps = () => html`
-  <form style="display: flex; flex-direction: column; gap: var(--spacing-4); max-width: 400px;">
+  <form style="display: flex; flex-direction: column; gap: var(--spacing-4); max-width: 400px;" onsubmit="event.preventDefault(); toastFormData(new FormData(event.target));">
     <label>
       <span>Opacity (10% steps)</span>
-      <input type="range" min="0" max="100" value="100" step="10">
+      <input type="range" name="opacity" min="0" max="100" value="100" step="10">
     </label>
     <label>
       <span>Font Size (0.25rem steps)</span>
-      <input type="range" min="0.5" max="3" value="1" step="0.25">
+      <input type="range" name="fontSize" min="0.5" max="3" value="1" step="0.25">
     </label>
+    <button type="submit" class="btn-primary" style="margin-top: var(--spacing-2);">Apply Settings</button>
   </form>
 `;
 

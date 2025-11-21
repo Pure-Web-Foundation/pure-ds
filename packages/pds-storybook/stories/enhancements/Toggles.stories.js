@@ -26,23 +26,24 @@ export const PreChecked = () => html`
 `;
 
 export const MultipleToggles = () => html`
-  <form class="flex flex-col gap-sm" style="max-width: 400px;">
+  <form class="flex flex-col gap-sm" style="max-width: 400px;" onsubmit="event.preventDefault(); toastFormData(new FormData(event.target));">
     <label data-toggle>
       <span data-label>Email notifications</span>
-      <input type="checkbox" checked>
+      <input type="checkbox" name="email" checked>
     </label>
     <label data-toggle>
       <span data-label>Push notifications</span>
-      <input type="checkbox">
+      <input type="checkbox" name="push">
     </label>
     <label data-toggle>
       <span data-label>SMS notifications</span>
-      <input type="checkbox">
+      <input type="checkbox" name="sms">
     </label>
     <label data-toggle>
       <span data-label>Weekly digest</span>
-      <input type="checkbox" checked>
+      <input type="checkbox" name="digest" checked>
     </label>
+    <button type="submit" class="btn-primary" style="margin-top: var(--spacing-3);">Save Preferences</button>
   </form>
 `;
 

@@ -778,7 +778,7 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
               >
             </button>
 
-            <fieldset role="radiogroup" aria-label="Theme" class="theme-select">
+            <fieldset role="radiogroup" aria-label="Theme" class="theme-select buttons">
               <legend>Theme</legend>
               ${(() => {
                 const stored = PDS.theme || null;

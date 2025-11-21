@@ -4,6 +4,10 @@ import './addons/pds-configurator/preview.js';
 import { withHTMLExtractor } from './addons/html-preview/preview.js';
 import { withDescription } from './addons/description/preview.js';
 import './htmlPreview.css';
+import { toastFormData } from '../stories/utils/toast-utils.js';
+
+// Expose toastFormData globally for inline event handlers
+window.toastFormData = toastFormData;
 
 // Get initial preset from storage or URL or default
 const getInitialPreset = () => {

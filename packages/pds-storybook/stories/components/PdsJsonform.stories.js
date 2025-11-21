@@ -1,5 +1,4 @@
 import { html } from 'lit';
-import { toastFormData } from '../utils/toast-utils.js';
 
 export default {
   title: 'Components/Pds Jsonform',
@@ -946,6 +945,160 @@ export const WithDatalistAutocomplete = {
       <pds-jsonform 
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const WithArrayFields = {
+  name: 'Dynamic Arrays (Add/Remove)',
+  parameters: {
+    docs: {
+      description: {
+        story: `Arrays in JSON Schema forms allow users to dynamically add and remove items. This is perfect for managing lists like team members, tasks, or any collection that can grow or shrink.
+
+### Features:
+- **Add items** - Click "Add" button to create new entries
+- **Remove items** - Delete individual items with the "Remove" button
+- **Reorder items** - Use up/down arrows to change order
+- **Nested objects** - Each array item can contain complex nested data
+- **Initial values** - Pre-populate with default items`
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      properties: {
+        projectName: {
+          type: 'string',
+          title: 'Project Name',
+          examples: ['Website Redesign Project']
+        },
+        tags: {
+          type: 'array',
+          title: 'Project Tags',
+          items: {
+            type: 'string'
+          },
+          default: ['web', 'design', 'frontend']
+        },
+        teamMembers: {
+          type: 'array',
+          title: 'Team Members',
+          items: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+                title: 'Full Name',
+                examples: ['Alice Johnson']
+              },
+              role: {
+                type: 'string',
+                title: 'Role',
+                enum: ['Developer', 'Designer', 'Project Manager', 'QA Engineer', 'DevOps'],
+                default: 'Developer'
+              },
+              email: {
+                type: 'string',
+                format: 'email',
+                title: 'Email',
+                examples: ['alice.johnson@company.com']
+              },
+              hours: {
+                type: 'number',
+                title: 'Hours/Week',
+                minimum: 1,
+                maximum: 40,
+                default: 40
+              }
+            },
+            required: ['name', 'role', 'email']
+          },
+          minItems: 1
+        },
+        milestones: {
+          type: 'array',
+          title: 'Project Milestones',
+          items: {
+            type: 'object',
+            properties: {
+              title: {
+                type: 'string',
+                title: 'Milestone Title',
+                examples: ['MVP Launch']
+              },
+              dueDate: {
+                type: 'string',
+                format: 'date',
+                title: 'Due Date'
+              },
+              completed: {
+                type: 'boolean',
+                title: 'Completed',
+                default: false
+              }
+            },
+            required: ['title', 'dueDate']
+          }
+        }
+        
+      },
+      required: ['projectName', 'teamMembers']
+    };
+
+    // Initial values to demonstrate pre-populated arrays
+    const initialValues = {
+      projectName: 'Website Redesign Project',
+      teamMembers: [
+        {
+          name: 'Alice Johnson',
+          role: 'Project Manager',
+          email: 'alice.johnson@company.com',
+          hours: 40
+        },
+        {
+          name: 'Bob Smith',
+          role: 'Developer',
+          email: 'bob.smith@company.com',
+          hours: 35
+        }
+      ],
+      milestones: [
+        {
+          title: 'Design Phase Complete',
+          dueDate: '2025-02-01',
+          completed: true
+        },
+        {
+          title: 'MVP Launch',
+          dueDate: '2025-04-15',
+          completed: false
+        }
+      ],
+      tags: ['web', 'design', 'frontend', 'responsive']
+    };
+
+    const uiSchema = {
+      teamMembers: {
+        'ui:layout': 'default',
+        role: {
+          'ui:widget': 'select'
+        }
+      }
+    };
+
+    return html`
+      <pds-jsonform 
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        .values=${initialValues}
+        @pw:array-add=${(e) => console.log('➕ Item added to:', e.detail.path)}
+        @pw:array-remove=${(e) => console.log('➖ Item removed from:', e.detail.path, 'at index:', e.detail.index)}
+        @pw:array-reorder=${(e) => console.log('🔄 Item moved from', e.detail.from, 'to', e.detail.to, 'in:', e.detail.path)}
+        @pw:value-change=${(e) => console.log('🔄 Value changed:', e.detail)}
         @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
     `;
