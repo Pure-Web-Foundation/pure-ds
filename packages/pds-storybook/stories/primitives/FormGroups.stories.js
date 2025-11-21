@@ -1,4 +1,5 @@
 import { html } from "lit";
+import { toastFormData } from '../utils/toast-utils.js';
 
 export default {
   title: "Primitives/Form Groups",
@@ -417,7 +418,7 @@ export const AccessibleFormGroups = () => html`
     </p>
 
     <div class="card" style="padding: var(--spacing-6); max-width: 600px;">
-      <form onsubmit="event.preventDefault(); alert('Form submitted!');">
+      <form onsubmit="event.preventDefault(); toastFormData(new FormData(event.target));">
         <fieldset
           role="radiogroup"
           class="buttons"

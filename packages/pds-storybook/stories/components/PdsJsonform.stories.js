@@ -1,4 +1,5 @@
 import { html } from 'lit';
+import { toastFormData } from '../utils/toast-utils.js';
 
 export default {
   title: 'Components/Pds Jsonform',
@@ -101,7 +102,7 @@ export const SimpleForm = {
     return html`
       <pds-jsonform 
         .jsonSchema=${simpleSchema}
-        @pw:submit=${(e) => console.log('✅ Form submitted:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
     `;
   }
@@ -112,7 +113,7 @@ export const ComplexForm = {
     return html`
       <pds-jsonform 
         .jsonSchema=${complexSchema}
-        @pw:submit=${(e) => console.log('✅ Form submitted:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
     `;
   }
@@ -132,7 +133,7 @@ export const WithInitialData = {
         .jsonSchema=${simpleSchema}
         .values=${initialValues}
         @pw:value-change=${(e) => console.log('🔄 Value changed:', e.detail)}
-        @pw:submit=${(e) => console.log('✅ Form submitted:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
     `;
   }
@@ -194,7 +195,7 @@ export const WithTogglesSwitches = {
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
         .options=${options}
-        @pw:submit=${(e) => console.log('✅ Submitted:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
     `;
   }
@@ -256,7 +257,7 @@ export const WithRangeSliders = {
         .uiSchema=${uiSchema}
         .options=${options}
         @pw:value-change=${(e) => console.log('🎚️ Value changed:', e.detail)}
-        @pw:submit=${(e) => console.log('✅ Submitted:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
     `;
   }
@@ -336,7 +337,7 @@ export const WithIcons = {
       <pds-jsonform 
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
-        @pw:submit=${(e) => console.log('✅ Submitted:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
     `;
   }
@@ -400,7 +401,7 @@ export const WithPdsUpload = {
       <pds-jsonform 
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
-        @pw:submit=${(e) => console.log('✅ Submitted:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
     `;
   }
@@ -457,7 +458,7 @@ export const WithPdsRichtext = {
       <pds-jsonform 
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
-        @pw:submit=${(e) => console.log('✅ Submitted:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
     `;
   }
@@ -497,7 +498,7 @@ export const WithFlexLayout = {
       <pds-jsonform 
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
-        @pw:submit=${(e) => console.log('✅ Submitted:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
     `;
   }
@@ -540,7 +541,7 @@ export const WithGridLayout = {
       <pds-jsonform 
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
-        @pw:submit=${(e) => console.log('✅ Submitted:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
     `;
   }
@@ -611,7 +612,7 @@ export const WithAccordionLayout = {
       <pds-jsonform 
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
-        @pw:submit=${(e) => console.log('✅ Submitted:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
     `;
   }
@@ -669,7 +670,7 @@ export const WithTabsLayout = {
       <pds-jsonform 
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
-        @pw:submit=${(e) => console.log('✅ Submitted:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
     `;
   }
@@ -757,7 +758,7 @@ export const WithSurfaces = {
       <pds-jsonform 
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
-        @pw:submit=${(e) => console.log('✅ Submitted:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
     `;
   }
@@ -890,7 +891,7 @@ export const WithDialogForms = {
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
         .values=${initialValues}
-        @pw:submit=${(e) => console.log('✅ Submitted:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
         @pw:dialog-submit=${(e) => console.log('📝 Dialog saved:', e.detail)}
       ></pds-jsonform>
     `;
@@ -945,7 +946,7 @@ export const WithDatalistAutocomplete = {
       <pds-jsonform 
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
-        @pw:submit=${(e) => console.log('✅ Submitted:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
     `;
   }
@@ -1079,7 +1080,7 @@ export const ComprehensiveExample = {
         .uiSchema=${uiSchema}
         .options=${options}
         @pw:value-change=${(e) => console.log('🔄 Changed:', e.detail)}
-        @pw:submit=${(e) => console.log('✅ Submitted:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
     `;
   }

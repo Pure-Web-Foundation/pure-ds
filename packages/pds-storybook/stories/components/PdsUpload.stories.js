@@ -1,4 +1,5 @@
 import { html } from 'lit';
+import { toastFormData } from '../utils/toast-utils.js';
 
 export default {
   title: 'Components/Pds Upload',
@@ -31,7 +32,7 @@ export const Default = {
       accept="${args.accept}"
       ?multiple="${args.multiple}"
       max-size="${args.maxSize}"
-      @files-changed="${(e) => console.log('Files:', e.detail)}">
+      @files-changed="${(e) => toastFormData(e.detail)}">
     </pds-upload>
   `,
   args: {
