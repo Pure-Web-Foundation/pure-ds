@@ -1,0 +1,775 @@
+{
+  "version": 1.1,
+  "tags": [
+    {
+      "name": "pds-drawer",
+      "description": "DrawerPanel component",
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Controls whether the drawer is open or closed",
+          "valueSet": "v"
+        },
+        {
+          "name": "position",
+          "description": "Position of the drawer relative to the viewport",
+          "values": [
+            {
+              "name": "bottom"
+            },
+            {
+              "name": "top"
+            },
+            {
+              "name": "left"
+            },
+            {
+              "name": "right"
+            }
+          ]
+        },
+        {
+          "name": "drag",
+          "description": "Controls drag interaction behavior",
+          "values": [
+            {
+              "name": "header"
+            },
+            {
+              "name": "none"
+            }
+          ]
+        },
+        {
+          "name": "max-height",
+          "description": "Maximum height for top/bottom positioned drawers (CSS value)"
+        },
+        {
+          "name": "min-height",
+          "description": "Minimum height for top/bottom positioned drawers (CSS value)"
+        },
+        {
+          "name": "show-close",
+          "description": "Whether to show the close button in the header",
+          "valueSet": "v"
+        }
+      ]
+    },
+    {
+      "name": "pds-icon",
+      "description": "SVG Icon Web Component",
+      "attributes": [
+        {
+          "name": "icon",
+          "description": "Icon name from the sprite sheet",
+          "values": [
+            {
+              "name": "arrow-counter-clockwise",
+              "description": "arrow-counter-clockwise icon"
+            },
+            {
+              "name": "arrow-down",
+              "description": "arrow-down icon"
+            },
+            {
+              "name": "arrow-left",
+              "description": "arrow-left icon"
+            },
+            {
+              "name": "arrow-right",
+              "description": "arrow-right icon"
+            },
+            {
+              "name": "arrow-up",
+              "description": "arrow-up icon"
+            },
+            {
+              "name": "at",
+              "description": "at icon"
+            },
+            {
+              "name": "battery-charging",
+              "description": "battery-charging icon"
+            },
+            {
+              "name": "bell",
+              "description": "bell icon"
+            },
+            {
+              "name": "bell-ringing",
+              "description": "bell-ringing icon"
+            },
+            {
+              "name": "bell-simple",
+              "description": "bell-simple icon"
+            },
+            {
+              "name": "book-open",
+              "description": "book-open icon"
+            },
+            {
+              "name": "bookmark",
+              "description": "bookmark icon"
+            },
+            {
+              "name": "brackets-curly",
+              "description": "brackets-curly icon"
+            },
+            {
+              "name": "briefcase",
+              "description": "briefcase icon"
+            },
+            {
+              "name": "calendar",
+              "description": "calendar icon"
+            },
+            {
+              "name": "camera",
+              "description": "camera icon"
+            },
+            {
+              "name": "caret-down",
+              "description": "caret-down icon"
+            },
+            {
+              "name": "caret-left",
+              "description": "caret-left icon"
+            },
+            {
+              "name": "caret-right",
+              "description": "caret-right icon"
+            },
+            {
+              "name": "caret-up",
+              "description": "caret-up icon"
+            },
+            {
+              "name": "chart-bar",
+              "description": "chart-bar icon"
+            },
+            {
+              "name": "chart-line",
+              "description": "chart-line icon"
+            },
+            {
+              "name": "chat-circle",
+              "description": "chat-circle icon"
+            },
+            {
+              "name": "check",
+              "description": "check icon"
+            },
+            {
+              "name": "check-circle",
+              "description": "check-circle icon"
+            },
+            {
+              "name": "circle",
+              "description": "circle icon"
+            },
+            {
+              "name": "clipboard",
+              "description": "clipboard icon"
+            },
+            {
+              "name": "clock",
+              "description": "clock icon"
+            },
+            {
+              "name": "cloud",
+              "description": "cloud icon"
+            },
+            {
+              "name": "cloud-arrow-down",
+              "description": "cloud-arrow-down icon"
+            },
+            {
+              "name": "cloud-arrow-up",
+              "description": "cloud-arrow-up icon"
+            },
+            {
+              "name": "code",
+              "description": "code icon"
+            },
+            {
+              "name": "copy",
+              "description": "copy icon"
+            },
+            {
+              "name": "credit-card",
+              "description": "credit-card icon"
+            },
+            {
+              "name": "currency-dollar",
+              "description": "currency-dollar icon"
+            },
+            {
+              "name": "cursor-click",
+              "description": "cursor-click icon"
+            },
+            {
+              "name": "database",
+              "description": "database icon"
+            },
+            {
+              "name": "desktop",
+              "description": "desktop icon"
+            },
+            {
+              "name": "device-mobile",
+              "description": "device-mobile icon"
+            },
+            {
+              "name": "dots-three",
+              "description": "dots-three icon"
+            },
+            {
+              "name": "dots-three-vertical",
+              "description": "dots-three-vertical icon"
+            },
+            {
+              "name": "download",
+              "description": "download icon"
+            },
+            {
+              "name": "envelope",
+              "description": "envelope icon"
+            },
+            {
+              "name": "eye",
+              "description": "eye icon"
+            },
+            {
+              "name": "eye-slash",
+              "description": "eye-slash icon"
+            },
+            {
+              "name": "feather",
+              "description": "feather icon"
+            },
+            {
+              "name": "file",
+              "description": "file icon"
+            },
+            {
+              "name": "file-css",
+              "description": "file-css icon"
+            },
+            {
+              "name": "file-js",
+              "description": "file-js icon"
+            },
+            {
+              "name": "file-text",
+              "description": "file-text icon"
+            },
+            {
+              "name": "fingerprint",
+              "description": "fingerprint icon"
+            },
+            {
+              "name": "floppy-disk",
+              "description": "floppy-disk icon"
+            },
+            {
+              "name": "folder",
+              "description": "folder icon"
+            },
+            {
+              "name": "folder-open",
+              "description": "folder-open icon"
+            },
+            {
+              "name": "folder-simple",
+              "description": "folder-simple icon"
+            },
+            {
+              "name": "funnel",
+              "description": "funnel icon"
+            },
+            {
+              "name": "gear",
+              "description": "gear icon"
+            },
+            {
+              "name": "globe",
+              "description": "globe icon"
+            },
+            {
+              "name": "grid-four",
+              "description": "grid-four icon"
+            },
+            {
+              "name": "heart",
+              "description": "heart icon"
+            },
+            {
+              "name": "hourglass",
+              "description": "hourglass icon"
+            },
+            {
+              "name": "house",
+              "description": "house icon"
+            },
+            {
+              "name": "image",
+              "description": "image icon"
+            },
+            {
+              "name": "info",
+              "description": "info icon"
+            },
+            {
+              "name": "lightning",
+              "description": "lightning icon"
+            },
+            {
+              "name": "link",
+              "description": "link icon"
+            },
+            {
+              "name": "list",
+              "description": "list icon"
+            },
+            {
+              "name": "list-bullets",
+              "description": "list-bullets icon"
+            },
+            {
+              "name": "list-dashes",
+              "description": "list-dashes icon"
+            },
+            {
+              "name": "list-numbers",
+              "description": "list-numbers icon"
+            },
+            {
+              "name": "lock",
+              "description": "lock icon"
+            },
+            {
+              "name": "lock-open",
+              "description": "lock-open icon"
+            },
+            {
+              "name": "magic-wand",
+              "description": "magic-wand icon"
+            },
+            {
+              "name": "magnifying-glass",
+              "description": "magnifying-glass icon"
+            },
+            {
+              "name": "map-pin",
+              "description": "map-pin icon"
+            },
+            {
+              "name": "microphone",
+              "description": "microphone icon"
+            },
+            {
+              "name": "minus",
+              "description": "minus icon"
+            },
+            {
+              "name": "moon",
+              "description": "moon icon"
+            },
+            {
+              "name": "moon-stars",
+              "description": "moon-stars icon"
+            },
+            {
+              "name": "note-pencil",
+              "description": "note-pencil icon"
+            },
+            {
+              "name": "palette",
+              "description": "palette icon"
+            },
+            {
+              "name": "paper-plane-tilt",
+              "description": "paper-plane-tilt icon"
+            },
+            {
+              "name": "pause",
+              "description": "pause icon"
+            },
+            {
+              "name": "pencil",
+              "description": "pencil icon"
+            },
+            {
+              "name": "phone",
+              "description": "phone icon"
+            },
+            {
+              "name": "play",
+              "description": "play icon"
+            },
+            {
+              "name": "plus",
+              "description": "plus icon"
+            },
+            {
+              "name": "question",
+              "description": "question icon"
+            },
+            {
+              "name": "receipt",
+              "description": "receipt icon"
+            },
+            {
+              "name": "rocket",
+              "description": "rocket icon"
+            },
+            {
+              "name": "share",
+              "description": "share icon"
+            },
+            {
+              "name": "shield",
+              "description": "shield icon"
+            },
+            {
+              "name": "shield-check",
+              "description": "shield-check icon"
+            },
+            {
+              "name": "shield-warning",
+              "description": "shield-warning icon"
+            },
+            {
+              "name": "shopping-cart",
+              "description": "shopping-cart icon"
+            },
+            {
+              "name": "sidebar",
+              "description": "sidebar icon"
+            },
+            {
+              "name": "sparkle",
+              "description": "sparkle icon"
+            },
+            {
+              "name": "square",
+              "description": "square icon"
+            },
+            {
+              "name": "squares-four",
+              "description": "squares-four icon"
+            },
+            {
+              "name": "star",
+              "description": "star icon"
+            },
+            {
+              "name": "storefront",
+              "description": "storefront icon"
+            },
+            {
+              "name": "sun",
+              "description": "sun icon"
+            },
+            {
+              "name": "tabs",
+              "description": "tabs icon"
+            },
+            {
+              "name": "tag",
+              "description": "tag icon"
+            },
+            {
+              "name": "text-aa",
+              "description": "text-aa icon"
+            },
+            {
+              "name": "text-align-center",
+              "description": "text-align-center icon"
+            },
+            {
+              "name": "text-align-left",
+              "description": "text-align-left icon"
+            },
+            {
+              "name": "text-align-right",
+              "description": "text-align-right icon"
+            },
+            {
+              "name": "text-b",
+              "description": "text-b icon"
+            },
+            {
+              "name": "text-italic",
+              "description": "text-italic icon"
+            },
+            {
+              "name": "text-underline",
+              "description": "text-underline icon"
+            },
+            {
+              "name": "timer",
+              "description": "timer icon"
+            },
+            {
+              "name": "trash",
+              "description": "trash icon"
+            },
+            {
+              "name": "upload",
+              "description": "upload icon"
+            },
+            {
+              "name": "user",
+              "description": "user icon"
+            },
+            {
+              "name": "user-gear",
+              "description": "user-gear icon"
+            },
+            {
+              "name": "users",
+              "description": "users icon"
+            },
+            {
+              "name": "video-camera",
+              "description": "video-camera icon"
+            },
+            {
+              "name": "warning",
+              "description": "warning icon"
+            },
+            {
+              "name": "wifi-high",
+              "description": "wifi-high icon"
+            },
+            {
+              "name": "wrench",
+              "description": "wrench icon"
+            },
+            {
+              "name": "x",
+              "description": "x icon"
+            },
+            {
+              "name": "x-circle",
+              "description": "x-circle icon"
+            }
+          ]
+        },
+        {
+          "name": "size",
+          "description": "Icon size in pixels or named size (xs, sm, md, lg, xl, 2xl)"
+        },
+        {
+          "name": "color",
+          "description": "Icon color (CSS color value, default: currentColor)"
+        },
+        {
+          "name": "label",
+          "description": "Accessible label for the icon (adds role=\"img\")"
+        },
+        {
+          "name": "rotate",
+          "description": "Rotation angle in degrees"
+        },
+        {
+          "name": "sprite",
+          "description": "Override sprite sheet path"
+        },
+        {
+          "name": "no-sprite",
+          "description": "Force fallback icon rendering",
+          "valueSet": "v"
+        }
+      ]
+    },
+    {
+      "name": "pds-jsonform",
+      "description": "<pds-jsonform>\n\nForm Actions:\nBy default, the form includes Submit and Reset buttons inside the <form> element.\n\nUsage options:\n1. Default buttons:\n   <pds-jsonform .jsonSchema=${schema}></pds-jsonform>\n\n2. Customize labels:\n   <pds-jsonform .jsonSchema=${schema} submit-label=\"Save\" reset-label=\"Clear\"></pds-jsonform>\n\n3. Hide reset button:\n   <pds-jsonform .jsonSchema=${schema} hide-reset></pds-jsonform>\n\n4. Add extra buttons (slot):\n   <pds-jsonform .jsonSchema=${schema}>\n     <button type=\"button\" slot=\"actions\"",
+      "attributes": [
+        {
+          "name": "json-schema",
+          "description": ""
+        },
+        {
+          "name": "ui-schema",
+          "description": ""
+        },
+        {
+          "name": "options",
+          "description": ""
+        },
+        {
+          "name": "values",
+          "description": ""
+        },
+        {
+          "name": "action",
+          "description": ""
+        },
+        {
+          "name": "method",
+          "description": ""
+        },
+        {
+          "name": "disabled",
+          "description": "",
+          "valueSet": "v"
+        },
+        {
+          "name": "hide-actions",
+          "description": "",
+          "valueSet": "v"
+        },
+        {
+          "name": "submit-label",
+          "description": ""
+        },
+        {
+          "name": "reset-label",
+          "description": ""
+        },
+        {
+          "name": "hide-reset",
+          "description": "",
+          "valueSet": "v"
+        },
+        {
+          "name": "hide-submit",
+          "description": "",
+          "valueSet": "v"
+        },
+        {
+          "name": "hide-legend",
+          "description": "",
+          "valueSet": "v"
+        }
+      ]
+    },
+    {
+      "name": "pds-richtext",
+      "description": "RichText component",
+      "attributes": [
+        {
+          "name": "name",
+          "description": ""
+        },
+        {
+          "name": "placeholder",
+          "description": ""
+        },
+        {
+          "name": "disabled",
+          "description": ""
+        },
+        {
+          "name": "required",
+          "description": ""
+        },
+        {
+          "name": "submit-on-enter",
+          "description": ""
+        },
+        {
+          "name": "spellcheck",
+          "description": ""
+        },
+        {
+          "name": "toolbar",
+          "description": ""
+        },
+        {
+          "name": "value",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "pds-scrollrow",
+      "description": "PdsScrollrow component",
+      "attributes": [
+        {
+          "name": "label",
+          "description": ""
+        },
+        {
+          "name": "snap",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "pds-splitpanel",
+      "description": "anonymous_0 component",
+      "attributes": [
+        {
+          "name": "layout",
+          "description": ""
+        },
+        {
+          "name": "defaultsplit",
+          "description": ""
+        },
+        {
+          "name": "breakpoint",
+          "description": ""
+        },
+        {
+          "name": "open",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "pds-tabpanel",
+      "description": "TabPanel component",
+      "attributes": [
+        {
+          "name": "label",
+          "description": "Label for the tab button"
+        },
+        {
+          "name": "id",
+          "description": "Unique identifier for the panel (auto-generated if not provided)"
+        }
+      ]
+    },
+    {
+      "name": "pds-tabstrip",
+      "description": "TabStrip component",
+      "attributes": [
+        {
+          "name": "label",
+          "description": "Accessible label for the tabs navigation"
+        }
+      ]
+    },
+    {
+      "name": "pds-toaster",
+      "description": "AppToaster component"
+    },
+    {
+      "name": "pds-upload",
+      "description": "UploadArea component",
+      "attributes": [
+        {
+          "name": "accept",
+          "description": ""
+        },
+        {
+          "name": "multiple",
+          "description": ""
+        },
+        {
+          "name": "disabled",
+          "description": ""
+        },
+        {
+          "name": "max-files",
+          "description": ""
+        }
+      ]
+    }
+  ]
+}

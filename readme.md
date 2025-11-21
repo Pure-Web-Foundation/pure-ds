@@ -1528,21 +1528,63 @@ Or generate independently:
 npm run pds:manifest
 ```
 
+This command:
+1. Generates `custom-elements.json` (Custom Elements Manifest)
+2. Converts it to `vscode-custom-data.json` (VS Code format)
+3. Creates `pds.html-data.json` in the project root
+4. Prompts you to reload VS Code to activate autocomplete
+
+### VS Code Setup
+
+To enable autocomplete for PDS components in VS Code:
+
+**Option 1: Workspace Settings (Recommended)**
+
+Add to `.vscode/settings.json`:
+```json
+{
+  "html.customData": [
+    "public/assets/pds/vscode-custom-data.json"
+  ]
+}
+```
+
+**Option 2: User Settings**
+
+Reference the generated `pds.html-data.json`:
+```json
+{
+  "html.customData": [
+    "./pds.html-data.json"
+  ]
+}
+```
+
+After adding the setting, reload VS Code (**Ctrl+Shift+P** → **Developer: Reload Window**).
+
 ### Location
 
-After export, find the manifest at:
+After generation, find these files:
 ```
-public/assets/pds/custom-elements.json
+public/assets/pds/
+├── custom-elements.json        # Custom Elements Manifest
+└── vscode-custom-data.json     # VS Code autocomplete data
+
+pds.html-data.json               # VS Code settings reference (project root)
 ```
 
 ### Example Usage
 
 ```html
-<!-- IDE will provide autocomplete for attributes -->
+<!-- Type <pds- to see all components with descriptions -->
+<!-- Type position=" to see available values with autocomplete -->
 <pds-drawer open position="right" max-height="80vh">
   <div slot="drawer-header">Settings</div>
   <div slot="drawer-content">Content here</div>
 </pds-drawer>
+
+<!-- Autocomplete suggests icon names, sizes, and all attributes -->
+<pds-icon icon="star" size="lg" color="blue"></pds-icon>
 ```
 
 ```javascript
@@ -1551,6 +1593,12 @@ const drawer = document.querySelector('pds-drawer');
 drawer.openDrawer();  // ← Autocomplete + docs on hover
 drawer.setContent('<p>New content</p>');
 ```
+
+**What you get:**
+- 🔍 **Tag autocomplete** - Type `<pds-` to see all components
+- 📝 **Attribute suggestions** - See available attributes for each component
+- 💡 **Value hints** - Enum values like `position="bottom|top|left|right"`
+- 📖 **Hover documentation** - View descriptions without leaving your code
 
 For detailed information, see [CUSTOM-ELEMENTS-MANIFEST.md](./CUSTOM-ELEMENTS-MANIFEST.md).
 
