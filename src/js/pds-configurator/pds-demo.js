@@ -1500,25 +1500,6 @@ customElements.define(
             </div>
           </section>
 
-          <form
-            @submit=${(e) => {
-              e.preventDefault();
-              const formData = new FormData(e.target);
-              console.log("Form submitted with data:");
-              for (const [key, value] of formData.entries()) {
-                console.log(`  ${key}: ${value}`);
-              }
-            }}
-          >
-            <fieldset role="group" data-open>
-              <label>
-                <span data-label>Test</span>
-                <input value="lala" name="test1" type="checkbox" />
-              </label>
-            </fieldset>
-            <button type="submit">Submit</button>
-          </form>
-
           <!-- Colors Section -->
           <section class="showcase-section" data-section="color-system">
             <h2>
