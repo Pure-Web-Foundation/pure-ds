@@ -33,7 +33,7 @@ customElements.define("pds-tabpanel", TabPanel);
 
 /**
  * @element pds-tabstrip
- * @fires change - Fired when the active tab changes
+ * @fires tabchange - Fired when the active tab changes. Event detail contains: { oldTab: string, newTab: string }
  * 
  * @attr {string} label - Accessible label for the tabs navigation
  * 
@@ -48,6 +48,7 @@ class TabStrip extends HTMLElement {
   #inkbar;
   #panels = [];
   #mo;
+  #currentTab = null;
 
   constructor() {
     super();
@@ -73,14 +74,16 @@ class TabStrip extends HTMLElement {
           background-color: var(--color-accent-400); pointer-events:none;
         }
       </style>
-      <nav part="tabs" aria-label="${
-        this.getAttribute("label") || "Tabs"
-      }"></nav>
+      <nav part="tabs"></nav>
       <slot></slot>
     `;
   }
 
   connectedCallback() {
+    // Set nav aria-label based on attribute or default
+    const nav = this.#shadow.querySelector("nav");
+    nav.setAttribute("aria-label", this.getAttribute("label") || "Tabs");
+
     // Build once panels are in the light DOM
     queueMicrotask(() => {
       this.#collectPanels();
@@ -109,18 +112,10 @@ class TabStrip extends HTMLElement {
     addEventListener("resize", this.#positionInkbar, { passive: true });
 
     // Handle clicks/keys in the shadow nav
-    const nav = this.#shadow.querySelector("nav");
     nav.addEventListener("click", this.#onNavClick);
     nav.addEventListener("keydown", this.#onNavKeydown);
   }
-
-  disconnectedCallback() {
-    this.#mo?.disconnect();
-    removeEventListener("hashchange", this.#onUrlChange);
-    removeEventListener("popstate", this.#onUrlChange);
-    removeEventListener("resize", this.#positionInkbar);
-  }
-
+    
   // --- helpers ---
   #collectPanels() {
     // Direct children <pds-tabpanel> only (your structure)
@@ -153,8 +148,13 @@ class TabStrip extends HTMLElement {
       ? hashId
       : this.getAttribute("selected") || this.#panels[0].id;
 
+    // Track previous tab for event
+    const oldTab = this.#currentTab;
+    const changed = oldTab !== null && oldTab !== next;
+
     // Update selected attribute (optional external reflection)
     this.setAttribute("selected", next);
+    this.#currentTab = next;
 
     // Show/hide panels
     for (const p of this.#panels) {
@@ -181,6 +181,17 @@ class TabStrip extends HTMLElement {
     // Stabilize URL on first paint if needed
     if (initial && (!hashId || !exists)) {
       history.replaceState(null, "", `#${next}`);
+    }
+
+    // Emit tabchange event (skip initial load)
+    if (changed) {
+      this.dispatchEvent(
+        new CustomEvent("tabchange", {
+          bubbles: true,
+          composed: true,
+          detail: { oldTab, newTab: next }
+        })
+      );
     }
   }
 

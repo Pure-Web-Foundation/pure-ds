@@ -2004,7 +2004,7 @@ customElements.define(
                 .map(
                   (_, i) => html`<img
                     loading="lazy"
-                    class="gallery-image"
+                    class="scroll-row-image"
                     src="https://picsum.photos/200/200?random=${i + 1}"
                     alt="Gallery image ${i + 1}"
                   />`
@@ -3243,7 +3243,7 @@ customElements.define(
             </p>
 
             <div style="margin-top: var(--spacing-6);">
-              <pds-tabstrip label="Example Tabs">
+              <pds-tabstrip @tabchange="${this.handleTabChange}" label="Example Tabs">
                 <pds-tabpanel id="overview" label="Overview">
                   <h3>Overview</h3>
                   <p>
@@ -3400,6 +3400,10 @@ customElements.define(
         const toaster = document.getElementById("global-toaster");
         toaster.toast("Error loading docs. See console.", { type: "danger" });
       }
+    }
+
+    handleTabChange(event) {
+      toast(`Switched to tab: ${event.detail.newTab}`, { type: "info" });
     }
 
     openDrawer() {
