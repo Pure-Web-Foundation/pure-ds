@@ -1511,6 +1511,7 @@ customElements.define(
               Color System
             </h2>
 
+
             <div class="color-grid">
               ${this.renderColorCard("Primary", "primary")}
               ${this.renderColorCard("Secondary", "secondary")}
@@ -3303,6 +3304,12 @@ customElements.define(
               </pds-tabstrip>
             </div>
           </section>
+
+          <h3>Calendar</h3>
+          <section class="card surface" >
+            <pds-calendar></pds-calendar>
+          </section>
+          
 
           <!-- Drawer Section -->
           <section class="showcase-section">

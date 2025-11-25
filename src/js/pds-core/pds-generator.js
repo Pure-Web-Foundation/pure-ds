@@ -14,7 +14,7 @@ export class Generator {
       debug: false,
       ...options,
     };
-    
+
     // Ensure design is always present for internal access
     if (!this.options.design) {
       this.options.design = {};
@@ -137,7 +137,11 @@ export class Generator {
       },
       dark: {
         fill: this.#pickFillShadeForWhite(colors.dark.primary, 4.5), // For button fills with white text
-        text: this.#pickReadablePrimaryOnSurface(colors.dark.primary, colors.dark.surface.base, 4.5), // For links/outlines on dark backgrounds
+        text: this.#pickReadablePrimaryOnSurface(
+          colors.dark.primary,
+          colors.dark.surface.base,
+          4.5
+        ), // For links/outlines on dark backgrounds
       },
     };
 
@@ -534,8 +538,13 @@ export class Generator {
     } = spatialConfig;
 
     // Validate and convert to numbers, with fallbacks
-    const validBaseUnit = Number.isFinite(Number(baseUnit)) ? Number(baseUnit) : 4;
-    const validMaxSpacingSteps = Math.min(Number.isFinite(Number(maxSpacingSteps)) ? Number(maxSpacingSteps) : 12, 12);
+    const validBaseUnit = Number.isFinite(Number(baseUnit))
+      ? Number(baseUnit)
+      : 4;
+    const validMaxSpacingSteps = Math.min(
+      Number.isFinite(Number(maxSpacingSteps)) ? Number(maxSpacingSteps) : 12,
+      12
+    );
 
     const spacing = { 0: "0" };
 
@@ -566,30 +575,47 @@ export class Generator {
     }
 
     // Validate and convert baseRadius to a number
-    const validBaseRadius = Number.isFinite(Number(baseRadius)) ? Number(baseRadius) : enums.RadiusSizes.medium;
+    const validBaseRadius = Number.isFinite(Number(baseRadius))
+      ? Number(baseRadius)
+      : enums.RadiusSizes.medium;
 
     return {
       none: "0",
-      xs: `${Number.isFinite(validBaseRadius * 0.25) ? Math.round(validBaseRadius * 0.25) : 0}px`,
-      sm: `${Number.isFinite(validBaseRadius * 0.5) ? Math.round(validBaseRadius * 0.5) : 0}px`,
+      xs: `${
+        Number.isFinite(validBaseRadius * 0.25)
+          ? Math.round(validBaseRadius * 0.25)
+          : 0
+      }px`,
+      sm: `${
+        Number.isFinite(validBaseRadius * 0.5)
+          ? Math.round(validBaseRadius * 0.5)
+          : 0
+      }px`,
       md: `${validBaseRadius}px`,
-      lg: `${Number.isFinite(validBaseRadius * 1.5) ? Math.round(validBaseRadius * 1.5) : 0}px`,
-      xl: `${Number.isFinite(validBaseRadius * 2) ? Math.round(validBaseRadius * 2) : 0}px`,
+      lg: `${
+        Number.isFinite(validBaseRadius * 1.5)
+          ? Math.round(validBaseRadius * 1.5)
+          : 0
+      }px`,
+      xl: `${
+        Number.isFinite(validBaseRadius * 2)
+          ? Math.round(validBaseRadius * 2)
+          : 0
+      }px`,
       full: "9999px",
     };
   }
 
   #generateBorderWidthTokens(shapeConfig) {
-    const {
-      borderWidth = "medium",
-    } = shapeConfig;
+    const { borderWidth = "medium" } = shapeConfig;
 
     // Support string enum keys, numeric values, or default to medium
     let baseBorderWidth;
     if (typeof borderWidth === "number") {
       baseBorderWidth = borderWidth;
     } else if (typeof borderWidth === "string") {
-      baseBorderWidth = enums.BorderWidths[borderWidth] ?? enums.BorderWidths.medium;
+      baseBorderWidth =
+        enums.BorderWidths[borderWidth] ?? enums.BorderWidths.medium;
     } else {
       baseBorderWidth = enums.BorderWidths.medium;
     }
@@ -621,8 +647,12 @@ export class Generator {
     } = typographyConfig;
 
     // Validate numeric values to prevent NaN
-    const validBaseFontSize = Number.isFinite(Number(baseFontSize)) ? Number(baseFontSize) : 16;
-    const validFontScale = Number.isFinite(Number(fontScale)) ? Number(fontScale) : 1.25;
+    const validBaseFontSize = Number.isFinite(Number(baseFontSize))
+      ? Number(baseFontSize)
+      : 16;
+    const validFontScale = Number.isFinite(Number(fontScale))
+      ? Number(fontScale)
+      : 1.25;
 
     return {
       fontFamily: {
@@ -632,14 +662,20 @@ export class Generator {
       },
       fontSize: {
         // Consistent modular scale using 1.25 ratio (minor third)
-        xs: `${Math.round(validBaseFontSize / Math.pow(validFontScale, 2))}px`,   // 16 / 1.25² = 10px
-        sm: `${Math.round(validBaseFontSize / validFontScale)}px`,                // 16 / 1.25 = 13px  
-        base: `${validBaseFontSize}px`,                                          // 16px
-        lg: `${Math.round(validBaseFontSize * validFontScale)}px`,               // 16 × 1.25 = 20px
-        xl: `${Math.round(validBaseFontSize * Math.pow(validFontScale, 2))}px`,  // 16 × 1.25² = 25px
-        "2xl": `${Math.round(validBaseFontSize * Math.pow(validFontScale, 3))}px`, // 16 × 1.25³ = 31px
-        "3xl": `${Math.round(validBaseFontSize * Math.pow(validFontScale, 4))}px`, // 16 × 1.25⁴ = 39px
-        "4xl": `${Math.round(validBaseFontSize * Math.pow(validFontScale, 5))}px`, // 16 × 1.25⁵ = 49px
+        xs: `${Math.round(validBaseFontSize / Math.pow(validFontScale, 2))}px`, // 16 / 1.25² = 10px
+        sm: `${Math.round(validBaseFontSize / validFontScale)}px`, // 16 / 1.25 = 13px
+        base: `${validBaseFontSize}px`, // 16px
+        lg: `${Math.round(validBaseFontSize * validFontScale)}px`, // 16 × 1.25 = 20px
+        xl: `${Math.round(validBaseFontSize * Math.pow(validFontScale, 2))}px`, // 16 × 1.25² = 25px
+        "2xl": `${Math.round(
+          validBaseFontSize * Math.pow(validFontScale, 3)
+        )}px`, // 16 × 1.25³ = 31px
+        "3xl": `${Math.round(
+          validBaseFontSize * Math.pow(validFontScale, 4)
+        )}px`, // 16 × 1.25⁴ = 39px
+        "4xl": `${Math.round(
+          validBaseFontSize * Math.pow(validFontScale, 5)
+        )}px`, // 16 × 1.25⁵ = 49px
       },
       fontWeight: {
         light: fontWeightLight?.toString() || "300",
@@ -720,11 +756,11 @@ export class Generator {
       },
       // Semantic spacing tokens for large layouts
       // Use these instead of numbered spacing beyond --spacing-12
-      pageMargin: "120px",      // For page-level margins
-      sectionGap: "160px",      // Between major page sections  
-      containerGap: "200px",    // Between container blocks
-      heroSpacing: "240px",     // For hero/banner areas
-      footerSpacing: "160px",   // Before footer sections
+      pageMargin: "120px", // For page-level margins
+      sectionGap: "160px", // Between major page sections
+      containerGap: "200px", // Between container blocks
+      heroSpacing: "240px", // For hero/banner areas
+      footerSpacing: "160px", // Before footer sections
     };
   }
 
@@ -857,12 +893,18 @@ export class Generator {
     chunks.push(`  --color-input-disabled-bg: var(--color-gray-50);\n`);
     chunks.push(`  --color-input-disabled-text: var(--color-gray-500);\n`);
     chunks.push(`  --color-code-bg: var(--color-gray-100);\n`);
-    
+
     // Interactive color tokens - separate shades for different purposes (light mode)
     if (colors.interactive && colors.interactive.light) {
-      chunks.push(`  /* Interactive Colors - optimized for specific use cases */\n`);
-      chunks.push(`  --color-primary-fill: ${colors.interactive.light.fill}; /* For button backgrounds with white text */\n`);
-      chunks.push(`  --color-primary-text: ${colors.interactive.light.text}; /* For links and outline buttons on light surfaces */\n`);
+      chunks.push(
+        `  /* Interactive Colors - optimized for specific use cases */\n`
+      );
+      chunks.push(
+        `  --color-primary-fill: ${colors.interactive.light.fill}; /* For button backgrounds with white text */\n`
+      );
+      chunks.push(
+        `  --color-primary-text: ${colors.interactive.light.text}; /* For links and outline buttons on light surfaces */\n`
+      );
     }
 
     // Translucent surface tokens
@@ -927,8 +969,14 @@ export class Generator {
     let css = "  /* Spacing */\n";
     Object.entries(spacing).forEach(([key, value]) => {
       // Validate the key and value before generating CSS
-      if (key !== null && key !== undefined && key !== 'NaN' && 
-          value !== null && value !== undefined && !value.includes('NaN')) {
+      if (
+        key !== null &&
+        key !== undefined &&
+        key !== "NaN" &&
+        value !== null &&
+        value !== undefined &&
+        !value.includes("NaN")
+      ) {
         css += `  --spacing-${key}: ${value};\n`;
       }
     });
@@ -959,12 +1007,12 @@ export class Generator {
       const cleanCategory = category
         .replace(/^font/, "")
         .replace(/^(.)/, (m) => m.toLowerCase())
-        .replace(/([A-Z])/g, '-$1')
+        .replace(/([A-Z])/g, "-$1")
         .toLowerCase();
-      
+
       Object.entries(values).forEach(([key, value]) => {
         // Convert camelCase keys to kebab-case
-        const kebabKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+        const kebabKey = key.replace(/([A-Z])/g, "-$1").toLowerCase();
         css += `  --font-${cleanCategory}-${kebabKey}: ${value};\n`;
       });
     });
@@ -983,14 +1031,14 @@ export class Generator {
     let css = "  /* Layout */\n";
     Object.entries(layout).forEach(([key, value]) => {
       // Convert camelCase keys to kebab-case
-      const kebabKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
-      
+      const kebabKey = key.replace(/([A-Z])/g, "-$1").toLowerCase();
+
       // Skip breakpoints object - it's used in JS but doesn't belong in CSS variables
       // Breakpoints are used in @media queries, not as CSS custom properties
-      if (key === 'breakpoints') {
+      if (key === "breakpoints") {
         return;
       }
-      
+
       css += `  --layout-${kebabKey}: ${value};\n`;
     });
     return css + "\n";
@@ -1026,86 +1074,86 @@ export class Generator {
     return css + "\n";
   }
 
-//   #generateDarkModeCSS(colors) {
-//     if (!colors.dark) return "";
+  //   #generateDarkModeCSS(colors) {
+  //     if (!colors.dark) return "";
 
-//     // Always emit dark-mode variables and rules scoped to html[data-theme="dark"].
-//     // We avoid relying on prefers-color-scheme media queries so the runtime
-//     // can simply toggle the attribute on <html> to switch modes.
-//     let vars = "";
-//     const generateNestedDarkColors = (obj, prefix = "") => {
-//       Object.entries(obj).forEach(([key, value]) => {
-//         if (typeof value === "object" && value !== null) {
-//           generateNestedDarkColors(value, `${prefix}${key}-`);
-//         } else if (typeof value === "string") {
-//           vars += `  --color-${prefix}${key}: ${value};\n`;
-//         }
-//       });
-//     };
+  //     // Always emit dark-mode variables and rules scoped to html[data-theme="dark"].
+  //     // We avoid relying on prefers-color-scheme media queries so the runtime
+  //     // can simply toggle the attribute on <html> to switch modes.
+  //     let vars = "";
+  //     const generateNestedDarkColors = (obj, prefix = "") => {
+  //       Object.entries(obj).forEach(([key, value]) => {
+  //         if (typeof value === "object" && value !== null) {
+  //           generateNestedDarkColors(value, `${prefix}${key}-`);
+  //         } else if (typeof value === "string") {
+  //           vars += `  --color-${prefix}${key}: ${value};\n`;
+  //         }
+  //       });
+  //     };
 
-//     Object.entries(colors.dark).forEach(([category, values]) => {
-//       if (category === "surfaceSmart") return; // Handle smart tokens separately
-//       if (typeof values === "object" && values !== null) {
-//         generateNestedDarkColors(values, `${category}-`);
-//       }
-//     });
+  //     Object.entries(colors.dark).forEach(([category, values]) => {
+  //       if (category === "surfaceSmart") return; // Handle smart tokens separately
+  //       if (typeof values === "object" && values !== null) {
+  //         generateNestedDarkColors(values, `${category}-`);
+  //       }
+  //     });
 
-//     // Generate smart surface tokens for dark mode
-//     let smartSurfaceVars = "";
-//     if (colors.dark.surfaceSmart) {
-//       smartSurfaceVars += `  /* Smart Surface Tokens (dark mode, context-aware) */\n`;
-//       Object.entries(colors.dark.surfaceSmart).forEach(
-//         ([surfaceKey, tokens]) => {
-//           smartSurfaceVars += `  --surface-${surfaceKey}-bg: ${tokens.bg};\n`;
-//           smartSurfaceVars += `  --surface-${surfaceKey}-text: ${tokens.text};\n`;
-//           smartSurfaceVars += `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`;
-//           smartSurfaceVars += `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`;
-//           smartSurfaceVars += `  --surface-${surfaceKey}-icon: ${tokens.icon};\n`;
-//           smartSurfaceVars += `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`;
-//           smartSurfaceVars += `  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`;
-//           smartSurfaceVars += `  --surface-${surfaceKey}-border: ${tokens.border};\n`;
-//         }
-//       );
-//       smartSurfaceVars += `\n`;
-//     }
+  //     // Generate smart surface tokens for dark mode
+  //     let smartSurfaceVars = "";
+  //     if (colors.dark.surfaceSmart) {
+  //       smartSurfaceVars += `  /* Smart Surface Tokens (dark mode, context-aware) */\n`;
+  //       Object.entries(colors.dark.surfaceSmart).forEach(
+  //         ([surfaceKey, tokens]) => {
+  //           smartSurfaceVars += `  --surface-${surfaceKey}-bg: ${tokens.bg};\n`;
+  //           smartSurfaceVars += `  --surface-${surfaceKey}-text: ${tokens.text};\n`;
+  //           smartSurfaceVars += `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`;
+  //           smartSurfaceVars += `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`;
+  //           smartSurfaceVars += `  --surface-${surfaceKey}-icon: ${tokens.icon};\n`;
+  //           smartSurfaceVars += `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`;
+  //           smartSurfaceVars += `  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`;
+  //           smartSurfaceVars += `  --surface-${surfaceKey}-border: ${tokens.border};\n`;
+  //         }
+  //       );
+  //       smartSurfaceVars += `\n`;
+  //     }
 
-//     // Interactive color tokens for dark mode - use precomputed tokens
-//     const semanticVars = /*css*/ `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n  /* Interactive Colors - optimized for specific use cases (dark mode) */\n  --color-primary-fill: ${colors.interactive.dark.fill}; /* For button backgrounds with white text */\n  --color-primary-text: ${colors.interactive.dark.text}; /* For links and outline buttons on dark surfaces */\n`;
+  //     // Interactive color tokens for dark mode - use precomputed tokens
+  //     const semanticVars = /*css*/ `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n  /* Interactive Colors - optimized for specific use cases (dark mode) */\n  --color-primary-fill: ${colors.interactive.dark.fill}; /* For button backgrounds with white text */\n  --color-primary-text: ${colors.interactive.dark.text}; /* For links and outline buttons on dark surfaces */\n`;
 
-//     // Backdrop tokens for dark mode
-//     const backdropVars = /*css*/ `  /* Backdrop tokens - used for modal dialogs, drawers, overlays (dark mode) */
-//   --backdrop-bg: linear-gradient(
-//       135deg,
-//       rgba(0, 0, 0, 0.6),
-//       rgba(0, 0, 0, 0.4)
-//     );
-//   --backdrop-blur: 10px;
-//   --backdrop-saturate: 120%;
-//   --backdrop-brightness: 0.7;
-//   --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));
-//   --backdrop-opacity: 1;
-  
-//   /* Legacy alias for backwards compatibility */
-//   --backdrop-background: var(--backdrop-bg);
-// `;
+  //     // Backdrop tokens for dark mode
+  //     const backdropVars = /*css*/ `  /* Backdrop tokens - used for modal dialogs, drawers, overlays (dark mode) */
+  //   --backdrop-bg: linear-gradient(
+  //       135deg,
+  //       rgba(0, 0, 0, 0.6),
+  //       rgba(0, 0, 0, 0.4)
+  //     );
+  //   --backdrop-blur: 10px;
+  //   --backdrop-saturate: 120%;
+  //   --backdrop-brightness: 0.7;
+  //   --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));
+  //   --backdrop-opacity: 1;
 
-//     // Generate dark mode mesh gradients
-//     const meshVars = this.#generateMeshGradientsDark(colors);
+  //   /* Legacy alias for backwards compatibility */
+  //   --backdrop-background: var(--backdrop-bg);
+  // `;
 
-//     // Scope rules using native CSS nesting by wrapping inside html[data-theme="dark"]
-//     // This yields: html[data-theme="dark"] .selector { ... }
-//     let css = "";
-//     css += `html[data-theme="dark"] {\n${vars}${smartSurfaceVars}${semanticVars}${backdropVars}${meshVars}`;
-//     css += `\n}`;
+  //     // Generate dark mode mesh gradients
+  //     const meshVars = this.#generateMeshGradientsDark(colors);
 
-//     return css;
-//   }
+  //     // Scope rules using native CSS nesting by wrapping inside html[data-theme="dark"]
+  //     // This yields: html[data-theme="dark"] .selector { ... }
+  //     let css = "";
+  //     css += `html[data-theme="dark"] {\n${vars}${smartSurfaceVars}${semanticVars}${backdropVars}${meshVars}`;
+  //     css += `\n}`;
+
+  //     return css;
+  //   }
 
   // Generate ONLY the dark-mode variable overrides (no component rules),
   // and do NOT wrap them in any @layer. This ensures that when a page has
   // older unlayered CSS loaded, the explicit html[data-theme="dark"]
   // variables here will take precedence and correctly flip the theme.
-  
+
   #generateDarkVariablesOnly(colors) {
     if (!colors?.dark) return "";
 
@@ -1204,7 +1252,7 @@ export class Generator {
       interactiveTokens += `    --color-primary-fill: ${colors.interactive.dark.fill}; /* For button backgrounds with white text */\n`;
       interactiveTokens += `    --color-primary-text: ${colors.interactive.dark.text}; /* For links and outline buttons on dark surfaces */\n`;
     }
-    
+
     const semantic = `    --color-text-primary: var(--color-gray-100);\n    --color-text-secondary: var(--color-gray-300);\n    --color-text-muted: var(--color-gray-400);\n    --color-border: var(--color-gray-700);\n    --color-input-bg: var(--color-gray-800);\n    --color-input-disabled-bg: var(--color-gray-900);\n    --color-input-disabled-text: var(--color-gray-600);\n    --color-code-bg: var(--color-gray-800);\n${interactiveTokens}`;
 
     const backdrop = `    /* Backdrop tokens - dark mode */\n    --backdrop-bg: linear-gradient(\n        135deg,\n        rgba(0, 0, 0, 0.6),\n        rgba(0, 0, 0, 0.4)\n      );\n    --backdrop-blur: 10px;\n    --backdrop-saturate: 120%;\n    --backdrop-brightness: 0.7;\n    --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));\n    --backdrop-opacity: 1;\n    \n    /* Legacy alias for backwards compatibility */\n    --backdrop-background: var(--backdrop-bg);\n`;
@@ -1334,26 +1382,31 @@ html[data-theme="dark"] video:hover {
   #generateBodyBackgroundMeshRule() {
     try {
       const meshOption =
-        this.options?.design?.options?.backgroundMesh ?? 
-        this.options?.options?.backgroundMesh ?? 
+        this.options?.design?.options?.backgroundMesh ??
+        this.options?.options?.backgroundMesh ??
         this.options?.backgroundMesh;
-      
+
       if (this.options.debug) {
         this.options.log?.("debug", "backgroundMesh check:", {
-          "design.options.backgroundMesh": this.options?.design?.options?.backgroundMesh,
+          "design.options.backgroundMesh":
+            this.options?.design?.options?.backgroundMesh,
           "options.backgroundMesh": this.options?.options?.backgroundMesh,
-          "backgroundMesh": this.options?.backgroundMesh,
+          backgroundMesh: this.options?.backgroundMesh,
           meshOption,
         });
       }
-      
+
       const num = Number(meshOption);
       if (!Number.isFinite(num) || num === 0) return "";
       const idx = Math.max(1, Math.min(5, Math.floor(num)));
       return `/* Optional background mesh applied from config */\nbody {\n  background: var(--background-mesh-0${idx});\n  background-attachment: fixed;\n}`;
     } catch (e) {
       if (this.options.debug) {
-        this.options.log?.("error", "Error in generateBodyBackgroundMeshRule:", e);
+        this.options.log?.(
+          "error",
+          "Error in generateBodyBackgroundMeshRule:",
+          e
+        );
       }
       return "";
     }
@@ -1381,7 +1434,7 @@ html[data-theme="dark"] video:hover {
   // Generate border gradient utilities for WHOOP-style card outlines
   // Creates reusable utilities for standard cards, gradient borders, and glow effects
   #generateBorderGradientUtilities() {
-    return /*css*/`/* ============================================================================
+    return /*css*/ `/* ============================================================================
    Border Gradient Utilities
    WHOOP-style card outlines with gradient borders and glow effects
    ============================================================================ */
@@ -1725,7 +1778,11 @@ form {
 }
 
 fieldset {
-  margin: 0 0 var(--spacing-${Number.isFinite(Math.round((gapValue * sectionSpacingValue) / 4)) ? Math.round((gapValue * sectionSpacingValue) / 4) : 1}) 0;
+  margin: 0 0 var(--spacing-${
+    Number.isFinite(Math.round((gapValue * sectionSpacingValue) / 4))
+      ? Math.round((gapValue * sectionSpacingValue) / 4)
+      : 1
+  }) 0;
   padding: var(--spacing-5);
   width: 100%;
   background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
@@ -1841,7 +1898,9 @@ input, textarea, select {
   &:focus {
     outline: none;
     border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round((focusRingOpacity || 0.3) * 100)}%, transparent);
+    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
+      (focusRingOpacity || 0.3) * 100
+    )}%, transparent);
     background-color: var(--color-surface-base);
   }
   
@@ -1857,7 +1916,9 @@ input, textarea, select {
     border-color: var(--color-danger-500);
     
     &:focus {
-      box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-danger-500) ${Math.round((focusRingOpacity || 0.3) * 100)}%, transparent);
+      box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-danger-500) ${Math.round(
+      (focusRingOpacity || 0.3) * 100
+    )}%, transparent);
     }
   }
 }
@@ -1998,7 +2059,9 @@ input[type="checkbox"] + label:not(fieldset label):not(label[data-toggle]) {
   align-items: center;
   justify-content: center;
   min-height: calc(${minButtonHeight}px * 0.75);
-  padding: calc(var(--spacing-1) * ${buttonPaddingValue * 0.6}) calc(var(--spacing-4) * 0.85);
+  padding: calc(var(--spacing-1) * ${
+    buttonPaddingValue * 0.6
+  }) calc(var(--spacing-4) * 0.85);
   border: ${borderWidth}px solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
@@ -2039,7 +2102,9 @@ input[type="checkbox"]:checked + label:not(fieldset label):not(label[data-toggle
 label:has(input[type="checkbox"]:focus):not(fieldset label):not(label[data-toggle]),
 input[type="checkbox"]:focus + label:not(fieldset label):not(label[data-toggle]) {
   outline: none;
-  box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round((focusRingOpacity || 0.3) * 100)}%, transparent);
+  box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
+      (focusRingOpacity || 0.3) * 100
+    )}%, transparent);
 }
 
 label:has(input[type="checkbox"]:disabled):not(fieldset label):not(label[data-toggle]),
@@ -2098,7 +2163,9 @@ fieldset[role="group"].buttons {
     align-items: center;
     justify-content: center;
     min-height: calc(${minButtonHeight}px * 0.75);
-    padding: calc(var(--spacing-1) * ${buttonPaddingValue * 0.6}) calc(var(--spacing-4) * 0.85);
+    padding: calc(var(--spacing-1) * ${
+      buttonPaddingValue * 0.6
+    }) calc(var(--spacing-4) * 0.85);
     border: ${borderWidth}px solid var(--color-border);
     border-radius: var(--radius-md);
     font-family: var(--font-family-body);
@@ -2139,7 +2206,9 @@ fieldset[role="group"].buttons {
   label:has(input[type="radio"]:focus),
   label:has(input[type="checkbox"]:focus) {
     outline: none;
-    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round((focusRingOpacity || 0.3) * 100)}%, transparent);
+    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
+      (focusRingOpacity || 0.3) * 100
+    )}%, transparent);
   }
   
   label:has(input[type="radio"]:disabled),
@@ -2295,7 +2364,9 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round((focusRingOpacity || 0.3) * 100)}%, transparent);
+    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
+      (focusRingOpacity || 0.3) * 100
+    )}%, transparent);
   }
   
   &:disabled {
@@ -2325,7 +2396,9 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   }
   
   &:focus {
-    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round((focusRingOpacity || 0.3) * 100)}%, transparent);
+    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
+      (focusRingOpacity || 0.3) * 100
+    )}%, transparent);
   }
   
   &:disabled {
@@ -3587,8 +3660,8 @@ nav[data-dropdown] {
     }
 
     // Generate gap utilities
-    
-      css += /*css*/ `
+
+    css += /*css*/ `
 /* Gap utilities */
 .gap-0 { gap: 0; }
 .gap-xs { gap: var(--spacing-1); }
@@ -3598,7 +3671,6 @@ nav[data-dropdown] {
 .gap-xl { gap: var(--spacing-8); }
 
 `;
-    
 
     css += /*css*/ `
 /* Flexbox System */
@@ -4058,10 +4130,16 @@ nav[data-dropdown] {
   :where(body) {
     margin: 0;
     padding: 0;
+    scroll-behavior: smooth;
     min-height: 100vh;
     min-height: var(--layout-min-height, 100vh);
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+
+    &.drawer-open{
+      overflow: hidden;
+      scrollbar-gutter: stable;
+    }
   }
 
   /* Button primitives */
@@ -4422,7 +4500,7 @@ ${this.#generateDarkModeComponentRules()}
   }
 
   #generateUtilitiesLayer() {
-    return /*css*/`@layer utilities {\n
+    return /*css*/ `@layer utilities {\n
 ${this.#generateIconStyles()}
 
 ${this.#generateLayoutUtilities()}
@@ -4638,7 +4716,7 @@ ${this.#generateMediaQueries()}
    * Get a complete compiled representation of the design system state.
    * This provides structured access to all generated tokens, scales, layers, and metadata.
    * Linked to ontology and enums for introspection and tooling.
-   * 
+   *
    * @returns {Object} Compiled design system state with tokens, layers, metadata, and references
    */
   get compiled() {
@@ -4711,19 +4789,17 @@ ${this.#generateMediaQueries()}
       // Computed metadata about the generated design system
       meta: {
         generatedAt: new Date().toISOString(),
-        totalSize: (
+        totalSize:
           (this.#layers?.tokens?.length || 0) +
           (this.#layers?.primitives?.length || 0) +
           (this.#layers?.components?.length || 0) +
-          (this.#layers?.utilities?.length || 0)
-        ),
+          (this.#layers?.utilities?.length || 0),
         totalSizeKB: (
-          (
-            (this.#layers?.tokens?.length || 0) +
+          ((this.#layers?.tokens?.length || 0) +
             (this.#layers?.primitives?.length || 0) +
             (this.#layers?.components?.length || 0) +
-            (this.#layers?.utilities?.length || 0)
-          ) / 1024
+            (this.#layers?.utilities?.length || 0)) /
+          1024
         ).toFixed(2),
         layerCount: 4,
         tokenGroups: Object.keys(this.tokens).length,
@@ -4773,9 +4849,18 @@ ${this.#generateMediaQueries()}
          * Get the CSS for a specific layer
          */
         getLayerCSS: (layer) => {
-          const validLayers = ["tokens", "primitives", "components", "utilities"];
+          const validLayers = [
+            "tokens",
+            "primitives",
+            "components",
+            "utilities",
+          ];
           if (!validLayers.includes(layer)) {
-            throw new Error(`Invalid layer: ${layer}. Must be one of ${validLayers.join(", ")}`);
+            throw new Error(
+              `Invalid layer: ${layer}. Must be one of ${validLayers.join(
+                ", "
+              )}`
+            );
           }
           return this.#layers?.[layer] || "";
         },
@@ -4875,7 +4960,10 @@ export const ${name}CSS = \`${escapedCSS}\`;
   static applyStyles(designer) {
     // Validate parameter
     if (!designer || typeof designer !== "object") {
-      designer?.options?.log?.("error", "[Generator] applyStyles requires a designer object");
+      designer?.options?.log?.(
+        "error",
+        "[Generator] applyStyles requires a designer object"
+      );
       return;
     }
 
@@ -4883,7 +4971,10 @@ export const ${name}CSS = \`${escapedCSS}\`;
     // are available in light DOM (ensures primitives like :where(button):active apply)
     const cssText = designer.layeredCSS || designer.css || "";
     if (!cssText) {
-      designer?.options?.log?.("warn", "[Generator] No CSS available on designer to apply");
+      designer?.options?.log?.(
+        "warn",
+        "[Generator] No CSS available on designer to apply"
+      );
       return;
     }
 
@@ -4891,7 +4982,10 @@ export const ${name}CSS = \`${escapedCSS}\`;
     // creating/removing <link> or swapping blob URLs.
     Generator.installRuntimeStyles(cssText);
     if (designer && designer.#blobURLs && designer.options?.debug) {
-      designer.options?.log?.("debug", "[Generator] Applied live styles via in-place stylesheet");
+      designer.options?.log?.(
+        "debug",
+        "[Generator] Applied live styles via in-place stylesheet"
+      );
     }
   }
 

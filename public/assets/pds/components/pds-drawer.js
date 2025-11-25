@@ -75,6 +75,10 @@ export class DrawerPanel extends HTMLElement {
     // Focus panel when opening
     if (this._open) {
       queueMicrotask(() => this.#aside?.focus());
+      document.body.classList.add("drawer-open");
+    }
+    else {
+      document.body.classList.remove("drawer-open");
     }
     this.dispatchEvent(new Event("toggle"));
     this.#syncAria();
