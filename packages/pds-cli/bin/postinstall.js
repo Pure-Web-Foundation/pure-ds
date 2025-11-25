@@ -253,13 +253,16 @@ async function copyPdsAssets() {
     // side-effects during npm install and avoids stale/legacy /auto-define/ layout.
     console.log('🚫 Skipping legacy auto-copy of components to ./public/auto-define/.');
     
-    // Auto-run pds:export if PDS_AUTO_EXPORT env var is set
+    // Auto-run pds:export by default (can be disabled with PDS_SKIP_EXPORT)
     if (
-      process.env.PDS_AUTO_EXPORT === '1' ||
-      process.env.PDS_AUTO_EXPORT === 'true' ||
-      process.env.npm_config_pds_auto_export === 'true'
+      process.env.PDS_SKIP_EXPORT === '1' ||
+      process.env.PDS_SKIP_EXPORT === 'true' ||
+      process.env.npm_config_pds_skip_export === 'true'
     ) {
-      console.log('🚀 Running pds:export automatically (PDS_AUTO_EXPORT enabled)...');
+      console.log('⏭️  Skipping pds:export (PDS_SKIP_EXPORT set)');
+      console.log('📦 To generate static assets run:   npm run pds:export');
+    } else {
+      console.log('🚀 Running pds:export automatically...');
       try {
         const { runPdsStatic } = await import(pathToFileURL(path.join(__dirname, 'pds-static.js')).href);
         await runPdsStatic();
@@ -267,9 +270,6 @@ async function copyPdsAssets() {
         console.error('❌ Auto-export failed:', e?.message || e);
         console.log('💡 You can run it manually: npm run pds:export');
       }
-    } else {
-      console.log('📦 To generate static assets run:   npm run pds:export');
-      console.log('💡 Tip: Set PDS_AUTO_EXPORT=1 to run export automatically on install');
     }
     
     console.log('🎨 (Optional) Build custom icons:   npm run pds:build-icons');

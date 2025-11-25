@@ -8,11 +8,11 @@ class PDSRegistry {
     this._mode = "static"; // Default to static mode
     this._designer = null;
     this._staticPaths = {
-      tokens: "/css/pds-tokens.css.js",
-      primitives: "/css/pds-primitives.css.js",
-      components: "/css/pds-components.css.js",
-      utilities: "/css/pds-utilities.css.js",
-      styles: "/css/pds-styles.css.js",
+      tokens: "/assets/pds/styles/pds-tokens.css.js",
+      primitives: "/assets/pds/styles/pds-primitives.css.js",
+      components: "/assets/pds/styles/pds-components.css.js",
+      utilities: "/assets/pds/styles/pds-utilities.css.js",
+      styles: "/assets/pds/styles/pds-styles.css.js",
     };
   }
 
