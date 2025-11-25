@@ -1317,6 +1317,8 @@ export class SchemaForm extends LitElement {
       ({ id, path, value, attrs, set, schema, ui, host }) => {
         const useDropdown = host.#getOption('widgets.selects', 'standard') === 'dropdown' ||
                            ui?.["ui:dropdown"] === true;
+        const enumValues = schema.enum || [];
+        const enumLabels = schema.enumNames || enumValues;
         return html`
           <select
             id=${id}
@@ -1327,8 +1329,8 @@ export class SchemaForm extends LitElement {
             @change=${(e) => set(e.target.value)}
           >
             <option value="" ?selected=${value == null}>—</option>
-            ${(schema.enum || []).map(
-              (v) => html`<option value=${String(v)}>${String(v)}</option>`
+            ${enumValues.map(
+              (v, i) => html`<option value=${String(v)}>${String(enumLabels[i])}</option>`
             )}
           </select>
         `;
@@ -1339,27 +1341,31 @@ export class SchemaForm extends LitElement {
     // Matches AutoDesigner pattern: input hidden, label styled as button
     this.defineRenderer(
       "radio",
-      ({ id, path, value, attrs, set, schema }) => html`
-        ${(schema.enum || []).map((v, i) => {
-          const rid = `${id}-${i}`;
-          return html`
-            <label for=${rid}>
-              <input
-                id=${rid}
-                type="radio"
-                name=${path}
-                .value=${String(v)}
-                .checked=${String(value) === String(v)}
-                ?required=${!!attrs.required}
-                @change=${(e) => {
-                  if (e.target.checked) set(schema.enum[i]);
-                }}
-              />
-              ${String(v)}
-            </label>
-          `;
-        })}
-      `
+      ({ id, path, value, attrs, set, schema }) => {
+        const enumValues = schema.enum || [];
+        const enumLabels = schema.enumNames || enumValues;
+        return html`
+          ${enumValues.map((v, i) => {
+            const rid = `${id}-${i}`;
+            return html`
+              <label for=${rid}>
+                <input
+                  id=${rid}
+                  type="radio"
+                  name=${path}
+                  .value=${String(v)}
+                  .checked=${String(value) === String(v)}
+                  ?required=${!!attrs.required}
+                  @change=${(e) => {
+                    if (e.target.checked) set(enumValues[i]);
+                  }}
+                />
+                ${String(enumLabels[i])}
+              </label>
+            `;
+          })}
+        `;
+      }
     );
 
     // Checkbox group: for multi-select from enum (array type with enum items)
@@ -1369,6 +1375,7 @@ export class SchemaForm extends LitElement {
       ({ id, path, value, attrs, set, schema }) => {
         const selected = Array.isArray(value) ? value : [];
         const options = schema.items?.enum || schema.enum || [];
+        const optionLabels = schema.items?.enumNames || schema.enumNames || options;
 
         return html`
           ${options.map((v, i) => {
@@ -1391,7 +1398,7 @@ export class SchemaForm extends LitElement {
                     set(newSelected);
                   }}
                 />
-                <span>${String(v)}</span>
+                <span>${String(optionLabels[i])}</span>
               </label>
             `;
           })}
