@@ -102,6 +102,18 @@ export class SchemaForm extends LitElement {
     this.hideReset = false;
     this.hideLegend = false;
     this.#installDefaultRenderers();
+    
+    // Handle submit button clicks in slotted actions
+    this.addEventListener('click', (e) => {
+      const button = e.target.closest('button[type="submit"]');
+      if (button && this.contains(button)) {
+        const form = this.querySelector('form');
+        if (form) {
+          e.preventDefault();
+          form.requestSubmit();
+        }
+      }
+    });
   }
 
   // ===== Public API =====

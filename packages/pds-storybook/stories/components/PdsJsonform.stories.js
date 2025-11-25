@@ -1238,3 +1238,98 @@ export const ComprehensiveExample = {
     `;
   }
 };
+
+export const CustomFormActions = {
+  name: 'Custom Form Actions',
+  parameters: {
+    docs: {
+      description: {
+        story: `Demonstrates using \`hide-actions\` to provide custom form submission buttons and handling.
+        
+When \`hide-actions\` is set, the default Submit and Reset buttons are hidden, allowing you to create custom action buttons in the \`actions\` slot. You can then handle form submission programmatically using the form's \`submit()\` method or by manually triggering the form element.`
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      properties: {
+        username: {
+          type: 'string',
+          title: 'Username',
+          minLength: 3,
+          examples: ['johndoe']
+        },
+        email: {
+          type: 'string',
+          format: 'email',
+          title: 'Email',
+          examples: ['john@example.com']
+        },
+        password: {
+          type: 'string',
+          format: 'password',
+          title: 'Password',
+          minLength: 8
+        },
+        terms: {
+          type: 'boolean',
+          title: 'I agree to the terms and conditions'
+        }
+      },
+      required: ['username', 'email', 'password', 'terms']
+    };
+
+    const handleSaveDraft = (e) => {
+      const form = e.target.closest('pds-jsonform');
+      const data = form.serialize();
+      console.log('💾 Saving draft:', data.json);
+    };
+
+    return html`
+      <style>
+        .custom-actions {
+          margin-top: var(--spacing-6, 1.5rem);
+          display: flex;
+          gap: var(--spacing-3, 0.75rem);
+          align-items: center;
+        }
+        .custom-actions .btn-secondary {
+          margin-left: auto;
+        }
+      </style>
+      
+      <pds-jsonform 
+        .jsonSchema=${schema}
+        hide-actions
+        @pw:value-change=${(e) => console.log('🔄 Field changed:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      >
+        <div slot="actions" class="custom-actions">
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+          >
+            <pds-icon icon="check"></pds-icon>
+            Create Account
+          </button>
+          <button 
+            type="button" 
+            class="btn"
+            @click=${handleSaveDraft}
+          >
+            <pds-icon icon="file"></pds-icon>
+            Save Draft
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-secondary btn-outline"
+            @click=${() => console.log('Registration cancelled')}
+          >
+            Cancel
+          </button>
+        </div>
+      </pds-jsonform>
+    `;
+  }
+};
