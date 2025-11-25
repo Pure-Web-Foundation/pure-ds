@@ -67,6 +67,74 @@ async function copyDirectory(srcDir, dstDir) {
   }
 }
 
+/**
+ * Update or create .vscode/settings.json with IntelliSense paths
+ */
+async function updateVSCodeSettings(targetDir) {
+  try {
+    const cwd = process.cwd();
+    const vscodeDir = path.join(cwd, '.vscode');
+    const settingsPath = path.join(vscodeDir, 'settings.json');
+    
+    // Calculate relative paths from workspace root to the generated files
+    const htmlCustomDataPath = path.relative(cwd, path.join(targetDir, 'vscode-custom-data.json')).replace(/\\/g, '/');
+    const cssCustomDataPath = path.relative(cwd, path.join(targetDir, 'pds.css-data.json')).replace(/\\/g, '/');
+    
+    let settings = {};
+    
+    // Read existing settings if file exists
+    if (existsSync(settingsPath)) {
+      try {
+        const content = await readFile(settingsPath, 'utf-8');
+        // Remove comments from JSON (simple approach for // style comments)
+        const cleanContent = content.split('\n')
+          .filter(line => !line.trim().startsWith('//'))
+          .join('\n');
+        settings = JSON.parse(cleanContent);
+      } catch (e) {
+        log(`⚠️  Could not parse existing .vscode/settings.json: ${e.message}`, 'yellow');
+        log('   Creating new settings file...', 'yellow');
+      }
+    }
+    
+    // Update or add the custom data paths
+    if (!settings['html.customData']) {
+      settings['html.customData'] = [];
+    }
+    if (!settings['css.customData']) {
+      settings['css.customData'] = [];
+    }
+    
+    // Remove old PDS paths and add the new one
+    settings['html.customData'] = settings['html.customData'].filter(
+      p => !p.includes('vscode-custom-data.json') || !p.includes('/pds/')
+    );
+    settings['css.customData'] = settings['css.customData'].filter(
+      p => !p.includes('pds.css-data.json') || !p.includes('/pds/')
+    );
+    
+    if (!settings['html.customData'].includes(htmlCustomDataPath)) {
+      settings['html.customData'].push(htmlCustomDataPath);
+    }
+    if (!settings['css.customData'].includes(cssCustomDataPath)) {
+      settings['css.customData'].push(cssCustomDataPath);
+    }
+    
+    // Ensure .vscode directory exists
+    await mkdir(vscodeDir, { recursive: true });
+    
+    // Write settings with proper formatting
+    await writeFile(settingsPath, JSON.stringify(settings, null, 2), 'utf-8');
+    
+    log(`✅ Updated .vscode/settings.json with IntelliSense paths`, 'green');
+    log(`   • html.customData: ${htmlCustomDataPath}`, 'blue');
+    log(`   • css.customData: ${cssCustomDataPath}`, 'blue');
+  } catch (e) {
+    log(`⚠️  Failed to update .vscode/settings.json: ${e?.message || e}`, 'yellow');
+    log('   You may need to manually add the IntelliSense paths to your settings.', 'yellow');
+  }
+}
+
 async function loadConsumerConfig() {
   const cwd = process.cwd();
 
@@ -231,7 +299,10 @@ async function main() {
     log(`⚠️  CSS custom data generation failed: ${e?.message || e}`, 'yellow');
   }
 
-  // 8) Summary
+  // 8) Update .vscode/settings.json with IntelliSense paths
+  await updateVSCodeSettings(targetDir);
+
+  // 9) Summary
   log('\n────────────────────────────────────────────');
   log('✅ PDS static assets ready', 'green');
   log(`📍 Location: ${path.relative(process.cwd(), targetDir)}`);
