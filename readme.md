@@ -680,6 +680,28 @@ The system:
 4. Registers custom element
 5. Upgrades existing instances
 
+> ⚠️ **Important: Programmatic Access to Auto-Defined Components**
+>
+> Components loaded via `autoDefine` are registered asynchronously. If you need to access component methods or properties programmatically (e.g., `toaster.toast()`), ensure the component is defined first:
+>
+> ```javascript
+> // Wait for component to be defined
+> await customElements.whenDefined('pds-toaster');
+> const toaster = document.querySelector('pds-toaster');
+> toaster.toast('Hello!');
+> ```
+>
+> **Alternative:** Use `predefine` to eagerly load components at `PDS.start()` time:
+>
+> ```javascript
+> await PDS.start({
+>   autoDefine: {
+>     predefine: ['pds-toaster', 'pds-icon'] // Loaded immediately
+>   }
+> });
+> // Components are now available synchronously
+> ```
+
 ---
 
 ## Styling Layers

@@ -145,6 +145,19 @@ await PDS.start({
 - Full access to `PDS.compiled` object model
 - Automatic font loading
 
+> ⚠️ **Important: Programmatic Component Access**
+>
+> Components loaded via `autoDefine` (except those in `predefine`) are registered asynchronously. When accessing component methods programmatically in stories or utilities:
+>
+> ```javascript
+> // Always wait for the component to be defined
+> await customElements.whenDefined('pds-toaster');
+> const toaster = document.querySelector('pds-toaster');
+> toaster.toast('Message');
+> ```
+>
+> Components in the `predefine` array (`pds-icon`, `pds-drawer`) are available immediately after `PDS.start()` completes.
+
 ### Configurator Addon
 
 Custom Storybook addon at `.storybook/addons/pds-configurator/`:
