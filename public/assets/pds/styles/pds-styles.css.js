@@ -731,10 +731,16 @@ html[data-theme="dark"] {
   :where(body) {
     margin: 0;
     padding: 0;
+    scroll-behavior: smooth;
     min-height: 100vh;
     min-height: var(--layout-min-height, 100vh);
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+
+    &.drawer-open{
+      overflow: hidden;
+      scrollbar-gutter: stable;
+    }
   }
 
   /* Button primitives */
@@ -1859,6 +1865,13 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   font-size: var(--font-size-sm);
   min-height: calc(44px * 0.8);
 }
+
+.btn-xs {
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--font-size-xs);
+  min-height: calc(44px * 0.6);
+}
+
 
 .btn-lg {
   padding: var(--spacing-4) var(--spacing-8);
@@ -4286,10 +4299,16 @@ html[data-theme="dark"] {
   :where(body) {
     margin: 0;
     padding: 0;
+    scroll-behavior: smooth;
     min-height: 100vh;
     min-height: var(--layout-min-height, 100vh);
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+
+    &.drawer-open{
+      overflow: hidden;
+      scrollbar-gutter: stable;
+    }
   }
 
   /* Button primitives */
@@ -5414,6 +5433,13 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   font-size: var(--font-size-sm);
   min-height: calc(44px * 0.8);
 }
+
+.btn-xs {
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--font-size-xs);
+  min-height: calc(44px * 0.6);
+}
+
 
 .btn-lg {
   padding: var(--spacing-4) var(--spacing-8);

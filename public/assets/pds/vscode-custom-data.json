@@ -2,6 +2,16 @@
   "version": 1.1,
   "tags": [
     {
+      "name": "pds-calendar",
+      "description": "anonymous_0 component",
+      "attributes": [
+        {
+          "name": "date",
+          "description": ""
+        }
+      ]
+    },
+    {
       "name": "pds-drawer",
       "description": "DrawerPanel component",
       "attributes": [
@@ -700,7 +710,7 @@
       ]
     },
     {
-      "name": "pds-splitpanel",
+      "name": "pds-calendar",
       "description": "anonymous_0 component",
       "attributes": [
         {

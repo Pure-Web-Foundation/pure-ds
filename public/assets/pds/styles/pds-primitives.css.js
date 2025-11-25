@@ -31,10 +31,16 @@ primitives.replaceSync(`@layer primitives {
   :where(body) {
     margin: 0;
     padding: 0;
+    scroll-behavior: smooth;
     min-height: 100vh;
     min-height: var(--layout-min-height, 100vh);
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+
+    &.drawer-open{
+      overflow: hidden;
+      scrollbar-gutter: stable;
+    }
   }
 
   /* Button primitives */
@@ -370,10 +376,16 @@ export const primitivesCSS = `@layer primitives {
   :where(body) {
     margin: 0;
     padding: 0;
+    scroll-behavior: smooth;
     min-height: 100vh;
     min-height: var(--layout-min-height, 100vh);
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+
+    &.drawer-open{
+      overflow: hidden;
+      scrollbar-gutter: stable;
+    }
   }
 
   /* Button primitives */

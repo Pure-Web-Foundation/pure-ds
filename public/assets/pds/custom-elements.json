@@ -4,6 +4,115 @@
   "modules": [
     {
       "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-calendar.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Simple class for efficient HTML string building",
+          "name": "HTMLBuilder",
+          "members": [
+            {
+              "kind": "method",
+              "name": "add",
+              "parameters": [
+                {
+                  "name": "htmlPart",
+                  "type": {
+                    "text": "String"
+                  }
+                }
+              ],
+              "description": "Adds a string to the builder"
+            },
+            {
+              "kind": "method",
+              "name": "toHTML",
+              "description": "Returns the built-up string, optionally using the given container for enclosing.",
+              "return": {
+                "type": {
+                  "text": "String"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "anonymous_0",
+          "members": [
+            {
+              "kind": "field",
+              "name": "date",
+              "description": "Gets the current date",
+              "parameters": [
+                {
+                  "description": "Date string or Date object",
+                  "name": "value",
+                  "type": {
+                    "text": "String|Date"
+                  }
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "Date"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "refresh",
+              "description": "Refreshes the calendar display",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "dateHelper",
+              "default": "new DateHelper()"
+            }
+          ],
+          "events": [
+            {
+              "name": "month-rendered",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "date"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-calendar",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HTMLBuilder",
+          "declaration": {
+            "name": "HTMLBuilder",
+            "module": "public/assets/pds/components/pds-calendar.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-calendar",
+          "declaration": {
+            "name": "anonymous_0",
+            "module": "public/assets/pds/components/pds-calendar.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "public/assets/pds/components/pds-drawer.js",
       "declarations": [
         {
@@ -1137,7 +1246,7 @@
           "superclass": {
             "name": "HTMLElement"
           },
-          "tagName": "pds-splitpanel",
+          "tagName": "pds-calendar",
           "customElement": true
         }
       ],
@@ -1221,13 +1330,16 @@
             {
               "kind": "field",
               "name": "innerHTML",
-              "default": "`\n      <style>\n        :host{display:block}\n        nav{\n          position:relative; display:inline-flex; gap:.5rem; align-items:flex-end;\n          \n          --pad-x:.5rem; --pad-y:.25rem;\n        }\n        nav a{\n          color: currentColor;\n          display:inline-block; padding:var(--pad-y) var(--pad-x);\n          text-decoration:none; line-height:1.2; border-bottom:2px solid transparent;\n          cursor:pointer;\n        }\n        nav a[aria-current=\"page\"]{ font-weight:600; }\n        nav a:focus-visible{ outline:auto; outline-offset:2px; }\n        .inkbar{\n          position:absolute; inset-inline-start:0; bottom:-1px; height:2px; width:0;\n          transform:translateX(0); transition:transform .25s ease, width .25s ease;\n          background-color: var(--color-accent-400); pointer-events:none;\n        }\n      </style>\n      <nav part=\"tabs\" aria-label=\"${\n        this.getAttribute(\"label\") || \"Tabs\"\n      }\"></nav>\n      <slot></slot>\n    `"
+              "default": "`\n      <style>\n        :host{display:block}\n        nav{\n          position:relative; display:inline-flex; gap:.5rem; align-items:flex-end;\n          \n          --pad-x:.5rem; --pad-y:.25rem;\n        }\n        nav a{\n          color: currentColor;\n          display:inline-block; padding:var(--pad-y) var(--pad-x);\n          text-decoration:none; line-height:1.2; border-bottom:2px solid transparent;\n          cursor:pointer;\n        }\n        nav a[aria-current=\"page\"]{ font-weight:600; }\n        nav a:focus-visible{ outline:auto; outline-offset:2px; }\n        .inkbar{\n          position:absolute; inset-inline-start:0; bottom:-1px; height:2px; width:0;\n          transform:translateX(0); transition:transform .25s ease, width .25s ease;\n          background-color: var(--color-accent-400); pointer-events:none;\n        }\n      </style>\n      <nav part=\"tabs\"></nav>\n      <slot></slot>\n    `"
             }
           ],
           "events": [
             {
-              "description": "Fired when the active tab changes",
-              "name": "change"
+              "name": "tabchange",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Fired when the active tab changes. Event detail contains: { oldTab: string, newTab: string }"
             }
           ],
           "attributes": [

@@ -6,6 +6,7 @@
  */
 
 import { readFile, writeFile, mkdir, copyFile, readdir, stat, access, unlink } from 'fs/promises';
+import { readFileSync } from 'fs';
 import { createHash } from 'crypto';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
@@ -27,14 +28,16 @@ function isInstallingWithinPureDsRepo() {
     const cwd = process.cwd();
     const initCwd = process.env.INIT_CWD || cwd;
     
-    // Normalize paths for comparison
-    const normalizedInitCwd = normalizePath(initCwd);
-    const normalizedRepoRoot = normalizePath(repoRoot);
-    
-    // Check if we're inside the pure-ds repo structure
-    // Either at repo root or in any packages subfolder
-    return normalizedInitCwd === normalizedRepoRoot || 
-           normalizedInitCwd.startsWith(normalizedRepoRoot + path.sep);
+    // Check if the INIT_CWD has package.json with name "pure-ds"
+    // This is more reliable than path comparison since repoRoot
+    // points to node_modules/pure-ds when installed as a dependency
+    try {
+      const pkgPath = path.join(initCwd, 'package.json');
+      const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
+      return pkg.name === 'pure-ds';
+    } catch {
+      return false;
+    }
   } catch (err) {
     console.log('⚠️  Error checking repo location:', err.message);
     return false;
