@@ -87,13 +87,11 @@ const withPDS = (story, context) => {
   // ALWAYS reapply PDS styles before each story render
   const designer = window.__pdsDesigner || PDS.registry._designer;
   if (designer) {
-    console.log('🎨 Reapplying PDS styles...');
     PDS.Generator.applyStyles(designer);
     
     // Check again after applying
     const afterSheets = document.adoptedStyleSheets || [];
     const afterPdsSheets = afterSheets.filter(s => s._pds === true);
-    console.log('✅ After reapply - Total sheets:', afterSheets.length, 'PDS sheets:', afterPdsSheets.length);
   } else {
     console.warn('⚠️ No designer found!');
   }

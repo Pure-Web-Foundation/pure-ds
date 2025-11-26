@@ -429,4 +429,60 @@ export const defaultPDSEnhancers = [
       });
     },
   },
+  {
+    selector: "button, a[class*='btn-']",
+    description:
+      "Automatically manages spinner icon for buttons with .btn-working class",
+    run: (elem) => {
+      if (elem.dataset.enhancedBtnWorking) return;
+      elem.dataset.enhancedBtnWorking = "true";
+
+      // Store original icon if exists
+      let originalIcon = null;
+      let addedIcon = false;
+
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.attributeName === "class") {
+            const hasWorking = elem.classList.contains("btn-working");
+            const icon = elem.querySelector("pds-icon");
+
+            if (hasWorking) {
+              if (icon) {
+                // Store and replace existing icon
+                if (!originalIcon) {
+                  originalIcon = icon.getAttribute("icon");
+                }
+                icon.setAttribute("icon", "circle-notch");
+              } else {
+                // Add spinner icon if none exists
+                const newIcon = document.createElement("pds-icon");
+                newIcon.setAttribute("icon", "circle-notch");
+                newIcon.setAttribute("size", "sm");
+                elem.insertBefore(newIcon, elem.firstChild);
+                addedIcon = true;
+              }
+            } else if (mutation.oldValue?.includes("btn-working")) {
+              // Restore or remove icon when btn-working is removed
+              if (icon) {
+                if (addedIcon) {
+                  icon.remove();
+                  addedIcon = false;
+                } else if (originalIcon) {
+                  icon.setAttribute("icon", originalIcon);
+                  originalIcon = null;
+                }
+              }
+            }
+          }
+        });
+      });
+
+      observer.observe(elem, {
+        attributes: true,
+        attributeFilter: ["class"],
+        attributeOldValue: true,
+      });
+    },
+  },
 ];

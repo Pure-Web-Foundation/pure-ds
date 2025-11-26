@@ -5,24 +5,22 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: 'Interactive states including focus rings, hover effects, and configurable transition speeds. All animations respect user preferences and accessibility settings.'
+        component: 'Interactive states including focus rings, hover effects, active states, disabled states, and working/loading states. All animations respect user preferences and accessibility settings.'
       }
     }
   }
 };
 
 export const FocusStates = () => html`
-  <div style="padding: var(--spacing-4);">
+  <div class="card">
     <h2>Focus States</h2>
-    <p style="margin-bottom: var(--spacing-4);">
-      Press <kbd>Tab</kbd> to navigate and see focus rings on interactive elements
-    </p>
+    <p>Press <kbd>Tab</kbd> to navigate and see focus rings on interactive elements</p>
     
-    <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-3); align-items: center;">
+    <div class="flex flex-wrap gap-sm align-center">
       <button class="btn-primary">Button 1</button>
       <button class="btn-secondary">Button 2</button>
       <button class="btn-outline">Button 3</button>
-      <input type="text" placeholder="Focus me" style="max-width: 200px;" />
+      <input type="text" placeholder="Focus me" />
       <select>
         <option>Option 1</option>
         <option>Option 2</option>
@@ -30,20 +28,22 @@ export const FocusStates = () => html`
       </select>
       <a href="#" onclick="event.preventDefault();">Link Example</a>
     </div>
+  </div>
 
-    <h3 style="margin-top: var(--spacing-6);">Form Controls</h3>
-    <div style="max-width: 400px;">
+  <div class="card">
+    <h3>Form Controls</h3>
+    <div class="max-w-md">
       <label>
         <span>Text Input</span>
         <input type="text" placeholder="Tab to focus" />
       </label>
       
-      <label style="margin-top: var(--spacing-3);">
+      <label>
         <span>Textarea</span>
         <textarea rows="3" placeholder="Tab to focus"></textarea>
       </label>
 
-      <fieldset role="group" style="margin-top: var(--spacing-4);">
+      <fieldset role="group">
         <legend>Options</legend>
         <label>
           <input type="checkbox" />
@@ -55,7 +55,7 @@ export const FocusStates = () => html`
         </label>
       </fieldset>
 
-      <fieldset role="radiogroup" style="margin-top: var(--spacing-4);">
+      <fieldset role="radiogroup">
         <legend>Choice</legend>
         <label>
           <input type="radio" name="choice" value="a" checked />
@@ -73,79 +73,123 @@ export const FocusStates = () => html`
 FocusStates.storyName = 'Focus States';
 
 export const HoverStates = () => html`
-  <div style="padding: var(--spacing-4);">
+  <div class="card">
     <h2>Hover States</h2>
-    <p style="margin-bottom: var(--spacing-4);">
-      Hover over elements to see smooth transitions and state changes
-    </p>
+    <p>Hover over elements to see smooth transitions and state changes</p>
 
     <h3>Buttons</h3>
-    <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-3); margin-bottom: var(--spacing-6);">
+    <div class="flex flex-wrap gap-sm">
       <button class="btn-primary">Hover Me</button>
       <button class="btn-secondary">Hover Me</button>
       <button class="btn-outline">Hover Me</button>
       <button class="btn-primary btn-sm">Small</button>
       <button class="btn-primary btn-lg">Large</button>
     </div>
+  </div>
 
-    <h3>Cards</h3>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-4);">
-      ${Array.from({ length: 3 }, (_, i) => html`
-        <div class="card" style="padding: var(--spacing-5); text-align: center; transition: transform var(--transition-normal), box-shadow var(--transition-normal); cursor: pointer;"
-             onmouseenter="this.style.transform='translateY(-4px)'; this.style.boxShadow='var(--shadow-lg)'"
-             onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'">
-          <pds-icon icon="star" size="xl" class="icon-accent"></pds-icon>
-          <h4 style="margin-top: var(--spacing-2);">Card ${i + 1}</h4>
-          <p>Hover to lift</p>
-        </div>
-      `)}
+  <div class="card">
+    <h3>Icon Buttons</h3>
+    <div class="flex flex-wrap gap-sm">
+      <button class="btn-primary icon-only" aria-label="Settings">
+        <pds-icon icon="gear"></pds-icon>
+      </button>
+      <button class="btn-secondary icon-only" aria-label="Search">
+        <pds-icon icon="magnifying-glass"></pds-icon>
+      </button>
+      <button class="btn-outline icon-only" aria-label="Heart">
+        <pds-icon icon="heart"></pds-icon>
+      </button>
     </div>
+  </div>
 
-    <h3 style="margin-top: var(--spacing-6);">Interactive List</h3>
-    <ul style="list-style: none; padding: 0; max-width: 400px;">
-      ${Array.from({ length: 4 }, (_, i) => html`
-        <li style="padding: var(--spacing-3); border-bottom: 1px solid var(--color-border); transition: background-color var(--transition-fast), padding-left var(--transition-fast); cursor: pointer;"
-            onmouseenter="this.style.backgroundColor='var(--color-surface-subtle)'; this.style.paddingLeft='var(--spacing-4)'"
-            onmouseleave="this.style.backgroundColor='transparent'; this.style.paddingLeft='var(--spacing-3)'">
-          <pds-icon icon="arrow-right" size="sm"></pds-icon>
-          List Item ${i + 1}
-        </li>
-      `)}
-    </ul>
+  <div class="card">
+    <h3>Buttons with Icons</h3>
+    <div class="flex flex-wrap gap-sm">
+      <button class="btn-primary">
+        <pds-icon icon="plus" size="sm"></pds-icon>
+        Add Item
+      </button>
+      <button class="btn-secondary">
+        <pds-icon icon="download" size="sm"></pds-icon>
+        Download
+      </button>
+      <button class="btn-outline">
+        <pds-icon icon="share" size="sm"></pds-icon>
+        Share
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Links</h3>
+    <div class="flex flex-wrap gap-md">
+      <a href="#" onclick="event.preventDefault();">Text Link</a>
+      <a href="#" onclick="event.preventDefault();">
+        <pds-icon icon="arrow-right" size="sm"></pds-icon>
+        Link with Icon
+      </a>
+    </div>
   </div>
 `;
 
 HoverStates.storyName = 'Hover States';
 
+export const ActiveStates = () => html`
+  <div class="card">
+    <h2>Active States</h2>
+    <p>Click and hold to see active/pressed states</p>
+
+    <h3>Buttons</h3>
+    <div class="flex flex-wrap gap-sm">
+      <button class="btn-primary">Click and Hold</button>
+      <button class="btn-secondary">Click and Hold</button>
+      <button class="btn-outline">Click and Hold</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Icon Buttons</h3>
+    <div class="flex flex-wrap gap-sm">
+      <button class="btn-primary icon-only" aria-label="Like">
+        <pds-icon icon="heart"></pds-icon>
+      </button>
+      <button class="btn-secondary icon-only" aria-label="Bookmark">
+        <pds-icon icon="bookmark"></pds-icon>
+      </button>
+      <button class="btn-outline icon-only" aria-label="Star">
+        <pds-icon icon="star"></pds-icon>
+      </button>
+    </div>
+  </div>
+`;
+
+ActiveStates.storyName = 'Active States';
+
 export const TransitionSpeeds = () => {
-  let animating = false;
-  
   const triggerAnimation = (speed) => {
-    if (animating) return;
-    animating = true;
-    
     const ball = document.getElementById(`ball-${speed}`);
-    if (!ball) return;
+    if (!ball || ball.classList.contains('animating')) return;
     
+    ball.classList.add('animating');
     ball.style.transition = `transform var(--transition-${speed})`;
     ball.style.transform = 'translateX(250px)';
+    
+    const duration = speed === 'fast' ? 150 : speed === 'slow' ? 500 : 250;
     
     setTimeout(() => {
       ball.style.transform = 'translateX(0)';
       setTimeout(() => {
-        animating = false;
-      }, speed === 'fast' ? 150 : speed === 'slow' ? 500 : 250);
-    }, speed === 'fast' ? 150 : speed === 'slow' ? 500 : 250);
+        ball.classList.remove('animating');
+      }, duration);
+    }, duration);
   };
 
   return html`
-    <div style="padding: var(--spacing-4);">
+    <div class="card">
       <h2>Transition Speeds</h2>
-      <p style="margin-bottom: var(--spacing-6);">
-        The design system provides three transition speed tokens that can be configured globally.
-      </p>
+      <p>The design system provides three transition speed tokens that can be configured globally.</p>
 
-      <div style="display: grid; gap: var(--spacing-6);">
+      <div class="grid gap-lg">
         ${['fast', 'normal', 'slow'].map(speed => html`
           <div>
             <h3>--transition-${speed}</h3>
@@ -153,17 +197,19 @@ export const TransitionSpeeds = () => {
               <pds-icon icon="play" size="sm"></pds-icon>
               Animate ${speed}
             </button>
-            <div style="margin-top: var(--spacing-3); padding: var(--spacing-4); background: var(--color-surface-subtle); border-radius: var(--radius-md); height: 60px; position: relative;">
-              <div id="ball-${speed}" style="width: 40px; height: 40px; background: var(--color-primary-500); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-md);">
-                <pds-icon icon="cursor-click" size="sm" style="color: white;"></pds-icon>
+            <div class="card surface-subtle">
+              <div id="ball-${speed}" class="badge badge-primary radius-full shadow-md">
+                <pds-icon icon="cursor-click" size="sm"></pds-icon>
               </div>
             </div>
           </div>
         `)}
       </div>
+    </div>
 
-      <h3 style="margin-top: var(--spacing-8);">Code Example</h3>
-      <pre style="background: var(--color-surface-subtle); padding: var(--spacing-4); border-radius: var(--radius-md); overflow-x: auto;"><code>/* Use transition tokens in your CSS */
+    <div class="card">
+      <h3>Code Example</h3>
+      <pre class="surface-subtle radius-md overflow-auto"><code>/* Use transition tokens in your CSS */
 .button {
   transition: background-color var(--transition-fast);
 }
@@ -183,90 +229,230 @@ export const TransitionSpeeds = () => {
 
 TransitionSpeeds.storyName = 'Transition Speeds';
 
-export const LoadingStates = () => html`
-  <div style="padding: var(--spacing-4);">
-    <h2>Loading States</h2>
-    
-    <h3>Button Loading States</h3>
-    <div style="display: flex; gap: var(--spacing-3); margin-bottom: var(--spacing-6); flex-wrap: wrap;">
-      <button class="btn-primary" disabled>
-        <span style="display: inline-block; width: 16px; height: 16px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></span>
-        Loading...
-      </button>
-      <button class="btn-secondary" disabled>
-        Processing
-      </button>
-      <button class="btn-outline" disabled>
-        Disabled
-      </button>
-    </div>
+export const WorkingStates = () => {
+  const toggleWorking = (btn) => {
+    btn.classList.add('btn-working');
+    setTimeout(() => {
+      btn.classList.remove('btn-working');
+    }, 2000);
+  };
 
-    <h3>Skeleton Loading</h3>
-    <div style="max-width: 600px;">
-      <div class="card" style="padding: var(--spacing-5);">
-        ${Array.from({ length: 3 }, () => html`
-          <div style="background: var(--color-surface-subtle); height: 16px; border-radius: var(--radius-sm); margin-bottom: var(--spacing-2); animation: pulse 1.5s ease-in-out infinite;"></div>
-        `)}
-        <div style="background: var(--color-surface-subtle); height: 16px; border-radius: var(--radius-sm); width: 60%; animation: pulse 1.5s ease-in-out infinite;"></div>
+  return html`
+    <div class="card">
+      <h2>Working/Loading States</h2>
+      <p>
+        Click buttons to see the <code>.btn-working</code> state with automatic spinner animation. 
+        The PDS enhancer automatically swaps existing icons to spinners or adds a spinner if none exists.
+      </p>
+
+      <h3>Buttons Without Icons</h3>
+      <p class="text-muted text-sm">Enhancer automatically adds spinner icon</p>
+      <div class="flex flex-wrap gap-sm">
+        <button class="btn-primary" @click=${(e) => toggleWorking(e.target)}>
+          Save
+        </button>
+        <button class="btn-secondary" @click=${(e) => toggleWorking(e.target)}>
+          Upload
+        </button>
+        <button class="btn-outline" @click=${(e) => toggleWorking(e.target)}>
+          Download
+        </button>
       </div>
     </div>
 
-    <h3 style="margin-top: var(--spacing-6);">Spinner</h3>
-    <div style="display: flex; gap: var(--spacing-6); align-items: center;">
-      <div style="width: 24px; height: 24px; border: 3px solid var(--color-primary-200); border-top-color: var(--color-primary-600); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-      <div style="width: 32px; height: 32px; border: 3px solid var(--color-success-200); border-top-color: var(--color-success-600); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-      <div style="width: 40px; height: 40px; border: 4px solid var(--color-info-200); border-top-color: var(--color-info-600); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+    <div class="card">
+      <h3>Buttons With Existing Icons</h3>
+      <p class="text-muted text-sm">Enhancer swaps icon to spinner, restores original when complete</p>
+      <div class="flex flex-wrap gap-sm">
+        <button class="btn-primary" @click=${(e) => toggleWorking(e.target)}>
+          <pds-icon icon="floppy-disk" size="sm"></pds-icon>
+          Save
+        </button>
+        <button class="btn-secondary" @click=${(e) => toggleWorking(e.target)}>
+          <pds-icon icon="upload" size="sm"></pds-icon>
+          Upload
+        </button>
+        <button class="btn-outline" @click=${(e) => toggleWorking(e.target)}>
+          <pds-icon icon="download" size="sm"></pds-icon>
+          Download
+        </button>
+      </div>
     </div>
 
-    <style>
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-      
-      @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
-      }
-    </style>
+    <div class="card">
+      <h3>Icon Buttons</h3>
+      <p class="text-muted text-sm">Icon-only buttons with automatic spinner swap</p>
+      <div class="flex flex-wrap gap-sm">
+        <button class="btn-primary icon-only" @click=${(e) => toggleWorking(e.target)} aria-label="Refresh">
+          <pds-icon icon="arrow-counter-clockwise"></pds-icon>
+        </button>
+        <button class="btn-secondary icon-only" @click=${(e) => toggleWorking(e.target)} aria-label="Sync">
+          <pds-icon icon="arrow-counter-clockwise"></pds-icon>
+        </button>
+        <button class="btn-outline icon-only" @click=${(e) => toggleWorking(e.target)} aria-label="Process">
+          <pds-icon icon="gear"></pds-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Different Sizes</h3>
+      <p class="text-muted text-sm">Spinner size adapts to button size</p>
+      <div class="flex flex-wrap gap-sm align-center">
+        <button class="btn-primary btn-sm" @click=${(e) => toggleWorking(e.target)}>
+          <pds-icon icon="paper-plane-tilt" size="sm"></pds-icon>
+          Small
+        </button>
+        <button class="btn-primary" @click=${(e) => toggleWorking(e.target)}>
+          <pds-icon icon="paper-plane-tilt" size="sm"></pds-icon>
+          Default
+        </button>
+        <button class="btn-primary btn-lg" @click=${(e) => toggleWorking(e.target)}>
+          <pds-icon icon="paper-plane-tilt"></pds-icon>
+          Large
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Permanent Working State</h3>
+      <p class="text-muted">Buttons in continuous working state</p>
+      <div class="flex flex-wrap gap-sm">
+        <button class="btn-primary btn-working">
+          <pds-icon icon="circle-notch" size="sm"></pds-icon>
+          Loading...
+        </button>
+        <button class="btn-secondary btn-working">
+          <pds-icon icon="circle-notch" size="sm"></pds-icon>
+          Processing...
+        </button>
+        <button class="btn-outline icon-only btn-working" aria-label="Loading">
+          <pds-icon icon="circle-notch"></pds-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Usage</h3>
+      <pre class="bg-surface-subtle radius-md overflow-auto"><code>// Simply toggle the class - PDS handles the rest
+button.classList.add('btn-working');
+
+// After async operation completes
+button.classList.remove('btn-working');</code></pre>
+    </div>
+  `;
+};
+
+WorkingStates.storyName = 'Working States';
+
+export const SkeletonLoading = () => html`
+  <div class="card">
+    <h2>Skeleton Loading</h2>
+    <p>Use the <code>.skeleton</code> class for content placeholders while loading</p>
+
+    <h3>Card Skeleton</h3>
+    <div class="max-w-xl">
+      <div class="card">
+        <div class="skeleton" style="height: 24px; width: 60%; margin-bottom: var(--spacing-3);"></div>
+        <div class="skeleton" style="height: 16px; margin-bottom: var(--spacing-2);"></div>
+        <div class="skeleton" style="height: 16px; margin-bottom: var(--spacing-2);"></div>
+        <div class="skeleton" style="height: 16px; width: 80%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>List Skeleton</h3>
+    <div class="max-w-md">
+      ${Array.from({ length: 4 }, () => html`
+        <div class="flex gap-sm align-center border-bottom" style="padding: var(--spacing-3);">
+          <div class="skeleton" style="width: 40px; height: 40px; border-radius: 50%;"></div>
+          <div style="flex: 1;">
+            <div class="skeleton" style="height: 16px; width: 70%; margin-bottom: var(--spacing-2);"></div>
+            <div class="skeleton" style="height: 14px; width: 50%;"></div>
+          </div>
+        </div>
+      `)}
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Text Skeleton</h3>
+    <div class="max-w-lg">
+      <div class="skeleton" style="height: 20px; width: 40%; margin-bottom: var(--spacing-3);"></div>
+      <div class="skeleton" style="height: 16px; margin-bottom: var(--spacing-2);"></div>
+      <div class="skeleton" style="height: 16px; margin-bottom: var(--spacing-2);"></div>
+      <div class="skeleton" style="height: 16px; margin-bottom: var(--spacing-2);"></div>
+      <div class="skeleton" style="height: 16px; width: 85%;"></div>
+    </div>
   </div>
 `;
 
-LoadingStates.storyName = 'Loading States';
+SkeletonLoading.storyName = 'Skeleton Loading';
 
 export const DisabledStates = () => html`
-  <div style="padding: var(--spacing-4);">
+  <div class="card">
     <h2>Disabled States</h2>
-    <p style="margin-bottom: var(--spacing-4);">
-      Disabled elements have reduced opacity and no pointer events
-    </p>
+    <p>Disabled elements have reduced opacity and no pointer events</p>
 
     <h3>Buttons</h3>
-    <div style="display: flex; gap: var(--spacing-3); margin-bottom: var(--spacing-6); flex-wrap: wrap;">
+    <div class="flex flex-wrap gap-sm">
       <button class="btn-primary" disabled>Primary Disabled</button>
       <button class="btn-secondary" disabled>Secondary Disabled</button>
       <button class="btn-outline" disabled>Outline Disabled</button>
     </div>
+  </div>
 
+  <div class="card">
+    <h3>Icon Buttons</h3>
+    <div class="flex flex-wrap gap-sm">
+      <button class="btn-primary icon-only" disabled aria-label="Settings">
+        <pds-icon icon="gear"></pds-icon>
+      </button>
+      <button class="btn-secondary icon-only" disabled aria-label="Search">
+        <pds-icon icon="magnifying-glass"></pds-icon>
+      </button>
+      <button class="btn-outline icon-only" disabled aria-label="Heart">
+        <pds-icon icon="heart"></pds-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Buttons with Icons</h3>
+    <div class="flex flex-wrap gap-sm">
+      <button class="btn-primary" disabled>
+        <pds-icon icon="plus" size="sm"></pds-icon>
+        Add Item
+      </button>
+      <button class="btn-secondary" disabled>
+        <pds-icon icon="download" size="sm"></pds-icon>
+        Download
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
     <h3>Form Controls</h3>
-    <div style="max-width: 400px;">
+    <div class="max-w-md">
       <label>
         <span>Disabled Input</span>
         <input type="text" disabled value="Cannot edit" />
       </label>
 
-      <label style="margin-top: var(--spacing-3);">
+      <label>
         <span>Disabled Select</span>
         <select disabled>
           <option>Cannot select</option>
         </select>
       </label>
 
-      <label style="margin-top: var(--spacing-3);">
+      <label>
         <span>Disabled Textarea</span>
         <textarea disabled rows="3">Cannot edit this text</textarea>
       </label>
 
-      <fieldset role="group" style="margin-top: var(--spacing-4);">
+      <fieldset role="group">
         <legend>Disabled Checkboxes</legend>
         <label>
           <input type="checkbox" disabled />
@@ -282,3 +468,78 @@ export const DisabledStates = () => html`
 `;
 
 DisabledStates.storyName = 'Disabled States';
+
+export const CombinedStates = () => html`
+  <div class="card">
+    <h2>Combined State Examples</h2>
+    <p>Comprehensive examples showing all interactive states together</p>
+  </div>
+
+  <div class="card">
+    <h3>Idle State</h3>
+    <div class="flex flex-wrap gap-sm">
+      <button class="btn-primary">Primary</button>
+      <button class="btn-secondary">Secondary</button>
+      <button class="btn-outline">Outline</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Hover State</h3>
+    <p class="text-muted text-sm">Hover over buttons to see effect</p>
+    <div class="flex flex-wrap gap-sm">
+      <button class="btn-primary">Primary</button>
+      <button class="btn-secondary">Secondary</button>
+      <button class="btn-outline">Outline</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Active State</h3>
+    <p class="text-muted text-sm">Click and hold to see effect</p>
+    <div class="flex flex-wrap gap-sm">
+      <button class="btn-primary">Primary</button>
+      <button class="btn-secondary">Secondary</button>
+      <button class="btn-outline">Outline</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Focus State</h3>
+    <p class="text-muted text-sm">Tab to focus on buttons</p>
+    <div class="flex flex-wrap gap-sm">
+      <button class="btn-primary">Primary</button>
+      <button class="btn-secondary">Secondary</button>
+      <button class="btn-outline">Outline</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Disabled State</h3>
+    <div class="flex flex-wrap gap-sm">
+      <button class="btn-primary" disabled>Primary</button>
+      <button class="btn-secondary" disabled>Secondary</button>
+      <button class="btn-outline" disabled>Outline</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Working State</h3>
+    <div class="flex flex-wrap gap-sm">
+      <button class="btn-primary btn-working">
+        <pds-icon icon="circle-notch" size="sm"></pds-icon>
+        Primary
+      </button>
+      <button class="btn-secondary btn-working">
+        <pds-icon icon="circle-notch" size="sm"></pds-icon>
+        Secondary
+      </button>
+      <button class="btn-outline btn-working">
+        <pds-icon icon="circle-notch" size="sm"></pds-icon>
+        Outline
+      </button>
+    </div>
+  </div>
+`;
+
+CombinedStates.storyName = 'All States';

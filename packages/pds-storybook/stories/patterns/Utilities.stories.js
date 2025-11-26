@@ -61,9 +61,9 @@ export const BorderUtilities = () => html`
 
 export const RoundedUtilities = () => html`
   <div class="flex gap-md flex-wrap">
-    <div class="card" style="background: var(--color-secondary-400); width: 100px; height: 100px; border-radius: var(--radius-sm);">--radius-sm</div>
-    <div class="card" style="background: var(--color-secondary-400); width: 100px; height: 100px; border-radius: var(--radius-md);">--radius-md</div>
-    <div class="card" style="background: var(--color-secondary-400); width: 100px; height: 100px; border-radius: var(--radius-lg);">--radius-lg</div>
-    <div class="card" style="background: var(--color-secondary-400); width: 100px; height: 100px; border-radius: var(--radius-full);">--radius-full</div>
+    <div class="card surface-inverse" style="border-radius: var(--radius-sm);">--radius-sm</div>
+    <div class="card surface-inverse" style="border-radius: var(--radius-md);">--radius-md</div>
+    <div class="card surface-inverse" style="border-radius: var(--radius-lg);">--radius-lg</div>
+    <div class="card surface-inverse" style="border-radius: var(--radius-full);">--radius-full</div>
   </div>
 `;

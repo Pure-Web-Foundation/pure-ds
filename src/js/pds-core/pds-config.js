@@ -1085,6 +1085,7 @@ presets.default = {
         "lock",
         "lock-open",
         "fingerprint",
+        "circle-notch"
       ],
       time: ["calendar", "clock", "timer", "hourglass"],
       commerce: [
