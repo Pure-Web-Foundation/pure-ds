@@ -461,17 +461,14 @@ export const AccessibleFormGroups = () => html`
           </p>
           <label data-toggle>
             <input type="checkbox" name="topics" value="product" checked />
-            <span class="toggle-switch"><span class="toggle-knob"></span></span>
             <span>Product Updates</span>
           </label>
           <label data-toggle>
             <input type="checkbox" name="topics" value="security" checked />
-            <span class="toggle-switch"><span class="toggle-knob"></span></span>
             <span>Security Alerts</span>
           </label>
           <label data-toggle>
-            <input type="checkbox" name="topics" value="marketing" />
-            <span class="toggle-switch"><span class="toggle-knob"></span></span>
+            <input type="checkbox" name="topics" value="marketing" />            
             <span>Marketing & Promotions</span>
           </label>
         </fieldset>

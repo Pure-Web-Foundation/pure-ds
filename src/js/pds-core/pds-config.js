@@ -523,14 +523,14 @@ export const presets = {
       backgroundMesh: 3,
     },
     colors: {
-      primary: "#ff385c", // Airbnb-inspired coral red
+      primary: "#d93251", // Darker coral red for better contrast (was #ff385c)
       secondary: "#717171", // neutral gray for text
       accent: "#144990", // teal for experiences/verified
       background: "#ffffff",
       darkMode: {
         background: "#222222",
         secondary: "#b0b0b0",
-        primary: "#ff385c",
+        primary: "#ff5a7a", // Lighter for dark mode
       },
     },
     typography: {
@@ -585,7 +585,7 @@ export const presets = {
       darkMode: {
         background: "#0f0f0f",
         secondary: "#8a8a8a",
-        primary: "#ffffff", // inverted for dark mode
+        primary: "#06c167", // Use bright green for dark mode buttons (was white)
       },
     },
     typography: {

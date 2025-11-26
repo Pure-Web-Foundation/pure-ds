@@ -1,0 +1,11 @@
+{
+  "exportedAt": "2025-11-26T07:42:21.708Z",
+  "staticRoot": "/assets/pds/",
+  "paths": {
+    "tokens": "/assets/pds/styles/pds-tokens.css.js",
+    "primitives": "/assets/pds/styles/pds-primitives.css.js",
+    "components": "/assets/pds/styles/pds-components.css.js",
+    "utilities": "/assets/pds/styles/pds-utilities.css.js",
+    "styles": "/assets/pds/styles/pds-styles.css.js"
+  }
+}
