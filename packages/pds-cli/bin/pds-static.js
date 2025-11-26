@@ -302,7 +302,36 @@ async function main() {
   // 8) Update .vscode/settings.json with IntelliSense paths
   await updateVSCodeSettings(targetDir);
 
-  // 9) Summary
+  // 9) Write runtime config helper for auto-discovery
+  try {
+    // Calculate the web-root-relative path to the target directory
+    const relativePath = path.relative(process.cwd(), targetDir).replace(/\\/g, '/');
+    const urlPath = relativePath.startsWith('public/') 
+      ? '/' + relativePath.substring('public/'.length)
+      : '/' + relativePath;
+    const normalizedUrlPath = urlPath.endsWith('/') ? urlPath : urlPath + '/';
+    
+    const runtimeConfig = {
+      exportedAt: new Date().toISOString(),
+      staticRoot: normalizedUrlPath,
+      paths: {
+        tokens: `${normalizedUrlPath}styles/pds-tokens.css.js`,
+        primitives: `${normalizedUrlPath}styles/pds-primitives.css.js`,
+        components: `${normalizedUrlPath}styles/pds-components.css.js`,
+        utilities: `${normalizedUrlPath}styles/pds-utilities.css.js`,
+        styles: `${normalizedUrlPath}styles/pds-styles.css.js`,
+      }
+    };
+    
+    const runtimeConfigPath = path.join(targetDir, 'pds-runtime-config.json');
+    await writeFile(runtimeConfigPath, JSON.stringify(runtimeConfig, null, 2), 'utf-8');
+    log(`✅ Runtime config written to ${path.relative(process.cwd(), runtimeConfigPath)}`, 'green');
+    log(`💡 Use this in PDS.start(): static: { root: "${normalizedUrlPath}" }`, 'blue');
+  } catch (e) {
+    log(`⚠️  Failed to write runtime config: ${e?.message || e}`, 'yellow');
+  }
+
+  // 10) Summary
   log('\n────────────────────────────────────────────');
   log('✅ PDS static assets ready', 'green');
   log(`📍 Location: ${path.relative(process.cwd(), targetDir)}`);
