@@ -61,7 +61,9 @@ async function initializeConfigurator() {
   setTimeout(() => {
     const closeBtn = document.getElementById('close-configurator-btn');
     if (closeBtn && drawerElement) {
-      closeBtn.onclick = () => drawerElement.open = false;
+      closeBtn.onclick = () => {
+        drawerElement.open = false;
+      };
     }
   }, 0);
 
@@ -97,11 +99,10 @@ async function loadConfigForm() {
         console.log('Design updated in configurator:', e.detail);
         
         try {
-          // Get the current designer from registry and regenerate styles
-          const designer = PDS.registry._designer;
-          if (designer && e.detail.config) {
-            designer.configure(e.detail.config);
-            await PDS.Generator.applyStyles(designer);
+          // The event detail contains both config and designer from pds-config-form
+          if (e.detail.designer) {
+            // Apply the styles from the designer that was already created by pds-config-form
+            await PDS.Generator.applyStyles(e.detail.designer);
           }
           
           // Notify manager
@@ -137,6 +138,7 @@ if (typeof window !== 'undefined') {
       
       if (drawerElement) {
         console.log('✅ Opening configurator drawer');
+        // Always open (no toggle)
         drawerElement.open = true;
       } else {
         throw new Error('Drawer element failed to initialize');
@@ -145,13 +147,6 @@ if (typeof window !== 'undefined') {
       console.error('❌ Failed to open configurator:', error);
       // Show user-friendly error
       alert(`Failed to open PDS Configurator: ${error.message}\n\nPlease refresh the page and try again.`);
-    }
-  });
-
-  channel.on(EVENTS.CLOSE_CONFIGURATOR, () => {
-    console.log('🎯 CLOSE_CONFIGURATOR event received in preview');
-    if (drawerElement) {
-      drawerElement.open = false;
     }
   });
 

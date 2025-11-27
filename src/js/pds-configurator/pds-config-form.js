@@ -9,8 +9,16 @@ import { AutoComplete } from "pure-web/ac";
 
 const STORAGE_KEY = "pure-ds-config";
 
-function toast(message, options = {}) {
-  return document.querySelector("#global-toaster").toast(message, options);
+async function toast(message, options = {}) {
+  let toaster = document.querySelector("#global-toaster");
+  if(!toaster) {
+    toaster = document.createElement("pds-toaster");
+    toaster.id = "global-toaster";
+    document.body.appendChild(toaster);
+    await customElements.whenDefined("pds-toaster");
+  }
+
+  return toaster.toast(message, options);
 }
 
 customElements.define(
