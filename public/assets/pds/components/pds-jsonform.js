@@ -1060,10 +1060,19 @@ export class SchemaForm extends LitElement {
     const useRangeOutput = isRange && this.#getOption('enhancements.rangeOutput', true);
     const labelClass = useRangeOutput ? "range-output" : undefined;
 
+    const renderControlAndLabel = (isToggle) => {
+      if(isToggle)
+        return html`${controlTpl} <span data-label>${label}</span>`;
+
+      return html`<span data-label>${label}</span> ${controlTpl}`;
+
+    }
+    
     return html`
-      <label for=${id} ?data-toggle=${isToggle} class=${ifDefined(labelClass)}>
-        ${controlTpl}
-        <span data-label>${label}</span>
+      <label for=${id} ?data-toggle=${isToggle} class=${ifDefined(labelClass)}>        
+      
+        ${renderControlAndLabel(isToggle)}
+
         ${help ? html`<div data-help>${help}</div>` : nothing}
       </label>
     `;

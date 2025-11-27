@@ -161,8 +161,8 @@ export const defaultPDSEnhancers = [
     selector: "label[data-toggle]",
     description: "Creates a toggle switch element from a checkbox.",
     demoHtml: () => `<label data-toggle>
-      <span data-label>Enable notifications</span>
       <input type="checkbox">
+      <span data-label>Enable notifications</span>
     </label>`,
     run: (elem) => {
       if (elem.dataset.enhancedToggle) return;
