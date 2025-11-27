@@ -134,7 +134,7 @@ export const presets = {
       fontWeightBold: 700,
     },
     spatialRhythm: {
-      baseUnit: 3, // Tight, compact
+      baseUnit: 4, // Tight, compact
       scaleRatio: 1.2,
     },
     shape: {

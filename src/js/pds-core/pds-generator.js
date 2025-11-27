@@ -5037,7 +5037,7 @@ export const ${name}CSS = \`${escapedCSS}\`;
  *
  * @example
  * // In your web component:
- * import { adoptPrimitives } from './auto-designer.js';
+ * import { PDS } from 'pure-ds';
  *
  * async connectedCallback() {
  *   this.attachShadow({ mode: 'open' });
@@ -5045,7 +5045,7 @@ export const ${name}CSS = \`${escapedCSS}\`;
  *   const componentStyles = new CSSStyleSheet();
  *   componentStyles.replaceSync(`...your styles...`);
  *
- *   await adoptPrimitives(this.shadowRoot, [componentStyles]);
+ *   await PDS.adoptPrimitives(this.shadowRoot, [componentStyles]);
  * }
  */
 export async function adoptPrimitives(shadowRoot, additionalSheets = []) {

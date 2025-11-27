@@ -49,9 +49,7 @@ async function initializeConfigurator() {
   const content = document.createElement('div');
   content.slot = 'drawer-content';
   content.id = 'configurator-content';
-  content.style.height = '60vh';
-  content.style.overflow = 'auto';
-  content.style.padding = 'var(--spacing-4)';
+  
   content.innerHTML = `<p style="padding: 1rem;">Loading configurator...</p>`;
   drawerElement.appendChild(content);
 

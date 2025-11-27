@@ -1338,7 +1338,7 @@ export class SchemaForm extends LitElement {
     );
 
     // Radio group: returns ONLY the labeled inputs
-    // Matches AutoDesigner pattern: input hidden, label styled as button
+    // Matches PDS pattern: input hidden, label styled as button
     this.defineRenderer(
       "radio",
       ({ id, path, value, attrs, set, schema }) => {

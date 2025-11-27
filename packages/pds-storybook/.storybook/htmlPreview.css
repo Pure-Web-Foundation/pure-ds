@@ -87,3 +87,10 @@
   color: var(--code-comment);
   font-style: italic;
 }
+
+pds-config-form {
+  label:has(input[type="color"]){
+    display: inline-block;
+    min-width: 7rem;
+  }
+}

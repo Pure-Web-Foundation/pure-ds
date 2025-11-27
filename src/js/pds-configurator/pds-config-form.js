@@ -38,6 +38,9 @@ customElements.define(
       formValues: { type: Object, state: true }, // Filtered values for the form
       validationIssues: { type: Array, state: true }, // Accessibility/design issues from PDS.validateDesign
       formKey: { type: Number, state: true }, // Force form re-render
+      showInspector: { type: Boolean, attribute: 'show-inspector' }, // Show/hide Code Inspector button
+      showPresetSelector: { type: Boolean, attribute: 'show-preset-selector' }, // Show/hide Preset selector
+      showThemeSelector: { type: Boolean, attribute: 'show-theme-selector' }, // Show/hide Theme selector
     };
 
     createRenderRoot() {
@@ -51,6 +54,9 @@ customElements.define(
 
       this.mode = "simple";
       this.inspectorMode = false;
+      
+      // Boolean attributes: when present they're true, when absent they're false
+      // No need to set defaults - Lit handles boolean attributes correctly
 
       this.config = this.loadConfig();
 
@@ -558,7 +564,7 @@ customElements.define(
             .join("\n");
           this._validationToastId = toast(
             `Design has accessibility issues. Fix before saving.\n${summary}`,
-            { type: "error", persistent: true }
+            { type: "error" }
           );
         }
         return; // Do not persist or apply invalid config
@@ -713,11 +719,11 @@ customElements.define(
           content = `// Pure Design System Configuration
 // Generated: ${new Date().toISOString()}
 
-import { Generator } from './auto-designer.js';
+import { PDS } from 'pure-ds';
 
-export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
+export const pdsConfig = ${JSON.stringify(this.config, null, 2)};
 `;
-          filename = "auto-designer.config.js";
+          filename = "pds.config.js";
           mimeType = "text/javascript";
           break;
 
@@ -768,78 +774,95 @@ export const autoDesignerConfig = ${JSON.stringify(this.config, null, 2)};
               >
             </label>
 
-            <button
-              class="inspector-toggle ${this.inspectorMode ? "active" : ""}"
-              @click=${this.toggleInspectorMode}
-              title="${this.inspectorMode
-                ? "Deactivate"
-                : "Activate"} Code Inspector"
-            >
-              <pds-icon
-                icon="${this.inspectorMode ? "eye-slash" : "code"}"
-                size="sm"
-              ></pds-icon>
-              <span
-                >${this.inspectorMode
-                  ? "Inspector Active"
-                  : "Code Inspector"}</span
-              >
-            </button>
+            ${this.showInspector
+              ? html`
+                  <button
+                    class="inspector-toggle ${this.inspectorMode
+                      ? "active"
+                      : ""}"
+                    @click=${this.toggleInspectorMode}
+                    title="${this.inspectorMode
+                      ? "Deactivate"
+                      : "Activate"} Code Inspector"
+                  >
+                    <pds-icon
+                      icon="${this.inspectorMode ? "eye-slash" : "code"}"
+                      size="sm"
+                    ></pds-icon>
+                    <span
+                      >${this.inspectorMode
+                        ? "Inspector Active"
+                        : "Code Inspector"}</span
+                    >
+                  </button>
+                `
+              : nothing}
 
-            <fieldset role="radiogroup" aria-label="Theme" class="theme-select buttons">
-              <legend>Theme</legend>
-              ${(() => {
-                const stored = PDS.theme || null;
-                const selected = stored || "system";
-                return html`
-                  <label>
-                    <input
-                      type="radio"
-                      name="theme"
-                      value="system"
-                      @change=${this.handleThemeChange}
-                      .checked=${selected === "system"}
-                    />
-                    <span><pds-icon icon="moon-stars"></pds-icon> System</span>
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="theme"
-                      value="light"
-                      @change=${this.handleThemeChange}
-                      .checked=${selected === "light"}
-                    />
-                    <span><pds-icon icon="sun"></pds-icon> Light</span>
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="theme"
-                      value="dark"
-                      @change=${this.handleThemeChange}
-                      .checked=${selected === "dark"}
-                    />
-                    <span><pds-icon icon="moon"></pds-icon> Dark</span>
-                  </label>
-                `;
-              })()}
-            </fieldset>
+            ${this.showThemeSelector
+              ? html`
+                  <fieldset role="radiogroup" aria-label="Theme" class="theme-select buttons">
+                    <legend>Theme</legend>
+                    ${(() => {
+                      const stored = PDS.theme || null;
+                      const selected = stored || "system";
+                      return html`
+                        <label>
+                          <input
+                            type="radio"
+                            name="theme"
+                            value="system"
+                            @change=${this.handleThemeChange}
+                            .checked=${selected === "system"}
+                          />
+                          <span><pds-icon icon="moon-stars"></pds-icon> System</span>
+                        </label>
+                        <label>
+                          <input
+                            type="radio"
+                            name="theme"
+                            value="light"
+                            @change=${this.handleThemeChange}
+                            .checked=${selected === "light"}
+                          />
+                          <span><pds-icon icon="sun"></pds-icon> Light</span>
+                        </label>
+                        <label>
+                          <input
+                            type="radio"
+                            name="theme"
+                            value="dark"
+                            @change=${this.handleThemeChange}
+                            .checked=${selected === "dark"}
+                          />
+                          <span><pds-icon icon="moon"></pds-icon> Dark</span>
+                        </label>
+                      `;
+                    })()}
+                  </fieldset>
+                `
+              : nothing}
 
-            <fieldset>
-              <legend>Preset</legend>
-              <div class="input-icon">
-                <pds-icon icon="magnifying-glass"></pds-icon>
-                <input
-                  @focus=${(e) =>
-                    AutoComplete.connect(e, this.presetAutoCompleteSettings)}
-                  id="preset-search"
-                  type="search"
-                  placeholder="Start typing to search all presets..."
-                  autocomplete="off"
-                />
-              </div>
-            </fieldset>
+            ${this.showPresetSelector
+              ? html`
+                  <fieldset>
+                    <legend>Preset</legend>
+                    <div class="input-icon">
+                      <pds-icon icon="magnifying-glass"></pds-icon>
+                      <input
+                        @focus=${(e) =>
+                          AutoComplete.connect(
+                            e,
+                            this.presetAutoCompleteSettings
+                          )}
+                        id="preset-search"
+                        type="search"
+                        placeholder="Start typing to search all presets..."
+                        autocomplete="off"
+                      />
+                    </div>
+                  </fieldset>
+                `
+              : nothing}
           </div>
 
           <div class="designer-form-container">
