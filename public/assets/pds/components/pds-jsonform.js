@@ -1062,8 +1062,9 @@ export class SchemaForm extends LitElement {
 
     return html`
       <label for=${id} ?data-toggle=${isToggle} class=${ifDefined(labelClass)}>
+        ${controlTpl}
         <span data-label>${label}</span>
-        ${controlTpl} ${help ? html`<div data-help>${help}</div>` : nothing}
+        ${help ? html`<div data-help>${help}</div>` : nothing}
       </label>
     `;
   }

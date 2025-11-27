@@ -47,6 +47,44 @@ export const MultipleToggles = () => html`
   </form>
 `;
 
+export const TogglePositions = () => html`
+  <div style="max-width: 600px;">
+    <h3>Toggle Position Variations</h3>
+    <p style="color: var(--surface-text-secondary); margin-bottom: var(--spacing-4);">
+      Toggle knob position adapts based on label placement in DOM
+    </p>
+    <div class="flex flex-col gap-md">
+      <div>
+        <h4 style="margin-bottom: var(--spacing-2);">Label First (Knob on Right)</h4>
+        <div class="flex flex-col gap-sm">
+          <label data-toggle>
+            <span data-label>Email notifications</span>
+            <input type="checkbox" checked>
+          </label>
+          <label data-toggle>
+            <span data-label>Push notifications</span>
+            <input type="checkbox">
+          </label>
+        </div>
+      </div>
+      
+      <div>
+        <h4 style="margin-bottom: var(--spacing-2);">Label Last (Knob on Left)</h4>
+        <div class="flex flex-col gap-sm">
+          <label data-toggle>
+            <input type="checkbox" checked>
+            <span data-label>Dark mode enabled</span>
+          </label>
+          <label data-toggle>
+            <input type="checkbox">
+            <span data-label>Auto-save changes</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+`;
+
 export const InCard = () => html`
   <article class="card" style="max-width: 500px;">
     <h3>Privacy Settings</h3>

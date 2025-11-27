@@ -264,29 +264,40 @@ export const ToggleSwitches = () => html`
       Uses <code>data-toggle</code> attribute for enhanced toggle switch styling
     </p>
 
-    <fieldset class="card" role="group">
-      <legend>Preferences</legend>
+    <section class="card">
+      <fieldset class="card" role="group">
+        <legend>Preferences</legend>
 
-      <label data-toggle>
+        <label data-toggle>
+        <span>Enable notifications</span>  
         <input type="checkbox" name="prefs" value="notifications" checked />
-        <span>Enable notifications</span>
-      </label>
+          
+        </label>
 
-      <label data-toggle>
-        <input type="checkbox" name="prefs" value="dark" />
+        <label data-toggle>
         <span>Dark mode</span>
-      </label>
+          <input type="checkbox" name="prefs" value="dark" />
+          
+        </label>
+      </fieldset>
+    </section>
 
-      <label data-toggle>
-        <input type="checkbox" name="prefs" value="autosave" checked />
-        <span>Auto-save</span>
-      </label>
+    <section class="card">
+      <fieldset class="card" role="group">
+        <legend>Left-aligned knob</legend>
+        <label data-toggle>
+          
+          <input type="checkbox" name="prefs" value="autosave" checked />
+          <span>Auto-save</span>
+        </label>
 
-      <label data-toggle>
-        <input type="checkbox" name="prefs" value="tooltips" />
-        <span>Show tooltips</span>
-      </label>
-    </fieldset>
+        <label data-toggle>
+          
+          <input type="checkbox" name="prefs" value="tooltips" />
+          <span>Show tooltips</span>
+        </label>
+      </fieldset>
+    </section>
   </div>
 `;
 
@@ -417,7 +428,9 @@ export const AccessibleFormGroups = () => html`
     </p>
 
     <div class="card" style="padding: var(--spacing-6); max-width: 600px;">
-      <form onsubmit="event.preventDefault(); toastFormData(new FormData(event.target));">
+      <form
+        onsubmit="event.preventDefault(); toastFormData(new FormData(event.target));"
+      >
         <fieldset
           role="radiogroup"
           class="buttons"
@@ -468,7 +481,7 @@ export const AccessibleFormGroups = () => html`
             <span>Security Alerts</span>
           </label>
           <label data-toggle>
-            <input type="checkbox" name="topics" value="marketing" />            
+            <input type="checkbox" name="topics" value="marketing" />
             <span>Marketing & Promotions</span>
           </label>
         </fieldset>

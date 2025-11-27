@@ -2209,10 +2209,11 @@ label[data-toggle] {
 
   /* Toggle switch when checked - using :has() selector */
   &:has(input[type="checkbox"]:checked) .toggle-switch {
-    background-color: var(--color-accent-500);
+    background-color: var(--color-primary-fill);
   }
+  
 
-  /* Toggle knob when checked */
+  /* Toggle knob when checked - always moves to the right */
   &:has(input[type="checkbox"]:checked) .toggle-knob {
     left: 22px;
   }

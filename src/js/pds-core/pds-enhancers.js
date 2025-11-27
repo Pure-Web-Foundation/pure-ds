@@ -186,9 +186,10 @@ export const defaultPDSEnhancers = [
       const knob = document.createElement("span");
       knob.className = "toggle-knob";
       toggleSwitch.appendChild(knob);
-      const labelSpan = elem.querySelector("span[data-label]");
-      if (labelSpan) elem.insertBefore(toggleSwitch, labelSpan);
-      else elem.appendChild(toggleSwitch);
+      
+      // Always insert toggle switch after the checkbox input
+      // CSS will handle the visual positioning based on DOM order
+      elem.insertBefore(toggleSwitch, checkbox.nextSibling);
 
       // Toggle function
       const toggle = () => {
