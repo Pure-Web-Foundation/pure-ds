@@ -1,4 +1,4 @@
-import { LitElement, html, nothing, ifDefined } from "#pds/lit";
+import { LitElement, html, nothing, ifDefined, ref } from "#pds/lit";
 
 function getStep(value) {
   if (typeof value === "number") {
@@ -803,40 +803,86 @@ export class SchemaForm extends LitElement {
     
     const useOpenGroup = arrayLayout === 'open' && isSimpleStringArray;
     
+    // Check if this is a single-selection array (maxItems: 1) for radio group
+    const isSingleSelection = node.schema?.maxItems === 1;
+    const inputType = isSingleSelection ? "radio" : "checkbox";
+    
     if (useOpenGroup) {
-      // Use fieldset[role=group][data-open] enhancement for simple string arrays
-      const onChange = (e) => {
-        // Get all checkboxes/radios in the group (excluding the text input)
-        const inputs = Array.from(e.currentTarget.querySelectorAll('input[type="radio"], input[type="checkbox"]'));
+      // Render fieldset with data-open to let the enhancement handle UI
+      // We sync state after the enhancement runs via MutationObserver
+      
+      const syncFromDOM = (fieldset) => {
+        // Read current state from DOM (after enhancement has modified it)
+        const inputs = Array.from(fieldset.querySelectorAll('input[type="radio"], input[type="checkbox"]'));
         const values = inputs
-          .filter(input => input.value && input.value.trim())
-          .map(input => input.value);
+          .map(input => input.value)
+          .filter(v => v && v.trim());
         
-        this.#setByPath(this.#data, path, values);
-        this.requestUpdate();
-        this.#emit("pw:array-change", { path, values });
+        if (isSingleSelection) {
+          // For radio groups, find the checked one
+          const checkedInput = inputs.find(input => input.checked);
+          this.#setByPath(this.#data, path, checkedInput && checkedInput.value ? [checkedInput.value] : []);
+        } else {
+          // For checkbox groups, all items in DOM are in the array
+          this.#setByPath(this.#data, path, values);
+        }
+        this.#emit("pw:array-change", { path, values: this.#getByPath(this.#data, path) });
       };
+      
+      const handleChange = (e) => {
+        const fieldset = e.currentTarget;
+        if (isSingleSelection) {
+          // For radio groups, update to selected value immediately
+          const checkedInput = fieldset.querySelector('input[type="radio"]:checked');
+          this.#setByPath(this.#data, path, checkedInput && checkedInput.value ? [checkedInput.value] : []);
+          this.#emit("pw:array-change", { path, values: this.#getByPath(this.#data, path) });
+        }
+      };
+      
+      const afterRender = (fieldset) => {
+        // Observe DOM changes made by the data-open enhancement
+        const observer = new MutationObserver(() => {
+          syncFromDOM(fieldset);
+        });
+        observer.observe(fieldset, { 
+          childList: true, 
+          subtree: true 
+        });
+        
+        // Store observer for cleanup
+        if (!fieldset._arrayObserver) {
+          fieldset._arrayObserver = observer;
+        }
+      };
+      
+      const selectedValue = isSingleSelection && arr.length > 0 ? arr[0] : null;
       
       return html`
         <fieldset 
-          role="group" 
-          data-open 
+          role="group"
+          data-open
           data-path=${path}
           data-name=${path}
-          @change=${onChange}
+          @change=${handleChange}
+          ${ref((el) => { if (el) afterRender(el); })}
         >
           <legend>${node.title ?? "List"}</legend>
-          ${arr.map((value, i) => html`
-            <label>
-              <span data-label>${value}</span>
-              <input 
-                type="checkbox" 
-                name=${path}
-                value=${value}
-                checked
-              />
-            </label>
-          `)}
+          ${arr.map((value, i) => {
+            const id = `${path}-${i}`;
+            const isChecked = isSingleSelection ? value === selectedValue : false;
+            return html`
+              <label for=${id}>
+                <span data-label>${value}</span>
+                <input 
+                  id=${id}
+                  type=${inputType}
+                  name=${path}
+                  value=${value}
+                  ?checked=${isChecked}
+                />
+              </label>
+            `;
+          })}
         </fieldset>
       `;
     }

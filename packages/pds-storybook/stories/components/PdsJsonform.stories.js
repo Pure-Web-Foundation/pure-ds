@@ -897,6 +897,86 @@ export const WithDialogForms = {
   }
 };
 
+export const WithRadioGroupOpen = {
+  name: 'Radio Group Open (Single Selection)',
+  parameters: {
+    docs: {
+      description: {
+        story: `When an array has \`maxItems: 1\`, it renders as a Radio Group Open, allowing single selection with the ability to add custom options.
+        
+This is perfect for scenarios where users can choose one option from predefined choices or add their own custom value. The \`data-open\` enhancement automatically provides an input field to add new options dynamically.
+
+### Key Features:
+- **Single selection** - Only one option can be selected at a time (radio buttons)
+- **Add custom options** - Users can type new options in the input field
+- **Remove options** - Click the × button to remove options
+- **Pre-populated** - Start with default options from the schema
+
+This pattern is ideal for fields like "Priority", "Status", "Category", or any single-choice field where users might need custom values.`
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      properties: {
+        priority: {
+          type: 'array',
+          title: 'Project Priority',
+          description: 'Select one priority level or add your own',
+          items: {
+            type: 'string',
+            examples: ['High', 'Medium', 'Low']
+          },
+          default: ['High', 'Medium', 'Low'],
+          uniqueItems: true,
+          maxItems: 1
+        },
+        status: {
+          type: 'array',
+          title: 'Current Status',
+          description: 'Choose the current project status',
+          items: {
+            type: 'string',
+            examples: ['Planning', 'In Progress', 'Review', 'Completed']
+          },
+          default: ['Planning', 'In Progress', 'Review', 'Completed'],
+          uniqueItems: true,
+          maxItems: 1
+        },
+        department: {
+          type: 'array',
+          title: 'Department',
+          description: 'Select your department',
+          items: {
+            type: 'string',
+            examples: ['Engineering', 'Design', 'Marketing', 'Sales']
+          },
+          default: ['Engineering', 'Design', 'Marketing', 'Sales'],
+          uniqueItems: true,
+          maxItems: 1
+        }
+      },
+      required: ['priority', 'status']
+    };
+
+    const initialValues = {
+      priority: ['High', 'Medium', 'Low'],
+      status: ['Planning', 'In Progress', 'Review', 'Completed'],
+      department: ['Engineering', 'Design', 'Marketing', 'Sales']
+    };
+
+    return html`
+      <pds-jsonform 
+        .jsonSchema=${schema}
+        .values=${initialValues}
+        @pw:value-change=${(e) => console.log('🔄 Value changed:', e.detail)}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
 export const WithDatalistAutocomplete = {
   name: 'Datalist Autocomplete',
   render: () => {
@@ -963,7 +1043,8 @@ export const WithArrayFields = {
 - **Remove items** - Delete individual items with the "Remove" button
 - **Reorder items** - Use up/down arrows to change order
 - **Nested objects** - Each array item can contain complex nested data
-- **Initial values** - Pre-populate with default items`
+- **Initial values** - Pre-populate with default items
+- **Radio Group Open** - Arrays with \`maxItems: 1\` render as radio buttons for single selection`
       }
     }
   },
@@ -975,6 +1056,17 @@ export const WithArrayFields = {
           type: 'string',
           title: 'Project Name',
           examples: ['Website Redesign Project']
+        },
+        priority: {
+          type: 'array',
+          title: 'Project Priority',
+          items: {
+            type: 'string',
+            examples: ['High', 'Medium', 'Low']
+          },
+          default: ['High', 'Medium', 'Low'],
+          uniqueItems: true,
+          maxItems: 1
         },
         tags: {
           type: 'array',
@@ -1052,6 +1144,7 @@ export const WithArrayFields = {
     // Initial values to demonstrate pre-populated arrays
     const initialValues = {
       projectName: 'Website Redesign Project',
+      priority: ['High', 'Medium', 'Low'],
       teamMembers: [
         {
           name: 'Alice Johnson',
