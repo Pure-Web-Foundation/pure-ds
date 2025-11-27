@@ -1302,6 +1302,12 @@ label {
   margin-bottom: var(--spacing-2);
 }
 
+[data-open]{
+  [data-label]{
+    margin-bottom: 0;
+  }
+}
+
 .field-description {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
@@ -1557,6 +1563,10 @@ input[type="radio"]:not(fieldset input[type="radio"]) {
   opacity: 1;
   appearance: auto;
   -webkit-appearance: auto;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
 }
 
 /* Button-style radio and checkbox groups with .buttons class */
@@ -1607,6 +1617,10 @@ fieldset[role="group"].buttons {
       background-color: var(--color-surface-subtle);
       border-color: var(--color-primary-500);
       color: var(--color-text-primary);
+    }
+
+    &:has([disabled]){
+      pointer-events: none;
     }
   }
   
@@ -1692,10 +1706,11 @@ label[data-toggle] {
 
   /* Toggle switch when checked - using :has() selector */
   &:has(input[type="checkbox"]:checked) .toggle-switch {
-    background-color: var(--color-accent-500);
+    background-color: var(--color-primary-fill);
   }
+  
 
-  /* Toggle knob when checked */
+  /* Toggle knob when checked - always moves to the right */
   &:has(input[type="checkbox"]:checked) .toggle-knob {
     left: 22px;
   }
@@ -1841,12 +1856,20 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
     background-color: var(--color-primary-500);
     color: var(--color-primary-contrast);
     border-color: var(--color-primary-500);
+
+    pds-icon {
+      color: white;
+    }
   }
 
   &:active {
     background-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
     border-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
     color: var(--color-primary-contrast);
+
+    pds-icon {
+      color: white;
+    }
   }
   
   &:disabled {
@@ -1873,6 +1896,44 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   padding: var(--spacing-4) var(--spacing-8);
   font-size: var(--font-size-lg);
   min-height: calc(44px * 1.2);
+}
+
+/* Working/loading state for buttons */
+button.btn-working,
+a.btn-working {
+  cursor: wait;
+  pointer-events: none;
+  opacity: 0.6;
+  
+  pds-icon:first-child {
+    animation: pds-spin 0.8s linear infinite;
+  }
+}
+
+@keyframes pds-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Skeleton loading animation */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%) 0%,
+    color-mix(in oklab, var(--color-surface-base) 85%, var(--color-text-primary) 15%) 50%,
+    color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%) 100%
+  );
+  background-size: 200% 100%;
+  animation: pds-skeleton 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+  
+  &::before {
+    content: '\00a0';
+  }
+}
+
+@keyframes pds-skeleton {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* Form utility classes */

@@ -178,6 +178,10 @@
               "description": "circle icon"
             },
             {
+              "name": "circle-notch",
+              "description": "circle-notch icon"
+            },
+            {
               "name": "clipboard",
               "description": "clipboard icon"
             },
@@ -790,7 +794,7 @@
     },
     {
       "name": "data-toggle",
-      "description": "Creates a toggle switch element from a checkbox.\n\nExample:\n<label data-toggle>\n<span data-label>Enable notifications</span>\n<input type=\"checkbox\">\n</label>",
+      "description": "Creates a toggle switch element from a checkbox.\n\nExample:\n<label data-toggle>\n<input type=\"checkbox\">\n<span data-label>Enable notifications</span>\n</label>",
       "valueSet": "v"
     },
     {
