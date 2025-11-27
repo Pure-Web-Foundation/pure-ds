@@ -30,20 +30,15 @@ async function initializeConfigurator() {
   drawerElement = document.createElement('pds-drawer');
   drawerElement.id = 'storybook-pds-configurator';
   drawerElement.setAttribute('position', 'bottom');
+  drawerElement.setAttribute('show-close', '');
   drawerElement.style.zIndex = '999999';
   
   // Create header
-  const header = document.createElement('div');
-  header.slot = 'drawer-header';
-  header.innerHTML = `
-    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-      <h3 style="margin: 0;">PDS Configurator</h3>
-      <button class="btn-ghost" id="close-configurator-btn" style="padding: 0.5rem;">
-        <pds-icon icon="x" size="sm"></pds-icon>
-      </button>
-    </div>
-  `;
-  drawerElement.appendChild(header);
+  //const header = document.createElement('div');
+  //header.slot = 'drawer-header';
+  //header.innerHTML = `
+  //`;
+  //drawerElement.appendChild(header);
 
   // Create configurator content container
   const content = document.createElement('div');
@@ -54,16 +49,6 @@ async function initializeConfigurator() {
   drawerElement.appendChild(content);
 
   document.body.appendChild(drawerElement);
-  
-  // Attach close button handler after drawer is in DOM
-  setTimeout(() => {
-    const closeBtn = document.getElementById('close-configurator-btn');
-    if (closeBtn && drawerElement) {
-      closeBtn.onclick = () => {
-        drawerElement.open = false;
-      };
-    }
-  }, 0);
 
   // Load pds-config-form dynamically
   loadConfigForm();
