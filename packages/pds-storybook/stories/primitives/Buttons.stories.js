@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Primitives/Buttons',
+  tags: ['buttons', 'interaction'],
   parameters: {
+    pds: {
+      tags: ['buttons', 'interaction']
+    },
     docs: {
       description: {
         component: 'Button primitives with variants, sizes, and icon support. All buttons automatically adapt to your theme with proper focus states and accessibility.'

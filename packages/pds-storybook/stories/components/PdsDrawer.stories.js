@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Components/Pds Drawer',
+  tags: ['grouping'],
   parameters: {
+    pds: {
+      tags: ['navigation', 'layout', 'grouping']
+    },
     docs: {
       description: {
         component: 'Slide-out panels from any edge'

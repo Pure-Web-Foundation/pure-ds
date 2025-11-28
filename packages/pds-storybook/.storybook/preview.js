@@ -1,3 +1,5 @@
+import { addons } from '@storybook/preview-api';
+import { SELECT_STORY } from '@storybook/core-events';
 import { PDS } from '../../../src/js/pds.js';
 import { presets } from '../../../src/js/pds-core/pds-config.js';
 import './addons/pds-configurator/preview.js';
@@ -266,9 +268,744 @@ const withGlobalsHandler = (story, context) => {
   return story();
 };
 
+const DEFAULT_STORY_TAGS = new Set(['dev', 'test', 'story', 'stories', 'autodocs', 'example', 'examples']);
+
+const getStoryStore = () => {
+  if (typeof window === 'undefined') return null;
+  return window.__STORYBOOK_STORY_STORE__ || null;
+};
+
+const collectStoryIndexTags = (storyId) => {
+  if (!storyId) return undefined;
+  const storyStore = getStoryStore();
+  const index = storyStore?.storyIndex;
+  if (!index) return undefined;
+
+  const entries = index.entries || index;
+  const entry = entries?.[storyId];
+  return entry?.tags;
+};
+
+const collectStoryStoreEntryTags = (storyId) => {
+  const storyStore = getStoryStore();
+  if (!storyStore?.fromId || !storyId) return undefined;
+
+  try {
+    const entry = storyStore.fromId(storyId);
+    if (!entry) return undefined;
+
+    return mergeTagSets(
+      entry.meta?.tags,
+      entry.parameters?.tags,
+      entry.moduleExport?.default?.tags,
+      entry.moduleExport?.tags
+    );
+  } catch {
+    return undefined;
+  }
+};
+
+const ensureRelatedStyles = (() => {
+  let injected = false;
+  return () => {
+    if (injected || typeof document === 'undefined') return;
+
+    const style = document.createElement('style');
+    style.id = 'pds-related-footer-styles';
+    style.textContent = `
+      .pds-related-footer {
+        margin-top: 2.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--sb-border-color, rgba(0, 0, 0, 0.08));
+      }
+
+      .pds-related-footer h2 {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--sbdocs-color-secondary, #5c5f62);
+        margin: 0 0 0.75rem;
+      }
+
+      #pds-related-overlay {
+        position: fixed;
+        inset-block-end: 24px;
+        inset-inline-end: 24px;
+        z-index: 2147483647;
+        max-width: min(360px, 90vw);
+        box-shadow: 0 12px 32px rgba(15, 33, 62, 0.18);
+        border-radius: 16px;
+        background: color-mix(in srgb, var(--color-surface-raised, #ffffff) 92%, transparent);
+        border: 1px solid color-mix(in srgb, var(--color-border-subtle, rgba(15, 33, 62, 0.1)) 80%, transparent);
+        padding: 20px;
+        display: grid;
+        gap: 12px;
+        font-family: var(--font-family-base, system-ui);
+        backdrop-filter: blur(18px);
+      }
+
+      #pds-related-overlay h2 {
+        margin: 0;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--surface-text-secondary, rgba(26, 32, 44, 0.62));
+      }
+
+      .pds-related-accordion {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .pds-related-accordion details {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--pds-related-border, rgba(0, 0, 0, 0.08));
+        background: var(--pds-related-bg, transparent);
+      }
+
+      #pds-related-overlay .pds-related-accordion details {
+        --pds-related-border: color-mix(in srgb, var(--color-border-subtle, rgba(15, 33, 62, 0.12)) 80%, transparent);
+        --pds-related-bg: color-mix(in srgb, var(--color-surface-raised, #ffffff) 92%, transparent);
+      }
+
+      .pds-related-footer .pds-related-accordion details {
+        --pds-related-border: var(--sb-border-color, rgba(0, 0, 0, 0.08));
+        --pds-related-bg: color-mix(in srgb, var(--sbdocs-color-background, #ffffff) 96%, transparent);
+      }
+
+      .pds-related-accordion summary {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.5rem 0.75rem;
+        font-weight: 600;
+        font-size: 0.78rem;
+        cursor: pointer;
+        list-style: none;
+      }
+
+      .pds-related-accordion summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .pds-related-accordion summary::after {
+        content: '';
+        border: solid currentColor;
+        border-width: 0 2px 2px 0;
+        display: inline-block;
+        padding: 3px;
+        transform: rotate(-45deg);
+        margin-inline-start: auto;
+        transition: transform 0.2s ease;
+      }
+
+      .pds-related-accordion details[open] summary::after {
+        transform: rotate(135deg);
+      }
+
+      .pds-related-tag-label {
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.72rem;
+        color: inherit;
+      }
+
+      .pds-related-count {
+        background: color-mix(in srgb, var(--color-primary, #3f6df6) 18%, transparent);
+        color: var(--color-primary, #3f6df6);
+        border-radius: 999px;
+        font-size: 0.68rem;
+        font-weight: 600;
+        line-height: 1;
+        padding: 0.15rem 0.4rem;
+      }
+
+      .pds-related-list {
+        list-style: none;
+        display: grid;
+        gap: 0.4rem;
+        padding: 0 0.75rem 0.55rem;
+        margin: 0;
+      }
+
+      .pds-related-list-item {
+        padding-block: unset!important;
+        display: flex;
+        flex-direction: row;
+        gap: var(--spacing-2, 0.35rem);
+        align-items: baseline;
+        justify-content: space-between;
+      }
+
+      .pds-related-list a {
+        font-weight: 600;
+        color: var(--color-primary, #3f6df6);
+        text-decoration: none;
+      }
+
+      .pds-related-list a:hover {
+        text-decoration: underline;
+      }
+
+      .pds-related-list a[aria-current="page"] {
+        color: var(--surface-text-secondary, rgba(26, 32, 44, 0.55));
+        cursor: default;
+        text-decoration: none;
+      }
+
+      .pds-related-tags {
+        font-size: 0.78rem;
+        color: var(--surface-text-secondary, rgba(26, 32, 44, 0.55));
+      }
+
+      .pds-related-footer .pds-related-tags {
+        color: var(--sbdocs-color, rgba(60, 60, 60, 0.7));
+      }
+    `;
+
+    document.head.appendChild(style);
+    injected = true;
+  };
+})();
+
+const getStorySlug = (storyId) => {
+  if (typeof storyId !== 'string') return undefined;
+  const [slug] = storyId.split('--');
+  return slug;
+};
+
+const selectStoryById = (storyId, viewMode = 'story') => {
+  if (!storyId) return false;
+
+  try {
+    const channel = addons?.getChannel?.();
+    if (channel) {
+      channel.emit(SELECT_STORY, { storyId, viewMode });
+      return true;
+    }
+  } catch (err) {
+    console.warn('PDS related overlay: channel navigation failed', err);
+  }
+
+  try {
+    window.parent?.postMessage(
+      {
+        source: 'pds-related-overlay',
+        type: 'pds-related:navigate',
+        storyId,
+        viewMode
+      },
+      '*'
+    );
+  } catch {}
+
+  const slug = getStorySlug(storyId);
+  const targetSearch = viewMode === 'docs' && slug
+    ? `?path=/docs/${slug}--docs`
+    : `?path=/story/${storyId}`;
+
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.location.search = targetSearch;
+    } else {
+      window.location.search = targetSearch;
+    }
+    return true;
+  } catch (err) {
+    console.warn('PDS related overlay: fallback navigation failed', err);
+  }
+
+  return false;
+};
+
+const defaultRelatedLinkConfigurator = (link, item, preferredViewMode = 'docs') => {
+  if (!link || !item) return;
+
+  if (preferredViewMode === 'story' && item.storyId) {
+    link.href = `?path=/story/${item.storyId}`;
+    return;
+  }
+
+  if (preferredViewMode === 'docs' && item.slug) {
+    link.href = `?path=/docs/${item.slug}--docs`;
+    return;
+  }
+
+  if (item.storyId) {
+    link.href = `?path=/story/${item.storyId}`;
+    return;
+  }
+
+  if (item.slug) {
+    link.href = `?path=/docs/${item.slug}--docs`;
+    return;
+  }
+
+  link.href = '#';
+};
+
+const groupRelatedByTag = (related, currentTags) => {
+  const grouped = new Map();
+
+  related.forEach((item) => {
+    item.overlap.forEach((tag) => {
+      if (!grouped.has(tag)) grouped.set(tag, []);
+      grouped.get(tag).push(item);
+    });
+  });
+
+  const currentTagArray = Array.isArray(currentTags)
+    ? currentTags
+    : Array.from(currentTags || []);
+
+  const priority = new Map();
+  currentTagArray.forEach((tag, index) => {
+    if (!priority.has(tag)) priority.set(tag, index);
+  });
+
+  const orderedTags = Array.from(grouped.keys()).sort((a, b) => {
+    const priorityA = priority.has(a) ? priority.get(a) : Number.MAX_SAFE_INTEGER;
+    const priorityB = priority.has(b) ? priority.get(b) : Number.MAX_SAFE_INTEGER;
+
+    if (priorityA !== priorityB) return priorityA - priorityB;
+
+    const countDiff = grouped.get(b).length - grouped.get(a).length;
+    if (countDiff !== 0) return countDiff;
+
+    return a.localeCompare(b);
+  });
+
+  return { grouped, orderedTags };
+};
+
+const buildRelatedAccordion = (related, currentTags, options = {}) => {
+  if (!related?.length) return null;
+
+  const { grouped, orderedTags } = groupRelatedByTag(related, currentTags);
+  if (!orderedTags.length) return null;
+
+  const {
+    variant = 'overlay',
+    configureLink,
+    openFirst = false
+  } = options;
+
+  const accordion = document.createElement('section');
+  accordion.className = 'accordion pds-related-accordion';
+  accordion.classList.add(
+    variant === 'overlay' ? 'pds-related-accordion--overlay' : 'pds-related-accordion--docs'
+  );
+
+  orderedTags.forEach((tag, index) => {
+    const stories = grouped.get(tag);
+    if (!stories?.length) return;
+
+    const details = document.createElement('details');
+    if (openFirst && index === 0) {
+      details.open = true;
+    }
+
+    const summary = document.createElement('summary');
+    const tagLabel = document.createElement('span');
+    tagLabel.className = 'pds-related-tag-label';
+    tagLabel.textContent = tag;
+    summary.appendChild(tagLabel);
+
+    const count = document.createElement('span');
+    count.className = 'pds-related-count';
+    count.textContent = String(stories.length);
+    summary.appendChild(count);
+
+    details.appendChild(summary);
+
+    const list = document.createElement('ul');
+    list.className = 'pds-related-list';
+    const seen = new Set();
+
+    stories.forEach((item) => {
+      const key = item.storyId || `${item.slug || ''}::${item.title}`;
+      if (!key || seen.has(key)) return;
+      seen.add(key);
+
+      const listItem = document.createElement('li');
+      listItem.className = 'pds-related-list-item';
+
+      const link = document.createElement('a');
+      link.textContent = item.title;
+
+      if (typeof configureLink === 'function') {
+        configureLink(link, item, { tag, variant });
+      } else {
+        defaultRelatedLinkConfigurator(link, item, variant === 'overlay' ? 'story' : 'docs');
+      }
+
+      const otherTags = item.overlap.filter((value) => value !== tag);
+      const tags = document.createElement('span');
+      tags.className = 'pds-related-tags';
+      tags.textContent = otherTags.length ? otherTags.join('  ') : tag;
+
+      listItem.appendChild(link);
+      listItem.appendChild(tags);
+      list.appendChild(listItem);
+    });
+
+    if (!list.children.length) return;
+
+    details.appendChild(list);
+    accordion.appendChild(details);
+  });
+
+  if (!accordion.children.length) return null;
+
+  return accordion;
+};
+
+const createOverlayLinkConfigurator = (context) => (link, item) => {
+  defaultRelatedLinkConfigurator(link, item, 'story');
+
+  const currentId = context?.id || context?.storyId;
+  if (item.storyId && currentId && item.storyId === currentId) {
+    link.setAttribute('aria-current', 'page');
+  }
+
+  if (!item.storyId) return;
+
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const navigated = selectStoryById(item.storyId, 'story');
+    if (!navigated) {
+      const target = `?path=/story/${item.storyId}`;
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.location.search = target;
+        } else {
+          window.location.search = target;
+        }
+      } catch {
+        window.location.search = target;
+      }
+    }
+  });
+};
+
+const createDocsLinkConfigurator = (context) => (link, item) => {
+  defaultRelatedLinkConfigurator(link, item, 'docs');
+
+  const currentSlug = getStorySlug(context?.id || context?.storyId);
+  if (item.slug && currentSlug && item.slug === currentSlug) {
+    link.setAttribute('aria-current', 'page');
+  }
+};
+
+const normalizeTag = (tag) => {
+  if (typeof tag !== 'string') return null;
+  const value = tag.trim().toLowerCase();
+  if (!value || DEFAULT_STORY_TAGS.has(value)) return null;
+  return value;
+};
+
+const mergeTagSets = (...sets) => {
+  const merged = new Set();
+  sets.forEach((set) => {
+    if (!set) return;
+
+    if (Array.isArray(set)) {
+      set.forEach((tag) => {
+        const normalized = normalizeTag(tag);
+        if (normalized) merged.add(normalized);
+      });
+      return;
+    }
+
+    if (set instanceof Set) {
+      set.forEach((tag) => {
+        const normalized = normalizeTag(tag);
+        if (normalized) merged.add(normalized);
+      });
+    }
+  });
+  return merged;
+};
+
+const getContextTags = (context) => {
+  const storyId = context.id || context.storyId;
+  const initial = mergeTagSets(
+    context.parameters?.tags,
+    context.parameters?.pds?.tags,
+    context.component?.parameters?.tags,
+    context.component?.tags,
+    context.tags,
+    context.moduleExport?.default?.tags,
+    context.moduleExport?.default?.parameters?.pds?.tags,
+    context.moduleExport?.parameters?.pds?.tags,
+    context.moduleExport?.pds?.tags,
+    context.parameters?.pdsTags,
+    context.moduleExport?.tags,
+    collectStoryIndexTags(storyId),
+    collectStoryStoreEntryTags(storyId)
+  );
+
+  if (initial.size > 0) {
+    return initial;
+  }
+
+  const fallback = new Set();
+  const clientApi = typeof window !== 'undefined' ? window.__STORYBOOK_CLIENT_API__ : null;
+  if (!clientApi?.raw) return fallback;
+
+  clientApi
+    .raw()
+    .filter((story) => story?.title === context.title)
+    .forEach((story) => {
+      getStoryTags(story).forEach((tag) => fallback.add(tag));
+    });
+
+  return fallback;
+};
+
+const getStoryTags = (story) => {
+  const collected = mergeTagSets(
+    story.parameters?.tags,
+    story.parameters?.pds?.tags,
+    story.meta?.tags,
+    story.tags,
+    story.meta?.parameters?.pds?.tags,
+    story.moduleExport?.default?.parameters?.pds?.tags,
+    story.moduleExport?.parameters?.pds?.tags,
+    story.moduleExport?.pds?.tags,
+    story.parameters?.pdsTags,
+    story.moduleExport?.default?.tags,
+    story.moduleExport?.tags,
+    collectStoryIndexTags(story.id),
+    collectStoryStoreEntryTags(story.id)
+  );
+
+  if (collected.size > 0) {
+    return collected;
+  }
+
+  const storyStore = getStoryStore();
+  const storyIndex = storyStore?.storyIndex;
+  if (storyIndex?.entries) {
+    const entry = storyIndex.entries[story.id];
+    if (entry?.tags) {
+      return mergeTagSets(entry.tags);
+    }
+  }
+
+  return collected;
+};
+
+const getAllStoriesForRelated = () => {
+  const stories = [];
+
+  const clientApi = typeof window !== 'undefined' ? window.__STORYBOOK_CLIENT_API__ : null;
+  if (clientApi?.raw) {
+    stories.push(...clientApi.raw());
+    return stories;
+  }
+
+  const storyStore = getStoryStore();
+  const indexEntries = storyStore?.storyIndex?.entries;
+  if (!indexEntries) return stories;
+
+  Object.entries(indexEntries).forEach(([storyId, entry]) => {
+    if (!entry || entry.type !== 'story') return;
+
+    let storeEntry;
+    if (storyStore?.fromId) {
+      try {
+        storeEntry = storyStore.fromId(storyId);
+      } catch {}
+    }
+
+    const parameters = storeEntry?.parameters || storeEntry?.story?.parameters || entry.parameters || {};
+    const meta = storeEntry?.meta || { title: entry.title };
+    const moduleExport = storeEntry?.moduleExport;
+    const tags = mergeTagSets(entry.tags, storeEntry?.tags);
+
+    stories.push({
+      id: storyId,
+      title: storeEntry?.story?.title || entry.title,
+      name: entry.name,
+      importPath: entry.importPath,
+      parameters,
+      meta,
+      moduleExport,
+      tags
+    });
+  });
+
+  return stories;
+};
+
+const computeRelatedStories = (context) => {
+  if (typeof window === 'undefined') return [];
+
+  const currentTags = getContextTags(context);
+  if (currentTags.size === 0) return [];
+
+  const byTitle = new Map();
+
+  getAllStoriesForRelated().forEach((story) => {
+    const title = story?.title;
+    if (!title) return;
+
+    const tags = getStoryTags(story);
+    if (tags.size === 0) return;
+
+    const storyId = story.id;
+    if (!storyId) return;
+    const slug = storyId.split('--')[0];
+
+    const existing = byTitle.get(title);
+    if (existing) {
+      tags.forEach((tag) => existing.tags.add(tag));
+      if (!existing.slug) existing.slug = slug;
+      if (!existing.storyId) existing.storyId = storyId;
+      return;
+    }
+
+    byTitle.set(title, {
+      title,
+      tags,
+      slug,
+      storyId
+    });
+  });
+
+  byTitle.delete(context.title);
+
+  const related = [];
+
+  byTitle.forEach((value) => {
+    const overlap = Array.from(value.tags).filter((tag) => currentTags.has(tag));
+    if (overlap.length === 0) return;
+
+    related.push({
+      title: value.title,
+      slug: value.slug,
+      storyId: value.storyId,
+      overlap,
+      score: overlap.length
+    });
+  });
+
+  related.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return a.title.localeCompare(b.title);
+  });
+
+  return related.slice(0, 6);
+};
+
+const renderRelatedFooter = (context) => {
+  if (typeof document === 'undefined') return;
+
+  const docsRoot = document.getElementById('docs-root');
+  if (!docsRoot) return;
+
+  const content = docsRoot.querySelector('.sbdocs-content');
+  if (!content) return;
+
+  const existing = content.querySelector('.pds-related-footer');
+  if (existing) existing.remove();
+
+  const related = computeRelatedStories(context);
+  if (!related.length) return;
+
+  const currentTags = getContextTags(context);
+  const accordion = buildRelatedAccordion(related, currentTags, {
+    variant: 'docs',
+    configureLink: createDocsLinkConfigurator(context)
+  });
+
+  if (!accordion) return;
+
+  ensureRelatedStyles();
+
+  const section = document.createElement('section');
+  section.className = 'pds-related-footer sbdocs sbdocs-section';
+
+  const heading = document.createElement('h2');
+  heading.textContent = 'Related';
+  section.appendChild(heading);
+
+  section.appendChild(accordion);
+  content.appendChild(section);
+};
+
+const removeRelatedOverlay = () => {
+  if (typeof document === 'undefined') return;
+  const existing = document.getElementById('pds-related-overlay');
+  if (existing) existing.remove();
+};
+
+const renderRelatedOverlay = (context) => {
+  if (typeof document === 'undefined') return;
+
+  const related = computeRelatedStories(context);
+  if (!related.length) {
+    removeRelatedOverlay();
+    return;
+  }
+
+  const currentTags = getContextTags(context);
+  const accordion = buildRelatedAccordion(related, currentTags, {
+    variant: 'overlay',
+    configureLink: createOverlayLinkConfigurator(context)
+  });
+
+  if (!accordion) {
+    removeRelatedOverlay();
+    return;
+  }
+
+  ensureRelatedStyles();
+
+  let overlay = document.getElementById('pds-related-overlay');
+  if (!overlay) {
+    overlay = document.createElement('aside');
+    overlay.id = 'pds-related-overlay';
+    document.body.appendChild(overlay);
+  }
+
+  overlay.textContent = '';
+
+  const heading = document.createElement('h2');
+  heading.textContent = 'Related';
+  overlay.appendChild(heading);
+  overlay.appendChild(accordion);
+};
+
+const withRelatedStories = (story, context) => {
+  const result = story();
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      if (context.viewMode === 'docs') {
+        renderRelatedFooter(context);
+        removeRelatedOverlay();
+        return;
+      }
+
+      if (context.viewMode === 'story') {
+        renderRelatedOverlay(context);
+        return;
+      }
+
+      removeRelatedOverlay();
+    });
+  });
+
+  return result;
+};
+
 /** @type { import('@storybook/web-components').Preview } */
 const preview = {
-  decorators: [withGlobalsHandler, withPDS, withHTMLExtractor, withDescription],
+  decorators: [withGlobalsHandler, withPDS, withHTMLExtractor, withDescription, withRelatedStories],
   parameters: {
     controls: {
       matchers: {

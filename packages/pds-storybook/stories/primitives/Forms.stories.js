@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Primitives/Forms',
+  tags: ['buttons', 'forms'],
   parameters: {
+    pds: {
+      tags: ['buttons', 'forms']
+    },
     docs: {
       description: {
         component: `Standard HTML form controls styled by PDS. 

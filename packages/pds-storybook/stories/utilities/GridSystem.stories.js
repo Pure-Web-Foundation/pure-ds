@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Utilities/Grid System',
+  tags: ['grouping'],
   parameters: {
+    pds: {
+      tags: ['grid', 'layout', 'utilities']
+    },
     docs: {
       description: {
         component: 'Modern, config-driven grid system with fixed column grids and auto-fit responsive layouts. All utilities are generated from layout.gridSystem configuration.'

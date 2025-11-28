@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Components/Pds Jsonform',
+  tags: ['buttons', 'forms'],
   parameters: {
+    pds: {
+      tags: ['buttons', 'forms']
+    },
     docs: {
       description: {
         component: `**⭐ Recommended for modern applications** - Automatically generate complete forms from JSON Schema definitions.

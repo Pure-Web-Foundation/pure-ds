@@ -2,7 +2,11 @@ import { html } from "lit";
 
 export default {
   title: "Primitives/Form Groups",
+  tags: ['grouping'],
   parameters: {
+    pds: {
+      tags: ['forms', 'grouping']
+    },
     docs: {
       description: {
         component: `Accessible radio groups and checkbox groups with proper ARIA attributes and semantic HTML.

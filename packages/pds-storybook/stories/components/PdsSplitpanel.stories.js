@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Components/Pds Splitpanel',
+  tags: ['grouping'],
   parameters: {
+    pds: {
+      tags: ['layout', 'grouping', 'productivity']
+    },
     docs: {
       description: {
         component: 'Resizable split panes with drag handle'

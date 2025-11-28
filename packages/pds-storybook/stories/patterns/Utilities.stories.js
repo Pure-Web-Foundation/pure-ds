@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Patterns/Utilities',
+  tags: ['grouping'],
   parameters: {
+    pds: {
+      tags: ['utilities', 'layout', 'grouping']
+    },
     docs: {
       description: {
         component: 'Utility classes for spacing, sizing, and common patterns'

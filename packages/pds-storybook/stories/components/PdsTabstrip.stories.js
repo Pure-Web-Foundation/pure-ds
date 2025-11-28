@@ -2,7 +2,11 @@ import { html } from "lit";
 
 export default {
   title: "Components/Pds Tabstrip",
+  tags: ['grouping'],
   parameters: {
+    pds: {
+      tags: ['navigation', 'grouping', 'layout']
+    },
     docs: {
       description: {
         component: "Accessible tab interface with keyboard navigation",

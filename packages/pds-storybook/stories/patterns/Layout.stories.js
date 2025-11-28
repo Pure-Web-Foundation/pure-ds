@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Patterns/Layout',
+  tags: ['grouping'],
   parameters: {
+    pds: {
+      tags: ['layout', 'grid', 'flex', 'grouping']
+    },
     docs: {
       description: {
         component: 'Layout patterns using grid, flex, and container utilities'

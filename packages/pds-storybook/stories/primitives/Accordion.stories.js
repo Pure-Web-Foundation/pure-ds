@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Primitives/Accordion',
+  tags: ['grouping'],
   parameters: {
+    pds: {
+      tags: ['grouping', 'navigation']
+    },
     docs: {
       description: {
         component: 'Accessible accordion using native HTML details/summary elements with proper ARIA attributes and progressive enhancement.'

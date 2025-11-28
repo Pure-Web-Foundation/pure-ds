@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Enhancements/Interactive States',
+  tags: ['buttons', 'interaction'],
   parameters: {
+    pds: {
+      tags: ['interaction', 'accessibility', 'feedback']
+    },
     docs: {
       description: {
         component: 'Interactive states including focus rings, hover effects, active states, disabled states, and working/loading states. All animations respect user preferences and accessibility settings.'
