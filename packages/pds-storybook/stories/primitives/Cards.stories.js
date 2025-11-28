@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Primitives/Cards',
+  tags: ['cards', 'layout', 'spacing', 'surface'],
   parameters: {
+    pds: {
+      tags: ['cards', 'layout', 'spacing', 'surface']
+    },
     docs: {
       description: {
         component: 'Versatile content containers with multiple surface variants. Cards automatically adapt to your theme and support nesting for complex layouts.'

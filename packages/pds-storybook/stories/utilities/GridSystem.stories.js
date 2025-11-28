@@ -2,10 +2,10 @@ import { html } from 'lit';
 
 export default {
   title: 'Utilities/Grid System',
-  tags: ['grouping'],
+  tags: ['layout', 'grid', 'spacing', 'utilities', 'gap'],
   parameters: {
     pds: {
-      tags: ['grid', 'layout', 'utilities']
+      tags: ['grid', 'layout', 'utilities', 'spacing', 'gap']
     },
     docs: {
       description: {

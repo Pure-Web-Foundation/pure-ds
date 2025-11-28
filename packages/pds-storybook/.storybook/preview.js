@@ -270,6 +270,70 @@ const withGlobalsHandler = (story, context) => {
 
 const DEFAULT_STORY_TAGS = new Set(['dev', 'test', 'story', 'stories', 'autodocs', 'example', 'examples']);
 
+const TAG_SYNONYMS = new Map([
+  ['padding', 'spacing'],
+  ['gap', 'spacing'],
+  ['grid', 'layout'],
+  ['flex', 'layout'],
+  ['pds-ask', 'interaction'],
+  ['dialogs', 'interaction'],
+  ['validation', 'interaction'],
+  ['confirmation', 'interaction']
+]);
+
+const normalizeTag = (tag) => {
+  if (typeof tag !== 'string') return null;
+  const value = tag.trim().toLowerCase();
+  if (!value) return null;
+
+  const synonym = TAG_SYNONYMS.get(value);
+  const normalized = synonym || value;
+
+  if (DEFAULT_STORY_TAGS.has(normalized)) return null;
+
+  return normalized;
+};
+
+const SEMANTIC_TAG_RELATIONS = new Map([
+  ['interaction', ['dialogs', 'buttons', 'forms']],
+  ['dialogs', ['interaction', 'pds-ask', 'confirmation', 'forms']],
+  ['pds-ask', ['dialogs', 'interaction', 'forms']],
+  ['buttons', ['interaction', 'controls']],
+  ['forms', ['interaction', 'validation']],
+  ['spacing', ['layout', 'gap', 'padding', 'cards', 'grid']],
+  ['layout', ['spacing', 'grid', 'flex', 'cards']],
+  ['grid', ['layout', 'spacing']],
+  ['gap', ['spacing']],
+  ['cards', ['layout', 'spacing', 'surface']],
+  ['surface', ['cards', 'spacing']],
+  ['utilities', ['spacing', 'layout']],
+  ['focus', ['interaction']],
+  ['hover', ['interaction']],
+  ['confirmation', ['dialogs', 'interaction']]
+]);
+
+const expandSemanticTags = (input) => {
+  if (!input || input.size === 0) return input;
+  const expanded = new Set(input);
+  const queue = Array.from(input);
+
+  while (queue.length > 0) {
+    const tag = queue.pop();
+    const related = SEMANTIC_TAG_RELATIONS.get(tag);
+    if (!related) continue;
+    related.forEach((value) => {
+      const normalized = normalizeTag(value);
+      if (!normalized) return;
+      if (!expanded.has(normalized)) {
+        expanded.add(normalized);
+        queue.push(normalized);
+      }
+    });
+  }
+
+  return expanded;
+};
+
 const getStoryStore = () => {
   if (typeof window === 'undefined') return null;
   return window.__STORYBOOK_STORY_STORE__ || null;
@@ -700,13 +764,6 @@ const createDocsLinkConfigurator = (context) => (link, item) => {
   }
 };
 
-const normalizeTag = (tag) => {
-  if (typeof tag !== 'string') return null;
-  const value = tag.trim().toLowerCase();
-  if (!value || DEFAULT_STORY_TAGS.has(value)) return null;
-  return value;
-};
-
 const mergeTagSets = (...sets) => {
   const merged = new Set();
   sets.forEach((set) => {
@@ -749,7 +806,7 @@ const getContextTags = (context) => {
   );
 
   if (initial.size > 0) {
-    return initial;
+    return expandSemanticTags(initial);
   }
 
   const fallback = new Set();
@@ -763,7 +820,7 @@ const getContextTags = (context) => {
       getStoryTags(story).forEach((tag) => fallback.add(tag));
     });
 
-  return fallback;
+  return expandSemanticTags(fallback);
 };
 
 const getStoryTags = (story) => {
@@ -784,7 +841,7 @@ const getStoryTags = (story) => {
   );
 
   if (collected.size > 0) {
-    return collected;
+    return expandSemanticTags(collected);
   }
 
   const storyStore = getStoryStore();
@@ -792,11 +849,11 @@ const getStoryTags = (story) => {
   if (storyIndex?.entries) {
     const entry = storyIndex.entries[story.id];
     if (entry?.tags) {
-      return mergeTagSets(entry.tags);
+      return expandSemanticTags(mergeTagSets(entry.tags));
     }
   }
 
-  return collected;
+  return expandSemanticTags(collected);
 };
 
 const getAllStoriesForRelated = () => {

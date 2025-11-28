@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Enhancements/Required Fields',
+  tags: ['forms', 'interaction'],
   parameters: {
+    pds: {
+      tags: ['forms', 'interaction']
+    },
     docs: {
       description: {
         component: 'Automatic asterisk indicators for required form fields'

@@ -2,7 +2,11 @@ import { html } from "lit";
 
 export default {
   title: "Enhancements/Open Groups",
+  tags: ['forms', 'interaction'],
   parameters: {
+    pds: {
+      tags: ['forms', 'interaction']
+    },
     docs: {
       description: {
         component:

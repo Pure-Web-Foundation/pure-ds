@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Enhancements/Toggles',
+  tags: ['forms', 'interaction'],
   parameters: {
+    pds: {
+      tags: ['forms', 'interaction']
+    },
     docs: {
       description: {
         component: 'Transform checkboxes into toggle switches using data-toggle attribute'

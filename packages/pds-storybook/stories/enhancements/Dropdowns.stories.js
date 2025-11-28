@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Enhancements/Dropdowns',
+  tags: ['forms', 'interaction'],
   parameters: {
+    pds: {
+      tags: ['forms', 'interaction']
+    },
     docs: {
       description: {
         component: 'Progressive enhancement for dropdown menus using data-dropdown attribute'

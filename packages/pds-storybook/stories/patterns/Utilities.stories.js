@@ -2,10 +2,10 @@ import { html } from 'lit';
 
 export default {
   title: 'Patterns/Utilities',
-  tags: ['grouping'],
+  tags: ['utilities', 'spacing', 'layout', 'gap'],
   parameters: {
     pds: {
-      tags: ['utilities', 'layout', 'grouping']
+      tags: ['utilities', 'layout', 'spacing', 'gap']
     },
     docs: {
       description: {

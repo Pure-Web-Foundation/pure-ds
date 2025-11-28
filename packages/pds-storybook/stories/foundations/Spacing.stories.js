@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Foundations/Spacing',
+  tags: ['spacing', 'tokens'],
   parameters: {
+    pds: {
+      tags: ['spacing', 'tokens']
+    },
     docs: {
       description: {
         component: 'Design tokens - colors, typography, spacing, icons'

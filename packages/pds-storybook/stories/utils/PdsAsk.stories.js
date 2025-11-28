@@ -75,7 +75,11 @@ const formDataToObject = (formData) => {
 
 export default {
   title: 'Utilities/PDS ask',
+  tags: ['interaction', 'dialogs', 'forms'],
   parameters: {
+    pds: {
+      tags: ['interaction', 'dialogs', 'forms', 'pds-ask']
+    },
     docs: {
       description: {
         component: `The \`PDS.ask()\` helper wraps the native \`<dialog>\` element with Pure DS styling and a promise-based API.

@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Enhancements/Range Sliders',
+  tags: ['forms', 'interaction'],
   parameters: {
+    pds: {
+      tags: ['forms', 'interaction']
+    },
     docs: {
       description: {
         component: `Enhanced range inputs with two display modes:

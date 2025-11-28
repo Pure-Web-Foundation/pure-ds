@@ -2,10 +2,10 @@ import { html } from 'lit';
 
 export default {
   title: 'Components/Pds Jsonform',
-  tags: ['buttons', 'forms'],
+  tags: ['buttons', 'forms', 'interaction'],
   parameters: {
     pds: {
-      tags: ['buttons', 'forms']
+      tags: ['buttons', 'forms', 'interaction']
     },
     docs: {
       description: {
