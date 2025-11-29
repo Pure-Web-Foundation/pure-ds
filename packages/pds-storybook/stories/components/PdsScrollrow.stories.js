@@ -3,6 +3,9 @@ import { html } from 'lit';
 export default {
   title: 'Components/Pds Scrollrow',
   parameters: {
+    pds: {
+      tags: ['layout' ]
+    },
     docs: {
       description: {
         component: 'Horizontal scrolling container with navigation buttons'

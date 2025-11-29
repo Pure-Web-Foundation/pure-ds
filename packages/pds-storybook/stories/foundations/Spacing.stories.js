@@ -37,12 +37,12 @@ export const Default = {
     return html`
       <div class="story-container" style="padding: 2rem;">
         
-    <div style="display: flex; flex-direction: column; gap: var(--spacing-2);">
-      <div style="background: var(--color-primary-100); padding: var(--spacing-1);">Spacing 1</div>
-      <div style="background: var(--color-primary-200); padding: var(--spacing-2);">Spacing 2</div>
-      <div style="background: var(--color-primary-300); padding: var(--spacing-3);">Spacing 3</div>
-      <div style="background: var(--color-primary-400); padding: var(--spacing-4);">Spacing 4</div>
-      <div style="background: var(--color-primary-500); padding: var(--spacing-5); color: white;">Spacing 5</div>
+    <div class="flex flex-col gap-sm">
+      <div class="card surface" style="padding: var(--spacing-1);">Padding: --spacing-1</div>
+      <div class="card" style="padding: var(--spacing-2);">Padding: --spacing-2</div>
+      <div class="card" style="padding: var(--spacing-3);">Padding: --spacing-3</div>
+      <div class="card" style="padding: var(--spacing-4);">Padding: --spacing-4</div>
+      <div class="card" style="padding: var(--spacing-5);">Padding: --spacing-5</div>
     </div>
   
       </div>

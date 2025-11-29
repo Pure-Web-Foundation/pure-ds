@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Components/Pds Icon',
+  tags: ['icons', 'svg', 'sprite', 'buttons'],
   parameters: {
+    pds: {
+      tags: ['icons', 'svg', 'sprite']
+    },
     docs: {
       description: {
         component: 'SVG sprite icons with fallbacks'

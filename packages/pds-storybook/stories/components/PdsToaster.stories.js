@@ -3,6 +3,9 @@ import { html } from 'lit';
 export default {
   title: 'Components/Pds Toaster',
   parameters: {
+    pds: {
+      tags: ['interaction', 'notifications']
+    },
     docs: {
       description: {
         component: 'Toast notification system with auto-dismiss and stacking. Toast notifications appear in the top-right corner and auto-dismiss after a few seconds based on message length.'

@@ -2,10 +2,10 @@ import { html } from 'lit';
 
 export default {
   title: 'Primitives/Cards',
-  tags: ['cards', 'layout', 'spacing', 'surface'],
+  tags: ['cards', 'layout', 'spacing', 'surface', 'colors'],
   parameters: {
     pds: {
-      tags: ['cards', 'layout', 'spacing', 'surface']
+      tags: ['cards', 'layout', 'spacing', 'surface', 'colors']
     },
     docs: {
       description: {

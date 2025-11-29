@@ -3,6 +3,9 @@ import { html } from 'lit';
 export default {
   title: 'Primitives/Alerts',
   parameters: {
+    pds: {
+      tags: ['colors']
+    },
     docs: {
       description: {
         component: 'Basic UI elements - buttons, forms, cards, badges'

@@ -3,6 +3,9 @@ import { html } from 'lit';
 export default {
   title: 'Foundations/Smart Surfaces',
   parameters: {
+    pds: {
+      tags: ['surface', 'colors', 'layout']
+    },
     docs: {
       description: {
         component: 'Smart surface system that automatically adapts text, icons, shadows, and borders based on backgrounds. Maintains WCAG AA contrast ratios automatically.'

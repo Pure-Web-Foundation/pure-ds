@@ -3,6 +3,9 @@ import { html } from 'lit';
 export default {
   title: 'Components/Pds Upload',
   parameters: {
+     pds: {
+      tags: ['forms']
+    },
     docs: {
       description: {
         component: 'File upload with preview and validation'

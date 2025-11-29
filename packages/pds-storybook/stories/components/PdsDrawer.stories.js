@@ -5,7 +5,7 @@ export default {
   tags: ['grouping'],
   parameters: {
     pds: {
-      tags: ['navigation', 'layout', 'grouping']
+      tags: ['navigation', 'layout', 'grouping', 'interaction']
     },
     docs: {
       description: {

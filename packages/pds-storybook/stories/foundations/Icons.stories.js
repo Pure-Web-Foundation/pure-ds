@@ -38,30 +38,30 @@ CommonIcons.storyName = 'Common Icons';
 export const IconSizes = () => html`
   <div style="padding: var(--spacing-4);">
     <h3>Icon Sizes</h3>
-    <div style="display: flex; gap: var(--spacing-6); align-items: center; flex-wrap: wrap;">
-      <div style="text-align: center;">
+    <div class="gap-md flex flex-col flex-wrap">
+      <div class="text-center">
         <pds-icon icon="heart" size="xs"></pds-icon>
-        <div style="font-size: 0.75rem; margin-top: var(--spacing-1); opacity: 0.7;">xs (16px)</div>
+        <small class="text-muted">xs (16px)</small>
       </div>
-      <div style="text-align: center;">
+      <div class="text-center">
         <pds-icon icon="heart" size="sm"></pds-icon>
-        <div style="font-size: 0.75rem; margin-top: var(--spacing-1); opacity: 0.7;">sm (20px)</div>
+        <small class="text-muted">sm (20px)</small>
       </div>
-      <div style="text-align: center;">
+      <div class="text-center">
         <pds-icon icon="heart" size="md"></pds-icon>
-        <div style="font-size: 0.75rem; margin-top: var(--spacing-1); opacity: 0.7;">md (24px)</div>
+        <small class="text-muted">md (24px)</small>
       </div>
-      <div style="text-align: center;">
+      <div class="text-center">
         <pds-icon icon="heart" size="lg"></pds-icon>
-        <div style="font-size: 0.75rem; margin-top: var(--spacing-1); opacity: 0.7;">lg (32px)</div>
+        <small class="text-muted">lg (32px)</small>
       </div>
-      <div style="text-align: center;">
+      <div class="text-center">
         <pds-icon icon="heart" size="xl"></pds-icon>
-        <div style="font-size: 0.75rem; margin-top: var(--spacing-1); opacity: 0.7;">xl (48px)</div>
+        <small class="text-muted">xl (48px)</small>
       </div>
-      <div style="text-align: center;">
+      <div class="text-center">
         <pds-icon icon="heart" size="2xl"></pds-icon>
-        <div style="font-size: 0.75rem; margin-top: var(--spacing-1); opacity: 0.7;">2xl (64px)</div>
+        <small class="text-muted">2xl (64px)</small>
       </div>
     </div>
   </div>
@@ -120,7 +120,7 @@ export const AllIcons = () => {
       </label>
       
       ${Object.entries(iconConfig).map(([category, icons]) => html`
-        <article class="card icon-category" style="margin-bottom: var(--spacing-6);">
+        <article class="card icon-category" >
           <h3 style="text-transform: capitalize; margin-bottom: var(--spacing-4);">
             ${category.replace(/([A-Z])/g, ' $1').trim()}
             <span style="font-size: 0.85rem; font-weight: normal; opacity: 0.6; margin-left: var(--spacing-2);">

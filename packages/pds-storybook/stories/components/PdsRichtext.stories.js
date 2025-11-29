@@ -3,6 +3,9 @@ import { html } from 'lit';
 export default {
   title: 'Components/Pds Richtext',
   parameters: {
+    pds: {
+      tags: ['editor', 'richtext', 'forms']
+    },
     docs: {
       description: {
         component: 'Rich text editor with markdown support and formatting toolbar'

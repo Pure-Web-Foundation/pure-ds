@@ -275,10 +275,14 @@ const TAG_SYNONYMS = new Map([
   ['gap', 'spacing'],
   ['grid', 'layout'],
   ['flex', 'layout'],
-  ['pds-ask', 'interaction'],
   ['dialogs', 'interaction'],
   ['validation', 'interaction'],
-  ['confirmation', 'interaction']
+  ['confirmation', 'interaction'],
+  ['surfaces', 'surface'],
+  ['alert', 'alerts'],
+  ['badge', 'badges'],
+  ['pill', 'pills'],
+  ['color', 'colors']
 ]);
 
 const normalizeTag = (tag) => {
@@ -295,21 +299,23 @@ const normalizeTag = (tag) => {
 };
 
 const SEMANTIC_TAG_RELATIONS = new Map([
-  ['interaction', ['dialogs', 'buttons', 'forms']],
-  ['dialogs', ['interaction', 'pds-ask', 'confirmation', 'forms']],
-  ['pds-ask', ['dialogs', 'interaction', 'forms']],
-  ['buttons', ['interaction', 'controls']],
-  ['forms', ['interaction', 'validation']],
-  ['spacing', ['layout', 'gap', 'padding', 'cards', 'grid']],
-  ['layout', ['spacing', 'grid', 'flex', 'cards']],
-  ['grid', ['layout', 'spacing']],
-  ['gap', ['spacing']],
-  ['cards', ['layout', 'spacing', 'surface']],
-  ['surface', ['cards', 'spacing']],
-  ['utilities', ['spacing', 'layout']],
-  ['focus', ['interaction']],
-  ['hover', ['interaction']],
-  ['confirmation', ['dialogs', 'interaction']]
+  // ['interaction', ['dialogs', 'buttons', 'forms']],
+  // ['buttons', ['interaction', 'controls']],
+  // ['forms', ['interaction', 'validation']],
+  // ['spacing', ['layout', 'gap', 'padding', 'cards', 'grid']],
+  // ['layout', ['spacing', 'grid', 'flex', 'cards']],
+  // ['grid', ['layout', 'spacing']],
+  // ['gap', ['spacing']],
+  // ['cards', ['layout', 'spacing', 'surface']],
+  // ['surface', ['cards', 'spacing']],
+  // ['alerts', ['interaction', 'colors']],
+  // ['badges', ['colors', 'pills']],
+  // ['pills', ['badges', 'colors']],
+  // ['colors', ['surface']],
+  // ['utilities', ['spacing', 'layout']],
+  // ['focus', ['interaction']],
+  // ['hover', ['interaction']],
+  // ['confirmation', ['dialogs', 'interaction']]
 ]);
 
 const expandSemanticTags = (input) => {
@@ -378,73 +384,72 @@ const ensureRelatedStyles = (() => {
     style.id = 'pds-related-footer-styles';
     style.textContent = `
       .pds-related-footer {
-        margin-top: 2.5rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid var(--sb-border-color, rgba(0, 0, 0, 0.08));
+        margin-top: var(--spacing-8);
+        padding-top: var(--spacing-5);
+        border-top: 1px solid var(--color-border);
       }
 
       .pds-related-footer h2 {
-        font-size: 0.85rem;
+        margin: 0 0 var(--spacing-3);
+        font-size: var(--font-size-sm);
         text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--sbdocs-color-secondary, #5c5f62);
-        margin: 0 0 0.75rem;
+        letter-spacing: var(--letter-spacing-wide, 0.08em);
+        color: var(--color-text-muted);
       }
 
       #pds-related-overlay {
         position: fixed;
-        inset-block-end: 24px;
-        inset-inline-end: 24px;
-        z-index: 2147483647;
+        inset-block-end: var(--spacing-6);
+        inset-inline-end: var(--spacing-6);
+        z-index: var(--z-popover, 2147483647);
         max-width: min(360px, 90vw);
-        box-shadow: 0 12px 32px rgba(15, 33, 62, 0.18);
-        border-radius: 16px;
-        background: color-mix(in srgb, var(--color-surface-raised, #ffffff) 92%, transparent);
-        border: 1px solid color-mix(in srgb, var(--color-border-subtle, rgba(15, 33, 62, 0.1)) 80%, transparent);
-        padding: 20px;
+        background: var(--color-surface-overlay);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-5);
         display: grid;
-        gap: 12px;
-        font-family: var(--font-family-base, system-ui);
-        backdrop-filter: blur(18px);
+        gap: var(--spacing-4);
+        box-shadow: var(--shadow-lg);
+        font-family: var(--font-family-body, var(--font-family-base, system-ui));
+        color: var(--color-text-primary);
+        backdrop-filter: var(--backdrop-filter, blur(12px));
       }
 
       #pds-related-overlay h2 {
         margin: 0;
-        font-size: 0.78rem;
+        font-size: var(--font-size-xs);
         text-transform: uppercase;
-        letter-spacing: 0.12em;
-        color: var(--surface-text-secondary, rgba(26, 32, 44, 0.62));
+        letter-spacing: var(--letter-spacing-wide, 0.12em);
+        color: var(--color-text-muted);
       }
 
       .pds-related-accordion {
         display: grid;
-        gap: 0.75rem;
+        gap: var(--spacing-3);
       }
 
       .pds-related-accordion details {
-        border-radius: 12px;
+        border-radius: var(--radius-md);
         overflow: hidden;
-        border: 1px solid var(--pds-related-border, rgba(0, 0, 0, 0.08));
-        background: var(--pds-related-bg, transparent);
+        border: 1px solid var(--color-border);
+        background: var(--color-surface-base);
       }
 
       #pds-related-overlay .pds-related-accordion details {
-        --pds-related-border: color-mix(in srgb, var(--color-border-subtle, rgba(15, 33, 62, 0.12)) 80%, transparent);
-        --pds-related-bg: color-mix(in srgb, var(--color-surface-raised, #ffffff) 92%, transparent);
+        background: var(--color-surface-overlay);
       }
 
       .pds-related-footer .pds-related-accordion details {
-        --pds-related-border: var(--sb-border-color, rgba(0, 0, 0, 0.08));
-        --pds-related-bg: color-mix(in srgb, var(--sbdocs-color-background, #ffffff) 96%, transparent);
+        background: var(--color-surface-base);
       }
 
       .pds-related-accordion summary {
         display: flex;
         align-items: center;
-        gap: 0.4rem;
-        padding: 0.5rem 0.75rem;
-        font-weight: 600;
-        font-size: 0.78rem;
+        gap: var(--spacing-2);
+        padding: var(--spacing-3) var(--spacing-4);
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-sm);
         cursor: pointer;
         list-style: none;
       }
@@ -458,10 +463,10 @@ const ensureRelatedStyles = (() => {
         border: solid currentColor;
         border-width: 0 2px 2px 0;
         display: inline-block;
-        padding: 3px;
+        padding: 4px;
         transform: rotate(-45deg);
         margin-inline-start: auto;
-        transition: transform 0.2s ease;
+        transition: transform var(--transition-fast);
       }
 
       .pds-related-accordion details[open] summary::after {
@@ -470,41 +475,40 @@ const ensureRelatedStyles = (() => {
 
       .pds-related-tag-label {
         text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-size: 0.72rem;
+        letter-spacing: var(--letter-spacing-wide, 0.08em);
+        font-size: var(--font-size-xs);
         color: inherit;
       }
 
       .pds-related-count {
-        background: color-mix(in srgb, var(--color-primary, #3f6df6) 18%, transparent);
-        color: var(--color-primary, #3f6df6);
-        border-radius: 999px;
-        font-size: 0.68rem;
-        font-weight: 600;
+        background: var(--color-primary-100);
+        color: var(--color-primary-700);
+        border-radius: var(--radius-full, 999px);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
         line-height: 1;
-        padding: 0.15rem 0.4rem;
+        padding: var(--spacing-1) var(--spacing-2);
       }
 
       .pds-related-list {
         list-style: none;
         display: grid;
-        gap: 0.4rem;
-        padding: 0 0.75rem 0.55rem;
+        gap: var(--spacing-2);
+        padding: 0 var(--spacing-4) var(--spacing-3);
         margin: 0;
       }
 
       .pds-related-list-item {
-        padding-block: unset!important;
         display: flex;
         flex-direction: row;
-        gap: var(--spacing-2, 0.35rem);
+        gap: var(--spacing-3);
         align-items: baseline;
         justify-content: space-between;
       }
 
       .pds-related-list a {
-        font-weight: 600;
-        color: var(--color-primary, #3f6df6);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-primary-text, var(--color-primary-600));
         text-decoration: none;
       }
 
@@ -513,18 +517,18 @@ const ensureRelatedStyles = (() => {
       }
 
       .pds-related-list a[aria-current="page"] {
-        color: var(--surface-text-secondary, rgba(26, 32, 44, 0.55));
+        color: var(--color-text-muted);
         cursor: default;
         text-decoration: none;
       }
 
       .pds-related-tags {
-        font-size: 0.78rem;
-        color: var(--surface-text-secondary, rgba(26, 32, 44, 0.55));
+        font-size: var(--font-size-xs);
+        color: var(--color-text-muted);
       }
 
       .pds-related-footer .pds-related-tags {
-        color: var(--sbdocs-color, rgba(60, 60, 60, 0.7));
+        color: var(--color-text-muted);
       }
     `;
 
@@ -1031,6 +1035,7 @@ const renderRelatedOverlay = (context) => {
   }
 
   overlay.textContent = '';
+  overlay.className = 'pds-related-overlay card card-elevated surface-overlay shadow-lg grid gap-md';
 
   const heading = document.createElement('h2');
   heading.textContent = 'Related';

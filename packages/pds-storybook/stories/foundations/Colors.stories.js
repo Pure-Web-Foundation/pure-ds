@@ -3,6 +3,9 @@ import { html } from 'lit';
 export default {
   title: 'Foundations/Colors',
   parameters: {
+    pds: {
+      tags: ['colors']
+    },
     docs: {
       description: {
         component: 'Design tokens - colors, typography, spacing, icons'

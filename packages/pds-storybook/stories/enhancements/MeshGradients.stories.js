@@ -3,6 +3,9 @@ import { html } from 'lit';
 export default {
   title: 'Enhancements/Mesh Gradients',
   parameters: {
+    pds: {
+      tags: ['colors']
+    },
     docs: {
       description: {
         component: 'Beautiful mesh gradient backgrounds generated from your color palette. Automatically adapts to light and dark modes with 5 different variations.'
