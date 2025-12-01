@@ -4119,8 +4119,8 @@ nav[data-dropdown] {
     -webkit-overflow-scrolling: touch;
 
     &.drawer-open{
-      overflow: hidden;
-      scrollbar-gutter: stable;
+      /* overflow: hidden; */
+      /* scrollbar-gutter: stable; */
     }
   }
 

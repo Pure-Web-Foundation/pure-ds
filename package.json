@@ -1,7 +1,7 @@
 {
   "name": "pure-ds",
   "shortname": "pds",
-  "version": "0.2.25",
+  "version": "0.2.26",
   "description": "Pure Design System - Why develop a Design System when you can generate one?",
   "repository": {
     "type": "git",
@@ -49,6 +49,7 @@
     "public/pds/components/",
     "public/assets/pds/icons/pds-icons.svg",
     "packages/pds-cli/bin/",
+    "packages/pds-cli/lib/",
     "src/js/pds.d.ts",
     "src/js/pds.js",
     "src/js/pds-core/",

@@ -4,7 +4,7 @@
  * PDS Build Icons CLI
  *
  * Rebuilds the SVG sprite (pds-icons.svg) into the consumer app's configured static root.
- * Output path: [config.static.root]/icons/pds-icons.svg
+ * Output path: [public.root]/icons/pds-icons.svg
  *
  * Usage: node node_modules/pure-ds/packages/pds-cli/bin/pds-build-icons.js
  */
@@ -12,6 +12,7 @@
 import { readFile, writeFile, mkdir, access } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
+import { resolvePublicAssetDirectory, ensurePdsPath } from '../lib/asset-roots.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -73,17 +74,19 @@ async function main() {
     log('\n🎨 PDS Build Icons • starting...', 'bold');
     const config = await loadConsumerConfig();
 
-    // Require static.root to be configured
-    const rootInput = process.env.PDS_STATIC_ROOT || config?.static?.root;
-    if (!rootInput || typeof rootInput !== 'string') {
-      log('⚠️  static.root is not configured in pds.config.js — skipping icon build.', 'yellow');
-      log('   Set config.static.root (e.g., "public/assets/pds/") and re-run.', 'yellow');
-      process.exit(0);
-      return;
+    const envRoot = process.env.PDS_STATIC_ROOT;
+    let staticRoot;
+    if (envRoot && typeof envRoot === 'string') {
+      const resolved = path.isAbsolute(envRoot)
+        ? envRoot
+        : path.resolve(process.cwd(), envRoot);
+      staticRoot = ensurePdsPath(resolved);
+    } else {
+      staticRoot = resolvePublicAssetDirectory(config);
     }
-    const staticRoot = path.isAbsolute(rootInput) ? rootInput : path.resolve(process.cwd(), rootInput);
-  const outDir = path.join(staticRoot, 'icons');
-  const outFile = path.join(outDir, 'pds-icons.svg');
+
+    const outDir = path.join(staticRoot, 'icons');
+    const outFile = path.join(outDir, 'pds-icons.svg');
 
     // Determine icon set configuration (consumer overrides internal defaults)
     const internal = await import(pathToFileURL(path.join(repoRoot, 'src/js/pds-core/pds-config.js')).href);

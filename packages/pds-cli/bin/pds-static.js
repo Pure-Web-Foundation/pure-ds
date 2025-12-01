@@ -6,10 +6,10 @@
  * Generates a static package of Pure Design System assets for consumer apps:
  * - Discovers the web root (reuses discoverWebRoot from postinstall)
  * - Reads pds.config.js (source of truth)
- * - Copies auto-define web components into [config.static.root]/components/
- * - Generates CSS layers into [config.static.root]/styles/ (and .css.js modules)
- *
- * Default target when config.static.root missing: <webroot>/pds
+ * - Copies auto-define web components into [public.root]/components/
+ * - Generates CSS layers into [public.root]/styles/ (and .css.js modules)
+
+ * Default target when no public/static root provided: <webroot>/assets/pds
  *
  * Usage:
  *   node packages/pds-cli/bin/pds-static.js
@@ -25,6 +25,13 @@ import { discoverWebRoot } from './postinstall.js';
 import { runPdsBuildIcons } from './pds-build-icons.js';
 import { generateManifest } from './generate-manifest.js';
 import { generateCSSData } from './generate-css-data.js';
+import {
+  resolvePublicAssetDirectory,
+  resolvePublicAssetURL,
+  isUrlLike,
+  getPublicRootCandidate,
+  ensurePdsPath,
+} from '../lib/asset-roots.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -192,21 +199,30 @@ async function main() {
   // 2) Load config
   const config = await loadConsumerConfig();
 
-  // 3) Resolve target directory: prefer config.static.root, else fall back to webRoot + base
-  //    IMPORTANT: Resolve relative paths against the consumer app's CWD, not the PDS package root.
+  // 3) Resolve target directory using normalized public/static root
+  const rootCandidate = getPublicRootCandidate(config);
   let targetDir;
-  if (config?.static?.root) {
-    const rootPath = String(config.static.root);
-    targetDir = path.isAbsolute(rootPath)
-      ? rootPath
-      : path.resolve(process.cwd(), rootPath);
+  let assetUrlRoot;
+
+  if (!rootCandidate && config?.staticBase) {
+    const baseFolderName = String(config.staticBase || '').trim().replace(/^\/+|\/+$/g, '') || 'assets';
+    targetDir = ensurePdsPath(path.join(webRoot.path, baseFolderName));
+    assetUrlRoot = resolvePublicAssetURL({ public: { root: baseFolderName } });
   } else {
-    const baseFolderName = String(config?.staticBase || 'pds').replace(/^\/+|\/+$/g, '');
-    targetDir = path.join(webRoot.path, baseFolderName);
+    targetDir = resolvePublicAssetDirectory(config, { webRootPath: webRoot.path });
+    assetUrlRoot = resolvePublicAssetURL(config);
   }
 
   log(`📂 Web root: ${webRoot.relative}/`,'blue');
-  log(`📦 Target folder: ${path.relative(process.cwd(), targetDir)}`,'blue');
+  const relativeTarget = path.relative(process.cwd(), targetDir) || '.';
+  log(`📦 Target folder: ${relativeTarget}`,'blue');
+  log(`🌐 Public URL: ${assetUrlRoot}`,'blue');
+
+  if (rootCandidate && isUrlLike(rootCandidate)) {
+    log('⚠️  public/static root looks like a URL. Exporting assets under the discovered web root instead.', 'yellow');
+  }
+
+  await mkdir(targetDir, { recursive: true });
 
   // 4) Copy component modules into target/components
   // Prefer new location (public/pds/components); fallback to legacy (public/auto-define)
@@ -304,22 +320,15 @@ async function main() {
 
   // 9) Write runtime config helper for auto-discovery
   try {
-    // Calculate the web-root-relative path to the target directory
-    const relativePath = path.relative(process.cwd(), targetDir).replace(/\\/g, '/');
-    const urlPath = relativePath.startsWith('public/') 
-      ? '/' + relativePath.substring('public/'.length)
-      : '/' + relativePath;
-    const normalizedUrlPath = urlPath.endsWith('/') ? urlPath : urlPath + '/';
-    
     const runtimeConfig = {
       exportedAt: new Date().toISOString(),
-      staticRoot: normalizedUrlPath,
+      staticRoot: assetUrlRoot,
       paths: {
-        tokens: `${normalizedUrlPath}styles/pds-tokens.css.js`,
-        primitives: `${normalizedUrlPath}styles/pds-primitives.css.js`,
-        components: `${normalizedUrlPath}styles/pds-components.css.js`,
-        utilities: `${normalizedUrlPath}styles/pds-utilities.css.js`,
-        styles: `${normalizedUrlPath}styles/pds-styles.css.js`,
+        tokens: `${assetUrlRoot}styles/pds-tokens.css.js`,
+        primitives: `${assetUrlRoot}styles/pds-primitives.css.js`,
+        components: `${assetUrlRoot}styles/pds-components.css.js`,
+        utilities: `${assetUrlRoot}styles/pds-utilities.css.js`,
+        styles: `${assetUrlRoot}styles/pds-styles.css.js`,
       }
     };
     

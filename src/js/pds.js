@@ -56,6 +56,7 @@ import { ask } from "./common/ask.js";
 import { PDSQuery } from "./pds-core/pds-query.js";
 import * as common from "./common/common.js";
 import { defaultPDSEnhancers } from "./pds-core/pds-enhancers.js";
+import { resolvePublicAssetURL } from "./pds-core/pds-paths.js";
 
 // Font loading utilities
 import { loadTypographyFonts } from "./common/font-loader.js";
@@ -1079,36 +1080,11 @@ async function live(config) {
 
     // Note: auto-define base URL is used internally; no globals are written
 
-    // Derive a sensible default AutoDefiner base for LIVE mode too when not provided
-    // If consumer provided config.static.root, default to `${root}components/` so that
-    // PDS components resolve from the installed assets directory. This mirrors static mode behavior.
+    // Derive a sensible default AutoDefiner base for LIVE mode too when not provided.
+    // Use the normalized public asset root so live and static modes share the same directory layout.
+    const assetRootURL = resolvePublicAssetURL(config);
     let derivedAutoDefineBaseURL =
-      (cfgAuto && cfgAuto.baseURL) || "/auto-define/";
-    if (!(cfgAuto && cfgAuto.baseURL)) {
-      const staticConfig = /** @type {{ root?: string }} */ (
-        config.static || {}
-      );
-      const toUrlRoot = (root) => {
-        if (!root) return null;
-        try {
-          let r = String(root).replace(/\\/g, "/");
-          if (/^https?:\/\//i.test(r) || r.startsWith("/")) {
-            if (!r.endsWith("/")) r += "/";
-            return r;
-          }
-          if (r.startsWith("public/")) r = r.substring("public/".length);
-          if (!r.startsWith("/")) r = "/" + r;
-          if (!r.endsWith("/")) r += "/";
-          return r;
-        } catch {
-          return null;
-        }
-      };
-      const staticRootURL = toUrlRoot(staticConfig.root);
-      if (staticRootURL) {
-        derivedAutoDefineBaseURL = `${staticRootURL}components/`;
-      }
-    }
+      (cfgAuto && cfgAuto.baseURL) || `${assetRootURL}components/`;
 
     // 5) Set up AutoDefiner + run enhancers (defaults merged with user)
     let autoDefiner = null;
@@ -1223,9 +1199,9 @@ async function staticInit(config) {
   const manageTheme = config.manageTheme ?? true;
   const themeStorageKey = config.themeStorageKey ?? "pure-ds-theme";
   let staticPaths = config.staticPaths ?? {};
-  const staticConfig = /** @type {{ root?: string }} */ (config.static || {});
+  const assetRootURL = resolvePublicAssetURL(config);
   const cfgAuto = (config && config.autoDefine) || null;
-  let autoDefineBaseURL = (cfgAuto && cfgAuto.baseURL) || "/auto-define/";
+  let autoDefineBaseURL = (cfgAuto && cfgAuto.baseURL) || `${assetRootURL}components/`;
   const autoDefinePreload =
     (cfgAuto && Array.isArray(cfgAuto.predefine) && cfgAuto.predefine) || [];
   const autoDefineMapper =
@@ -1242,44 +1218,17 @@ async function staticInit(config) {
     const normalized = __normalizeInitConfig(config, {});
     const userEnhancers = normalized.enhancers;
 
-    // 2) Compute static asset URLs from config.static.root if provided
-    //    This allows consumers to specify a filesystem-ish path like
-    //    "public/assets/pds/" which maps to "/assets/pds/" at runtime.
-    const toUrlRoot = (root) => {
-      if (!root) return null;
-      try {
-        let r = String(root).replace(/\\/g, "/");
-        // If already an absolute URL or root-relative, use as-is
-        if (/^https?:\/\//i.test(r) || r.startsWith("/")) {
-          if (!r.endsWith("/")) r += "/";
-          return r;
-        }
-        // Map repo/public-relative to web root
-        if (r.startsWith("public/")) r = r.substring("public/".length);
-        if (!r.startsWith("/")) r = "/" + r;
-        if (!r.endsWith("/")) r += "/";
-        return r;
-      } catch {
-        return null;
-      }
+    // 2) Derive static asset URLs from the normalized public root
+    const baseStaticPaths = {
+      tokens: `${assetRootURL}styles/pds-tokens.css.js`,
+      primitives: `${assetRootURL}styles/pds-primitives.css.js`,
+      components: `${assetRootURL}styles/pds-components.css.js`,
+      utilities: `${assetRootURL}styles/pds-utilities.css.js`,
+      styles: `${assetRootURL}styles/pds-styles.css.js`,
     };
-
-    const staticRootURL = toUrlRoot(staticConfig.root);
-
-    // Derive default staticPaths from staticRootURL when not explicitly provided
-    if (staticRootURL) {
-      staticPaths = {
-        tokens: `${staticRootURL}styles/pds-tokens.css.js`,
-        primitives: `${staticRootURL}styles/pds-primitives.css.js`,
-        components: `${staticRootURL}styles/pds-components.css.js`,
-        utilities: `${staticRootURL}styles/pds-utilities.css.js`,
-        styles: `${staticRootURL}styles/pds-styles.css.js`,
-        ...staticPaths,
-      };
-      // Derive a sensible default for AutoDefiner base when not provided
-      if (!(cfgAuto && cfgAuto.baseURL)) {
-        autoDefineBaseURL = `${staticRootURL}components/`;
-      }
+    staticPaths = { ...baseStaticPaths, ...staticPaths };
+    if (!(cfgAuto && cfgAuto.baseURL)) {
+      autoDefineBaseURL = `${assetRootURL}components/`;
     }
 
     // 3) Static mode registry
