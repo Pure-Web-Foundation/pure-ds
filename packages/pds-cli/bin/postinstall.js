@@ -57,6 +57,13 @@ function isNpmLinkInvocation() {
   }
 }
 
+function isGlobalInstall() {
+  const value = process.env.npm_config_global;
+  if (!value) return false;
+  const normalized = String(value).toLowerCase();
+  return normalized === 'true' || normalized === '1';
+}
+
 /**
  * Find the consumer app root (directory containing the consumer's package.json)
  * Prefer INIT_CWD (npm sets this to the original cwd) and fallback by walking up from the package dir
@@ -202,6 +209,24 @@ async function discoverWebRoot(baseDir) {
 async function copyPdsAssets() {
   console.log('📦 PDS postinstall running (no automatic component copy)…');
   try {
+    const normalizedRepoRoot = normalizePath(repoRoot);
+    const normalizedInitCwd = normalizePath(process.env.INIT_CWD || process.cwd());
+
+    if (normalizedInitCwd === normalizedRepoRoot) {
+      console.log('🛑 Skipping PDS postinstall (working inside pure-ds repository root).');
+      return;
+    }
+
+    if (isNpmLinkInvocation()) {
+      console.log('🛑 Skipping PDS postinstall (detected npm link invocation).');
+      return;
+    }
+
+    if (isGlobalInstall()) {
+      console.log('🛑 Skipping PDS postinstall (global install detected).');
+      return;
+    }
+
     const consumerRoot = await findConsumerRoot();
     console.log('🧪 Consumer root:', consumerRoot);
 
@@ -217,15 +242,15 @@ async function copyPdsAssets() {
 
     // If running inside the package repo itself (e.g., during `npm link`), skip
     const inRepo = normalizePath(consumerRoot) === normalizePath(repoRoot);
-    const linkInvocation = isNpmLinkInvocation();
     const withinPureDs = isInstallingWithinPureDsRepo();
-    
-    if (inRepo || linkInvocation || withinPureDs) {
-      const reason = inRepo
-        ? 'inside the package repo'
-        : linkInvocation
-        ? 'detected npm link invocation'
-        : 'installing within pure-ds repository';
+
+    if (inRepo || withinPureDs) {
+      let reason = 'installing within pure-ds repository';
+      if (inRepo) {
+        reason = 'inside the package repo';
+      } else if (withinPureDs) {
+        reason = 'installing within pure-ds repository';
+      }
       console.log(`🛑 Skipping PDS postinstall (${reason}).`);
       return;
     }
@@ -296,6 +321,7 @@ async function copyPdsAssets() {
   } catch (error) {
     console.error('❌ PDS postinstall failed (non-fatal):', error.message);
     console.log('💡 Static export still available via: npm run pds:export');
+    process.exitCode = 1;
   }
 }
 
