@@ -15,16 +15,25 @@
 
 Pure Design System generates complete, production-ready design systems from JavaScript configuration. Write your design intent once—colors, typography, spacing—and get tokens, primitives, components, and utilities automatically.
 
-```javascript
-import { PDS } from 'pure-ds';
+### pds.config.js 
 
-await PDS.start({
+```javascript
+export const config = {
   design: {
     colors: { primary: '#007acc', secondary: '#5c2d91' },
     typography: { baseFontSize: 16, fontScale: 1.25 },
     spatialRhythm: { baseUnit: 8, scaleRatio: 1.5 }
   }
-});
+}
+```
+
+### app.js
+
+```javascript
+import { PDS } from 'pure-ds';
+import { config } from './pds.config.js';
+
+await PDS.start(config);
 
 // Start using components immediately
 // <pds-icon icon="star"></pds-icon>
