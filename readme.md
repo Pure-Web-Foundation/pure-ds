@@ -8,6 +8,8 @@
 
 **Why build a design system when you can generate one?**
 
+![Pure Design System logo](public/assets/img/logo-trans.png)
+
 Pure Design System generates complete, production-ready design systems from JavaScript configuration. Write your design intent once—colors, typography, spacing—and get tokens, primitives, components, and utilities automatically.
 
 ```javascript

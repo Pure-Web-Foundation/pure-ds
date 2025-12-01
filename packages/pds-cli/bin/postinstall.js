@@ -45,6 +45,15 @@ function isInstallingWithinPureDsRepo() {
 }
 
 function isNpmLinkInvocation() {
+  const truthy = (value) => {
+    if (value === undefined || value === null) return false;
+    const normalized = String(value).toLowerCase();
+    return normalized === 'true' || normalized === '1';
+  };
+
+  if (truthy(process.env.npm_config_link)) return true;
+  if ((process.env.npm_command || '').toLowerCase() === 'link') return true;
+
   try {
     const argvRaw = process.env.npm_config_argv;
     if (!argvRaw) return false;
@@ -55,6 +64,10 @@ function isNpmLinkInvocation() {
   } catch {
     return false;
   }
+}
+
+function isLinkedPackagePath(p) {
+  return !/[\\/]+node_modules[\\/]+/i.test(p);
 }
 
 function isGlobalInstall() {
@@ -211,6 +224,11 @@ async function copyPdsAssets() {
   try {
     const normalizedRepoRoot = normalizePath(repoRoot);
     const normalizedInitCwd = normalizePath(process.env.INIT_CWD || process.cwd());
+
+    if (isLinkedPackagePath(normalizedRepoRoot)) {
+      console.log('🛑 Skipping PDS postinstall (detected symlinked package path).');
+      return;
+    }
 
     if (normalizedInitCwd === normalizedRepoRoot) {
       console.log('🛑 Skipping PDS postinstall (working inside pure-ds repository root).');
