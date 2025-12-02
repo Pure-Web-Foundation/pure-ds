@@ -42,6 +42,9 @@ export class SvgIcon extends HTMLElement {
     'missing': '<circle cx="128" cy="128" r="96" stroke="currentColor" fill="none" stroke-width="16"/>',
   };
 
+  static spritePromises = new Map();
+  static inlineSprites = new Set();
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
@@ -88,8 +91,42 @@ export class SvgIcon extends HTMLElement {
     }
     if (spriteOverride) spriteHref = spriteOverride;
 
+    // Normalize overrides to absolute URLs when possible
+    try {
+      if (typeof spriteHref === 'string') {
+        const normalized = new URL(spriteHref, typeof window !== 'undefined' ? window.location.href : undefined);
+        spriteHref = normalized.href;
+      }
+    } catch (e) {
+      // leave spriteHref as-is if URL construction fails
+    }
+
     // Determine if we should use sprite or fallback
-    const useFallback = this.hasAttribute('no-sprite') || !this.spriteAvailable();
+    let useFallback = this.hasAttribute('no-sprite') || !this.spriteAvailable();
+
+    let effectiveHref = spriteHref ? `${spriteHref}#${icon}` : `#${icon}`;
+
+    if (!useFallback && typeof window !== 'undefined' && spriteHref) {
+      try {
+        const spriteURL = new URL(spriteHref, window.location.href);
+        const sameOrigin = spriteURL.origin === window.location.origin;
+
+        if (!sameOrigin) {
+          if (SvgIcon.inlineSprites.has(spriteURL.href)) {
+            effectiveHref = `#${icon}`;
+          } else {
+            useFallback = true;
+            SvgIcon.ensureInlineSprite(spriteURL.href).then((success) => {
+              if (success && this.isConnected) {
+                this.render();
+              }
+            });
+          }
+        }
+      } catch (e) {
+        // Ignore URL errors and fall back to default behaviour
+      }
+    }
     
     // Build transform string for rotation
     const transform = rotate !== '0' ? `rotate(${rotate} 128 128)` : '';
@@ -107,7 +144,7 @@ export class SvgIcon extends HTMLElement {
         <g transform="${transform}">
           ${useFallback 
             ? this.getFallbackIcon(icon)
-            : `<use href="${spriteHref}#${icon}"></use>`
+            : `<use href="${effectiveHref}"></use>`
           }
         </g>
       </svg>
@@ -128,6 +165,64 @@ export class SvgIcon extends HTMLElement {
     // Simple heuristic: assume sprite is available unless explicitly disabled
     // In production, you might check for sprite load status
     return true;
+  }
+
+  static async ensureInlineSprite(spriteURL) {
+    if (!spriteURL || typeof document === 'undefined') {
+      return false;
+    }
+
+    if (SvgIcon.inlineSprites.has(spriteURL)) {
+      return true;
+    }
+
+    if (SvgIcon.spritePromises.has(spriteURL)) {
+      return SvgIcon.spritePromises.get(spriteURL);
+    }
+
+    const promise = fetch(spriteURL, { mode: 'cors' })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to load sprite: ${response.status} ${response.statusText}`);
+        }
+        const svgText = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(svgText, 'image/svg+xml');
+        const symbols = doc.querySelectorAll('symbol[id]');
+
+        if (!symbols.length) {
+          throw new Error('Sprite does not contain any <symbol> definitions');
+        }
+
+        const spriteContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        spriteContainer.setAttribute('aria-hidden', 'true');
+        spriteContainer.setAttribute('focusable', 'false');
+        spriteContainer.setAttribute('width', '0');
+        spriteContainer.setAttribute('height', '0');
+        spriteContainer.style.position = 'absolute';
+        spriteContainer.style.width = '0';
+        spriteContainer.style.height = '0';
+        spriteContainer.style.overflow = 'hidden';
+        spriteContainer.setAttribute('data-pds-inline-sprite', spriteURL);
+
+        symbols.forEach((symbol) => {
+          spriteContainer.appendChild(symbol.cloneNode(true));
+        });
+
+        (document.body || document.documentElement).appendChild(spriteContainer);
+        SvgIcon.inlineSprites.add(spriteURL);
+        return true;
+      })
+      .catch((error) => {
+        console.warn('[pds-icon] Unable to inline sprite:', error);
+        return false;
+      })
+      .finally(() => {
+        SvgIcon.spritePromises.delete(spriteURL);
+      });
+
+    SvgIcon.spritePromises.set(spriteURL, promise);
+    return promise;
   }
 }
 
