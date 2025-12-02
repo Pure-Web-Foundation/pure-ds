@@ -254,7 +254,7 @@ async function copyPdsAssets() {
       process.env.PDS_SKIP_POSTINSTALL === 'true' ||
       process.env.npm_config_pds_skip_postinstall === 'true'
     ) {
-      console.log('� Skipping PDS postinstall (PDS_SKIP_POSTINSTALL set).');
+      console.log('⏭️  Skipping PDS postinstall (PDS_SKIP_POSTINSTALL set).');
       return;
     }
 
@@ -273,7 +273,7 @@ async function copyPdsAssets() {
       return;
     }
     
-  console.log('�📦 Proceeding with asset copying...');
+  console.log('📦 Proceeding with asset copying...');
 
     // Proactively add export & build-icons scripts to consumer package.json (still helpful)
     await ensureExportScript(consumerRoot);
@@ -309,12 +309,41 @@ async function copyPdsAssets() {
       console.log('📦 To generate static assets run:   npm run pds:export');
     } else {
       console.log('🚀 Running pds:export automatically...');
+      const staticModuleUrl = pathToFileURL(path.join(__dirname, 'pds-static.js')).href;
+      const previousEnv = {
+        PDS_POSTINSTALL: process.env.PDS_POSTINSTALL,
+        PDS_LOG_STREAM: process.env.PDS_LOG_STREAM,
+        PDS_CONSUMER_ROOT: process.env.PDS_CONSUMER_ROOT,
+      };
+
       try {
-        const { runPdsStatic } = await import(pathToFileURL(path.join(__dirname, 'pds-static.js')).href);
-        await runPdsStatic();
+        process.env.PDS_POSTINSTALL = '1';
+        process.env.PDS_LOG_STREAM = 'stderr';
+        process.env.PDS_CONSUMER_ROOT = consumerRoot;
+
+        const { runPdsStatic } = await import(staticModuleUrl);
+        await runPdsStatic({ cwd: consumerRoot });
       } catch (e) {
         console.error('❌ Auto-export failed:', e?.message || e);
         console.log('💡 You can run it manually: npm run pds:export');
+      } finally {
+        if (previousEnv.PDS_POSTINSTALL === undefined) {
+          delete process.env.PDS_POSTINSTALL;
+        } else {
+          process.env.PDS_POSTINSTALL = previousEnv.PDS_POSTINSTALL;
+        }
+
+        if (previousEnv.PDS_LOG_STREAM === undefined) {
+          delete process.env.PDS_LOG_STREAM;
+        } else {
+          process.env.PDS_LOG_STREAM = previousEnv.PDS_LOG_STREAM;
+        }
+
+        if (previousEnv.PDS_CONSUMER_ROOT === undefined) {
+          delete process.env.PDS_CONSUMER_ROOT;
+        } else {
+          process.env.PDS_CONSUMER_ROOT = previousEnv.PDS_CONSUMER_ROOT;
+        }
       }
     }
     

@@ -24,7 +24,50 @@ const COLORS = {
   blue: '\x1b[34m',
   red: '\x1b[31m',
 };
-const log = (msg, color = 'reset') => console.log(`${COLORS[color]}${msg}${COLORS.reset}`);
+
+const shouldLogToStderr = () => process.env.PDS_LOG_STREAM === 'stderr' || process.env.PDS_POSTINSTALL === '1';
+const log = (msg, color = 'reset') => {
+  const colorCode = COLORS[color] || '';
+  const text = `${colorCode}${msg}${COLORS.reset}`;
+  if (shouldLogToStderr()) {
+    process.stderr.write(`${text}\n`);
+  } else {
+    console.log(text);
+  }
+};
+
+async function copyBundledManifest(targetDir) {
+  try {
+    const sourceManifest = path.join(repoRoot, 'custom-elements.json');
+    if (!existsSync(sourceManifest)) {
+      log('⚠️  Packaged custom-elements.json not found; skipping manifest copy.', 'yellow');
+      return false;
+    }
+
+    if (targetDir) {
+      await mkdir(targetDir, { recursive: true });
+      const manifestContent = await readFile(sourceManifest, 'utf-8');
+      const manifestTarget = path.join(targetDir, 'custom-elements.json');
+      await writeFile(manifestTarget, manifestContent, 'utf-8');
+      log(`✅ Manifest copied to ${path.relative(process.cwd(), manifestTarget)}`, 'green');
+    } else {
+      log('✅ Packaged custom-elements.json is available', 'green');
+    }
+
+    const packagedVscodeData = path.join(repoRoot, 'public/assets/pds/vscode-custom-data.json');
+    if (targetDir && existsSync(packagedVscodeData)) {
+      const vscodeContent = await readFile(packagedVscodeData, 'utf-8');
+      const vscodeTarget = path.join(targetDir, 'vscode-custom-data.json');
+      await writeFile(vscodeTarget, vscodeContent, 'utf-8');
+      log(`✅ VS Code custom data copied to ${path.relative(process.cwd(), vscodeTarget)}`, 'green');
+    }
+
+    return true;
+  } catch (error) {
+    log(`❌ Failed to copy packaged manifest: ${error?.message || error}`, 'red');
+    return false;
+  }
+}
 
 /**
  * Convert Custom Elements Manifest to VS Code Custom Data format
@@ -194,20 +237,23 @@ async function generateManifest(targetDir) {
   try {
     log('📋 Generating Custom Elements Manifest...', 'bold');
     
-    // Check if analyzer is installed
     const analyzerInstalled = existsSync(path.join(repoRoot, 'node_modules/@custom-elements-manifest/analyzer'));
-    
-    if (!analyzerInstalled) {
-      log('⚠️  @custom-elements-manifest/analyzer not installed', 'yellow');
-      log('   Installing analyzer...', 'blue');
-      execSync('npm install --save-dev @custom-elements-manifest/analyzer', { 
-        cwd: repoRoot,
-        stdio: 'inherit'
-      });
+    const runningFromPostinstall = process.env.PDS_POSTINSTALL === '1';
+
+    if (!analyzerInstalled || runningFromPostinstall) {
+      if (!analyzerInstalled) {
+        const color = runningFromPostinstall ? 'blue' : 'yellow';
+        log('ℹ️  Using packaged Custom Elements manifest (analyzer not available).', color);
+        if (!runningFromPostinstall) {
+          log('   Install @custom-elements-manifest/analyzer to enable manifest regeneration.', 'yellow');
+        }
+      } else {
+        log('ℹ️  Skipping analyzer during postinstall; using packaged manifest.', 'blue');
+      }
+      return copyBundledManifest(targetDir);
     }
 
     // Run the analyzer
-    const componentsDir = path.join(repoRoot, 'public/assets/pds/components');
     const configPath = path.join(repoRoot, 'custom-elements-manifest.config.js');
     
     log('🔍 Analyzing components...', 'blue');

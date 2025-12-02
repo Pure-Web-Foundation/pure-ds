@@ -25,7 +25,16 @@ const COLORS = {
   red: '\x1b[31m',
   cyan: '\x1b[36m',
 };
-const log = (msg, color = 'reset') => console.log(`${COLORS[color]}${msg}${COLORS.reset}`);
+const shouldLogToStderr = () => process.env.PDS_LOG_STREAM === 'stderr' || process.env.PDS_POSTINSTALL === '1';
+const log = (msg, color = 'reset') => {
+  const colorCode = COLORS[color] || '';
+  const text = `${colorCode}${msg}${COLORS.reset}`;
+  if (shouldLogToStderr()) {
+    process.stderr.write(`${text}\n`);
+  } else {
+    console.log(text);
+  }
+};
 
 /**
  * Extract CSS custom properties from generated tokens

@@ -53,7 +53,17 @@ const COLORS = {
   magenta: '\x1b[35m',
   red: '\x1b[31m',
 };
-const log = (msg, color = 'reset') => console.log(`${COLORS[color]}${msg}${COLORS.reset}`);
+
+const shouldLogToStderr = () => process.env.PDS_LOG_STREAM === 'stderr' || process.env.PDS_POSTINSTALL === '1';
+const log = (msg, color = 'reset') => {
+  const colorCode = COLORS[color] || '';
+  const text = `${colorCode}${msg}${COLORS.reset}`;
+  if (shouldLogToStderr()) {
+    process.stderr.write(`${text}\n`);
+  } else {
+    console.log(text);
+  }
+};
 
 // (Icons generation removed for streamlined static export)
 
@@ -189,7 +199,20 @@ async function loadConsumerConfig() {
   return internal.presets.default;
 }
 
-async function main() {
+async function main(options = {}) {
+  const desiredCwd = options.cwd || process.env.PDS_CONSUMER_ROOT || null;
+  const originalCwd = process.cwd();
+  let cwdChanged = false;
+
+  if (desiredCwd && desiredCwd !== originalCwd) {
+    try {
+      process.chdir(desiredCwd);
+      cwdChanged = true;
+    } catch (err) {
+      log(`⚠️  Could not change working directory to ${desiredCwd}: ${err?.message || err}`, 'yellow');
+    }
+  }
+
   try {
     log('\nPDS Static Export • starting...', 'bold');
 
@@ -335,7 +358,7 @@ async function main() {
     const runtimeConfigPath = path.join(targetDir, 'pds-runtime-config.json');
     await writeFile(runtimeConfigPath, JSON.stringify(runtimeConfig, null, 2), 'utf-8');
     log(`✅ Runtime config written to ${path.relative(process.cwd(), runtimeConfigPath)}`, 'green');
-    log(`💡 Use this in PDS.start(): static: { root: "${normalizedUrlPath}" }`, 'blue');
+    log(`💡 Use this in PDS.start(): static: { root: "${assetUrlRoot}" }`, 'blue');
   } catch (e) {
     log(`⚠️  Failed to write runtime config: ${e?.message || e}`, 'yellow');
   }
@@ -353,6 +376,12 @@ async function main() {
   } catch (err) {
     console.error('❌ pds:static failed:', err?.message || err);
     process.exit(1);
+  } finally {
+    if (cwdChanged) {
+      try {
+        process.chdir(originalCwd);
+      } catch {}
+    }
   }
 }
 
