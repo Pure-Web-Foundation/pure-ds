@@ -22,18 +22,24 @@ export default {
 
 export const Default = {
   render: (args) => html`
-    <pds-richtext 
+    <pds-richtext placeholder="Start typing your rich text here..."
       value="${args.value}"
       @input="${(e) => console.log('Content:', e.target.value)}">
     </pds-richtext>
   `,
   args: {
-    value: '<p>Start typing here...</p>'
+    
   }
 };
 
+// Sample rich text content 
+const htmlString = `
+<h2>Welcome to the Rich Text Editor</h2>
+<p>This is a <strong>rich text editor</strong> component that allows you to create and edit formatted text easily.
+`
+
 export const WithContent = () => html`
-  <pds-richtext value="<h2>Rich Text Editor</h2><p>This editor supports <strong>bold</strong>, <em>italic</em>, and <u>underline</u> formatting.</p><p>You can also add <a href='#'>links</a> and create lists:</p><ul><li>Item 1</li><li>Item 2</li></ul>"></pds-richtext>
+  <pds-richtext value="${htmlString}"></pds-richtext>
 `;
 
 export const InForm = () => html`
@@ -42,10 +48,10 @@ export const InForm = () => html`
       <span>Blog Post Content</span>
       <pds-richtext 
         value="<h3>My Blog Post</h3><p>Write your content here...</p>"
-        style="min-height: 300px;">
+        >
       </pds-richtext>
     </label>
-    <div style="margin-top: var(--spacing-4);">
+    <div>
       <button type="submit" class="btn-primary">Publish</button>
       <button type="button" class="btn-ghost">Save Draft</button>
     </div>
@@ -68,35 +74,35 @@ export const EmailComposer = () => html`
   <article class="card" style="max-width: 700px;">
     <h3>Compose Email</h3>
     
-    <div style="margin-top: var(--spacing-4);">
-      <label style="display: block; margin-bottom: var(--spacing-2);">
+    <div>
+      <label>
         <strong>To:</strong>
         <div class="input-icon">
           <pds-icon icon="envelope"></pds-icon>
-          <input type="email" placeholder="recipient@example.com" style="width: 100%; margin-top: var(--spacing-1); padding: var(--spacing-2); border: 1px solid var(--color-border); border-radius: var(--radius-sm);">
+          <input type="email" placeholder="recipient@example.com" >
         </div>
       </label>
       
-      <label style="display: block; margin-bottom: var(--spacing-4);">
+      <label>
         <strong>Subject:</strong>
-        <input type="text" placeholder="Email subject" style="width: 100%; margin-top: var(--spacing-1); padding: var(--spacing-2); border: 1px solid var(--color-border); border-radius: var(--radius-sm);">
+        <input type="text" placeholder="Email subject" >
       </label>
       
-      <label style="display: block; margin-bottom: var(--spacing-4);">
+      <label>
         <strong>Message:</strong>
         <pds-richtext 
           value="<p>Hello,</p><p>I hope this message finds you well.</p><p>Best regards,<br><strong>Your Name</strong></p>"
-          style="min-height: 300px; margin-top: var(--spacing-2);">
+          >
         </pds-richtext>
       </label>
       
-      <div style="display: flex; gap: var(--spacing-2);">
+      <div class="flex gap-sm" >
         <button class="btn-primary">
-          <pds-icon icon="send"></pds-icon>
+          <pds-icon icon="arrow-up"></pds-icon>
           Send Email
         </button>
         <button class="btn-outline">
-          <pds-icon icon="paperclip"></pds-icon>
+          <pds-icon icon="upload"></pds-icon>
           Attach File
         </button>
         <button class="btn-ghost">Save Draft</button>

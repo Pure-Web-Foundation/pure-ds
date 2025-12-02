@@ -4117,11 +4117,11 @@ nav[data-dropdown] {
     min-height: var(--layout-min-height, 100vh);
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+  }
 
-    &.drawer-open{
-      /* overflow: hidden; */
-      /* scrollbar-gutter: stable; */
-    }
+  :where(body.drawer-open) {
+    /* overflow: hidden; */
+    /* scrollbar-gutter: stable; */
   }
 
   /* Button primitives */
@@ -4196,6 +4196,15 @@ nav[data-dropdown] {
     opacity: 0.6;
     cursor: not-allowed;
     background-color: var(--color-input-disabled-bg);
+  }
+
+  /* Harmonized placeholder styling */
+  :where(input)::placeholder,
+  :where(textarea)::placeholder,
+  :where(pds-richtext)::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+    font-weight: var(--font-weight-normal);
   }
 
   :where(textarea) {
@@ -4421,7 +4430,7 @@ nav[data-dropdown] {
   }
 
   
-  [hidden] {
+  :where([hidden]) {
     display: none !important;
   }
 }
@@ -4588,6 +4597,10 @@ ${this.#generateBorderGradientUtilities()}
 
 .shadow-none {
   box-shadow: none;
+}
+
+.text-muted {
+  color: var(--color-text-muted);
 }
 
 

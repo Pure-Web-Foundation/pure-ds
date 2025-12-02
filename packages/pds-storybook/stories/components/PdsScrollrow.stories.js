@@ -38,6 +38,16 @@ export const WithImages = () => html`
 `;
 
 export const ProductGallery = () => html`
+<style>
+  
+  .product-price {
+    font-size: 1.5rem; font-weight: 700; color: var(--color-primary);
+  }
+  .product-image {
+    width: 100%; height: 200px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: var(--spacing-3);
+  }
+
+</style>
   <div style="padding: var(--spacing-4);">
     <h3>Featured Products</h3>
     <pds-scrollrow snap="start">
@@ -46,11 +56,11 @@ export const ProductGallery = () => html`
           <img 
             src="https://picsum.photos/280/200?random=${100 + i}" 
             alt="Product ${i + 1}"
-            style="width: 100%; height: 200px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: var(--spacing-3);">
+            class="product-image">
           <h4>Product ${i + 1}</h4>
-          <p style="opacity: 0.8; font-size: 0.9rem;">Premium quality product with amazing features.</p>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-3);">
-            <span style="font-size: 1.5rem; font-weight: 700; color: var(--color-primary);">$${(i + 1) * 10 + 29}</span>
+          <small class="text-muted">Premium quality product with amazing features.</small>
+          <div class="flex justify-between align-center" >
+            <span class="product-price">$${(i + 1) * 10 + 29}</span>
             <button class="btn-primary btn-sm">
               <pds-icon icon="shopping-cart" size="sm"></pds-icon>
               Add
@@ -65,7 +75,12 @@ export const ProductGallery = () => html`
 ProductGallery.storyName = 'Product Gallery';
 
 export const UserProfiles = () => html`
-  <div style="padding: var(--spacing-4);">
+  <style>
+    .avatar-lg {
+      width: 100px; height: 100px; border-radius: var(--radius-full); margin: 0 auto var(--spacing-3);
+    }
+  </style>
+  <div>
     <h3>Team Members</h3>
     <pds-scrollrow>
       ${Array.from({ length: 12 }, (_, i) => html`
@@ -73,9 +88,10 @@ export const UserProfiles = () => html`
           <img 
             src="https://i.pravatar.cc/150?img=${i + 1}" 
             alt="Team member ${i + 1}"
-            style="width: 100px; height: 100px; border-radius: 50%; margin: 0 auto var(--spacing-3);">
-          <h4 style="margin-bottom: var(--spacing-1);">Team Member ${i + 1}</h4>
-          <p style="font-size: 0.85rem; opacity: 0.7; margin-bottom: var(--spacing-3);">Role Title</p>
+            class="avatar-lg"
+            >
+          <h4 class="">Team Member ${i + 1}</h4>
+          <p><small class="text-muted">Role Title</small></p>
           <button class="btn-outline btn-sm">
             <pds-icon icon="chat-circle" size="sm"></pds-icon>
             Message

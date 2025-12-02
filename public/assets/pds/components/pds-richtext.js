@@ -27,6 +27,8 @@ export class RichText extends HTMLElement {
   #converter;
   #loadingShowdown = false;
   #loadedShowdown = false;
+  #isSyncingFromEditor = false;
+  #isReflectingValue = false;
 
   static formAssociated = true;
 
@@ -120,8 +122,20 @@ export class RichText extends HTMLElement {
     return this._value;
   }
   set value(v) {
-    this._value = v ?? "";
-    this.setAttribute("value", this._value);
+    const next = v ?? "";
+    if (next === this._value) {
+      this.#reflectValueAttribute(this._value);
+      if (!this.#isSyncingFromEditor && this.#editorDiv && this.#editorDiv.innerHTML !== this._value) {
+        this.#editorDiv.innerHTML = this._value;
+      }
+      return;
+    }
+    this._value = next;
+    if (this.#isSyncingFromEditor) {
+      this.#reflectValueAttribute(this._value);
+      return;
+    }
+    this.#updateEditorFromValue();
   }
 
   attributeChangedCallback(name, oldV, newV) {
@@ -146,7 +160,9 @@ export class RichText extends HTMLElement {
         this.toolbar = this.hasAttribute("toolbar");
         break;
       case "value":
+        if (this.#isReflectingValue) break;
         this._value = newV || "";
+        if (!this.#isSyncingFromEditor) this.#updateEditorFromValue();
         break;
     }
   }
@@ -186,7 +202,7 @@ export class RichText extends HTMLElement {
       .tbtn { transition: none; display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius: var(--radius-sm,6px); cursor:pointer; user-select:none; color: inherit; background: transparent; border:none; }
       .tbtn:hover { background: var(--color-surface-hover, color-mix(in oklab, CanvasText 12%, transparent)); }
       .edwrap { position:relative; }
-      .ed { display: block; min-height:90px; max-height:280px; overflow:auto; padding:12px 14px; outline:none; white-space:pre-wrap; word-break:break-word; border-radius: 0 0 var(--radius-md,8px) var(--radius-md,8px); background: var(--rt-editor-bg, var(--color-input-bg)); }
+      .ed { display: block; min-height:90px; max-height:280px; overflow:auto; padding: var(--spacing-3, 0); outline:none; white-space:pre-wrap; word-break:break-word; border-radius: 0 0 var(--radius-md,8px) var(--radius-md,8px); background: var(--rt-editor-bg, var(--color-input-bg)); }
       .ed[contenteditable="true"]:empty::before { content: attr(data-ph); color: var(--rt-muted, var(--color-text-muted)); pointer-events:none; }
       .send { margin-left:auto; display:inline-flex; gap: var(--spacing-2,8px); align-items:center; }
       button.icon { background:transparent; border:0; color:inherit; cursor:pointer; padding:6px; border-radius: var(--radius-sm,6px); }
@@ -294,6 +310,9 @@ export class RichText extends HTMLElement {
       });
       btn.addEventListener("mousedown", (e) => e.preventDefault());
     });
+    if (this.#editorDiv) {
+      this.#editorDiv.innerHTML = this._value;
+    }
   }
 
   #executeTool(label) {
@@ -404,13 +423,10 @@ export class RichText extends HTMLElement {
   }
 
   #syncValue() {
-    const html = this.#canonicalize(this.#editorDiv?.innerHTML || "");
-    const md = this.#htmlToMinimalMarkdown(html);
-    const cleanHtml =
-      this.#loadedShowdown && this.#converter
-        ? this.#converter.makeHtml(md)
-        : this.#markdownToBareHtml(md);
+    const cleanHtml = this.#cleanHtml(this.#editorDiv?.innerHTML || "");
+    this.#isSyncingFromEditor = true;
     this.value = cleanHtml;
+    this.#isSyncingFromEditor = false;
     this.#internals.setFormValue(cleanHtml);
     // validity for required
     if (this.required)
@@ -435,6 +451,52 @@ export class RichText extends HTMLElement {
       });
     });
     return tmp.innerHTML;
+  }
+
+  #cleanHtml(html) {
+    const canonical = this.#canonicalize(html || "");
+    if (!canonical) return "";
+    const scratch = document.createElement("div");
+    scratch.innerHTML = canonical;
+    if (!(scratch.textContent || "").trim()) return "";
+    const md = this.#htmlToMinimalMarkdown(canonical);
+    if (!md.trim()) return "";
+    return this.#loadedShowdown && this.#converter
+      ? this.#converter.makeHtml(md)
+      : this.#markdownToBareHtml(md);
+  }
+
+  #updateEditorFromValue(options = {}) {
+    const { reflect = true, updateForm = true } = options;
+    const cleanHtml = this.#cleanHtml(this._value);
+    if (cleanHtml !== this._value) {
+      this._value = cleanHtml;
+    }
+    if (reflect) this.#reflectValueAttribute(this._value);
+    if (this.#editorDiv && this.#editorDiv.innerHTML !== this._value) {
+      this.#editorDiv.innerHTML = this._value;
+    }
+    if (updateForm) {
+      this.#internals.setFormValue(this._value);
+      if (this.required)
+        this.#internals.setValidity(
+          this._value.trim() ? {} : { customError: true },
+          this._value.trim() ? "" : "Please enter a message.",
+          this.#editorDiv
+        );
+    }
+  }
+
+  #reflectValueAttribute(value) {
+    this.#isReflectingValue = true;
+    if (value) {
+      if (this.getAttribute("value") !== value) {
+        this.setAttribute("value", value);
+      }
+    } else if (this.hasAttribute("value")) {
+      this.removeAttribute("value");
+    }
+    this.#isReflectingValue = false;
   }
 
   // Very small HTML -> Markdown covering the toolbar features and basic blocks

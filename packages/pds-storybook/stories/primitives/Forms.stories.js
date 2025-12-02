@@ -1,4 +1,5 @@
 import { html } from 'lit';
+import { toastFormData } from '../utils/toast-utils.js';
 
 export default {
   title: 'Primitives/Forms',
@@ -37,25 +38,29 @@ These primitive form controls provide the foundation for manual form building wh
 export const Default = {
   render: (args) => {
     // Preset changes are handled by toolbar in preview.js
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      toastFormData(new FormData(event.target));
+    };
     
     return html`
       <div class="card">
         
-    <form style="max-width: 400px;">
+    <form style="max-width: 400px;" @submit=${handleSubmit}>
       <label>
         <span>Text Input</span>
-        <input type="text" placeholder="Enter text...">
+        <input type="text" name="text" placeholder="Enter text...">
       </label>
       <label>
         <span>Email</span>
         <div class="input-icon">
           <pds-icon icon="envelope"></pds-icon>
-          <input type="email" required placeholder="email@example.com">
+          <input type="email" name="email" required placeholder="email@example.com">
         </div>
       </label>
       <label>
         <span>Select</span>
-        <select>
+        <select name="select">
           <option>Option 1</option>
           <option>Option 2</option>
           <option>Option 3</option>
@@ -63,7 +68,7 @@ export const Default = {
       </label>
       <label>
         <span>Textarea</span>
-        <textarea rows="4" placeholder="Enter longer text..."></textarea>
+        <textarea name="textarea" rows="4" placeholder="Enter longer text..."></textarea>
       </label>
       <button type="submit" class="btn-primary">Submit</button>
     </form>
