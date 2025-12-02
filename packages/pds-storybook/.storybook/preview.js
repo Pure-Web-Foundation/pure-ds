@@ -399,10 +399,66 @@ const ensureRelatedStyles = (() => {
 
       #pds-related-overlay {
         position: fixed;
-        inset-block-end: var(--spacing-6);
-        inset-inline-end: var(--spacing-6);
+        inset-block-end: var(--spacing-4);
+        inset-inline-end: 0;
         z-index: var(--z-popover, 2147483647);
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        gap: 0;
+        pointer-events: none;
+        transition: inset-inline-end var(--transition-fast), gap var(--transition-fast);
+      }
+
+      #pds-related-overlay.is-expanded {
+        inset-inline-end: var(--spacing-4);
+        gap: var(--spacing-3);
+      }
+
+      #pds-related-overlay > * {
+        pointer-events: auto;
+      }
+
+      #pds-related-overlay.is-expanded .pds-related-toggle {
+        background: var(--color-primary-100);
+        color: var(--color-primary-700);
+        border-color: var(--color-primary-500);
+      }
+
+      #pds-related-overlay.is-collapsed .pds-related-toggle {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+
+      .pds-related-toggle {
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        background: var(--color-surface-overlay);
+        color: var(--color-primary-text, var(--color-primary-600));
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-3) var(--spacing-2);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        letter-spacing: var(--letter-spacing-wide, 0.12em);
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: var(--shadow-sm);
+        transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+      }
+
+      .pds-related-toggle:hover,
+      .pds-related-toggle:focus-visible {
+        background: var(--color-primary-100);
+        color: var(--color-primary-700);
+        border-color: var(--color-primary-500);
+        outline: none;
+      }
+
+      .pds-related-panel {
         max-width: min(360px, 90vw);
+        width: clamp(260px, 32vw, 360px);
+        min-width: 0;
         background: var(--color-surface-overlay);
         border: 1px solid var(--color-border);
         border-radius: var(--radius-lg);
@@ -413,14 +469,80 @@ const ensureRelatedStyles = (() => {
         font-family: var(--font-family-body, var(--font-family-base, system-ui));
         color: var(--color-text-primary);
         backdrop-filter: var(--backdrop-filter, blur(12px));
+        overflow: hidden;
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity var(--transition-fast), transform var(--transition-fast), max-width var(--transition-fast), width var(--transition-fast), padding var(--transition-fast), border-width var(--transition-fast);
       }
 
-      #pds-related-overlay h2 {
+      .pds-related-panel > * {
+        transition: opacity var(--transition-fast);
+      }
+
+      #pds-related-overlay.is-collapsed .pds-related-panel {
+        opacity: 0;
+        transform: translateY(8px);
+        max-width: 0;
+        width: 0;
+        padding: 0;
+        border-width: 0;
+        pointer-events: none;
+        box-shadow: none;
+      }
+
+      #pds-related-overlay.is-collapsed .pds-related-panel > * {
+        opacity: 0;
+      }
+
+      #pds-related-overlay.is-expanded .pds-related-panel {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      #pds-related-overlay.is-expanded .pds-related-panel > * {
+        opacity: 1;
+      }
+
+      .pds-related-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--spacing-3);
+      }
+
+      .pds-related-panel h2 {
         margin: 0;
         font-size: var(--font-size-xs);
         text-transform: uppercase;
         letter-spacing: var(--letter-spacing-wide, 0.12em);
         color: var(--color-text-muted);
+      }
+
+      .pds-related-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--spacing-8);
+        height: var(--spacing-8);
+        border-radius: var(--radius-full);
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--color-text-muted);
+        cursor: pointer;
+        transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+      }
+
+      .pds-related-close:hover,
+      .pds-related-close:focus-visible {
+        background: color-mix(in oklab, var(--color-primary-500) 15%, transparent);
+        color: var(--color-primary-600);
+        border-color: var(--color-primary-400);
+        outline: none;
+      }
+
+      .pds-related-close pds-icon {
+        width: var(--icon-size-sm, 20px);
+        height: var(--icon-size-sm, 20px);
       }
 
       .pds-related-accordion {
@@ -435,7 +557,7 @@ const ensureRelatedStyles = (() => {
         background: var(--color-surface-base);
       }
 
-      #pds-related-overlay .pds-related-accordion details {
+      .pds-related-panel .pds-related-accordion details {
         background: var(--color-surface-overlay);
       }
 
@@ -529,6 +651,26 @@ const ensureRelatedStyles = (() => {
 
       .pds-related-footer .pds-related-tags {
         color: var(--color-text-muted);
+      }
+
+      @media (max-width: 600px) {
+        #pds-related-overlay {
+          inset-block-end: var(--spacing-3);
+        }
+
+        #pds-related-overlay.is-expanded {
+          inset-inline-end: var(--spacing-3);
+        }
+
+        .pds-related-toggle {
+          padding: var(--spacing-2) var(--spacing-1);
+        }
+
+        .pds-related-panel {
+          width: min(90vw, 320px);
+          max-width: min(90vw, 320px);
+          padding: var(--spacing-4);
+        }
       }
     `;
 
@@ -1028,19 +1170,92 @@ const renderRelatedOverlay = (context) => {
   ensureRelatedStyles();
 
   let overlay = document.getElementById('pds-related-overlay');
+  const initialExpanded = overlay ? overlay.classList.contains('is-expanded') : false;
+
   if (!overlay) {
     overlay = document.createElement('aside');
     overlay.id = 'pds-related-overlay';
     document.body.appendChild(overlay);
   }
 
-  overlay.textContent = '';
-  overlay.className = 'pds-related-overlay card card-elevated surface-overlay shadow-lg grid gap-md';
+  overlay.className = 'pds-related-overlay';
 
-  const heading = document.createElement('h2');
-  heading.textContent = 'Related';
-  overlay.appendChild(heading);
-  overlay.appendChild(accordion);
+  let toggle = overlay.querySelector('.pds-related-toggle');
+  if (!toggle) {
+    toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'pds-related-toggle';
+    toggle.setAttribute('aria-label', 'Show related stories');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-controls', 'pds-related-panel');
+    toggle.textContent = 'Related';
+    overlay.appendChild(toggle);
+  }
+
+  let panel = overlay.querySelector('.pds-related-panel');
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.className = 'pds-related-panel';
+    panel.id = 'pds-related-panel';
+
+    const header = document.createElement('div');
+    header.className = 'pds-related-panel-header';
+
+    const heading = document.createElement('h2');
+    heading.textContent = 'Related';
+    header.appendChild(heading);
+
+    const closeButton = document.createElement('button');
+    closeButton.type = 'button';
+    closeButton.className = 'pds-related-close icon-only';
+    closeButton.setAttribute('aria-label', 'Close related stories');
+    closeButton.setAttribute('title', 'Close related stories');
+
+    const closeIcon = document.createElement('pds-icon');
+    closeIcon.setAttribute('name', 'x');
+    closeIcon.setAttribute('size', 'sm');
+    closeButton.appendChild(closeIcon);
+
+    header.appendChild(closeButton);
+
+    const body = document.createElement('div');
+    body.className = 'pds-related-panel-body';
+
+    panel.appendChild(header);
+    panel.appendChild(body);
+    overlay.appendChild(panel);
+  }
+
+  const body = panel.querySelector('.pds-related-panel-body');
+  if (!body) return;
+
+  body.textContent = '';
+  body.appendChild(accordion);
+
+  const closeButton = panel.querySelector('.pds-related-close');
+
+  const setExpanded = (expanded) => {
+    overlay.classList.toggle('is-expanded', expanded);
+    overlay.classList.toggle('is-collapsed', !expanded);
+    toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    toggle.setAttribute('aria-label', expanded ? 'Hide related stories' : 'Show related stories');
+    toggle.setAttribute('title', expanded ? 'Hide related stories' : 'Show related stories');
+    panel.setAttribute('aria-hidden', expanded ? 'false' : 'true');
+  };
+
+  toggle.onclick = () => {
+    const next = !overlay.classList.contains('is-expanded');
+    setExpanded(next);
+  };
+
+  if (closeButton) {
+    closeButton.onclick = (event) => {
+      event.preventDefault();
+      setExpanded(false);
+    };
+  }
+
+  setExpanded(initialExpanded);
 };
 
 const withRelatedStories = (story, context) => {
