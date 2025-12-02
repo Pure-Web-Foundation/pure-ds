@@ -15,8 +15,27 @@ export default {
   }
 };
 
+const buttonsStoryStyles = html`
+  <style>
+    .buttons-story-section {
+      padding: var(--spacing-4);
+    }
+    .buttons-story-heading-spacer {
+      margin-top: var(--spacing-6);
+    }
+    .buttons-story-helper {
+      margin-bottom: var(--spacing-4);
+      opacity: 0.8;
+    }
+    .buttons-story-row {
+      margin-bottom: var(--spacing-4);
+    }
+  </style>
+`;
+
 export const ButtonVariants = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${buttonsStoryStyles}
+  <div class="buttons-story-section">
     <h3>Button Variants</h3>
     <div class="flex gap-sm flex-wrap">
       <button class="btn-primary">Primary</button>
@@ -30,7 +49,8 @@ export const ButtonVariants = () => html`
 ButtonVariants.storyName = 'Button Variants';
 
 export const ButtonSizes = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${buttonsStoryStyles}
+  <div class="buttons-story-section">
     <h3>Button Sizes</h3>
     <div class="flex gap-sm flex-wrap items-center">
       <button class="btn-primary btn-sm">Small</button>
@@ -43,7 +63,8 @@ export const ButtonSizes = () => html`
 ButtonSizes.storyName = 'Button Sizes';
 
 export const IconButtons = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${buttonsStoryStyles}
+  <div class="buttons-story-section">
     <h3>Buttons with Icons</h3>
     <div class="flex gap-sm flex-wrap">
       <button class="btn-primary">
@@ -64,7 +85,7 @@ export const IconButtons = () => html`
       </button>
     </div>
 
-    <h3 style="margin-top: var(--spacing-6);">Icon on Right</h3>
+    <h3 class="buttons-story-heading-spacer">Icon on Right</h3>
     <div class="flex gap-sm flex-wrap">
       <button class="btn-primary">
         <span>Next</span>
@@ -81,9 +102,10 @@ export const IconButtons = () => html`
 IconButtons.storyName = 'Buttons with Icons';
 
 export const IconOnlyButtons = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${buttonsStoryStyles}
+  <div class="buttons-story-section">
     <h3>Icon-Only Buttons</h3>
-    <p style="margin-bottom: var(--spacing-4); opacity: 0.8;">
+    <p class="buttons-story-helper">
       Use <code>.icon-only</code> class for square icon buttons
     </p>
     
@@ -108,7 +130,7 @@ export const IconOnlyButtons = () => html`
       </button>
     </div>
 
-    <h3 style="margin-top: var(--spacing-6);">Icon-Only Sizes</h3>
+    <h3 class="buttons-story-heading-spacer">Icon-Only Sizes</h3>
     <div class="flex gap-sm flex-wrap items-center">
       <button class="icon-only btn-primary btn-sm">
         <pds-icon icon="plus" size="sm" label="Add"></pds-icon>
@@ -126,7 +148,8 @@ export const IconOnlyButtons = () => html`
 IconOnlyButtons.storyName = 'Icon-Only Buttons';
 
 export const ButtonGroups = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${buttonsStoryStyles}
+  <div class="buttons-story-section">
     <h3>Button Groups</h3>
     <div class="btn-group">
       <button class="btn-primary">
@@ -139,7 +162,7 @@ export const ButtonGroups = () => html`
       </button>
     </div>
 
-    <h3 style="margin-top: var(--spacing-6);">Icon-Only Group</h3>
+    <h3 class="buttons-story-heading-spacer">Icon-Only Group</h3>
     <div class="btn-group">
       <button class="icon-only btn-outline">
         <pds-icon icon="text-align-left" label="Align left"></pds-icon>
@@ -157,9 +180,10 @@ export const ButtonGroups = () => html`
 ButtonGroups.storyName = 'Button Groups';
 
 export const AllSizesCombinations = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${buttonsStoryStyles}
+  <div class="buttons-story-section">
     <h3>Small Buttons</h3>
-    <div class="flex gap-sm flex-wrap" style="margin-bottom: var(--spacing-4);">
+    <div class="flex gap-sm flex-wrap buttons-story-row">
       <button class="btn-primary btn-sm">Primary</button>
       <button class="btn-secondary btn-sm">Secondary</button>
       <button class="btn-outline btn-sm">Outline</button>
@@ -173,7 +197,7 @@ export const AllSizesCombinations = () => html`
     </div>
 
     <h3>Default Buttons</h3>
-    <div class="flex gap-sm flex-wrap" style="margin-bottom: var(--spacing-4);">
+    <div class="flex gap-sm flex-wrap buttons-story-row">
       <button class="btn-primary">Primary</button>
       <button class="btn-secondary">Secondary</button>
       <button class="btn-outline">Outline</button>

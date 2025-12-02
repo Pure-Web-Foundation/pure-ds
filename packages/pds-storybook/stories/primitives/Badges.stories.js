@@ -26,10 +26,31 @@ export default {
   }
 };
 
+const badgesStoryStyles = html`
+  <style>
+    .badges-story-container {
+      padding: var(--spacing-8);
+    }
+    .badges-row {
+      display: flex;
+      gap: var(--spacing-4);
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .badges-row + .badges-row {
+      margin-top: var(--spacing-8);
+    }
+    .badges-section {
+      margin-bottom: var(--spacing-8);
+    }
+  </style>
+`;
+
 export const DefaultBadges = {
   render: (args) => {
     return html`
-      <div class="story-container" style="padding: 2rem;">
+      ${badgesStoryStyles}
+      <div class="story-container badges-story-container">
         <h3>Default Badges</h3>
         <div class="flex gap-md flex-wrap items-center">
           <span class="badge">Default</span>
@@ -51,9 +72,10 @@ export const DefaultBadges = {
 export const OutlinedBadges = {
   render: (args) => {
     return html`
-      <div class="story-container" style="padding: 2rem;">
+      ${badgesStoryStyles}
+      <div class="story-container badges-story-container">
         <h3>Outlined Badges</h3>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+        <div class="badges-row">
           <span class="badge badge-outline badge-primary">Primary</span>
           <span class="badge badge-outline badge-secondary">Secondary</span>
           <span class="badge badge-outline badge-success">Success</span>
@@ -72,7 +94,8 @@ export const OutlinedBadges = {
 export const BadgeSizes = {
   render: (args) => {
     return html`
-      <div class="story-container" style="padding: 2rem;">
+      ${badgesStoryStyles}
+      <div class="story-container badges-story-container">
         <h3>Badge Sizes</h3>
         <div class="flex gap-md flex-wrap items-center">
           <span class="badge badge-primary badge-sm">Small</span>
@@ -90,9 +113,10 @@ export const BadgeSizes = {
 export const Pills = {
   render: (args) => {
     return html`
-      <div class="story-container" style="padding: 2rem;">
+      ${badgesStoryStyles}
+      <div class="story-container badges-story-container">
         <h3>Pills</h3>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+        <div class="badges-row">
           <span class="pill badge-primary">React</span>
           <span class="pill badge-secondary">Vue</span>
           <span class="pill badge-success">Node.js</span>
@@ -111,9 +135,10 @@ export const Pills = {
 export const AllVariations = {
   render: (args) => {
     return html`
-      <div class="story-container" style="padding: 2rem;">
+      ${badgesStoryStyles}
+      <div class="story-container badges-story-container">
         <h3>Default Badges</h3>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin-bottom: 2rem;">
+        <div class="badges-row badges-section">
           <span class="badge">Default</span>
           <span class="badge badge-primary">Primary</span>
           <span class="badge badge-secondary">Secondary</span>
@@ -124,7 +149,7 @@ export const AllVariations = {
         </div>
 
         <h3>Outlined Badges</h3>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin-bottom: 2rem;">
+        <div class="badges-row badges-section">
           <span class="badge badge-outline badge-primary">Primary</span>
           <span class="badge badge-outline badge-secondary">Secondary</span>
           <span class="badge badge-outline badge-success">Success</span>
@@ -134,14 +159,14 @@ export const AllVariations = {
         </div>
 
         <h3>Badge Sizes</h3>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin-bottom: 2rem;">
+        <div class="badges-row badges-section">
           <span class="badge badge-primary badge-sm">Small</span>
           <span class="badge badge-primary">Default</span>
           <span class="badge badge-primary badge-lg">Large</span>
         </div>
 
         <h3>Pills</h3>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+        <div class="badges-row">
           <span class="pill badge-primary">React</span>
           <span class="pill badge-secondary">Vue</span>
           <span class="pill badge-success">Node.js</span>

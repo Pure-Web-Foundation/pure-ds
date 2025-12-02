@@ -11,10 +11,98 @@ export default {
   }
 };
 
+const zIndexStoryStyles = html`
+  <style>
+    .z-index-section {
+      padding: var(--spacing-8);
+      max-width: 75rem;
+    }
+    .z-index-value {
+      font-weight: 600;
+    }
+    .z-index-number {
+      font-family: var(--font-mono, monospace);
+      margin-left: var(--spacing-3);
+    }
+    .z-index-callout {
+      margin-top: var(--spacing-8);
+      border-left-width: 4px;
+    }
+    .z-index-callout--info {
+      border-left-color: var(--color-info);
+    }
+    .z-index-callout--warning {
+      border-left-color: var(--color-warning);
+    }
+    .z-index-demo-wrapper {
+      position: relative;
+      height: 37.5rem;
+      overflow: hidden;
+    }
+    .z-index-demo-base {
+      padding: var(--spacing-6);
+    }
+    .z-index-demo-dropdown {
+      position: absolute;
+      top: 100px;
+      left: 50px;
+      z-index: var(--z-dropdown);
+      min-width: 12.5rem;
+    }
+    .z-index-demo-sticky {
+      position: absolute;
+      top: 180px;
+      left: 100px;
+      z-index: var(--z-sticky);
+      min-width: 12.5rem;
+    }
+    .z-index-demo-fixed {
+      position: absolute;
+      top: 260px;
+      left: 150px;
+      z-index: var(--z-fixed);
+      min-width: 12.5rem;
+    }
+    .z-index-demo-modal-overlay {
+      position: absolute;
+      border-radius: var(--radius-md);
+      inset: 0;
+      z-index: var(--z-modal);
+      background: rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .z-index-demo-modal-card {
+      max-width: 25rem;
+    }
+    .z-index-demo-tooltip {
+      position: absolute;
+      top: 50px;
+      right: 50px;
+      z-index: var(--z-tooltip);
+      padding: var(--spacing-2) var(--spacing-3);
+    }
+    .z-index-demo-toast {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: var(--z-notification);
+      background: var(--color-success);
+      color: var(--color-text-inverse, #ffffff);
+      min-width: 15.625rem;
+    }
+    .z-index-note {
+      margin-top: var(--spacing-6);
+    }
+  </style>
+`;
+
 export const ZIndexScale = {
   name: 'Z-Index Scale',
   render: () => html`
-    <div style="padding: var(--spacing-8); max-width: 1200px;">
+    ${zIndexStoryStyles}
+    <div class="z-index-section">
       <h2>Z-Index Token Scale</h2>
       <p class="text-muted">
         Tokens are organized from lowest to highest z-index values, ensuring proper stacking of UI layers.
@@ -22,55 +110,55 @@ export const ZIndexScale = {
       
       <div class="grid grid-cols-1 gap-md">
         <div class="card surface-subtle">
-          <code style="font-weight: 600;">--z-dropdown</code>
-          <span style="font-family: var(--font-mono, monospace); margin-left: var(--spacing-3);">1000</span>
+          <code class="z-index-value">--z-dropdown</code>
+          <span class="z-index-number">1000</span>
           <p class="text-muted">Dropdown menus and select options</p>
         </div>
         
         <div class="card surface-subtle">
-          <code style="font-weight: 600;">--z-sticky</code>
-          <span style="font-family: var(--font-mono, monospace); margin-left: var(--spacing-3);">1020</span>
+          <code class="z-index-value">--z-sticky</code>
+          <span class="z-index-number">1020</span>
           <p class="text-muted">Sticky headers and navigation elements</p>
         </div>
         
         <div class="card surface-subtle">
-          <code style="font-weight: 600;">--z-fixed</code>
-          <span style="font-family: var(--font-mono, monospace); margin-left: var(--spacing-3);">1030</span>
+          <code class="z-index-value">--z-fixed</code>
+          <span class="z-index-number">1030</span>
           <p class="text-muted">Fixed position elements</p>
         </div>
         
         <div class="card surface-subtle">
-          <code style="font-weight: 600;">--z-modal</code>
-          <span style="font-family: var(--font-mono, monospace); margin-left: var(--spacing-3);">1040</span>
+          <code class="z-index-value">--z-modal</code>
+          <span class="z-index-number">1040</span>
           <p class="text-muted">Modal dialogs and overlays</p>
         </div>
         
         <div class="card surface-subtle">
-          <code style="font-weight: 600;">--z-drawer</code>
-          <span style="font-family: var(--font-mono, monospace); margin-left: var(--spacing-3);">1050</span>
+          <code class="z-index-value">--z-drawer</code>
+          <span class="z-index-number">1050</span>
           <p class="text-muted">Drawer panels (side sheets)</p>
         </div>
         
         <div class="card surface-subtle">
-          <code style="font-weight: 600;">--z-popover</code>
-          <span style="font-family: var(--font-mono, monospace); margin-left: var(--spacing-3);">1060</span>
+          <code class="z-index-value">--z-popover</code>
+          <span class="z-index-number">1060</span>
           <p class="text-muted">Popovers and context menus</p>
         </div>
         
         <div class="card surface-subtle">
-          <code style="font-weight: 600;">--z-tooltip</code>
-          <span style="font-family: var(--font-mono, monospace); margin-left: var(--spacing-3);">1070</span>
+          <code class="z-index-value">--z-tooltip</code>
+          <span class="z-index-number">1070</span>
           <p class="text-muted">Tooltips and helper text</p>
         </div>
         
         <div class="card surface-subtle">
-          <code style="font-weight: 600;">--z-notification</code>
-          <span style="font-family: var(--font-mono, monospace); margin-left: var(--spacing-3);">1080</span>
+          <code class="z-index-value">--z-notification</code>
+          <span class="z-index-number">1080</span>
           <p class="text-muted">Toast notifications and alerts</p>
         </div>
       </div>
       
-      <div class="card card-outlined" style="margin-top: var(--spacing-8); border-left-width: 4px; border-left-color: var(--color-info);">
+      <div class="card card-outlined z-index-callout z-index-callout--info">
         <h3><pds-icon icon="info"></pds-icon> Best Practices</h3>
         <ul>
           <li>Always use these tokens instead of hard-coded z-index values</li>
@@ -87,49 +175,50 @@ export const ZIndexScale = {
 export const VisualDemo = {
   name: 'Visual Stacking Demo',
   render: () => html`
-    <div style="padding: var(--spacing-8); max-width: 1200px;">
+    ${zIndexStoryStyles}
+    <div class="z-index-section">
       <h2>Interactive Stacking Example</h2>
       <p class="text-muted">
         This demo shows how different z-index tokens create proper layering. 
         Lower elements appear behind higher ones.
       </p>
       
-      <div class="surface" style="position: relative; height: 600px; overflow: hidden;">
+      <div class="surface z-index-demo-wrapper">
         
-        <div style="padding: var(--spacing-6);">
+        <div class="z-index-demo-base">
           <h3>Base Content (z-index: auto)</h3>
           <p>This is the base layer of content with no explicit z-index.</p>
         </div>
         
-        <div class="card card-elevated" style="position: absolute; top: 100px; left: 50px; z-index: var(--z-dropdown); min-width: 200px;">
+        <div class="card card-elevated z-index-demo-dropdown">
           <strong>Dropdown Menu</strong>
           <p><small>z-index: var(--z-dropdown) = 1000</small></p>
         </div>
         
-        <div class="card surface-elevated" style="position: absolute; top: 180px; left: 100px; z-index: var(--z-sticky); min-width: 200px;">
+        <div class="card surface-elevated z-index-demo-sticky">
           <strong>Sticky Header</strong>
           <p><small>z-index: var(--z-sticky) = 1020</small></p>
         </div>
         
-        <div class="card surface-elevated" style="position: absolute; top: 260px; left: 150px; z-index: var(--z-fixed); min-width: 200px;">
+        <div class="card surface-elevated z-index-demo-fixed">
           <strong>Fixed Element</strong>
           <p><small>z-index: var(--z-fixed) = 1030</small></p>
         </div>
         
-        <div style="position: absolute; inset: 0; z-index: var(--z-modal); background: rgba(0, 0, 0, 0.1); display: flex; align-items: center; justify-content: center;">
-          <article class="card card-elevated" style="max-width: 400px;">
+        <div class="z-index-demo-modal-overlay">
+          <article class="card card-elevated z-index-demo-modal-card">
             <h4>Modal Dialog</h4>
             <p><small>z-index: var(--z-modal) = 1040</small></p>
             <p class="text-muted">Modal dialogs appear above most other content.</p>
           </article>
         </div>
         
-        <div class="surface-inverse" style="position: absolute; top: 50px; right: 50px; z-index: var(--z-tooltip); padding: var(--spacing-2) var(--spacing-3);">
+        <div class="surface-inverse z-index-demo-tooltip">
           <strong>Tooltip</strong>
           <p><small>--z-tooltip: 1070</small></p>
         </div>
         
-        <div class="card" style="position: absolute; top: 20px; right: 20px; z-index: var(--z-notification); background: var(--color-success); color: white; min-width: 250px;">
+        <div class="card z-index-demo-toast">
           <strong>🎉 Notification Toast</strong>
           <p><small>z-index: var(--z-notification) = 1080</small></p>
           <p><small>Highest layer</small></p>
@@ -137,7 +226,7 @@ export const VisualDemo = {
         
       </div>
       
-      <div class="card card-outlined" style="margin-top: var(--spacing-6);">
+      <div class="card card-outlined z-index-note">
         <p>
           <strong>Note:</strong> In this demo, elements are positioned to overlap. 
           Notice how higher z-index values appear above lower ones, with notifications at the top.
@@ -150,7 +239,8 @@ export const VisualDemo = {
 export const UsageExamples = {
   name: 'Usage Examples',
   render: () => html`
-    <div style="padding: var(--spacing-8); max-width: 1200px;">
+    ${zIndexStoryStyles}
+    <div class="z-index-section">
       <h2>Code Examples</h2>
       <p class="text-muted">
         How to use z-index tokens in your components and styles.
@@ -220,7 +310,7 @@ export const UsageExamples = {
         
       </div>
       
-      <aside class="card card-outlined" style="margin-top: var(--spacing-8); border-left-width: 4px; border-left-color: var(--color-warning);">
+      <aside class="card card-outlined z-index-callout z-index-callout--warning">
         <h3><pds-icon icon="warning"></pds-icon> Important Guidelines</h3>
         <ul>
           <li><strong>Never use magic numbers:</strong> Always reference these tokens instead of hardcoded values</li>

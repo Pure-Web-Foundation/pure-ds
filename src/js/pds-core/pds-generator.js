@@ -887,7 +887,7 @@ export class Generator {
     chunks.push(`  /* Semantic Text Colors */\n`);
     chunks.push(`  --color-text-primary: var(--color-gray-900);\n`);
     chunks.push(`  --color-text-secondary: var(--color-gray-600);\n`);
-    chunks.push(`  --color-text-muted: var(--color-gray-500);\n`);
+    chunks.push(`  --color-text-muted: var(--color-gray-600);\n`);
     chunks.push(`  --color-border: var(--color-gray-300);\n`);
     chunks.push(`  --color-input-bg: var(--color-surface-base);\n`);
     chunks.push(`  --color-input-disabled-bg: var(--color-gray-50);\n`);
@@ -2361,21 +2361,21 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   
   &:hover {
     background-color: var(--color-primary-500);
-    color: var(--color-primary-contrast);
+    color: var(--color-primary-contrast, #ffffff);
     border-color: var(--color-primary-500);
 
     pds-icon {
-      color: white;
+      color: var(--color-primary-contrast, #ffffff);
     }
   }
 
   &:active {
     background-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
     border-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
-    color: var(--color-primary-contrast);
+    color: var(--color-primary-contrast, #ffffff);
 
     pds-icon {
-      color: white;
+      color: var(--color-primary-contrast, #ffffff);
     }
   }
   

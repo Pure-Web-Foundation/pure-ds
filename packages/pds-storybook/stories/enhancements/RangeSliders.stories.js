@@ -1,5 +1,48 @@
 import { html } from 'lit';
 
+const rangeSliderStoryStyles = html`
+  <style>
+    .range-slider-section {
+      max-width: 400px;
+      display: grid;
+      gap: var(--spacing-4);
+    }
+
+    .range-slider-section--wide {
+      max-width: 500px;
+    }
+
+    .range-slider-section--comparison {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--spacing-6);
+      max-width: 1000px;
+    }
+
+    .range-slider-description {
+      color: var(--color-text-secondary);
+      font-size: 0.875rem;
+      margin: 0 0 var(--spacing-4);
+    }
+
+    .range-slider-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-4);
+    }
+
+    .range-slider-actions {
+      margin-top: var(--spacing-2);
+      align-self: flex-start;
+    }
+
+    .range-slider-card {
+      display: grid;
+      gap: var(--spacing-4);
+    }
+  </style>
+`;
+
 export default {
   title: 'Enhancements/Range Sliders',
   tags: ['forms', 'interaction'],
@@ -10,7 +53,7 @@ export default {
     docs: {
       description: {
         component: `Enhanced range inputs with two display modes:
-        
+
 **Standard Mode** (default): Floating bubble that appears on interaction.
 
 **Inline Output Mode**: Add \`range-output\` class to the label for persistent inline value display using semantic \`<output>\` element.
@@ -22,21 +65,29 @@ Both modes automatically generate proper ARIA attributes and use the \`<output>\
 };
 
 export const StandardFloatingBubble = () => html`
-  <div style="max-width: 400px;">
-    <p style="color: var(--color-text-secondary); font-size: 0.875rem; margin-bottom: var(--spacing-4);">
+  ${rangeSliderStoryStyles}
+  <section class="range-slider-section">
+    <p class="range-slider-description">
       Default behavior: A floating bubble appears when you interact with the slider.
     </p>
     <label>
       <span>Volume</span>
       <input type="range" min="0" max="100" value="50">
     </label>
-  </div>
+  </section>
 `;
 
 StandardFloatingBubble.storyName = 'Standard (Floating Bubble)';
 
 export const MultipleRanges = () => html`
-  <form style="display: flex; flex-direction: column; gap: var(--spacing-4); max-width: 400px;" onsubmit="event.preventDefault(); toastFormData(new FormData(event.target));">
+  ${rangeSliderStoryStyles}
+  <form
+    class="range-slider-section range-slider-form"
+    @submit="${(event) => {
+      event.preventDefault();
+      toastFormData(new FormData(event.target));
+    }}"
+  >
     <label>
       <span>Brightness</span>
       <input type="range" name="brightness" min="0" max="100" value="75">
@@ -53,12 +104,19 @@ export const MultipleRanges = () => html`
       <span>Temperature</span>
       <input type="range" name="temperature" min="-100" max="100" value="0">
     </label>
-    <button type="submit" class="btn-primary" style="margin-top: var(--spacing-2);">Apply Settings</button>
+    <button type="submit" class="btn-primary range-slider-actions">Apply Settings</button>
   </form>
 `;
 
 export const CustomSteps = () => html`
-  <form style="display: flex; flex-direction: column; gap: var(--spacing-4); max-width: 400px;" onsubmit="event.preventDefault(); toastFormData(new FormData(event.target));">
+  ${rangeSliderStoryStyles}
+  <form
+    class="range-slider-section range-slider-form"
+    @submit="${(event) => {
+      event.preventDefault();
+      toastFormData(new FormData(event.target));
+    }}"
+  >
     <label>
       <span>Opacity (10% steps)</span>
       <input type="range" name="opacity" min="0" max="100" value="100" step="10">
@@ -67,16 +125,17 @@ export const CustomSteps = () => html`
       <span>Font Size (0.25rem steps)</span>
       <input type="range" name="fontSize" min="0.5" max="3" value="1" step="0.25">
     </label>
-    <button type="submit" class="btn-primary" style="margin-top: var(--spacing-2);">Apply Settings</button>
+    <button type="submit" class="btn-primary range-slider-actions">Apply Settings</button>
   </form>
 `;
 
 export const InlineOutputMode = () => html`
-  <div style="max-width: 500px;">
-    <p style="color: var(--color-text-secondary); font-size: 0.875rem; margin-bottom: var(--spacing-4);">
+  ${rangeSliderStoryStyles}
+  <section class="range-slider-section range-slider-section--wide">
+    <p class="range-slider-description">
       Add the <code>range-output</code> class to automatically create an inline output display.
     </p>
-    <div style="display: flex; flex-direction: column; gap: var(--spacing-4);">
+    <div class="range-slider-form">
       <label class="range-output">
         <span>Master Volume</span>
         <input type="range" min="0" max="100" value="75">
@@ -90,18 +149,21 @@ export const InlineOutputMode = () => html`
         <input type="range" min="0" max="100" value="60">
       </label>
     </div>
-  </div>
+  </section>
 `;
 
 InlineOutputMode.storyName = 'Inline Output (range-output class)';
 
 export const AudioControlsExample = () => html`
-  <article class="card" style="max-width: 500px;">
-    <h3>Audio Controls</h3>
-    <p style="color: var(--color-text-secondary); font-size: 0.875rem; margin-bottom: var(--spacing-4);">
-      Complete example using <code>range-output</code> class for a real-world audio control interface.
-    </p>
-    <div style="display: flex; flex-direction: column; gap: var(--spacing-4);">
+  ${rangeSliderStoryStyles}
+  <article class="card range-slider-section range-slider-section--wide range-slider-card">
+    <div>
+      <h3>Audio Controls</h3>
+      <p class="range-slider-description">
+        Complete example using <code>range-output</code> class for a real-world audio control interface.
+      </p>
+    </div>
+    <div class="range-slider-form">
       <label class="range-output">
         <span>Master Volume</span>
         <input type="range" min="0" max="100" value="75">
@@ -125,13 +187,16 @@ export const AudioControlsExample = () => html`
 AudioControlsExample.storyName = 'Real-world Example (Audio Controls)';
 
 export const ComparisonView = () => html`
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-6); max-width: 1000px;">
-    <article class="card">
-      <h3>Standard Mode</h3>
-      <p style="color: var(--color-text-secondary); font-size: 0.875rem; margin-bottom: var(--spacing-4);">
-        Floating bubble appears on hover/focus. Best for simple forms.
-      </p>
-      <div style="display: flex; flex-direction: column; gap: var(--spacing-4);">
+  ${rangeSliderStoryStyles}
+  <div class="range-slider-section range-slider-section--comparison">
+    <article class="card range-slider-card">
+      <div>
+        <h3>Standard Mode</h3>
+        <p class="range-slider-description">
+          Floating bubble appears on hover/focus. Best for simple forms.
+        </p>
+      </div>
+      <div class="range-slider-form">
         <label>
           <span>Volume</span>
           <input type="range" min="0" max="100" value="75">
@@ -142,13 +207,15 @@ export const ComparisonView = () => html`
         </label>
       </div>
     </article>
-    
-    <article class="card">
-      <h3>Inline Output Mode</h3>
-      <p style="color: var(--color-text-secondary); font-size: 0.875rem; margin-bottom: var(--spacing-4);">
-        Persistent value display. Best for settings and controls.
-      </p>
-      <div style="display: flex; flex-direction: column; gap: var(--spacing-4);">
+
+    <article class="card range-slider-card">
+      <div>
+        <h3>Inline Output Mode</h3>
+        <p class="range-slider-description">
+          Persistent value display. Best for settings and controls.
+        </p>
+      </div>
+      <div class="range-slider-form">
         <label class="range-output">
           <span>Volume</span>
           <input type="range" min="0" max="100" value="75">

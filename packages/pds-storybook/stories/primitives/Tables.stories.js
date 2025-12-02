@@ -1,5 +1,22 @@
 import { html } from 'lit';
 
+const tablesStoryStyles = html`
+  <style>
+    .table-story-section {
+      padding: var(--spacing-4);
+    }
+
+    .table-story-description {
+      margin: 0 0 var(--spacing-4);
+      font-style: italic;
+    }
+
+    .table-story-scroll {
+      overflow-x: auto;
+    }
+  </style>
+`;
+
 export default {
   title: 'Primitives/Tables',
   parameters: {
@@ -12,7 +29,8 @@ export default {
 };
 
 export const DefaultTable = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${tablesStoryStyles}
+  <section class="table-story-section">
     <table>
       <thead>
         <tr>
@@ -49,13 +67,14 @@ export const DefaultTable = () => html`
         </tr>
       </tbody>
     </table>
-  </div>
+  </section>
 `;
 
 DefaultTable.storyName = 'Default Table';
 
 export const StripedTable = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${tablesStoryStyles}
+  <section class="table-story-section">
     <table class="table-striped">
       <thead>
         <tr>
@@ -98,13 +117,14 @@ export const StripedTable = () => html`
         </tr>
       </tbody>
     </table>
-  </div>
+  </section>
 `;
 
 StripedTable.storyName = 'Striped Table';
 
 export const BorderedCompactTable = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${tablesStoryStyles}
+  <section class="table-story-section">
     <table class="table-bordered table-compact">
       <thead>
         <tr>
@@ -147,17 +167,18 @@ export const BorderedCompactTable = () => html`
         </tr>
       </tbody>
     </table>
-  </div>
+  </section>
 `;
 
 BorderedCompactTable.storyName = 'Bordered Compact Table';
 
 export const ResponsiveTable = () => html`
-  <div style="padding: var(--spacing-4);">
-    <p style="margin-bottom: var(--spacing-4);">
-      <em>Resize the window to see horizontal scrolling on small screens</em>
+  ${tablesStoryStyles}
+  <section class="table-story-section">
+    <p class="table-story-description">
+      Resize the window to see horizontal scrolling on small screens
     </p>
-    <div style="overflow-x: auto;">
+    <div class="table-story-scroll">
       <table class="table-striped">
         <thead>
           <tr>
@@ -205,7 +226,7 @@ export const ResponsiveTable = () => html`
         </tbody>
       </table>
     </div>
-  </div>
+  </section>
 `;
 
 ResponsiveTable.storyName = 'Responsive Table';

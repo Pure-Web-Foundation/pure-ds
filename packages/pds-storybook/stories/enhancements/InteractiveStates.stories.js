@@ -1,5 +1,80 @@
 import { html } from 'lit';
 
+const interactiveSkeletonStoryStyles = html`
+  <style>
+    .interactive-skeleton-card {
+      display: grid;
+      gap: var(--spacing-3);
+    }
+
+    .interactive-skeleton-block {
+      display: block;
+    }
+
+    .interactive-skeleton-height-24 {
+      height: 1.5rem;
+    }
+
+    .interactive-skeleton-height-20 {
+      height: 1.25rem;
+    }
+
+    .interactive-skeleton-height-16 {
+      height: 1rem;
+    }
+
+    .interactive-skeleton-height-14 {
+      height: 0.875rem;
+    }
+
+    .interactive-skeleton-width-60 {
+      width: 60%;
+    }
+
+    .interactive-skeleton-width-80 {
+      width: 80%;
+    }
+
+    .interactive-skeleton-width-70 {
+      width: 70%;
+    }
+
+    .interactive-skeleton-width-50 {
+      width: 50%;
+    }
+
+    .interactive-skeleton-width-40 {
+      width: 40%;
+    }
+
+    .interactive-skeleton-width-85 {
+      width: 85%;
+    }
+
+    .interactive-skeleton-margin-lg {
+      margin-bottom: var(--spacing-3);
+    }
+
+    .interactive-skeleton-margin-md {
+      margin-bottom: var(--spacing-2);
+    }
+
+    .interactive-skeleton-avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+    }
+
+    .interactive-skeleton-list-item {
+      padding: var(--spacing-3);
+    }
+
+    .interactive-skeleton-details {
+      flex: 1;
+    }
+  </style>
+`;
+
 export default {
   title: 'Enhancements/Interactive States',
   tags: ['buttons', 'interaction'],
@@ -350,17 +425,18 @@ button.classList.remove('btn-working');</code></pre>
 WorkingStates.storyName = 'Working States';
 
 export const SkeletonLoading = () => html`
+  ${interactiveSkeletonStoryStyles}
   <div class="card">
     <h2>Skeleton Loading</h2>
     <p>Use the <code>.skeleton</code> class for content placeholders while loading</p>
 
     <h3>Card Skeleton</h3>
     <div class="max-w-xl">
-      <div class="card">
-        <div class="skeleton" style="height: 24px; width: 60%; margin-bottom: var(--spacing-3);"></div>
-        <div class="skeleton" style="height: 16px; margin-bottom: var(--spacing-2);"></div>
-        <div class="skeleton" style="height: 16px; margin-bottom: var(--spacing-2);"></div>
-        <div class="skeleton" style="height: 16px; width: 80%;"></div>
+      <div class="card interactive-skeleton-card">
+        <div class="skeleton interactive-skeleton-block interactive-skeleton-height-24 interactive-skeleton-width-60 interactive-skeleton-margin-lg"></div>
+        <div class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-margin-md"></div>
+        <div class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-margin-md"></div>
+        <div class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-width-80"></div>
       </div>
     </div>
   </div>
@@ -369,11 +445,11 @@ export const SkeletonLoading = () => html`
     <h3>List Skeleton</h3>
     <div class="max-w-md">
       ${Array.from({ length: 4 }, () => html`
-        <div class="flex gap-sm align-center border-bottom" style="padding: var(--spacing-3);">
-          <div class="skeleton" style="width: 40px; height: 40px; border-radius: 50%;"></div>
-          <div style="flex: 1;">
-            <div class="skeleton" style="height: 16px; width: 70%; margin-bottom: var(--spacing-2);"></div>
-            <div class="skeleton" style="height: 14px; width: 50%;"></div>
+        <div class="flex gap-sm align-center border-bottom interactive-skeleton-list-item">
+          <div class="skeleton interactive-skeleton-avatar"></div>
+          <div class="interactive-skeleton-details">
+            <div class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-width-70 interactive-skeleton-margin-md"></div>
+            <div class="skeleton interactive-skeleton-block interactive-skeleton-height-14 interactive-skeleton-width-50"></div>
           </div>
         </div>
       `)}
@@ -383,11 +459,11 @@ export const SkeletonLoading = () => html`
   <div class="card">
     <h3>Text Skeleton</h3>
     <div class="max-w-lg">
-      <div class="skeleton" style="height: 20px; width: 40%; margin-bottom: var(--spacing-3);"></div>
-      <div class="skeleton" style="height: 16px; margin-bottom: var(--spacing-2);"></div>
-      <div class="skeleton" style="height: 16px; margin-bottom: var(--spacing-2);"></div>
-      <div class="skeleton" style="height: 16px; margin-bottom: var(--spacing-2);"></div>
-      <div class="skeleton" style="height: 16px; width: 85%;"></div>
+      <div class="skeleton interactive-skeleton-block interactive-skeleton-height-20 interactive-skeleton-width-40 interactive-skeleton-margin-lg"></div>
+      <div class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-margin-md"></div>
+      <div class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-margin-md"></div>
+      <div class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-margin-md"></div>
+      <div class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-width-85"></div>
     </div>
   </div>
 `;

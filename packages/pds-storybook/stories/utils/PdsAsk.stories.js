@@ -73,6 +73,45 @@ const formDataToObject = (formData) => {
   return entries;
 };
 
+const askStoryStyles = html`
+  <style>
+    .ask-card {
+      padding: var(--spacing-6, 1.5rem);
+      border: 1px solid var(--surface-border, rgba(0, 0, 0, 0.08));
+      border-radius: var(--radius-lg, 16px);
+      background: var(--surface-base, #ffffff);
+    }
+    .ask-card--sm {
+      max-width: 26.25rem;
+    }
+    .ask-card--md {
+      max-width: 30rem;
+    }
+    .ask-card--lg {
+      max-width: 32.5rem;
+    }
+    .ask-card--xl {
+      max-width: 38.75rem;
+    }
+    .ask-card-heading {
+      margin: 0;
+    }
+    .ask-card-status {
+      margin: 0;
+      color: var(--surface-muted-text, rgba(0, 0, 0, 0.6));
+    }
+    .ask-card-list {
+      padding-left: var(--spacing-6, 1.5rem);
+    }
+    .ask-dialog-form {
+      min-width: 22.5rem;
+    }
+    .ask-dialog-form--wide {
+      min-width: 30rem;
+    }
+  </style>
+`;
+
 export default {
   title: 'Utilities/PDS ask',
   tags: ['interaction', 'dialogs', 'forms'],
@@ -113,17 +152,17 @@ export const BareConfirm = {
     };
 
     return html`
+      ${askStoryStyles}
       <section
         data-ask-example
-        class="flex flex-col gap-md"
-        style="max-width: 420px; padding: var(--spacing-6, 1.5rem); border: 1px solid var(--surface-border, rgba(0,0,0,0.08)); border-radius: var(--radius-lg, 16px);"
+        class="ask-card ask-card--sm flex flex-col gap-md"
       >
-        <h3 style="margin: 0;">Default confirm dialog</h3>
+        <h3 class="ask-card-heading">Default confirm dialog</h3>
         <p>
           No custom options supplied—just a message string. The helper wires up buttons, focus, and the promise result for you.
         </p>
         <button class="btn" @click=${handleClick}>Ask “Are you sure?”</button>
-        <p data-status style="margin: 0; color: var(--surface-muted-text, rgba(0,0,0,0.6));">Waiting…</p>
+        <p data-status class="ask-card-status">Waiting…</p>
       </section>
     `;
   }
@@ -143,14 +182,14 @@ export const SimpleForm = {
 
       const result = await ask(
         html`
-          <form method="dialog" class="flex flex-col gap-sm" style="min-width: 360px;">
+          <form method="dialog" class="ask-dialog-form flex flex-col gap-sm">
             <label class="flex flex-col gap-xs">
               <span>Name</span>
-              <input class="input" name="name" required placeholder="Alex Rivera" />
+              <input name="name" required placeholder="Alex Rivera" />
             </label>
             <label class="flex flex-col gap-xs">
               <span>Email</span>
-              <input class="input" type="email" name="email" required placeholder="alex@example.com" />
+              <input type="email" name="email" required placeholder="alex@example.com" />
             </label>
             <label class="flex flex-col gap-xs">
               <span>Team size</span>
@@ -187,17 +226,17 @@ export const SimpleForm = {
     };
 
     return html`
+      ${askStoryStyles}
       <section
         data-ask-example
-        class="flex flex-col gap-md"
-        style="max-width: 480px; padding: var(--spacing-6, 1.5rem); border: 1px solid var(--surface-border, rgba(0,0,0,0.08)); border-radius: var(--radius-lg, 16px);"
+        class="ask-card ask-card--md flex flex-col gap-md"
       >
-        <h3 style="margin: 0;">Collect a few fields</h3>
+        <h3 class="ask-card-heading">Collect a few fields</h3>
         <p>
           A plain HTML form inside the dialog captures values through <code>FormData</code> when the OK button fires.
         </p>
         <button class="btn btn-primary" @click=${handleClick}>Open mini form</button>
-        <p data-status style="margin: 0; color: var(--surface-muted-text, rgba(0,0,0,0.6));">No submission yet.</p>
+        <p data-status class="ask-card-status">No submission yet.</p>
       </section>
     `;
   }
@@ -219,7 +258,7 @@ export const QuickConfirm = {
         html`
           <div class="flex flex-col gap-sm">
             <p>This dialog comes from <code>PDS.ask()</code> and resolves with a simple boolean.</p>
-            <ul class="list-disc" style="padding-left: var(--spacing-6, 1.5rem);">
+            <ul class="ask-card-list list-disc">
               <li>Handles focus trapping and ESC cancel automatically.</li>
               <li>Resolves to <code>true</code> when the primary button is pressed.</li>
               <li>Returns <code>false</code> if the user cancels or closes the dialog.</li>
@@ -249,18 +288,18 @@ export const QuickConfirm = {
     };
 
     return html`
+      ${askStoryStyles}
       <section
         data-ask-example
-        class="flex flex-col gap-md"
-        style="max-width: 520px; padding: var(--spacing-6, 1.5rem); border: 1px solid var(--surface-border, rgba(0,0,0,0.08)); border-radius: var(--radius-lg, 16px);"
+        class="ask-card ask-card--lg flex flex-col gap-md"
       >
-        <h3 style="margin: 0;">Lightweight confirmations</h3>
+        <h3 class="ask-card-heading">Lightweight confirmations</h3>
         <p>
           Click the button to open a fully styled modal dialog. When it resolves, the promise gives you a
           boolean — ideal for gating destructive actions without wiring any extra event listeners.
         </p>
         <button class="btn btn-primary" @click=${handleClick}>Archive project</button>
-        <p data-status style="margin: 0; color: var(--surface-muted-text, rgba(0,0,0,0.6));">No dialog shown yet.</p>
+        <p data-status class="ask-card-status">No dialog shown yet.</p>
       </section>
     `;
   }
@@ -280,7 +319,7 @@ export const JsonformSubdialog = {
 
       const dialogResult = await ask(
         html`
-          <form method="dialog" class="flex flex-col gap-md" style="min-width: 480px;">
+          <form method="dialog" class="ask-dialog-form ask-dialog-form--wide flex flex-col gap-md">
             <pds-jsonform
               id="spotlight-form"
               .jsonSchema=${marketingSchema}
@@ -363,18 +402,18 @@ export const JsonformSubdialog = {
     };
 
     return html`
+      ${askStoryStyles}
       <section
         data-ask-example
-        class="flex flex-col gap-md"
-        style="max-width: 620px; padding: var(--spacing-6, 1.5rem); border: 1px solid var(--surface-border, rgba(0,0,0,0.08)); border-radius: var(--radius-lg, 16px);"
+        class="ask-card ask-card--xl flex flex-col gap-md"
       >
-        <h3 style="margin: 0;">Deep editing workflows</h3>
+        <h3 class="ask-card-heading">Deep editing workflows</h3>
         <p>
           Use <code>PDS.ask()</code> with <code>useForm: true</code> to mount an entire <code>&lt;pds-jsonform&gt;</code>
           inside the dialog. The promise resolves with the form data, letting you merge the changes into the parent flow.
         </p>
         <button class="btn btn-outline" @click=${handleClick}>Edit spotlight copy</button>
-        <p data-status style="margin: 0; color: var(--surface-muted-text, rgba(0,0,0,0.6));">No edits made yet.</p>
+        <p data-status class="ask-card-status">No edits made yet.</p>
       </section>
     `;
   }

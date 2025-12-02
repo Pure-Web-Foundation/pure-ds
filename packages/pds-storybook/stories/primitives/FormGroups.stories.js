@@ -1,4 +1,5 @@
-import { html } from "lit";
+import { html } from 'lit';
+import { toastFormData } from '../utils/toast-utils.js';
 
 export default {
   title: "Primitives/Form Groups",
@@ -36,10 +37,70 @@ Add the \`.buttons\` class to either type for outlined button-style controls:
   },
 };
 
+const formGroupsStoryStyles = html`
+  <style>
+    .form-groups-section {
+      padding: var(--spacing-4);
+    }
+    .form-groups-helper {
+      margin-bottom: var(--spacing-4);
+      opacity: 0.8;
+    }
+    .form-groups-helper-lg {
+      margin-bottom: var(--spacing-6);
+      opacity: 0.8;
+    }
+    .form-groups-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-8);
+    }
+    .form-groups-subheading {
+      margin-bottom: var(--spacing-4);
+    }
+    .form-groups-fieldset-spacing {
+      margin-bottom: var(--spacing-6);
+    }
+    .form-groups-card {
+      padding: var(--spacing-4);
+    }
+    .form-groups-horizontal {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-3);
+    }
+    .form-groups-grid {
+      display: grid;
+      gap: var(--spacing-6);
+      max-width: 50rem;
+    }
+    .form-groups-accessible-card {
+      padding: var(--spacing-6);
+      max-width: 37.5rem;
+    }
+    .form-groups-accessible-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-6);
+    }
+    .form-groups-topics-helper {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-bottom: var(--spacing-3);
+    }
+    .form-groups-actions {
+      margin-top: var(--spacing-6);
+      display: flex;
+      gap: var(--spacing-2);
+    }
+  </style>
+`;
+
 export const RadioGroupDefault = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${formGroupsStoryStyles}
+  <div class="form-groups-section">
     <h3>Radio Group - Default Style</h3>
-    <p style="margin-bottom: var(--spacing-4); opacity: 0.8;">
+    <p class="form-groups-helper">
       Default radio group with visible radio buttons, vertical layout
     </p>
     <fieldset role="radiogroup">
@@ -63,9 +124,10 @@ export const RadioGroupDefault = () => html`
 RadioGroupDefault.storyName = "Radio Group - Default";
 
 export const RadioGroupButtons = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${formGroupsStoryStyles}
+  <div class="form-groups-section">
     <h3>Radio Group - Button Style</h3>
-    <p style="margin-bottom: var(--spacing-4); opacity: 0.8;">
+    <p class="form-groups-helper">
       Add <code>class="buttons"</code> for outlined button-style radio controls
     </p>
     <fieldset role="radiogroup" class="buttons">
@@ -89,9 +151,10 @@ export const RadioGroupButtons = () => html`
 RadioGroupButtons.storyName = "Radio Group - Buttons";
 
 export const CheckboxGroupDefault = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${formGroupsStoryStyles}
+  <div class="form-groups-section">
     <h3>Checkbox Group - Default Style</h3>
-    <p style="margin-bottom: var(--spacing-4); opacity: 0.8;">
+    <p class="form-groups-helper">
       Default checkbox group with visible checkboxes, vertical layout
     </p>
     <fieldset role="group">
@@ -124,9 +187,10 @@ export const CheckboxGroupDefault = () => html`
 CheckboxGroupDefault.storyName = "Checkbox Group - Default";
 
 export const CheckboxGroupButtons = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${formGroupsStoryStyles}
+  <div class="form-groups-section">
     <h3>Checkbox Group - Button Style</h3>
-    <p style="margin-bottom: var(--spacing-4); opacity: 0.8;">
+    <p class="form-groups-helper">
       Add <code>class="buttons"</code> for outlined button-style checkboxes
     </p>
     <fieldset role="group" class="buttons">
@@ -159,19 +223,18 @@ export const CheckboxGroupButtons = () => html`
 CheckboxGroupButtons.storyName = "Checkbox Group - Buttons";
 
 export const StyleComparison = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${formGroupsStoryStyles}
+  <div class="form-groups-section">
     <h3>Side-by-Side Comparison</h3>
-    <p style="margin-bottom: var(--spacing-6); opacity: 0.8;">
+    <p class="form-groups-helper-lg">
       Compare default vs button styles for both radio and checkbox groups
     </p>
 
-    <div
-      style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-8);"
-    >
+    <div class="form-groups-comparison">
       <div>
-        <h4 style="margin-bottom: var(--spacing-4);">Default Style</h4>
+        <h4 class="form-groups-subheading">Default Style</h4>
 
-        <fieldset role="radiogroup" style="margin-bottom: var(--spacing-6);">
+        <fieldset role="radiogroup" class="form-groups-fieldset-spacing">
           <legend>Billing Cycle</legend>
           <label>
             <input
@@ -211,12 +274,11 @@ export const StyleComparison = () => html`
       </div>
 
       <div>
-        <h4 style="margin-bottom: var(--spacing-4);">Button Style</h4>
+        <h4 class="form-groups-subheading">Button Style</h4>
 
         <fieldset
           role="radiogroup"
-          class="buttons"
-          style="margin-bottom: var(--spacing-6);"
+          class="buttons form-groups-fieldset-spacing"
         >
           <legend>Billing Cycle</legend>
           <label>
@@ -262,41 +324,39 @@ export const StyleComparison = () => html`
 StyleComparison.storyName = "Style Comparison";
 
 export const ToggleSwitches = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${formGroupsStoryStyles}
+  <div class="form-groups-section">
     <h3>Toggle Switches</h3>
-    <p style="margin-bottom: var(--spacing-4); opacity: 0.8;">
+    <p class="form-groups-helper">
       Uses <code>data-toggle</code> attribute for enhanced toggle switch styling
     </p>
 
-    <section class="card">
+    <section class="card form-groups-card">
       <fieldset class="card" role="group">
         <legend>Preferences</legend>
 
         <label data-toggle>
-        <span>Enable notifications</span>  
-        <input type="checkbox" name="prefs" value="notifications" checked />
-          
+          <input type="checkbox" name="prefs" value="notifications" checked />
+          <span>Enable notifications</span>
         </label>
 
         <label data-toggle>
-        <span>Dark mode</span>
           <input type="checkbox" name="prefs" value="dark" />
+          <span>Dark mode</span>
           
         </label>
       </fieldset>
     </section>
 
-    <section class="card">
+    <section class="card form-groups-card">
       <fieldset class="card" role="group">
         <legend>Left-aligned knob</legend>
         <label data-toggle>
-          
           <input type="checkbox" name="prefs" value="autosave" checked />
           <span>Auto-save</span>
         </label>
 
         <label data-toggle>
-          
           <input type="checkbox" name="prefs" value="tooltips" />
           <span>Show tooltips</span>
         </label>
@@ -308,13 +368,14 @@ export const ToggleSwitches = () => html`
 ToggleSwitches.storyName = "Toggle Switches";
 
 export const CustomLayout = () => html`
-  <div class="card">
+  ${formGroupsStoryStyles}
+  <div class="card form-groups-card">
     <h3>Custom Layout with Flex Utilities</h3>
     <p class="alert alert-info">
       Override default column layout using standard CSS flex properties
     </p>
 
-    <fieldset role="radiogroup" style="flex-direction: row; flex-wrap: wrap;">
+    <fieldset role="radiogroup" class="form-groups-horizontal">
       <legend>Horizontal Radio Group (flex-direction: row)</legend>
       <label>
         <input type="radio" name="horizontal-radio" value="1" checked />
@@ -330,7 +391,7 @@ export const CustomLayout = () => html`
       </label>
     </fieldset>
 
-    <fieldset role="group" style="flex-direction: row; flex-wrap: wrap;">
+    <fieldset role="group" class="form-groups-horizontal">
       <legend>Horizontal Checkbox Group (flex-direction: row)</legend>
       <label>
         <input type="checkbox" name="horizontal-check" value="1" checked />
@@ -351,13 +412,14 @@ export const CustomLayout = () => html`
 CustomLayout.storyName = "Custom Layout";
 
 export const ButtonStyleVariants = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${formGroupsStoryStyles}
+  <div class="form-groups-section">
     <h3>Button Style Variants</h3>
-    <p style="margin-bottom: var(--spacing-6); opacity: 0.8;">
+    <p class="form-groups-helper-lg">
       Examples of button-style groups in different contexts
     </p>
 
-    <div style="display: grid; gap: var(--spacing-6); max-width: 800px;">
+    <div class="form-groups-grid">
       <fieldset role="radiogroup" class="buttons">
         <legend>Subscription Tier</legend>
         <label>
@@ -423,86 +485,85 @@ export const ButtonStyleVariants = () => html`
 
 ButtonStyleVariants.storyName = "Button Style Variants";
 
-export const AccessibleFormGroups = () => html`
-  <div style="padding: var(--spacing-4);">
-    <h2>Accessibility Features</h2>
-    <p style="margin-bottom: var(--spacing-6);">
-      Form groups include proper ARIA attributes, semantic HTML, and keyboard
-      navigation support.
-    </p>
+export const AccessibleFormGroups = {
+  render: () => {
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      toastFormData(new FormData(event.target));
+    };
 
-    <div class="card" style="padding: var(--spacing-6); max-width: 600px;">
-      <form
-        onsubmit="event.preventDefault(); toastFormData(new FormData(event.target));"
-      >
-        <fieldset
-          role="radiogroup"
-          class="buttons"
-          aria-describedby="notification-help"
-        >
-          <legend>Notification Preferences</legend>
+    return html`
+      ${formGroupsStoryStyles}
+      <div class="form-groups-section">
+        <h2>Accessibility Features</h2>
+        <p class="form-groups-helper-lg">
+          Form groups include proper ARIA attributes, semantic HTML, and keyboard
+          navigation support.
+        </p>
 
-          <p>Choose how you'd like to receive notifications</p>
+        <div class="card form-groups-accessible-card">
+          <form class="form-groups-accessible-form" @submit=${handleSubmit}>
+            <fieldset
+              role="radiogroup"
+              class="buttons"
+              aria-describedby="notification-help"
+            >
+              <legend>Notification Preferences</legend>
 
-          <fieldset role="group" class="flex flex-row">
-            <label>
-              <input type="radio" name="notification" value="email" checked />
-              <span>Email only</span>
-            </label>
-            <label>
-              <input type="radio" name="notification" value="sms" />
-              <span>SMS only</span>
-            </label>
-            <label>
-              <input type="radio" name="notification" value="both" />
-              <span>Both</span>
-            </label>
-            <label>
-              <input type="radio" name="notification" value="none" />
-              <span>None</span>
-            </label>
-          </fieldset>
-        </fieldset>
+              <p>Choose how you'd like to receive notifications</p>
 
-        <fieldset
-          role="group"
-          style="margin-top: var(--spacing-6);"
-          aria-describedby="topics-help"
-        >
-          <legend>Topics to Follow</legend>
-          <p
-            id="topics-help"
-            style="font-size: 0.9rem; opacity: 0.8; margin-bottom: var(--spacing-3);"
-          >
-            Select all topics you're interested in
-          </p>
-          <label data-toggle>
-            <input type="checkbox" name="topics" value="product" checked />
-            <span>Product Updates</span>
-          </label>
-          <label data-toggle>
-            <input type="checkbox" name="topics" value="security" checked />
-            <span>Security Alerts</span>
-          </label>
-          <label data-toggle>
-            <input type="checkbox" name="topics" value="marketing" />
-            <span>Marketing & Promotions</span>
-          </label>
-        </fieldset>
+              <fieldset role="group" class="flex flex-row">
+                <label>
+                  <input type="radio" name="notification" value="email" checked />
+                  <span>Email only</span>
+                </label>
+                <label>
+                  <input type="radio" name="notification" value="sms" />
+                  <span>SMS only</span>
+                </label>
+                <label>
+                  <input type="radio" name="notification" value="both" />
+                  <span>Both</span>
+                </label>
+                <label>
+                  <input type="radio" name="notification" value="none" />
+                  <span>None</span>
+                </label>
+              </fieldset>
+            </fieldset>
 
-        <div style="margin-top: var(--spacing-6);">
-          <button type="submit" class="btn-primary">Save Preferences</button>
-          <button
-            type="reset"
-            class="btn-secondary"
-            style="margin-left: var(--spacing-2);"
-          >
-            Reset
-          </button>
+            <fieldset
+              role="group"
+              class="form-groups-fieldset-spacing"
+              aria-describedby="topics-help"
+            >
+              <legend>Topics to Follow</legend>
+              <p id="topics-help" class="form-groups-topics-helper">
+                Select all topics you're interested in
+              </p>
+              <label data-toggle>
+                <input type="checkbox" name="topics" value="product" checked />
+                <span>Product Updates</span>
+              </label>
+              <label data-toggle>
+                <input type="checkbox" name="topics" value="security" checked />
+                <span>Security Alerts</span>
+              </label>
+              <label data-toggle>
+                <input type="checkbox" name="topics" value="marketing" />
+                <span>Marketing & Promotions</span>
+              </label>
+            </fieldset>
+
+            <div class="form-groups-actions">
+              <button type="submit" class="btn-primary">Save Preferences</button>
+              <button type="reset" class="btn-secondary">Reset</button>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
-  </div>
-`;
+      </div>
+    `;
+  }
+};
 
 AccessibleFormGroups.storyName = "Accessible Form Groups";

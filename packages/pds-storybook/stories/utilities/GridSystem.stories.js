@@ -15,6 +15,14 @@ export default {
   }
 };
 
+const gridSystemStoryStyles = html`
+  <style>
+    .grid-system-card-title {
+      margin-top: var(--spacing-3);
+    }
+  </style>
+`;
+
 export const FixedColumnGrids = () => html`
   <div class="card">
     <h3>Two Column Grid (.grid-cols-2)</h3>
@@ -172,6 +180,7 @@ export const GapUtilities = () => html`
 GapUtilities.storyName = 'Gap Utilities';
 
 export const CardGridLayouts = () => html`
+  ${gridSystemStoryStyles}
   <div class="card">
     <h2>Card Grid Layouts</h2>
     <p>Practical examples using grid utilities for card-based layouts</p>
@@ -179,17 +188,17 @@ export const CardGridLayouts = () => html`
     <div class="grid grid-cols-3 gap-md">
       <div class="card">
         <pds-icon icon="palette" size="xl" class="icon-primary"></pds-icon>
-        <h5 style="margin-top: var(--spacing-3);">Design</h5>
+        <h5 class="grid-system-card-title">Design</h5>
         <p>Smart surfaces handle theming automatically</p>
       </div>
       <div class="card">
         <pds-icon icon="code" size="xl" class="icon-success"></pds-icon>
-        <h5 style="margin-top: var(--spacing-3);">Development</h5>
+        <h5 class="grid-system-card-title">Development</h5>
         <p>Zero manual color overrides needed</p>
       </div>
       <div class="card">
         <pds-icon icon="rocket" size="xl" class="icon-info"></pds-icon>
-        <h5 style="margin-top: var(--spacing-3);">Performance</h5>
+        <h5 class="grid-system-card-title">Performance</h5>
         <p>CSS custom properties are fast</p>
       </div>
     </div>

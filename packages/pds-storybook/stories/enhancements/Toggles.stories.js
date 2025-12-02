@@ -1,5 +1,44 @@
 import { html } from 'lit';
 
+const toggleStoryStyles = html`
+  <style>
+    .toggle-story-form {
+      max-width: 400px;
+    }
+
+    .toggle-story-form__button {
+      margin-top: var(--spacing-3);
+      align-self: flex-start;
+    }
+
+    .toggle-story-layout {
+      max-width: 600px;
+      display: grid;
+      gap: var(--spacing-4);
+    }
+
+    .toggle-story-muted {
+      color: var(--surface-text-secondary);
+      margin-bottom: var(--spacing-4);
+    }
+
+    .toggle-story-section {
+      display: grid;
+      gap: var(--spacing-3);
+    }
+
+    .toggle-story-subheading {
+      margin-bottom: var(--spacing-2);
+    }
+
+    .toggle-story-card {
+      max-width: 500px;
+      display: grid;
+      gap: var(--spacing-4);
+    }
+  </style>
+`;
+
 export default {
   title: 'Enhancements/Toggles',
   tags: ['forms', 'interaction'],
@@ -16,6 +55,7 @@ export default {
 };
 
 export const BasicToggle = () => html`
+  ${toggleStoryStyles}
   <label data-toggle>
     <span data-label>Enable notifications</span>
     <input type="checkbox">
@@ -23,6 +63,7 @@ export const BasicToggle = () => html`
 `;
 
 export const PreChecked = () => html`
+  ${toggleStoryStyles}
   <label data-toggle>
     <span data-label>Dark mode</span>
     <input type="checkbox" checked>
@@ -30,7 +71,14 @@ export const PreChecked = () => html`
 `;
 
 export const MultipleToggles = () => html`
-  <form class="flex flex-col gap-sm" style="max-width: 400px;" onsubmit="event.preventDefault(); toastFormData(new FormData(event.target));">
+  ${toggleStoryStyles}
+  <form
+    class="flex flex-col gap-sm toggle-story-form"
+    @submit="${(event) => {
+      event.preventDefault();
+      toastFormData(new FormData(event.target));
+    }}"
+  >
     <label data-toggle>
       <span data-label>Email notifications</span>
       <input type="checkbox" name="email" checked>
@@ -47,19 +95,22 @@ export const MultipleToggles = () => html`
       <span data-label>Weekly digest</span>
       <input type="checkbox" name="digest" checked>
     </label>
-    <button type="submit" class="btn-primary" style="margin-top: var(--spacing-3);">Save Preferences</button>
+    <button type="submit" class="btn-primary toggle-story-form__button">Save Preferences</button>
   </form>
 `;
 
 export const TogglePositions = () => html`
-  <div style="max-width: 600px;">
-    <h3>Toggle Position Variations</h3>
-    <p style="color: var(--surface-text-secondary); margin-bottom: var(--spacing-4);">
-      Toggle knob position adapts based on label placement in DOM
-    </p>
+  ${toggleStoryStyles}
+  <div class="toggle-story-layout">
+    <div>
+      <h3>Toggle Position Variations</h3>
+      <p class="toggle-story-muted">
+        Toggle knob position adapts based on label placement in DOM
+      </p>
+    </div>
     <div class="flex flex-col gap-md">
-      <div>
-        <h4 style="margin-bottom: var(--spacing-2);">Label First (Knob on Right)</h4>
+      <section class="toggle-story-section">
+        <h4 class="toggle-story-subheading">Label First (Knob on Right)</h4>
         <div class="flex flex-col gap-sm">
           <label data-toggle>
             <span data-label>Email notifications</span>
@@ -70,10 +121,10 @@ export const TogglePositions = () => html`
             <input type="checkbox">
           </label>
         </div>
-      </div>
-      
-      <div>
-        <h4 style="margin-bottom: var(--spacing-2);">Label Last (Knob on Left)</h4>
+      </section>
+
+      <section class="toggle-story-section">
+        <h4 class="toggle-story-subheading">Label Last (Knob on Left)</h4>
         <div class="flex flex-col gap-sm">
           <label data-toggle>
             <input type="checkbox" checked>
@@ -84,17 +135,20 @@ export const TogglePositions = () => html`
             <span data-label>Auto-save changes</span>
           </label>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 `;
 
 export const InCard = () => html`
-  <article class="card" style="max-width: 500px;">
-    <h3>Privacy Settings</h3>
-    <p style="color: var(--surface-text-secondary); margin-bottom: var(--spacing-4);">
-      Control your privacy preferences
-    </p>
+  ${toggleStoryStyles}
+  <article class="card toggle-story-card">
+    <div>
+      <h3>Privacy Settings</h3>
+      <p class="toggle-story-muted">
+        Control your privacy preferences
+      </p>
+    </div>
     <div class="flex flex-col gap-sm">
       <label data-toggle>
         <span data-label>Profile visibility</span>

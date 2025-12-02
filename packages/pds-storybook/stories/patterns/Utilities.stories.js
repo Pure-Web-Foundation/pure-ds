@@ -15,6 +15,37 @@ export default {
   }
 };
 
+const utilitiesStoryStyles = html`
+  <style>
+    .utilities-flex-fill {
+      flex: 1;
+    }
+    .utilities-heading-reset {
+      margin: 0;
+    }
+    .utilities-helper-text {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--surface-text-secondary);
+    }
+    .utilities-auto-grid {
+      grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+    }
+    .utilities-radius-sm {
+      border-radius: var(--radius-sm);
+    }
+    .utilities-radius-md {
+      border-radius: var(--radius-md);
+    }
+    .utilities-radius-lg {
+      border-radius: var(--radius-lg);
+    }
+    .utilities-radius-full {
+      border-radius: var(--radius-full);
+    }
+  </style>
+`;
+
 export const SpacingUtilities = () => html`
   <div class="flex flex-col gap-md">
     <div class="gap-xs flex" >
@@ -36,18 +67,20 @@ export const SpacingUtilities = () => html`
 `;
 
 export const FlexUtilities = () => html`
+  ${utilitiesStoryStyles}
   <div class="card flex items-center gap-md" >
     <pds-icon icon="star" size="lg"></pds-icon>
-    <div style="flex: 1;">
-      <h4 style="margin: 0;">Flex Item</h4>
-      <p style="margin: 0; font-size: 0.875rem; color: var(--surface-text-secondary);">Vertically centered with gap</p>
+    <div class="utilities-flex-fill">
+      <h4 class="utilities-heading-reset">Flex Item</h4>
+      <p class="utilities-helper-text">Vertically centered with gap</p>
     </div>
     <button class="btn-primary">Action</button>
   </div>
 `;
 
 export const BorderUtilities = () => html`
-  <div class="grid gap-md" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+  ${utilitiesStoryStyles}
+  <div class="grid gap-md utilities-auto-grid">
     <div class="card" >
       <h4>Default Border</h4>
       <p>No border specified</p>
@@ -64,10 +97,11 @@ export const BorderUtilities = () => html`
 `;
 
 export const RoundedUtilities = () => html`
+  ${utilitiesStoryStyles}
   <div class="flex gap-md flex-wrap">
-    <div class="card surface-inverse" style="border-radius: var(--radius-sm);">--radius-sm</div>
-    <div class="card surface-inverse" style="border-radius: var(--radius-md);">--radius-md</div>
-    <div class="card surface-inverse" style="border-radius: var(--radius-lg);">--radius-lg</div>
-    <div class="card surface-inverse" style="border-radius: var(--radius-full);">--radius-full</div>
+    <div class="card surface-inverse utilities-radius-sm">--radius-sm</div>
+    <div class="card surface-inverse utilities-radius-md">--radius-md</div>
+    <div class="card surface-inverse utilities-radius-lg">--radius-lg</div>
+    <div class="card surface-inverse utilities-radius-full">--radius-full</div>
   </div>
 `;

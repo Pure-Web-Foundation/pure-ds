@@ -1,5 +1,13 @@
 import { html } from 'lit';
 
+const toasterStoryStyles = html`
+  <style>
+    .toaster-story-description {
+      margin: 0 0 var(--spacing-4);
+    }
+  </style>
+`;
+
 export default {
   title: 'Components/Pds Toaster',
   parameters: {
@@ -58,9 +66,10 @@ export const Default = () => {
   }, 0);
   
   return html`
+    ${toasterStoryStyles}
     <pds-toaster id="demo-toaster"></pds-toaster>
     
-    <p style="margin-bottom: var(--spacing-4);">
+    <p class="toaster-story-description">
       Toast notifications appear in the top-right corner and auto-dismiss after a few seconds. Click the buttons below to see them in action:
     </p>
     
@@ -135,9 +144,10 @@ export const ViaEvents = () => {
   }, 0);
   
   return html`
+    ${toasterStoryStyles}
     <pds-toaster id="event-toaster"></pds-toaster>
     
-    <p style="margin-bottom: var(--spacing-4);">
+    <p class="toaster-story-description">
       Toast notifications can also be triggered via PDS events. This is useful for global notifications from anywhere in your application.
     </p>
     

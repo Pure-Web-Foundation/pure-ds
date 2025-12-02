@@ -44,9 +44,14 @@ export const Default = {
     };
     
     return html`
+      <style>
+        .forms-default-form {
+          max-width: 25rem;
+        }
+      </style>
       <div class="card">
         
-    <form style="max-width: 400px;" @submit=${handleSubmit}>
+    <form class="forms-default-form" @submit=${handleSubmit}>
       <label>
         <span>Text Input</span>
         <input type="text" name="text" placeholder="Enter text...">
@@ -84,11 +89,16 @@ export const Default = {
 export const InputsWithIcons = {
   render: (args) => {
     return html`
+      <style>
+        .forms-inputs-demo {
+          max-width: 25rem;
+        }
+      </style>
       <div class="card">
         <h3>Inputs with Icons</h3>
         <p>Enhance inputs with icons for better UX. Icons can be positioned at the start or end of the input.</p>
         
-        <div class="flex flex-col gap-lg" style="max-width: 400px;">
+        <div class="flex flex-col gap-lg forms-inputs-demo">
           <label>
             <span>Search (Icon Start)</span>
             <div class="input-icon">

@@ -29,20 +29,32 @@ export default {
   }
 };
 
+const alertsStoryStyles = html`
+  <style>
+    .alerts-story-container {
+      padding: var(--spacing-8);
+    }
+    .alerts-stack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-4);
+    }
+  </style>
+`;
+
 export const Default = {
   render: (args) => {
     // Preset changes are handled by toolbar in preview.js
     
     return html`
-      <div class="story-container" style="padding: 2rem;">
-        
-    <div style="display: flex; flex-direction: column; gap: 1rem;">
-      <div class="alert alert-info">This is an info alert.</div>
-      <div class="alert alert-success">This is a success alert.</div>
-      <div class="alert alert-warning">This is a warning alert.</div>
-      <div class="alert alert-danger">This is a danger alert.</div>
-    </div>
-  
+      ${alertsStoryStyles}
+      <div class="story-container alerts-story-container">
+        <div class="alerts-stack">
+          <div class="alert alert-info">This is an info alert.</div>
+          <div class="alert alert-success">This is a success alert.</div>
+          <div class="alert alert-warning">This is a warning alert.</div>
+          <div class="alert alert-danger">This is a danger alert.</div>
+        </div>
       </div>
     `;
   },

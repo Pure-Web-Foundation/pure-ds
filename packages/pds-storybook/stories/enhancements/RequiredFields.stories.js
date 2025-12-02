@@ -1,5 +1,46 @@
 import { html } from 'lit';
 
+const requiredFieldsStoryStyles = html`
+  <style>
+    .required-form {
+      max-width: 400px;
+      display: grid;
+      gap: var(--spacing-3);
+    }
+
+    .required-form--wide {
+      max-width: 500px;
+    }
+
+    .required-fieldset {
+      display: grid;
+      gap: var(--spacing-3);
+    }
+
+    .required-fieldset--spaced {
+      margin-top: var(--spacing-4);
+    }
+
+    .required-actions {
+      margin-top: var(--spacing-4);
+    }
+
+    .required-help-text {
+      color: var(--surface-text-secondary);
+      display: block;
+      margin-top: 0.25rem;
+    }
+
+    .required-field--spaced {
+      margin-top: var(--spacing-3);
+    }
+
+    .required-form__button {
+      justify-self: start;
+    }
+  </style>
+`;
+
 export default {
   title: 'Enhancements/Required Fields',
   tags: ['forms', 'interaction'],
@@ -16,7 +57,14 @@ export default {
 };
 
 export const BasicRequired = () => html`
-  <form style="max-width: 400px;" onsubmit="event.preventDefault(); toastFormData(new FormData(event.target));">
+  ${requiredFieldsStoryStyles}
+  <form
+    class="required-form"
+    @submit="${(event) => {
+      event.preventDefault();
+      toastFormData(new FormData(event.target));
+    }}"
+  >
     <label>
       <span>Full Name</span>
       <input type="text" required placeholder="John Doe">
@@ -35,13 +83,20 @@ export const BasicRequired = () => html`
         <input type="tel" placeholder="+1 (555) 123-4567">
       </div>
     </label>
-    <button type="submit" class="btn-primary">Submit</button>
+    <button type="submit" class="btn-primary required-form__button">Submit</button>
   </form>
 `;
 
 export const MixedRequired = () => html`
-  <form style="max-width: 500px;" onsubmit="event.preventDefault(); toastFormData(new FormData(event.target));">
-    <fieldset>
+  ${requiredFieldsStoryStyles}
+  <form
+    class="required-form required-form--wide"
+    @submit="${(event) => {
+      event.preventDefault();
+      toastFormData(new FormData(event.target));
+    }}"
+  >
+    <fieldset class="required-fieldset">
       <legend>Account Information</legend>
       <label>
         <span>Username</span>
@@ -65,8 +120,8 @@ export const MixedRequired = () => html`
         </div>
       </label>
     </fieldset>
-    
-    <fieldset style="margin-top: var(--spacing-4);">
+
+    <fieldset class="required-fieldset required-fieldset--spaced">
       <legend>Optional Details</legend>
       <label>
         <span>Company</span>
@@ -80,46 +135,55 @@ export const MixedRequired = () => html`
         </div>
       </label>
     </fieldset>
-    
-    <div style="margin-top: var(--spacing-4);">
-      <button type="submit" class="btn-primary">Create Account</button>
+
+    <div class="required-actions">
+      <button type="submit" class="btn-primary required-form__button">Create Account</button>
     </div>
   </form>
 `;
 
 export const InlineHelp = () => html`
-  <form style="max-width: 500px;" onsubmit="event.preventDefault(); toastFormData(new FormData(event.target));">
+  ${requiredFieldsStoryStyles}
+  <form
+    class="required-form required-form--wide"
+    @submit="${(event) => {
+      event.preventDefault();
+      toastFormData(new FormData(event.target));
+    }}"
+  >
     <label>
       <span>Email Address</span>
       <div class="input-icon">
         <pds-icon icon="envelope"></pds-icon>
         <input type="email" required placeholder="you@example.com">
       </div>
-      <small style="color: var(--surface-text-secondary); display: block; margin-top: 0.25rem;">
+      <small class="required-help-text">
         We'll never share your email with anyone else.
       </small>
     </label>
-    <label style="margin-top: var(--spacing-3);">
+    <label class="required-field--spaced">
       <span>Password</span>
       <div class="input-icon">
         <pds-icon icon="lock"></pds-icon>
         <input type="password" required placeholder="••••••••">
       </div>
-      <small style="color: var(--surface-text-secondary); display: block; margin-top: 0.25rem;">
+      <small class="required-help-text">
         Must be at least 8 characters long.
       </small>
     </label>
-    <label style="margin-top: var(--spacing-3);">
+    <label class="required-field--spaced">
       <span>Newsletter Frequency</span>
       <select>
         <option>Weekly</option>
         <option>Monthly</option>
         <option>Never</option>
       </select>
-      <small style="color: var(--surface-text-secondary); display: block; margin-top: 0.25rem;">
+      <small class="required-help-text">
         Optional - choose how often you want updates.
       </small>
     </label>
-    <button type="submit" class="btn-primary" style="margin-top: var(--spacing-4);">Sign Up</button>
+    <div class="required-actions">
+      <button type="submit" class="btn-primary required-form__button">Sign Up</button>
+    </div>
   </form>
 `;

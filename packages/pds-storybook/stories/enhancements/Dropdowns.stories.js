@@ -1,5 +1,13 @@
 import { html } from 'lit';
 
+const dropdownStoryStyles = html`
+  <style>
+    .dropdown-story-align-right {
+      text-align: right;
+    }
+  </style>
+`;
+
 export default {
   title: 'Enhancements/Dropdowns',
   tags: ['forms', 'interaction'],
@@ -28,7 +36,8 @@ export const BasicDropdown = () => html`
 `;
 
 export const RightAligned = () => html`
-  <div style="text-align: right;">
+  ${dropdownStoryStyles}
+  <div class="dropdown-story-align-right">
     <nav data-dropdown class="align-right">
       <button class="btn-secondary">User Menu</button>
       <menu>
@@ -42,6 +51,7 @@ export const RightAligned = () => html`
 `;
 
 export const WithIcons = () => html`
+  ${dropdownStoryStyles}
   <nav data-dropdown>
     <button class="btn-outline">
       <pds-icon icon="list" size="sm"></pds-icon>

@@ -1,5 +1,198 @@
 import { html } from 'lit';
 
+const meshGradientStoryStyles = html`
+  <style>
+    .mesh-story {
+      padding: var(--spacing-4);
+      display: grid;
+      gap: var(--spacing-6);
+    }
+
+    .mesh-story__intro {
+      margin: 0 0 var(--spacing-6);
+    }
+
+    .mesh-story__grid {
+      display: grid;
+      gap: var(--spacing-6);
+    }
+
+    .mesh-story__grid--featured {
+      grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr));
+    }
+
+    .mesh-story__grid--tiles {
+      grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+      gap: var(--spacing-4);
+    }
+
+    .mesh-story__panel,
+    .mesh-story__surface {
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border);
+    }
+
+    .mesh-story__panel {
+      position: relative;
+      padding: var(--spacing-6);
+      min-height: 12.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mesh-story__panel--mesh-01 {
+      background: var(--background-mesh-01);
+    }
+
+    .mesh-story__panel--mesh-02 {
+      background: var(--background-mesh-02);
+    }
+
+    .mesh-story__inner {
+      background: var(--color-surface-base);
+      padding: var(--spacing-4);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+      text-align: center;
+      display: grid;
+      gap: var(--spacing-2);
+    }
+
+    .mesh-story__inner-heading {
+      margin: 0;
+    }
+
+    .mesh-story__inner-subtitle {
+      margin: 0;
+      opacity: 0.7;
+    }
+
+    .mesh-story__tile {
+      position: relative;
+      padding: var(--spacing-5);
+      border-radius: var(--radius-md);
+      min-height: 9.375rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border: 1px solid var(--color-border);
+    }
+
+    .mesh-story__tile--mesh-03 {
+      background: var(--background-mesh-03);
+    }
+
+    .mesh-story__tile--mesh-04 {
+      background: var(--background-mesh-04);
+    }
+
+    .mesh-story__tile--mesh-05 {
+      background: var(--background-mesh-05);
+    }
+
+    .mesh-story__tile-icon {
+      opacity: 0.9;
+      margin-bottom: var(--spacing-2);
+    }
+
+    .mesh-story__tile-code {
+      font-size: 0.75rem;
+    }
+
+    .mesh-story__subheading {
+      margin: var(--spacing-6) 0 var(--spacing-2);
+    }
+
+    .mesh-story__hero {
+      background: var(--background-mesh-01);
+      padding: var(--spacing-8);
+      text-align: center;
+    }
+
+    .mesh-story__hero-text {
+      font-size: 1.25rem;
+      margin-top: var(--spacing-3);
+    }
+
+    .mesh-story__hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: var(--spacing-3);
+      margin-top: var(--spacing-4);
+    }
+
+    .mesh-story__card-surface {
+      background: var(--background-mesh-03);
+      padding: var(--spacing-6);
+    }
+
+    .mesh-story__card-overlay {
+      padding: var(--spacing-6);
+      max-width: 31.25rem;
+    }
+
+    .mesh-story__action-button {
+      margin-top: var(--spacing-3);
+    }
+
+    .mesh-story__grid-surface {
+      background: var(--background-mesh-05);
+      padding: var(--spacing-6);
+    }
+
+    .mesh-story__feature-card {
+      padding: var(--spacing-5);
+      text-align: center;
+    }
+
+    .mesh-story__feature-heading {
+      margin-top: var(--spacing-2);
+    }
+
+    .mesh-story__code-block {
+      background: var(--color-surface-subtle);
+      padding: var(--spacing-4);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+    }
+
+    .mesh-story__list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .mesh-story__list-item {
+      padding: var(--spacing-2);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .mesh-story__list-item:last-child {
+      border-bottom: 0;
+    }
+  </style>
+`;
+
+const featuredMeshCards = [
+  {
+    key: 'mesh-01',
+    title: 'Mesh 01',
+    description: 'Subtle radial blend'
+  },
+  {
+    key: 'mesh-02',
+    title: 'Mesh 02',
+    description: 'Corner accents'
+  }
+];
+
+const meshTileBackgrounds = ['mesh-03', 'mesh-04', 'mesh-05'];
+
+const meshVariableList = ['mesh-01', 'mesh-02', 'mesh-03', 'mesh-04', 'mesh-05'];
+
 export default {
   title: 'Enhancements/Mesh Gradients',
   parameters: {
@@ -15,95 +208,88 @@ export default {
 };
 
 export const AllMeshGradients = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${meshGradientStoryStyles}
+  <section class="mesh-story">
     <h2>Mesh Gradient Backgrounds</h2>
-    <p style="margin-bottom: var(--spacing-6);">
+    <p class="mesh-story__intro">
       Subtle, beautiful mesh gradient backgrounds using <code>--background-mesh-01</code> through <code>--background-mesh-05</code>. Toggle dark mode to see automatic adaptation.
     </p>
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-6); margin-bottom: var(--spacing-6);">
-      <div style="position: relative; background: var(--background-mesh-01); padding: var(--spacing-6); border-radius: var(--radius-lg); min-height: 200px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-border);">
-        <div style="background: var(--color-surface-base); padding: var(--spacing-4); border-radius: var(--radius-md); box-shadow: var(--shadow-md); text-align: center;">
-          <h4 style="margin: 0;">Mesh 01</h4>
-          <p style="margin: var(--spacing-2) 0 0 0; opacity: 0.7;">Subtle radial blend</p>
-        </div>
-      </div>
-      
-      <div style="position: relative; background: var(--background-mesh-02); padding: var(--spacing-6); border-radius: var(--radius-lg); min-height: 200px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-border);">
-        <div style="background: var(--color-surface-base); padding: var(--spacing-4); border-radius: var(--radius-md); box-shadow: var(--shadow-md); text-align: center;">
-          <h4 style="margin: 0;">Mesh 02</h4>
-          <p style="margin: var(--spacing-2) 0 0 0; opacity: 0.7;">Corner accents</p>
-        </div>
-      </div>
-    </div>
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-4);">
-      ${Array.from({ length: 3 }, (_, i) => {
-        const meshNum = String(i + 3).padStart(2, '0');
-        return html`
-          <div style="position: relative; background: var(--background-mesh-${meshNum}); padding: var(--spacing-5); border-radius: var(--radius-md); min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px solid var(--color-border);">
-            <pds-icon icon="sparkle" size="xl" style="opacity: 0.9; margin-bottom: var(--spacing-2);"></pds-icon>
-            <code style="font-size: 0.75rem;">mesh-${meshNum}</code>
+    <div class="mesh-story__grid mesh-story__grid--featured">
+      ${featuredMeshCards.map(({ key, title, description }) => html`
+        <div class="mesh-story__panel mesh-story__panel--${key}">
+          <div class="mesh-story__inner">
+            <h4 class="mesh-story__inner-heading">${title}</h4>
+            <p class="mesh-story__inner-subtitle">${description}</p>
           </div>
-        `;
-      })}
+        </div>
+      `)}
     </div>
-  </div>
+    <div class="mesh-story__grid mesh-story__grid--tiles">
+      ${meshTileBackgrounds.map((meshKey) => html`
+        <div class="mesh-story__tile mesh-story__tile--${meshKey}">
+          <pds-icon icon="sparkle" size="xl" class="mesh-story__tile-icon"></pds-icon>
+          <code class="mesh-story__tile-code">${meshKey}</code>
+        </div>
+      `)}
+    </div>
+  </section>
 `;
 
 AllMeshGradients.storyName = 'All Mesh Gradients';
 
 export const MeshUsageExamples = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${meshGradientStoryStyles}
+  <section class="mesh-story">
     <h2>Usage Examples</h2>
-    
-    <h3 style="margin-top: var(--spacing-6);">Hero Section</h3>
-    <div style="background: var(--background-mesh-01); padding: var(--spacing-8); border-radius: var(--radius-lg); text-align: center; border: 1px solid var(--color-border);">
+
+    <h3 class="mesh-story__subheading">Hero Section</h3>
+    <div class="mesh-story__surface mesh-story__hero">
       <h1>Welcome to Pure Design System</h1>
-      <p style="font-size: 1.25rem; margin-top: var(--spacing-3);">
+      <p class="mesh-story__hero-text">
         Beautiful backgrounds generated from your color palette
       </p>
-      <div style="display: flex; gap: var(--spacing-3); justify-content: center; margin-top: var(--spacing-4);">
+      <div class="mesh-story__hero-actions">
         <button class="btn-primary btn-lg">Get Started</button>
         <button class="btn-secondary btn-lg">Learn More</button>
       </div>
     </div>
 
-    <h3 style="margin-top: var(--spacing-6);">Card with Mesh Background</h3>
-    <div style="background: var(--background-mesh-03); padding: var(--spacing-6); border-radius: var(--radius-lg); border: 1px solid var(--color-border);">
-      <div class="card surface-elevated" style="padding: var(--spacing-6); max-width: 500px;">
+    <h3 class="mesh-story__subheading">Card with Mesh Background</h3>
+    <div class="mesh-story__surface mesh-story__card-surface">
+      <div class="card surface-elevated mesh-story__card-overlay">
         <h4>Layered Design</h4>
         <p>Mesh gradients work beautifully as backgrounds with overlaid content using surface tokens.</p>
-        <button class="btn-primary" style="margin-top: var(--spacing-3);">
+        <button class="btn-primary mesh-story__action-button">
           <pds-icon icon="rocket"></pds-icon>
           Take Action
         </button>
       </div>
     </div>
 
-    <h3 style="margin-top: var(--spacing-6);">Grid Layout with Mesh</h3>
-    <div style="background: var(--background-mesh-05); padding: var(--spacing-6); border-radius: var(--radius-lg); border: 1px solid var(--color-border);">
+    <h3 class="mesh-story__subheading">Grid Layout with Mesh</h3>
+    <div class="mesh-story__surface mesh-story__grid-surface">
       <div class="grid grid-cols-3 gap-md">
-        ${Array.from({ length: 3 }, (_, i) => html`
-          <div class="card surface-base" style="padding: var(--spacing-5); text-align: center;">
+        ${Array.from({ length: 3 }, (_, index) => html`
+          <div class="card surface-base mesh-story__feature-card">
             <pds-icon icon="star" size="xl" class="icon-accent"></pds-icon>
-            <h5 style="margin-top: var(--spacing-2);">Feature ${i + 1}</h5>
+            <h5 class="mesh-story__feature-heading">Feature ${index + 1}</h5>
             <p>Mesh backgrounds create visual interest without overwhelming content</p>
           </div>
         `)}
       </div>
     </div>
-  </div>
+  </section>
 `;
 
 MeshUsageExamples.storyName = 'Usage Examples';
 
 export const CodeSamples = () => html`
-  <div style="padding: var(--spacing-4);">
+  ${meshGradientStoryStyles}
+  <section class="mesh-story">
     <h2>Code Samples</h2>
-    
-    <h3>Apply as Background</h3>
-    <pre style="background: var(--color-surface-subtle); padding: var(--spacing-4); border-radius: var(--radius-md); overflow-x: auto;"><code>/* Use CSS custom properties */
+
+    <h3 class="mesh-story__subheading">Apply as Background</h3>
+    <pre class="mesh-story__code-block"><code>/* Use CSS custom properties */
 .hero-section {
   background: var(--background-mesh-01);
 }
@@ -120,18 +306,15 @@ export const CodeSamples = () => html`
   background-image: var(--background-mesh-02);
 }</code></pre>
 
-    <h3 style="margin-top: var(--spacing-6);">Available Variables</h3>
-    <ul style="list-style: none; padding: 0;">
-      ${Array.from({ length: 5 }, (_, i) => {
-        const meshNum = String(i + 1).padStart(2, '0');
-        return html`
-          <li style="padding: var(--spacing-2); border-bottom: 1px solid var(--color-border);">
-            <code>--background-mesh-${meshNum}</code>
-          </li>
-        `;
-      })}
+    <h3 class="mesh-story__subheading">Available Variables</h3>
+    <ul class="mesh-story__list">
+      ${meshVariableList.map((meshKey) => html`
+        <li class="mesh-story__list-item">
+          <code>--background-${meshKey}</code>
+        </li>
+      `)}
     </ul>
-  </div>
+  </section>
 `;
 
 CodeSamples.storyName = 'Code Samples';
