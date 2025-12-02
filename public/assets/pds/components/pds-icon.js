@@ -43,7 +43,11 @@ export class SvgIcon extends HTMLElement {
   };
 
   static spritePromises = new Map();
-  static inlineSprites = new Set();
+  static inlineSprites = new Map();
+
+  static spritePrefixCache = new Map();
+
+  static instances = new Set();
 
   constructor() {
     super();
@@ -51,7 +55,12 @@ export class SvgIcon extends HTMLElement {
   }
   
   connectedCallback() {
+    SvgIcon.instances.add(this);
     this.render();
+  }
+
+  disconnectedCallback() {
+    SvgIcon.instances.delete(this);
   }
   
   attributeChangedCallback(name, oldValue, newValue) {
@@ -112,15 +121,16 @@ export class SvgIcon extends HTMLElement {
         const sameOrigin = spriteURL.origin === window.location.origin;
 
         if (!sameOrigin) {
-          if (SvgIcon.inlineSprites.has(spriteURL.href)) {
-            effectiveHref = `#${icon}`;
+          const inlineSpriteData = SvgIcon.inlineSprites.get(spriteURL.href);
+
+          if (inlineSpriteData && inlineSpriteData.ids.has(icon)) {
+            effectiveHref = `#${inlineSpriteData.prefix}-${icon}`;
           } else {
-            useFallback = true;
-            SvgIcon.ensureInlineSprite(spriteURL.href).then((success) => {
-              if (success && this.isConnected) {
-                this.render();
-              }
-            });
+            if (!inlineSpriteData) {
+              SvgIcon.ensureInlineSprite(spriteURL.href);
+            } else {
+              useFallback = true;
+            }
           }
         }
       } catch (e) {
@@ -172,7 +182,8 @@ export class SvgIcon extends HTMLElement {
       return false;
     }
 
-    if (SvgIcon.inlineSprites.has(spriteURL)) {
+    const existingInline = SvgIcon.inlineSprites.get(spriteURL);
+    if (existingInline) {
       return true;
     }
 
@@ -203,14 +214,40 @@ export class SvgIcon extends HTMLElement {
         spriteContainer.style.width = '0';
         spriteContainer.style.height = '0';
         spriteContainer.style.overflow = 'hidden';
+        spriteContainer.style.setProperty('display', 'none', 'important');
+        spriteContainer.style.setProperty('visibility', 'hidden', 'important');
+        spriteContainer.style.setProperty('pointer-events', 'none', 'important');
+        spriteContainer.style.setProperty('width', '0', 'important');
+        spriteContainer.style.setProperty('height', '0', 'important');
         spriteContainer.setAttribute('data-pds-inline-sprite', spriteURL);
 
+        const prefix = SvgIcon.getSpritePrefix(spriteURL);
+        const ids = new Set();
+
         symbols.forEach((symbol) => {
-          spriteContainer.appendChild(symbol.cloneNode(true));
+          const originalId = symbol.getAttribute('id');
+          if (!originalId) {
+            return;
+          }
+
+          const clonedSymbol = symbol.cloneNode(true);
+          const scopedId = `${prefix}-${originalId}`;
+          clonedSymbol.setAttribute('id', scopedId);
+          clonedSymbol.setAttribute('data-pds-original-id', originalId);
+          spriteContainer.appendChild(clonedSymbol);
+          ids.add(originalId);
         });
 
+        if (!ids.size) {
+          throw new Error('Sprite does not contain any <symbol> definitions with valid ids');
+        }
+
+        spriteContainer.setAttribute('data-pds-inline-prefix', prefix);
+        spriteContainer.hidden = true;
+
         (document.body || document.documentElement).appendChild(spriteContainer);
-        SvgIcon.inlineSprites.add(spriteURL);
+        SvgIcon.inlineSprites.set(spriteURL, { prefix, ids });
+        SvgIcon.notifyInlineSpriteReady();
         return true;
       })
       .catch((error) => {
@@ -223,6 +260,31 @@ export class SvgIcon extends HTMLElement {
 
     SvgIcon.spritePromises.set(spriteURL, promise);
     return promise;
+  }
+
+  static getSpritePrefix(spriteURL) {
+    if (SvgIcon.spritePrefixCache.has(spriteURL)) {
+      return SvgIcon.spritePrefixCache.get(spriteURL);
+    }
+
+    let hash = 0;
+    for (let i = 0; i < spriteURL.length; i += 1) {
+      const charCode = spriteURL.charCodeAt(i);
+      hash = ((hash << 5) - hash) + charCode;
+      hash |= 0; // Keep as 32-bit int
+    }
+
+    const prefix = `pds-inline-${Math.abs(hash).toString(36)}`;
+    SvgIcon.spritePrefixCache.set(spriteURL, prefix);
+    return prefix;
+  }
+
+  static notifyInlineSpriteReady() {
+    SvgIcon.instances.forEach((instance) => {
+      if (instance && instance.isConnected) {
+        instance.render();
+      }
+    });
   }
 }
 
