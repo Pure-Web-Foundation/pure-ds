@@ -121,16 +121,23 @@ export class SvgIcon extends HTMLElement {
         const sameOrigin = spriteURL.origin === window.location.origin;
 
         if (!sameOrigin) {
-          const inlineSpriteData = SvgIcon.inlineSprites.get(spriteURL.href);
+          // Scope cross-origin sprite symbols locally to avoid blocked <use> lookups
+          const spriteKey = spriteURL.href;
+          const prefix = SvgIcon.getSpritePrefix(spriteKey);
+          const inlineSpriteData = SvgIcon.inlineSprites.get(spriteKey);
 
-          if (inlineSpriteData && inlineSpriteData.ids.has(icon)) {
-            effectiveHref = `#${inlineSpriteData.prefix}-${icon}`;
-          } else {
-            if (!inlineSpriteData) {
-              SvgIcon.ensureInlineSprite(spriteURL.href);
-            } else {
-              useFallback = true;
-            }
+          effectiveHref = `#${prefix}-${icon}`;
+
+          if (!inlineSpriteData) {
+            SvgIcon.ensureInlineSprite(spriteKey).then((success) => {
+              if (!success && this.isConnected) {
+                this.render();
+              }
+            });
+          } else if (inlineSpriteData.error) {
+            useFallback = true;
+          } else if (inlineSpriteData.loaded && !inlineSpriteData.ids.has(icon)) {
+            useFallback = true;
           }
         }
       } catch (e) {
@@ -184,7 +191,12 @@ export class SvgIcon extends HTMLElement {
 
     const existingInline = SvgIcon.inlineSprites.get(spriteURL);
     if (existingInline) {
-      return true;
+      if (existingInline.loaded) {
+        return true;
+      }
+      if (existingInline.error) {
+        return false;
+      }
     }
 
     if (SvgIcon.spritePromises.has(spriteURL)) {
@@ -246,12 +258,15 @@ export class SvgIcon extends HTMLElement {
         spriteContainer.hidden = true;
 
         (document.body || document.documentElement).appendChild(spriteContainer);
-        SvgIcon.inlineSprites.set(spriteURL, { prefix, ids });
-        SvgIcon.notifyInlineSpriteReady();
+        SvgIcon.inlineSprites.set(spriteURL, { prefix, ids, loaded: true });
+        SvgIcon.notifyInstances();
         return true;
       })
       .catch((error) => {
         console.warn('[pds-icon] Unable to inline sprite:', error);
+        const prefix = SvgIcon.getSpritePrefix(spriteURL);
+        SvgIcon.inlineSprites.set(spriteURL, { prefix, ids: new Set(), error: true });
+        SvgIcon.notifyInstances();
         return false;
       })
       .finally(() => {
@@ -279,7 +294,7 @@ export class SvgIcon extends HTMLElement {
     return prefix;
   }
 
-  static notifyInlineSpriteReady() {
+  static notifyInstances() {
     SvgIcon.instances.forEach((instance) => {
       if (instance && instance.isConnected) {
         instance.render();
