@@ -45,8 +45,6 @@ export class SvgIcon extends HTMLElement {
   static spritePromises = new Map();
   static inlineSprites = new Map();
 
-  static spritePrefixCache = new Map();
-
   static instances = new Set();
 
   constructor() {
@@ -114,6 +112,9 @@ export class SvgIcon extends HTMLElement {
     let useFallback = this.hasAttribute('no-sprite') || !this.spriteAvailable();
 
     let effectiveHref = spriteHref ? `${spriteHref}#${icon}` : `#${icon}`;
+    let inlineSymbolContent = null;
+    let inlineSymbolViewBox = null;
+    let inlineSymbolPreserveAspectRatio = null;
 
     if (!useFallback && typeof window !== 'undefined' && spriteHref) {
       try {
@@ -121,24 +122,26 @@ export class SvgIcon extends HTMLElement {
         const sameOrigin = spriteURL.origin === window.location.origin;
 
         if (!sameOrigin) {
-          // Scope cross-origin sprite symbols locally to avoid blocked <use> lookups
           const spriteKey = spriteURL.href;
-          const prefix = SvgIcon.getSpritePrefix(spriteKey);
           const inlineSpriteData = SvgIcon.inlineSprites.get(spriteKey);
 
-          effectiveHref = `#${prefix}-${icon}`;
-
-          if (!inlineSpriteData) {
-            SvgIcon.ensureInlineSprite(spriteKey).then((success) => {
-              if (!success && this.isConnected) {
-                this.render();
-              }
-            });
-          } else if (inlineSpriteData.error) {
+          if (inlineSpriteData && inlineSpriteData.loaded) {
+            const symbolData = inlineSpriteData.symbols.get(icon);
+            if (symbolData) {
+              inlineSymbolContent = symbolData.content;
+              inlineSymbolViewBox = symbolData.viewBox;
+              inlineSymbolPreserveAspectRatio = symbolData.preserveAspectRatio;
+            } else {
+              useFallback = true;
+            }
+          } else if (inlineSpriteData && inlineSpriteData.error) {
             useFallback = true;
-          } else if (inlineSpriteData.loaded && !inlineSpriteData.ids.has(icon)) {
+          } else {
+            SvgIcon.ensureInlineSprite(spriteKey);
             useFallback = true;
           }
+        } else {
+          inlineSymbolContent = null;
         }
       } catch (e) {
         // Ignore URL errors and fall back to default behaviour
@@ -147,6 +150,15 @@ export class SvgIcon extends HTMLElement {
     
     // Build transform string for rotation
     const transform = rotate !== '0' ? `rotate(${rotate} 128 128)` : '';
+    const defaultViewBox = '0 0 256 256';
+    const viewBox = inlineSymbolViewBox || defaultViewBox;
+    const preserveAspectRatioAttr = inlineSymbolPreserveAspectRatio
+      ? ` preserveAspectRatio="${inlineSymbolPreserveAspectRatio}"`
+      : '';
+    const hasInlineSymbol = inlineSymbolContent !== null;
+    const symbolMarkup = useFallback
+      ? this.getFallbackIcon(icon)
+      : (hasInlineSymbol ? inlineSymbolContent : `<use href="${effectiveHref}"></use>`);
     
     this.shadowRoot.innerHTML = `
       <svg
@@ -156,13 +168,11 @@ export class SvgIcon extends HTMLElement {
         aria-hidden="${!label}"
         ${label ? `role="img" aria-label="${label}"` : ''}
         style="display: inline-block; vertical-align: middle; flex-shrink: 0;"
-        viewBox="0 0 256 256"
+        viewBox="${viewBox}"
+        ${preserveAspectRatioAttr}
       >
         <g transform="${transform}">
-          ${useFallback 
-            ? this.getFallbackIcon(icon)
-            : `<use href="${effectiveHref}"></use>`
-          }
+          ${symbolMarkup}
         </g>
       </svg>
     `;
@@ -216,25 +226,8 @@ export class SvgIcon extends HTMLElement {
         if (!symbols.length) {
           throw new Error('Sprite does not contain any <symbol> definitions');
         }
-
-        const spriteContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        spriteContainer.setAttribute('aria-hidden', 'true');
-        spriteContainer.setAttribute('focusable', 'false');
-        spriteContainer.setAttribute('width', '0');
-        spriteContainer.setAttribute('height', '0');
-        spriteContainer.style.position = 'absolute';
-        spriteContainer.style.width = '0';
-        spriteContainer.style.height = '0';
-        spriteContainer.style.overflow = 'hidden';
-        spriteContainer.style.setProperty('display', 'none', 'important');
-        spriteContainer.style.setProperty('visibility', 'hidden', 'important');
-        spriteContainer.style.setProperty('pointer-events', 'none', 'important');
-        spriteContainer.style.setProperty('width', '0', 'important');
-        spriteContainer.style.setProperty('height', '0', 'important');
-        spriteContainer.setAttribute('data-pds-inline-sprite', spriteURL);
-
-        const prefix = SvgIcon.getSpritePrefix(spriteURL);
-        const ids = new Set();
+        const serializer = new XMLSerializer();
+        const symbolMap = new Map();
 
         symbols.forEach((symbol) => {
           const originalId = symbol.getAttribute('id');
@@ -242,30 +235,34 @@ export class SvgIcon extends HTMLElement {
             return;
           }
 
-          const clonedSymbol = symbol.cloneNode(true);
-          const scopedId = `${prefix}-${originalId}`;
-          clonedSymbol.setAttribute('id', scopedId);
-          clonedSymbol.setAttribute('data-pds-original-id', originalId);
-          spriteContainer.appendChild(clonedSymbol);
-          ids.add(originalId);
+          const clone = symbol.cloneNode(true);
+          clone.removeAttribute('id');
+
+          const childMarkup = Array.from(clone.childNodes)
+            .map((node) => serializer.serializeToString(node))
+            .join('');
+
+          const viewBox = symbol.getAttribute('viewBox');
+          const preserveAspectRatio = symbol.getAttribute('preserveAspectRatio');
+
+          symbolMap.set(originalId, {
+            content: childMarkup,
+            viewBox,
+            preserveAspectRatio,
+          });
         });
 
-        if (!ids.size) {
+        if (!symbolMap.size) {
           throw new Error('Sprite does not contain any <symbol> definitions with valid ids');
         }
 
-        spriteContainer.setAttribute('data-pds-inline-prefix', prefix);
-        spriteContainer.hidden = true;
-
-        (document.body || document.documentElement).appendChild(spriteContainer);
-        SvgIcon.inlineSprites.set(spriteURL, { prefix, ids, loaded: true });
+        SvgIcon.inlineSprites.set(spriteURL, { loaded: true, error: false, symbols: symbolMap });
         SvgIcon.notifyInstances();
         return true;
       })
       .catch((error) => {
         console.warn('[pds-icon] Unable to inline sprite:', error);
-        const prefix = SvgIcon.getSpritePrefix(spriteURL);
-        SvgIcon.inlineSprites.set(spriteURL, { prefix, ids: new Set(), error: true });
+        SvgIcon.inlineSprites.set(spriteURL, { loaded: false, error: true, symbols: new Map() });
         SvgIcon.notifyInstances();
         return false;
       })
@@ -276,24 +273,6 @@ export class SvgIcon extends HTMLElement {
     SvgIcon.spritePromises.set(spriteURL, promise);
     return promise;
   }
-
-  static getSpritePrefix(spriteURL) {
-    if (SvgIcon.spritePrefixCache.has(spriteURL)) {
-      return SvgIcon.spritePrefixCache.get(spriteURL);
-    }
-
-    let hash = 0;
-    for (let i = 0; i < spriteURL.length; i += 1) {
-      const charCode = spriteURL.charCodeAt(i);
-      hash = ((hash << 5) - hash) + charCode;
-      hash |= 0; // Keep as 32-bit int
-    }
-
-    const prefix = `pds-inline-${Math.abs(hash).toString(36)}`;
-    SvgIcon.spritePrefixCache.set(spriteURL, prefix);
-    return prefix;
-  }
-
   static notifyInstances() {
     SvgIcon.instances.forEach((instance) => {
       if (instance && instance.isConnected) {
