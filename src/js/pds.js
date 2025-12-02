@@ -670,6 +670,78 @@ function __stripFunctions(obj) {
   return result;
 }
 
+const __ABSOLUTE_URL_PATTERN__ = /^[a-z][a-z0-9+\-.]*:\/\//i;
+const __MODULE_URL__ = (() => {
+  try {
+    return import.meta.url;
+  } catch (e) {
+    return undefined;
+  }
+})();
+
+function __ensureAbsoluteAssetURL(value, options = {}) {
+  if (!value || __ABSOLUTE_URL_PATTERN__.test(value)) {
+    return value;
+  }
+
+  const { preferModule = true } = options;
+
+  const tryModule = () => {
+    if (!__MODULE_URL__) return null;
+    try {
+      return new URL(value, __MODULE_URL__).href;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const tryWindow = () => {
+    if (typeof window === "undefined" || !window.location?.origin) {
+      return null;
+    }
+    try {
+      return new URL(value, window.location.origin).href;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const resolved = preferModule
+    ? tryModule() || tryWindow()
+    : tryWindow() || tryModule();
+
+  return resolved || value;
+}
+
+const __ensureTrailingSlash = (value) =>
+  typeof value === "string" && value.length && !value.endsWith("/")
+    ? `${value}/`
+    : value;
+
+const __MODULE_DEFAULT_ASSET_ROOT__ = (() => {
+  if (!__MODULE_URL__) return undefined;
+  try {
+    const parsed = new URL(__MODULE_URL__);
+    if (/\/public\/assets\/js\//.test(parsed.pathname)) {
+      return new URL("../pds/", __MODULE_URL__).href;
+    }
+  } catch (e) {
+    return undefined;
+  }
+  return undefined;
+})();
+
+function __resolveRuntimeAssetRoot(config) {
+  const hasCustomRoot = Boolean(config?.public?.root || config?.static?.root);
+  let candidate = resolvePublicAssetURL(config);
+
+  if (!hasCustomRoot && __MODULE_DEFAULT_ASSET_ROOT__) {
+    candidate = __MODULE_DEFAULT_ASSET_ROOT__;
+  }
+
+  return __ensureTrailingSlash(__ensureAbsoluteAssetURL(candidate));
+}
+
 // Internal: normalize first-arg config to a full generator config and extract enhancers if provided inline
 function __normalizeInitConfig(inputConfig = {}, options = {}) {
   // If caller passed a plain design config (legacy), keep as-is
@@ -786,6 +858,7 @@ async function __setupAutoDefinerAndEnhancers(options) {
     enhancers = [],
     // New: raw overrides for AutoDefiner config (scanExisting, observeShadows, etc.)
     autoDefineOverrides = null,
+    autoDefinePreferModule = true,
   } = options;
 
   // // Warn if assets not present (best-effort)
@@ -838,8 +911,16 @@ async function __setupAutoDefinerAndEnhancers(options) {
         ? autoDefineOverrides
         : {};
 
+    const normalizedBaseURL = autoDefineBaseURL
+      ? __ensureTrailingSlash(
+          __ensureAbsoluteAssetURL(autoDefineBaseURL, {
+            preferModule: autoDefinePreferModule,
+          })
+        )
+      : autoDefineBaseURL;
+
     const autoDefineConfig = {
-      baseURL: autoDefineBaseURL,
+      baseURL: normalizedBaseURL,
       predefine: autoDefinePreload,
       scanExisting: true,
       observeShadows: true,
@@ -866,13 +947,7 @@ async function __setupAutoDefinerAndEnhancers(options) {
         if (typeof autoDefineMapper === "function") {
           try {
             const mapped = autoDefineMapper(tag);
-            // Treat undefined, null, false, or empty string as "not handled" and fallback
-            if (
-              mapped === undefined ||
-              mapped === null ||
-              mapped === false ||
-              mapped === ""
-            ) {
+            if (mapped === undefined) {
               return defaultMapper(tag);
             }
             return mapped;
@@ -1082,9 +1157,16 @@ async function live(config) {
 
     // Derive a sensible default AutoDefiner base for LIVE mode too when not provided.
     // Use the normalized public asset root so live and static modes share the same directory layout.
-    const assetRootURL = resolvePublicAssetURL(config);
-    let derivedAutoDefineBaseURL =
-      (cfgAuto && cfgAuto.baseURL) || `${assetRootURL}components/`;
+    const assetRootURL = __resolveRuntimeAssetRoot(config);
+
+    let derivedAutoDefineBaseURL;
+    if (cfgAuto && cfgAuto.baseURL) {
+      derivedAutoDefineBaseURL = __ensureTrailingSlash(
+        __ensureAbsoluteAssetURL(cfgAuto.baseURL, { preferModule: false })
+      );
+    } else {
+      derivedAutoDefineBaseURL = `${assetRootURL}components/`;
+    }
 
     // 5) Set up AutoDefiner + run enhancers (defaults merged with user)
     let autoDefiner = null;
@@ -1099,6 +1181,7 @@ async function live(config) {
           null,
         enhancers: userEnhancers,
         autoDefineOverrides: cfgAuto || null,
+        autoDefinePreferModule: !(cfgAuto && cfgAuto.baseURL),
       });
       autoDefiner = res.autoDefiner;
     } catch (error) {
@@ -1199,9 +1282,16 @@ async function staticInit(config) {
   const manageTheme = config.manageTheme ?? true;
   const themeStorageKey = config.themeStorageKey ?? "pure-ds-theme";
   let staticPaths = config.staticPaths ?? {};
-  const assetRootURL = resolvePublicAssetURL(config);
+  const assetRootURL = __resolveRuntimeAssetRoot(config);
   const cfgAuto = (config && config.autoDefine) || null;
-  let autoDefineBaseURL = (cfgAuto && cfgAuto.baseURL) || `${assetRootURL}components/`;
+  let autoDefineBaseURL;
+  if (cfgAuto && cfgAuto.baseURL) {
+    autoDefineBaseURL = __ensureTrailingSlash(
+      __ensureAbsoluteAssetURL(cfgAuto.baseURL, { preferModule: false })
+    );
+  } else {
+    autoDefineBaseURL = `${assetRootURL}components/`;
+  }
   const autoDefinePreload =
     (cfgAuto && Array.isArray(cfgAuto.predefine) && cfgAuto.predefine) || [];
   const autoDefineMapper =
@@ -1227,9 +1317,6 @@ async function staticInit(config) {
       styles: `${assetRootURL}styles/pds-styles.css.js`,
     };
     staticPaths = { ...baseStaticPaths, ...staticPaths };
-    if (!(cfgAuto && cfgAuto.baseURL)) {
-      autoDefineBaseURL = `${assetRootURL}components/`;
-    }
 
     // 3) Static mode registry
     PDS.registry.setStaticMode(staticPaths);
@@ -1262,6 +1349,7 @@ async function staticInit(config) {
         autoDefineMapper,
         enhancers: userEnhancers,
         autoDefineOverrides: cfgAuto || null,
+        autoDefinePreferModule: !(cfgAuto && cfgAuto.baseURL),
       });
       autoDefiner = res.autoDefiner;
     } catch (error) {

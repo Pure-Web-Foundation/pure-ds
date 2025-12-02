@@ -80,10 +80,11 @@ export class SvgIcon extends HTMLElement {
     let spriteHref;
     try {
       const url = new URL('../icons/pds-icons.svg', import.meta.url);
-      spriteHref = url.pathname;
+      spriteHref = url.href;
     } catch (e) {
       // Fallback (should rarely happen)
-      spriteHref = '/icons/pds-icons.svg';
+      const origin = typeof window !== 'undefined' && window.location ? window.location.origin : '';
+      spriteHref = `${origin}/icons/pds-icons.svg`;
     }
     if (spriteOverride) spriteHref = spriteOverride;
 
