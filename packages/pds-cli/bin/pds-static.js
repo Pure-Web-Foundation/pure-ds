@@ -43,6 +43,163 @@ async function loadGenerator() {
   return import(pathToFileURL(genPath).href);
 }
 
+let cachedPdsConfigModule = null;
+async function loadPdsConfigModule() {
+  if (!cachedPdsConfigModule) {
+    const cfgPath = path.join(repoRoot, 'src/js/pds-core/pds-config.js');
+    cachedPdsConfigModule = await import(pathToFileURL(cfgPath).href);
+  }
+  return cachedPdsConfigModule;
+}
+
+const DESIGN_KEYS = new Set([
+  'colors',
+  'typography',
+  'spatialRhythm',
+  'shape',
+  'behavior',
+  'layout',
+  'advanced',
+  'a11y',
+  'components',
+  'icons',
+]);
+
+const clone = (value) => {
+  if (value === undefined || value === null) return value;
+  if (typeof value !== 'object') return value;
+  if (typeof globalThis.structuredClone === 'function') {
+    return globalThis.structuredClone(value);
+  }
+  return JSON.parse(JSON.stringify(value));
+};
+
+const deepMerge = (target = {}, source = {}) => {
+  const out = Array.isArray(target) ? [...target] : { ...target };
+  if (!source || typeof source !== 'object') return out;
+  for (const [key, value] of Object.entries(source)) {
+    if (Array.isArray(value)) {
+      out[key] = value.map((item) => clone(item));
+    } else if (value && typeof value === 'object') {
+      const base = out[key] && typeof out[key] === 'object' ? out[key] : {};
+      out[key] = deepMerge(base, value);
+    } else {
+      out[key] = value;
+    }
+  }
+  return out;
+};
+
+const slugify = (str = '') =>
+  String(str)
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const stripFunctions = (obj) => {
+  if (obj === null || obj === undefined) return obj;
+  if (typeof obj === 'function') return undefined;
+  if (typeof obj !== 'object') return obj;
+
+  if (Array.isArray(obj)) {
+    return obj
+      .map((item) => stripFunctions(item))
+      .filter((item) => item !== undefined);
+  }
+
+  const result = {};
+  for (const key of Object.keys(obj)) {
+    const value = obj[key];
+    if (typeof value === 'function') continue;
+    const stripped = stripFunctions(value);
+    if (stripped !== undefined) {
+      result[key] = stripped;
+    }
+  }
+  return result;
+};
+
+const looksLikeDesignConfig = (config) => {
+  if (!config || typeof config !== 'object') return false;
+  return Array.from(DESIGN_KEYS).some((key) => key in config);
+};
+
+async function resolveGeneratorOptions(rawConfig = {}) {
+  const module = await loadPdsConfigModule();
+  const presets = module?.presets || {};
+  const defaultLog = module?.defaultLog || ((level, message, ...data) => {
+    const method = console[level] || console.log;
+    method(message, ...data);
+  });
+
+  const config = rawConfig && typeof rawConfig === 'object' ? rawConfig : {};
+  const hasNewShape =
+    'preset' in config || 'design' in config || 'enhancers' in config;
+
+  if (hasNewShape) {
+    const presetId = config?.preset;
+    const effectivePreset = String(presetId || 'default').toLowerCase();
+    const presetFromMap = presets[effectivePreset];
+    const presetList = Object.values(presets || {});
+    const matchedPreset =
+      presetFromMap ||
+      presetList.find((preset) => {
+        const idMatch = String(preset?.id || '').toLowerCase() === effectivePreset;
+        const nameMatch = slugify(preset?.name || '') === effectivePreset;
+        return idMatch || nameMatch;
+      });
+
+    if (!matchedPreset) {
+      throw new Error(`PDS preset not found: "${presetId || 'default'}"`);
+    }
+
+    let mergedDesign = clone(matchedPreset);
+    if (config.design && typeof config.design === 'object') {
+      const overrides = clone(stripFunctions(config.design));
+      mergedDesign = deepMerge(mergedDesign, overrides);
+    }
+
+    const {
+      mode,
+      autoDefine,
+      applyGlobalStyles,
+      manageTheme,
+      themeStorageKey,
+      preloadStyles,
+      criticalLayers,
+      preset: _preset,
+      design: _design,
+      enhancers: _enhancers,
+      log: userLog,
+      ...otherProps
+    } = config;
+
+    return {
+      ...otherProps,
+      design: mergedDesign,
+      preset: matchedPreset.name || matchedPreset.id || 'default',
+      log: userLog || defaultLog,
+    };
+  }
+
+  if (looksLikeDesignConfig(config)) {
+    const { log: userLog, ...designConfig } = config;
+    const cleanDesign = stripFunctions(designConfig);
+    return {
+      design: clone(cleanDesign),
+      log: userLog || defaultLog,
+    };
+  }
+
+  const fallbackPreset = presets?.default || Object.values(presets || {})[0] || {};
+  return {
+    design: clone(fallbackPreset),
+    preset: fallbackPreset.name || fallbackPreset.id || 'default',
+    log: defaultLog,
+  };
+}
+
 // Colors for terminal output
 const COLORS = {
   reset: '\x1b[0m',
@@ -267,7 +424,8 @@ async function main(options = {}) {
   // 5) Generate CSS layers into target/styles
   log('🧬 Generating styles...', 'bold');
   const { Generator } = await loadGenerator();
-  const designer = new Generator({ ...config, debug: false });
+  const generatorOptions = await resolveGeneratorOptions(config);
+  const designer = new Generator(generatorOptions);
   const stylesDir = path.join(targetDir, 'styles');
   await mkdir(stylesDir, { recursive: true });
   await writeFile(path.join(stylesDir, 'pds-tokens.css'), designer.tokensCSS, 'utf-8');

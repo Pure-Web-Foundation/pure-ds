@@ -2,13 +2,9 @@ export const config = {
   //debug: true,
   mode: "live",
   preset: "default",
-  // options: {
-  //   liquidGlassEffects: true,
-  //   backgroundMesh: 1,
+  // public: {
+  //   root: "public/assets/",
   // },
-  public: {
-    root: "public/assets/",
-  },
 
   static: {
     root: "public/assets/pds/",
