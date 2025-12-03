@@ -108,6 +108,36 @@ PDS.query = async function(question) {
   return await queryEngine.search(question);
 };
 
+function __emitPDSReady(detail) {
+  const hasCustomEvent = typeof CustomEvent === "function";
+
+  try {
+    const readyEvent = hasCustomEvent
+      ? new CustomEvent("pds:ready", { detail })
+      : new Event("pds:ready");
+    PDS.dispatchEvent(readyEvent);
+  } catch (e) {}
+
+  if (typeof document !== "undefined") {
+    if (hasCustomEvent) {
+      const eventOptions = { detail, bubbles: true, composed: true };
+      try {
+        document.dispatchEvent(new CustomEvent("pds:ready", eventOptions));
+      } catch (e) {}
+      try {
+        document.dispatchEvent(new CustomEvent("pds-ready", eventOptions));
+      } catch (e) {}
+    } else {
+      try {
+        document.dispatchEvent(new Event("pds:ready"));
+      } catch (e) {}
+      try {
+        document.dispatchEvent(new Event("pds-ready"));
+      } catch (e) {}
+    }
+  }
+}
+
 /** Current configuration (set after PDS.start() completes) - read-only, frozen after initialization */
 Object.defineProperty(PDS, "currentConfig", {
   value: null,
@@ -1203,17 +1233,13 @@ async function live(config) {
     });
 
     // Emit event to notify that PDS is ready (unified)
-    PDS.dispatchEvent(
-      new CustomEvent("pds:ready", {
-        detail: {
-          mode: "live",
-          generator,
-          config: resolvedConfig,
-          theme: resolvedTheme,
-          autoDefiner,
-        },
-      })
-    );
+    __emitPDSReady({
+      mode: "live",
+      generator,
+      config: resolvedConfig,
+      theme: resolvedTheme,
+      autoDefiner,
+    });
 
     return {
       generator,
@@ -1372,16 +1398,12 @@ async function staticInit(config) {
     });
 
     // 6) Emit ready event (unified)
-    PDS.dispatchEvent(
-      new CustomEvent("pds:ready", {
-        detail: {
-          mode: "static",
-          config: normalized.generatorConfig,
-          theme: resolvedTheme,
-          autoDefiner,
-        },
-      })
-    );
+    __emitPDSReady({
+      mode: "static",
+      config: normalized.generatorConfig,
+      theme: resolvedTheme,
+      autoDefiner,
+    });
     return {
       config: normalized.generatorConfig,
       theme: resolvedTheme,
