@@ -5,6 +5,15 @@ const dropdownStoryStyles = html`
     .dropdown-story-align-right {
       text-align: right;
     }
+
+    .dropdown-story-dropup {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      height: 260px;
+      padding: var(--spacing-6);
+      border-radius: var(--radius-lg);
+    }
   </style>
 `;
 
@@ -78,4 +87,18 @@ export const WithIcons = () => html`
       </li>
     </menu>
   </nav>
+`;
+
+export const DropUp = () => html`
+  ${dropdownStoryStyles}
+  <div class="dropdown-story-dropup">
+    <nav data-dropdown data-mode="up">
+      <button class="btn-primary">Resources</button>
+      <menu>
+        <li><a href="#guides">Guides</a></li>
+        <li><a href="#checklists">Checklists</a></li>
+        <li><a href="#support">Support</a></li>
+      </menu>
+    </nav>
+  </div>
 `;

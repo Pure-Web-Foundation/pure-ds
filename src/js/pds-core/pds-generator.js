@@ -973,7 +973,6 @@ export class Generator {
         key !== null &&
         key !== undefined &&
         key !== "NaN" &&
-        value !== null &&
         value !== undefined &&
         !value.includes("NaN")
       ) {
@@ -1343,10 +1342,41 @@ html[data-theme="dark"] video:hover {
         this.options?.liquidGlassEffects;
       if (!enabled) return "";
       // Use design tokens where possible so the effect adapts to the theme.
-      return `/* Liquid glass utility (opt-in via options.liquidGlassEffects) */\n.liquid-glass {\n  position: relative;\n  border-radius: var(--radius-lg);\n  /* Subtle translucent fill blended with surface */\n  background: color-mix(in oklab, var(--color-surface-subtle) 45%, transparent);\n  background-image: linear-gradient(\n    135deg,\n    rgba(255,255,255,0.35),\n    rgba(255,255,255,0.12)\n  );\n  /* Frosted glass blur + saturation */\n  -webkit-backdrop-filter: blur(12px) saturate(140%);\n  backdrop-filter: blur(12px) saturate(140%);\n  /* Soft inner highlight and outer depth */\n  box-shadow:\n    inset 0 1px 0 rgba(255,255,255,0.6),\n    inset 0 -40px 80px rgba(255,255,255,0.12),\n    0 10px 30px rgba(0,0,0,0.10);\n  /* Glossy border with slight light and dark edges */\n  border: 1px solid color-mix(in oklab, var(--color-primary-500) 22%, transparent);\n  outline: 1px solid color-mix(in oklab, #ffffff 18%, transparent);\n  outline-offset: -1px;\n}
+      return /*css*/`/* Liquid glass utility (opt-in via options.liquidGlassEffects) */
+.liquid-glass {
+  border-radius: var(--radius-lg);
+  /* Subtle translucent fill blended with surface */
+  background: color-mix(in oklab, var(--color-surface-subtle) 45%, transparent);
+  background-image: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0.12)
+  );
+  /* Frosted glass blur + saturation */
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(12px) saturate(140%);
+  /* Soft inner highlight and outer depth */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.6),
+    inset 0 -40px 80px rgba(255,255,255,0.12),
+    0 10px 30px rgba(0,0,0,0.10);
+  /* Glossy border with slight light and dark edges */
+  border: 1px solid color-mix(in oklab, var(--color-primary-500) 22%, transparent);
+  outline: 1px solid color-mix(in oklab, #ffffff 18%, transparent);
+  outline-offset: -1px;
+}
 
 /* Fallback when backdrop-filter isn't supported */
-@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {\n  .liquid-glass {\n    /* Strengthen fill a bit to compensate for lack of blur */\n    background: color-mix(in oklab, var(--color-surface-subtle) 70%, rgba(255,255,255,0.4));\n    box-shadow:\n      inset 0 1px 0 rgba(255,255,255,0.6),\n      0 10px 24px rgba(0,0,0,0.08);\n  }\n}\n`;
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .liquid-glass {
+    /* Strengthen fill a bit to compensate for lack of blur */
+    background: color-mix(in oklab, var(--color-surface-subtle) 70%, rgba(255,255,255,0.4));
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.6),
+      0 10px 24px rgba(0,0,0,0.08);
+  }
+}
+`;
     } catch {
       return "";
     }
@@ -3507,6 +3537,7 @@ button, a {
 /* Basic dropdown host */
 nav[data-dropdown] {
   position: relative;
+  display: inline-block;
   padding: 0;
 
   menu {
@@ -3518,18 +3549,46 @@ nav[data-dropdown] {
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
-    /* Default drop direction: down (top anchored). JavaScript enhancer may
-       override for data-mode="auto" by switching to bottom:100% when needed. */
     top: 100%;
     bottom: auto;
     left: 0;
-    right: 0;
+    right: auto;
     margin-top: var(--spacing-2);
+    --dropdown-transition-duration: var(--transition-fast, 160ms);
+    min-width: max(100%, var(--dropdown-min-width, 12rem));
+    width: max-content;
+    opacity: 0;
+    scale: 0.95;
+    visibility: hidden;
     display: none;
+    pointer-events: none;
+    transform-origin: top center;
+    z-index: var(--z-dropdown, 1050);
+    max-height: min(60vh, 24rem);
+    overflow-y: auto;
+    transition:
+      opacity var(--dropdown-transition-duration) ease,
+      scale var(--dropdown-transition-duration) ease,
+      visibility 0s linear var(--dropdown-transition-duration),
+      display 0s linear var(--dropdown-transition-duration);
+    transition-behavior: allow-discrete;
+  }
+
+  menu[aria-hidden="false"] {
+    display: block;
+    opacity: 1;
+    scale: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      opacity var(--dropdown-transition-duration) ease,
+      scale var(--dropdown-transition-duration) ease,
+      visibility 0s linear 0s,
+      display 0s linear 0s;
   }
 
   li {
-    padding: var(--spacing-2) 0;
+    padding: var(--spacing-1) 0;
 
     & + li {
       border-top: 1px solid var(--color-border);
@@ -3566,24 +3625,55 @@ nav[data-dropdown] {
     }
   }
 
-  /* Explicit direction modifiers */
-  &[data-mode="up"] menu {
-    top: auto;
-    bottom: 100%;
-    margin-bottom: var(--spacing-2);
+  &.align-right,
+  &[data-align="right"],
+  &[data-align="end"],
+  &[data-dropdown-align="right"],
+  &[data-dropdown-align="end"] {
+    menu {
+      left: auto;
+      right: 0;
+    }
   }
 
-  &[data-mode="down"] menu {
-    top: 100%;
-    bottom: auto;
-    margin-top: var(--spacing-2);
+  &[data-mode="up"],
+  &[data-dropdown-direction="up"] {
+    menu {
+      top: auto;
+      bottom: 100%;
+      margin-top: 0;
+      margin-bottom: var(--spacing-2);
+      transform-origin: bottom center;
+    }
   }
 
-  /* Auto acts like down by default; the enhancer will calculate at runtime
-     and set inline top/bottom when necessary to avoid overflow. */
+  &[data-mode="down"],
+  &[data-dropdown-direction="down"] {
+    menu {
+      top: 100%;
+      bottom: auto;
+      margin-top: var(--spacing-2);
+      margin-bottom: 0;
+      transform-origin: top center;
+    }
+  }
+
   &[data-mode="auto"] menu {
     top: 100%;
     bottom: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    menu {
+      transition-duration: 0.01s !important;
+    }
+  }
+}
+
+@starting-style {
+  nav[data-dropdown] menu[aria-hidden="false"] {
+    opacity: 0;
+    scale: 0.95;
   }
 }
 `;

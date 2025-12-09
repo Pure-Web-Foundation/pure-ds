@@ -17,143 +17,80 @@ export const defaultPDSEnhancers = [
       const menu = elem.querySelector("menu");
       if (!menu) return;
 
-      // Ensure toggle button doesn't submit forms by default
-      const btn = elem.querySelector("button");
+      const trigger =
+        elem.querySelector("[data-dropdown-toggle]") ||
+        elem.querySelector("button");
 
-      // Ensure positioning context and predictable absolute placement for the menu
-      try {
-        const cs = getComputedStyle(elem);
-        if (cs && cs.position === "static") {
-          // Avoid layout shifts by only setting when not already positioned
-          elem.style.position = "relative";
-        }
-      } catch {}
-      if (!menu.style.position) menu.style.position = "absolute";
-      // Default to left alignment; may be overridden by placeHorizontal()
-      if (!menu.style.left && !menu.style.right) {
-        menu.style.left = "0";
-        menu.style.right = "auto";
-      }
-      // Set minimum width to match the button width
-      if (btn) {
-        try {
-          const btnWidth = btn.offsetWidth;
-          if (btnWidth > 0) {
-            menu.style.minWidth = `${btnWidth}px`;
-          }
-        } catch {}
-      }
-      if (btn && !btn.hasAttribute("type")) {
-        btn.setAttribute("type", "button");
+      if (trigger && !trigger.hasAttribute("type")) {
+        trigger.setAttribute("type", "button");
       }
 
-      // Accessibility attributes
-      if (btn) {
-        btn.setAttribute("aria-haspopup", "true");
-        btn.setAttribute("aria-expanded", "false");
+      if (!menu.id) {
+        menu.id = `dropdown-${Math.random().toString(36).slice(2, 9)}`;
       }
+
       menu.setAttribute("role", menu.getAttribute("role") || "menu");
-      menu.setAttribute("aria-hidden", "true");
+      if (!menu.hasAttribute("aria-hidden")) {
+        menu.setAttribute("aria-hidden", "true");
+      }
 
-      // Ensure initial hidden state
-      menu.style.display = "none";
+      if (trigger) {
+        trigger.setAttribute("aria-haspopup", "true");
+        trigger.setAttribute("aria-controls", menu.id);
+        trigger.setAttribute("aria-expanded", "false");
+      }
 
-      const placeMenu = (direction) => {
-        if (direction === "up") {
-          menu.style.top = "auto";
-          menu.style.bottom = "100%";
-          menu.style.marginTop = "";
-          menu.style.marginBottom = "var(--spacing-2)";
-        } else {
-          menu.style.top = "100%";
-          menu.style.bottom = "auto";
-          menu.style.marginBottom = "";
-          menu.style.marginTop = "var(--spacing-2)";
-        }
-      };
-
-      // Horizontal alignment helper: support nav[data-dropdown].align-right
-      const placeHorizontal = () => {
-        const alignRight = elem.classList.contains("align-right");
-        if (alignRight) {
-          menu.style.right = "0";
-          menu.style.left = "auto";
-        } else {
-          menu.style.left = "0";
-          menu.style.right = "auto";
-        }
-      };
-
-      const computeAutoDirection = () => {
-        // Choose the direction with the most vertical space available.
-        // This is simpler and more robust for very long menus: prefer the
-        // direction that gives the user the most room and allow the menu to
-        // scroll when needed.
+      const resolveDirection = () => {
+        const mode = (elem.getAttribute("data-mode") || "auto").toLowerCase();
+        if (mode === "up" || mode === "down") return mode;
         const rect = elem.getBoundingClientRect();
         const spaceBelow = Math.max(0, window.innerHeight - rect.bottom);
         const spaceAbove = Math.max(0, rect.top);
         return spaceAbove > spaceBelow ? "up" : "down";
       };
 
-      const showMenu = () => {
-        const mode = (elem.getAttribute("data-mode") || "auto").toLowerCase();
-        let dir = mode;
-        if (mode === "auto") {
-          dir = computeAutoDirection();
-        }
-        placeMenu(dir);
-        placeHorizontal();
-        // Constrain menu height to available viewport space and allow scrolling
-        // when content exceeds that height. Add a tiny safety margin.
-        const rect = elem.getBoundingClientRect();
-        const spaceBelow = Math.max(0, window.innerHeight - rect.bottom);
-        const spaceAbove = Math.max(0, rect.top);
-        const available = dir === "up" ? spaceAbove : spaceBelow;
-        const maxHeight = Math.max(0, available - 8); // 8px margin
-        if (maxHeight > 0) {
-          menu.style.maxHeight = `${maxHeight}px`;
-          menu.style.overflowY = "auto";
-        } else {
-          // Fallback: allow the menu to grow but still scroll if needed
-          menu.style.maxHeight = "60vh";
-          menu.style.overflowY = "auto";
-        }
-
-        menu.style.display = "block";
+      const openMenu = () => {
+        elem.dataset.dropdownDirection = resolveDirection();
         menu.setAttribute("aria-hidden", "false");
-        if (btn) btn.setAttribute("aria-expanded", "true");
+        trigger?.setAttribute("aria-expanded", "true");
       };
 
-      const hideMenu = () => {
-        menu.style.display = "none";
+      const closeMenu = () => {
         menu.setAttribute("aria-hidden", "true");
-        if (btn) btn.setAttribute("aria-expanded", "false");
+        trigger?.setAttribute("aria-expanded", "false");
       };
 
-      const toggle = (e) => {
-        // If event originates from a link inside the menu, let it proceed
-        if (e && e.target && e.target.closest && e.target.closest("menu"))
-          return;
-        const isVisible = menu.style.display !== "none";
-        if (isVisible) hideMenu();
-        else showMenu();
+      const toggleMenu = () => {
+        if (menu.getAttribute("aria-hidden") === "false") {
+          closeMenu();
+        } else {
+          openMenu();
+        }
       };
 
-      // Click only on the toggle button should open/close; clicks inside menu
-      // should be handled normally. Close when clicking outside.
-      if (btn)
-        btn.addEventListener("click", (ev) => {
-          ev.stopPropagation();
-          toggle(ev);
-        });
-      // Close on outside click
-      document.addEventListener("click", (ev) => {
-        if (!elem.contains(ev.target)) hideMenu();
+      trigger?.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleMenu();
       });
 
-      // Also close on Escape
-      document.addEventListener("keydown", (ev) => {
-        if (ev.key === "Escape") hideMenu();
+      document.addEventListener("click", (event) => {
+        if (!elem.contains(event.target)) {
+          closeMenu();
+        }
+      });
+
+      elem.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeMenu();
+          trigger?.focus();
+        }
+      });
+
+      elem.addEventListener("focusout", (event) => {
+        if (!event.relatedTarget || !elem.contains(event.relatedTarget)) {
+          closeMenu();
+        }
       });
     },
   },
