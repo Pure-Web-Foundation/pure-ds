@@ -19,7 +19,6 @@ export class Generator {
     if (!this.options.design) {
       this.options.design = {};
     }
-
     if (this.options.debug) {
       this.options.log?.("debug", "Generator options:", this.options);
     }
@@ -1347,6 +1346,7 @@ html[data-theme="dark"] video:hover {
   border-radius: var(--radius-lg);
   /* Subtle translucent fill blended with surface */
   background: color-mix(in oklab, var(--color-surface-subtle) 45%, transparent);
+
   background-image: linear-gradient(
     135deg,
     rgba(255,255,255,0.35),
@@ -1366,6 +1366,21 @@ html[data-theme="dark"] video:hover {
   outline-offset: -1px;
 }
 
+html[data-theme="dark"] .liquid-glass {
+  background: color-mix(in oklab, var(--color-surface-inverse) 35%, transparent);
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--color-primary-300) 30%, transparent),
+    color-mix(in oklab, var(--color-surface-overlay) 38%, transparent)
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    inset 0 -40px 80px rgba(0,0,0,0.55),
+    0 18px 38px rgba(0,0,0,0.65);
+  border: 1px solid color-mix(in oklab, var(--color-primary-300) 26%, transparent);
+  outline: 1px solid color-mix(in oklab, #ffffff 16%, transparent);
+}
+
 /* Fallback when backdrop-filter isn't supported */
 @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
   .liquid-glass {
@@ -1374,6 +1389,13 @@ html[data-theme="dark"] video:hover {
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.6),
       0 10px 24px rgba(0,0,0,0.08);
+  }
+
+  html[data-theme="dark"] .liquid-glass {
+    background: color-mix(in oklab, var(--color-surface-inverse) 70%, transparent);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.1),
+      0 18px 32px rgba(0,0,0,0.58);
   }
 }
 `;

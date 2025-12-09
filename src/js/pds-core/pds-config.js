@@ -466,7 +466,7 @@ export const presets = {
     description:
       "Health and fitness tracking aesthetic with data-driven dark surfaces and vibrant accent rings",
     options: {
-      liquidGlassEffects: false,
+      liquidGlassEffects: true,
       backgroundMesh: 2,
     },
     colors: {
@@ -519,7 +519,7 @@ export const presets = {
     description:
       "Hospitality marketplace design with clean cards, subtle shadows, and trust-building neutrals",
     options: {
-      liquidGlassEffects: false,
+      liquidGlassEffects: true,
       backgroundMesh: 3,
     },
     colors: {
@@ -574,7 +574,7 @@ export const presets = {
     description:
       "On-demand service platform with bold typography, map-ready colors, and action-driven UI",
     options: {
-      liquidGlassEffects: false,
+      liquidGlassEffects: true,
       backgroundMesh: 0,
     },
     colors: {
@@ -686,7 +686,7 @@ export const presets = {
     description:
       "Content-first social platform with minimal chrome, bold actions, and vibrant media presentation",
     options: {
-      liquidGlassEffects: false,
+      liquidGlassEffects: true,
       backgroundMesh: 4,
     },
     colors: {

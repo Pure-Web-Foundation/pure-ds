@@ -1,4 +1,4 @@
-import { html } from 'lit';
+import { html } from "lit";
 
 const dropdownStoryStyles = html`
   <style>
@@ -17,19 +17,73 @@ const dropdownStoryStyles = html`
   </style>
 `;
 
+const dropdownGlassDemoStyles = html`
+  <style>
+    .dropdown-story-glass-demo {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: var(--spacing-8);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      background-image: var(--dropdown-demo-image);
+      background-size: cover;
+      background-position: center;
+      color: inherit;
+    }
+
+    .dropdown-story-glass-demo::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      /* background: linear-gradient(
+        rgba(12, 18, 28, 0.72),
+        rgba(12, 18, 28, 0.32)
+      ); */
+    }
+
+    .dropdown-story-glass-content {
+      position: relative;
+      display: grid;
+      gap: var(--spacing-4);
+      text-align: center;
+      max-width: 360px;
+    }
+
+    .dropdown-story-glass-content h3 {
+      margin: 0;
+      font-weight: var(--font-weight-semibold);
+      letter-spacing: 0.04em;
+    }
+
+    .dropdown-story-glass-content p {
+      margin: 0;
+      
+    }
+
+    .dropdown-story-glass-content menu {
+      margin: 0;
+      padding: var(--spacing-3);
+    }
+  </style>
+`;
+
 export default {
-  title: 'Enhancements/Dropdowns',
-  tags: ['forms', 'interaction'],
+  title: "Enhancements/Dropdowns",
+  tags: ["forms", "interaction"],
   parameters: {
     pds: {
-      tags: ['forms', 'interaction']
+      tags: ["forms", "interaction"],
     },
     docs: {
       description: {
-        component: 'Progressive enhancement for dropdown menus using data-dropdown attribute'
-      }
-    }
-  }
+        component:
+          "Progressive enhancement for dropdown menus using data-dropdown attribute",
+      },
+    },
+  },
 };
 
 export const BasicDropdown = () => html`
@@ -52,7 +106,7 @@ export const RightAligned = () => html`
       <menu>
         <li><a href="#profile">Profile</a></li>
         <li><a href="#settings">Settings</a></li>
-        <li><hr></li>
+        <li><hr /></li>
         <li><a href="#logout">Logout</a></li>
       </menu>
     </nav>
@@ -101,4 +155,31 @@ export const DropUp = () => html`
       </menu>
     </nav>
   </div>
+`;
+
+export const BackgroundImageLiquidGlass = () => html`
+  ${dropdownStoryStyles} ${dropdownGlassDemoStyles}
+  <section
+    class="dropdown-story-glass-demo"
+    style="--dropdown-demo-image: url('https://images.unsplash.com/photo-1517832207067-4db24a2ae47c?auto=format&fit=crop&w=1200&q=80');"
+  >
+    <div class="dropdown-story-glass-content">
+      <div class="card liquid-glass">
+        <h3>Plan Your Escape</h3>
+        <p>
+          Frosted dropdown blends with the hero photo while keeping content
+          readable.
+        </p>
+      </div>
+      <nav data-dropdown data-mode="down">
+        <button class="btn-primary">Featured Cities</button>
+        <menu class="liquid-glass">
+          <li><a href="#barcelona">Barcelona</a></li>
+          <li><a href="#kyoto">Kyoto</a></li>
+          <li><a href="#cape-town">Cape Town</a></li>
+          <li><a href="#reykjavik">Reykjavik</a></li>
+        </menu>
+      </nav>
+    </div>
+  </section>
 `;
