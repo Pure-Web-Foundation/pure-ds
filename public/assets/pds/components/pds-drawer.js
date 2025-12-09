@@ -19,7 +19,7 @@ const PDS = window.PDS;
  * @csspart grab-handle - The drag handle indicator
  * @csspart content - The drawer content section
  */
-export class DrawerPanel extends HTMLElement {
+customElements.define("pds-drawer", class extends HTMLElement {
   #isDragging = false;
   #startX = 0;
   #startY = 0;
@@ -34,6 +34,7 @@ export class DrawerPanel extends HTMLElement {
   #raf = 0;
   #currentFraction = 0; // 0=open, 1=closed
   #resizeObs = null;
+  #openAnimationController = null;
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -71,8 +72,6 @@ export class DrawerPanel extends HTMLElement {
     if (this._open === bool) return;
     this._open = bool;
     this.toggleAttribute("open", this._open);
-    this.#animateTo(this._open ? 0 : 1);
-    // Focus panel when opening
     if (this._open) {
       queueMicrotask(() => this.#aside?.focus());
       document.body.classList.add("drawer-open");
@@ -182,7 +181,12 @@ export class DrawerPanel extends HTMLElement {
     switch (name) {
       case "open":
         this._open = this.hasAttribute("open");
-        this.#animateTo(this._open ? 0 : 1);
+        if (this._open) {
+          this.#queueOpenAnimation();
+        } else {
+          this.#cancelPendingOpenAnimation();
+          this.#animateTo(1);
+        }
         this.#syncAria();
         break;
       case "position":
@@ -404,6 +408,7 @@ export class DrawerPanel extends HTMLElement {
     window.removeEventListener("resize", this.#recalc);
     this.#resizeObs?.disconnect();
     cancelAnimationFrame(this.#raf);
+    this.#cancelPendingOpenAnimation();
   }
 
   // Public API
@@ -462,11 +467,11 @@ export class DrawerPanel extends HTMLElement {
     const showClose = options.showClose === undefined ? defaultShowClose : !!options.showClose;
     this.showClose = showClose;
 
-  // Render content (header/body)
-  await this.setContent(htmlContent, options.header);
+    // Render content (header/body)
+    await this.setContent(htmlContent, options.header);
 
-  // Wait for next frame so slots are distributed
-  await new Promise((r) => requestAnimationFrame(() => r()));
+    // Wait for next frame so slots are distributed
+    await new Promise((r) => requestAnimationFrame(() => r()));
 
     // Optionally wait for media to load (default: true)
     const shouldWaitForMedia = options.waitForMedia !== false;
@@ -475,8 +480,6 @@ export class DrawerPanel extends HTMLElement {
       await this.#waitForMedia(mediaTimeout);
     }
 
-    // Open with a short delay to ensure layout has settled
-    await new Promise((r) => setTimeout(r, 10));
     this.openDrawer();
     return this;
   }
@@ -660,6 +663,69 @@ export class DrawerPanel extends HTMLElement {
   };
 
   // Helpers
+  #cancelPendingOpenAnimation() {
+    if (!this.#openAnimationController) return;
+    this.#openAnimationController.abort();
+    this.#openAnimationController = null;
+  }
+
+  #queueOpenAnimation() {
+    const aside = this.#aside;
+    if (!aside) return;
+
+    this.#cancelPendingOpenAnimation();
+    const controller = new AbortController();
+    this.#openAnimationController = controller;
+
+    this.#applyFraction(1, false);
+    void aside.offsetHeight; // Force layout to register the closed state
+
+    this.#whenReadyForOpen(controller.signal)
+      .then(() => {
+        if (controller.signal.aborted) return;
+        this.#animateTo(0);
+      })
+      .finally(() => {
+        if (this.#openAnimationController === controller) {
+          this.#openAnimationController = null;
+        }
+      });
+  }
+
+  async #whenReadyForOpen(signal) {
+    await this.#nextFrame(signal);
+    await this.#nextFrame(signal);
+    await this.#waitForIdle(signal);
+  }
+
+  #nextFrame(signal) {
+    if (signal?.aborted) return Promise.resolve();
+    return new Promise((resolve) => {
+      const id = requestAnimationFrame(() => resolve());
+      signal?.addEventListener("abort", () => {
+        cancelAnimationFrame(id);
+        resolve();
+      }, { once: true });
+    });
+  }
+
+  #waitForIdle(signal) {
+    if (signal?.aborted) return Promise.resolve();
+    if (typeof window.requestIdleCallback === "function") {
+      return new Promise((resolve) => {
+        const idleId = window.requestIdleCallback(() => resolve());
+        signal?.addEventListener("abort", () => {
+          if (typeof window.cancelIdleCallback === "function") {
+            window.cancelIdleCallback(idleId);
+          }
+          resolve();
+        }, { once: true });
+      });
+    }
+    // Fallback: wait for another frame as a lightweight idle approximation
+    return this.#nextFrame(signal);
+  }
+
   async #waitForMedia(maxTimeout = 500) {
     // Find media elements within the drawer (including slotted content)
     const media = Array.from(this.querySelectorAll("img, video"));
@@ -788,6 +854,4 @@ export class DrawerPanel extends HTMLElement {
       }
     }
   }
-}
-
-customElements.define("pds-drawer", DrawerPanel);
+})
