@@ -1072,7 +1072,6 @@ export class Generator {
     return css + "\n";
   }
 
-
   #generateDarkVariablesOnly(colors) {
     if (!colors?.dark) return "";
 
@@ -1300,19 +1299,15 @@ html[data-theme="dark"] video:hover {
   // Mesh variables are always generated above; this just opts-in the body background.
   #generateBodyBackgroundMeshRule() {
     try {
-      const meshOption =
-        this.options?.design?.options?.backgroundMesh ??
-        this.options?.options?.backgroundMesh ??
-        this.options?.backgroundMesh;
+      const meshOption = this.options?.design?.options?.backgroundMesh;
 
       if (this.options.debug) {
-        this.options.log?.("debug", "backgroundMesh check:", {
-          "design.options.backgroundMesh":
-            this.options?.design?.options?.backgroundMesh,
-          "options.backgroundMesh": this.options?.options?.backgroundMesh,
-          backgroundMesh: this.options?.backgroundMesh,
-          meshOption,
-        });
+        this.options.log?.(
+          "debug",
+          "backgroundMesh check:",
+
+          meshOption
+        );
       }
 
       const num = Number(meshOption);
@@ -1335,13 +1330,9 @@ html[data-theme="dark"] video:hover {
   // Inspired by the referenced article, using gradients, borders, shadows, and backdrop-filter.
   #generateLiquidGlassUtility() {
     try {
-      const enabled =
-        this.options?.design?.options?.liquidGlassEffects ??
-        this.options?.options?.liquidGlassEffects ??
-        this.options?.liquidGlassEffects;
-      if (!enabled) return "";
+      if (!this.options?.design?.options?.liquidGlassEffects) return "";
       // Use design tokens where possible so the effect adapts to the theme.
-      return /*css*/`/* Liquid glass utility (opt-in via options.liquidGlassEffects) */
+      return /*css*/ `/* Liquid glass utility (opt-in via options.liquidGlassEffects) */
 .liquid-glass {
   border-radius: var(--radius-lg);
   /* Subtle translucent fill blended with surface */
@@ -1367,11 +1358,11 @@ html[data-theme="dark"] video:hover {
 }
 
 html[data-theme="dark"] .liquid-glass {
-  background: color-mix(in oklab, var(--color-surface-inverse) 35%, transparent);
+  background: color-mix(in oklab, var(--color-surface-inverse) 45%, transparent);
   background-image: linear-gradient(
     135deg,
-    color-mix(in oklab, var(--color-primary-300) 30%, transparent),
-    color-mix(in oklab, var(--color-surface-overlay) 38%, transparent)
+    color-mix(in oklab, var(--color-primary-300) 40%, transparent),
+    color-mix(in oklab, var(--color-surface-overlay) 48%, transparent)
   );
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.12),
