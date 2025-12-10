@@ -6,7 +6,7 @@ export class Generator {
   // Private internal fields
   #layers;
   #stylesheets;
-  #blobURLs;
+  //#blobURLs;
 
   constructor(options = {}) {
     this.options = {
@@ -22,7 +22,7 @@ export class Generator {
     if (this.options.debug) {
       this.options.log?.("debug", "Generator options:", this.options);
     }
-    this.tokens = this.#generateTokens();
+    this.tokens = this.generateTokens();
     if (this.options.debug) {
       this.options.log?.("debug", "Generated tokens:", this.tokens);
     }
@@ -33,14 +33,14 @@ export class Generator {
     // Only create browser-specific features if in browser environment
     if (typeof CSSStyleSheet !== "undefined") {
       this.#createConstructableStylesheets();
-      this.#createBlobURLs();
+      //this.#createBlobURLs();
 
-      if (this.options.debug) {
-        this.options.log?.("debug", "[Generator] Created BLOB URLs:", {
-          styles: this.#blobURLs?.styles,
-          primitives: this.#blobURLs?.primitives,
-        });
-      }
+      // if (this.options.debug) {
+      //   this.options.log?.("debug", "[Generator] Created BLOB URLs:", {
+      //     styles: this.#blobURLs?.styles,
+      //     primitives: this.#blobURLs?.primitives,
+      //   });
+      // }
     } else {
       if (this.options.debug) {
         this.options.log?.(
@@ -51,7 +51,7 @@ export class Generator {
     }
   }
 
-  #generateTokens() {
+  generateTokens() {
     // Access design configuration from options.design
     const config = this.options.design || {};
 
@@ -965,7 +965,7 @@ export class Generator {
   }
 
   #generateSpacingVariables(spacing) {
-    let css = "  /* Spacing */\n";
+    const lines = ["  /* Spacing */\n"];
     Object.entries(spacing).forEach(([key, value]) => {
       // Validate the key and value before generating CSS
       if (
@@ -975,30 +975,30 @@ export class Generator {
         value !== undefined &&
         !value.includes("NaN")
       ) {
-        css += `  --spacing-${key}: ${value};\n`;
+        lines.push(`  --spacing-${key}: ${value};\n`);
       }
     });
-    return css + "\n";
+    return `${lines.join("")}\n`;
   }
 
   #generateRadiusVariables(radius) {
-    let css = "  /* Border Radius */\n";
+    const lines = ["  /* Border Radius */\n"];
     Object.entries(radius).forEach(([key, value]) => {
-      css += `  --radius-${key}: ${value};\n`;
+      lines.push(`  --radius-${key}: ${value};\n`);
     });
-    return css + "\n";
+    return `${lines.join("")}\n`;
   }
 
   #generateBorderWidthVariables(borderWidths) {
-    let css = "  /* Border Widths */\n";
+    const lines = ["  /* Border Widths */\n"];
     Object.entries(borderWidths).forEach(([key, value]) => {
-      css += `  --border-width-${key}: ${value};\n`;
+      lines.push(`  --border-width-${key}: ${value};\n`);
     });
-    return css + "\n";
+    return `${lines.join("")}\n`;
   }
 
   #generateTypographyVariables(typography) {
-    let css = "  /* Typography */\n";
+    const lines = ["  /* Typography */\n"];
     Object.entries(typography).forEach(([category, values]) => {
       // Remove "font" prefix from category names and convert to kebab-case
       // fontFamily -> family, fontSize -> size, fontWeight -> weight, lineHeight -> line-height
@@ -1011,22 +1011,22 @@ export class Generator {
       Object.entries(values).forEach(([key, value]) => {
         // Convert camelCase keys to kebab-case
         const kebabKey = key.replace(/([A-Z])/g, "-$1").toLowerCase();
-        css += `  --font-${cleanCategory}-${kebabKey}: ${value};\n`;
+        lines.push(`  --font-${cleanCategory}-${kebabKey}: ${value};\n`);
       });
     });
-    return css + "\n";
+    return `${lines.join("")}\n`;
   }
 
   #generateShadowVariables(shadows) {
-    let css = "  /* Shadows */\n";
+    const lines = ["  /* Shadows */\n"];
     Object.entries(shadows).forEach(([key, value]) => {
-      css += `  --shadow-${key}: ${value};\n`;
+      lines.push(`  --shadow-${key}: ${value};\n`);
     });
-    return css + "\n";
+    return `${lines.join("")}\n`;
   }
 
   #generateLayoutVariables(layout) {
-    let css = "  /* Layout */\n";
+    const lines = ["  /* Layout */\n"];
     Object.entries(layout).forEach(([key, value]) => {
       // Convert camelCase keys to kebab-case
       const kebabKey = key.replace(/([A-Z])/g, "-$1").toLowerCase();
@@ -1037,51 +1037,51 @@ export class Generator {
         return;
       }
 
-      css += `  --layout-${kebabKey}: ${value};\n`;
+      lines.push(`  --layout-${kebabKey}: ${value};\n`);
     });
-    return css + "\n";
+    return `${lines.join("")}\n`;
   }
 
   #generateTransitionVariables(transitions) {
-    let css = "  /* Transitions */\n";
+    const lines = ["  /* Transitions */\n"];
     Object.entries(transitions).forEach(([key, value]) => {
-      css += `  --transition-${key}: ${value};\n`;
+      lines.push(`  --transition-${key}: ${value};\n`);
     });
-    return css + "\n";
+    return `${lines.join("")}\n`;
   }
 
   #generateZIndexVariables(zIndex) {
-    let css = "  /* Z-Index */\n";
+    const lines = ["  /* Z-Index */\n"];
     Object.entries(zIndex).forEach(([key, value]) => {
-      css += `  --z-${key}: ${value};\n`;
+      lines.push(`  --z-${key}: ${value};\n`);
     });
-    return css + "\n";
+    return `${lines.join("")}\n`;
   }
 
   #generateIconVariables(icons) {
-    let css = "  /* Icon System */\n";
-    css += `  --icon-set: ${icons.set};\n`;
-    css += `  --icon-weight: ${icons.weight};\n`;
-    css += `  --icon-size: ${icons.defaultSize};\n`;
+    const lines = ["  /* Icon System */\n"];
+    lines.push(`  --icon-set: ${icons.set};\n`);
+    lines.push(`  --icon-weight: ${icons.weight};\n`);
+    lines.push(`  --icon-size: ${icons.defaultSize};\n`);
 
     // Icon size scale
     Object.entries(icons.sizes).forEach(([key, value]) => {
-      css += `  --icon-size-${key}: ${value};\n`;
+      lines.push(`  --icon-size-${key}: ${value};\n`);
     });
 
-    return css + "\n";
+    return `${lines.join("")}\n`;
   }
 
   #generateDarkVariablesOnly(colors) {
     if (!colors?.dark) return "";
 
-    let vars = "";
+    const varLines = [];
     const generateNested = (obj, prefix = "") => {
       Object.entries(obj).forEach(([key, value]) => {
         if (typeof value === "object" && value !== null) {
           generateNested(value, `${prefix}${key}-`);
         } else if (typeof value === "string") {
-          vars += `  --color-${prefix}${key}: ${value};\n`;
+          varLines.push(`  --color-${prefix}${key}: ${value};\n`);
         }
       });
     };
@@ -1094,22 +1094,28 @@ export class Generator {
     });
 
     // Smart surface tokens
-    let smart = "";
+    const smartLines = [];
     if (colors.dark.surfaceSmart) {
-      smart += `  /* Smart Surface Tokens (dark mode, context-aware) */\n`;
+      smartLines.push(`  /* Smart Surface Tokens (dark mode, context-aware) */\n`);
       Object.entries(colors.dark.surfaceSmart).forEach(
         ([surfaceKey, tokens]) => {
-          smart += `  --surface-${surfaceKey}-bg: ${tokens.bg};\n`;
-          smart += `  --surface-${surfaceKey}-text: ${tokens.text};\n`;
-          smart += `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`;
-          smart += `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`;
-          smart += `  --surface-${surfaceKey}-icon: ${tokens.icon};\n`;
-          smart += `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`;
-          smart += `  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`;
-          smart += `  --surface-${surfaceKey}-border: ${tokens.border};\n`;
+          smartLines.push(`  --surface-${surfaceKey}-bg: ${tokens.bg};\n`);
+          smartLines.push(`  --surface-${surfaceKey}-text: ${tokens.text};\n`);
+          smartLines.push(
+            `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`
+          );
+          smartLines.push(
+            `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`
+          );
+          smartLines.push(`  --surface-${surfaceKey}-icon: ${tokens.icon};\n`);
+          smartLines.push(
+            `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`
+          );
+          smartLines.push(`  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`);
+          smartLines.push(`  --surface-${surfaceKey}-border: ${tokens.border};\n`);
         }
       );
-      smart += `\n`;
+      smartLines.push(`\n`);
     }
 
     const semantic = `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n`;
@@ -1119,20 +1125,28 @@ export class Generator {
     const mesh = this.#generateMeshGradientsDark(colors);
 
     // Return ONLY variables, no component rules
-    return `html[data-theme="dark"] {\n${vars}${smart}${semantic}${backdrop}${mesh}}\n`;
+    const body = [
+      ...varLines,
+      ...smartLines,
+      semantic,
+      backdrop,
+      mesh,
+    ].join("");
+
+    return `html[data-theme="dark"] {\n${body}}\n`;
   }
 
   // Generate ONLY dark mode variables for the tokens layer (no wrapper, no component rules)
   #generateDarkVariablesForTokensLayer(colors) {
     if (!colors?.dark) return "";
 
-    let vars = "";
+    const varLines = [];
     const generateNested = (obj, prefix = "") => {
       Object.entries(obj).forEach(([key, value]) => {
         if (typeof value === "object" && value !== null) {
           generateNested(value, `${prefix}${key}-`);
         } else if (typeof value === "string") {
-          vars += `    --color-${prefix}${key}: ${value};\n`;
+          varLines.push(`    --color-${prefix}${key}: ${value};\n`);
         }
       });
     };
@@ -1145,39 +1159,71 @@ export class Generator {
     });
 
     // Smart surface tokens
-    let smart = "";
+    const smartLines = [];
     if (colors.dark.surfaceSmart) {
-      smart += `    /* Smart Surface Tokens (dark mode, context-aware) */\n`;
+      smartLines.push(
+        `    /* Smart Surface Tokens (dark mode, context-aware) */\n`
+      );
       Object.entries(colors.dark.surfaceSmart).forEach(
         ([surfaceKey, tokens]) => {
-          smart += `    --surface-${surfaceKey}-bg: ${tokens.bg};\n`;
-          smart += `    --surface-${surfaceKey}-text: ${tokens.text};\n`;
-          smart += `    --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`;
-          smart += `    --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`;
-          smart += `    --surface-${surfaceKey}-icon: ${tokens.icon};\n`;
-          smart += `    --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`;
-          smart += `    --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`;
-          smart += `    --surface-${surfaceKey}-border: ${tokens.border};\n`;
+          smartLines.push(`    --surface-${surfaceKey}-bg: ${tokens.bg};\n`);
+          smartLines.push(`    --surface-${surfaceKey}-text: ${tokens.text};\n`);
+          smartLines.push(
+            `    --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`
+          );
+          smartLines.push(
+            `    --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`
+          );
+          smartLines.push(`    --surface-${surfaceKey}-icon: ${tokens.icon};\n`);
+          smartLines.push(
+            `    --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`
+          );
+          smartLines.push(`    --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`);
+          smartLines.push(`    --surface-${surfaceKey}-border: ${tokens.border};\n`);
         }
       );
-      smart += `\n`;
+      smartLines.push(`\n`);
     }
 
     // Interactive dark mode tokens
-    let interactiveTokens = "";
+    const interactiveLines = [];
     if (colors.interactive && colors.interactive.dark) {
-      interactiveTokens = `    /* Interactive Colors - optimized for specific use cases (dark mode) */\n`;
-      interactiveTokens += `    --color-primary-fill: ${colors.interactive.dark.fill}; /* For button backgrounds with white text */\n`;
-      interactiveTokens += `    --color-primary-text: ${colors.interactive.dark.text}; /* For links and outline buttons on dark surfaces */\n`;
+      interactiveLines.push(
+        `    /* Interactive Colors - optimized for specific use cases (dark mode) */\n`
+      );
+      interactiveLines.push(
+        `    --color-primary-fill: ${colors.interactive.dark.fill}; /* For button backgrounds with white text */\n`
+      );
+      interactiveLines.push(
+        `    --color-primary-text: ${colors.interactive.dark.text}; /* For links and outline buttons on dark surfaces */\n`
+      );
     }
 
-    const semantic = `    --color-text-primary: var(--color-gray-100);\n    --color-text-secondary: var(--color-gray-300);\n    --color-text-muted: var(--color-gray-400);\n    --color-border: var(--color-gray-700);\n    --color-input-bg: var(--color-gray-800);\n    --color-input-disabled-bg: var(--color-gray-900);\n    --color-input-disabled-text: var(--color-gray-600);\n    --color-code-bg: var(--color-gray-800);\n${interactiveTokens}`;
+    const semantic = [
+      `    --color-text-primary: var(--color-gray-100);\n`,
+      `    --color-text-secondary: var(--color-gray-300);\n`,
+      `    --color-text-muted: var(--color-gray-400);\n`,
+      `    --color-border: var(--color-gray-700);\n`,
+      `    --color-input-bg: var(--color-gray-800);\n`,
+      `    --color-input-disabled-bg: var(--color-gray-900);\n`,
+      `    --color-input-disabled-text: var(--color-gray-600);\n`,
+      `    --color-code-bg: var(--color-gray-800);\n`,
+      ...interactiveLines,
+    ].join("");
 
     const backdrop = `    /* Backdrop tokens - dark mode */\n    --backdrop-bg: linear-gradient(\n        135deg,\n        rgba(0, 0, 0, 0.6),\n        rgba(0, 0, 0, 0.4)\n      );\n    --backdrop-blur: 10px;\n    --backdrop-saturate: 120%;\n    --backdrop-brightness: 0.7;\n    --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));\n    --backdrop-opacity: 1;\n    \n    /* Legacy alias for backwards compatibility */\n    --backdrop-background: var(--backdrop-bg);\n`;
 
     const mesh = this.#generateMeshGradientsDarkVariablesOnly(colors);
 
-    return `\n       html[data-theme="dark"] {\n${vars}${smart}${semantic}${backdrop}${mesh}       }\n`;
+    const content = [
+      ...varLines,
+      ...smartLines,
+      semantic,
+      backdrop,
+      mesh,
+    ].join("");
+
+    return `\n       html[data-theme="dark"] {\n${content}       }\n`;
   }
 
   // Generate only mesh gradient variables for dark mode (for tokens layer)
@@ -1188,7 +1234,7 @@ export class Generator {
     const secondary = dark.secondary?.[400] || "#a78bfa";
     const accent = dark.accent?.[400] || "#fbbf24";
 
-    return `    /* Mesh Gradient Variables (Dark Mode) */
+    return /*css*/`    /* Mesh Gradient Variables (Dark Mode) */
     --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 20%, transparent) 0px, transparent 50%),
       radial-gradient(at 97% 21%, color-mix(in oklab, ${secondary} 16%, transparent) 0px, transparent 50%),
       radial-gradient(at 52% 99%, color-mix(in oklab, ${accent} 13%, transparent) 0px, transparent 50%),
@@ -1223,7 +1269,7 @@ export class Generator {
     const secondary = dark.secondary?.[400] || "#a78bfa";
     const accent = dark.accent?.[400] || "#fbbf24";
 
-    return `
+    return /*css*/`
   /* Mesh Gradient Backgrounds (Dark Mode) */
   --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 20%, transparent) 0px, transparent 50%),
     radial-gradient(at 97% 21%, color-mix(in oklab, ${secondary} 16%, transparent) 0px, transparent 50%),
@@ -1400,7 +1446,7 @@ html[data-theme="dark"] .liquid-glass {
   #generateBorderGradientUtilities() {
     return /*css*/ `/* ============================================================================
    Border Gradient Utilities
-   WHOOP-style card outlines with gradient borders and glow effects
+   Card outlines with gradient borders and glow effects
    ============================================================================ */
 
 
@@ -1526,17 +1572,17 @@ html[data-theme="dark"] .liquid-glass {
 `;
   }
 
-  #generateLightModeCSS(colors) {
-    // Emit an explicit light theme block scoped to html[data-theme="light"].
-    // We reuse the same color variable generation used for :root so consumers
-    // can rely on attribute-scoped tokens for both themes.
-    try {
-      const colorBlock = this.#generateColorVariables(colors || {});
-      return `html[data-theme="light"] {\n${colorBlock}}\n\n`;
-    } catch (ex) {
-      return "";
-    }
-  }
+  // #generateLightModeCSS(colors) {
+  //   // Emit an explicit light theme block scoped to html[data-theme="light"].
+  //   // We reuse the same color variable generation used for :root so consumers
+  //   // can rely on attribute-scoped tokens for both themes.
+  //   try {
+  //     const colorBlock = this.#generateColorVariables(colors || {});
+  //     return `html[data-theme="light"] {\n${colorBlock}}\n\n`;
+  //   } catch (ex) {
+  //     return "";
+  //   }
+  // }
 
   // Legacy #generateBaseStyles() removed - all content moved to #generatePrimitivesLayer()
 
@@ -3710,7 +3756,8 @@ nav[data-dropdown] {
       xl: "450px",
     };
 
-    let css = /*css*/ `
+    const sections = [
+      /*css*/ `
 /* ============================================================================
    Layout Utilities
    Modern grid and flex system for building responsive layouts
@@ -3731,22 +3778,28 @@ nav[data-dropdown] {
   gap: var(--spacing-4);
 }
 
-`;
+`,
+    ];
 
     // Generate fixed column grids
     for (const col of columns) {
-      css += `.grid-cols-${col} { grid-template-columns: repeat(${col}, 1fr); }\n`;
+      sections.push(
+        `.grid-cols-${col} { grid-template-columns: repeat(${col}, 1fr); }\n`
+      );
     }
 
-    css += "\n/* Auto-fit grids (responsive) */\n";
+    sections.push("\n/* Auto-fit grids (responsive) */\n");
     // Generate auto-fit responsive grids
     for (const [name, minWidth] of Object.entries(autoFitBreakpoints)) {
-      css += `.grid-auto-${name} { grid-template-columns: repeat(auto-fit, minmax(${minWidth}, 1fr)); }\n`;
+      sections.push(
+        `.grid-auto-${name} { grid-template-columns: repeat(auto-fit, minmax(${minWidth}, 1fr)); }\n`
+      );
     }
 
     // Generate gap utilities
 
-    css += /*css*/ `
+    sections.push(
+      /*css*/ `
 /* Gap utilities */
 .gap-0 { gap: 0; }
 .gap-xs { gap: var(--spacing-1); }
@@ -3755,9 +3808,11 @@ nav[data-dropdown] {
 .gap-lg { gap: var(--spacing-6); }
 .gap-xl { gap: var(--spacing-8); }
 
-`;
+`
+    );
 
-    css += /*css*/ `
+    sections.push(
+      /*css*/ `
 /* Flexbox System */
 .flex {
   display: flex;
@@ -3839,9 +3894,10 @@ nav[data-dropdown] {
     --backdrop-blur: 20px;
   }
 }
-`;
+`
+    );
 
-    return css;
+    return sections.join("");
   }
 
   #generateMediaUtilities() {
@@ -4146,7 +4202,8 @@ nav[data-dropdown] {
       icons,
     } = this.tokens;
 
-    let css = /*css*/ `@layer tokens {
+    const sections = [
+      /*css*/ `@layer tokens {
        :root {
           ${this.#generateColorVariables(colors)}
           ${this.#generateSpacingVariables(spacing)}
@@ -4160,16 +4217,19 @@ nav[data-dropdown] {
           ${this.#generateIconVariables(icons)}
        }
        ${this.#generateDarkVariablesForTokensLayer(colors)}
-    }`;
+    }`,
+    ];
 
     // Important: emit a non-layered dark variables block so that manual
     // html[data-theme="dark"] wins even if the page has older, unlayered
     // PDS CSS loaded. Unlayered declarations outrank layered ones in the
     // cascade; this small non-layered override ensures correct theming.
-    css += `\n/* Non-layered dark variables fallback (ensures attribute wins) */\n`;
-    css += this.#generateDarkVariablesOnly(colors);
+    sections.push(
+      `\n/* Non-layered dark variables fallback (ensures attribute wins) */\n`
+    );
+    sections.push(this.#generateDarkVariablesOnly(colors));
 
-    return css;
+    return sections.join("");
   }
 
   #generatePrimitivesLayer() {
@@ -4734,56 +4794,56 @@ ${this.#generateMediaQueries()}
     this.#stylesheets.utilities.replaceSync(this.#layers.utilities);
   }
 
-  /**
-   * Create BLOB URLs for live injection
-   */
-  #createBlobURLs() {
-    this.#blobURLs = {};
-    this.#recreateBlobURLs();
-  }
+  // /**
+  //  * Create BLOB URLs for live injection
+  //  */
+  // #createBlobURLs() {
+  //   this.#blobURLs = {};
+  //   this.#recreateBlobURLs();
+  // }
 
-  #recreateBlobURLs() {
-    // Safety check
-    if (!this.#layers) {
-      this.options.log?.(
-        "error",
-        "[Generator] Cannot create BLOB URLs: layers not generated"
-      );
-      return;
-    }
+  // #recreateBlobURLs() {
+  //   // Safety check
+  //   if (!this.#layers) {
+  //     this.options.log?.(
+  //       "error",
+  //       "[Generator] Cannot create BLOB URLs: layers not generated"
+  //     );
+  //     return;
+  //   }
 
-    // Revoke old URLs
-    if (this.#blobURLs) {
-      Object.values(this.#blobURLs).forEach((url) => {
-        if (url) URL.revokeObjectURL(url);
-      });
-    }
+  //   // Revoke old URLs
+  //   if (this.#blobURLs) {
+  //     Object.values(this.#blobURLs).forEach((url) => {
+  //       if (url) URL.revokeObjectURL(url);
+  //     });
+  //   }
 
-    // Create new BLOB URLs for each layer
-    this.#blobURLs.tokens = this.#createBlobURL(this.#layers.tokens);
-    this.#blobURLs.primitives = this.#createBlobURL(this.#layers.primitives);
-    this.#blobURLs.components = this.#createBlobURL(this.#layers.components);
-    this.#blobURLs.utilities = this.#createBlobURL(this.#layers.utilities);
+  //   // Create new BLOB URLs for each layer
+  //   this.#blobURLs.tokens = this.#createBlobURL(this.#layers.tokens);
+  //   this.#blobURLs.primitives = this.#createBlobURL(this.#layers.primitives);
+  //   this.#blobURLs.components = this.#createBlobURL(this.#layers.components);
+  //   this.#blobURLs.utilities = this.#createBlobURL(this.#layers.utilities);
 
-    // Combined styles (layers already have @layer wrappers, just concatenate)
-    const combined = `${this.#layers.tokens}\n${this.#layers.primitives}\n${
-      this.#layers.components
-    }\n${this.#layers.utilities}`;
-    this.#blobURLs.styles = this.#createBlobURL(combined);
+  //   // Combined styles (layers already have @layer wrappers, just concatenate)
+  //   const combined = `${this.#layers.tokens}\n${this.#layers.primitives}\n${
+  //     this.#layers.components
+  //   }\n${this.#layers.utilities}`;
+  //   this.#blobURLs.styles = this.#createBlobURL(combined);
 
-    if (this.options.debug) {
-      this.options.log?.(
-        "debug",
-        "[Generator] Created BLOB URL for combined styles:",
-        this.#blobURLs.styles
-      );
-    }
-  }
+  //   if (this.options.debug) {
+  //     this.options.log?.(
+  //       "debug",
+  //       "[Generator] Created BLOB URL for combined styles:",
+  //       this.#blobURLs.styles
+  //     );
+  //   }
+  // }
 
-  #createBlobURL(css) {
-    const blob = new Blob([css], { type: "text/css" });
-    return URL.createObjectURL(blob);
-  }
+  // #createBlobURL(css) {
+  //   const blob = new Blob([css], { type: "text/css" });
+  //   return URL.createObjectURL(blob);
+  // }
 
   // ========================================================================
   // PUBLIC GETTERS FOR LAYER ACCESS
@@ -4990,22 +5050,22 @@ ${this.#generateMediaQueries()}
     return this.#stylesheets?.utilities;
   }
 
-  // BLOB URLs (browser only)
-  get tokensBlobURL() {
-    return this.#blobURLs?.tokens;
-  }
-  get primitivesBlobURL() {
-    return this.#blobURLs?.primitives;
-  }
-  get componentsBlobURL() {
-    return this.#blobURLs?.components;
-  }
-  get utilitiesBlobURL() {
-    return this.#blobURLs?.utilities;
-  }
-  get stylesBlobURL() {
-    return this.#blobURLs?.styles;
-  }
+  // // BLOB URLs (browser only)
+  // get tokensBlobURL() {
+  //   return this.#blobURLs?.tokens;
+  // }
+  // get primitivesBlobURL() {
+  //   return this.#blobURLs?.primitives;
+  // }
+  // get componentsBlobURL() {
+  //   return this.#blobURLs?.components;
+  // }
+  // get utilitiesBlobURL() {
+  //   return this.#blobURLs?.utilities;
+  // }
+  // get stylesBlobURL() {
+  //   return this.#blobURLs?.styles;
+  // }
 
   /**
    * Generate CSS module files for export
@@ -5053,23 +5113,23 @@ export const ${name}CSS = \`${escapedCSS}\`;
   /**
    * Static method to apply styles to document
    * Creates a link element with BLOB URL
-   * @param {Generator} designer - The Generator instance with generated styles
+   * @param {Generator} generator - The Generator instance with generated styles
    */
-  static applyStyles(designer) {
+  static applyStyles(generator) {
     // Validate parameter
-    if (!designer || typeof designer !== "object") {
-      designer?.options?.log?.(
+    if (!generator || typeof generator !== "object") {
+      generator?.options?.log?.(
         "error",
-        "[Generator] applyStyles requires a designer object"
+        "[Generator] applyStyles requires a generator object"
       );
       return;
     }
 
     // Preferred: apply layered CSS so tokens + primitives + components + utilities
     // are available in light DOM (ensures primitives like :where(button):active apply)
-    const cssText = designer.layeredCSS || designer.css || "";
+    const cssText = generator.layeredCSS || generator.css || "";
     if (!cssText) {
-      designer?.options?.log?.(
+      generator?.options?.log?.(
         "warn",
         "[Generator] No CSS available on designer to apply"
       );
@@ -5079,12 +5139,12 @@ export const ${name}CSS = \`${escapedCSS}\`;
     // Install/update runtime styles atomically to avoid flicker caused by
     // creating/removing <link> or swapping blob URLs.
     Generator.installRuntimeStyles(cssText);
-    if (designer && designer.#blobURLs && designer.options?.debug) {
-      designer.options?.log?.(
-        "debug",
-        "[Generator] Applied live styles via in-place stylesheet"
-      );
-    }
+    // if (designer && designer.#blobURLs && designer.options?.debug) {
+    //   designer.options?.log?.(
+    //     "debug",
+    //     "[Generator] Applied live styles via in-place stylesheet"
+    //   );
+    // }
   }
 
   /**

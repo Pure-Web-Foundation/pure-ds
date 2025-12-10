@@ -6,12 +6,14 @@ import { PDS, validateDesign } from "../pds";
 import { deepMerge } from "../common/common";
 import { loadTypographyFonts } from "../common/font-loader.js";
 import { AutoComplete } from "pure-web/ac";
-
+import { figmafyTokens } from "./figma-export";
 const STORAGE_KEY = "pure-ds-config";
+
+
 
 async function toast(message, options = {}) {
   let toaster = document.querySelector("#global-toaster");
-  if(!toaster) {
+  if (!toaster) {
     toaster = document.createElement("pds-toaster");
     toaster.id = "global-toaster";
     document.body.appendChild(toaster);
@@ -38,9 +40,9 @@ customElements.define(
       formValues: { type: Object, state: true }, // Filtered values for the form
       validationIssues: { type: Array, state: true }, // Accessibility/design issues from PDS.validateDesign
       formKey: { type: Number, state: true }, // Force form re-render
-      showInspector: { type: Boolean, attribute: 'show-inspector' }, // Show/hide Code Inspector button
-      showPresetSelector: { type: Boolean, attribute: 'show-preset-selector' }, // Show/hide Preset selector
-      showThemeSelector: { type: Boolean, attribute: 'show-theme-selector' }, // Show/hide Theme selector
+      showInspector: { type: Boolean, attribute: "show-inspector" }, // Show/hide Code Inspector button
+      showPresetSelector: { type: Boolean, attribute: "show-preset-selector" }, // Show/hide Preset selector
+      showThemeSelector: { type: Boolean, attribute: "show-theme-selector" }, // Show/hide Theme selector
     };
 
     createRenderRoot() {
@@ -54,7 +56,7 @@ customElements.define(
 
       this.mode = "simple";
       this.inspectorMode = false;
-      
+
       // Boolean attributes: when present they're true, when absent they're false
       // No need to set defaults - Lit handles boolean attributes correctly
 
@@ -350,8 +352,8 @@ customElements.define(
       const generatorOptions = { design: structuredClone(baseConfig) };
       if (storedTheme) generatorOptions.theme = storedTheme;
 
-      this.designer = new Generator(generatorOptions);
-      Generator.applyStyles(this.designer);
+      this.generator = new Generator(generatorOptions);
+      Generator.applyStyles(this.generator);
 
       // Let PDS ensure document html[data-theme] reflects persisted preference
       try {
@@ -364,7 +366,7 @@ customElements.define(
       // Emit design-updated in a throttled manner with the actual designer
       this.scheduleDesignUpdatedEmit({
         config: baseConfig,
-        designer: this.designer,
+        designer: this.generator,
       });
     }
 
@@ -710,7 +712,7 @@ customElements.define(
 
       switch (format) {
         case "css":
-          content = this.designer.css;
+          content = this.generator.layeredCSS;
           filename = "pure-ds.css";
           mimeType = "text/css";
           break;
@@ -728,7 +730,7 @@ export const pdsConfig = ${JSON.stringify(this.config, null, 2)};
           break;
 
         case "tokens":
-          const tokens = this.designer.generateColorTokens(this.config.colors);
+          const tokens = figmafyTokens(this.generator.generateTokens());
           content = JSON.stringify(tokens, null, 2);
           filename = "design-tokens.json";
           mimeType = "application/json";
@@ -797,10 +799,13 @@ export const pdsConfig = ${JSON.stringify(this.config, null, 2)};
                   </button>
                 `
               : nothing}
-
             ${this.showThemeSelector
               ? html`
-                  <fieldset role="radiogroup" aria-label="Theme" class="theme-select buttons">
+                  <fieldset
+                    role="radiogroup"
+                    aria-label="Theme"
+                    class="theme-select buttons"
+                  >
                     <legend>Theme</legend>
                     ${(() => {
                       const stored = PDS.theme || null;
@@ -814,7 +819,10 @@ export const pdsConfig = ${JSON.stringify(this.config, null, 2)};
                             @change=${this.handleThemeChange}
                             .checked=${selected === "system"}
                           />
-                          <span><pds-icon icon="moon-stars"></pds-icon> System</span>
+                          <span
+                            ><pds-icon icon="moon-stars"></pds-icon>
+                            System</span
+                          >
                         </label>
                         <label>
                           <input
@@ -841,7 +849,6 @@ export const pdsConfig = ${JSON.stringify(this.config, null, 2)};
                   </fieldset>
                 `
               : nothing}
-
             ${this.showPresetSelector
               ? html`
                   <fieldset>

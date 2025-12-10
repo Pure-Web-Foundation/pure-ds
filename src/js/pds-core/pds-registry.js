@@ -79,29 +79,29 @@ class PDSRegistry {
     }
   }
 
-  /**
-   * Get BLOB URL for a layer (live mode only)
-   * Used for @import statements in CSS
-   */
-  getBlobURL(layer) {
-    if (this._mode === "live" && this._designer) {
-      switch (layer) {
-        case "tokens":
-          return this._designer.tokensBlobURL;
-        case "primitives":
-          return this._designer.primitivesBlobURL;
-        case "components":
-          return this._designer.componentsBlobURL;
-        case "utilities":
-          return this._designer.utilitiesBlobURL;
-        case "styles":
-          return this._designer.stylesBlobURL;
-        default:
-          return null;
-      }
-    }
-    return null;
-  }
+  // /**
+  //  * Get BLOB URL for a layer (live mode only)
+  //  * Used for @import statements in CSS
+  //  */
+  // getBlobURL(layer) {
+  //   if (this._mode === "live" && this._designer) {
+  //     switch (layer) {
+  //       case "tokens":
+  //         return this._designer.tokensBlobURL;
+  //       case "primitives":
+  //         return this._designer.primitivesBlobURL;
+  //       case "components":
+  //         return this._designer.componentsBlobURL;
+  //       case "utilities":
+  //         return this._designer.utilitiesBlobURL;
+  //       case "styles":
+  //         return this._designer.stylesBlobURL;
+  //       default:
+  //         return null;
+  //     }
+  //   }
+  //   return null;
+  // }
 
   /**
    * Get current mode

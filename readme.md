@@ -785,9 +785,6 @@ const primitivesCSS = compiled.layers.primitives.css;
 
 // Get as stylesheet
 const sheet = await PDS.registry.getStylesheet('primitives');
-
-// Get blob URL
-const url = PDS.registry.getBlobURL('utilities');
 ```
 
 **In static mode:**
