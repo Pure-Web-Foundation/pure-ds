@@ -29,6 +29,9 @@ export class RichText extends HTMLElement {
   #loadedShowdown = false;
   #isSyncingFromEditor = false;
   #isReflectingValue = false;
+  #displayValue = "";
+  #showdownPromise = null;
+  #warnedMarkdownFallback = false;
 
   static formAssociated = true;
 
@@ -42,6 +45,7 @@ export class RichText extends HTMLElement {
       "spellcheck",
       "toolbar",
       "value",
+      "format",
     ];
   }
 
@@ -52,10 +56,12 @@ export class RichText extends HTMLElement {
     this._submitOnEnter = false;
     this._toolbar = true;
     this._spellcheck = true;
-    this._value = ""; // cleaned HTML submitted
+    this._value = ""; // form submission value (HTML or Markdown)
     this._placeholder = "";
     this._disabled = false;
     this._required = false;
+    this._format = "html";
+    this.#displayValue = "";
   }
 
   // Property accessors (reflective where needed)
@@ -118,6 +124,18 @@ export class RichText extends HTMLElement {
     this.toggleAttribute("toolbar", b);
     this.#render();
   }
+  get format() {
+    return this._format;
+  }
+  set format(v) {
+    const next =
+      (v ?? "").toString().toLowerCase() === "markdown" ? "markdown" : "html";
+    if (next === "html") {
+      if (this.hasAttribute("format")) this.removeAttribute("format");
+    } else if (this.getAttribute("format") !== "markdown") {
+      this.setAttribute("format", "markdown");
+    }
+  }
   get value() {
     return this._value;
   }
@@ -125,8 +143,8 @@ export class RichText extends HTMLElement {
     const next = v ?? "";
     if (next === this._value) {
       this.#reflectValueAttribute(this._value);
-      if (!this.#isSyncingFromEditor && this.#editorDiv && this.#editorDiv.innerHTML !== this._value) {
-        this.#editorDiv.innerHTML = this._value;
+      if (!this.#isSyncingFromEditor) {
+        this.#updateEditorFromValue({ reflect: false, updateForm: false });
       }
       return;
     }
@@ -164,6 +182,28 @@ export class RichText extends HTMLElement {
         this._value = newV || "";
         if (!this.#isSyncingFromEditor) this.#updateEditorFromValue();
         break;
+      case "format":
+        this.#applyFormat(newV);
+        break;
+    }
+  }
+
+  #applyFormat(value) {
+    const next =
+      (value ?? "").toString().toLowerCase() === "markdown"
+        ? "markdown"
+        : "html";
+    if (next === this._format) return;
+    this._format = next;
+    const refresh = () => this.#updateEditorFromValue({
+      reflect: true,
+      updateForm: true,
+      forceDisplayRefresh: true,
+    });
+    if (next === "markdown") {
+      this.#ensureShowdown().then(refresh);
+    } else {
+      refresh();
     }
   }
 
@@ -180,7 +220,9 @@ export class RichText extends HTMLElement {
   async connectedCallback() {
     this.#render();
     await this.#adoptStyles();
-    this.#ensureShowdown();
+    if (this._format === "markdown") await this.#ensureShowdown();
+    else this.#ensureShowdown();
+    this.#updateEditorFromValue({ reflect: true, updateForm: true, forceDisplayRefresh: true });
   }
 
   async #adoptStyles() {
@@ -202,7 +244,7 @@ export class RichText extends HTMLElement {
       .tbtn { transition: none; display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius: var(--radius-sm,6px); cursor:pointer; user-select:none; color: inherit; background: transparent; border:none; }
       .tbtn:hover { background: var(--color-surface-hover, color-mix(in oklab, CanvasText 12%, transparent)); }
       .edwrap { position:relative; }
-      .ed { display: block; min-height:90px; max-height:280px; overflow:auto; padding: var(--spacing-3, 0); outline:none; white-space:pre-wrap; word-break:break-word; border-radius: 0 0 var(--radius-md,8px) var(--radius-md,8px); background: var(--rt-editor-bg, var(--color-input-bg)); }
+      .ed { display: block; min-height:90px; max-height:280px; overflow:auto; padding: var(--spacing-3, 0); outline:none; word-break:break-word; border-radius: 0 0 var(--radius-md,8px) var(--radius-md,8px); background: var(--rt-editor-bg, var(--color-input-bg)); }
       .ed[contenteditable="true"]:empty::before { content: attr(data-ph); color: var(--rt-muted, var(--color-text-muted)); pointer-events:none; }
       .send { margin-left:auto; display:inline-flex; gap: var(--spacing-2,8px); align-items:center; }
       button.icon { background:transparent; border:0; color:inherit; cursor:pointer; padding:6px; border-radius: var(--radius-sm,6px); }
@@ -220,43 +262,97 @@ export class RichText extends HTMLElement {
   }
 
   async #ensureShowdown() {
-    if (this.#loadedShowdown || this.#loadingShowdown) return;
+    if (this.#loadedShowdown) return true;
+    if (this.#showdownPromise) return this.#showdownPromise;
+
     this.#loadingShowdown = true;
-    try {
-      if (!("showdown" in window)) {
-        // Load UMD build as a classic script to ensure `this` is the window (avoids `root` undefined)
-        try {
-          await this.#loadScript(
-            "https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"
-          );
-        } catch {
-          // Fallback CDN
-          await this.#loadScript(
-            "https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"
-          );
+    this.#showdownPromise = (async () => {
+      try {
+        let showdownExports = await this.#importShowdownFromMap();
+
+        if (!showdownExports) {
+          await this.#loadShowdownFromCdn();
+          showdownExports = window.showdown;
         }
+
+        const showdownApi = this.#resolveShowdownExports(showdownExports);
+        if (!showdownApi) {
+          throw new Error("Showdown exports missing Converter");
+        }
+
+        this.#applyShowdownConverter(showdownApi);
+        this.#loadedShowdown = true;
+        this.#warnedMarkdownFallback = false;
+      } catch (e) {
+        console.warn(
+          "Showdown failed to load; cleaning will still happen via local sanitizer.",
+          e
+        );
+        this.#loadedShowdown = false;
+      } finally {
+        this.#loadingShowdown = false;
+        if (!this.#loadedShowdown) this.#showdownPromise = null;
       }
-      if (!("showdown" in window))
-        throw new Error("Showdown failed to attach to window");
-      // @ts-ignore
-      this.#converter = new window.showdown.Converter({
-        simplifiedAutoLink: true,
-        openLinksInNewWindow: true,
-        strikethrough: true,
-        emoji: false,
-        ghMentions: false,
-        tables: false,
-      });
-      this.#loadedShowdown = true;
-    } catch (e) {
-      console.warn(
-        "Showdown failed to load; cleaning will still happen via local sanitizer.",
-        e
-      );
-      this.#loadedShowdown = false;
-    } finally {
-      this.#loadingShowdown = false;
+      return this.#loadedShowdown;
+    })();
+
+    return this.#showdownPromise;
+  }
+
+  async #importShowdownFromMap() {
+    try {
+      const mod = await import("#showdown");
+      return mod;
+    } catch (err) {
+      return null;
     }
+  }
+
+  async #loadShowdownFromCdn() {
+    if ("showdown" in window) return;
+    try {
+      await this.#loadScript(
+        "https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"
+      );
+    } catch {
+      await this.#loadScript(
+        "https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"
+      );
+    }
+  }
+
+  #resolveShowdownExports(exports) {
+    const candidates = [
+      exports,
+      exports && exports.default,
+      exports && exports.showdown,
+      exports && exports.default && exports.default.showdown,
+    ];
+    for (const candidate of candidates) {
+      if (candidate && typeof candidate.Converter === "function") {
+        return candidate;
+      }
+    }
+    if (exports && typeof exports.Converter === "function") return exports;
+    return null;
+  }
+
+  #applyShowdownConverter(api) {
+    if (!api || typeof api.Converter !== "function") {
+      throw new Error("Invalid Showdown API");
+    }
+    if (!window.showdown) {
+      window.showdown = api;
+    }
+    // @ts-ignore
+    this.#converter = new api.Converter({
+      simplifiedAutoLink: true,
+      openLinksInNewWindow: true,
+      strikethrough: true,
+      emoji: false,
+      ghMentions: false,
+      tables: false,
+    });
   }
 
   // Load a classic script tag; resolves on load, rejects on error
@@ -292,7 +388,7 @@ export class RichText extends HTMLElement {
             this._placeholder
           }" contenteditable="${!this._disabled}" spellcheck="${
       this._spellcheck
-    }"></div>
+    }">${this.#displayValue || ""}</div>
         </div>       
       </div>`;
     this.#editorDiv = this.shadowRoot.querySelector(".ed");
@@ -310,8 +406,8 @@ export class RichText extends HTMLElement {
       });
       btn.addEventListener("mousedown", (e) => e.preventDefault());
     });
-    if (this.#editorDiv) {
-      this.#editorDiv.innerHTML = this._value;
+    if (this.#editorDiv && this.#editorDiv.innerHTML !== this.#displayValue) {
+      this.#editorDiv.innerHTML = this.#displayValue;
     }
   }
 
@@ -362,11 +458,11 @@ export class RichText extends HTMLElement {
     document.execCommand("insertText", false, text);
   };
 
-  #onKeyDown = (e) => {
+  #onKeyDown = async (e) => {
     if (e.key === "Enter" && !e.isComposing) {
       if (e.shiftKey || !this._submitOnEnter) return; // newline allowed
       e.preventDefault();
-      this.#syncValue();
+      await this.#syncValue();
       this.#requestSubmit();
     }
   };
@@ -422,19 +518,23 @@ export class RichText extends HTMLElement {
     return null;
   }
 
-  #syncValue() {
-    const cleanHtml = this.#cleanHtml(this.#editorDiv?.innerHTML || "");
+  async #syncValue() {
+    if (!this.#editorDiv) return;
+    if (this._format === "markdown") await this.#ensureShowdown();
+    const { html, markdown } = this.#prepareContentFromEditor(
+      this.#editorDiv.innerHTML || "",
+      this._format === "markdown"
+    );
+    const nextValue = this._format === "markdown" ? markdown : html;
     this.#isSyncingFromEditor = true;
-    this.value = cleanHtml;
+    this.value = nextValue;
     this.#isSyncingFromEditor = false;
-    this.#internals.setFormValue(cleanHtml);
-    // validity for required
-    if (this.required)
-      this.#internals.setValidity(
-        cleanHtml.trim() ? {} : { customError: true },
-        cleanHtml.trim() ? "" : "Please enter a message.",
-        this.#editorDiv
-      );
+    this.#displayValue = html;
+    if (this.#editorDiv.innerHTML !== html) {
+      this.#editorDiv.innerHTML = html;
+    }
+    this.#internals.setFormValue(nextValue);
+    this.#updateValidityState(html, nextValue);
     this.dispatchEvent(
       new InputEvent("input", { bubbles: true, composed: true })
     );
@@ -466,24 +566,105 @@ export class RichText extends HTMLElement {
       : this.#markdownToBareHtml(md);
   }
 
+  #prepareContentFromEditor(html, requireConverter = false) {
+    const cleanedHtml = this.#cleanHtml(html || "");
+    if (!cleanedHtml) return { html: "", markdown: "" };
+    if (this.#converter && typeof this.#converter.makeMarkdown === "function") {
+      return { html: cleanedHtml, markdown: this.#converter.makeMarkdown(cleanedHtml) };
+    }
+    if (requireConverter && !this.#warnedMarkdownFallback) {
+      console.warn(
+        "pds-richtext: Showdown converter unavailable; falling back to internal markdown cleaner."
+      );
+      this.#warnedMarkdownFallback = true;
+    }
+    return {
+      html: cleanedHtml,
+      markdown: this.#htmlToMinimalMarkdown(cleanedHtml),
+    };
+  }
+
+  #updateValidityState(displayHtml, formValue) {
+    if (!this.required) {
+      this.#internals.setValidity({}, "", this.#editorDiv);
+      return;
+    }
+    const hasDisplayContent = this.#hasContent(displayHtml);
+    const hasValueContent = typeof formValue === "string" && formValue.trim().length > 0;
+    if (hasDisplayContent || hasValueContent) {
+      this.#internals.setValidity({}, "", this.#editorDiv);
+    } else {
+      this.#internals.setValidity(
+        { customError: true },
+        "Please enter a message.",
+        this.#editorDiv
+      );
+    }
+  }
+
+  #hasContent(html) {
+    if (!html) return false;
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return !!(tmp.textContent || "").trim();
+  }
+
   #updateEditorFromValue(options = {}) {
-    const { reflect = true, updateForm = true } = options;
-    const cleanHtml = this.#cleanHtml(this._value);
-    if (cleanHtml !== this._value) {
-      this._value = cleanHtml;
+    if (
+      this._format === "markdown" &&
+      (!this.#converter || !this.#loadedShowdown)
+    ) {
+      this.#ensureShowdown().then(() => this.#applyValueToEditor(options));
+      return;
     }
+    this.#applyValueToEditor(options);
+  }
+
+  #applyValueToEditor(options = {}) {
+    const { reflect = true, updateForm = true, forceDisplayRefresh = false } = options;
+    const format = this._format;
+    const cleanedHtml = this.#cleanHtml(this._value);
+
+    if (format === "html") {
+      if (cleanedHtml !== this._value) {
+        this._value = cleanedHtml;
+      }
+    } else if (this.#converter && typeof this.#converter.makeMarkdown === "function") {
+      const normalizedMarkdown = cleanedHtml
+        ? this.#converter.makeMarkdown(cleanedHtml)
+        : "";
+      if (normalizedMarkdown !== this._value) {
+        this._value = normalizedMarkdown;
+      } else {
+        // ensure value string matches converter output
+        this._value = normalizedMarkdown;
+      }
+    } else {
+      if (!this.#warnedMarkdownFallback) {
+        console.warn(
+          "pds-richtext: Showdown converter unavailable while normalizing markdown value; using internal sanitizer instead."
+        );
+        this.#warnedMarkdownFallback = true;
+      }
+      this._value = cleanedHtml
+        ? this.#htmlToMinimalMarkdown(cleanedHtml)
+        : "";
+    }
+
+    this.#displayValue = cleanedHtml;
+
     if (reflect) this.#reflectValueAttribute(this._value);
-    if (this.#editorDiv && this.#editorDiv.innerHTML !== this._value) {
-      this.#editorDiv.innerHTML = this._value;
+
+    if (
+      this.#editorDiv &&
+      (forceDisplayRefresh || this.#editorDiv.innerHTML !== cleanedHtml)
+    ) {
+      this.#editorDiv.innerHTML = cleanedHtml;
     }
+
     if (updateForm) {
       this.#internals.setFormValue(this._value);
-      if (this.required)
-        this.#internals.setValidity(
-          this._value.trim() ? {} : { customError: true },
-          this._value.trim() ? "" : "Please enter a message.",
-          this.#editorDiv
-        );
+      this.#updateValidityState(cleanedHtml, this._value);
     }
   }
 

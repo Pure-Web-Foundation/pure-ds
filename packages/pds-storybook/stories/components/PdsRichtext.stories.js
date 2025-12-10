@@ -147,7 +147,7 @@ export default {
     },
     docs: {
       description: {
-        component: 'Rich text editor with markdown support and formatting toolbar'
+        component: 'Rich text editor with markdown support and formatting toolbar. Provide a #showdown import-map entry for best performance; set format="markdown" to keep submitted values as Markdown.'
       }
     }
   },
@@ -178,6 +178,14 @@ const htmlString = `
 <p>This is a <strong>rich text editor</strong> component that allows you to create and edit formatted text easily.</p>
 <p>Use the toolbar to format your content with headings, lists, links, and more.</p>
 `;
+
+const markdownSample = `**Getting Started**
+
+- Write markdown directly in the editor
+- Try bold, italics, lists, and links
+- Submit the form to inspect the markdown payload
+
+> Markdown mode keeps your formatting exact`;
 
 export const WithContent = () => html`
   ${richtextStoryStyles}
@@ -319,3 +327,28 @@ export const CommentEditor = () => {
 };
 
 CommentEditor.storyName = 'Comment Editor';
+
+export const MarkdownForm = () => {
+  bindToastForms('.richtext-markdown-form');
+
+  return html`
+    ${richtextStoryStyles}
+    <form class="richtext-form richtext-markdown-form">
+      <label>
+        <span>Release Notes (Markdown)</span>
+        <pds-richtext
+          name="release-notes"
+          format="markdown"
+          placeholder="Document your release highlights..."
+          value="${markdownSample}"
+        ></pds-richtext>
+      </label>
+      <div class="richtext-form-actions">
+        <button type="submit" class="btn-primary">Submit Markdown</button>
+        <button type="reset" class="btn-ghost">Reset</button>
+      </div>
+    </form>
+  `;
+};
+
+MarkdownForm.storyName = 'Markdown Format';

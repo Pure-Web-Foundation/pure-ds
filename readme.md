@@ -107,12 +107,12 @@ Semantic HTML gets enhanced with JavaScript:
 ### 3. **Web Components** (Rich UI, lazy-loaded using [AutoDefiner](https://www.npmjs.com/package/pure-web#user-content-autodefiner))
 Optional components loaded on demand:
 - `<pds-icon>` - SVG sprite icons
-- `<pds-drawer>` - Slide-out panels
-- `<pds-tabstrip>` - Accessible tabs
-- `<pds-upload>` - File upload with preview
-- `<pds-toaster>` - Toast notifications
-- `<pds-richtext>` - Rich text editor
-- `<pds-jsonform>` - Dynamic forms from JSON Schema
+- `<pds-drawer>` - Slide-out panels (top, bottom, lef, right)
+- `<pds-tabstrip>` - Accessible tabs 
+- `<pds-upload>` - File upload with drag & drop and preview
+- `<pds-toaster>` - Smart Toast notifications
+- `<pds-richtext>` - Rich text editor (prefers `#showdown` import map; `format="markdown"` keeps Markdown values)
+- `<pds-jsonform>` - Dynamic forms generated from JSON Schema 
 - `<pds-splitpanel>` - Resizable panes
 - `<pds-scrollrow>` - Horizontal scrolling containers
 
@@ -622,8 +622,25 @@ PDS.dispatchEvent(new CustomEvent('pds:toast', {
 
 **`<pds-richtext>`** - Rich text editor
 ```html
-<pds-richtext value="<p>Initial content</p>"></pds-richtext>
+<script type="importmap">
+  {
+    "imports": {
+      "#showdown": "https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.esm.js"
+    }
+  }
+</script>
+
+<pds-richtext
+  value="<p>Initial content</p>"
+  format="html">
+</pds-richtext>
 ```
+
+Set `format="markdown"` when you want the submitted form value to stay in Markdown:
+```html
+<pds-richtext name="release-notes" format="markdown"></pds-richtext>
+```
+The element will use the `#showdown` import-map specifier first, and will only fall back to loading the script from CDNs if that specifier is missing.
 
 Features:
 - Bold, italic, underline, strikethrough

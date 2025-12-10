@@ -57,7 +57,7 @@ Web Components (`<pds-*>`):
 - `pds-tabstrip` - Accessible tabs
 - `pds-upload` - File upload with preview
 - `pds-toaster` - Toast notifications
-- `pds-richtext` - Rich text editor
+- `pds-richtext` - Rich text editor (prefers `#showdown` import map; set `format="markdown"` to submit Markdown)
 - `pds-jsonform` - JSON Schema forms
 - `pds-splitpanel` - Resizable panes
 - `pds-scrollrow` - Horizontal scroll

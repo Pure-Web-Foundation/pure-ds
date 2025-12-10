@@ -138,7 +138,7 @@ Then run `pds-storybook` to export with your config.
 - `pds-tabstrip` - Tab interface
 - `pds-upload` - File upload
 - `pds-toaster` - Toast notifications
-- `pds-richtext` - Rich text editor
+- `pds-richtext` - Rich text editor (use `#showdown` import map, optional `format="markdown"`)
 - `pds-jsonform` - JSON Schema forms
 - `pds-splitpanel` - Resizable panes
 - `pds-scrollrow` - Horizontal scroll
