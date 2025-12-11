@@ -22,7 +22,7 @@ export class SvgIcon extends HTMLElement {
   static observedAttributes = ['icon', 'size', 'color', 'label', 'rotate'];
   
   // Inline fallback icons for critical UI elements (when sprite fails to load)
-  static fallbackIcons = {
+  static #fallbackIcons = {
     'x': '<path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z" fill="currentColor"/>',
     
     'house': '<path d="M218.83,103.77l-80-75.48a1.14,1.14,0,0,1-.11-.11,16,16,0,0,0-21.53,0l-.11.11L37.17,103.77A16,16,0,0,0,32,115.55V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V160h32v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V115.55A16,16,0,0,0,218.83,103.77ZM208,208H160V160a16,16,0,0,0-16-16H112a16,16,0,0,0-16,16v48H48V115.55l.11-.1L128,40l79.9,75.43.11.1Z" fill="currentColor"/>',
@@ -46,6 +46,58 @@ export class SvgIcon extends HTMLElement {
   static inlineSprites = new Map();
 
   static instances = new Set();
+
+  static #spriteSupport = false;
+
+  static {
+    // Precompute sprite support once during class definition to avoid per-instance work.
+    SvgIcon.#spriteSupport = SvgIcon.#detectSpriteSupport();
+  }
+
+  static #detectSpriteSupport() {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      return false;
+    }
+
+    if (!document.createElementNS || typeof window.SVGSVGElement === 'undefined') {
+      return false;
+    }
+
+    const docEl = document.documentElement;
+    const hasNoSpriteFlag = Boolean(docEl && docEl.dataset && Object.prototype.hasOwnProperty.call(docEl.dataset, 'pdsNoSprite'));
+    const globalDisable = Boolean(
+      window.__PDS_DISABLE_SVG_SPRITES === true ||
+      window.PDS_DISABLE_SVG_SPRITES === true ||
+      hasNoSpriteFlag
+    );
+
+    if (globalDisable) {
+      return false;
+    }
+
+    try {
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const xlinkNS = 'http://www.w3.org/1999/xlink';
+
+      const svg = document.createElementNS(svgNS, 'svg');
+      const use = document.createElementNS(svgNS, 'use');
+      svg.appendChild(use);
+
+      use.setAttribute('href', '#__pds_sprite_test__');
+      use.setAttributeNS(xlinkNS, 'xlink:href', '#__pds_sprite_test__');
+
+      const hasUseInterface = typeof window.SVGUseElement !== 'undefined' && use instanceof SVGUseElement;
+      const hrefProperty = Boolean(use.href && typeof use.href.baseVal === 'string');
+      const hrefAttribute =
+        use.getAttribute('href') === '#__pds_sprite_test__' ||
+        use.getAttributeNS(xlinkNS, 'href') === '#__pds_sprite_test__' ||
+        use.getAttribute('xlink:href') === '#__pds_sprite_test__';
+
+      return Boolean(hasUseInterface && (hrefProperty || hrefAttribute));
+    } catch (error) {
+      return false;
+    }
+  }
 
   constructor() {
     super();
@@ -157,7 +209,7 @@ export class SvgIcon extends HTMLElement {
       : '';
     const hasInlineSymbol = inlineSymbolContent !== null;
     const symbolMarkup = useFallback
-      ? this.getFallbackIcon(icon)
+      ? this.#getFallbackIcon(icon)
       : (hasInlineSymbol ? inlineSymbolContent : `<use href="${effectiveHref}"></use>`);
     
     this.shadowRoot.innerHTML = `
@@ -178,8 +230,8 @@ export class SvgIcon extends HTMLElement {
     `;
   }
   
-  getFallbackIcon(name) {
-    return SvgIcon.fallbackIcons[name] || SvgIcon.fallbackIcons['missing'];
+  #getFallbackIcon(name) {
+    return SvgIcon.#fallbackIcons[name] || SvgIcon.#fallbackIcons['missing'];
   }
   
   /**
@@ -189,9 +241,7 @@ export class SvgIcon extends HTMLElement {
    * @returns {boolean} True if sprite sheet should be used
    */
   spriteAvailable() {
-    // Simple heuristic: assume sprite is available unless explicitly disabled
-    // In production, you might check for sprite load status
-    return true;
+    return SvgIcon.#spriteSupport;
   }
 
   static async ensureInlineSprite(spriteURL) {

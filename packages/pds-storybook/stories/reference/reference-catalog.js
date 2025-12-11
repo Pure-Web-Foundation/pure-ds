@@ -43,19 +43,147 @@ function formatTimestamp(timestamp) {
   }
 }
 
-function escapeHtml(value) {
-  if (value === undefined || value === null) return '';
-  return String(value)
+const VOID_HTML_ELEMENTS = new Set([
+  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+  'link', 'meta', 'param', 'source', 'track', 'wbr'
+]);
+
+function formatDemoHtml(html) {
+  if (typeof html !== 'string') return '';
+  const tokens = html.trim().split(/(<[^>]+>)/g).filter(Boolean);
+  if (!tokens.length) return '';
+
+  const indentUnit = '  ';
+  let indent = 0;
+  let formatted = '';
+
+  for (const token of tokens) {
+    const isTag = token.startsWith('<');
+    if (!isTag) {
+      const text = token.replace(/\s+/g, ' ').trim();
+      if (text) {
+        formatted += `${indentUnit.repeat(indent)}${text}\n`;
+      }
+      continue;
+    }
+
+    const isClosing = /^<\//.test(token);
+    const tagNameMatch = token.match(/^<\/?\s*([a-zA-Z0-9-]+)/);
+    const tagName = tagNameMatch ? tagNameMatch[1].toLowerCase() : '';
+    const isVoid = VOID_HTML_ELEMENTS.has(tagName) || /\/\s*>$/.test(token);
+
+    if (isClosing) {
+      indent = Math.max(0, indent - 1);
+    }
+
+    formatted += `${indentUnit.repeat(indent)}${token.trim()}\n`;
+
+    if (!isClosing && !isVoid) {
+      indent += 1;
+    }
+  }
+
+  return formatted.trimEnd();
+}
+
+function escapeCodeFragment(text) {
+  return text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+function highlightDemoHtml(html) {
+  if (!html) return '';
+  let result = '';
+  let index = 0;
+  const attrRegex = /([\w:-@.]+)(?:=(?:"([^"]*)"|'([^']*)'|([^\s>]*)))?/g;
+
+  while (index < html.length) {
+    if (html.startsWith('<!--', index)) {
+      const commentEnd = html.indexOf('-->', index);
+      if (commentEnd !== -1) {
+        const comment = html.substring(index, commentEnd + 3);
+        result += `<span class="html-token-comment">${escapeCodeFragment(comment)}</span>`;
+        index = commentEnd + 3;
+        continue;
+      }
+    }
+
+    const char = html[index];
+
+    if (char === '\n' || char === '\r' || char === '\t' || char === ' ') {
+      result += char;
+      index += 1;
+      continue;
+    }
+
+    if (char === '<') {
+      const tagEnd = html.indexOf('>', index);
+      if (tagEnd !== -1) {
+        const tagContent = html.substring(index + 1, tagEnd);
+        result += '&lt;';
+
+        if (tagContent.startsWith('/')) {
+          const tagName = tagContent.substring(1).split(/[\s>]/)[0];
+          result += '/';
+          result += `<span class="html-token-tag">${escapeCodeFragment(tagName)}</span>`;
+        } else {
+          const parts = tagContent.match(/^([\w:-@.]+)([\s\S]*?)(\/?)?$/);
+          if (parts) {
+            const [, tagName, attrsStr, trailingSlash] = parts;
+            result += `<span class="html-token-tag">${escapeCodeFragment(tagName)}</span>`;
+
+            if (attrsStr && attrsStr.trim()) {
+              let lastIndex = 0;
+              attrRegex.lastIndex = 0;
+              let match;
+
+              while ((match = attrRegex.exec(attrsStr)) !== null) {
+                result += escapeCodeFragment(attrsStr.substring(lastIndex, match.index));
+                const [fullMatch, attrName, doubleQuoted, singleQuoted, unquoted] = match;
+                result += `<span class="html-token-attr">${escapeCodeFragment(attrName)}</span>`;
+
+                if (doubleQuoted !== undefined) {
+                  result += `=<span class="html-token-value">"${escapeCodeFragment(doubleQuoted)}"</span>`;
+                } else if (singleQuoted !== undefined) {
+                  result += `=<span class="html-token-value">'${escapeCodeFragment(singleQuoted)}'</span>`;
+                } else if (unquoted !== undefined && unquoted !== '') {
+                  result += `=<span class="html-token-value">${escapeCodeFragment(unquoted)}</span>`;
+                }
+
+                lastIndex = match.index + fullMatch.length;
+              }
+
+              result += escapeCodeFragment(attrsStr.substring(lastIndex));
+            }
+
+            if (trailingSlash) {
+              result += '/';
+            }
+          } else {
+            result += escapeCodeFragment(tagContent);
+          }
+        }
+
+        result += '&gt;';
+        index = tagEnd + 1;
+        continue;
+      }
+    }
+
+    result += escapeCodeFragment(char);
+    index += 1;
+  }
+
+  return result;
 }
 
 function renderChipList(values = []) {
   if (!values.length) return nothing;
   return html`
     <div class="flex flex-wrap gap-xs">
-      ${values.map((value) => html`<span class="pill">${value}</span>`)}
+      ${values.map((value) => html`<span class="badge">${value}</span>`)}
     </div>
   `;
 }
@@ -85,7 +213,7 @@ ${JSON.stringify(value, null, 2)}
 function renderTable(items = [], columns = []) {
   if (!items.length) return nothing;
   return html`
-    <table class="table-striped table-compact text-sm" style="width: 100%;">
+    <table class="table-bordered table-compact">
       <thead>
         <tr>
           ${columns.map((col) => html`<th scope="col">${col.label}</th>`)}
@@ -114,6 +242,7 @@ export class PdsReferenceCatalog extends LitElement {
     this.data = null;
     this.view = 'ref-components';
     this.selectedComponent = null;
+    this.__buttonRefreshScheduled = false;
   }
 
   createRenderRoot() {
@@ -155,7 +284,7 @@ export class PdsReferenceCatalog extends LitElement {
       <section class="card surface-elevated flex flex-col gap-xl">
         <header class="flex flex-wrap items-start justify-between gap-md">
           <div class="flex flex-col gap-xs">
-            <h1 style="margin: 0;">Pure DS Reference</h1>
+            <h1 style="margin: 0;">PDS Reference</h1>
             <p class="text-muted" style="margin: 0; max-width: 60ch;">
               Living metadata for components, primitives, tokens, and enhancements sourced from the manifest, ontology, and Storybook docs.
             </p>
@@ -163,11 +292,11 @@ export class PdsReferenceCatalog extends LitElement {
           <div class="flex flex-wrap gap-sm items-center">
             <span class="badge">Components ${componentTotal}</span>
             <span class="badge">Token Groups ${tokenGroups}</span>
-            <span class="pill">Generated ${formatTimestamp(this.data.generatedAt)}</span>
+            <span class="badge">Generated ${formatTimestamp(this.data.generatedAt)}</span>
           </div>
         </header>
 
-        <pds-tabstrip label="Pure DS reference views" selected=${this.view} @tabchange=${this.onTabChange}>
+        <pds-tabstrip label="PDS reference views" selected=${this.view} @tabchange=${this.onTabChange}>
           <pds-tabpanel id="ref-components" label="Components">
             <div class="flex flex-col gap-lg" style="margin-top: var(--spacing-3);">
               ${this.renderComponentsView()}
@@ -219,8 +348,8 @@ export class PdsReferenceCatalog extends LitElement {
         </span>
         ${component.pdsTags?.length ? html`
           <div class="flex flex-wrap gap-xs">
-            ${component.pdsTags.slice(0, 3).map((tag) => html`<span class="pill">${tag}</span>`)}
-            ${component.pdsTags.length > 3 ? html`<span class="pill">+${component.pdsTags.length - 3}</span>` : nothing}
+            ${component.pdsTags.slice(0, 3).map((tag) => html`<span class="badge">${tag}</span>`)}
+            ${component.pdsTags.length > 3 ? html`<span class="badge">+${component.pdsTags.length - 3}</span>` : nothing}
           </div>
         ` : nothing}
       </button>
@@ -300,8 +429,8 @@ export class PdsReferenceCatalog extends LitElement {
         <section class="card surface-base flex flex-col gap-sm">
           <h3 style="margin: 0;">Ontology</h3>
           <div class="flex flex-wrap gap-xs items-center">
-            <span class="pill">${component.ontology.id}</span>
-            ${component.ontology.name ? html`<span class="pill">${component.ontology.name}</span>` : nothing}
+            <span class="badge">${component.ontology.id}</span>
+            ${component.ontology.name ? html`<span class="badge">${component.ontology.name}</span>` : nothing}
           </div>
           ${component.ontology.selectors?.length ? html`
             <div class="flex flex-col gap-xs">
@@ -402,7 +531,7 @@ export class PdsReferenceCatalog extends LitElement {
       <article class="card surface-base flex flex-col gap-sm">
         <div class="flex items-center gap-sm flex-wrap">
           <h3 style="margin: 0;">${primitive.name}</h3>
-          <span class="pill">${primitive.id}</span>
+          <span class="badge">${primitive.id}</span>
         </div>
         ${primitive.selectors?.length ? html`
           <div class="flex flex-col gap-xs">
@@ -417,7 +546,7 @@ export class PdsReferenceCatalog extends LitElement {
       <article class="card surface-base flex flex-col gap-sm">
         <div class="flex items-center gap-sm flex-wrap">
           <h3 style="margin: 0;">${pattern.name}</h3>
-          <span class="pill">${pattern.id}</span>
+          <span class="badge">${pattern.id}</span>
         </div>
         ${pattern.description ? html`<p class="text-muted" style="margin: 0;">${pattern.description}</p>` : nothing}
         ${pattern.selectors?.length ? html`
@@ -493,27 +622,53 @@ export class PdsReferenceCatalog extends LitElement {
     if (!enhancement) return nothing;
     const { selector, description, demoHtml, source } = enhancement;
     const safeSelector = selector || '(unknown selector)';
-    const hasDetails = Boolean(description || demoHtml);
+    const demoMarkup = typeof demoHtml === 'string' ? demoHtml.trim() : '';
+    const formattedDemoHtml = demoMarkup ? formatDemoHtml(demoMarkup) : '';
+    const highlightedDemoHtml = formattedDemoHtml ? highlightDemoHtml(formattedDemoHtml) : '';
+    const hasDetails = Boolean(description || demoMarkup);
+
+    if (demoMarkup) {
+      this.scheduleButtonWorkingRefresh();
+    }
 
     return html`
       <article class="card surface-base flex flex-col gap-sm">
         <div class="flex flex-wrap items-center justify-between gap-sm">
           <h3 style="margin: 0;"><code>${safeSelector}</code></h3>
-          ${source ? html`<span class="pill text-sm">${source}</span>` : nothing}
+          ${source ? html`<span class="badge text-sm">${source}</span>` : nothing}
         </div>
         ${description ? html`<p class="text-muted" style="margin: 0;">${description}</p>` : nothing}
-        ${demoHtml ? html`
+        ${demoMarkup ? html`
           <div class="flex flex-col gap-xs">
             <span class="text-muted text-sm">Demo</span>
-            <div class="surface-subtle radius-lg" style="padding: var(--spacing-3);">
-              ${unsafeHTML(demoHtml)}
+            <div class="surface-subtle radius-lg pds-ref-demo" style="padding: var(--spacing-3);">
+              ${unsafeHTML(demoMarkup)}
             </div>
-            <pre class="surface-subtle radius-lg text-sm overflow-auto" style="margin: 0; padding: var(--spacing-3);">${escapeHtml(demoHtml)}</pre>
+            ${highlightedDemoHtml ? html`
+              <pre class="html-source-pre radius-lg text-sm overflow-auto" style="margin: 0;"><code class="html-source-code">${unsafeHTML(highlightedDemoHtml)}</code></pre>
+            ` : nothing}
           </div>
         ` : nothing}
         ${!hasDetails ? html`<p class="text-muted text-sm" style="margin: 0;">Documentation pending.</p>` : nothing}
       </article>
     `;
+  }
+
+  scheduleButtonWorkingRefresh() {
+    if (this.__buttonRefreshScheduled) return;
+    this.__buttonRefreshScheduled = true;
+    requestAnimationFrame(() => {
+      this.__buttonRefreshScheduled = false;
+      const workingTargets = this.querySelectorAll('.pds-ref-demo button.btn-working, .pds-ref-demo a.btn-working');
+      workingTargets.forEach((target) => {
+        if (!target.classList.contains('btn-working')) {
+          return;
+        }
+        target.classList.remove('btn-working');
+        void target.offsetWidth; // Force reflow so the re-add triggers MutationObserver
+        target.classList.add('btn-working');
+      });
+    });
   }
 }
 

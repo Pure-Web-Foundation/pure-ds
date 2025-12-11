@@ -38,10 +38,15 @@ export const enhancerMetadata = [
     description:
       "Enhances required form fields using an asterisk in the label.",
     demoHtml: `
+      <form action'#" method="post">
       <label>
         <span>Field Label</span>
         <input type="text" required>
       </label>
+        <nav class="form-actions">
+          <button type="submit" class="btn-primary">Submit</button>
+        </nav>
+      </form>
     `.trim(),
   },
   {

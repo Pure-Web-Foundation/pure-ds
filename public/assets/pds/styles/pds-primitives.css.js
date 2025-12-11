@@ -36,11 +36,11 @@ primitives.replaceSync(`@layer primitives {
     min-height: var(--layout-min-height, 100vh);
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+  }
 
-    &.drawer-open{
-      overflow: hidden;
-      scrollbar-gutter: stable;
-    }
+  :where(body.drawer-open) {
+    /* overflow: hidden; */
+    /* scrollbar-gutter: stable; */
   }
 
   /* Button primitives */
@@ -115,6 +115,15 @@ primitives.replaceSync(`@layer primitives {
     opacity: 0.6;
     cursor: not-allowed;
     background-color: var(--color-input-disabled-bg);
+  }
+
+  /* Harmonized placeholder styling */
+  :where(input)::placeholder,
+  :where(textarea)::placeholder,
+  :where(pds-richtext)::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+    font-weight: var(--font-weight-normal);
   }
 
   :where(textarea) {
@@ -340,7 +349,7 @@ primitives.replaceSync(`@layer primitives {
   }
 
   
-  [hidden] {
+  :where([hidden]) {
     display: none !important;
   }
 }
@@ -381,11 +390,11 @@ export const primitivesCSS = `@layer primitives {
     min-height: var(--layout-min-height, 100vh);
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+  }
 
-    &.drawer-open{
-      overflow: hidden;
-      scrollbar-gutter: stable;
-    }
+  :where(body.drawer-open) {
+    /* overflow: hidden; */
+    /* scrollbar-gutter: stable; */
   }
 
   /* Button primitives */
@@ -460,6 +469,15 @@ export const primitivesCSS = `@layer primitives {
     opacity: 0.6;
     cursor: not-allowed;
     background-color: var(--color-input-disabled-bg);
+  }
+
+  /* Harmonized placeholder styling */
+  :where(input)::placeholder,
+  :where(textarea)::placeholder,
+  :where(pds-richtext)::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+    font-weight: var(--font-weight-normal);
   }
 
   :where(textarea) {
@@ -685,7 +703,7 @@ export const primitivesCSS = `@layer primitives {
   }
 
   
-  [hidden] {
+  :where([hidden]) {
     display: none !important;
   }
 }

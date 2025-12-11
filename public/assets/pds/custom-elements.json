@@ -118,61 +118,7 @@
         {
           "kind": "class",
           "description": "",
-          "name": "DrawerPanel",
-          "cssProperties": [
-            {
-              "description": "Animation duration (default: var(--transition-normal))",
-              "name": "--drawer-duration"
-            },
-            {
-              "description": "Animation easing function (default: var(--easing-emphasized))",
-              "name": "--drawer-easing"
-            },
-            {
-              "description": "Maximum height when position is top/bottom (default: 70vh)",
-              "name": "--drawer-max-height"
-            },
-            {
-              "description": "Minimum height when position is top/bottom (default: auto)",
-              "name": "--drawer-min-height"
-            }
-          ],
-          "cssParts": [
-            {
-              "description": "The semi-transparent backdrop overlay",
-              "name": "backdrop"
-            },
-            {
-              "description": "The drawer panel container",
-              "name": "panel"
-            },
-            {
-              "description": "The drawer header section",
-              "name": "header"
-            },
-            {
-              "description": "The close button",
-              "name": "close-button"
-            },
-            {
-              "description": "The drag handle indicator",
-              "name": "grab-handle"
-            },
-            {
-              "description": "The drawer content section",
-              "name": "content"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Header content for the drawer",
-              "name": "drawer-header"
-            },
-            {
-              "description": "Main content of the drawer",
-              "name": "drawer-content"
-            }
-          ],
+          "name": "anonymous_0",
           "members": [
             {
               "kind": "field",
@@ -364,12 +310,6 @@
               "default": "false"
             }
           ],
-          "events": [
-            {
-              "description": "Fired when the drawer opens or closes",
-              "name": "toggle"
-            }
-          ],
           "attributes": [
             {
               "name": "open",
@@ -428,24 +368,16 @@
           "superclass": {
             "name": "HTMLElement"
           },
-          "tagName": "pds-drawer",
+          "tagName": "pds-calendar",
           "customElement": true
         }
       ],
       "exports": [
         {
-          "kind": "js",
-          "name": "DrawerPanel",
-          "declaration": {
-            "name": "DrawerPanel",
-            "module": "public/assets/pds/components/pds-drawer.js"
-          }
-        },
-        {
           "kind": "custom-element-definition",
           "name": "pds-drawer",
           "declaration": {
-            "name": "DrawerPanel",
+            "name": "anonymous_0",
             "module": "public/assets/pds/components/pds-drawer.js"
           }
         }
@@ -462,21 +394,21 @@
           "members": [
             {
               "kind": "field",
-              "name": "fallbackIcons",
-              "type": {
-                "text": "object"
-              },
+              "name": "spritePromises",
               "static": true,
-              "default": "{\n    'x': '<path d=\"M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z\" fill=\"currentColor\"/>',\n    \n    'house': '<path d=\"M218.83,103.77l-80-75.48a1.14,1.14,0,0,1-.11-.11,16,16,0,0,0-21.53,0l-.11.11L37.17,103.77A16,16,0,0,0,32,115.55V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V160h32v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V115.55A16,16,0,0,0,218.83,103.77ZM208,208H160V160a16,16,0,0,0-16-16H112a16,16,0,0,0-16,16v48H48V115.55l.11-.1L128,40l79.9,75.43.11.1Z\" fill=\"currentColor\"/>',\n    \n    'list': '<path d=\"M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z\" fill=\"currentColor\"/>',\n    \n    'gear': '<path d=\"M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z\" fill=\"currentColor\"/>',\n    \n    'magnifying-glass': '<path d=\"M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z\" fill=\"currentColor\"/>',\n    \n    'info': '<path d=\"M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z\" fill=\"currentColor\"/>',\n    \n    'check-circle': '<path d=\"M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z\" fill=\"currentColor\"/>',\n    \n    'warning': '<path d=\"M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM222.93,203.8a8.5,8.5,0,0,1-7.48,4.2H40.55a8.5,8.5,0,0,1-7.48-4.2,7.59,7.59,0,0,1,0-7.72L120.52,44.21a8.75,8.75,0,0,1,15,0l87.45,151.87A7.59,7.59,0,0,1,222.93,203.8ZM120,144V104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z\" fill=\"currentColor\"/>',\n    \n    'missing': '<circle cx=\"128\" cy=\"128\" r=\"96\" stroke=\"currentColor\" fill=\"none\" stroke-width=\"16\"/>',\n  }"
+              "default": "new Map()"
             },
             {
-              "kind": "method",
-              "name": "getFallbackIcon",
-              "parameters": [
-                {
-                  "name": "name"
-                }
-              ]
+              "kind": "field",
+              "name": "inlineSprites",
+              "static": true,
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "instances",
+              "static": true,
+              "default": "new Set()"
             },
             {
               "kind": "method",
@@ -488,6 +420,21 @@
                   "text": "boolean"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "ensureInlineSprite",
+              "static": true,
+              "parameters": [
+                {
+                  "name": "spriteURL"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "notifyInstances",
+              "static": true
             }
           ],
           "attributes": [
@@ -896,48 +843,196 @@
             },
             {
               "kind": "field",
-              "name": "name"
+              "name": "name",
+              "description": "Update the form field name.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "placeholder"
+              "name": "placeholder",
+              "description": "Set the placeholder text.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "disabled"
+              "name": "disabled",
+              "description": "Enable or disable user input.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "required"
+              "name": "required",
+              "description": "Toggle required validation.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "submitOnEnter"
+              "name": "submitOnEnter",
+              "description": "Enable or disable submit-on-enter behaviour.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "spellcheck"
+              "name": "spellcheck",
+              "description": "Toggle native spell checking support.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "toolbar"
+              "name": "toolbar",
+              "description": "Show or hide the formatting toolbar.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "value"
+              "name": "format",
+              "description": "Change the output format for future values.",
+              "return": {
+                "type": {
+                  "text": "\"html\"|\"markdown\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "description": "Update the editor value programmatically.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
               "name": "form",
+              "description": "Reference to the associated HTMLFormElement, when applicable.",
+              "return": {
+                "type": {
+                  "text": "HTMLFormElement|null"
+                }
+              },
               "readonly": true
             },
             {
               "kind": "method",
-              "name": "checkValidity"
+              "name": "checkValidity",
+              "description": "Run native form validation against the control.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
             },
             {
               "kind": "method",
-              "name": "reportValidity"
+              "name": "reportValidity",
+              "description": "Report validity using the browser's built-in UI.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
             },
             {
               "kind": "field",
@@ -994,6 +1089,14 @@
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_format",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"html\""
             }
           ],
           "events": [
@@ -1028,6 +1131,9 @@
             },
             {
               "name": "value"
+            },
+            {
+              "name": "format"
             }
           ],
           "superclass": {
@@ -1062,33 +1168,89 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "",
+          "description": "Horizontal scrolling row with optional heading and snap alignment controls.",
           "name": "PdsScrollrow",
+          "cssParts": [
+            {
+              "description": "The scrollable container element",
+              "name": "viewport"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Scrollable tile content",
+              "name": "default"
+            },
+            {
+              "description": "Optional heading content rendered in the component header",
+              "name": "heading"
+            }
+          ],
           "members": [
             {
               "kind": "field",
-              "name": "label"
+              "name": "label",
+              "description": "Update the accessible label and optional fallback heading text.",
+              "return": {
+                "type": {
+                  "text": "string|null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "val",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "snap"
+              "name": "snap",
+              "description": "Adjust the scroll snap alignment.",
+              "return": {
+                "type": {
+                  "text": "\"start\"|\"center\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "val",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
             },
             {
               "kind": "method",
               "name": "doPage",
               "parameters": [
                 {
-                  "name": "e"
+                  "name": "e",
+                  "type": {
+                    "text": "Event"
+                  }
                 }
-              ]
+              ],
+              "description": "Scroll the viewport by roughly one page in the indicated direction."
             }
           ],
           "attributes": [
             {
-              "name": "label"
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Accessible label for the scroll region; also used as fallback heading copy"
             },
             {
-              "name": "snap"
+              "name": "snap",
+              "type": {
+                "text": "\"start\"|\"center\""
+              },
+              "description": "Snap alignment for tiles when scrolling (default: start)"
             }
           ],
           "superclass": {
@@ -1279,6 +1441,12 @@
             {
               "kind": "field",
               "name": "section",
+              "description": "The inner `<section>` that exposes the panel region semantics.",
+              "return": {
+                "type": {
+                  "text": "HTMLElement|null"
+                }
+              },
               "readonly": true
             }
           ],
@@ -1306,23 +1474,23 @@
         },
         {
           "kind": "class",
-          "description": "",
+          "description": "Tab navigation component that pairs anchors with `pds-tabpanel` children.",
           "name": "TabStrip",
           "cssProperties": [
             {
-              "description": "Color of the active tab indicator",
+              "description": "Color of the active tab indicator underline",
               "name": "--color-accent-400"
             }
           ],
           "cssParts": [
             {
-              "description": "The navigation container with tab buttons",
+              "description": "Navigation container comprising the clickable tab buttons",
               "name": "tabs"
             }
           ],
           "slots": [
             {
-              "description": "Tab panels (pds-tabpanel elements)",
+              "description": "Collection of `pds-tabpanel` nodes representing individual tab panels",
               "name": ""
             }
           ],
@@ -1339,7 +1507,7 @@
               "type": {
                 "text": "CustomEvent"
               },
-              "description": "Fired when the active tab changes. Event detail contains: { oldTab: string, newTab: string }"
+              "description": "Fired when the active tab changes. Detail: `{ oldTab: string|null, newTab: string }`"
             }
           ],
           "attributes": [
@@ -1347,8 +1515,15 @@
               "type": {
                 "text": "string"
               },
-              "description": "Accessible label for the tabs navigation",
+              "description": "Accessible label announced for the tablist",
               "name": "label"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Identifier of the currently active panel (synced with the location hash)",
+              "name": "selected"
             }
           ],
           "superclass": {
@@ -1433,42 +1608,51 @@
             },
             {
               "kind": "method",
-              "name": "showToast",
-              "parameters": [
-                {
-                  "name": "message"
-                },
-                {
-                  "name": "config"
-                },
-                {
-                  "name": "duration"
-                }
-              ]
-            },
-            {
-              "kind": "method",
               "name": "createToastElement",
               "parameters": [
                 {
-                  "name": "id"
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
                 },
                 {
-                  "name": "message"
+                  "name": "message",
+                  "type": {
+                    "text": "string"
+                  }
                 },
                 {
-                  "name": "type"
+                  "name": "type",
+                  "type": {
+                    "text": "\"information\"|\"success\"|\"warning\"|\"error\""
+                  }
                 },
                 {
-                  "name": "closable"
+                  "name": "closable",
+                  "type": {
+                    "text": "boolean"
+                  }
                 },
                 {
-                  "name": "duration"
+                  "name": "duration",
+                  "type": {
+                    "text": "number"
+                  }
                 },
                 {
-                  "name": "persistent"
+                  "name": "persistent",
+                  "type": {
+                    "text": "boolean"
+                  }
                 }
-              ]
+              ],
+              "description": "Build a DOM node representing a single toast notification.",
+              "return": {
+                "type": {
+                  "text": "HTMLElement"
+                }
+              }
             },
             {
               "kind": "method",
@@ -1487,52 +1671,8 @@
             },
             {
               "kind": "method",
-              "name": "dismissAll"
-            },
-            {
-              "kind": "method",
-              "name": "handleCloseClick",
-              "parameters": [
-                {
-                  "name": "toastId"
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "handleAnimationEnd",
-              "parameters": [
-                {
-                  "name": "toastId"
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "getToastIcon",
-              "parameters": [
-                {
-                  "name": "type"
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "getToastTitle",
-              "parameters": [
-                {
-                  "name": "type"
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "getAlertClass",
-              "parameters": [
-                {
-                  "name": "type"
-                }
-              ]
+              "name": "dismissAll",
+              "description": "Close all active toasts."
             },
             {
               "kind": "method",
@@ -1697,142 +1837,102 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "",
+          "description": "Drag-and-drop file uploader that participates in native forms.",
           "name": "UploadArea",
           "members": [
             {
               "kind": "method",
-              "name": "_renderStructure"
-            },
-            {
-              "kind": "method",
-              "name": "_adoptStyles"
-            },
-            {
-              "kind": "method",
-              "name": "formAssociatedCallback"
+              "name": "formAssociatedCallback",
+              "description": "Invoked when the element becomes associated with a `<form>`."
             },
             {
               "kind": "method",
               "name": "formDisabledCallback",
               "parameters": [
                 {
-                  "name": "disabled"
+                  "name": "disabled",
+                  "type": {
+                    "text": "boolean"
+                  }
                 }
-              ]
+              ],
+              "description": "Sync disabled state across internal controls when the host form toggles."
             },
             {
               "kind": "method",
-              "name": "formResetCallback"
+              "name": "formResetCallback",
+              "description": "Clear selected files when the host form resets."
             },
             {
               "kind": "method",
               "name": "formStateRestoreCallback",
               "parameters": [
                 {
-                  "name": "state"
+                  "name": "state",
+                  "type": {
+                    "text": "File[]"
+                  }
                 }
-              ]
+              ],
+              "description": "Restore previously submitted files during BFCache or session restores."
             },
             {
               "kind": "field",
-              "name": "value"
-            },
-            {
-              "kind": "method",
-              "name": "checkValidity"
-            },
-            {
-              "kind": "method",
-              "name": "reportValidity"
-            },
-            {
-              "kind": "method",
-              "name": "clear"
-            },
-            {
-              "kind": "method",
-              "name": "getFiles"
-            },
-            {
-              "kind": "method",
-              "name": "clear"
-            },
-            {
-              "kind": "method",
-              "name": "_upgradeProperty",
+              "name": "value",
+              "description": "Value is derived from the selected files and cannot be set manually.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
               "parameters": [
                 {
-                  "name": "prop"
+                  "name": "val",
+                  "type": {
+                    "text": "string"
+                  }
                 }
               ]
             },
             {
               "kind": "method",
-              "name": "_applyAttributesToInput"
-            },
-            {
-              "kind": "method",
-              "name": "_addFiles",
-              "parameters": [
-                {
-                  "name": "fileListLike"
+              "name": "checkValidity",
+              "description": "Run constraint validation leveraging ElementInternals.",
+              "return": {
+                "type": {
+                  "text": "boolean"
                 }
-              ]
+              }
             },
             {
               "kind": "method",
-              "name": "_fileMatchesAccept",
-              "parameters": [
-                {
-                  "name": "file"
-                },
-                {
-                  "name": "acceptList"
+              "name": "reportValidity",
+              "description": "Report validity issues using the browser UI.",
+              "return": {
+                "type": {
+                  "text": "boolean"
                 }
-              ]
+              }
             },
             {
               "kind": "method",
-              "name": "_updateInputFiles"
+              "name": "clear",
+              "description": "Clear all selected files and update the UI accordingly."
             },
             {
               "kind": "method",
-              "name": "_renderTiles"
-            },
-            {
-              "kind": "method",
-              "name": "_removeFileAtIndex",
-              "parameters": [
-                {
-                  "name": "i"
+              "name": "getFiles",
+              "description": "Retrieve a shallow copy of the current file selection.",
+              "return": {
+                "type": {
+                  "text": "File[]"
                 }
-              ]
+              }
             },
             {
               "kind": "method",
-              "name": "_emitFilesChanged"
-            },
-            {
-              "kind": "method",
-              "name": "_formatBytes",
-              "parameters": [
-                {
-                  "name": "bytes"
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "_fileIconSvg"
-            },
-            {
-              "kind": "method",
-              "name": "_revokeAllObjectUrls"
-            },
-            {
-              "kind": "method",
-              "name": "_revokeUnusedObjectUrls"
+              "name": "clear",
+              "description": "Remove all files and emit a change notification."
             }
           ],
           "events": [
@@ -1845,16 +1945,32 @@
           ],
           "attributes": [
             {
-              "name": "accept"
+              "name": "accept",
+              "type": {
+                "text": "string"
+              },
+              "description": "Comma separated list of accepted MIME types and file extensions"
             },
             {
-              "name": "multiple"
+              "name": "multiple",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Allows selecting more than one file"
             },
             {
-              "name": "disabled"
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables interaction with the drop zone and button"
             },
             {
-              "name": "max-files"
+              "name": "max-files",
+              "type": {
+                "text": "number"
+              },
+              "description": "Optional cap on the number of files the user may select"
             }
           ],
           "superclass": {

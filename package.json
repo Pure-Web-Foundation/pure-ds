@@ -1,7 +1,7 @@
 {
   "name": "pure-ds",
   "shortname": "pds",
-  "version": "0.2.40",
+  "version": "0.2.41",
   "description": "Pure Design System - Why develop a Design System when you can generate one?",
   "repository": {
     "type": "git",
@@ -67,9 +67,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node esbuild-dev.js",
-    "build": "node esbuild-build.js && npm run types",
+    "prebuild": "npm run types",
+    "build": "node esbuild-build.js",
     "types": "tsc -p tsconfig.json && node scripts/sync-types.mjs",
     "postinstall": "node packages/pds-cli/bin/postinstall.js",
+    "prepds:export": "npm run types",
     "pds:export": "node packages/pds-cli/bin/pds-static.js",
     "pds:build-icons": "node packages/pds-cli/bin/pds-build-icons.js",
     "pds:manifest": "node packages/pds-cli/bin/generate-manifest.js",

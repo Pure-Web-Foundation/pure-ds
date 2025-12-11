@@ -2,7 +2,7 @@
 
 ## Overview
 
-Pure DS now automatically loads fonts from Google Fonts when they're not available in the browser. This feature works seamlessly in "live" mode as you configure your design system.
+PDS now automatically loads fonts from Google Fonts when they're not available in the browser. This feature works seamlessly in "live" mode as you configure your design system.
 
 ## How It Works
 

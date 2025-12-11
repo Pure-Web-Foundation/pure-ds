@@ -1,160 +1,160 @@
 @layer tokens {
        :root {
             /* Colors */
-  --color-primary-50: #e8f0fd;
-  --color-primary-100: #d0e0fb;
-  --color-primary-200: #b5d0fc;
-  --color-primary-300: #84b1f9;
-  --color-primary-400: #5392f7;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #0b63f3;
-  --color-primary-700: #094fc2;
-  --color-primary-800: #073b91;
-  --color-primary-900: #042761;
-  --color-secondary-50: #e8eaec;
-  --color-secondary-100: #cad0d8;
-  --color-secondary-200: #acb5c3;
-  --color-secondary-300: #8e9bae;
-  --color-secondary-400: #708198;
-  --color-secondary-500: #64748b;
-  --color-secondary-600: #4f5b6d;
-  --color-secondary-700: #394250;
-  --color-secondary-800: #242a32;
-  --color-secondary-900: #15191e;
-  --color-accent-50: #fbe9f2;
-  --color-accent-100: #f9d2e5;
-  --color-accent-200: #f8bad8;
-  --color-accent-300: #f38bbf;
-  --color-accent-400: #ee5da5;
-  --color-accent-500: #ec4899;
-  --color-accent-600: #e71a7f;
-  --color-accent-700: #bb1366;
-  --color-accent-800: #8c0f4d;
-  --color-accent-900: #5e0a33;
-  --color-success-50: #d0fad0;
-  --color-success-100: #a0f8a0;
-  --color-success-200: #6cf86c;
-  --color-success-300: #3bf63b;
-  --color-success-400: #0bf30b;
-  --color-success-500: #0adb0a;
-  --color-success-600: #08aa08;
-  --color-success-700: #067906;
-  --color-success-800: #034903;
-  --color-success-900: #023102;
-  --color-warning-50: #fef8e7;
-  --color-warning-100: #fdebb4;
-  --color-warning-200: #ffdf80;
-  --color-warning-300: #ffd24d;
-  --color-warning-400: #ffc51a;
-  --color-warning-500: #FFBF00;
-  --color-warning-600: #cc9900;
-  --color-warning-700: #997300;
-  --color-warning-800: #664c00;
+  --color-primary-50: #95dbee;
+  --color-primary-100: #65ceeb;
+  --color-primary-200: #32c3eb;
+  --color-primary-300: #15acd6;
+  --color-primary-400: #1087a7;
+  --color-primary-500: #0e7490;
+  --color-primary-600: #0b5e74;
+  --color-primary-700: #094b5d;
+  --color-primary-800: #073846;
+  --color-primary-900: #05252e;
+  --color-secondary-50: #f4f2f1;
+  --color-secondary-100: #e9e4e2;
+  --color-secondary-200: #ddd7d5;
+  --color-secondary-300: #c6bdb9;
+  --color-secondary-400: #afa29c;
+  --color-secondary-500: #a99b95;
+  --color-secondary-600: #928079;
+  --color-secondary-700: #776761;
+  --color-secondary-800: #5b4f4a;
+  --color-secondary-900: #3f3733;
+  --color-accent-50: #fbeaef;
+  --color-accent-100: #f8d3de;
+  --color-accent-200: #f4b2c5;
+  --color-accent-300: #ee85a4;
+  --color-accent-400: #e85882;
+  --color-accent-500: #e54271;
+  --color-accent-600: #d61e53;
+  --color-accent-700: #aa1742;
+  --color-accent-800: #7d1130;
+  --color-accent-900: #500b1f;
+  --color-success-50: #d3f8d3;
+  --color-success-100: #a4f3a4;
+  --color-success-200: #73f273;
+  --color-success-300: #44ed44;
+  --color-success-400: #16e816;
+  --color-success-500: #14d114;
+  --color-success-600: #10a210;
+  --color-success-700: #0b740b;
+  --color-success-800: #074607;
+  --color-success-900: #042f04;
+  --color-warning-50: #fae39f;
+  --color-warning-100: #fbd76a;
+  --color-warning-200: #ffcc33;
+  --color-warning-300: #ffbf00;
+  --color-warning-400: #cc9900;
+  --color-warning-500: #B38600;
+  --color-warning-600: #806000;
+  --color-warning-700: #664c00;
+  --color-warning-800: #4d3900;
   --color-warning-900: #332600;
-  --color-danger-50: #fde8e8;
-  --color-danger-100: #fab8b8;
-  --color-danger-200: #f98585;
-  --color-danger-300: #f75454;
-  --color-danger-400: #f52323;
-  --color-danger-500: #f40b0b;
-  --color-danger-600: #c30909;
-  --color-danger-700: #920707;
-  --color-danger-800: #620404;
-  --color-danger-900: #310202;
-  --color-info-50: #e8f0fd;
-  --color-info-100: #d0e0fb;
-  --color-info-200: #b5d0fc;
-  --color-info-300: #84b1f9;
-  --color-info-400: #5392f7;
-  --color-info-500: #3b82f6;
-  --color-info-600: #0b63f3;
-  --color-info-700: #094fc2;
-  --color-info-800: #073b91;
-  --color-info-900: #042761;
-  --color-gray-50: #f9fafa;
-  --color-gray-100: #f1f2f4;
-  --color-gray-200: #dde0e3;
-  --color-gray-300: #c1c6cd;
-  --color-gray-400: #8f97a3;
-  --color-gray-500: #64748b;
-  --color-gray-600: #627084;
-  --color-gray-700: #495669;
-  --color-gray-800: #29313d;
-  --color-gray-900: #14181f;
-  --color-surface-base: #ffffff;
-  --color-surface-subtle: #fafafa;
-  --color-surface-elevated: #f5f4f4;
-  --color-surface-sunken: #f0efef;
-  --color-surface-overlay: #fafafa;
-  --color-surface-inverse: #151313;
+  --color-danger-50: #fbe9e9;
+  --color-danger-100: #f6bbbb;
+  --color-danger-200: #f38b8b;
+  --color-danger-300: #ef5d5d;
+  --color-danger-400: #ea2e2e;
+  --color-danger-500: #e81717;
+  --color-danger-600: #ba1212;
+  --color-danger-700: #8b0e0e;
+  --color-danger-800: #5d0909;
+  --color-danger-900: #2e0505;
+  --color-info-50: #95dbee;
+  --color-info-100: #65ceeb;
+  --color-info-200: #32c3eb;
+  --color-info-300: #15acd6;
+  --color-info-400: #1087a7;
+  --color-info-500: #0e7490;
+  --color-info-600: #0b5e74;
+  --color-info-700: #094b5d;
+  --color-info-800: #073846;
+  --color-info-900: #05252e;
+  --color-gray-50: #fafaf9;
+  --color-gray-100: #f4f2f1;
+  --color-gray-200: #e3dfdd;
+  --color-gray-300: #cdc5c1;
+  --color-gray-400: #a3958f;
+  --color-gray-500: #a99b95;
+  --color-gray-600: #846c62;
+  --color-gray-700: #695349;
+  --color-gray-800: #3d2f29;
+  --color-gray-900: #1f1714;
+  --color-surface-base: #e7e6de;
+  --color-surface-subtle: #e3e2d8;
+  --color-surface-elevated: #deddd2;
+  --color-surface-sunken: #dad9cc;
+  --color-surface-overlay: #ebeae4;
+  --color-surface-inverse: #191810;
   --color-surface-hover: color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%);;
-  --color-surface-fieldset-base: #fafafa;
-  --color-surface-fieldset-subtle: #f5f4f4;
-  --color-surface-fieldset-elevated: #f0efef;
-  --color-surface-fieldset-sunken: #e4e3e3;
-  --color-surface-fieldset-overlay: #f5f4f4;
+  --color-surface-fieldset-base: #e3e2d8;
+  --color-surface-fieldset-subtle: #deddd2;
+  --color-surface-fieldset-elevated: #dad9cc;
+  --color-surface-fieldset-sunken: #d1d0c0;
+  --color-surface-fieldset-overlay: #deddd2;
   /* Smart Surface Tokens (context-aware) */
-  --surface-base-bg: #ffffff;
+  --surface-base-bg: #e7e6de;
   --surface-base-text: #000000;
   --surface-base-text-secondary: #000000;
-  --surface-base-text-muted: #666666;
+  --surface-base-text-muted: #5c5c59;
   --surface-base-icon: #000000;
-  --surface-base-icon-subtle: #666666;
+  --surface-base-icon-subtle: #5c5c59;
   --surface-base-shadow: rgba(0, 0, 0, 0.1);
   --surface-base-border: rgba(0, 0, 0, 0.1);
-  --surface-subtle-bg: #fafafa;
+  --surface-subtle-bg: #e3e2d8;
   --surface-subtle-text: #000000;
   --surface-subtle-text-secondary: #000000;
-  --surface-subtle-text-muted: #646464;
+  --surface-subtle-text-muted: #5b5a56;
   --surface-subtle-icon: #000000;
-  --surface-subtle-icon-subtle: #646464;
+  --surface-subtle-icon-subtle: #5b5a56;
   --surface-subtle-shadow: rgba(0, 0, 0, 0.1);
   --surface-subtle-border: rgba(0, 0, 0, 0.1);
-  --surface-elevated-bg: #f5f4f4;
+  --surface-elevated-bg: #deddd2;
   --surface-elevated-text: #000000;
   --surface-elevated-text-secondary: #000000;
-  --surface-elevated-text-muted: #626262;
+  --surface-elevated-text-muted: #595854;
   --surface-elevated-icon: #000000;
-  --surface-elevated-icon-subtle: #626262;
+  --surface-elevated-icon-subtle: #595854;
   --surface-elevated-shadow: rgba(0, 0, 0, 0.1);
   --surface-elevated-border: rgba(0, 0, 0, 0.1);
-  --surface-sunken-bg: #f0efef;
+  --surface-sunken-bg: #dad9cc;
   --surface-sunken-text: #000000;
   --surface-sunken-text-secondary: #000000;
-  --surface-sunken-text-muted: #606060;
+  --surface-sunken-text-muted: #575752;
   --surface-sunken-icon: #000000;
-  --surface-sunken-icon-subtle: #606060;
+  --surface-sunken-icon-subtle: #575752;
   --surface-sunken-shadow: rgba(0, 0, 0, 0.1);
   --surface-sunken-border: rgba(0, 0, 0, 0.1);
-  --surface-overlay-bg: #fafafa;
+  --surface-overlay-bg: #ebeae4;
   --surface-overlay-text: #000000;
   --surface-overlay-text-secondary: #000000;
-  --surface-overlay-text-muted: #646464;
+  --surface-overlay-text-muted: #5e5e5b;
   --surface-overlay-icon: #000000;
-  --surface-overlay-icon-subtle: #646464;
+  --surface-overlay-icon-subtle: #5e5e5b;
   --surface-overlay-shadow: rgba(0, 0, 0, 0.1);
   --surface-overlay-border: rgba(0, 0, 0, 0.1);
-  --surface-inverse-bg: #151313;
+  --surface-inverse-bg: #191810;
   --surface-inverse-text: #ffffff;
   --surface-inverse-text-secondary: #ffffff;
-  --surface-inverse-text-muted: #a1a1a1;
+  --surface-inverse-text-muted: #a3a39f;
   --surface-inverse-icon: #ffffff;
-  --surface-inverse-icon-subtle: #a1a1a1;
+  --surface-inverse-icon-subtle: #a3a39f;
   --surface-inverse-shadow: rgba(255, 255, 255, 0.25);
   --surface-inverse-border: rgba(255, 255, 255, 0.15);
 
   /* Semantic Text Colors */
   --color-text-primary: var(--color-gray-900);
   --color-text-secondary: var(--color-gray-600);
-  --color-text-muted: var(--color-gray-500);
+  --color-text-muted: var(--color-gray-600);
   --color-border: var(--color-gray-300);
   --color-input-bg: var(--color-surface-base);
   --color-input-disabled-bg: var(--color-gray-50);
   --color-input-disabled-text: var(--color-gray-500);
   --color-code-bg: var(--color-gray-100);
   /* Interactive Colors - optimized for specific use cases */
-  --color-primary-fill: #0b63f3; /* For button backgrounds with white text */
-  --color-primary-text: #0b63f3; /* For links and outline buttons on light surfaces */
+  --color-primary-fill: #0b5e74; /* For button backgrounds with white text */
+  --color-primary-text: #0b5e74; /* For links and outline buttons on light surfaces */
   /* Translucent Surface Tokens */
   --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);
   --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
@@ -176,30 +176,30 @@
     --backdrop-background: var(--backdrop-bg);
     
   /* Mesh Gradient Backgrounds */
-  --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, #3b82f6 25%, transparent) 0px, transparent 50%),
-    radial-gradient(at 97% 21%, color-mix(in oklab, #64748b 22%, transparent) 0px, transparent 50%),
-    radial-gradient(at 52% 99%, color-mix(in oklab, #ec4899 18%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 29%, color-mix(in oklab, #3b82f6 15%, transparent) 0px, transparent 50%);
+  --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, #0e7490 25%, transparent) 0px, transparent 50%),
+    radial-gradient(at 97% 21%, color-mix(in oklab, #a99b95 22%, transparent) 0px, transparent 50%),
+    radial-gradient(at 52% 99%, color-mix(in oklab, #e54271 18%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 29%, color-mix(in oklab, #0e7490 15%, transparent) 0px, transparent 50%);
   
-  --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, #64748b 24%, transparent) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, color-mix(in oklab, #3b82f6 20%, transparent) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, color-mix(in oklab, #ec4899 17%, transparent) 0px, transparent 50%),
-    radial-gradient(at 80% 100%, color-mix(in oklab, #64748b 15%, transparent) 0px, transparent 50%);
+  --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, #a99b95 24%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, color-mix(in oklab, #0e7490 20%, transparent) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, color-mix(in oklab, #e54271 17%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, color-mix(in oklab, #a99b95 15%, transparent) 0px, transparent 50%);
   
-  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #ec4899 21%, transparent) 0px, transparent 50%),
-    radial-gradient(at 85% 30%, color-mix(in oklab, #3b82f6 23%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 80%, color-mix(in oklab, #64748b 18%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 90%, color-mix(in oklab, #ec4899 16%, transparent) 0px, transparent 50%);
+  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #e54271 21%, transparent) 0px, transparent 50%),
+    radial-gradient(at 85% 30%, color-mix(in oklab, #0e7490 23%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, color-mix(in oklab, #a99b95 18%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, color-mix(in oklab, #e54271 16%, transparent) 0px, transparent 50%);
   
-  --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, #3b82f6 19%, transparent) 0px, transparent 50%),
-    radial-gradient(at 20% 80%, color-mix(in oklab, #64748b 22%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 60%, color-mix(in oklab, #ec4899 17%, transparent) 0px, transparent 50%),
-    radial-gradient(at 30% 40%, color-mix(in oklab, #3b82f6 16%, transparent) 0px, transparent 50%);
+  --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, #0e7490 19%, transparent) 0px, transparent 50%),
+    radial-gradient(at 20% 80%, color-mix(in oklab, #a99b95 22%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 60%, color-mix(in oklab, #e54271 17%, transparent) 0px, transparent 50%),
+    radial-gradient(at 30% 40%, color-mix(in oklab, #0e7490 16%, transparent) 0px, transparent 50%);
   
-  --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, #3b82f6 23%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 10%, color-mix(in oklab, #ec4899 20%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 10%, color-mix(in oklab, #64748b 18%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 90%, color-mix(in oklab, #ec4899 15%, transparent) 0px, transparent 50%);
+  --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, #0e7490 23%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 10%, color-mix(in oklab, #e54271 20%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, color-mix(in oklab, #a99b95 18%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, color-mix(in oklab, #e54271 15%, transparent) 0px, transparent 50%);
     
 
             /* Spacing */
@@ -220,11 +220,11 @@
 
             /* Border Radius */
   --radius-none: 0;
-  --radius-xs: 2px;
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
   --radius-full: 9999px;
 
 
@@ -236,17 +236,17 @@
 
 
             /* Typography */
-  --font-family-headings: system-ui, -apple-system, sans-serif;
-  --font-family-body: system-ui, -apple-system, sans-serif;
+  --font-family-headings: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-family-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-family-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
-  --font-size-xs: 10px;
+  --font-size-xs: 11px;
   --font-size-sm: 13px;
   --font-size-base: 16px;
-  --font-size-lg: 20px;
-  --font-size-xl: 25px;
-  --font-size-2xl: 31px;
-  --font-size-3xl: 39px;
-  --font-size-4xl: 49px;
+  --font-size-lg: 19px;
+  --font-size-xl: 23px;
+  --font-size-2xl: 28px;
+  --font-size-3xl: 33px;
+  --font-size-4xl: 40px;
   --font-weight-light: 300;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
@@ -269,7 +269,7 @@
             /* Layout */
   --layout-max-width: 1200px;
   --layout-min-height: 100vh;
-  --layout-container-padding: 16px;
+  --layout-container-padding: var(--spacing-6)px;
   --layout-page-margin: 120px;
   --layout-section-gap: 160px;
   --layout-container-gap: 200px;
@@ -309,140 +309,140 @@
        }
        
        html[data-theme="dark"] {
-    --color-surface-base: #151313;
-    --color-surface-subtle: #100e0e;
-    --color-surface-elevated: #0d0c0c;
-    --color-surface-sunken: #151313;
-    --color-surface-overlay: #1a1818;
-    --color-surface-inverse: #f3f2f2;
+    --color-surface-base: #16171a;
+    --color-surface-subtle: #111214;
+    --color-surface-elevated: #0d0d0f;
+    --color-surface-sunken: #131416;
+    --color-surface-overlay: #1b1c20;
+    --color-surface-inverse: #f2f2f3;
     --color-surface-hover: color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%);;
-    --color-surface-fieldset-base: #0d0c0c;
-    --color-surface-fieldset-subtle: #1a1818;
-    --color-surface-fieldset-elevated: #211f1f;
-    --color-surface-fieldset-sunken: #0d0c0c;
-    --color-surface-fieldset-overlay: #262323;
-    --color-primary-50: #0b2146;
-    --color-primary-100: #113269;
-    --color-primary-200: #16438c;
-    --color-primary-300: #1b54b0;
-    --color-primary-400: #206ae3;
-    --color-primary-500: #3378e5;
-    --color-primary-600: #5a91ea;
-    --color-primary-700: #80abf0;
-    --color-primary-800: #bcd2f8;
-    --color-primary-900: #d3e2fa;
-    --color-secondary-50: #121417;
-    --color-secondary-100: #1e2227;
-    --color-secondary-200: #2f353e;
-    --color-secondary-300: #424955;
-    --color-secondary-400: #576374;
-    --color-secondary-500: #616e80;
-    --color-secondary-600: #758397;
-    --color-secondary-700: #8e99aa;
-    --color-secondary-800: #bec5cf;
-    --color-secondary-900: #dbdee1;
-    --color-accent-50: #440f29;
-    --color-accent-100: #66163e;
-    --color-accent-200: #881d52;
-    --color-accent-300: #a92466;
-    --color-accent-400: #d92d82;
-    --color-accent-500: #db3e8c;
-    --color-accent-600: #e262a2;
-    --color-accent-700: #e988b7;
-    --color-accent-800: #f5bfd9;
-    --color-accent-900: #f6d5e6;
-    --color-gray-50: #f9fafa;
-    --color-gray-100: #f1f2f4;
-    --color-gray-200: #dde0e3;
-    --color-gray-300: #c1c6cd;
-    --color-gray-400: #8f97a3;
-    --color-gray-500: #64748b;
-    --color-gray-600: #627084;
-    --color-gray-700: #495669;
-    --color-gray-800: #29313d;
-    --color-gray-900: #14181f;
-    --color-success-50: #052305;
-    --color-success-100: #083508;
-    --color-success-200: #0e580e;
-    --color-success-300: #137b13;
-    --color-success-400: #16ad16;
-    --color-success-500: #18c018;
-    --color-success-600: #20e320;
-    --color-success-700: #47e747;
-    --color-success-800: #90f490;
-    --color-success-900: #bdf6bd;
-    --color-info-50: #0b2146;
-    --color-info-100: #113269;
-    --color-info-200: #16438c;
-    --color-info-300: #1b54b0;
-    --color-info-400: #206ae3;
-    --color-info-500: #3378e5;
-    --color-info-600: #5a91ea;
-    --color-info-700: #80abf0;
-    --color-info-800: #bcd2f8;
-    --color-info-900: #d3e2fa;
+    --color-surface-fieldset-base: #0d0d0f;
+    --color-surface-fieldset-subtle: #1b1c20;
+    --color-surface-fieldset-elevated: #1f1f24;
+    --color-surface-fieldset-sunken: #0d0d0f;
+    --color-surface-fieldset-overlay: #25272c;
+    --color-primary-50: #c5f2fa;
+    --color-primary-100: #93eaf9;
+    --color-primary-200: #5fe4fa;
+    --color-primary-300: #2ddbf9;
+    --color-primary-400: #07cbed;
+    --color-primary-500: #06b6d4;
+    --color-primary-600: #058ba2;
+    --color-primary-700: #036171;
+    --color-primary-800: #02404a;
+    --color-primary-900: #012b32;
+    --color-secondary-50: #f1f2f4;
+    --color-secondary-100: #e2e5e9;
+    --color-secondary-200: #cfd1d5;
+    --color-secondary-300: #b4b8bd;
+    --color-secondary-400: #999ea5;
+    --color-secondary-500: #8b9199;
+    --color-secondary-600: #717780;
+    --color-secondary-700: #595e65;
+    --color-secondary-800: #41454a;
+    --color-secondary-900: #292c2f;
+    --color-accent-50: #3a0e1b;
+    --color-accent-100: #5b162a;
+    --color-accent-200: #7c1e3a;
+    --color-accent-300: #9c2749;
+    --color-accent-400: #ce2d5b;
+    --color-accent-500: #d53b68;
+    --color-accent-600: #dc5f84;
+    --color-accent-700: #e4839f;
+    --color-accent-800: #f4c1d0;
+    --color-accent-900: #f6d6e0;
+    --color-gray-50: #fafafa;
+    --color-gray-100: #f1f2f3;
+    --color-gray-200: #dee0e2;
+    --color-gray-300: #c3c6cb;
+    --color-gray-400: #9298a0;
+    --color-gray-500: #8b9199;
+    --color-gray-600: #667180;
+    --color-gray-700: #4c5766;
+    --color-gray-800: #2b323b;
+    --color-gray-900: #15191e;
+    --color-success-50: #072207;
+    --color-success-100: #0b330b;
+    --color-success-200: #115411;
+    --color-success-300: #187618;
+    --color-success-400: #1da61d;
+    --color-success-500: #20b820;
+    --color-success-600: #2ad92a;
+    --color-success-700: #4fe14f;
+    --color-success-800: #94ee94;
+    --color-success-900: #c1f4c1;
+    --color-info-50: #071c22;
+    --color-info-100: #0b2a33;
+    --color-info-200: #0e3844;
+    --color-info-300: #114654;
+    --color-info-400: #145e72;
+    --color-info-500: #176d84;
+    --color-info-600: #1e8baa;
+    --color-info-700: #24a9ce;
+    --color-info-800: #5ac7e5;
+    --color-info-900: #87d4e9;
     --color-warning-50: #251c04;
-    --color-warning-100: #493908;
-    --color-warning-200: #6e560c;
-    --color-warning-300: #937210;
-    --color-warning-400: #c89a10;
-    --color-warning-500: #ddaa12;
-    --color-warning-600: #eebd2c;
-    --color-warning-700: #f1ca54;
-    --color-warning-800: #fae4a1;
-    --color-warning-900: #fcf1d1;
-    --color-danger-50: #230505;
-    --color-danger-100: #470b0b;
-    --color-danger-200: #6a1111;
-    --color-danger-300: #8d1616;
-    --color-danger-400: #c11818;
-    --color-danger-500: #d31b1b;
-    --color-danger-600: #e53434;
-    --color-danger-700: #ea5b5b;
-    --color-danger-800: #f6a6a6;
-    --color-danger-900: #fad3d3;
+    --color-warning-100: #372b06;
+    --color-warning-200: #493908;
+    --color-warning-300: #5c480a;
+    --color-warning-400: #8d6c0b;
+    --color-warning-500: #a07c0d;
+    --color-warning-600: #c89a10;
+    --color-warning-700: #ecb718;
+    --color-warning-800: #f6d05d;
+    --color-warning-900: #f6dc8e;
+    --color-danger-50: #220707;
+    --color-danger-100: #440e0e;
+    --color-danger-200: #651515;
+    --color-danger-300: #871c1c;
+    --color-danger-400: #b82121;
+    --color-danger-500: #ca2424;
+    --color-danger-600: #dd3e3e;
+    --color-danger-700: #e26262;
+    --color-danger-800: #f2aaaa;
+    --color-danger-900: #f6d5d5;
     /* Smart Surface Tokens (dark mode, context-aware) */
-    --surface-base-bg: #151313;
+    --surface-base-bg: #16171a;
     --surface-base-text: #ffffff;
     --surface-base-text-secondary: #ffffff;
-    --surface-base-text-muted: #a1a1a1;
+    --surface-base-text-muted: #a2a2a3;
     --surface-base-icon: #ffffff;
-    --surface-base-icon-subtle: #a1a1a1;
+    --surface-base-icon-subtle: #a2a2a3;
     --surface-base-shadow: rgba(255, 255, 255, 0.25);
     --surface-base-border: rgba(255, 255, 255, 0.15);
-    --surface-subtle-bg: #100e0e;
+    --surface-subtle-bg: #111214;
     --surface-subtle-text: #ffffff;
     --surface-subtle-text-secondary: #ffffff;
-    --surface-subtle-text-muted: #9f9f9f;
+    --surface-subtle-text-muted: #a0a0a1;
     --surface-subtle-icon: #ffffff;
-    --surface-subtle-icon-subtle: #9f9f9f;
+    --surface-subtle-icon-subtle: #a0a0a1;
     --surface-subtle-shadow: rgba(255, 255, 255, 0.25);
     --surface-subtle-border: rgba(255, 255, 255, 0.15);
-    --surface-elevated-bg: #0d0c0c;
+    --surface-elevated-bg: #0d0d0f;
     --surface-elevated-text: #ffffff;
     --surface-elevated-text-secondary: #ffffff;
-    --surface-elevated-text-muted: #9e9e9e;
+    --surface-elevated-text-muted: #9e9e9f;
     --surface-elevated-icon: #ffffff;
-    --surface-elevated-icon-subtle: #9e9e9e;
+    --surface-elevated-icon-subtle: #9e9e9f;
     --surface-elevated-shadow: rgba(255, 255, 255, 0.25);
     --surface-elevated-border: rgba(255, 255, 255, 0.15);
-    --surface-sunken-bg: #151313;
+    --surface-sunken-bg: #131416;
     --surface-sunken-text: #ffffff;
     --surface-sunken-text-secondary: #ffffff;
-    --surface-sunken-text-muted: #a1a1a1;
+    --surface-sunken-text-muted: #a1a1a2;
     --surface-sunken-icon: #ffffff;
-    --surface-sunken-icon-subtle: #a1a1a1;
+    --surface-sunken-icon-subtle: #a1a1a2;
     --surface-sunken-shadow: rgba(255, 255, 255, 0.25);
     --surface-sunken-border: rgba(255, 255, 255, 0.15);
-    --surface-overlay-bg: #1a1818;
+    --surface-overlay-bg: #1b1c20;
     --surface-overlay-text: #ffffff;
     --surface-overlay-text-secondary: #ffffff;
-    --surface-overlay-text-muted: #a3a3a3;
+    --surface-overlay-text-muted: #a4a4a6;
     --surface-overlay-icon: #ffffff;
-    --surface-overlay-icon-subtle: #a3a3a3;
+    --surface-overlay-icon-subtle: #a4a4a6;
     --surface-overlay-shadow: rgba(255, 255, 255, 0.25);
     --surface-overlay-border: rgba(255, 255, 255, 0.15);
-    --surface-inverse-bg: #f3f2f2;
+    --surface-inverse-bg: #f2f2f3;
     --surface-inverse-text: #000000;
     --surface-inverse-text-secondary: #000000;
     --surface-inverse-text-muted: #616161;
@@ -460,8 +460,8 @@
     --color-input-disabled-text: var(--color-gray-600);
     --color-code-bg: var(--color-gray-800);
     /* Interactive Colors - optimized for specific use cases (dark mode) */
-    --color-primary-fill: #206ae3; /* For button backgrounds with white text */
-    --color-primary-text: #5a91ea; /* For links and outline buttons on dark surfaces */
+    --color-primary-fill: #036171; /* For button backgrounds with white text */
+    --color-primary-text: #06b6d4; /* For links and outline buttons on dark surfaces */
     /* Backdrop tokens - dark mode */
     --backdrop-bg: linear-gradient(
         135deg,
@@ -477,169 +477,169 @@
     /* Legacy alias for backwards compatibility */
     --backdrop-background: var(--backdrop-bg);
     /* Mesh Gradient Variables (Dark Mode) */
-    --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, #206ae3 20%, transparent) 0px, transparent 50%),
-      radial-gradient(at 97% 21%, color-mix(in oklab, #576374 16%, transparent) 0px, transparent 50%),
-      radial-gradient(at 52% 99%, color-mix(in oklab, #d92d82 13%, transparent) 0px, transparent 50%),
-      radial-gradient(at 10% 29%, color-mix(in oklab, #206ae3 10%, transparent) 0px, transparent 50%);
+    --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, #07cbed 20%, transparent) 0px, transparent 50%),
+      radial-gradient(at 97% 21%, color-mix(in oklab, #999ea5 16%, transparent) 0px, transparent 50%),
+      radial-gradient(at 52% 99%, color-mix(in oklab, #ce2d5b 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 10% 29%, color-mix(in oklab, #07cbed 10%, transparent) 0px, transparent 50%);
     
-    --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, #576374 18%, transparent) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, color-mix(in oklab, #206ae3 14%, transparent) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, color-mix(in oklab, #d92d82 12%, transparent) 0px, transparent 50%),
-      radial-gradient(at 80% 100%, color-mix(in oklab, #576374 10%, transparent) 0px, transparent 50%);
+    --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, #999ea5 18%, transparent) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, color-mix(in oklab, #07cbed 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, color-mix(in oklab, #ce2d5b 12%, transparent) 0px, transparent 50%),
+      radial-gradient(at 80% 100%, color-mix(in oklab, #999ea5 10%, transparent) 0px, transparent 50%);
     
-    --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #d92d82 15%, transparent) 0px, transparent 50%),
-      radial-gradient(at 85% 30%, color-mix(in oklab, #206ae3 17%, transparent) 0px, transparent 50%),
-      radial-gradient(at 50% 80%, color-mix(in oklab, #576374 13%, transparent) 0px, transparent 50%),
-      radial-gradient(at 90% 90%, color-mix(in oklab, #d92d82 11%, transparent) 0px, transparent 50%);
+    --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #ce2d5b 15%, transparent) 0px, transparent 50%),
+      radial-gradient(at 85% 30%, color-mix(in oklab, #07cbed 17%, transparent) 0px, transparent 50%),
+      radial-gradient(at 50% 80%, color-mix(in oklab, #999ea5 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 90%, color-mix(in oklab, #ce2d5b 11%, transparent) 0px, transparent 50%);
     
-    --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, #206ae3 14%, transparent) 0px, transparent 50%),
-      radial-gradient(at 20% 80%, color-mix(in oklab, #576374 16%, transparent) 0px, transparent 50%),
-      radial-gradient(at 90% 60%, color-mix(in oklab, #d92d82 12%, transparent) 0px, transparent 50%),
-      radial-gradient(at 30% 40%, color-mix(in oklab, #206ae3 11%, transparent) 0px, transparent 50%);
+    --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, #07cbed 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 20% 80%, color-mix(in oklab, #999ea5 16%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 60%, color-mix(in oklab, #ce2d5b 12%, transparent) 0px, transparent 50%),
+      radial-gradient(at 30% 40%, color-mix(in oklab, #07cbed 11%, transparent) 0px, transparent 50%);
     
-    --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, #206ae3 17%, transparent) 0px, transparent 50%),
-      radial-gradient(at 10% 10%, color-mix(in oklab, #d92d82 14%, transparent) 0px, transparent 50%),
-      radial-gradient(at 90% 10%, color-mix(in oklab, #576374 13%, transparent) 0px, transparent 50%),
-      radial-gradient(at 50% 90%, color-mix(in oklab, #d92d82 10%, transparent) 0px, transparent 50%);
+    --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, #07cbed 17%, transparent) 0px, transparent 50%),
+      radial-gradient(at 10% 10%, color-mix(in oklab, #ce2d5b 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 10%, color-mix(in oklab, #999ea5 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 50% 90%, color-mix(in oklab, #ce2d5b 10%, transparent) 0px, transparent 50%);
              }
 
     }
 /* Non-layered dark variables fallback (ensures attribute wins) */
 html[data-theme="dark"] {
-  --color-surface-base: #151313;
-  --color-surface-subtle: #100e0e;
-  --color-surface-elevated: #0d0c0c;
-  --color-surface-sunken: #151313;
-  --color-surface-overlay: #1a1818;
-  --color-surface-inverse: #f3f2f2;
+  --color-surface-base: #16171a;
+  --color-surface-subtle: #111214;
+  --color-surface-elevated: #0d0d0f;
+  --color-surface-sunken: #131416;
+  --color-surface-overlay: #1b1c20;
+  --color-surface-inverse: #f2f2f3;
   --color-surface-hover: color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%);;
-  --color-surface-fieldset-base: #0d0c0c;
-  --color-surface-fieldset-subtle: #1a1818;
-  --color-surface-fieldset-elevated: #211f1f;
-  --color-surface-fieldset-sunken: #0d0c0c;
-  --color-surface-fieldset-overlay: #262323;
-  --color-primary-50: #0b2146;
-  --color-primary-100: #113269;
-  --color-primary-200: #16438c;
-  --color-primary-300: #1b54b0;
-  --color-primary-400: #206ae3;
-  --color-primary-500: #3378e5;
-  --color-primary-600: #5a91ea;
-  --color-primary-700: #80abf0;
-  --color-primary-800: #bcd2f8;
-  --color-primary-900: #d3e2fa;
-  --color-secondary-50: #121417;
-  --color-secondary-100: #1e2227;
-  --color-secondary-200: #2f353e;
-  --color-secondary-300: #424955;
-  --color-secondary-400: #576374;
-  --color-secondary-500: #616e80;
-  --color-secondary-600: #758397;
-  --color-secondary-700: #8e99aa;
-  --color-secondary-800: #bec5cf;
-  --color-secondary-900: #dbdee1;
-  --color-accent-50: #440f29;
-  --color-accent-100: #66163e;
-  --color-accent-200: #881d52;
-  --color-accent-300: #a92466;
-  --color-accent-400: #d92d82;
-  --color-accent-500: #db3e8c;
-  --color-accent-600: #e262a2;
-  --color-accent-700: #e988b7;
-  --color-accent-800: #f5bfd9;
-  --color-accent-900: #f6d5e6;
-  --color-gray-50: #f9fafa;
-  --color-gray-100: #f1f2f4;
-  --color-gray-200: #dde0e3;
-  --color-gray-300: #c1c6cd;
-  --color-gray-400: #8f97a3;
-  --color-gray-500: #64748b;
-  --color-gray-600: #627084;
-  --color-gray-700: #495669;
-  --color-gray-800: #29313d;
-  --color-gray-900: #14181f;
-  --color-success-50: #052305;
-  --color-success-100: #083508;
-  --color-success-200: #0e580e;
-  --color-success-300: #137b13;
-  --color-success-400: #16ad16;
-  --color-success-500: #18c018;
-  --color-success-600: #20e320;
-  --color-success-700: #47e747;
-  --color-success-800: #90f490;
-  --color-success-900: #bdf6bd;
-  --color-info-50: #0b2146;
-  --color-info-100: #113269;
-  --color-info-200: #16438c;
-  --color-info-300: #1b54b0;
-  --color-info-400: #206ae3;
-  --color-info-500: #3378e5;
-  --color-info-600: #5a91ea;
-  --color-info-700: #80abf0;
-  --color-info-800: #bcd2f8;
-  --color-info-900: #d3e2fa;
+  --color-surface-fieldset-base: #0d0d0f;
+  --color-surface-fieldset-subtle: #1b1c20;
+  --color-surface-fieldset-elevated: #1f1f24;
+  --color-surface-fieldset-sunken: #0d0d0f;
+  --color-surface-fieldset-overlay: #25272c;
+  --color-primary-50: #c5f2fa;
+  --color-primary-100: #93eaf9;
+  --color-primary-200: #5fe4fa;
+  --color-primary-300: #2ddbf9;
+  --color-primary-400: #07cbed;
+  --color-primary-500: #06b6d4;
+  --color-primary-600: #058ba2;
+  --color-primary-700: #036171;
+  --color-primary-800: #02404a;
+  --color-primary-900: #012b32;
+  --color-secondary-50: #f1f2f4;
+  --color-secondary-100: #e2e5e9;
+  --color-secondary-200: #cfd1d5;
+  --color-secondary-300: #b4b8bd;
+  --color-secondary-400: #999ea5;
+  --color-secondary-500: #8b9199;
+  --color-secondary-600: #717780;
+  --color-secondary-700: #595e65;
+  --color-secondary-800: #41454a;
+  --color-secondary-900: #292c2f;
+  --color-accent-50: #3a0e1b;
+  --color-accent-100: #5b162a;
+  --color-accent-200: #7c1e3a;
+  --color-accent-300: #9c2749;
+  --color-accent-400: #ce2d5b;
+  --color-accent-500: #d53b68;
+  --color-accent-600: #dc5f84;
+  --color-accent-700: #e4839f;
+  --color-accent-800: #f4c1d0;
+  --color-accent-900: #f6d6e0;
+  --color-gray-50: #fafafa;
+  --color-gray-100: #f1f2f3;
+  --color-gray-200: #dee0e2;
+  --color-gray-300: #c3c6cb;
+  --color-gray-400: #9298a0;
+  --color-gray-500: #8b9199;
+  --color-gray-600: #667180;
+  --color-gray-700: #4c5766;
+  --color-gray-800: #2b323b;
+  --color-gray-900: #15191e;
+  --color-success-50: #072207;
+  --color-success-100: #0b330b;
+  --color-success-200: #115411;
+  --color-success-300: #187618;
+  --color-success-400: #1da61d;
+  --color-success-500: #20b820;
+  --color-success-600: #2ad92a;
+  --color-success-700: #4fe14f;
+  --color-success-800: #94ee94;
+  --color-success-900: #c1f4c1;
+  --color-info-50: #071c22;
+  --color-info-100: #0b2a33;
+  --color-info-200: #0e3844;
+  --color-info-300: #114654;
+  --color-info-400: #145e72;
+  --color-info-500: #176d84;
+  --color-info-600: #1e8baa;
+  --color-info-700: #24a9ce;
+  --color-info-800: #5ac7e5;
+  --color-info-900: #87d4e9;
   --color-warning-50: #251c04;
-  --color-warning-100: #493908;
-  --color-warning-200: #6e560c;
-  --color-warning-300: #937210;
-  --color-warning-400: #c89a10;
-  --color-warning-500: #ddaa12;
-  --color-warning-600: #eebd2c;
-  --color-warning-700: #f1ca54;
-  --color-warning-800: #fae4a1;
-  --color-warning-900: #fcf1d1;
-  --color-danger-50: #230505;
-  --color-danger-100: #470b0b;
-  --color-danger-200: #6a1111;
-  --color-danger-300: #8d1616;
-  --color-danger-400: #c11818;
-  --color-danger-500: #d31b1b;
-  --color-danger-600: #e53434;
-  --color-danger-700: #ea5b5b;
-  --color-danger-800: #f6a6a6;
-  --color-danger-900: #fad3d3;
+  --color-warning-100: #372b06;
+  --color-warning-200: #493908;
+  --color-warning-300: #5c480a;
+  --color-warning-400: #8d6c0b;
+  --color-warning-500: #a07c0d;
+  --color-warning-600: #c89a10;
+  --color-warning-700: #ecb718;
+  --color-warning-800: #f6d05d;
+  --color-warning-900: #f6dc8e;
+  --color-danger-50: #220707;
+  --color-danger-100: #440e0e;
+  --color-danger-200: #651515;
+  --color-danger-300: #871c1c;
+  --color-danger-400: #b82121;
+  --color-danger-500: #ca2424;
+  --color-danger-600: #dd3e3e;
+  --color-danger-700: #e26262;
+  --color-danger-800: #f2aaaa;
+  --color-danger-900: #f6d5d5;
   /* Smart Surface Tokens (dark mode, context-aware) */
-  --surface-base-bg: #151313;
+  --surface-base-bg: #16171a;
   --surface-base-text: #ffffff;
   --surface-base-text-secondary: #ffffff;
-  --surface-base-text-muted: #a1a1a1;
+  --surface-base-text-muted: #a2a2a3;
   --surface-base-icon: #ffffff;
-  --surface-base-icon-subtle: #a1a1a1;
+  --surface-base-icon-subtle: #a2a2a3;
   --surface-base-shadow: rgba(255, 255, 255, 0.25);
   --surface-base-border: rgba(255, 255, 255, 0.15);
-  --surface-subtle-bg: #100e0e;
+  --surface-subtle-bg: #111214;
   --surface-subtle-text: #ffffff;
   --surface-subtle-text-secondary: #ffffff;
-  --surface-subtle-text-muted: #9f9f9f;
+  --surface-subtle-text-muted: #a0a0a1;
   --surface-subtle-icon: #ffffff;
-  --surface-subtle-icon-subtle: #9f9f9f;
+  --surface-subtle-icon-subtle: #a0a0a1;
   --surface-subtle-shadow: rgba(255, 255, 255, 0.25);
   --surface-subtle-border: rgba(255, 255, 255, 0.15);
-  --surface-elevated-bg: #0d0c0c;
+  --surface-elevated-bg: #0d0d0f;
   --surface-elevated-text: #ffffff;
   --surface-elevated-text-secondary: #ffffff;
-  --surface-elevated-text-muted: #9e9e9e;
+  --surface-elevated-text-muted: #9e9e9f;
   --surface-elevated-icon: #ffffff;
-  --surface-elevated-icon-subtle: #9e9e9e;
+  --surface-elevated-icon-subtle: #9e9e9f;
   --surface-elevated-shadow: rgba(255, 255, 255, 0.25);
   --surface-elevated-border: rgba(255, 255, 255, 0.15);
-  --surface-sunken-bg: #151313;
+  --surface-sunken-bg: #131416;
   --surface-sunken-text: #ffffff;
   --surface-sunken-text-secondary: #ffffff;
-  --surface-sunken-text-muted: #a1a1a1;
+  --surface-sunken-text-muted: #a1a1a2;
   --surface-sunken-icon: #ffffff;
-  --surface-sunken-icon-subtle: #a1a1a1;
+  --surface-sunken-icon-subtle: #a1a1a2;
   --surface-sunken-shadow: rgba(255, 255, 255, 0.25);
   --surface-sunken-border: rgba(255, 255, 255, 0.15);
-  --surface-overlay-bg: #1a1818;
+  --surface-overlay-bg: #1b1c20;
   --surface-overlay-text: #ffffff;
   --surface-overlay-text-secondary: #ffffff;
-  --surface-overlay-text-muted: #a3a3a3;
+  --surface-overlay-text-muted: #a4a4a6;
   --surface-overlay-icon: #ffffff;
-  --surface-overlay-icon-subtle: #a3a3a3;
+  --surface-overlay-icon-subtle: #a4a4a6;
   --surface-overlay-shadow: rgba(255, 255, 255, 0.25);
   --surface-overlay-border: rgba(255, 255, 255, 0.15);
-  --surface-inverse-bg: #f3f2f2;
+  --surface-inverse-bg: #f2f2f3;
   --surface-inverse-text: #000000;
   --surface-inverse-text-secondary: #000000;
   --surface-inverse-text-muted: #616161;
@@ -672,28 +672,28 @@ html[data-theme="dark"] {
   --backdrop-background: var(--backdrop-bg);
 
   /* Mesh Gradient Backgrounds (Dark Mode) */
-  --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, #206ae3 20%, transparent) 0px, transparent 50%),
-    radial-gradient(at 97% 21%, color-mix(in oklab, #576374 16%, transparent) 0px, transparent 50%),
-    radial-gradient(at 52% 99%, color-mix(in oklab, #d92d82 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 29%, color-mix(in oklab, #206ae3 10%, transparent) 0px, transparent 50%);
+  --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, #07cbed 20%, transparent) 0px, transparent 50%),
+    radial-gradient(at 97% 21%, color-mix(in oklab, #999ea5 16%, transparent) 0px, transparent 50%),
+    radial-gradient(at 52% 99%, color-mix(in oklab, #ce2d5b 13%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 29%, color-mix(in oklab, #07cbed 10%, transparent) 0px, transparent 50%);
   
-  --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, #576374 18%, transparent) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, color-mix(in oklab, #206ae3 14%, transparent) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, color-mix(in oklab, #d92d82 12%, transparent) 0px, transparent 50%),
-    radial-gradient(at 80% 100%, color-mix(in oklab, #576374 10%, transparent) 0px, transparent 50%);
+  --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, #999ea5 18%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, color-mix(in oklab, #07cbed 14%, transparent) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, color-mix(in oklab, #ce2d5b 12%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, color-mix(in oklab, #999ea5 10%, transparent) 0px, transparent 50%);
   
-  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #d92d82 15%, transparent) 0px, transparent 50%),
-    radial-gradient(at 85% 30%, color-mix(in oklab, #206ae3 17%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 80%, color-mix(in oklab, #576374 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 90%, color-mix(in oklab, #d92d82 11%, transparent) 0px, transparent 50%);
+  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #ce2d5b 15%, transparent) 0px, transparent 50%),
+    radial-gradient(at 85% 30%, color-mix(in oklab, #07cbed 17%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, color-mix(in oklab, #999ea5 13%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, color-mix(in oklab, #ce2d5b 11%, transparent) 0px, transparent 50%);
   
-  --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, #206ae3 14%, transparent) 0px, transparent 50%),
-    radial-gradient(at 20% 80%, color-mix(in oklab, #576374 16%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 60%, color-mix(in oklab, #d92d82 12%, transparent) 0px, transparent 50%),
-    radial-gradient(at 30% 40%, color-mix(in oklab, #206ae3 11%, transparent) 0px, transparent 50%);
+  --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, #07cbed 14%, transparent) 0px, transparent 50%),
+    radial-gradient(at 20% 80%, color-mix(in oklab, #999ea5 16%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 60%, color-mix(in oklab, #ce2d5b 12%, transparent) 0px, transparent 50%),
+    radial-gradient(at 30% 40%, color-mix(in oklab, #07cbed 11%, transparent) 0px, transparent 50%);
   
-  --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, #206ae3 17%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 10%, color-mix(in oklab, #d92d82 14%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 10%, color-mix(in oklab, #576374 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 90%, color-mix(in oklab, #d92d82 10%, transparent) 0px, transparent 50%);
+  --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, #07cbed 17%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 10%, color-mix(in oklab, #ce2d5b 14%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, color-mix(in oklab, #999ea5 13%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, color-mix(in oklab, #ce2d5b 10%, transparent) 0px, transparent 50%);
     }

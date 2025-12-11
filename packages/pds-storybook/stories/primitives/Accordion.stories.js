@@ -102,7 +102,7 @@ export const AccordionWithRichContent = () => html`
         <summary id="feature1">Getting Started</summary>
         <div class="card" role="region" aria-labelledby="feature1">
           <h4>Welcome to Pure Design System</h4>
-          <p>Pure DS is a generative design system that creates complete design tokens from just a few base colors.</p>
+          <p>Pure Design System is a generative design system that creates complete design tokens from just a few base colors.</p>
           <ul>
             <li>Generate 9-step color scales automatically</li>
             <li>Smart surface system with auto-contrast</li>

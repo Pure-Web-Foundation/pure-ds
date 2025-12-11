@@ -121,7 +121,7 @@ export default {
     },
     docs: {
       description: {
-        component: `The \`PDS.ask()\` helper wraps the native \`<dialog>\` element with Pure DS styling and a promise-based API.
+        component: `The \`PDS.ask()\` helper wraps the native \`<dialog>\` element with PDS styling and a promise-based API.
 Use it to collect quick confirmations or to stage entire forms before committing data back to the host application.`
       }
     }

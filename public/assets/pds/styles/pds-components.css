@@ -168,7 +168,7 @@ form {
 }
 
 fieldset {
-  margin: 0 0 var(--spacing-1) 0;
+  margin: 0 0 var(--spacing-2) 0;
   padding: var(--spacing-5);
   width: 100%;
   background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
@@ -810,21 +810,21 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   
   &:hover {
     background-color: var(--color-primary-500);
-    color: var(--color-primary-contrast);
+    color: var(--color-primary-contrast, #ffffff);
     border-color: var(--color-primary-500);
 
     pds-icon {
-      color: white;
+      color: var(--color-primary-contrast, #ffffff);
     }
   }
 
   &:active {
     background-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
     border-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
-    color: var(--color-primary-contrast);
+    color: var(--color-primary-contrast, #ffffff);
 
     pds-icon {
-      color: white;
+      color: var(--color-primary-contrast, #ffffff);
     }
   }
   
@@ -1475,6 +1475,7 @@ dialog.dialog-full {
 /* Basic dropdown host */
 nav[data-dropdown] {
   position: relative;
+  display: inline-block;
   padding: 0;
 
   menu {
@@ -1486,18 +1487,46 @@ nav[data-dropdown] {
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
-    /* Default drop direction: down (top anchored). JavaScript enhancer may
-       override for data-mode="auto" by switching to bottom:100% when needed. */
     top: 100%;
     bottom: auto;
     left: 0;
-    right: 0;
+    right: auto;
     margin-top: var(--spacing-2);
+    --dropdown-transition-duration: var(--transition-fast, 160ms);
+    min-width: max(100%, var(--dropdown-min-width, 12rem));
+    width: max-content;
+    opacity: 0;
+    scale: 0.95;
+    visibility: hidden;
     display: none;
+    pointer-events: none;
+    transform-origin: top center;
+    z-index: var(--z-dropdown, 1050);
+    max-height: min(60vh, 24rem);
+    overflow-y: auto;
+    transition:
+      opacity var(--dropdown-transition-duration) ease,
+      scale var(--dropdown-transition-duration) ease,
+      visibility 0s linear var(--dropdown-transition-duration),
+      display 0s linear var(--dropdown-transition-duration);
+    transition-behavior: allow-discrete;
+  }
+
+  menu[aria-hidden="false"] {
+    display: block;
+    opacity: 1;
+    scale: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      opacity var(--dropdown-transition-duration) ease,
+      scale var(--dropdown-transition-duration) ease,
+      visibility 0s linear 0s,
+      display 0s linear 0s;
   }
 
   li {
-    padding: var(--spacing-2) 0;
+    padding: var(--spacing-1) 0;
 
     & + li {
       border-top: 1px solid var(--color-border);
@@ -1534,24 +1563,55 @@ nav[data-dropdown] {
     }
   }
 
-  /* Explicit direction modifiers */
-  &[data-mode="up"] menu {
-    top: auto;
-    bottom: 100%;
-    margin-bottom: var(--spacing-2);
+  &.align-right,
+  &[data-align="right"],
+  &[data-align="end"],
+  &[data-dropdown-align="right"],
+  &[data-dropdown-align="end"] {
+    menu {
+      left: auto;
+      right: 0;
+    }
   }
 
-  &[data-mode="down"] menu {
-    top: 100%;
-    bottom: auto;
-    margin-top: var(--spacing-2);
+  &[data-mode="up"],
+  &[data-dropdown-direction="up"] {
+    menu {
+      top: auto;
+      bottom: 100%;
+      margin-top: 0;
+      margin-bottom: var(--spacing-2);
+      transform-origin: bottom center;
+    }
   }
 
-  /* Auto acts like down by default; the enhancer will calculate at runtime
-     and set inline top/bottom when necessary to avoid overflow. */
+  &[data-mode="down"],
+  &[data-dropdown-direction="down"] {
+    menu {
+      top: 100%;
+      bottom: auto;
+      margin-top: var(--spacing-2);
+      margin-bottom: 0;
+      transform-origin: top center;
+    }
+  }
+
   &[data-mode="auto"] menu {
     top: 100%;
     bottom: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    menu {
+      transition-duration: 0.01s !important;
+    }
+  }
+}
+
+@starting-style {
+  nav[data-dropdown] menu[aria-hidden="false"] {
+    opacity: 0;
+    scale: 0.95;
   }
 }
 

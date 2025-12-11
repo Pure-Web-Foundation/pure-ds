@@ -1850,38 +1850,12 @@
       "category": "Utilities"
     }
   ],
-  "dataAttributes": [
-    {
-      "name": "data-dropdown",
-      "description": "Enhancement: nav[data-dropdown]",
-      "category": "Data Enhancements"
-    },
-    {
-      "name": "data-toggle",
-      "description": "Enhancement: label[data-toggle]",
-      "category": "Data Enhancements"
-    },
-    {
-      "name": "data-tabs",
-      "description": "Enhancement: [data-tabs]",
-      "category": "Data Enhancements"
-    },
-    {
-      "name": "data-modal",
-      "description": "Enhancement: [data-modal]",
-      "category": "Data Enhancements"
-    },
-    {
-      "name": "data-tooltip",
-      "description": "Enhancement: [data-tooltip]",
-      "category": "Data Enhancements"
-    }
-  ],
+  "dataAttributes": [],
   "metadata": {
     "generator": "PDS CSS Data Generator",
-    "generatedAt": "2025-12-01T12:33:53.671Z",
+    "generatedAt": "2025-12-11T14:17:05.649Z",
     "totalProperties": 165,
     "totalClasses": 91,
-    "totalAttributes": 5
+    "totalAttributes": 0
   }
 }

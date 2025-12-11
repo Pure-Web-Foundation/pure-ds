@@ -6,6 +6,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
+import ts from 'typescript';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,6 +20,8 @@ const ONTOLOGY_SOURCE_LABEL = path.relative(ROOT_DIR, ONTOLOGY_PATH);
 const STORIES_ROOT = path.join(ROOT_DIR, 'packages/pds-storybook/stories');
 const OUTPUT_DIR = path.join(ROOT_DIR, 'packages/pds-storybook/dist');
 const OUTPUT_PATH = path.join(OUTPUT_DIR, 'pds-reference.json');
+
+const TYPE_METADATA_CACHE = new Map();
 
 const SPECIAL_COMPONENT_OVERRIDES = {
   'pds-jsonform': {
@@ -115,6 +118,23 @@ function trimOrNull(value) {
   }
   const trimmed = value.trim();
   return trimmed.length ? trimmed : null;
+}
+
+function normalizeMemberName(name = '') {
+  if (typeof name !== 'string') {
+    return '';
+  }
+  return name.replace(/^['"]|['"]$/g, '');
+}
+
+function isPrivateMemberName(name) {
+  const normalized = normalizeMemberName(name);
+  if (!normalized) return false;
+  return (
+    normalized.startsWith('#') ||
+    normalized.startsWith('_') ||
+    normalized.includes('#private@')
+  );
 }
 
 async function readJson(filePath) {
@@ -282,8 +302,118 @@ async function collectStoryMetadata() {
   return result;
 }
 
-function mapCustomElement(declaration, moduleEntry, storyMeta = {}, ontologyLookup = new Map()) {
-  const tag = declaration.tagName?.toLowerCase();
+function extractJsDocComment(node, sourceFile) {
+  const docs = node?.jsDoc;
+  if (!docs?.length) return null;
+  const parts = [];
+  for (const doc of docs) {
+    if (typeof doc.comment === 'string') {
+      parts.push(doc.comment);
+    } else if (Array.isArray(doc.comment)) {
+      parts.push(
+        doc.comment
+          .map((segment) => (typeof segment === 'string' ? segment : segment.getText(sourceFile)))
+          .join('')
+      );
+    }
+  }
+  return trimOrNull(parts.join('\n\n'));
+}
+
+function resolveDtsPath(modulePath) {
+  if (!modulePath) return null;
+  const normalized = modulePath.replace(/\\/g, '/');
+  const candidate = normalized.replace(/\.(mjs|cjs|js|ts)$/i, '.d.ts');
+  return path.join(ROOT_DIR, 'dist/types', candidate);
+}
+
+async function loadTypeMetadata(modulePath) {
+  if (!modulePath) return null;
+  if (TYPE_METADATA_CACHE.has(modulePath)) {
+    return TYPE_METADATA_CACHE.get(modulePath);
+  }
+
+  const dtsPath = resolveDtsPath(modulePath);
+  if (!dtsPath) {
+    TYPE_METADATA_CACHE.set(modulePath, null);
+    return null;
+  }
+
+  let source;
+  try {
+    source = await fs.readFile(dtsPath, 'utf8');
+  } catch {
+    TYPE_METADATA_CACHE.set(modulePath, null);
+    return null;
+  }
+
+  if (!source || !source.trim()) {
+    TYPE_METADATA_CACHE.set(modulePath, null);
+    return null;
+  }
+
+  const sourceFile = ts.createSourceFile(dtsPath, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+
+  const moduleInfo = {
+    classes: {}
+  };
+
+  sourceFile.forEachChild((node) => {
+    if (!ts.isClassDeclaration(node) && !ts.isClassExpression(node)) return;
+    const className = node.name?.text;
+    if (!className) return;
+
+    const classInfo = {
+      name: className,
+      description: trimOrNull(extractJsDocComment(node, sourceFile)),
+      properties: {},
+      methods: {}
+    };
+
+    for (const member of node.members || []) {
+      const rawMemberName = member.name?.getText?.(sourceFile);
+      const memberName = normalizeMemberName(rawMemberName);
+      if (!memberName || isPrivateMemberName(memberName)) continue;
+
+      if (ts.isPropertyDeclaration(member) || ts.isPropertySignature(member)) {
+        classInfo.properties[memberName] = {
+          type: member.type ? member.type.getText(sourceFile) : null,
+          description: trimOrNull(extractJsDocComment(member, sourceFile)),
+          optional: Boolean(member.questionToken),
+          readonly: Boolean(member.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.ReadonlyKeyword))
+        };
+      } else if (ts.isMethodDeclaration(member) || ts.isMethodSignature(member)) {
+        classInfo.methods[memberName] = {
+          description: trimOrNull(extractJsDocComment(member, sourceFile)),
+          returnType: member.type ? member.type.getText(sourceFile) : 'void',
+          parameters:
+            member.parameters?.map((param) => ({
+              name: param.name.getText(sourceFile),
+              type: param.type ? param.type.getText(sourceFile) : 'any',
+              optional: Boolean(param.questionToken),
+              description: trimOrNull(extractJsDocComment(param, sourceFile))
+            })) || []
+        };
+      }
+    }
+
+    moduleInfo.classes[className] = classInfo;
+  });
+
+  TYPE_METADATA_CACHE.set(modulePath, moduleInfo);
+  return moduleInfo;
+}
+
+function mapCustomElement(
+  declaration,
+  moduleEntry,
+  storyMeta = {},
+  ontologyLookup = new Map(),
+  explicitTag,
+  tsClassInfo = null
+) {
+  const tag = (explicitTag || declaration.tagName || '').toLowerCase();
+  if (!tag) return null;
   const ontologyEntry = ontologyLookup.get(tag) || ontologyLookup.get(declaration.name) || null;
 
   const attributes = (declaration.attributes || []).map((attr) => ({
@@ -296,8 +426,8 @@ function mapCustomElement(declaration, moduleEntry, storyMeta = {}, ontologyLook
 
   const attributeByField = new Map(attributes.map((attr) => [attr.fieldName || attr.name, attr]));
 
-  const properties = (declaration.members || [])
-    .filter((member) => member.kind === 'field' && member.privacy !== 'private' && !(member.name || '').startsWith('_'))
+  let properties = (declaration.members || [])
+    .filter((member) => member.kind === 'field' && member.privacy !== 'private' && !isPrivateMemberName(member.name || ''))
     .map((member) => ({
       name: member.name,
       attribute: member.attribute || attributeByField.get(member.name)?.name || null,
@@ -308,8 +438,8 @@ function mapCustomElement(declaration, moduleEntry, storyMeta = {}, ontologyLook
       privacy: member.privacy || 'public'
     }));
 
-  const methods = (declaration.members || [])
-    .filter((member) => member.kind === 'method' && member.privacy !== 'private' && !(member.name || '').startsWith('_'))
+  let methods = (declaration.members || [])
+    .filter((member) => member.kind === 'method' && member.privacy !== 'private' && !isPrivateMemberName(member.name || ''))
     .map((member) => ({
       name: member.name,
       description: trimOrNull(member.description),
@@ -339,7 +469,79 @@ function mapCustomElement(declaration, moduleEntry, storyMeta = {}, ontologyLook
     description: trimOrNull(part.description)
   }));
 
-  const overrides = SPECIAL_COMPONENT_OVERRIDES[tag] || {};
+  if (tsClassInfo) {
+    const propertyMap = new Map(properties.map((prop) => [prop.name, prop]));
+    for (const prop of properties) {
+      const tsProp = tsClassInfo.properties?.[prop.name];
+      if (!tsProp) continue;
+      prop.type = tsProp.type || prop.type;
+      prop.description = trimOrNull([prop.description, tsProp.description].filter(Boolean).join('\n\n')) || prop.description;
+      if (tsProp.optional) prop.optional = true;
+      if (tsProp.readonly) prop.readonly = true;
+    }
+
+    for (const [propName, tsProp] of Object.entries(tsClassInfo.properties || {})) {
+      if (isPrivateMemberName(propName) || propertyMap.has(propName)) continue;
+      const entry = {
+        name: propName,
+        attribute: null,
+        description: trimOrNull(tsProp.description),
+        type: tsProp.type || null,
+        default: null,
+        reflects: false,
+        privacy: 'public'
+      };
+      if (tsProp.optional) entry.optional = true;
+      if (tsProp.readonly) entry.readonly = true;
+      propertyMap.set(propName, entry);
+    }
+    properties = Array.from(propertyMap.values());
+
+    const methodMap = new Map(methods.map((method) => [method.name, method]));
+    for (const method of methods) {
+      const tsMethod = tsClassInfo.methods?.[method.name];
+      if (!tsMethod) continue;
+      method.description = trimOrNull([method.description, tsMethod.description].filter(Boolean).join('\n\n')) || method.description;
+      if ((!method.parameters || method.parameters.length === 0) && tsMethod.parameters?.length) {
+        method.parameters = tsMethod.parameters.map((param) => ({
+          name: param.name,
+          type: param.type,
+          description: param.description,
+          optional: param.optional || false
+        }));
+      } else if (method.parameters?.length && tsMethod.parameters?.length) {
+        method.parameters = method.parameters.map((param) => {
+          const tsParam = tsMethod.parameters.find((p) => p.name === param.name);
+          if (!tsParam) return param;
+          return {
+            ...param,
+            type: tsParam.type || param.type,
+            description: trimOrNull([param.description, tsParam.description].filter(Boolean).join('\n\n')) || param.description,
+            optional: tsParam.optional || param.optional || false
+          };
+        });
+      }
+      method.return = tsMethod.returnType || method.return;
+    }
+
+    for (const [methodName, tsMethod] of Object.entries(tsClassInfo.methods || {})) {
+      if (isPrivateMemberName(methodName) || methodMap.has(methodName)) continue;
+      methodMap.set(methodName, {
+        name: methodName,
+        description: trimOrNull(tsMethod.description),
+        parameters: (tsMethod.parameters || []).map((param) => ({
+          name: param.name,
+          type: param.type,
+          description: param.description,
+          optional: param.optional || false
+        })),
+        return: tsMethod.returnType || null
+      });
+    }
+    methods = Array.from(methodMap.values());
+  }
+
+  const overrides = tag ? SPECIAL_COMPONENT_OVERRIDES[tag] || {} : {};
 
   if (overrides.properties) {
     for (const [propName, override] of Object.entries(overrides.properties)) {
@@ -377,13 +579,20 @@ function mapCustomElement(declaration, moduleEntry, storyMeta = {}, ontologyLook
     }
   }
 
+  const combinedDescription = trimOrNull([
+    declaration.description,
+    tsClassInfo?.description
+  ].filter(Boolean).join('\n\n'));
+
+  const className = tsClassInfo?.name || declaration.name;
+
   return {
     tag,
-    className: declaration.name,
+    className,
     displayName: overrides.title || storyMeta.name || ontologyEntry?.name || humanizeTag(tag),
     storyTitle: storyMeta.storyTitle || null,
     category: storyMeta.category || null,
-    description: trimOrNull(declaration.description),
+    description: combinedDescription,
     docsDescription: storyMeta.description || null,
     pdsTags: storyMeta.tags || [],
     ontology: ontologyEntry ? { ...ontologyEntry } : null,
@@ -400,7 +609,7 @@ function mapCustomElement(declaration, moduleEntry, storyMeta = {}, ontologyLook
   };
 }
 
-function buildComponents(customElements, ontology, storyIndex) {
+async function buildComponents(customElements, ontology, storyIndex) {
   const ontologyLookup = new Map();
   for (const item of ontology.components || []) {
     ontologyLookup.set(item.id?.toLowerCase(), item);
@@ -416,11 +625,54 @@ function buildComponents(customElements, ontology, storyIndex) {
   const components = {};
 
   for (const moduleEntry of customElements.modules || []) {
+    const moduleTypeInfo = await loadTypeMetadata(moduleEntry.path);
+    const customElementDefs = (moduleEntry.exports || []).filter((exp) => exp.kind === 'custom-element-definition');
+
+    if (customElementDefs.length) {
+      for (const definition of customElementDefs) {
+        const tag = definition.name?.toLowerCase();
+        if (!tag) continue;
+        const declarationRefName = definition.declaration?.name;
+        const declaration = (moduleEntry.declarations || []).find((decl) => decl.name === declarationRefName) ||
+          (moduleEntry.declarations || []).find((decl) => decl.tagName && decl.tagName.toLowerCase() === tag) ||
+          (moduleEntry.declarations || []).find((decl) => decl.customElement);
+        if (!declaration) continue;
+
+        const tagWithoutPrefix = tag.startsWith('pds-') ? tag.slice(4) : tag;
+        const storyMeta =
+          storyIndex[tag] ||
+          storyIndex[slugifySegment(tag)] ||
+          storyIndex[tagWithoutPrefix] ||
+          storyIndex[slugifySegment(tagWithoutPrefix)] ||
+          storyIndex[slugifySegment(declaration.name)] || {};
+
+        const tsClassInfo = moduleTypeInfo?.classes?.[declaration.name] ||
+          moduleTypeInfo?.classes?.[declarationRefName] ||
+          null;
+
+        const component = mapCustomElement(declaration, moduleEntry, storyMeta, ontologyLookup, tag, tsClassInfo);
+        if (component?.tag) {
+          components[component.tag] = component;
+        }
+      }
+      continue;
+    }
+
     for (const declaration of moduleEntry.declarations || []) {
       if (!declaration.tagName) continue;
       const tag = declaration.tagName.toLowerCase();
-      const storyMeta = storyIndex[tag] || storyIndex[slugifySegment(declaration.name)] || storyIndex[tag.replace(/^pds\-/, 'pds-')] || {};
-      components[tag] = mapCustomElement(declaration, moduleEntry, storyMeta, ontologyLookup);
+      const tagWithoutPrefix = tag.startsWith('pds-') ? tag.slice(4) : tag;
+      const storyMeta =
+        storyIndex[tag] ||
+        storyIndex[slugifySegment(tag)] ||
+        storyIndex[tagWithoutPrefix] ||
+        storyIndex[slugifySegment(tagWithoutPrefix)] ||
+        storyIndex[slugifySegment(declaration.name)] || {};
+      const tsClassInfo = moduleTypeInfo?.classes?.[declaration.name] || null;
+      const component = mapCustomElement(declaration, moduleEntry, storyMeta, ontologyLookup, tag, tsClassInfo);
+      if (component?.tag) {
+        components[component.tag] = component;
+      }
     }
   }
 
@@ -499,7 +751,7 @@ async function main() {
       loadEnhancers()
     ]);
 
-    const components = buildComponents(customElements, ontology, storyIndex);
+    const components = await buildComponents(customElements, ontology, storyIndex);
     const primitives = buildPrimitives(ontology);
     const enhancements = buildEnhancements(ontology, enhancerMetadata);
     const tokens = buildTokens(ontology);

@@ -12,8 +12,8 @@
       ]
     },
     {
-      "name": "pds-drawer",
-      "description": "DrawerPanel component",
+      "name": "pds-calendar",
+      "description": "anonymous_0 component",
       "attributes": [
         {
           "name": "open",
@@ -696,20 +696,32 @@
         {
           "name": "value",
           "description": ""
+        },
+        {
+          "name": "format",
+          "description": ""
         }
       ]
     },
     {
       "name": "pds-scrollrow",
-      "description": "PdsScrollrow component",
+      "description": "Horizontal scrolling row with optional heading and snap alignment controls.",
       "attributes": [
         {
           "name": "label",
-          "description": ""
+          "description": "Accessible label for the scroll region; also used as fallback heading copy"
         },
         {
           "name": "snap",
-          "description": ""
+          "description": "Snap alignment for tiles when scrolling (default: start)",
+          "values": [
+            {
+              "name": "start"
+            },
+            {
+              "name": "center"
+            }
+          ]
         }
       ]
     },
@@ -751,11 +763,15 @@
     },
     {
       "name": "pds-tabstrip",
-      "description": "TabStrip component",
+      "description": "Tab navigation component that pairs anchors with `pds-tabpanel` children.",
       "attributes": [
         {
           "name": "label",
-          "description": "Accessible label for the tabs navigation"
+          "description": "Accessible label announced for the tablist"
+        },
+        {
+          "name": "selected",
+          "description": "Identifier of the currently active panel (synced with the location hash)"
         }
       ]
     },
@@ -765,23 +781,25 @@
     },
     {
       "name": "pds-upload",
-      "description": "UploadArea component",
+      "description": "Drag-and-drop file uploader that participates in native forms.",
       "attributes": [
         {
           "name": "accept",
-          "description": ""
+          "description": "Comma separated list of accepted MIME types and file extensions"
         },
         {
           "name": "multiple",
-          "description": ""
+          "description": "Allows selecting more than one file",
+          "valueSet": "v"
         },
         {
           "name": "disabled",
-          "description": ""
+          "description": "Disables interaction with the drop zone and button",
+          "valueSet": "v"
         },
         {
           "name": "max-files",
-          "description": ""
+          "description": "Optional cap on the number of files the user may select"
         }
       ]
     }
