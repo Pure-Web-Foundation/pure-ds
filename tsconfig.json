@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowJs": true,
+    "checkJs": false,
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist/types",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "types": ["node"]
+  },
+  "include": [
+    "types/**/*.d.ts",
+    "src/**/*.js",
+    "public/assets/js/**/*.js",
+    "public/assets/pds/components/**/*.js",
+    "public/auto-define/**/*.js"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "public/assets/js/lit.js",
+    "packages/**",
+    "**/*.stories.js"
+  ]
+}

@@ -1,3 +1,14 @@
+/**
+ * Horizontal scrolling row with optional heading and snap alignment controls.
+ *
+ * @element pds-scrollrow
+ * @slot default - Scrollable tile content
+ * @slot heading - Optional heading content rendered in the component header
+ * @csspart viewport - The scrollable container element
+ *
+ * @attr {string} label - Accessible label for the scroll region; also used as fallback heading copy
+ * @attr {"start"|"center"} snap - Snap alignment for tiles when scrolling (default: start)
+ */
 class PdsScrollrow extends HTMLElement {
   #viewport;
   #ro;
@@ -81,22 +92,42 @@ class PdsScrollrow extends HTMLElement {
   }
 
   // Property <-> attribute reflection for ergonomic usage
+
+  /**
+   * Accessible label applied to the scroll region.
+   * @returns {string|null}
+   */
   get label() {
     // Return null when not set so caller can decide whether to render header
     return this.getAttribute("label");
   }
+  /**
+   * Update the accessible label and optional fallback heading text.
+   * @param {string|null} val
+   */
   set label(val) {
     if (val == null) this.removeAttribute("label");
     else this.setAttribute("label", String(val));
   }
+  /**
+   * Current scroll snap alignment strategy.
+   * @returns {"start"|"center"}
+   */
   get snap() {
     return this.getAttribute("snap") ?? "start";
   }
+  /**
+   * Adjust the scroll snap alignment.
+   * @param {string|null} val
+   */
   set snap(val) {
     if (val == null) this.removeAttribute("snap");
     else this.setAttribute("snap", String(val));
   }
 
+  /**
+   * Lifecycle hook called when the element is inserted into the document.
+   */
   connectedCallback() {
     if (!this.#rendered) {
       this.render();
@@ -107,10 +138,19 @@ class PdsScrollrow extends HTMLElement {
     this.#updateControls();
   }
 
+  /**
+   * Lifecycle hook called when the element is removed from the document.
+   */
   disconnectedCallback() {
     this.#ro?.disconnect();
   }
 
+  /**
+   * Respond to attribute mutations for `label` and `snap`.
+   * @param {string} name
+   * @param {string|null} oldValue
+   * @param {string|null} newValue
+   */
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue === newValue) return;
     if (!this.shadowRoot) return;
@@ -149,6 +189,9 @@ class PdsScrollrow extends HTMLElement {
     }
   }
 
+  /**
+   * Render or rerender the component shadow DOM.
+   */
   render() {
     const label = this.label;
     const headerHtml = label
@@ -228,6 +271,10 @@ class PdsScrollrow extends HTMLElement {
     }
   }
 
+  /**
+   * Scroll the viewport by roughly one page in the indicated direction.
+   * @param {Event} e
+   */
   doPage(e) {
     const target = e.currentTarget || e.target;
     const direction = target.getAttribute("part") === "prev" ? -1 : 1;

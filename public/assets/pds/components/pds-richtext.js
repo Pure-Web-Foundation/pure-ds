@@ -1,19 +1,37 @@
-/** <rich-text> — ultra‑light Slack‑style contenteditable editor (Lit + JS only)
- - Real contenteditable div, toolbar like Slack
- - Form‑associated custom element; submits a CLEANED HTML value
- - Cleaning pipeline: contenteditable HTML -> minimal Markdown (local) -> HTML via Showdown Converter
-   This ensures only MD‑supported tags remain (<strong>, <em>, <s>, <code>, <a>, <ul/ol/li>, <br>, <p>)
- - Enter submits (configurable), Shift+Enter inserts newline
- - Paste is forced to plain text
-
- Usage:
- <form onsubmit="event.preventDefault();console.log('posted:', new FormData(this).get('message'))}">
-   <rich-text name="message" placeholder="Message Steve" submit-on-enter></rich-text>
-   <button type="submit">Send</button>
- </form>
- <script type="module" src="/rich-text.js"></script> 
- 
-*/
+/**
+ * Slack-style rich text field with a semantic output pipeline.
+ *
+ * @element pds-richtext
+ * @formAssociated
+ *
+ * @attr {string} name - Form field name included with submitted form data
+ * @attr {string} placeholder - Placeholder copy displayed when the editor is empty
+ * @attr {boolean} disabled - Disables editing, selection, and toolbar interactions
+ * @attr {boolean} required - Marks the field as required for native form validation
+ * @attr {boolean} submit-on-enter - When present, pressing Enter submits the host form (Shift+Enter inserts a newline)
+ * @attr {boolean} spellcheck - Enables native spellcheck inside the editor (default: true)
+ * @attr {boolean} toolbar - Toggles the formatting toolbar UI (default: true)
+ * @attr {"html"|"markdown"} format - Output format for `value`; Markdown uses Showdown for sanitised HTML
+ * @attr {string} value - Initial editor value; kept in sync with the `value` property
+ *
+ * @property {string} name - Reflective form control name
+ * @property {string} placeholder - Placeholder text for the editor surface
+ * @property {boolean} disabled - Reflects the disabled state on the host element
+ * @property {boolean} required - Mirrors native required semantics
+ * @property {boolean} submitOnEnter - Controls form submission when the user presses Enter
+ * @property {boolean} spellcheck - Enables or disables native spell checking
+ * @property {boolean} toolbar - Shows or hides the inline formatting toolbar
+ * @property {"html"|"markdown"} format - Determines whether the element emits HTML or Markdown
+ * @property {string} value - Serialised editor contents as HTML (default) or Markdown
+ *
+ * @fires input - Fired whenever the editor value syncs from user input
+ *
+ * @example
+ * <form onsubmit="event.preventDefault(); console.log(new FormData(this).get('message'))">
+ *   <pds-richtext name="message" placeholder="Message Steve" submit-on-enter></pds-richtext>
+ *   <button type="submit">Send</button>
+ * </form>
+ */
 
 // Refactored: remove Lit dependency, implement as plain HTMLElement with Shadow DOM
 // - Adopts PDS layers (primitives, components) for styling tokens
@@ -65,24 +83,49 @@ export class RichText extends HTMLElement {
   }
 
   // Property accessors (reflective where needed)
+
+  /**
+   * Current form field name used when serialising via `FormData`.
+   * @returns {string}
+   */
   get name() {
     return this.getAttribute("name") || "";
   }
+  /**
+   * Update the form field name.
+   * @param {string|null} v
+   */
   set name(v) {
     if (v == null) this.removeAttribute("name");
     else this.setAttribute("name", v);
   }
+  /**
+   * Placeholder text shown while the editor is empty.
+   * @returns {string}
+   */
   get placeholder() {
     return this._placeholder;
   }
+  /**
+   * Set the placeholder text.
+   * @param {string|null} v
+   */
   set placeholder(v) {
     this._placeholder = v ?? "";
     if (this.#editorDiv)
       this.#editorDiv.setAttribute("data-ph", this._placeholder);
   }
+  /**
+   * Indicates whether user input is enabled.
+   * @returns {boolean}
+   */
   get disabled() {
     return this._disabled;
   }
+  /**
+   * Enable or disable user input.
+   * @param {boolean} v
+   */
   set disabled(v) {
     const b = !!v;
     this._disabled = b;
@@ -90,43 +133,83 @@ export class RichText extends HTMLElement {
     if (this.#editorDiv)
       this.#editorDiv.setAttribute("contenteditable", String(!b));
   }
+  /**
+   * Whether the control participates in required form validation.
+   * @returns {boolean}
+   */
   get required() {
     return this._required;
   }
+  /**
+   * Toggle required validation.
+   * @param {boolean} v
+   */
   set required(v) {
     const b = !!v;
     this._required = b;
     this.toggleAttribute("required", b);
   }
+  /**
+   * Submit-on-enter behaviour flag.
+   * @returns {boolean}
+   */
   get submitOnEnter() {
     return this._submitOnEnter;
   }
+  /**
+   * Enable or disable submit-on-enter behaviour.
+   * @param {boolean} v
+   */
   set submitOnEnter(v) {
     const b = !!v;
     this._submitOnEnter = b;
     this.toggleAttribute("submit-on-enter", b);
   }
+  /**
+   * Indicates if native spell checking is active.
+   * @returns {boolean}
+   */
   get spellcheck() {
     return this._spellcheck;
   }
+  /**
+   * Toggle native spell checking support.
+   * @param {boolean} v
+   */
   set spellcheck(v) {
     const b = !!v;
     this._spellcheck = b;
     this.toggleAttribute("spellcheck", b);
     if (this.#editorDiv) this.#editorDiv.setAttribute("spellcheck", String(b));
   }
+  /**
+   * Whether the formatting toolbar is rendered.
+   * @returns {boolean}
+   */
   get toolbar() {
     return this._toolbar;
   }
+  /**
+   * Show or hide the formatting toolbar.
+   * @param {boolean} v
+   */
   set toolbar(v) {
     const b = !!v;
     this._toolbar = b;
     this.toggleAttribute("toolbar", b);
     this.#render();
   }
+  /**
+   * Current output format for the value (HTML or Markdown).
+   * @returns {"html"|"markdown"}
+   */
   get format() {
     return this._format;
   }
+  /**
+   * Change the output format for future values.
+   * @param {string|null} v
+   */
   set format(v) {
     const next =
       (v ?? "").toString().toLowerCase() === "markdown" ? "markdown" : "html";
@@ -136,9 +219,17 @@ export class RichText extends HTMLElement {
       this.setAttribute("format", "markdown");
     }
   }
+  /**
+   * Serialised editor contents respecting the configured `format`.
+   * @returns {string}
+   */
   get value() {
     return this._value;
   }
+  /**
+   * Update the editor value programmatically.
+   * @param {string|null} v
+   */
   set value(v) {
     const next = v ?? "";
     if (next === this._value) {
@@ -156,6 +247,12 @@ export class RichText extends HTMLElement {
     this.#updateEditorFromValue();
   }
 
+  /**
+   * Reflect attribute mutations into the corresponding property state.
+   * @param {string} name
+   * @param {string|null} oldV
+   * @param {string|null} newV
+   */
   attributeChangedCallback(name, oldV, newV) {
     if (oldV === newV) return;
     switch (name) {
@@ -207,16 +304,32 @@ export class RichText extends HTMLElement {
     }
   }
 
+  /**
+   * Reference to the associated HTMLFormElement, when applicable.
+   * @returns {HTMLFormElement|null}
+   */
   get form() {
     return this.#internals.form;
   }
+  /**
+   * Run native form validation against the control.
+   * @returns {boolean}
+   */
   checkValidity() {
     return this.#internals.checkValidity();
   }
+  /**
+   * Report validity using the browser's built-in UI.
+   * @returns {boolean}
+   */
   reportValidity() {
     return this.#internals.reportValidity();
   }
 
+  /**
+   * Attach DOM, adopted styles, and hydrate the initial value on connect.
+   * @returns {Promise<void>}
+   */
   async connectedCallback() {
     this.#render();
     await this.#adoptStyles();

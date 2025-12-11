@@ -22,3 +22,4 @@ yarn.lock
 public/readme.md
 packages/pds-storybook/node_modules
 packages/pds-storybook/storybook-static
+packages/pds-storybook/dist

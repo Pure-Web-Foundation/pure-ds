@@ -6,8 +6,9 @@
   "private": true,
   "scripts": {
     "generate-stories": "node scripts/generate-stories.js",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build --output-dir storybook-static",
+    "build-reference": "node scripts/build-pds-reference.mjs",
+    "storybook": "npm run build-reference && storybook dev -p 6006",
+    "build-storybook": "npm run build-reference && storybook build --output-dir storybook-static",
     "storybook:dev": "npm run generate-stories && npm run storybook",
     "storybook:build": "npm run generate-stories && npm run build-storybook"
   },

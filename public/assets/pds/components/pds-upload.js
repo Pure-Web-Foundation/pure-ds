@@ -1,4 +1,14 @@
-
+/**
+ * Drag-and-drop file uploader that participates in native forms.
+ *
+ * @element pds-upload
+ * @formAssociated
+ *
+ * @attr {string} accept - Comma separated list of accepted MIME types and file extensions
+ * @attr {boolean} multiple - Allows selecting more than one file
+ * @attr {boolean} disabled - Disables interaction with the drop zone and button
+ * @attr {number} max-files - Optional cap on the number of files the user may select
+ */
 class UploadArea extends HTMLElement {
   static get observedAttributes() {
     return ["accept", "multiple", "disabled", "max-files"];
@@ -25,10 +35,10 @@ class UploadArea extends HTMLElement {
     this.#internals = this.attachInternals();
 
     // Render structure first
-    this._renderStructure();
+    this.#renderStructure();
     
     // Adopt primitives stylesheet asynchronously
-    this._adoptStyles();
+    this.#adoptStyles();
 
     this.#container = this.#root.querySelector(".container");
     this.#btnSelect = this.#root.querySelector(".btn-select");
@@ -36,7 +46,7 @@ class UploadArea extends HTMLElement {
     this.#input = this.#root.querySelector('input[type="file"]');
   }
 
-  _renderStructure() {
+  #renderStructure() {
     this.#root.innerHTML = `
       <div class="container" role="button" tabindex="0" aria-disabled="false">
         <div class="instructions">
@@ -52,7 +62,7 @@ class UploadArea extends HTMLElement {
     `;
   }
 
-  async _adoptStyles() {
+  async #adoptStyles() {
     // Component-specific styles (button styles come from primitives)
     const componentStyles = PDS.createStylesheet(/*css*/`
       @layer upload {
@@ -190,22 +200,33 @@ class UploadArea extends HTMLElement {
   }
 
   // Form-associated lifecycle callbacks
+  /**
+   * Invoked when the element becomes associated with a `<form>`.
+   */
   formAssociatedCallback() {
-    // Called when the element is associated with a form
+    // Hook reserved for future enhancements (e.g., default validity state)
   }
 
+  /**
+   * Sync disabled state across internal controls when the host form toggles.
+   * @param {boolean} disabled
+   */
   formDisabledCallback(disabled) {
-    // Called when the form or fieldset is disabled/enabled
     this.#container.setAttribute("aria-disabled", disabled);
   }
 
+  /**
+   * Clear selected files when the host form resets.
+   */
   formResetCallback() {
-    // Called when the form is reset
     this.clear();
   }
 
+  /**
+   * Restore previously submitted files during BFCache or session restores.
+   * @param {File[]} state
+   */
   formStateRestoreCallback(state) {
-    // Called when the form restores its state (e.g., after navigation)
     if (state) {
       this.#files = state;
       this.#updateTiles();
@@ -213,24 +234,41 @@ class UploadArea extends HTMLElement {
   }
 
   // Custom methods for form participation
+  /**
+   * Comma separated list of file names for form serialisation.
+   * @returns {string}
+   */
   get value() {
     return this.#files.map((file) => file.name).join(", ");
   }
 
+  /**
+   * Value is derived from the selected files and cannot be set manually.
+   * @param {string} val
+   */
   set value(val) {
-    // No-op: value is derived from files
+    // No-op by design: value is derived from files
   }
 
+  /**
+   * Run constraint validation leveraging ElementInternals.
+   * @returns {boolean}
+   */
   checkValidity() {
-    // Custom validation logic
     return this.#internals.checkValidity();
   }
 
+  /**
+   * Report validity issues using the browser UI.
+   * @returns {boolean}
+   */
   reportValidity() {
-    // Report validation issues
     return this.#internals.reportValidity();
   }
 
+  /**
+   * Clear all selected files and update the UI accordingly.
+   */
   clear() {
     this.#files = [];
     this.#updateTiles();
@@ -247,13 +285,16 @@ class UploadArea extends HTMLElement {
     });
   }
 
+  /**
+   * Lifecycle hook used to upgrade properties and wire event listeners.
+   */
   connectedCallback() {
-    this._upgradeProperty("accept");
-    this._upgradeProperty("multiple");
-    this._upgradeProperty("disabled");
-    this._upgradeProperty("max-files");
+    this.#upgradeProperty("accept");
+    this.#upgradeProperty("multiple");
+    this.#upgradeProperty("disabled");
+    this.#upgradeProperty("max-files");
 
-    this._applyAttributesToInput();
+    this.#applyAttributesToInput();
 
     this.#container.addEventListener("click", this.#onClick);
     this.#container.addEventListener("keydown", this.#onKey);
@@ -267,6 +308,9 @@ class UploadArea extends HTMLElement {
     this.#container.addEventListener("drop", this.#onDrop);
   }
 
+  /**
+   * Clean up listeners and revoke object URLs when disconnected.
+   */
   disconnectedCallback() {
     this.#container.removeEventListener("click", this.#onClick);
     this.#container.removeEventListener("keydown", this.#onKey);
@@ -278,9 +322,15 @@ class UploadArea extends HTMLElement {
     this.#container.removeEventListener("dragleave", this.#onDragLeave);
     this.#container.removeEventListener("drop", this.#onDrop);
 
-    this._revokeAllObjectUrls();
+    this.#revokeAllObjectUrls();
   }
 
+  /**
+   * Mirror attribute mutations onto the hidden file input.
+   * @param {string} name
+   * @param {string|null} oldVal
+   * @param {string|null} newVal
+   */
   attributeChangedCallback(name, oldVal, newVal) {
     if (oldVal === newVal) return;
     switch (name) {
@@ -288,26 +338,32 @@ class UploadArea extends HTMLElement {
       case "multiple":
       case "disabled":
       case "max-files":
-        this._applyAttributesToInput();
+        this.#applyAttributesToInput();
         break;
     }
   }
 
   // Public API
+  /**
+   * Retrieve a shallow copy of the current file selection.
+   * @returns {File[]}
+   */
   getFiles() {
-    // Return a copy array of files
     return Array.from(this.#files);
   }
 
+  /**
+   * Remove all files and emit a change notification.
+   */
   clear() {
     this.#files = [];
-    this._updateInputFiles();
-    this._renderTiles();
-    this._emitFilesChanged();
+    this.#updateInputFiles();
+    this.#renderTiles();
+    this.#emitFilesChanged();
   }
 
   // Internals
-  _upgradeProperty(prop) {
+  #upgradeProperty(prop) {
     if (this.hasOwnProperty(prop)) {
       let value = this[prop];
       delete this[prop];
@@ -315,7 +371,7 @@ class UploadArea extends HTMLElement {
     }
   }
 
-  _applyAttributesToInput() {
+  #applyAttributesToInput() {
     // accept
     if (this.hasAttribute("accept")) {
       this.#input.setAttribute("accept", this.getAttribute("accept"));
@@ -367,7 +423,7 @@ class UploadArea extends HTMLElement {
 
   #onFileInput = (e) => {
     if (!this.#input.files) return;
-    this._addFiles(this.#input.files);
+    this.#addFiles(this.#input.files);
     // reset input to allow selecting same file again
     this.#input.value = "";
   };
@@ -403,11 +459,11 @@ class UploadArea extends HTMLElement {
     const dtFiles =
       e.dataTransfer && e.dataTransfer.files ? e.dataTransfer.files : null;
     if (dtFiles && dtFiles.length) {
-      this._addFiles(dtFiles);
+      this.#addFiles(dtFiles);
     }
   };
 
-  _addFiles(fileListLike) {
+  #addFiles(fileListLike) {
     const incoming = Array.from(fileListLike);
 
     // If accept is present, filter by accept patterns
@@ -419,7 +475,7 @@ class UploadArea extends HTMLElement {
           .filter(Boolean)
       : null;
     const acceptedFiles = acceptList
-      ? incoming.filter((f) => this._fileMatchesAccept(f, acceptList))
+      ? incoming.filter((f) => this.#fileMatchesAccept(f, acceptList))
       : incoming;
 
     // max-files handling
@@ -440,12 +496,12 @@ class UploadArea extends HTMLElement {
       }
     }
 
-    this._updateInputFiles();
-    this._renderTiles();
-    this._emitFilesChanged();
+    this.#updateInputFiles();
+    this.#renderTiles();
+    this.#emitFilesChanged();
   }
 
-  _fileMatchesAccept(file, acceptList) {
+  #fileMatchesAccept(file, acceptList) {
     // Accept patterns can be MIME types, wildcards like image/*, or extensions like .png
     const name = (file.name || "").toLowerCase();
     const type = (file.type || "").toLowerCase();
@@ -463,7 +519,7 @@ class UploadArea extends HTMLElement {
     return false;
   }
 
-  _updateInputFiles() {
+  #updateInputFiles() {
     // Create a DataTransfer and assign files to hidden input for form compatibility
     try {
       const dt = new DataTransfer();
@@ -475,10 +531,10 @@ class UploadArea extends HTMLElement {
     }
   }
 
-  _renderTiles() {
+  #renderTiles() {
     // Clear tiles
     this.#tiles.innerHTML = "";
-    this._revokeUnusedObjectUrls();
+    this.#revokeUnusedObjectUrls();
 
     this.#files.forEach((file, idx) => {
       const tile = document.createElement("div");
@@ -497,7 +553,7 @@ class UploadArea extends HTMLElement {
         thumb.appendChild(img);
       } else {
         // non-image icon (simple file icon)
-        thumb.innerHTML = this._fileIconSvg();
+        thumb.innerHTML = this.#fileIconSvg();
       }
 
       const meta = document.createElement("div");
@@ -507,7 +563,7 @@ class UploadArea extends HTMLElement {
       name.textContent = file.name;
       const size = document.createElement("div");
       size.className = "size";
-      size.textContent = this._formatBytes(file.size);
+      size.textContent = this.#formatBytes(file.size);
       meta.appendChild(name);
       meta.appendChild(size);
 
@@ -519,7 +575,7 @@ class UploadArea extends HTMLElement {
       remove.textContent = "✕";
       remove.addEventListener("click", (e) => {
         e.stopPropagation();
-        this._removeFileAtIndex(idx);
+        this.#removeFileAtIndex(idx);
       });
 
       tile.appendChild(thumb);
@@ -530,13 +586,13 @@ class UploadArea extends HTMLElement {
     });
   }
 
-  _removeFileAtIndex(i) {
+  #removeFileAtIndex(i) {
     const file = this.#files[i];
     if (!file) return;
     this.#files.splice(i, 1);
-    this._updateInputFiles();
-    this._renderTiles();
-    this._emitFilesChanged();
+    this.#updateInputFiles();
+    this.#renderTiles();
+    this.#emitFilesChanged();
     // revoke object url for removed file
     if (this.#objectUrls.has(file)) {
       URL.revokeObjectURL(this.#objectUrls.get(file));
@@ -544,7 +600,7 @@ class UploadArea extends HTMLElement {
     }
   }
 
-  _emitFilesChanged() {
+  #emitFilesChanged() {
     const filesArray = this.getFiles();
     this.dispatchEvent(
       new CustomEvent("files-changed", {
@@ -555,7 +611,7 @@ class UploadArea extends HTMLElement {
     );
   }
 
-  _formatBytes(bytes) {
+  #formatBytes(bytes) {
     if (bytes === 0) return "0 B";
     const k = 1024;
     const sizes = ["B", "KB", "MB", "GB", "TB"];
@@ -563,7 +619,7 @@ class UploadArea extends HTMLElement {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   }
 
-  _fileIconSvg() {
+  #fileIconSvg() {
     // Minimal inline SVG for generic file icon
     return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
       <rect x="3" y="3" width="18" height="18" rx="2" fill="#fff" stroke="#e5e7eb"/>
@@ -571,7 +627,7 @@ class UploadArea extends HTMLElement {
     </svg>`;
   }
 
-  _revokeAllObjectUrls() {
+  #revokeAllObjectUrls() {
     for (const url of this.#objectUrls.values()) {
       try {
         URL.revokeObjectURL(url);
@@ -580,7 +636,7 @@ class UploadArea extends HTMLElement {
     this.#objectUrls.clear();
   }
 
-  _revokeUnusedObjectUrls() {
+  #revokeUnusedObjectUrls() {
     // Remove any object URLs for files no longer present
     const currentFiles = new Set(this.#files);
     for (const [file, url] of Array.from(this.#objectUrls.entries())) {

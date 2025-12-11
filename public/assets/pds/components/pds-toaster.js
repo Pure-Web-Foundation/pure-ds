@@ -24,6 +24,10 @@ export class AppToaster extends HTMLElement {
     this.toasts = [];
   }
 
+  /**
+   * Prepare styles and begin listening for global `pds:toast` events.
+   * @returns {Promise<void>}
+   */
   async connectedCallback() {
     // Attach shadow DOM
     this.attachShadow({ mode: "open" });
@@ -149,6 +153,9 @@ export class AppToaster extends HTMLElement {
     );
   }
 
+  /**
+   * Remove toast event listeners when disconnected.
+   */
   disconnectedCallback() {
     // Clean up event listener
     if (this._handleToastEvent) {
@@ -187,10 +194,13 @@ export class AppToaster extends HTMLElement {
     const multiplier = config.type === "error" ? 1.5 : 1;
     const duration = config.duration || baseReadingTime * multiplier;
 
-    return this.showToast(message, config, duration);
+    return this.#showToast(message, config, duration);
   }
 
-  showToast(message, config, duration) {
+  /*
+   * Internal helper used by shorthand methods to render a toast.   
+   */
+  #showToast(message, config, duration) {
     // Generate unique ID for this toast
     const toastId = `toast-${Date.now()}-${Math.random()
       .toString(36)
@@ -227,23 +237,33 @@ export class AppToaster extends HTMLElement {
     return toastId;
   }
 
+  /**
+   * Build a DOM node representing a single toast notification.
+   * @param {string} id
+   * @param {string} message
+   * @param {"information"|"success"|"warning"|"error"} type
+   * @param {boolean} closable
+   * @param {number} duration
+   * @param {boolean} persistent
+   * @returns {HTMLElement}
+   */
   createToastElement(id, message, type, closable, duration, persistent) {
     const toast = document.createElement("aside");
-    toast.className = `toast alert ${this.getAlertClass(type)}`;
+    toast.className = `toast alert ${this.#getAlertClass(type)}`;
     toast.setAttribute("data-toast-id", id);
     toast.setAttribute("role", "status");
     toast.setAttribute("aria-live", "polite");
 
     const icon = document.createElement("pds-icon");
     icon.className = "alert-icon";
-    icon.setAttribute("icon", this.getToastIcon(type));
+    icon.setAttribute("icon", this.#getToastIcon(type));
     icon.setAttribute("size", "lg");
 
     const content = document.createElement("div");
 
     const title = document.createElement("div");
     title.className = "alert-title";
-    title.textContent = this.getToastTitle(type);
+    title.textContent = this.#getToastTitle(type);
 
     const text = document.createElement("p");
     text.style.margin = "0";
@@ -299,6 +319,9 @@ export class AppToaster extends HTMLElement {
     }, 300);
   }
 
+  /**
+   * Close all active toasts.
+   */
   dismissAll() {
     const toastElements = this.shadowRoot.querySelectorAll(".toast");
     toastElements.forEach((toast) => {
@@ -314,15 +337,24 @@ export class AppToaster extends HTMLElement {
     }, 300);
   }
 
-  handleCloseClick(toastId) {
+  /*
+   * Programmatically close the toast associated with a button click.
+   */
+  #handleCloseClick(toastId) {
     this.dismissToast(toastId);
   }
 
-  handleAnimationEnd(toastId) {
+  /*
+   * Placeholder hook for responding to animation lifecycle in the future.
+   */
+  #handleAnimationEnd(toastId) {
     // Placeholder for potential future use
   }
 
-  getToastIcon(type) {
+  /**
+   * Map toast type to an icon identifier.
+   */
+  #getToastIcon(type) {
     const icons = {
       information: "info",
       success: "check-circle",
@@ -332,7 +364,12 @@ export class AppToaster extends HTMLElement {
     return icons[type] || icons.information;
   }
 
-  getToastTitle(type) {
+  /**
+   * Map toast type to a semantic title label.
+   * @param {"information"|"success"|"warning"|"error"} type
+   * @returns {string}
+   */
+  #getToastTitle(type) {
     const titles = {
       information: "Information",
       success: "Success!",
@@ -342,7 +379,12 @@ export class AppToaster extends HTMLElement {
     return titles[type] || titles.information;
   }
 
-  getAlertClass(type) {
+  /**
+   * Resolve toast type to an alert utility class name.
+   * @param {"information"|"success"|"warning"|"error"} type
+   * @returns {string}
+   */
+  #getAlertClass(type) {
     const classMap = {
       information: "alert-info",
       success: "alert-success",

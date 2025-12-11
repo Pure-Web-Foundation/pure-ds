@@ -11,14 +11,7 @@ export const ontology = {
     themes: ["light", "dark"],
   },
 
-  enhancements: [
-    "nav[data-dropdown]",
-    "label[data-toggle]",
-    "[data-tabs]",
-    "[data-modal]",
-    "[data-tooltip]",
-  ],
-
+  
   primitives: [
     { id: "badge", name: "Badge / Pill", selectors: [".badge", ".pill", ".tag", ".chip"] },
     { id: "card", name: "Card", selectors: [".card", ".card-basic", ".card-elevated", ".card-outlined", ".card-interactive"] },

@@ -25,6 +25,10 @@ class TabPanel extends HTMLElement {
       this._section = section;
     }
   }
+  /**
+   * The inner `<section>` that exposes the panel region semantics.
+   * @returns {HTMLElement|null}
+   */
   get section() {
     return this.querySelector("[data-tabpanel]");
   }
@@ -32,16 +36,18 @@ class TabPanel extends HTMLElement {
 customElements.define("pds-tabpanel", TabPanel);
 
 /**
+ * Tab navigation component that pairs anchors with `pds-tabpanel` children.
+ *
  * @element pds-tabstrip
- * @fires tabchange - Fired when the active tab changes. Event detail contains: { oldTab: string, newTab: string }
- * 
- * @attr {string} label - Accessible label for the tabs navigation
- * 
- * @slot - Tab panels (pds-tabpanel elements)
- * 
- * @csspart tabs - The navigation container with tab buttons
- * 
- * @cssprop --color-accent-400 - Color of the active tab indicator
+ * @fires tabchange - Fired when the active tab changes. Detail: `{ oldTab: string|null, newTab: string }`
+ *
+ * @attr {string} label - Accessible label announced for the tablist
+ * @attr {string} selected - Identifier of the currently active panel (synced with the location hash)
+ *
+ * @slot - Collection of `pds-tabpanel` nodes representing individual tab panels
+ *
+ * @csspart tabs - Navigation container comprising the clickable tab buttons
+ * @cssprop --color-accent-400 - Color of the active tab indicator underline
  */
 class TabStrip extends HTMLElement {
   #shadow = this.attachShadow({ mode: "open" });
@@ -79,6 +85,9 @@ class TabStrip extends HTMLElement {
     `;
   }
 
+  /**
+   * Attach event listeners and observe panels once connected.
+   */
   connectedCallback() {
     // Set nav aria-label based on attribute or default
     const nav = this.#shadow.querySelector("nav");

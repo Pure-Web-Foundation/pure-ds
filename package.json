@@ -24,7 +24,7 @@
   "type": "module",
   "main": "./public/assets/js/pds.js",
   "module": "./public/assets/js/pds.js",
-  "types": "./src/js/pds.d.ts",
+  "types": "./dist/types/pds.d.ts",
   "bin": {
     "pds-export": "packages/pds-cli/bin/pds-static.js",
     "pds-sync-assets": "packages/pds-cli/bin/sync-assets.js",
@@ -40,6 +40,7 @@
     "./auto-define/*": "./public/auto-define/*"
   },
   "files": [
+    "dist/types/",
     "public/assets/js/",
     "public/assets/pds/components/",
     "public/assets/pds/vscode-custom-data.json",
@@ -66,7 +67,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node esbuild-dev.js",
-    "build": "node esbuild-build.js",
+    "build": "node esbuild-build.js && npm run types",
+    "types": "tsc -p tsconfig.json && node scripts/sync-types.mjs",
     "postinstall": "node packages/pds-cli/bin/postinstall.js",
     "pds:export": "node packages/pds-cli/bin/pds-static.js",
     "pds:build-icons": "node packages/pds-cli/bin/pds-build-icons.js",
@@ -88,7 +90,9 @@
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "^0.9.9",
     "esbuild": "^0.19.0",
-    "fs-extra": "^11.1.1"
+    "fs-extra": "^11.1.1",
+    "typescript": "^5.6.3",
+    "@types/node": "^22.10.2"
   },
   "dependencies": {
     "lit": "^3.3.1",
