@@ -6,7 +6,7 @@ import { Panel } from './Panel.jsx';
 addons.register(ADDON_ID, () => {
   addons.add(PANEL_ID, {
     type: types.PANEL,
-    title: 'HTML',
+    title: 'Code',
     render: ({ active, key }) => (
       <div style={{ display: active ? 'block' : 'none', height: '100%' }}>
         <Panel key={key} active={active} />

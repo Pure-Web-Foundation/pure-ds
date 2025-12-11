@@ -1,17 +1,24 @@
 import { html } from 'lit';
 
+const docsParameters = {
+  description: {
+    component: 'Slide-out panels from any edge'
+  }
+};
+
+if (typeof window !== 'undefined') {
+  const { createComponentDocsPage } = await import('../reference/reference-docs.js');
+  docsParameters.page = createComponentDocsPage('pds-drawer');
+}
+
 export default {
   title: 'Components/Pds Drawer',
-  tags: ['grouping'],
+  tags: ['autodocs', 'grouping'],
   parameters: {
     pds: {
       tags: ['navigation', 'layout', 'grouping', 'interaction']
     },
-    docs: {
-      description: {
-        component: 'Slide-out panels from any edge'
-      }
-    }
+    docs: docsParameters
   },
   argTypes: {
     position: {

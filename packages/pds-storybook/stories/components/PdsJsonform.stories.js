@@ -1,15 +1,8 @@
 import { html } from 'lit';
 
-export default {
-  title: 'Components/Pds Jsonform',
-  tags: ['buttons', 'forms', 'interaction'],
-  parameters: {
-    pds: {
-      tags: ['buttons', 'forms', 'interaction']
-    },
-    docs: {
-      description: {
-        component: `**⭐ Recommended for modern applications** - Automatically generate complete forms from JSON Schema definitions.
+const docsParameters = {
+  description: {
+    component: `**⭐ Recommended for modern applications** - Automatically generate complete forms from JSON Schema definitions.
 
 ### Key Features
 - 🎯 **Zero boilerplate** - Define form structure in JSON, get a working form with validation
@@ -31,8 +24,22 @@ Instead of manually writing HTML for every form field, validation rule, and erro
 - Database schemas
 
 See the examples below to get started, or check the [primitive forms](/story/primitives-forms--default) for manual form building.`
-      }
-    }
+  }
+};
+
+if (typeof window !== 'undefined') {
+  const { createComponentDocsPage } = await import('../reference/reference-docs.js');
+  docsParameters.page = createComponentDocsPage('pds-jsonform');
+}
+
+export default {
+  title: 'Components/Pds Jsonform',
+  tags: ['autodocs', 'buttons', 'forms', 'interaction'],
+  parameters: {
+    pds: {
+      tags: ['buttons', 'forms', 'interaction']
+    },
+    docs: docsParameters
   }
 };
 

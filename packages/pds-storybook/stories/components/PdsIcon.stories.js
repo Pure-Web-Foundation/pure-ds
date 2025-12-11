@@ -1,17 +1,24 @@
 import { html } from 'lit';
 
+const docsParameters = {
+  description: {
+    component: 'SVG sprite icons with fallbacks'
+  }
+};
+
+if (typeof window !== 'undefined') {
+  const { createComponentDocsPage } = await import('../reference/reference-docs.js');
+  docsParameters.page = createComponentDocsPage('pds-icon');
+}
+
 export default {
   title: 'Components/Pds Icon',
-  tags: ['icons', 'svg', 'sprite', 'buttons'],
+  tags: ['autodocs', 'icons', 'svg', 'sprite', 'buttons'],
   parameters: {
     pds: {
       tags: ['icons', 'svg', 'sprite']
     },
-    docs: {
-      description: {
-        component: 'SVG sprite icons with fallbacks'
-      }
-    }
+    docs: docsParameters
   },
   argTypes: {
     icon: {

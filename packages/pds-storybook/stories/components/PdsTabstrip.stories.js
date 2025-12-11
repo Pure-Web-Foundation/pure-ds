@@ -1,5 +1,16 @@
 import { html } from "lit";
 
+const docsParameters = {
+  description: {
+    component: "Accessible tab interface with keyboard navigation",
+  },
+};
+
+if (typeof window !== 'undefined') {
+  const { createComponentDocsPage } = await import('../reference/reference-docs.js');
+  docsParameters.page = createComponentDocsPage('pds-tabstrip');
+}
+
 const tabstripStoryStyles = html`
   <style>
     .tabstrip-panel {
@@ -272,16 +283,12 @@ const tabstripCategories = [
 
 export default {
   title: "Components/Pds Tabstrip",
-  tags: ["grouping"],
+  tags: ['autodocs', 'grouping'],
   parameters: {
     pds: {
       tags: ["navigation", "grouping", "layout"],
     },
-    docs: {
-      description: {
-        component: "Accessible tab interface with keyboard navigation",
-      },
-    },
+    docs: docsParameters,
   },
 };
 

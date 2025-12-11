@@ -1,6 +1,6 @@
 # Pure Design System (PDS)
 
-> ⚠️ **Beta Software** - APIs are stabilizing but may still change. Pin versions in production: `"pure-ds": "~0.1.29"`
+> ⚠️ **Beta Software** - APIs are stabilizing but may still change. Pin versions in production: `"pure-ds": "~0.2.41"`
 
 [![CI](https://github.com/mvneerven/pure-ds/actions/workflows/ci.yml/badge.svg)](https://github.com/mvneerven/pure-ds/actions/workflows/ci.yml)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](#license)

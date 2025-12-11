@@ -75,6 +75,51 @@ async function litToHTML(templateResult) {
   return formatHTML(temp.innerHTML);
 }
 
+function serializeForDisplay(value) {
+  if (value === undefined) return '';
+  if (typeof value === 'bigint') return value.toString();
+  if (typeof value === 'symbol') return value.toString();
+
+  const seen = new WeakSet();
+
+  const replacer = (key, currentValue) => {
+    if (typeof currentValue === 'function') {
+      return `[Function${currentValue.name ? `: ${currentValue.name}` : ''}]`;
+    }
+    if (typeof currentValue === 'bigint') {
+      return currentValue.toString();
+    }
+    if (typeof currentValue === 'symbol') {
+      return currentValue.toString();
+    }
+    if (currentValue instanceof Map) {
+      return Object.fromEntries(currentValue);
+    }
+    if (currentValue instanceof Set) {
+      return Array.from(currentValue);
+    }
+    if (currentValue instanceof Date) {
+      return currentValue.toISOString();
+    }
+    if (typeof currentValue === 'object' && currentValue !== null) {
+      if (seen.has(currentValue)) {
+        return '[Circular]';
+      }
+      seen.add(currentValue);
+    }
+    return currentValue;
+  };
+
+  try {
+    if (value === null) {
+      return 'null';
+    }
+    return JSON.stringify(value, replacer, 2);
+  } catch (error) {
+    return `/* Unable to serialize value: ${error.message} */`;
+  }
+}
+
 /**
  * Global decorator that extracts and sends HTML to the panel
  */
@@ -94,10 +139,33 @@ export const withHTMLExtractor = (storyFn, context) => {
       } else {
         html = formatHTML(extractHTML(container));
       }
-      
-      if (html) {
-        channel.emit(EVENTS.UPDATE_HTML, html);
-      }
+
+      const forms = Array.from(container.querySelectorAll('pds-jsonform'));
+      const jsonForms = forms
+        .map((form, index) => {
+          const label =
+            form.getAttribute?.('id') ||
+            form.getAttribute?.('name') ||
+            (forms.length > 1 ? `Form ${index + 1}` : 'Form');
+
+          const jsonSchema = serializeForDisplay(form.jsonSchema);
+          const uiSchema = serializeForDisplay(form.uiSchema);
+          const options = serializeForDisplay(form.options);
+
+          return {
+            id: index,
+            label,
+            jsonSchema,
+            uiSchema,
+            options
+          };
+        })
+        .filter((entry) => entry.jsonSchema || entry.uiSchema || entry.options);
+
+      channel.emit(EVENTS.UPDATE_HTML, {
+        markup: html || '',
+        jsonForms
+      });
     }
   };
   

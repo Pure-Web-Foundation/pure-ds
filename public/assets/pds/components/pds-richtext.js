@@ -353,11 +353,11 @@ export class RichText extends HTMLElement {
         }
       }
       
-      .toolbar {background-color: var(--surface-subtle-bg);  display:flex; gap: var(--spacing-3,10px); align-items:center; padding: var(--spacing-2,8px) var(--spacing-3,10px); border-bottom: 1px solid var(--rt-border, var(--color-border-muted)); border-radius: var(--radius-md,8px) var(--radius-md,8px) 0 0; }
+      .toolbar {background-color: var(--surface-subtle-bg);  display:flex; gap: var(--spacing-2,10px); align-items:center; border-bottom: 1px solid var(--rt-border, var(--color-border-muted)); border-radius: var(--radius-md,8px) var(--radius-md,8px) 0 0; }
       .tbtn { transition: none; display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius: var(--radius-sm,6px); cursor:pointer; user-select:none; color: inherit; background: transparent; border:none; }
       .tbtn:hover { background: var(--color-surface-hover, color-mix(in oklab, CanvasText 12%, transparent)); }
       .edwrap { position:relative; }
-      .ed { display: block; min-height:90px; max-height:280px; overflow:auto; padding: var(--spacing-3, 0); outline:none; word-break:break-word; border-radius: 0 0 var(--radius-md,8px) var(--radius-md,8px); background: var(--rt-editor-bg, var(--color-input-bg)); }
+      .ed { display: block; min-height:90px; max-height: 400px; overflow:auto; padding: var(--spacing-1, 0) var(--spacing-2, 0); outline:none; word-break:break-word; border-radius: 0 0 var(--radius-md,8px) var(--radius-md,8px); background: var(--rt-editor-bg, var(--color-input-bg)); }
       .ed[contenteditable="true"]:empty::before { content: attr(data-ph); color: var(--rt-muted, var(--color-text-muted)); pointer-events:none; }
       .send { margin-left:auto; display:inline-flex; gap: var(--spacing-2,8px); align-items:center; }
       button.icon { background:transparent; border:0; color:inherit; cursor:pointer; padding:6px; border-radius: var(--radius-sm,6px); }

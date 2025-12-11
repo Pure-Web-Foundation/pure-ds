@@ -1,16 +1,24 @@
 import { html } from 'lit';
 
+const docsParameters = {
+  description: {
+    component: 'Horizontal scrolling container with navigation buttons'
+  }
+};
+
+if (typeof window !== 'undefined') {
+  const { createComponentDocsPage } = await import('../reference/reference-docs.js');
+  docsParameters.page = createComponentDocsPage('pds-scrollrow');
+}
+
 export default {
   title: 'Components/Pds Scrollrow',
+  tags: ['autodocs'],
   parameters: {
     pds: {
       tags: ['layout' ]
     },
-    docs: {
-      description: {
-        component: 'Horizontal scrolling container with navigation buttons'
-      }
-    }
+    docs: docsParameters
   }
 };
 

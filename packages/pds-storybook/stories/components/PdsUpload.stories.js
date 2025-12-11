@@ -1,16 +1,24 @@
 import { html } from 'lit';
 
+const docsParameters = {
+  description: {
+    component: 'File upload with preview and validation'
+  }
+};
+
+if (typeof window !== 'undefined') {
+  const { createComponentDocsPage } = await import('../reference/reference-docs.js');
+  docsParameters.page = createComponentDocsPage('pds-upload');
+}
+
 export default {
   title: 'Components/Pds Upload',
+  tags: ['autodocs'],
   parameters: {
-     pds: {
+    pds: {
       tags: ['forms']
     },
-    docs: {
-      description: {
-        component: 'File upload with preview and validation'
-      }
-    }
+    docs: docsParameters
   },
   argTypes: {
     accept: {

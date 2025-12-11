@@ -1,5 +1,16 @@
 import { html } from 'lit';
 
+const docsParameters = {
+  description: {
+    component: 'Rich text editor with markdown support and formatting toolbar. Provide a #showdown import-map entry for best performance; set format="markdown" to keep submitted values as Markdown.'
+  }
+};
+
+if (typeof window !== 'undefined') {
+  const { createComponentDocsPage } = await import('../reference/reference-docs.js');
+  docsParameters.page = createComponentDocsPage('pds-richtext');
+}
+
 const richtextStoryStyles = html`
   <style>
     .richtext-form {
@@ -141,15 +152,12 @@ const bindToastForms = (selector) => {
 
 export default {
   title: 'Components/Pds Richtext',
+  tags: ['autodocs'],
   parameters: {
     pds: {
       tags: ['editor', 'richtext', 'forms']
     },
-    docs: {
-      description: {
-        component: 'Rich text editor with markdown support and formatting toolbar. Provide a #showdown import-map entry for best performance; set format="markdown" to keep submitted values as Markdown.'
-      }
-    }
+    docs: docsParameters
   },
   argTypes: {
     value: {

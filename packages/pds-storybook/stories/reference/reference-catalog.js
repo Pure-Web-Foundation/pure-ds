@@ -1,264 +1,31 @@
 import { LitElement, html, nothing } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import showdown from 'showdown';
-
-const markdown = new showdown.Converter({
-  tables: true,
-  simplifiedAutoLink: true,
-  ghCodeBlocks: true,
-  simpleLineBreaks: true
-});
-
-function renderMarkdown(text) {
-  if (!text) return nothing;
-  return unsafeHTML(markdown.makeHtml(text));
-}
-
-function renderCode(value) {
-  if (!value) return html`<span class="text-muted">&#8212;</span>`;
-  return html`<code>${value}</code>`;
-}
-
-function renderDefault(value) {
-  if (value === undefined || value === null || value === '') {
-    return html`<span class="text-muted">&#8212;</span>`;
-  }
-  if (typeof value === 'string') {
-    const trimmed = value.trim();
-    const unwrapped = trimmed.startsWith('"') && trimmed.endsWith('"')
-      ? trimmed.slice(1, -1)
-      : trimmed;
-    return html`<code>${unwrapped}</code>`;
-  }
-  return html`<code>${String(value)}</code>`;
-}
-
-function formatTimestamp(timestamp) {
-  if (!timestamp) return '\u2014';
-  try {
-    const date = new Date(timestamp);
-    return date.toLocaleString();
-  } catch (err) {
-    return timestamp;
-  }
-}
-
-const VOID_HTML_ELEMENTS = new Set([
-  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
-  'link', 'meta', 'param', 'source', 'track', 'wbr'
-]);
-
-function formatDemoHtml(html) {
-  if (typeof html !== 'string') return '';
-  const tokens = html.trim().split(/(<[^>]+>)/g).filter(Boolean);
-  if (!tokens.length) return '';
-
-  const indentUnit = '  ';
-  let indent = 0;
-  let formatted = '';
-
-  for (const token of tokens) {
-    const isTag = token.startsWith('<');
-    if (!isTag) {
-      const text = token.replace(/\s+/g, ' ').trim();
-      if (text) {
-        formatted += `${indentUnit.repeat(indent)}${text}\n`;
-      }
-      continue;
-    }
-
-    const isClosing = /^<\//.test(token);
-    const tagNameMatch = token.match(/^<\/?\s*([a-zA-Z0-9-]+)/);
-    const tagName = tagNameMatch ? tagNameMatch[1].toLowerCase() : '';
-    const isVoid = VOID_HTML_ELEMENTS.has(tagName) || /\/\s*>$/.test(token);
-
-    if (isClosing) {
-      indent = Math.max(0, indent - 1);
-    }
-
-    formatted += `${indentUnit.repeat(indent)}${token.trim()}\n`;
-
-    if (!isClosing && !isVoid) {
-      indent += 1;
-    }
-  }
-
-  return formatted.trimEnd();
-}
-
-function escapeCodeFragment(text) {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-
-function highlightDemoHtml(html) {
-  if (!html) return '';
-  let result = '';
-  let index = 0;
-  const attrRegex = /([\w:-@.]+)(?:=(?:"([^"]*)"|'([^']*)'|([^\s>]*)))?/g;
-
-  while (index < html.length) {
-    if (html.startsWith('<!--', index)) {
-      const commentEnd = html.indexOf('-->', index);
-      if (commentEnd !== -1) {
-        const comment = html.substring(index, commentEnd + 3);
-        result += `<span class="html-token-comment">${escapeCodeFragment(comment)}</span>`;
-        index = commentEnd + 3;
-        continue;
-      }
-    }
-
-    const char = html[index];
-
-    if (char === '\n' || char === '\r' || char === '\t' || char === ' ') {
-      result += char;
-      index += 1;
-      continue;
-    }
-
-    if (char === '<') {
-      const tagEnd = html.indexOf('>', index);
-      if (tagEnd !== -1) {
-        const tagContent = html.substring(index + 1, tagEnd);
-        result += '&lt;';
-
-        if (tagContent.startsWith('/')) {
-          const tagName = tagContent.substring(1).split(/[\s>]/)[0];
-          result += '/';
-          result += `<span class="html-token-tag">${escapeCodeFragment(tagName)}</span>`;
-        } else {
-          const parts = tagContent.match(/^([\w:-@.]+)([\s\S]*?)(\/?)?$/);
-          if (parts) {
-            const [, tagName, attrsStr, trailingSlash] = parts;
-            result += `<span class="html-token-tag">${escapeCodeFragment(tagName)}</span>`;
-
-            if (attrsStr && attrsStr.trim()) {
-              let lastIndex = 0;
-              attrRegex.lastIndex = 0;
-              let match;
-
-              while ((match = attrRegex.exec(attrsStr)) !== null) {
-                result += escapeCodeFragment(attrsStr.substring(lastIndex, match.index));
-                const [fullMatch, attrName, doubleQuoted, singleQuoted, unquoted] = match;
-                result += `<span class="html-token-attr">${escapeCodeFragment(attrName)}</span>`;
-
-                if (doubleQuoted !== undefined) {
-                  result += `=<span class="html-token-value">"${escapeCodeFragment(doubleQuoted)}"</span>`;
-                } else if (singleQuoted !== undefined) {
-                  result += `=<span class="html-token-value">'${escapeCodeFragment(singleQuoted)}'</span>`;
-                } else if (unquoted !== undefined && unquoted !== '') {
-                  result += `=<span class="html-token-value">${escapeCodeFragment(unquoted)}</span>`;
-                }
-
-                lastIndex = match.index + fullMatch.length;
-              }
-
-              result += escapeCodeFragment(attrsStr.substring(lastIndex));
-            }
-
-            if (trailingSlash) {
-              result += '/';
-            }
-          } else {
-            result += escapeCodeFragment(tagContent);
-          }
-        }
-
-        result += '&gt;';
-        index = tagEnd + 1;
-        continue;
-      }
-    }
-
-    result += escapeCodeFragment(char);
-    index += 1;
-  }
-
-  return result;
-}
-
-function renderChipList(values = []) {
-  if (!values.length) return nothing;
-  return html`
-    <div class="flex flex-wrap gap-xs">
-      ${values.map((value) => html`<span class="badge">${value}</span>`)}
-    </div>
-  `;
-}
-
-function formatTableValue(value) {
-  if (value === undefined || value === null || value === '') {
-    return html`<span class="text-muted">&#8212;</span>`;
-  }
-
-  if (Array.isArray(value)) {
-    if (!value.length) return html`<span class="text-muted">&#8212;</span>`;
-    return renderChipList(value.map((entry) => (typeof entry === 'object' ? JSON.stringify(entry) : entry)));
-  }
-
-  if (typeof value === 'object') {
-    return html`
-      <pre class="surface-subtle radius-lg text-sm overflow-auto" style="margin: 0; padding: var(--spacing-3);">
-${JSON.stringify(value, null, 2)}
-      </pre>
-    `;
-  }
-
-  const text = String(value);
-  return /[<>&]/.test(text) ? unsafeHTML(text) : html`${text}`;
-}
-
-function renderTable(items = [], columns = []) {
-  if (!items.length) return nothing;
-  return html`
-    <table class="table-bordered table-compact">
-      <thead>
-        <tr>
-          ${columns.map((col) => html`<th scope="col">${col.label}</th>`)}
-        </tr>
-      </thead>
-      <tbody>
-        ${items.map((item) => html`
-          <tr>
-            ${columns.map((col) => html`<td>${col.render ? col.render(item[col.key], item) : formatTableValue(col.format ? col.format(item[col.key], item) : item[col.key])}</td>`)}
-          </tr>
-        `)}
-      </tbody>
-    </table>
-  `;
-}
+import {
+  renderMarkdown,
+  renderCode,
+  renderDefault,
+  formatTimestamp,
+  formatDemoHtml,
+  highlightDemoHtml,
+  renderChipList,
+  renderTable
+} from './reference-helpers.js';
 
 export class PdsReferenceCatalog extends LitElement {
   static properties = {
     data: { type: Object },
-    view: { state: true },
-    selectedComponent: { state: true }
+    view: { state: true }
   };
 
   constructor() {
     super();
     this.data = null;
     this.view = 'ref-components';
-    this.selectedComponent = null;
     this.__buttonRefreshScheduled = false;
   }
 
   createRenderRoot() {
     return this; // Light DOM to inherit design system utilities.
-  }
-
-  willUpdate(changed) {
-    if (changed.has('data') && this.data) {
-      const keys = Object.keys(this.data.components || {}).sort();
-      if (!this.selectedComponent && keys.length) {
-        this.selectedComponent = keys[0];
-      }
-      if (this.selectedComponent && !this.data.components?.[this.selectedComponent]) {
-        this.selectedComponent = keys[0] || null;
-      }
-    }
   }
 
   onTabChange(event) {
@@ -322,64 +89,42 @@ export class PdsReferenceCatalog extends LitElement {
     `;
   }
 
-  renderComponentNav(component, activeTag) {
-    const isActive = component.tag === activeTag;
-    const classes = [
-      'btn-ghost',
-      'flex',
-      'flex-col',
-      'gap-xs',
-      'items-start',
-      'radius-lg'
-    ];
-    if (isActive) {
-      classes.push('surface-subtle', 'shadow-sm');
-    }
-
-    return html`
-      <button
-        class="${classes.join(' ')}"
-        style="width: 100%;"
-        @click=${() => (this.selectedComponent = component.tag)}
-      >
-        <span class="flex items-center justify-between gap-sm" style="width: 100%;">
-          <span>${component.displayName}</span>
-          ${component.stories?.length ? html`<span class="badge">${component.stories.length}</span>` : nothing}
-        </span>
-        ${component.pdsTags?.length ? html`
-          <div class="flex flex-wrap gap-xs">
-            ${component.pdsTags.slice(0, 3).map((tag) => html`<span class="badge">${tag}</span>`)}
-            ${component.pdsTags.length > 3 ? html`<span class="badge">+${component.pdsTags.length - 3}</span>` : nothing}
-          </div>
-        ` : nothing}
-      </button>
-    `;
-  }
-
   renderComponentsView() {
     const components = Object.values(this.data.components || {}).sort((a, b) => a.displayName.localeCompare(b.displayName));
     if (!components.length) {
       return html`<article class="card surface-base flex flex-col gap-sm"><p class="text-muted" style="margin: 0;">No component metadata was generated.</p></article>`;
     }
 
-    const activeKey = this.selectedComponent || components[0]?.tag;
-    const active = components.find((component) => component.tag === activeKey) || components[0];
-
     return html`
-      <div class="flex gap-xl mobile-stack">
-        <aside class="card surface-base flex flex-col gap-md radius-lg" style="min-width: 240px;">
+      <section class="card surface-base flex flex-col gap-md">
+        <div class="flex items-center justify-end">
+          <span class="badge">${components.length} components</span>
+        </div>
+        <section class="accordion" aria-label="Component reference list">
+          ${components.map((component, index) => this.renderComponentAccordionItem(component, index === 0))}
+        </section>
+      </section>
+    `;
+  }
+
+  renderComponentAccordionItem(component, open = false) {
+    const summaryId = `component-${component.tag}`;
+    return html`
+      <details ?open=${open}>
+        <summary id=${summaryId}>
           <div class="flex items-center justify-between gap-sm">
-            <h3 style="margin: 0;">Components</h3>
-            <span class="badge">${components.length}</span>
+            <span class="flex items-center gap-sm">
+              <code>&lt;${component.tag}&gt;</code>
+            </span>
+            <span class="flex items-center gap-xs">
+              ${component.stories?.length ? html`<span class="badge">${component.stories.length} stories</span>` : nothing}
+            </span>
           </div>
-          <div class="flex flex-col gap-xs overflow-auto" style="max-height: 70vh;">
-            ${components.map((component) => this.renderComponentNav(component, active.tag))}
-          </div>
-        </aside>
-        <article class="card surface-elevated flex flex-col gap-lg" style="flex: 1;">
-          ${this.renderComponentDetail(active)}
-        </article>
-      </div>
+        </summary>
+        <div role="region" aria-labelledby=${summaryId} class="flex flex-col gap-lg" style="padding: var(--spacing-4) 0;">
+          ${this.renderComponentDetail(component)}
+        </div>
+      </details>
     `;
   }
 
@@ -390,26 +135,10 @@ export class PdsReferenceCatalog extends LitElement {
 
     return html`
       <section class="card surface-base flex flex-col gap-sm">
-        <div class="flex flex-wrap gap-xs">
-          <span class="badge">Web Component</span>
-          ${component.ontology?.id ? html`<span class="badge">${component.ontology.id}</span>` : nothing}
-          ${component.superclass ? html`<span class="badge">extends ${component.superclass}</span>` : nothing}
-        </div>
-        <h2 style="margin: 0;">${component.displayName}</h2>
-        <div class="flex flex-wrap gap-sm text-muted text-sm">
-          <span><code>${component.tag}</code></span>
-          ${component.className ? html`<span>class <code>${component.className}</code></span>` : nothing}
-          ${component.sourceModule ? html`<span>${component.sourceModule}</span>` : nothing}
-        </div>
+        ${component.ontology?.id ? html`<div class="flex flex-wrap gap-xs"><span class="badge">${component.ontology.id}</span></div>` : nothing}
+        <h2 style="margin: 0;"><code>${component.tag}</code></h2>
         ${component.docsDescription ? html`<div>${renderMarkdown(component.docsDescription)}</div>` : nothing}
       </section>
-
-      ${component.pdsTags?.length ? html`
-        <section class="card surface-base flex flex-col gap-sm">
-          <h3 style="margin: 0;">Experience Tags</h3>
-          ${renderChipList(component.pdsTags)}
-        </section>
-      ` : nothing}
 
       ${component.description ? html`
         <section class="card surface-base flex flex-col gap-sm">

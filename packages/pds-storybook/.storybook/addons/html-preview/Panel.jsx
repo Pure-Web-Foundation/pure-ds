@@ -14,7 +14,7 @@ const Container = styled.div`
 const CodeBlock = styled.pre`
   margin: 0;
   padding: 16px;
-  padding-bottom: 60px; /* Space for fixed button */
+  padding-bottom: ${props => (props.$compact ? '24px' : '60px')}; /* Space for fixed button */
   font-family: ${props => props.theme.typography.fonts.mono};
   font-size: 13px;
   line-height: 1.6;
@@ -38,6 +38,34 @@ const CodeBlock = styled.pre`
     color: #5c6370;
     font-style: italic;
   }
+`;
+
+const SectionWrapper = styled.div`
+  border-bottom: 1px solid ${props => props.theme.appBorderColor};
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+`;
+
+const SectionHeading = styled.h3`
+  margin: 0;
+  padding: 16px 16px 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: ${props => props.theme.color.mediumdark};
+`;
+
+const Subheading = styled.h4`
+  margin: 0;
+  padding: 12px 16px 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: ${props => props.theme.color.mediumdark};
 `;
 
 const EmptyState = styled.div`
@@ -85,18 +113,31 @@ const CheckIcon = () => (
 );
 
 export const Panel = ({ active }) => {
-  const [html, setHtml] = useState('');
+  const [source, setSource] = useState({ markup: '', jsonForms: [] });
   const [copied, setCopied] = useState(false);
 
   useChannel({
-    [EVENTS.UPDATE_HTML]: (newHtml) => {
-      setHtml(newHtml || '');
+    [EVENTS.UPDATE_HTML]: (payload) => {
+      if (typeof payload === 'string') {
+        setSource({ markup: payload || '', jsonForms: [] });
+        return;
+      }
+
+      if (payload && typeof payload === 'object') {
+        setSource({
+          markup: payload.markup || '',
+          jsonForms: Array.isArray(payload.jsonForms) ? payload.jsonForms : []
+        });
+        return;
+      }
+
+      setSource({ markup: '', jsonForms: [] });
     }
   });
 
   // Request HTML update when panel becomes active
   React.useEffect(() => {
-    if (active && !html) {
+    if (active && !source.markup && source.jsonForms.length === 0) {
       // Trigger a re-extraction by emitting a request event
       // The decorator will pick this up on the next render cycle
       const container = document.querySelector('#storybook-root');
@@ -108,17 +149,18 @@ export const Panel = ({ active }) => {
         }, 100);
       }
     }
-  }, [active, html]);
+  }, [active, source.markup, source.jsonForms.length]);
 
   const copyToClipboard = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(html);
+      if (!source.markup) return;
+      await navigator.clipboard.writeText(source.markup);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
-  }, [html]);
+  }, [source.markup]);
 
   const highlightHTML = useCallback((code) => {
     if (!code) return '';
@@ -208,26 +250,77 @@ export const Panel = ({ active }) => {
     return result;
   }, []);
 
+  const hasMarkup = Boolean(source.markup);
+  const hasJsonForms = source.jsonForms.length > 0;
+
+  if (!hasMarkup && !hasJsonForms) {
+    return (
+      <Container>
+        <EmptyState>
+          <p>No code to display</p>
+          <p style={{ fontSize: '0.875rem', opacity: 0.7 }}>Select a story to inspect its output</p>
+        </EmptyState>
+      </Container>
+    );
+  }
+
   return (
     <Container>
-      {html ? (
-        <>
+      {hasMarkup && (
+        <SectionWrapper>
+          <SectionHeading>Markup</SectionHeading>
           <CodeBlock>
-            <code dangerouslySetInnerHTML={{ __html: highlightHTML(html) }} />
+            <code dangerouslySetInnerHTML={{ __html: highlightHTML(source.markup) }} />
           </CodeBlock>
-          <CopyButton
-            onClick={copyToClipboard}
-            title={copied ? 'Copied!' : 'Copy HTML'}
-            className={copied ? 'copied' : ''}
-          >
-            {copied ? <CheckIcon /> : <CopyIcon />}
-          </CopyButton>
-        </>
-      ) : (
-        <EmptyState>
-          <p>No HTML to display</p>
-          <p style={{ fontSize: '0.875rem', opacity: 0.7 }}>Select a story to view its HTML source</p>
-        </EmptyState>
+        </SectionWrapper>
+      )}
+
+      {hasJsonForms && source.jsonForms.map((form, index) => {
+        const key = form.id ?? index;
+        const heading = source.jsonForms.length > 1 ? (form.label || `Form ${index + 1}`) : 'pds-jsonform';
+
+        return (
+          <SectionWrapper key={key}>
+            <SectionHeading>{heading}</SectionHeading>
+
+            {form.jsonSchema && (
+              <>
+                <Subheading>jsonSchema</Subheading>
+                <CodeBlock $compact>
+                  <code>{form.jsonSchema}</code>
+                </CodeBlock>
+              </>
+            )}
+
+            {form.uiSchema && (
+              <>
+                <Subheading>uiSchema</Subheading>
+                <CodeBlock $compact>
+                  <code>{form.uiSchema}</code>
+                </CodeBlock>
+              </>
+            )}
+
+            {form.options && (
+              <>
+                <Subheading>options</Subheading>
+                <CodeBlock $compact>
+                  <code>{form.options}</code>
+                </CodeBlock>
+              </>
+            )}
+          </SectionWrapper>
+        );
+      })}
+
+      {hasMarkup && (
+        <CopyButton
+          onClick={copyToClipboard}
+          title={copied ? 'Copied!' : 'Copy markup'}
+          className={copied ? 'copied' : ''}
+        >
+          {copied ? <CheckIcon /> : <CopyIcon />}
+        </CopyButton>
       )}
     </Container>
   );

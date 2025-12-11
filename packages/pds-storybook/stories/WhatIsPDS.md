@@ -2,7 +2,8 @@
 
 ## A standards-native design system built entirely on the Web Platform
 
-PDS is not a framework, not a CSS library, and not tied to Storybook.\
+PDS is not a framework, not a CSS library, and not tied to Storybook.
+
 It is a **config-first, architecture-first, standards-only design system generator**.
 
 You write a small JavaScript config.
@@ -10,7 +11,7 @@ PDS turns it into:
 
 - Deterministic global CSS
 - AdoptedStyleSheets (for Web Components)
-- A full token model available as JS (`pds.compiled`)
+- A full hierarchic token model. Just type `PDS.compiled` in Dev Console...
 
 Apart from the layered token/styles generation, PDS offers:
 
@@ -188,6 +189,6 @@ Open the toolbar → 🎨 icon to adjust the live configuration.
 
 # In short
 
-> **PDS is the first design system that is 100% standards-native,\
-> extremely layered, dependency-free, and completely transparent.\
-> Storybook here simply demonstrates what PDS makes possible.**
+> **PDS is a 100% standards-native, extremely layered, 
+> dependency-free, and completely transparent design system.
+> This Storybook instance simply demonstrates its power.**

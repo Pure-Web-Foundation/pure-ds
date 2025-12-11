@@ -1,5 +1,16 @@
 import { html } from 'lit';
 
+const docsParameters = {
+  description: {
+    component: 'Toast notification system with auto-dismiss and stacking. Toast notifications appear in the top-right corner and auto-dismiss after a few seconds based on message length.'
+  }
+};
+
+if (typeof window !== 'undefined') {
+  const { createComponentDocsPage } = await import('../reference/reference-docs.js');
+  docsParameters.page = createComponentDocsPage('pds-toaster');
+}
+
 const toasterStoryStyles = html`
   <style>
     .toaster-story-description {
@@ -10,15 +21,12 @@ const toasterStoryStyles = html`
 
 export default {
   title: 'Components/Pds Toaster',
+  tags: ['autodocs'],
   parameters: {
     pds: {
       tags: ['interaction', 'notifications']
     },
-    docs: {
-      description: {
-        component: 'Toast notification system with auto-dismiss and stacking. Toast notifications appear in the top-right corner and auto-dismiss after a few seconds based on message length.'
-      }
-    }
+    docs: docsParameters
   }
 };
 

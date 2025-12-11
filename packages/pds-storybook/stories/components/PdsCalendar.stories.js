@@ -1,13 +1,21 @@
 import { html } from 'lit';
 
+const docsParameters = {
+  description: {
+    component: 'A fully featured calendar component with month navigation, event display, and expandable day views'
+  }
+};
+
+if (typeof window !== 'undefined') {
+  const { createComponentDocsPage } = await import('../reference/reference-docs.js');
+  docsParameters.page = createComponentDocsPage('pds-calendar');
+}
+
 export default {
   title: 'Components/Pds Calendar',
+  tags: ['autodocs'],
   parameters: {
-    docs: {
-      description: {
-        component: 'A fully featured calendar component with month navigation, event display, and expandable day views'
-      }
-    }
+    docs: docsParameters
   },
   argTypes: {
     date: {

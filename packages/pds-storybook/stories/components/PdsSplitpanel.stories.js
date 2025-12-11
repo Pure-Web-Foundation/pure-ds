@@ -1,5 +1,16 @@
 import { html } from 'lit';
 
+const docsParameters = {
+  description: {
+    component: 'Split panels divide content areas with a draggable divider for resizable layouts.'
+  }
+};
+
+if (typeof window !== 'undefined') {
+  const { createComponentDocsPage } = await import('../reference/reference-docs.js');
+  docsParameters.page = createComponentDocsPage('pds-splitpanel');
+}
+
 const splitpanelStoryStyles = html`
   <style>
     .splitpanel-story {
@@ -210,17 +221,6 @@ const splitpanelStoryStyles = html`
       background: var(--surface-bg-secondary);
     }
 
-    .splitpanel-activity-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--color-primary);
-      color: #ffffff;
-    }
-
     .splitpanel-activity-body {
       flex: 1;
       display: flex;
@@ -242,15 +242,12 @@ const splitpanelStoryStyles = html`
 
 export default {
   title: 'Components/Pds Splitpanel',
+  tags: ['autodocs'],
   parameters: {
     pds: {
       tags: ['layout', 'sizing', 'interaction']
     },
-    docs: {
-      description: {
-        component: 'Split panels divide content areas with a draggable divider for resizable layouts.'
-      }
-    }
+    docs: docsParameters
   }
 };
 
