@@ -1,4 +1,6 @@
 import { html, nothing } from 'lit';
+import { addons } from '@storybook/preview-api';
+import { SELECT_STORY } from '@storybook/core-events';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import showdown from 'showdown';
 
@@ -68,6 +70,62 @@ const VOID_HTML_ELEMENTS = new Set([
   'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
   'link', 'meta', 'param', 'source', 'track', 'wbr'
 ]);
+
+const getStorySlug = (storyId) => {
+  if (typeof storyId !== 'string') return undefined;
+  const [slug] = storyId.split('--');
+  return slug;
+};
+
+export function navigateToStory(storyId, viewMode = 'story') {
+  if (!storyId || typeof window === 'undefined') return false;
+
+  let navigated = false;
+
+  try {
+    const channel = addons?.getChannel?.();
+    if (channel?.emit) {
+      channel.emit(SELECT_STORY, { storyId, viewMode });
+      navigated = true;
+    }
+  } catch (err) {
+    console.warn('PDS reference docs: channel navigation failed', err);
+  }
+
+  try {
+    window.parent?.postMessage(
+      {
+        source: 'pds-reference-docs',
+        type: 'pds-related:navigate',
+        storyId,
+        viewMode
+      },
+      '*'
+    );
+  } catch (err) {
+    console.warn('PDS reference docs: postMessage navigation failed', err);
+  }
+
+  if (navigated) return true;
+
+  const slug = getStorySlug(storyId);
+  const targetSearch = viewMode === 'docs' && slug
+    ? `?path=/docs/${slug}--docs`
+    : `?path=/story/${storyId}`;
+
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.location.search = targetSearch;
+    } else {
+      window.location.search = targetSearch;
+    }
+    return true;
+  } catch (err) {
+    console.warn('PDS reference docs: fallback navigation failed', err);
+  }
+
+  return false;
+}
 
 export function formatDemoHtml(html) {
   if (typeof html !== 'string') return '';

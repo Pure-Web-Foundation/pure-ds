@@ -7,7 +7,8 @@ import {
   renderCode,
   renderDefault,
   renderChipList,
-  renderTable
+  renderTable,
+  navigateToStory
 } from './reference-helpers.js';
 
 const DOC_STYLE_ID = 'pds-reference-component-docs-styles';
@@ -241,10 +242,12 @@ class PdsReferenceComponentDocs extends LitElement {
         <div class="grid grid-auto-md gap-md">
           ${stories.map((story) => html`
             <div class="card surface-elevated flex flex-col gap-xs">
-              <a href="/?path=/story/${story.id}" target="_blank" rel="noopener">${story.name}</a>
+              <a
+                href="/?path=/story/${story.id}"
+                @click=${(event) => this.handleStoryNavigation(event, story.id)}
+              >${story.name}</a>
               <div class="flex flex-wrap gap-sm text-muted text-sm">
                 <span>${story.id}</span>
-                ${story.source ? html`<span>${story.source}</span>` : nothing}
               </div>
               ${story.description ? html`<p class="text-muted pds-reference-docs-reset">${story.description}</p>` : nothing}
               ${story.tags?.length ? renderChipList(story.tags) : nothing}
@@ -253,6 +256,12 @@ class PdsReferenceComponentDocs extends LitElement {
         </div>
       </section>
     `;
+  }
+
+  handleStoryNavigation(event, storyId) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    navigateToStory(storyId, 'story');
   }
 
   renderTableSection(title, items, columns) {

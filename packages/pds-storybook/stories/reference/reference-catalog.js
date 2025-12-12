@@ -8,7 +8,8 @@ import {
   formatDemoHtml,
   highlightDemoHtml,
   renderChipList,
-  renderTable
+  renderTable,
+  navigateToStory
 } from './reference-helpers.js';
 
 export class PdsReferenceCatalog extends LitElement {
@@ -176,10 +177,12 @@ export class PdsReferenceCatalog extends LitElement {
           <div class="grid grid-auto-md gap-md">
             ${component.stories.map((story) => html`
               <div class="card surface-elevated flex flex-col gap-xs">
-                <a href="/?path=/story/${story.id}" target="_blank" rel="noopener">${story.name}</a>
+                <a
+                  href="/?path=/story/${story.id}"
+                  @click=${(event) => this.handleStoryNavigation(event, story.id)}
+                >${story.name}</a>
                 <div class="flex flex-wrap gap-sm text-muted text-sm">
                   <span>${story.id}</span>
-                  <span>${story.source}</span>
                 </div>
                 ${story.description ? html`<p class="text-muted" style="margin: 0;">${story.description}</p>` : nothing}
                 ${story.tags?.length ? renderChipList(story.tags) : nothing}
@@ -242,6 +245,12 @@ export class PdsReferenceCatalog extends LitElement {
         { key: 'description', label: 'Description' }
       ])}
     `;
+  }
+
+  handleStoryNavigation(event, storyId) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    navigateToStory(storyId, 'story');
   }
 
   renderTableSection(title, items, columns) {
