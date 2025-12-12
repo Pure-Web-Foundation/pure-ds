@@ -7,8 +7,13 @@ const docsParameters = {
 };
 
 if (typeof window !== 'undefined') {
-  const { createComponentDocsPage } = await import('../reference/reference-docs.js');
-  docsParameters.page = createComponentDocsPage('pds-tabstrip');
+  import('../reference/reference-docs.js')
+    .then(({ createComponentDocsPage }) => {
+      docsParameters.page = createComponentDocsPage('pds-tabstrip');
+    })
+    .catch((error) => {
+      console.warn('storybook: docs page failed to load for pds-tabstrip', error);
+    });
 }
 
 const tabstripStoryStyles = html`

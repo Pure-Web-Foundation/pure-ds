@@ -28,8 +28,13 @@ See the examples below to get started, or check the [primitive forms](/story/pri
 };
 
 if (typeof window !== 'undefined') {
-  const { createComponentDocsPage } = await import('../reference/reference-docs.js');
-  docsParameters.page = createComponentDocsPage('pds-jsonform');
+  import('../reference/reference-docs.js')
+    .then(({ createComponentDocsPage }) => {
+      docsParameters.page = createComponentDocsPage('pds-jsonform');
+    })
+    .catch((error) => {
+      console.warn('storybook: docs page failed to load for pds-jsonform', error);
+    });
 }
 
 export default {

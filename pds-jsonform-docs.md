@@ -620,7 +620,7 @@ const uiSchema = {
 };
 ```
 
-> ℹ️ The rich text widget prefers a `#showdown` import map binding. Add something like `"#showdown": "https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.esm.js"` in an import map to avoid loading from the fallback CDN.
+> ℹ️ The rich text widget prefers a `#showdown` import map binding. Add something like `"#showdown": "https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.mjs"` in an import map to avoid loading from the fallback CDN.
 
 To have the submitted value stay as Markdown, set `format` to `"markdown"`:
 ```json
