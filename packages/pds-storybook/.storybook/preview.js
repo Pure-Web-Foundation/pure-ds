@@ -1,11 +1,14 @@
 import { addons } from '@storybook/preview-api';
 import { SELECT_STORY } from '@storybook/core-events';
+import React from 'react';
+import { Title, Subtitle, Description as DocsDescription, Controls } from '@storybook/blocks';
 import { PDS } from '../../../src/js/pds.js';
 import { presets } from '../../../src/js/pds-core/pds-config.js';
 import './addons/pds-configurator/preview.js';
 import { withHTMLExtractor } from './addons/html-preview/preview.js';
 import { withDescription } from './addons/description/preview.js';
 import './htmlPreview.css';
+import './docs.css';
 import { toastFormData } from '../stories/utils/toast-utils.js';
 
 // Expose toastFormData globally for inline event handlers
@@ -1258,11 +1261,63 @@ const renderRelatedOverlay = (context) => {
   setExpanded(initialExpanded);
 };
 
+const pruneDocsStories = (() => {
+  let observer;
+
+  const run = (root) => {
+    if (!root) return;
+
+    const selectors = [
+      '.docs-story',
+      '.sbdocs-preview',
+      '.sb-unstyled',
+      '.docblock-canvas-wrapper',
+      '.docblock-canvas',
+      '.docblock-argstable-wrapper',
+      '.docblock-argstable',
+      '.docblock-source-wrapper',
+      '.docblock-source',
+      '.sbdocs-preview-wrapper',
+      '.sb-story',
+      '[id*="story--"]',
+      '[class*="story-wrapper"]'
+    ];
+
+    root.querySelectorAll(selectors.join(',')).forEach((node) => {
+      node.remove();
+    });
+
+    root.querySelectorAll('h2, h3').forEach((heading) => {
+      if (!heading.textContent) return;
+      const text = heading.textContent.trim().toLowerCase();
+      if (text === 'stories' || text === 'story' || text === 'primary') {
+        const section = heading.closest('section, div') || heading;
+        section.remove();
+      }
+    });
+  };
+
+  return () => {
+    const docsRoot = document.getElementById('docs-root');
+    if (!docsRoot) return;
+
+    run(docsRoot);
+
+    if (!observer) {
+      observer = new MutationObserver(() => {
+        run(docsRoot);
+      });
+      observer.observe(docsRoot, { childList: true, subtree: true });
+    }
+  };
+})();
+
 const withRelatedStories = (story, context) => {
   const result = story();
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       if (context.viewMode === 'docs') {
+        pruneDocsStories();
         renderRelatedFooter(context);
         removeRelatedOverlay();
         return;
@@ -1279,6 +1334,15 @@ const withRelatedStories = (story, context) => {
 
   return result;
 };
+
+const DocsPage = () => React.createElement(
+  React.Fragment,
+  null,
+  React.createElement(Title, null),
+  React.createElement(Subtitle, null),
+  React.createElement(DocsDescription, null),
+  React.createElement(Controls, null)
+);
 
 /** @type { import('@storybook/web-components').Preview } */
 const preview = {
@@ -1298,6 +1362,9 @@ const preview = {
         { name: 'dark', value: '#1a1a1a' },
         { name: 'surface', value: 'var(--surface-bg)' }
       ]
+    },
+    docs: {
+      page: DocsPage
     },
     options: {
       storySort: {
