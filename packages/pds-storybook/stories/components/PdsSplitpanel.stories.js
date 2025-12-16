@@ -385,7 +385,7 @@ export const DashboardLayout = () => html`
 
       <nav class="splitpanel-nav">
         <button class="btn-outline">
-          <pds-icon icon="home"></pds-icon>
+          <pds-icon icon="house"></pds-icon>
           Dashboard
         </button>
         <button class="btn-outline">
@@ -448,4 +448,55 @@ export const DashboardLayout = () => html`
 `;
 
 DashboardLayout.storyName = 'Dashboard Layout';
+
+export const StyledToggle = () => html`
+  ${splitpanelStoryStyles}
+  <style>
+    .styled-toggle-panel::part(toggle) {
+      top: auto;
+      bottom: var(--spacing-4);
+      right: var(--spacing-4);
+    }
+  </style>
+
+  <div class="alert alert-info" style="margin-bottom: var(--spacing-4);">
+    <div class="alert-icon">
+      <pds-icon icon="info" class="icon-info" size="lg"></pds-icon>
+    </div>
+    <div>
+      <div class="alert-title">Styled Toggle</div>
+      <p>The custom styled toggle button below is only visible when the viewport width is less than the breakpoint (default 1024px). Resize your browser to see it.</p>
+    </div>
+  </div>
+
+  <pds-splitpanel class="splitpanel-story splitpanel-story--tall styled-toggle-panel" layout="horizontal" defaultsplit="360px">
+    <div slot="left" class="splitpanel-pane splitpanel-pane--surface splitpanel-pane--stacked">
+      <h3 class="splitpanel-heading">Mobile Menu</h3>
+      <nav class="splitpanel-nav">
+        <button class="btn-outline">
+          <pds-icon icon="house"></pds-icon>
+          Home
+        </button>
+        <button class="btn-outline">
+          <pds-icon icon="user"></pds-icon>
+          Profile
+        </button>
+        <button class="btn-outline">
+          <pds-icon icon="gear"></pds-icon>
+          Settings
+        </button>
+      </nav>
+    </div>
+    <div slot="right" class="splitpanel-pane splitpanel-pane--stacked">
+      <h3 class="splitpanel-heading">Main Content</h3>
+      <p>This is the main content area. In mobile view, use the floating toggle button at the bottom right to access the menu.</p>
+      <article class="card surface-elevated splitpanel-card">
+        <h4 class="splitpanel-section-title">Content Section</h4>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      </article>
+    </div>
+  </pds-splitpanel>
+`;
+
+StyledToggle.storyName = 'Styled Mobile Toggle';
 

@@ -392,7 +392,7 @@ export const NavigationDrawer = () => {
       
       <nav slot="drawer-content" class="flex flex-col gap-sm">
         <button class="btn-outline">
-          <pds-icon icon="home"></pds-icon>
+          <pds-icon icon="house"></pds-icon>
           <span>Home</span>
         </button>
         <button class="btn-outline">

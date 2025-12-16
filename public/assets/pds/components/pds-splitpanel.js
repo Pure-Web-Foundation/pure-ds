@@ -1,3 +1,44 @@
+/**
+ * @component pds-splitpanel
+ * @description A split panel component that supports horizontal and vertical layouts, resizable panels, and a responsive mobile view.
+ *
+ * @attr {String} layout - The layout direction of the panels. Can be "horizontal" or "vertical". Defaults to "horizontal".
+ * @attr {String} defaultsplit - The initial size of the primary (left/top) panel. Defaults to "450px".
+ * @attr {Number} breakpoint - The viewport width in pixels below which the component switches to mobile view. Defaults to 1024.
+ * @attr {Boolean} open - Controls the visibility of the primary panel in mobile view.
+ *
+ * @prop {String} layout - Gets or sets the layout direction.
+ * @prop {String} defaultSplit - Gets or sets the default split size.
+ * @prop {Number} breakpoint - Gets or sets the mobile breakpoint.
+ * @prop {Boolean} open - Gets or sets the open state of the mobile panel.
+ *
+ * @slot left - Content for the left (or top) panel.
+ * @slot right - Content for the right (or bottom) panel.
+ *
+ * @csspart toggle - The mobile toggle button.
+ *
+ * @cssprop --left-width - Width of the left panel in horizontal layout.
+ * @cssprop --color-border - Color of the splitter bar.
+ * @cssprop --color-surface-base - Background color of the left panel in mobile view.
+ * @cssprop --transition-fast - Transition duration for the mobile panel animation.
+ * @cssprop --spacing-4 - Positioning spacing for the mobile toggle button.
+ * @cssprop --spacing-1 - Padding for the mobile toggle button.
+ * @cssprop --spacing-2 - Padding for the mobile toggle button.
+ *
+ * @example
+ * <caption>Basic horizontal split</caption>
+ * <pds-splitpanel>
+ *   <div slot="left">Left Panel Content</div>
+ *   <div slot="right">Right Panel Content</div>
+ * </pds-splitpanel>
+ *
+ * @example
+ * <caption>Vertical split with custom default size</caption>
+ * <pds-splitpanel layout="vertical" defaultsplit="200px">
+ *   <div slot="left">Top Panel Content</div>
+ *   <div slot="right">Bottom Panel Content</div>
+ * </pds-splitpanel>
+ */
 customElements.define(
   "pds-splitpanel",
   class extends HTMLElement {
@@ -128,7 +169,7 @@ customElements.define(
         <div class="right-panel">
           <slot name="right"></slot>
         </div>
-        <button
+        <button part="toggle"
           id="mobile-toggle"
           class="mobile-toggle btn btn-sm"
           aria-label="Toggle panel"
@@ -275,6 +316,10 @@ customElements.define(
       this.shadowRoot.prepend(style);
     }
 
+    /**
+     * Updates the layout based on the current viewport width and breakpoint.
+     * Toggles mobile mode and adjusts panel styles.
+     */
     updateLayout() {
       const isMobile = window.innerWidth < this._breakpoint;
       this.toggleAttribute("mobile", isMobile);
@@ -333,10 +378,16 @@ customElements.define(
       document.body.style.cursor = "";
     }
 
+    /**
+     * Toggles the visibility of the primary panel in mobile view.
+     */
     toggleMobileView() {
       this.open = !this._open;
     }
 
+    /**
+     * Closes the primary panel in mobile view.
+     */
     closeMobileView() {
       this.open = false;
     }
