@@ -26,7 +26,7 @@ if (!ontologyMatch) {
 }
 
 // Load demo content
-const demoPath = join(ROOT_DIR, 'src/js/pds-configurator/pds-demo.js');
+const demoPath = join(ROOT_DIR, 'packages/pds-configurator/src/pds-demo.js');
 const demoContent = readFileSync(demoPath, 'utf-8');
 
 // Story groups based on design system best practices
@@ -72,7 +72,8 @@ const STORY_GROUPS = {
  * Extract HTML section from pds-demo.js
  */
 function extractDemoSection(sectionId) {
-  const sectionRegex = new RegExp(`<section[^>]*id=["']${sectionId}["'][^>]*>([\\s\\S]*?)<\\/section>`, 'i');
+  // Try matching by ID or data-section attribute
+  const sectionRegex = new RegExp(`<section[^>]*(?:id|data-section)=["']${sectionId}["'][^>]*>([\\s\\S]*?)<\\/section>`, 'i');
   const match = demoContent.match(sectionRegex);
   return match ? match[1].trim() : null;
 }
@@ -80,7 +81,7 @@ function extractDemoSection(sectionId) {
 /**
  * Generate story template
  */
-function generateStoryTemplate(group, storyName, content = '') {
+function generateStoryTemplate(group, storyName, content = '', extraCode = '') {
   const title = storyName.replace(/([A-Z])/g, ' $1').trim();
   const argTypes = `
   preset: {
@@ -100,7 +101,7 @@ function generateStoryTemplate(group, storyName, content = '') {
   return `import { html } from 'lit';
 
 export default {
-  title: 'PDS/${STORY_GROUPS[group].title}/${title}',
+  title: '${STORY_GROUPS[group].title}/${title}',
   parameters: {
     docs: {
       description: {
@@ -135,6 +136,8 @@ export const Default = {
       });
     }
     
+    ${extraCode}
+
     return html\`
       <div class="story-container" style="padding: 2rem;">
         ${content || `<p>Story content for ${title}</p>`}
@@ -154,29 +157,72 @@ export const Default = {
 function generateFoundationStories() {
   console.log('Generating foundation stories...');
   
-  // Colors
-  const colorsHTML = extractDemoSection('color-system') || `
-    <div class="demo-grid">
-      <div class="color-scale" style="--scale-color: var(--color-primary-500);">
-        <div style="--value: 50"></div>
-        <div style="--value: 100"></div>
-        <div style="--value: 200"></div>
-        <div style="--value: 300"></div>
-        <div style="--value: 400"></div>
-        <div style="--value: 500"></div>
-        <div style="--value: 600"></div>
-        <div style="--value: 700"></div>
-        <div style="--value: 800"></div>
-        <div style="--value: 900"></div>
+  // Colors - Use custom implementation since pds-demo.js uses dynamic Lit methods
+  const colorsCode = `
+    const renderColorCard = (name, color) => html\`
+      <div class="color-card">
+        <div class="color-swatch" style="background-color: var(--color-\${color}-500);"></div>
+        <div class="color-info">
+          <strong>\${name}</strong>
+          <code>var(--color-\${color}-500)</code>
+        </div>
+        <div class="color-scale" style="--scale-color: var(--color-\${color}-500);">
+          \${[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map(
+            (shade) => html\`<div style="--value: \${shade}"></div>\`
+          )}
+        </div>
       </div>
-    </div>
+    \`;
+    
+    const renderColorScale = (color) => html\`
+      <div class="color-scale-row">
+        \${[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map(shade => html\`
+          <div class="scale-item">
+            <div class="swatch" style="background-color: var(--color-\${color}-\${shade})"></div>
+            <span class="label">\${shade}</span>
+          </div>
+        \`)}
+      </div>
+    \`;
+  `;
+
+  const colorsHTML = `
+    <section class="showcase-section" data-section="color-system">
+      <h2><pds-icon icon="palette" size="lg" class="icon-primary"></pds-icon> Color System</h2>
+      <div class="color-grid">
+        \${renderColorCard("Primary", "primary")}
+        \${renderColorCard("Secondary", "secondary")}
+        \${renderColorCard("Accent", "accent")}
+        \${renderColorCard("Success", "success")}
+        \${renderColorCard("Warning", "warning")}
+        \${renderColorCard("Danger", "danger")}
+        \${renderColorCard("Info", "info")}
+      </div>
+      
+      <h3>Gray Scale (from Secondary)</h3>
+      <div class="gray-scale-grid">
+        \${[50, 100, 200, 300, 400, 500, 600, 700, 800].map(
+          (shade) => html\`
+            <div class="gray-scale-item">
+              <div
+                class="gray-scale-swatch"
+                style="background-color: var(--color-gray-\${shade});"
+                title="gray-\${shade}"
+              ></div>
+              <div class="gray-scale-label">\${shade}</div>
+            </div>
+          \`
+        )}
+      </div>
+    </section>
   `;
   
-  writeStory('foundations', 'Colors', generateStoryTemplate('foundations', 'Colors', colorsHTML));
+  writeStory('foundations', 'Colors', generateStoryTemplate('foundations', 'Colors', colorsHTML, colorsCode));
   
   // Typography
   const typographyHTML = extractDemoSection('typography') || `
     <h1>Heading 1</h1>
+
     <h2>Heading 2</h2>
     <h3>Heading 3</h3>
     <h4>Heading 4</h4>

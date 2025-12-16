@@ -23,7 +23,7 @@
     "ora": "^8.0.0"
   },
   "peerDependencies": {
-    "pure-ds": ">=0.1.29",
+    "@pure-ds/core": ">=0.3.0",
     "@storybook/web-components": ">=8.0.0",
     "@storybook/web-components-vite": ">=8.0.0",
     "vite": ">=5.0.0"

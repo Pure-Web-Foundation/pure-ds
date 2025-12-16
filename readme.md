@@ -1,10 +1,10 @@
 # Pure Design System (PDS)
 
-> ⚠️ **Beta Software** - APIs are stabilizing but may still change. Pin versions in production: `"pure-ds": "~0.2.41"`
+> ⚠️ **Beta Software** - APIs are stabilizing but may still change. Pin versions in production: `"@pure-ds/core": "~0.3.0"`
 
 [![CI](https://github.com/mvneerven/pure-ds/actions/workflows/ci.yml/badge.svg)](https://github.com/mvneerven/pure-ds/actions/workflows/ci.yml)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](#license)
-[![npm version](https://img.shields.io/npm/v/pure-ds.svg)](https://www.npmjs.com/package/pure-ds)
+[![npm version](https://img.shields.io/npm/v/@pure-ds/core.svg)](https://www.npmjs.com/package/@pure-ds/core)
 
 **Why build a design system when you can generate one?**
 
@@ -30,7 +30,7 @@ export const config = {
 ### app.js
 
 ```javascript
-import { PDS } from 'pure-ds';
+import { PDS } from '@pure-ds/core';
 import { config } from './pds.config.js';
 
 await PDS.start(config);
@@ -185,13 +185,13 @@ Optional components loaded on demand:
 ### Installation
 
 ```bash
-npm install pure-ds
+npm install @pure-ds/core
 ```
 
 Assets (components, icons) are auto-copied to your project during install. To manually sync:
 
 ```bash
-node node_modules/pure-ds/packages/pds-cli/bin/postinstall.js
+node node_modules/@pure-ds/core/packages/pds-cli/bin/postinstall.js
 ```
 
 ### Lit Import Convention
@@ -230,7 +230,7 @@ export default {
 Generate styles at runtime with instant updates:
 
 ```javascript
-import { PDS } from 'pure-ds';
+import { PDS } from '@pure-ds/core';
 
 await PDS.start({
   mode: 'live',
@@ -277,7 +277,7 @@ This creates:
 **2. Initialize in static mode:**
 
 ```javascript
-import { PDS } from 'pure-ds';
+import { PDS } from '@pure-ds/core';
 
 await PDS.start({
   mode: 'static',
@@ -1153,7 +1153,7 @@ await PDS.start({
 
 **Manual loading:**
 ```javascript
-import { loadGoogleFont } from 'pure-ds/common/font-loader';
+import { loadGoogleFont } from '@pure-ds/core/common/font-loader';
 
 await loadGoogleFont('Roboto', {
   weights: [400, 500, 700],
@@ -1469,17 +1469,17 @@ await PDS.start({ design: myPreset });
   <button class="btn-primary">Click me</button>
   
   <script type="module">
-    import { PDS } from 'https://cdn.jsdelivr.net/npm/pure-ds@latest/public/assets/js/pds.js';
+    import { PDS } from 'https://cdn.jsdelivr.net/npm/@pure-ds/core@latest/public/assets/js/pds.js';
     
     await PDS.start({
       mode: 'static',
       staticPaths: {
-        tokens: 'https://cdn.jsdelivr.net/npm/pure-ds@latest/public/assets/pds/styles/pds-tokens.css.js',
-        primitives: 'https://cdn.jsdelivr.net/npm/pure-ds@latest/public/assets/pds/styles/pds-primitives.css.js',
-        utilities: 'https://cdn.jsdelivr.net/npm/pure-ds@latest/public/assets/pds/styles/pds-utilities.css.js'
+        tokens: 'https://cdn.jsdelivr.net/npm/@pure-ds/core@latest/public/assets/pds/styles/pds-tokens.css.js',
+        primitives: 'https://cdn.jsdelivr.net/npm/@pure-ds/core@latest/public/assets/pds/styles/pds-primitives.css.js',
+        utilities: 'https://cdn.jsdelivr.net/npm/@pure-ds/core@latest/public/assets/pds/styles/pds-utilities.css.js'
       },
       autoDefine: {
-        baseURL: 'https://cdn.jsdelivr.net/npm/pure-ds@latest/public/assets/pds/components/'
+        baseURL: 'https://cdn.jsdelivr.net/npm/@pure-ds/core@latest/public/assets/pds/components/'
       },
       applyGlobalStyles: true
     });
@@ -1586,10 +1586,10 @@ Add to `.vscode/settings.json`:
 ```json
 {
   "html.customData": [
-    "node_modules/pure-ds/public/assets/pds/vscode-custom-data.json"
+    "node_modules/@pure-ds/core/public/assets/pds/vscode-custom-data.json"
   ],
   "css.customData": [
-    "node_modules/pure-ds/public/assets/pds/pds.css-data.json"
+    "node_modules/@pure-ds/core/public/assets/pds/pds.css-data.json"
   ]
 }
 ```
@@ -1736,7 +1736,7 @@ export default {
 };
 
 // main.js
-import { PDS } from 'pure-ds';
+import { PDS } from '@pure-ds/core';
 await PDS.start({ design: { colors: { primary: '#007acc' } } });
 ```
 
@@ -1747,7 +1747,7 @@ await PDS.start({ design: { colors: { primary: '#007acc' } } });
 'use client';
 
 import { useEffect } from 'react';
-import { PDS } from 'pure-ds';
+import { PDS } from '@pure-ds/core';
 
 export default function RootLayout({ children }) {
   useEffect(() => {

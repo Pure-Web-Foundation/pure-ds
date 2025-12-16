@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * NPM postinstall script for pure-ds
+ * NPM postinstall script for @pure-ds/core
  * Automatically copies PDS assets to the consuming app's web root
  */
 
@@ -21,20 +21,20 @@ const normalizePath = (p) => {
 };
 
 /**
- * Check if we're installing within the pure-ds repo itself (not a consumer)
+ * Check if we're installing within the @pure-ds/core repo itself (not a consumer)
  */
 function isInstallingWithinPureDsRepo() {
   try {
     const cwd = process.cwd();
     const initCwd = process.env.INIT_CWD || cwd;
     
-    // Check if the INIT_CWD has package.json with name "pure-ds"
+    // Check if the INIT_CWD has package.json with name "@pure-ds/core"
     // This is more reliable than path comparison since repoRoot
-    // points to node_modules/pure-ds when installed as a dependency
+    // points to node_modules/@pure-ds/core when installed as a dependency
     try {
       const pkgPath = path.join(initCwd, 'package.json');
       const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
-      return pkg.name === 'pure-ds';
+      return pkg.name === '@pure-ds/core' || pkg.name === 'pure-ds';
     } catch {
       return false;
     }

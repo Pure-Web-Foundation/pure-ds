@@ -113,7 +113,7 @@ pds-storybook --update
 #### Generated Integration:
 ```javascript
 // Injected into consumer's .storybook/preview.js
-import { PDS } from 'pure-ds';
+import { PDS } from '@pure-ds/core';
 
 const withPDS = (story, context) => {
   if (!pdsInitialized) {
@@ -193,10 +193,10 @@ Opens at http://localhost:6006 with:
 
 ```bash
 # In a consumer's Vite + Web Components Storybook project
-npx @pure-ds/storybook-cli
+npx @pure-ds/storybook
 
 # Or after installing
-npm install --save-dev @pure-ds/storybook-cli
+npm install --save-dev @pure-ds/storybook
 pds-storybook
 
 # Update later

@@ -1,5 +1,5 @@
-import "./pds-config-form";
-import "./pds-demo";
+import "./pds-config-form.js";
+import "./pds-demo.js";
 
 customElements.define(
   "pds-configurator",

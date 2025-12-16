@@ -64,7 +64,7 @@ async function loadConfigForm() {
     );
     
     await Promise.race([
-      import('../../../../../src/js/pds-configurator/pds-config-form.js'),
+      import('@pds-src/js/pds-configurator/pds-config-form.js'),
       importTimeout
     ]);
     
@@ -77,7 +77,7 @@ async function loadConfigForm() {
       configFormLoaded = true;
 
       // Listen for design updates from the form
-      const PDS = (await import('../../../../../src/js/pds.js')).PDS;
+      const PDS = (await import('@pds-src/js/pds.js')).PDS;
       PDS.addEventListener('pds:design:updated', async (e) => {
         console.log('Design updated in configurator:', e.detail);
         
@@ -135,7 +135,7 @@ if (typeof window !== 'undefined') {
 
   channel.on(EVENTS.QUERY_EXECUTED, async ({ query }) => {
     try {
-      const PDS = (await import('../../../../../src/js/pds.js')).PDS;
+      const PDS = (await import('@pds-src/js/pds.js')).PDS;
       const results = await PDS.query(query);
       
       // Send results back to manager

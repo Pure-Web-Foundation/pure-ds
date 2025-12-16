@@ -3,22 +3,45 @@
 // Consolidated reference data generator for Pure Design System Storybook
 // Combines metadata from custom-elements.json, the PDS ontology, and Storybook stories
 
-import { promises as fs } from 'fs';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import ts from 'typescript';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const ROOT_DIR = path.join(__dirname, '../../..');
+
+// Determine if we are in the monorepo or installed as a package
+// If we are in node_modules, we are a package.
+// OR if we are running from the package-build script, we might be in the package folder but not in node_modules yet.
+// But this script is run by the user (via npm run storybook) or by the build script.
+
+// If we are in the monorepo, ROOT_DIR is ../../..
+// If we are in the package, ROOT_DIR is ..
+// We can check for the existence of 'packages/pds-storybook' in the parent directories to guess.
+
+let ROOT_DIR;
+let STORIES_ROOT;
+let OUTPUT_DIR;
+
+// Check if we are in the monorepo structure
+if (fs.existsSync(path.join(__dirname, '../../packages/pds-storybook'))) {
+    // We are in packages/pds-storybook/scripts
+    ROOT_DIR = path.join(__dirname, '../../..');
+    STORIES_ROOT = path.join(ROOT_DIR, 'packages/pds-storybook/stories');
+    OUTPUT_DIR = path.join(ROOT_DIR, 'packages/pds-storybook/dist');
+} else {
+    // We are likely in the package structure (node_modules/@pure-ds/storybook/scripts or just dist/scripts)
+    ROOT_DIR = path.join(__dirname, '..');
+    STORIES_ROOT = path.join(ROOT_DIR, 'stories');
+    OUTPUT_DIR = path.join(ROOT_DIR, 'dist');
+}
 
 const CUSTOM_ELEMENTS_PATH = path.join(ROOT_DIR, 'custom-elements.json');
 const ONTOLOGY_PATH = path.join(ROOT_DIR, 'src/js/pds-core/pds-ontology.js');
 const ENHANCERS_PATH = path.join(ROOT_DIR, 'src/js/pds-core/pds-enhancers.js');
 const ENHANCERS_SOURCE_LABEL = path.relative(ROOT_DIR, ENHANCERS_PATH);
 const ONTOLOGY_SOURCE_LABEL = path.relative(ROOT_DIR, ONTOLOGY_PATH);
-const STORIES_ROOT = path.join(ROOT_DIR, 'packages/pds-storybook/stories');
-const OUTPUT_DIR = path.join(ROOT_DIR, 'packages/pds-storybook/dist');
 const OUTPUT_PATH = path.join(OUTPUT_DIR, 'pds-reference.json');
 
 const TYPE_METADATA_CACHE = new Map();
@@ -138,7 +161,7 @@ function isPrivateMemberName(name) {
 }
 
 async function readJson(filePath) {
-  const raw = await fs.readFile(filePath, 'utf-8');
+  const raw = await fs.promises.readFile(filePath, 'utf-8');
   return JSON.parse(raw);
 }
 
@@ -186,7 +209,7 @@ async function loadEnhancers() {
 }
 
 async function walkStories(dir) {
-  const entries = await fs.readdir(dir, { withFileTypes: true });
+  const entries = await fs.promises.readdir(dir, { withFileTypes: true });
   const files = [];
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
@@ -341,7 +364,7 @@ async function loadTypeMetadata(modulePath) {
 
   let source;
   try {
-    source = await fs.readFile(dtsPath, 'utf8');
+    source = await fs.promises.readFile(dtsPath, 'utf8');
   } catch {
     TYPE_METADATA_CACHE.set(modulePath, null);
     return null;
@@ -770,8 +793,8 @@ async function main() {
       tokens
     };
 
-    await fs.mkdir(OUTPUT_DIR, { recursive: true });
-    await fs.writeFile(OUTPUT_PATH, JSON.stringify(reference, null, 2));
+    await fs.promises.mkdir(OUTPUT_DIR, { recursive: true });
+    await fs.promises.writeFile(OUTPUT_PATH, JSON.stringify(reference, null, 2));
 
     console.log(`[pds-reference] Wrote ${path.relative(ROOT_DIR, OUTPUT_PATH)}`);
   } catch (error) {

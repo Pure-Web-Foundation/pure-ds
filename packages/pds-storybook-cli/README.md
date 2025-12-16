@@ -13,7 +13,7 @@ Command-line tool to integrate Pure Design System into existing **Vite + Web Com
 ## Installation
 
 ```bash
-npm install --save-dev @pure-ds/storybook-cli pure-ds
+npm install --save-dev @pure-ds/storybook-cli @pure-ds/core
 ```
 
 Or use directly with `npx`:

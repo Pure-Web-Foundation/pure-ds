@@ -1,0 +1,2003 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-calendar.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Simple class for efficient HTML string building",
+          "name": "HTMLBuilder",
+          "members": [
+            {
+              "kind": "method",
+              "name": "add",
+              "parameters": [
+                {
+                  "name": "htmlPart",
+                  "type": {
+                    "text": "String"
+                  }
+                }
+              ],
+              "description": "Adds a string to the builder"
+            },
+            {
+              "kind": "method",
+              "name": "toHTML",
+              "description": "Returns the built-up string, optionally using the given container for enclosing.",
+              "return": {
+                "type": {
+                  "text": "String"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "anonymous_0",
+          "members": [
+            {
+              "kind": "field",
+              "name": "date",
+              "description": "Gets the current date",
+              "parameters": [
+                {
+                  "description": "Date string or Date object",
+                  "name": "value",
+                  "type": {
+                    "text": "String|Date"
+                  }
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "Date"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "refresh",
+              "description": "Refreshes the calendar display",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "dateHelper",
+              "default": "new DateHelper()"
+            }
+          ],
+          "events": [
+            {
+              "name": "month-rendered",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "date"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-calendar",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HTMLBuilder",
+          "declaration": {
+            "name": "HTMLBuilder",
+            "module": "public/assets/pds/components/pds-calendar.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-calendar",
+          "declaration": {
+            "name": "anonymous_0",
+            "module": "public/assets/pds/components/pds-calendar.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-drawer.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "anonymous_0",
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "description": "Controls whether the drawer is open or closed",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "position",
+              "description": "Position of the drawer relative to the viewport",
+              "type": {
+                "text": "\"bottom\" | \"top\" | \"left\" | \"right\""
+              },
+              "default": "\"bottom\"",
+              "attribute": "position"
+            },
+            {
+              "kind": "field",
+              "name": "drag",
+              "description": "Controls drag interaction behavior",
+              "type": {
+                "text": "\"header\" | \"none\""
+              },
+              "default": "\"header\"",
+              "attribute": "drag"
+            },
+            {
+              "kind": "field",
+              "name": "maxHeight",
+              "description": "Maximum height for top/bottom positioned drawers (CSS value)",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"70vh\"",
+              "attribute": "max-height"
+            },
+            {
+              "kind": "field",
+              "name": "minHeight",
+              "description": "Minimum height for top/bottom positioned drawers (CSS value)",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"auto\"",
+              "attribute": "min-height"
+            },
+            {
+              "kind": "field",
+              "name": "showClose",
+              "description": "Whether to show the close button in the header",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "show-close"
+            },
+            {
+              "kind": "method",
+              "name": "openDrawer",
+              "description": "Opens the drawer",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "closeDrawer",
+              "description": "Closes the drawer",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "toggleDrawer",
+              "description": "Toggles the drawer open/closed state",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "show",
+              "parameters": [
+                {
+                  "name": "htmlContent",
+                  "description": "The main content to display",
+                  "type": {
+                    "text": "any|HTMLElement|string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Configuration options",
+                  "optional": true,
+                  "type": {
+                    "text": "@param {any|HTMLElement|string} [options.header] - Header content\n   * @param {\"bottom\"|\"top\"|\"left\"|\"right\"} [options.position] - Drawer position\n   * @param {string} [options.maxHeight] - Maximum height (CSS value)\n   * @param {string} [options.minHeight] - Minimum height (CSS value)\n   * @param {boolean} [options.showClose] - Show close button\n   * @param {boolean} [options.waitForMedia=true] - Wait for images/videos to load\n   * @param {number} [options.mediaTimeout=500] - Media load timeout in ms\n   * "
+                  }
+                }
+              ],
+              "description": "Configure and open the drawer in one call",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "Promise<this>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setContent",
+              "parameters": [
+                {
+                  "name": "bodyContent",
+                  "description": "Content for the drawer body",
+                  "type": {
+                    "text": "any|HTMLElement|string"
+                  }
+                },
+                {
+                  "name": "headerContent",
+                  "default": "null",
+                  "description": "Optional header content",
+                  "type": {
+                    "text": "any|HTMLElement|string"
+                  },
+                  "optional": true
+                }
+              ],
+              "description": "Set the content of the drawer",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "clearContent",
+              "description": "Clear drawer content (removes all slotted content)",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "_open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_position",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"bottom\""
+            },
+            {
+              "kind": "field",
+              "name": "_drag",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"header\""
+            },
+            {
+              "kind": "field",
+              "name": "_maxHeight",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_minHeight",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_showClose",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "description": "Controls whether the drawer is open or closed",
+              "type": {
+                "text": "boolean"
+              },
+              "fieldName": "open"
+            },
+            {
+              "name": "position",
+              "description": "Position of the drawer relative to the viewport",
+              "type": {
+                "text": "\"bottom\" | \"top\" | \"left\" | \"right\""
+              },
+              "default": "\"bottom\"",
+              "fieldName": "position"
+            },
+            {
+              "name": "drag",
+              "description": "Controls drag interaction behavior",
+              "type": {
+                "text": "\"header\" | \"none\""
+              },
+              "default": "\"header\"",
+              "fieldName": "drag"
+            },
+            {
+              "name": "max-height",
+              "description": "Maximum height for top/bottom positioned drawers (CSS value)",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"70vh\"",
+              "fieldName": "maxHeight"
+            },
+            {
+              "name": "min-height",
+              "description": "Minimum height for top/bottom positioned drawers (CSS value)",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"auto\"",
+              "fieldName": "minHeight"
+            },
+            {
+              "name": "show-close",
+              "description": "Whether to show the close button in the header",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "showClose"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-calendar",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-drawer",
+          "declaration": {
+            "name": "anonymous_0",
+            "module": "public/assets/pds/components/pds-drawer.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-icon.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "SVG Icon Web Component",
+          "name": "SvgIcon",
+          "members": [
+            {
+              "kind": "field",
+              "name": "spritePromises",
+              "static": true,
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "inlineSprites",
+              "static": true,
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "instances",
+              "static": true,
+              "default": "new Set()"
+            },
+            {
+              "kind": "method",
+              "name": "spriteAvailable",
+              "description": "Check if sprite sheet is available",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureInlineSprite",
+              "static": true,
+              "parameters": [
+                {
+                  "name": "spriteURL"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "notifyInstances",
+              "static": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "icon",
+              "type": {
+                "text": "string"
+              },
+              "description": "Icon name from the sprite sheet"
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "string|number"
+              },
+              "description": "Icon size in pixels or named size (xs, sm, md, lg, xl, 2xl)"
+            },
+            {
+              "name": "color",
+              "type": {
+                "text": "string"
+              },
+              "description": "Icon color (CSS color value, default: currentColor)"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Accessible label for the icon (adds role=\"img\")"
+            },
+            {
+              "name": "rotate",
+              "type": {
+                "text": "number"
+              },
+              "description": "Rotation angle in degrees"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Override sprite sheet path",
+              "name": "sprite"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Force fallback icon rendering",
+              "name": "no-sprite"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-icon",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SvgIcon",
+          "declaration": {
+            "name": "SvgIcon",
+            "module": "public/assets/pds/components/pds-icon.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-icon",
+          "declaration": {
+            "name": "SvgIcon",
+            "module": "public/assets/pds/components/pds-icon.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-jsonform.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "<pds-jsonform>\n\nForm Actions:\nBy default, the form includes Submit and Reset buttons inside the <form> element.\n\nUsage options:\n1. Default buttons:\n   <pds-jsonform .jsonSchema=${schema}></pds-jsonform>\n\n2. Customize labels:\n   <pds-jsonform .jsonSchema=${schema} submit-label=\"Save\" reset-label=\"Clear\"></pds-jsonform>\n\n3. Hide reset button:\n   <pds-jsonform .jsonSchema=${schema} hide-reset></pds-jsonform>\n\n4. Add extra buttons (slot):\n   <pds-jsonform .jsonSchema=${schema}>\n     <button type=\"button\" slot=\"actions\"",
+          "name": "SchemaForm",
+          "members": [
+            {
+              "kind": "method",
+              "name": "defineRenderer",
+              "parameters": [
+                {
+                  "name": "widgetKey"
+                },
+                {
+                  "name": "fn"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "useValidator",
+              "parameters": [
+                {
+                  "name": "fn"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getValuesFlat"
+            },
+            {
+              "kind": "method",
+              "name": "serialize"
+            },
+            {
+              "kind": "method",
+              "name": "submit"
+            },
+            {
+              "kind": "field",
+              "name": "jsonSchema",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "attribute": "json-schema"
+            },
+            {
+              "kind": "field",
+              "name": "uiSchema",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "attribute": "ui-schema"
+            },
+            {
+              "kind": "field",
+              "name": "options",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "attribute": "options"
+            },
+            {
+              "kind": "field",
+              "name": "values",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "attribute": "values"
+            },
+            {
+              "kind": "field",
+              "name": "method",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"post\"",
+              "attribute": "method"
+            },
+            {
+              "kind": "field",
+              "name": "hideActions",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "hide-actions"
+            },
+            {
+              "kind": "field",
+              "name": "submitLabel",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"Submit\"",
+              "attribute": "submit-label"
+            },
+            {
+              "kind": "field",
+              "name": "resetLabel",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"Reset\"",
+              "attribute": "reset-label"
+            },
+            {
+              "kind": "field",
+              "name": "hideReset",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "hide-reset"
+            },
+            {
+              "kind": "field",
+              "name": "hideLegend",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "hide-legend"
+            },
+            {
+              "kind": "field",
+              "name": "action",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "attribute": "action"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "hideSubmit",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "hide-submit"
+            }
+          ],
+          "events": [
+            {
+              "name": "name",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "json-schema",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "fieldName": "jsonSchema"
+            },
+            {
+              "name": "ui-schema",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "fieldName": "uiSchema"
+            },
+            {
+              "name": "options",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "fieldName": "options"
+            },
+            {
+              "name": "values",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "fieldName": "values"
+            },
+            {
+              "name": "action",
+              "type": {
+                "text": "string"
+              },
+              "fieldName": "action"
+            },
+            {
+              "name": "method",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"post\"",
+              "fieldName": "method"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "fieldName": "disabled"
+            },
+            {
+              "name": "hide-actions",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "hideActions"
+            },
+            {
+              "name": "submit-label",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"Submit\"",
+              "fieldName": "submitLabel"
+            },
+            {
+              "name": "reset-label",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"Reset\"",
+              "fieldName": "resetLabel"
+            },
+            {
+              "name": "hide-reset",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "hideReset"
+            },
+            {
+              "name": "hide-submit",
+              "type": {
+                "text": "boolean"
+              },
+              "fieldName": "hideSubmit"
+            },
+            {
+              "name": "hide-legend",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "hideLegend"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "module": "/public/assets/pds/components/pds-jsonform.js"
+          },
+          "tagName": "pds-jsonform",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SchemaForm",
+          "declaration": {
+            "name": "SchemaForm",
+            "module": "public/assets/pds/components/pds-jsonform.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-jsonform",
+          "declaration": {
+            "name": "SchemaForm",
+            "module": "public/assets/pds/components/pds-jsonform.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-richtext.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "RichText",
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "description": "Update the form field name.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "description": "Set the placeholder text.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "description": "Enable or disable user input.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "description": "Toggle required validation.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "submitOnEnter",
+              "description": "Enable or disable submit-on-enter behaviour.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "spellcheck",
+              "description": "Toggle native spell checking support.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "toolbar",
+              "description": "Show or hide the formatting toolbar.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "description": "Change the output format for future values.",
+              "return": {
+                "type": {
+                  "text": "\"html\"|\"markdown\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "description": "Update the editor value programmatically.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "description": "Reference to the associated HTMLFormElement, when applicable.",
+              "return": {
+                "type": {
+                  "text": "HTMLFormElement|null"
+                }
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
+              "description": "Run native form validation against the control.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity",
+              "description": "Report validity using the browser's built-in UI.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_submitOnEnter",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_toolbar",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "_spellcheck",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "_value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_placeholder",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_required",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_format",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"html\""
+            }
+          ],
+          "events": [
+            {
+              "name": "input",
+              "type": {
+                "text": "InputEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "name"
+            },
+            {
+              "name": "placeholder"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "required"
+            },
+            {
+              "name": "submit-on-enter"
+            },
+            {
+              "name": "spellcheck"
+            },
+            {
+              "name": "toolbar"
+            },
+            {
+              "name": "value"
+            },
+            {
+              "name": "format"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-richtext",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RichText",
+          "declaration": {
+            "name": "RichText",
+            "module": "public/assets/pds/components/pds-richtext.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-richtext",
+          "declaration": {
+            "name": "RichText",
+            "module": "public/assets/pds/components/pds-richtext.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-scrollrow.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Horizontal scrolling row with optional heading and snap alignment controls.",
+          "name": "PdsScrollrow",
+          "cssParts": [
+            {
+              "description": "The scrollable container element",
+              "name": "viewport"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Scrollable tile content",
+              "name": "default"
+            },
+            {
+              "description": "Optional heading content rendered in the component header",
+              "name": "heading"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label",
+              "description": "Update the accessible label and optional fallback heading text.",
+              "return": {
+                "type": {
+                  "text": "string|null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "val",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "snap",
+              "description": "Adjust the scroll snap alignment.",
+              "return": {
+                "type": {
+                  "text": "\"start\"|\"center\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "val",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "doPage",
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ],
+              "description": "Scroll the viewport by roughly one page in the indicated direction."
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Accessible label for the scroll region; also used as fallback heading copy"
+            },
+            {
+              "name": "snap",
+              "type": {
+                "text": "\"start\"|\"center\""
+              },
+              "description": "Snap alignment for tiles when scrolling (default: start)"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-scrollrow",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-scrollrow",
+          "declaration": {
+            "name": "PdsScrollrow",
+            "module": "public/assets/pds/components/pds-scrollrow.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-splitpanel.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "anonymous_0",
+          "members": [
+            {
+              "kind": "field",
+              "name": "layout"
+            },
+            {
+              "kind": "field",
+              "name": "defaultSplit"
+            },
+            {
+              "kind": "field",
+              "name": "breakpoint"
+            },
+            {
+              "kind": "field",
+              "name": "open"
+            },
+            {
+              "kind": "method",
+              "name": "_render"
+            },
+            {
+              "kind": "method",
+              "name": "_adoptStyles"
+            },
+            {
+              "kind": "method",
+              "name": "updateLayout"
+            },
+            {
+              "kind": "method",
+              "name": "startDragging",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "drag",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "stopDragging"
+            },
+            {
+              "kind": "method",
+              "name": "toggleMobileView"
+            },
+            {
+              "kind": "method",
+              "name": "closeMobileView"
+            },
+            {
+              "kind": "method",
+              "name": "_updateToggleButton"
+            },
+            {
+              "kind": "field",
+              "name": "_layout",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"horizontal\""
+            },
+            {
+              "kind": "field",
+              "name": "_defaultSplit",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"450px\""
+            },
+            {
+              "kind": "field",
+              "name": "_breakpoint",
+              "type": {
+                "text": "number"
+              },
+              "default": "1024"
+            },
+            {
+              "kind": "field",
+              "name": "_open"
+            },
+            {
+              "kind": "field",
+              "name": "isDragging",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_onResize"
+            },
+            {
+              "kind": "field",
+              "name": "_onMouseMove"
+            },
+            {
+              "kind": "field",
+              "name": "_onMouseUp"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "layout"
+            },
+            {
+              "name": "defaultsplit"
+            },
+            {
+              "name": "breakpoint"
+            },
+            {
+              "name": "open"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-calendar",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-splitpanel",
+          "declaration": {
+            "name": "anonymous_0",
+            "module": "public/assets/pds/components/pds-splitpanel.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-tabstrip.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TabPanel",
+          "slots": [
+            {
+              "description": "Content of the tab panel",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "section",
+              "description": "The inner `<section>` that exposes the panel region semantics.",
+              "return": {
+                "type": {
+                  "text": "HTMLElement|null"
+                }
+              },
+              "readonly": true
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Label for the tab button",
+              "name": "label"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Unique identifier for the panel (auto-generated if not provided)",
+              "name": "id"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-tabpanel",
+          "customElement": true
+        },
+        {
+          "kind": "class",
+          "description": "Tab navigation component that pairs anchors with `pds-tabpanel` children.",
+          "name": "TabStrip",
+          "cssProperties": [
+            {
+              "description": "Color of the active tab indicator underline",
+              "name": "--color-accent-400"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "Navigation container comprising the clickable tab buttons",
+              "name": "tabs"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Collection of `pds-tabpanel` nodes representing individual tab panels",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "innerHTML",
+              "default": "`\n      <style>\n        :host{display:block}\n        nav{\n          position:relative; display:inline-flex; gap:.5rem; align-items:flex-end;\n          \n          --pad-x:.5rem; --pad-y:.25rem;\n        }\n        nav a{\n          color: currentColor;\n          display:inline-block; padding:var(--pad-y) var(--pad-x);\n          text-decoration:none; line-height:1.2; border-bottom:2px solid transparent;\n          cursor:pointer;\n        }\n        nav a[aria-current=\"page\"]{ font-weight:600; }\n        nav a:focus-visible{ outline:auto; outline-offset:2px; }\n        .inkbar{\n          position:absolute; inset-inline-start:0; bottom:-1px; height:2px; width:0;\n          transform:translateX(0); transition:transform .25s ease, width .25s ease;\n          background-color: var(--color-accent-400); pointer-events:none;\n        }\n      </style>\n      <nav part=\"tabs\"></nav>\n      <slot></slot>\n    `"
+            }
+          ],
+          "events": [
+            {
+              "name": "tabchange",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Fired when the active tab changes. Detail: `{ oldTab: string|null, newTab: string }`"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Accessible label announced for the tablist",
+              "name": "label"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Identifier of the currently active panel (synced with the location hash)",
+              "name": "selected"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-tabstrip",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-tabpanel",
+          "declaration": {
+            "name": "TabPanel",
+            "module": "public/assets/pds/components/pds-tabstrip.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-tabstrip",
+          "declaration": {
+            "name": "TabStrip",
+            "module": "public/assets/pds/components/pds-tabstrip.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-toaster.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "AppToaster",
+          "cssProperties": [
+            {
+              "description": "Z-index for toast positioning (default: 9999)",
+              "name": "--z-notification"
+            },
+            {
+              "description": "Animation duration for toasts",
+              "name": "--transition-normal"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Toast messages are dynamically added to the shadow DOM",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "method",
+              "name": "toast",
+              "parameters": [
+                {
+                  "name": "message",
+                  "description": "The message to display",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Toast configuration",
+                  "optional": true,
+                  "type": {
+                    "text": "@param {\"information\"|\"success\"|\"warning\"|\"error\"} [options.type=\"information\"] - Toast type\n   * @param {number} [options.duration] - Duration in ms (auto-calculated if not provided)\n   * @param {boolean} [options.closable=true] - Whether toast can be closed manually\n   * @param {boolean} [options.persistent=false] - If true, toast doesn't auto-dismiss\n   * "
+                  }
+                }
+              ],
+              "description": "Display a toast notification",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "createToastElement",
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "message",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "type",
+                  "type": {
+                    "text": "\"information\"|\"success\"|\"warning\"|\"error\""
+                  }
+                },
+                {
+                  "name": "closable",
+                  "type": {
+                    "text": "boolean"
+                  }
+                },
+                {
+                  "name": "duration",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "persistent",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "description": "Build a DOM node representing a single toast notification.",
+              "return": {
+                "type": {
+                  "text": "HTMLElement"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "dismissToast",
+              "parameters": [
+                {
+                  "name": "toastId",
+                  "description": "The ID of the toast to dismiss",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Dismiss a toast by ID",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "dismissAll",
+              "description": "Close all active toasts."
+            },
+            {
+              "kind": "method",
+              "name": "toastSuccess",
+              "parameters": [
+                {
+                  "name": "message",
+                  "description": "The message to display",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Toast configuration options",
+                  "optional": true,
+                  "type": {
+                    "text": "Object"
+                  }
+                }
+              ],
+              "description": "Display a success toast",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "toastWarning",
+              "parameters": [
+                {
+                  "name": "message",
+                  "description": "The message to display",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Toast configuration options",
+                  "optional": true,
+                  "type": {
+                    "text": "Object"
+                  }
+                }
+              ],
+              "description": "Display a warning toast",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "toastError",
+              "parameters": [
+                {
+                  "name": "message",
+                  "description": "The message to display",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Toast configuration options",
+                  "optional": true,
+                  "type": {
+                    "text": "Object"
+                  }
+                }
+              ],
+              "description": "Display an error toast",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "toastInfo",
+              "parameters": [
+                {
+                  "name": "message",
+                  "description": "The message to display",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Toast configuration options",
+                  "optional": true,
+                  "type": {
+                    "text": "Object"
+                  }
+                }
+              ],
+              "description": "Display an information toast",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "toasts",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            }
+          ],
+          "events": [
+            {
+              "description": "Global event for creating toasts",
+              "name": "pds:toast"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-toaster",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "AppToaster",
+          "declaration": {
+            "name": "AppToaster",
+            "module": "public/assets/pds/components/pds-toaster.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-toaster",
+          "declaration": {
+            "name": "AppToaster",
+            "module": "public/assets/pds/components/pds-toaster.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-upload.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Drag-and-drop file uploader that participates in native forms.",
+          "name": "UploadArea",
+          "members": [
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback",
+              "description": "Invoked when the element becomes associated with a `<form>`."
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "description": "Sync disabled state across internal controls when the host form toggles."
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback",
+              "description": "Clear selected files when the host form resets."
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "File[]"
+                  }
+                }
+              ],
+              "description": "Restore previously submitted files during BFCache or session restores."
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "description": "Value is derived from the selected files and cannot be set manually.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "val",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
+              "description": "Run constraint validation leveraging ElementInternals.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity",
+              "description": "Report validity issues using the browser UI.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "clear",
+              "description": "Clear all selected files and update the UI accordingly."
+            },
+            {
+              "kind": "method",
+              "name": "getFiles",
+              "description": "Retrieve a shallow copy of the current file selection.",
+              "return": {
+                "type": {
+                  "text": "File[]"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "clear",
+              "description": "Remove all files and emit a change notification."
+            }
+          ],
+          "events": [
+            {
+              "name": "files-changed",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "accept",
+              "type": {
+                "text": "string"
+              },
+              "description": "Comma separated list of accepted MIME types and file extensions"
+            },
+            {
+              "name": "multiple",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Allows selecting more than one file"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables interaction with the drop zone and button"
+            },
+            {
+              "name": "max-files",
+              "type": {
+                "text": "number"
+              },
+              "description": "Optional cap on the number of files the user may select"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-upload",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-upload",
+          "declaration": {
+            "name": "UploadArea",
+            "module": "public/assets/pds/components/pds-upload.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UploadArea",
+            "module": "public/assets/pds/components/pds-upload.js"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -17,7 +17,7 @@ async function findPdsRoot() {
   }
   
   // If running from node_modules (consumer app)
-  // The structure would be: node_modules/pure-ds/packages/pds-cli/bin
+  // The structure would be: node_modules/@pure-ds/core/packages/pds-cli/bin
   if (currentDir.includes('node_modules')) {
     let dir = currentDir;
     while (dir !== path.dirname(dir)) {

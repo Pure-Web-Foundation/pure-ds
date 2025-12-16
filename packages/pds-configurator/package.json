@@ -1,0 +1,14 @@
+{
+  "name": "@pure-ds/configurator",
+  "version": "0.0.1",
+  "description": "Configuration UI for Pure Design System",
+  "type": "module",
+  "main": "./src/pds-configurator.js",
+  "exports": {
+    ".": "./src/pds-configurator.js",
+    "./form": "./src/pds-config-form.js"
+  },
+  "dependencies": {
+    "lit": "^3.0.0"
+  }
+}

@@ -1,12 +1,12 @@
-import { LitElement, html, nothing } from "../lit";
+import { LitElement, html, nothing } from "../../../src/js/lit.js";
 //import { config } from "../config";
-import { Generator } from "../pds-core/pds-generator.js";
-import { presets } from "../pds-core/pds-config.js";
-import { PDS, validateDesign } from "../pds";
-import { deepMerge } from "../common/common";
-import { loadTypographyFonts } from "../common/font-loader.js";
+import { Generator } from "../../../src/js/pds-core/pds-generator.js";
+import { presets } from "../../../src/js/pds-core/pds-config.js";
+import { PDS, validateDesign } from "../../../src/js/pds.js";
+import { deepMerge } from "../../../src/js/common/common.js";
+import { loadTypographyFonts } from "../../../src/js/common/font-loader.js";
 import { AutoComplete } from "pure-web/ac";
-import { figmafyTokens } from "./figma-export";
+import { figmafyTokens } from "./figma-export.js";
 const STORAGE_KEY = "pure-ds-config";
 
 

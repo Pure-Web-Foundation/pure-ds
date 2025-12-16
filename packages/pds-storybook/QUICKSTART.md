@@ -63,13 +63,13 @@ Outputs to `storybook-static/` - ready to deploy.
 **Requirements:**
 - Vite-based project
 - `@storybook/web-components-vite` framework
-- `pure-ds` installed
+- `@pure-ds/core` installed
 
 **Steps:**
 
 ```bash
 # 1. Install CLI
-npm install --save-dev @pure-ds/storybook-cli
+npm install --save-dev @pure-ds/storybook
 
 # 2. Run integration (from your project root)
 npx pds-storybook
@@ -305,7 +305,7 @@ export const WithEvents = () => {
 - **PDS Docs**: https://puredesignsystem.z6.web.core.windows.net/
 - **Storybook Docs**: https://storybook.js.org/docs/web-components/get-started
 - **GitHub**: https://github.com/mvneerven/pure-ds
-- **NPM**: https://www.npmjs.com/package/pure-ds
+- **NPM**: https://www.npmjs.com/package/@pure-ds/core
 
 ---
 

@@ -1,4 +1,4 @@
-import "./pds-configurator/pds-configurator";
+import "../../packages/pds-configurator/src/pds-configurator.js";
 import { PDS } from "./pds";
 import { config } from "../../pds.config.js"
 

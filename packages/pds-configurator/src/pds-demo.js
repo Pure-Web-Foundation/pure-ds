@@ -1,5 +1,5 @@
-import { LitElement, html, nothing, render, unsafeHTML } from "../lit";
-import { PDS } from "../pds";
+import { LitElement, html, nothing, render, unsafeHTML } from "../../../src/js/lit.js";
+import { PDS } from "../../../src/js/pds.js";
 
 import { AutoComplete } from "pure-web/ac";
 

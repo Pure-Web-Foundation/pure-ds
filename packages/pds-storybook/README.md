@@ -259,7 +259,7 @@ This package is private and not published to npm. It serves as:
 2. Development environment
 3. Story template source for CLI
 
-The CLI (`@pure-ds/storybook-cli`) copies stories from here to consumer projects.
+The CLI (`@pure-ds/storybook`) copies stories from here to consumer projects.
 
 ## License
 

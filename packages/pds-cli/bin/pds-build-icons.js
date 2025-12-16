@@ -6,7 +6,7 @@
  * Rebuilds the SVG sprite (pds-icons.svg) into the consumer app's configured static root.
  * Output path: [public.root]/icons/pds-icons.svg
  *
- * Usage: node node_modules/pure-ds/packages/pds-cli/bin/pds-build-icons.js
+ * Usage: node node_modules/@pure-ds/core/packages/pds-cli/bin/pds-build-icons.js
  */
 
 import { readFile, writeFile, mkdir, access } from 'fs/promises';

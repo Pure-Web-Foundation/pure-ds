@@ -2,8 +2,9 @@ import { addons } from '@storybook/preview-api';
 import { SELECT_STORY } from '@storybook/core-events';
 import React from 'react';
 import { Title, Subtitle, Description as DocsDescription, Controls } from '@storybook/blocks';
-import { PDS } from '../../../src/js/pds.js';
-import { presets } from '../../../src/js/pds-core/pds-config.js';
+import { PDS } from '@pds-src/js/pds.js';
+import { presets } from '@pds-src/js/pds-core/pds-config.js';
+import { config as userConfig } from '@user/pds-config';
 import './addons/pds-configurator/preview.js';
 import { withHTMLExtractor } from './addons/html-preview/preview.js';
 import { withDescription } from './addons/description/preview.js';
@@ -41,7 +42,7 @@ console.log('🎨 Starting PDS initialization with preset:', initialPreset);
 
 // Wrap top-level await in IIFE for production build compatibility
 (async () => {
-  await PDS.start({
+  const pdsOptions = {
     mode: 'live',
     preset: initialPreset,
     autoDefine: {
@@ -53,7 +54,21 @@ console.log('🎨 Starting PDS initialization with preset:', initialPreset);
     },
     applyGlobalStyles: true,
     manageTheme: true
-  });
+  };
+
+  // Merge user config
+  if (userConfig) {
+    if (userConfig.mode) pdsOptions.mode = userConfig.mode;
+    if (userConfig.autoDefine) {
+        // Merge autoDefine options
+        pdsOptions.autoDefine = {
+            ...pdsOptions.autoDefine,
+            ...userConfig.autoDefine
+        };
+    }
+  }
+
+  await PDS.start(pdsOptions);
 
   console.log('✨ PDS initialized in live mode for Storybook');
   console.log('📦 AutoDefiner active at:', PDS.autoDefiner?.config?.baseURL);
