@@ -353,7 +353,7 @@ customElements.define(
       if (storedTheme) generatorOptions.theme = storedTheme;
 
       this.generator = new Generator(generatorOptions);
-      Generator.applyStyles(this.generator);
+      Generator.applyStyles();
 
       // Let PDS ensure document html[data-theme] reflects persisted preference
       try {

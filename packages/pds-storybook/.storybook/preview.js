@@ -42,6 +42,7 @@ console.log('🎨 Starting PDS initialization with preset:', initialPreset);
 
 // Wrap top-level await in IIFE for production build compatibility
 (async () => {
+  PDS.initializing = true;
   const pdsOptions = {
     mode: 'live',
     preset: initialPreset,
@@ -69,13 +70,13 @@ console.log('🎨 Starting PDS initialization with preset:', initialPreset);
   }
 
   await PDS.start(pdsOptions);
+  PDS.initializing = false;
 
   console.log('✨ PDS initialized in live mode for Storybook');
   console.log('📦 AutoDefiner active at:', PDS.autoDefiner?.config?.baseURL);
 
   // Store PDS designer globally for reuse
-  window.__pdsDesigner = PDS.registry._designer;
-  window.__pdsCurrentPreset = initialPreset;
+  PDS.currentPreset = initialPreset;
 })();
 
 // Set up persistent style protection - monitor and restore PDS sheets if cleared
@@ -84,9 +85,9 @@ function ensurePDSStyles() {
   const sheets = document.adoptedStyleSheets || [];
   const hasPDS = sheets.some(s => s._pds === true);
   
-  if (!hasPDS && window.__pdsDesigner) {
+  if (!hasPDS && PDS.Generator.instance) {
     console.log('🛡️ PDS sheets missing - restoring...');
-    PDS.Generator.applyStyles(window.__pdsDesigner);
+    PDS.Generator.applyStyles();
   }
 }
 
@@ -105,14 +106,14 @@ const withPDS = (story, context) => {
   console.log('📋 Current adoptedStyleSheets:', currentSheets.length, 'PDS sheets:', pdsSheets.length);
   
   // ALWAYS reapply PDS styles before each story render
-  const designer = window.__pdsDesigner || PDS.registry._designer;
+  const designer = PDS.Generator.instance;
   if (designer) {
-    PDS.Generator.applyStyles(designer);
+    PDS.Generator.applyStyles();
     
     // Check again after applying
     const afterSheets = document.adoptedStyleSheets || [];
     const afterPdsSheets = afterSheets.filter(s => s._pds === true);
-  } else {
+  } else if (!PDS.initializing && PDS.isLiveMode()) {
     console.warn('⚠️ No designer found!');
   }
   
@@ -234,13 +235,13 @@ const withGlobalsHandler = (story, context) => {
   const { globals } = context;
   
   // Handle preset changes via decorator (has access to globals)
-  if (globals?.preset && globals.preset !== window.__pdsCurrentPreset) {
-    console.log('🔄 Decorator detected preset change:', window.__pdsCurrentPreset, '→', globals.preset);
+  if (globals?.preset && globals.preset !== PDS.currentPreset) {
+    console.log('🔄 Decorator detected preset change:', PDS.currentPreset, '→', globals.preset);
     
     // Apply preset asynchronously
     (async () => {
       try {
-        window.__pdsCurrentPreset = globals.preset;
+        PDS.currentPreset = globals.preset;
         
         // Store for persistence
         try {
@@ -263,10 +264,7 @@ const withGlobalsHandler = (story, context) => {
           if (PDS.theme) generatorOptions.theme = PDS.theme;
           
           const newDesigner = new PDS.Generator(generatorOptions);
-          await PDS.Generator.applyStyles(newDesigner);
-          
-          PDS.registry._designer = newDesigner;
-          window.__pdsDesigner = newDesigner;
+          await PDS.Generator.applyStyles();
           
           console.log(`✅ Preset applied via decorator: ${globals.preset}`);
         }
@@ -356,41 +354,6 @@ const expandSemanticTags = (input) => {
   }
 
   return expanded;
-};
-
-const getStoryStore = () => {
-  if (typeof window === 'undefined') return null;
-  return window.__STORYBOOK_STORY_STORE__ || null;
-};
-
-const collectStoryIndexTags = (storyId) => {
-  if (!storyId) return undefined;
-  const storyStore = getStoryStore();
-  const index = storyStore?.storyIndex;
-  if (!index) return undefined;
-
-  const entries = index.entries || index;
-  const entry = entries?.[storyId];
-  return entry?.tags;
-};
-
-const collectStoryStoreEntryTags = (storyId) => {
-  const storyStore = getStoryStore();
-  if (!storyStore?.fromId || !storyId) return undefined;
-
-  try {
-    const entry = storyStore.fromId(storyId);
-    if (!entry) return undefined;
-
-    return mergeTagSets(
-      entry.meta?.tags,
-      entry.parameters?.tags,
-      entry.moduleExport?.default?.tags,
-      entry.moduleExport?.tags
-    );
-  } catch {
-    return undefined;
-  }
 };
 
 const ensureRelatedStyles = (() => {
@@ -964,27 +927,14 @@ const getContextTags = (context) => {
     context.moduleExport?.parameters?.pds?.tags,
     context.moduleExport?.pds?.tags,
     context.parameters?.pdsTags,
-    context.moduleExport?.tags,
-    collectStoryIndexTags(storyId),
-    collectStoryStoreEntryTags(storyId)
+    context.moduleExport?.tags
   );
 
   if (initial.size > 0) {
     return expandSemanticTags(initial);
   }
 
-  const fallback = new Set();
-  const clientApi = typeof window !== 'undefined' ? window.__STORYBOOK_CLIENT_API__ : null;
-  if (!clientApi?.raw) return fallback;
-
-  clientApi
-    .raw()
-    .filter((story) => story?.title === context.title)
-    .forEach((story) => {
-      getStoryTags(story).forEach((tag) => fallback.add(tag));
-    });
-
-  return expandSemanticTags(fallback);
+  return expandSemanticTags(new Set());
 };
 
 const getStoryTags = (story) => {
@@ -999,22 +949,11 @@ const getStoryTags = (story) => {
     story.moduleExport?.pds?.tags,
     story.parameters?.pdsTags,
     story.moduleExport?.default?.tags,
-    story.moduleExport?.tags,
-    collectStoryIndexTags(story.id),
-    collectStoryStoreEntryTags(story.id)
+    story.moduleExport?.tags
   );
 
   if (collected.size > 0) {
     return expandSemanticTags(collected);
-  }
-
-  const storyStore = getStoryStore();
-  const storyIndex = storyStore?.storyIndex;
-  if (storyIndex?.entries) {
-    const entry = storyIndex.entries[story.id];
-    if (entry?.tags) {
-      return expandSemanticTags(mergeTagSets(entry.tags));
-    }
   }
 
   return expandSemanticTags(collected);
@@ -1028,37 +967,6 @@ const getAllStoriesForRelated = () => {
     stories.push(...clientApi.raw());
     return stories;
   }
-
-  const storyStore = getStoryStore();
-  const indexEntries = storyStore?.storyIndex?.entries;
-  if (!indexEntries) return stories;
-
-  Object.entries(indexEntries).forEach(([storyId, entry]) => {
-    if (!entry || entry.type !== 'story') return;
-
-    let storeEntry;
-    if (storyStore?.fromId) {
-      try {
-        storeEntry = storyStore.fromId(storyId);
-      } catch {}
-    }
-
-    const parameters = storeEntry?.parameters || storeEntry?.story?.parameters || entry.parameters || {};
-    const meta = storeEntry?.meta || { title: entry.title };
-    const moduleExport = storeEntry?.moduleExport;
-    const tags = mergeTagSets(entry.tags, storeEntry?.tags);
-
-    stories.push({
-      id: storyId,
-      title: storeEntry?.story?.title || entry.title,
-      name: entry.name,
-      importPath: entry.importPath,
-      parameters,
-      meta,
-      moduleExport,
-      tags
-    });
-  });
 
   return stories;
 };
@@ -1485,10 +1393,10 @@ if (typeof window !== 'undefined') {
       
       if (globals?.preset) {
         console.log('🔔 SET_GLOBALS message received with preset:', globals.preset);
-        console.log('📦 Current stored preset:', window.__pdsCurrentPreset);
+        console.log('📦 Current stored preset:', PDS.currentPreset);
         
         // Skip if already on this preset
-        if (globals.preset === window.__pdsCurrentPreset) {
+        if (globals.preset === PDS.currentPreset) {
           console.log('⏭️ Preset unchanged, skipping');
           return;
         }
@@ -1538,13 +1446,11 @@ if (typeof window !== 'undefined') {
             console.log('✅ Generator created');
             
             console.log('🎨 Applying styles to document...');
-            await PDS.Generator.applyStyles(newDesigner);
+            await PDS.Generator.applyStyles();
             console.log('✅ Styles applied to document');
             
-            // Update BOTH registry designer AND global reference
-            PDS.registry._designer = newDesigner;
-            window.__pdsDesigner = newDesigner;
-            window.__pdsCurrentPreset = presetId;
+            // Update global reference
+            PDS.currentPreset = presetId;
             
             console.log(`✅✅✅ Preset applied successfully: ${presetConfig.name || presetId}`);
           } else {

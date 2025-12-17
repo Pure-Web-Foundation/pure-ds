@@ -40,12 +40,15 @@ class PDSBase extends EventTarget {}
 /** @type {PDSAPI & PDSBase} */
 const PDS = new PDSBase();
 
+// State properties
+PDS.initializing = false;
+PDS.currentPreset = null;
+
 import {
   Generator,
   adoptLayers,
   adoptPrimitives,
   createStylesheet,
-  isLiveMode,
 } from "./pds-core/pds-generator.js";
 import { registry } from "./pds-core/pds-registry.js";
 import ontology from "./pds-core/pds-ontology.js";
@@ -64,7 +67,7 @@ import { loadTypographyFonts } from "./common/font-loader.js";
 /** Generator class — use to programmatically create design system assets from a config */
 PDS.Generator = Generator;
 
-/** Singleton runtime registry. Use `registry.setDesigner()` to enable live mode or `registry.setStaticMode()` for static assets */
+/** Singleton runtime registry. Use `registry.setLiveMode()` to enable live mode or `registry.setStaticMode()` for static assets */
 PDS.registry = registry;
 
 /** Ontology and metadata about components and tokens */
@@ -80,8 +83,7 @@ PDS.adoptPrimitives = adoptPrimitives;
 PDS.createStylesheet = createStylesheet;
 
 /** Return true when running inside a live/designer-backed environment */
-PDS.isLiveMode = isLiveMode;
-
+PDS.isLiveMode = () => registry.isLive;
 PDS.enums = enums;
 
 PDS.ask = ask;
@@ -163,8 +165,8 @@ Object.defineProperty(PDS, "currentConfig", {
 Object.defineProperty(PDS, "compiled", {
   get() {
     // Only available in live mode when we have a generator
-    if (PDS.registry?.isLive && PDS.registry?._designer) {
-      return PDS.registry._designer.compiled;
+    if (PDS.registry?.isLive && Generator.instance) {
+      return Generator.instance.compiled;
     }
     return null;
   },
@@ -1150,14 +1152,19 @@ async function live(config) {
       }
     }
 
-    // Set the registry to use this designer
-    PDS.registry.setDesigner(generator, {
-      presetName: normalized.presetInfo?.name,
-    });
+    // Set the registry to live mode
+    PDS.registry.setLiveMode();
+
+    // Log preset info if available
+    if (normalized.presetInfo?.name) {
+      generatorConfig?.log?.("log", `PDS live with preset "${normalized.presetInfo.name}"`);
+    } else {
+      generatorConfig?.log?.("log", "PDS live with custom config");
+    }
 
     // Apply styles globally if requested (default behavior)
     if (applyGlobalStyles) {
-      await PDS.Generator.applyStyles(generator);
+      await PDS.Generator.applyStyles();
 
       // Clean up critical styles after adoptedStyleSheets are applied
       if (typeof window !== "undefined") {
@@ -1459,19 +1466,19 @@ async function setTheme(theme, options = {}) {
   }
 
   // If we're in live mode, regenerate styles with new theme
-  if (PDS.registry.isLive && PDS.registry.hasDesigner) {
+  if (PDS.registry.isLive && Generator.instance) {
     try {
-      const currentDesigner = PDS.registry._designer; // Access internal designer
-      if (currentDesigner && currentDesigner.configure) {
-        // Update the designer's config with new theme
-        const newConfig = { ...currentDesigner.config, theme: resolvedTheme };
-        currentDesigner.configure(newConfig);
+      const currentGenerator = Generator.instance;
+      if (currentGenerator && currentGenerator.configure) {
+        // Update the generator's config with new theme
+        const newConfig = { ...currentGenerator.config, theme: resolvedTheme };
+        currentGenerator.configure(newConfig);
 
         // Reapply styles
-        await PDS.Generator.applyStyles(currentDesigner);
+        await PDS.Generator.applyStyles();
       }
     } catch (error) {
-      currentDesigner?.options?.log?.("warn", "Failed to update styles for new theme:", error);
+      console.warn("Failed to update styles for new theme:", error);
     }
   }
 

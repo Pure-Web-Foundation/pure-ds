@@ -6,7 +6,6 @@
 class PDSRegistry {
   constructor() {
     this._mode = "static"; // Default to static mode
-    this._designer = null;
     this._staticPaths = {
       tokens: "/assets/pds/styles/pds-tokens.css.js",
       primitives: "/assets/pds/styles/pds-primitives.css.js",
@@ -17,17 +16,10 @@ class PDSRegistry {
   }
 
   /**
-   * Set the designer instance and switch to live mode
+   * Switch to live mode
    */
-  setDesigner(designer, meta = {}) {
-    this._designer = designer;
+  setLiveMode() {
     this._mode = "live";
-    const presetName = meta?.presetName;
-    if (presetName) {
-      designer?.options?.log?.("log", `PDS live with preset "${presetName}"`);
-    } else {
-      designer?.options?.log?.("log", "PDS live with custom config");
-    }
   }
 
   /**
@@ -46,21 +38,10 @@ class PDSRegistry {
    * Returns CSSStyleSheet object (constructable stylesheet)
    */
   async getStylesheet(layer) {
-    if (this._mode === "live" && this._designer) {
-      // Return constructable stylesheet from live designer
-      switch (layer) {
-        case "tokens":
-          return this._designer.tokensStylesheet;
-        case "primitives":
-          return this._designer.primitivesStylesheet;
-        case "components":
-          return this._designer.componentsStylesheet;
-        case "utilities":
-          return this._designer.utilitiesStylesheet;
-        default:
-          this._designer?.options?.log?.("warn", `[PDS Registry] Unknown layer: ${layer}`);
-          return null;
-      }
+    if (this._mode === "live") {
+      // In live mode, stylesheets should be retrieved from Generator.instance
+      // If we are here, it means adoptLayers fell back or something is wrong
+      return null;
     } else {
       // Import from static path
       try {
@@ -79,30 +60,6 @@ class PDSRegistry {
     }
   }
 
-  // /**
-  //  * Get BLOB URL for a layer (live mode only)
-  //  * Used for @import statements in CSS
-  //  */
-  // getBlobURL(layer) {
-  //   if (this._mode === "live" && this._designer) {
-  //     switch (layer) {
-  //       case "tokens":
-  //         return this._designer.tokensBlobURL;
-  //       case "primitives":
-  //         return this._designer.primitivesBlobURL;
-  //       case "components":
-  //         return this._designer.componentsBlobURL;
-  //       case "utilities":
-  //         return this._designer.utilitiesBlobURL;
-  //       case "styles":
-  //         return this._designer.stylesBlobURL;
-  //       default:
-  //         return null;
-  //     }
-  //   }
-  //   return null;
-  // }
-
   /**
    * Get current mode
    */
@@ -114,14 +71,7 @@ class PDSRegistry {
    * Check if in live mode
    */
   get isLive() {
-    return this._mode === "live" && this._designer !== null;
-  }
-
-  /**
-   * Check if designer is available
-   */
-  get hasDesigner() {
-    return this._designer !== null;
+    return this._mode === "live";
   }
 }
 

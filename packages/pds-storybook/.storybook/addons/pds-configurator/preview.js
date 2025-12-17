@@ -85,7 +85,7 @@ async function loadConfigForm() {
           // The event detail contains both config and designer from pds-config-form
           if (e.detail.designer) {
             // Apply the styles from the designer that was already created by pds-config-form
-            await PDS.Generator.applyStyles(e.detail.designer);
+            await PDS.Generator.applyStyles();
           }
           
           // Notify manager

@@ -1,8 +1,17 @@
+import { registry as pdsRegistry } from "./pds-registry.js";
+
 /**
  * Generator - A JS-config-first design system
  * Generates comprehensive CSS variables and styles from a minimal configuration
  */
 export class Generator {
+  // Singleton instance
+  static #instance;
+
+  static get instance() {
+    return this.#instance;
+  }
+
   // Private internal fields
   #layers;
   #stylesheets;
@@ -22,6 +31,10 @@ export class Generator {
     if (this.options.debug) {
       this.options.log?.("debug", "Generator options:", this.options);
     }
+
+    // Set singleton instance
+    Generator.#instance = this;
+
     this.tokens = this.generateTokens();
     if (this.options.debug) {
       this.options.log?.("debug", "Generated tokens:", this.tokens);
@@ -5113,23 +5126,23 @@ export const ${name}CSS = \`${escapedCSS}\`;
   /**
    * Static method to apply styles to document
    * Creates a link element with BLOB URL
-   * @param {Generator} generator - The Generator instance with generated styles
+   * @param {Generator} [generator] - Optional Generator instance (defaults to singleton)
    */
   static applyStyles(generator) {
+    // Use provided generator or singleton instance
+    const target = generator || Generator.instance;
+
     // Validate parameter
-    if (!generator || typeof generator !== "object") {
-      generator?.options?.log?.(
-        "error",
-        "[Generator] applyStyles requires a generator object"
-      );
+    if (!target || typeof target !== "object") {
+      console.error("[Generator] applyStyles requires a generator object or active singleton");
       return;
     }
 
     // Preferred: apply layered CSS so tokens + primitives + components + utilities
     // are available in light DOM (ensures primitives like :where(button):active apply)
-    const cssText = generator.layeredCSS || generator.css || "";
+    const cssText = target.layeredCSS || target.css || "";
     if (!cssText) {
-      generator?.options?.log?.(
+      target.options?.log?.(
         "warn",
         "[Generator] No CSS available on designer to apply"
       );
@@ -5266,7 +5279,25 @@ export async function adoptLayers(
   try {
     // Get all requested stylesheets
     const stylesheets = await Promise.all(
-      layers.map((layer) => PDS.registry.getStylesheet(layer))
+      layers.map(async (layer) => {
+        // In live mode, get stylesheets directly from the Generator singleton
+        if (Generator.instance) {
+          switch (layer) {
+            case "tokens":
+              return Generator.instance.tokensStylesheet;
+            case "primitives":
+              return Generator.instance.primitivesStylesheet;
+            case "components":
+              return Generator.instance.componentsStylesheet;
+            case "utilities":
+              return Generator.instance.utilitiesStylesheet;
+            default:
+              // Fall through to registry for unknown layers or static fallback
+              break;
+          }
+        }
+        return pdsRegistry.getStylesheet(layer);
+      })
     );
 
     // Filter out any null results
@@ -5304,14 +5335,6 @@ export function createStylesheet(css) {
   return sheet;
 }
 
-/**
- * Check if running in live design system context
- * Useful for conditional behavior
- *
- * @returns {boolean}
- */
-export function isLiveMode() {
-  return pdsRegistry.isLive;
-}
+
 import { enums } from "./pds-enums.js";
 import { ontology } from "./pds-ontology.js";
