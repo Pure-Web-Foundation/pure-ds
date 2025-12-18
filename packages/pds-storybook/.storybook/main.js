@@ -16,7 +16,9 @@ const normalizePath = (path) => path.replace(/\\/g, '/');
 /** @type { import('@storybook/web-components-vite').StorybookConfig } */
 const config = {
   stories: [
-    '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)',
+    process.env.PDS_STORIES_PATH 
+      ? normalizePath(resolve(process.env.PDS_STORIES_PATH, '**/*.stories.@(js|jsx|mjs|ts|tsx)'))
+      : '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)',
     // Include user stories from the project root, but only if we are NOT running in the package itself
     ...(process.cwd() === resolve(__dirname, '..') ? [] : [
       normalizePath(resolve(process.cwd(), 'stories/**/*.stories.@(js|jsx|mjs|ts|tsx)')),
@@ -45,11 +47,19 @@ const config = {
   },
   viteFinal: async (config) => {
     // Ensure Lit import alias is resolved
-    config.resolve.alias = {
+    const aliases = {
       ...config.resolve.alias,
       '#pds/lit': 'lit',
-      '@pds-src': pdsSrcPath,
     };
+
+    // In monorepo, pds-configurator is in a separate package, not in src/js
+    // This must be defined BEFORE @pds-src to take precedence
+    if (!isPackage) {
+       aliases['@pds-src/js/pds-configurator'] = resolve(currentDirname, '../../../packages/pds-configurator/src');
+    }
+
+    aliases['@pds-src'] = pdsSrcPath;
+    config.resolve.alias = aliases;
 
     // Alias for relative paths to src (handles ../../../src in stories)
     // This allows stories to work in both monorepo (where ../../../src is valid)

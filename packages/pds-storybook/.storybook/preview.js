@@ -1292,6 +1292,24 @@ const preview = {
     options: {
       storySort: {
         order: [
+          'PDS',
+          [
+            'General',
+            ['What is PDS', 'Getting Started'],
+            'Foundations',
+            ['Colors', 'Typography', 'Icons', 'Spacing', 'Smart Surfaces'],
+            'Primitives',
+            ['Buttons', 'Forms', 'Form Groups', 'Alerts', 'Badges', 'Cards', 'Tables', 'Media', 'Accordion'],
+            'Utilities',
+            ['Grid System'],
+            'Patterns',
+            ['Layout', 'Border Effects', 'Utilities'],
+            'Enhancements',
+            ['Mesh Gradients', 'Interactive States', 'Toggles', 'Dropdowns', 'Range Sliders', 'Required Fields'],
+            'Components',
+            ['Pds Jsonform', 'Pds Icon', 'Pds Drawer', 'Pds Toaster', 'Pds Tabstrip', 'Pds Splitpanel', 'Pds Scrollrow', 'Pds Richtext', 'Pds Upload'],
+            'Reference'
+          ],
           'General',
           ['What is PDS', 'Getting Started'],
           'Foundations',
@@ -1306,6 +1324,7 @@ const preview = {
           ['Mesh Gradients', 'Interactive States', 'Toggles', 'Dropdowns', 'Range Sliders', 'Required Fields'],
           'Components',
           ['Pds Jsonform', 'Pds Icon', 'Pds Drawer', 'Pds Toaster', 'Pds Tabstrip', 'Pds Splitpanel', 'Pds Scrollrow', 'Pds Richtext', 'Pds Upload'],
+          'Reference',
           '*'
         ]
       }
