@@ -53,6 +53,7 @@ You can add your own stories in a `stories` directory or alongside your source c
 
 *   `stories/**/*.stories.@(js|jsx|mjs|ts|tsx)`
 *   `src/**/*.stories.@(js|jsx|mjs|ts|tsx)`
+*   `public/**/*.stories.@(js|jsx|mjs|ts|tsx)`
 
 Example story (`stories/MyComponent.stories.js`):
 
@@ -74,6 +75,29 @@ export const Default = {
 If your components rely on static assets (CSS, images, JS modules), ensure they are available in a `public` folder in your project root. The PDS Storybook will automatically serve the contents of your `public` folder at the root URL.
 
 For example, if you have `public/assets/js/components/my-component-card.js`, the mapper in `pds.config.js` can point to `/assets/js/components/my-component-card.js`.
+
+### Importing Modules from Your Public Folder
+
+Your story files can use absolute path imports that reference ESM bundles in your `public` folder. PDS Storybook includes a Vite plugin that loads these files as virtual modules, bypassing Vite's restriction on importing from `public/`:
+
+```javascript
+// This works - loads your actual public/assets/js/lit.js bundle
+import { html } from '/assets/js/lit.js';
+
+// Any other ESM module in your public folder works too
+import { MyUtil } from '/assets/js/utils.js';
+
+export default {
+  title: 'My Project/Hello World',
+  component: 'my-hello-world',
+};
+
+export const Default = {
+  render: () => html`<my-hello-world></my-hello-world>`,
+};
+```
+
+This allows you to write stories that use the exact same import paths as your app components. Any `.js` or `.mjs` file in your `public` folder can be imported using its absolute path.
 
 ## Running Storybook
 

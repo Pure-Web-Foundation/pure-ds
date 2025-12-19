@@ -1306,7 +1306,8 @@
             },
             {
               "kind": "method",
-              "name": "updateLayout"
+              "name": "updateLayout",
+              "description": "Updates the layout based on the current viewport width and breakpoint.\nToggles mobile mode and adjusts panel styles."
             },
             {
               "kind": "method",
@@ -1332,11 +1333,13 @@
             },
             {
               "kind": "method",
-              "name": "toggleMobileView"
+              "name": "toggleMobileView",
+              "description": "Toggles the visibility of the primary panel in mobile view."
             },
             {
               "kind": "method",
-              "name": "closeMobileView"
+              "name": "closeMobileView",
+              "description": "Closes the primary panel in mobile view."
             },
             {
               "kind": "method",

@@ -20,9 +20,10 @@ const config = {
       ? normalizePath(resolve(process.env.PDS_STORIES_PATH, '**/*.stories.@(js|jsx|mjs|ts|tsx)'))
       : '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)',
     // Include user stories from the project root, but only if we are NOT running in the package itself
-    ...(process.cwd() === resolve(__dirname, '..') ? [] : [
+    ...(process.cwd() === resolve(currentDirname, '..') ? [] : [
       normalizePath(resolve(process.cwd(), 'stories/**/*.stories.@(js|jsx|mjs|ts|tsx)')),
-      normalizePath(resolve(process.cwd(), 'src/**/*.stories.@(js|jsx|mjs|ts|tsx)'))
+      normalizePath(resolve(process.cwd(), 'src/**/*.stories.@(js|jsx|mjs|ts|tsx)')),
+      normalizePath(resolve(process.cwd(), 'public/**/*.stories.@(js|jsx|mjs|ts|tsx)'))
     ])
   ],
   addons: [
@@ -156,6 +157,45 @@ const config = {
     } else {
         // Fallback to a default config file if user config doesn't exist
         config.resolve.alias['@user/pds-config'] = resolve(currentDirname, '../default-pds.config.js');
+    }
+
+    // Support absolute path imports like: import { html } from '/assets/js/lit.js';
+    // Vite blocks direct imports from public/, so we disable Vite's public directory
+    // handling (Storybook uses staticDirs instead) and resolve these imports ourselves.
+    const userPublicPath = resolve(process.cwd(), 'public');
+    const isConsumerProject = process.cwd() !== resolve(currentDirname, '..');
+    
+    if (isConsumerProject && fs.existsSync(userPublicPath)) {
+      // Disable Vite's public directory to prevent "Cannot import non-asset file" errors
+      // Storybook's staticDirs handles serving public files at runtime
+      config.publicDir = false;
+      
+      config.plugins = config.plugins || [];
+      // Insert at the beginning to run before other plugins
+      config.plugins.unshift({
+        name: 'pds-public-esm-loader',
+        enforce: 'pre', // Run before Vite's built-in plugins
+        resolveId(id, importer) {
+          // Handle absolute paths starting with /assets/ or other paths in public
+          if (id.startsWith('/') && !id.startsWith('/@') && !id.startsWith('/node_modules')) {
+            const filePath = resolve(userPublicPath, id.slice(1)); // Remove leading /
+            if (fs.existsSync(filePath) && (filePath.endsWith('.js') || filePath.endsWith('.mjs'))) {
+              // Return a virtual module ID to bypass Vite's public folder check
+              return `\0virtual:public-esm:${id}`;
+            }
+          }
+        },
+        load(id) {
+          if (id.startsWith('\0virtual:public-esm:')) {
+            const originalPath = id.replace('\0virtual:public-esm:', '');
+            const filePath = resolve(userPublicPath, originalPath.slice(1));
+            if (fs.existsSync(filePath)) {
+              // Read and return the actual file contents
+              return fs.readFileSync(filePath, 'utf-8');
+            }
+          }
+        }
+      });
     }
 
     // Set base path for production builds

@@ -11,21 +11,21 @@ function getStep(value) {
 // Default options for pds-jsonform
 const DEFAULT_OPTIONS = {
   widgets: {
-    booleans: "toggle",      // 'toggle' | 'checkbox'
-    numbers: "input",        // 'input' | 'range'
-    selects: "standard",     // 'standard' | 'dropdown'
+    booleans: "toggle", // 'toggle' | 'checkbox'
+    numbers: "input", // 'input' | 'range'
+    selects: "standard", // 'standard' | 'dropdown'
   },
   layouts: {
-    fieldsets: "default",    // 'default' | 'flex' | 'grid' | 'accordion' | 'tabs' | 'card'
-    arrays: "default",       // 'default' | 'open' | 'compact'
+    fieldsets: "default", // 'default' | 'flex' | 'grid' | 'accordion' | 'tabs' | 'card'
+    arrays: "default", // 'default' | 'open' | 'compact'
   },
   enhancements: {
-    icons: true,             // Enable icon-enhanced inputs
-    datalists: true,         // Enable datalist autocomplete
-    rangeOutput: true,       // Use .range-output for ranges
+    icons: true, // Enable icon-enhanced inputs
+    datalists: true, // Enable datalist autocomplete
+    rangeOutput: true, // Use .range-output for ranges
   },
   validation: {
-    showErrors: true,        // Show validation errors inline
+    showErrors: true, // Show validation errors inline
     validateOnChange: false, // Validate on every change vs on submit
   },
 };
@@ -88,6 +88,7 @@ export class SchemaForm extends LitElement {
   #data = {};
   #idBase = `sf-${Math.random().toString(36).slice(2)}`;
   #mergedOptions = null;
+  #slottedActions = [];
 
   constructor() {
     super();
@@ -102,12 +103,12 @@ export class SchemaForm extends LitElement {
     this.hideReset = false;
     this.hideLegend = false;
     this.#installDefaultRenderers();
-    
+
     // Handle submit button clicks in slotted actions
-    this.addEventListener('click', (e) => {
+    this.addEventListener("click", (e) => {
       const button = e.target.closest('button[type="submit"]');
       if (button && this.contains(button)) {
-        const form = this.querySelector('form');
+        const form = this.querySelector("form");
         if (form) {
           e.preventDefault();
           form.requestSubmit();
@@ -123,18 +124,21 @@ export class SchemaForm extends LitElement {
   useValidator(fn) {
     this.#validator = fn;
   }
-  
+
   // Get values in flat JSON Pointer format
   getValuesFlat() {
     return this.#flattenToPointers(this.#data);
   }
-  
+
   #flattenToPointers(obj, prefix = "") {
     const flattened = {};
     for (const [key, value] of Object.entries(obj)) {
       const jsonPointerPath = prefix ? `${prefix}/${key}` : `/${key}`;
       if (value && typeof value === "object" && !Array.isArray(value)) {
-        Object.assign(flattened, this.#flattenToPointers(value, jsonPointerPath));
+        Object.assign(
+          flattened,
+          this.#flattenToPointers(value, jsonPointerPath)
+        );
       } else {
         flattened[jsonPointerPath] = value;
       }
@@ -152,13 +156,21 @@ export class SchemaForm extends LitElement {
     return this.#onSubmit(new Event("submit", { cancelable: true }));
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    // Capture slotted actions before first render (Light DOM doesn't support native slots)
+    this.#slottedActions = Array.from(
+      this.querySelectorAll('[slot="actions"]')
+    );
+  }
+
   // ===== Lit lifecycle =====
   willUpdate(changed) {
     // Merge options when options or jsonSchema changes
     if (changed.has("options") || changed.has("jsonSchema")) {
       this.#mergeOptions();
     }
-    
+
     if (changed.has("jsonSchema")) this.#compile();
     if (changed.has("uiSchema")) this.requestUpdate();
     if (changed.has("values")) {
@@ -169,7 +181,7 @@ export class SchemaForm extends LitElement {
       } else {
         const newData = {};
         for (const [key, value] of Object.entries(v)) {
-          if (key.startsWith('/')) {
+          if (key.startsWith("/")) {
             this.#setByPath(newData, key, value);
           } else {
             newData[key] = value;
@@ -183,34 +195,37 @@ export class SchemaForm extends LitElement {
   #mergeOptions() {
     // Start with default options
     let merged = { ...DEFAULT_OPTIONS };
-    
+
     // Try to get preset options from window.PDS if available
     if (typeof window !== "undefined" && window.PDS?.config?.form?.options) {
-      merged = window.PDS.common.deepMerge(merged, window.PDS.config.form.options);
+      merged = window.PDS.common.deepMerge(
+        merged,
+        window.PDS.config.form.options
+      );
     }
-    
+
     // Merge instance options
     if (this.options) {
       merged = window.PDS.common.deepMerge(merged, this.options);
     }
-    
+
     this.#mergedOptions = merged;
   }
 
   #getOption(path, defaultValue) {
     if (!this.#mergedOptions) this.#mergeOptions();
-    
+
     // Support path-based options like '/address/zip': { ... }
-    if (path.startsWith('/')) {
+    if (path.startsWith("/")) {
       const pathOptions = this.#mergedOptions[path];
       if (pathOptions !== undefined) return pathOptions;
     }
-    
+
     // Support nested option paths like 'widgets.booleans'
-    const parts = path.split('.');
+    const parts = path.split(".");
     let current = this.#mergedOptions;
     for (const part of parts) {
-      if (current && typeof current === 'object' && part in current) {
+      if (current && typeof current === "object" && part in current) {
         current = current[part];
       } else {
         return defaultValue;
@@ -260,7 +275,7 @@ export class SchemaForm extends LitElement {
         if (ui?.["ui:dialog"]) {
           return { kind: "dialog", path, title, schema, ui };
         }
-        
+
         const order = this.#propertyOrder(schema, ui);
         const children = order.map((key) => {
           const childPath = path + "/" + this.#escapeJsonPointer(key);
@@ -326,7 +341,7 @@ export class SchemaForm extends LitElement {
     if (schema.const !== undefined) return "const";
     if (schema.type === "string") {
       // Check for binary/upload content via JSON Schema contentMediaType
-      if (schema.contentMediaType || schema.contentEncoding === 'base64') {
+      if (schema.contentMediaType || schema.contentEncoding === "base64") {
         return "upload";
       }
       switch (schema.format) {
@@ -354,24 +369,23 @@ export class SchemaForm extends LitElement {
         case "date-time":
           return "input-datetime";
         default:
-          if (
-            (schema.maxLength ?? 0) > 160 ||
-            ui?.["ui:widget"] === "textarea"
-          )
+          if ((schema.maxLength ?? 0) > 160 || ui?.["ui:widget"] === "textarea")
             return "textarea";
           return "input-text";
       }
     }
     if (schema.type === "number" || schema.type === "integer") {
       // Check if range widget should be used
-      const useRange = this.#getOption('widgets.numbers', 'input') === 'range' ||
-                       ui?.["ui:widget"] === "range" ||
-                       ui?.["ui:widget"] === "input-range";
+      const useRange =
+        this.#getOption("widgets.numbers", "input") === "range" ||
+        ui?.["ui:widget"] === "range" ||
+        ui?.["ui:widget"] === "input-range";
       return useRange ? "input-range" : "input-number";
     }
     if (schema.type === "boolean") {
       // Check if toggle should be used
-      const useToggle = this.#getOption('widgets.booleans', 'toggle') === 'toggle';
+      const useToggle =
+        this.#getOption("widgets.booleans", "toggle") === "toggle";
       return useToggle ? "toggle" : "checkbox";
     }
     return "input-text";
@@ -425,24 +439,21 @@ export class SchemaForm extends LitElement {
         ${tree ? this.#renderNode(tree) : html`<slot></slot>`}
         ${!this.hideActions
           ? html`
-              <div
-                class="form-actions"
-                style="margin-top: var(--spacing-6, 1.5rem); display: flex; gap: var(--spacing-3, 0.75rem);"
-              >
-              ${!this.hideSubmit ? html`
-                <button type="submit" class="btn btn-primary">
-                  ${this.submitLabel}
-                </button>` : nothing}
-
+              <div class="form-actions">
+                ${!this.hideSubmit
+                  ? html` <button type="submit" class="btn btn-primary">
+                      ${this.submitLabel}
+                    </button>`
+                  : nothing}
                 ${!this.hideReset
                   ? html`<button type="reset" class="btn">
                       ${this.resetLabel}
                     </button>`
                   : nothing}
-                <slot name="actions"></slot>
+                ${this.#slottedActions}
               </div>
             `
-          : html`<slot name="actions"></slot>`}
+          : html`<div class="form-actions">${this.#slottedActions}</div>`}
       </form>
     `;
   }
@@ -467,39 +478,45 @@ export class SchemaForm extends LitElement {
   #renderFieldset(node, context = {}) {
     const legend = node.title ?? "Section";
     const ui = node.ui || this.#uiFor(node.path);
-    
+
     // Check for path-specific options
     const pathOptions = this.#getOption(node.path, {});
-    
+
     // Determine layout mode
-    const layout = ui?.["ui:layout"] || pathOptions.layout || 
-                   this.#getOption('layouts.fieldsets', 'default');
-    
+    const layout =
+      ui?.["ui:layout"] ||
+      pathOptions.layout ||
+      this.#getOption("layouts.fieldsets", "default");
+
     // Check for tabs layout
     if (layout === "tabs" || ui?.["ui:tabs"]) {
       return this.#renderFieldsetTabs(node, legend, ui);
     }
-    
+
     // Check for accordion layout
     if (layout === "accordion" || ui?.["ui:accordion"]) {
       return this.#renderFieldsetAccordion(node, legend, ui);
     }
-    
+
     // Check for surface wrapping
     const surface = ui?.["ui:surface"] || pathOptions.surface;
-    
+
     // Build layout classes and inline styles
     const layoutClasses = [];
     let layoutStyle = "";
     const layoutOptions = ui?.["ui:layoutOptions"] || {};
-    
+
     if (layout === "flex") {
       layoutClasses.push("flex");
       if (layoutOptions.wrap) layoutClasses.push("flex-wrap");
       if (layoutOptions.direction === "column") layoutClasses.push("flex-col");
       if (layoutOptions.gap) {
         // Check if gap is a CSS class name (e.g., 'md', 'lg') or a CSS value
-        if (layoutOptions.gap.startsWith('var(') || layoutOptions.gap.includes('px') || layoutOptions.gap.includes('rem')) {
+        if (
+          layoutOptions.gap.startsWith("var(") ||
+          layoutOptions.gap.includes("px") ||
+          layoutOptions.gap.includes("rem")
+        ) {
           layoutStyle += `gap: ${layoutOptions.gap};`;
         } else {
           layoutClasses.push(`gap-${layoutOptions.gap}`);
@@ -516,45 +533,60 @@ export class SchemaForm extends LitElement {
       }
       if (layoutOptions.gap) {
         // Check if gap is a CSS class name (e.g., 'md', 'lg') or a CSS value
-        if (layoutOptions.gap.startsWith('var(') || layoutOptions.gap.includes('px') || layoutOptions.gap.includes('rem')) {
+        if (
+          layoutOptions.gap.startsWith("var(") ||
+          layoutOptions.gap.includes("px") ||
+          layoutOptions.gap.includes("rem")
+        ) {
           layoutStyle += `gap: ${layoutOptions.gap};`;
         } else {
           layoutClasses.push(`gap-${layoutOptions.gap}`);
         }
       }
     }
-    
-    const fieldsetClass = layoutClasses.length > 0 ? layoutClasses.join(" ") : undefined;
-    
+
+    const fieldsetClass =
+      layoutClasses.length > 0 ? layoutClasses.join(" ") : undefined;
+
     // Render basic fieldset
     const fieldsetContent = html`
-      <fieldset data-path=${node.path} class=${ifDefined(fieldsetClass)} style=${ifDefined(layoutStyle || undefined)}>
-        ${!this.hideLegend && !context.hideLegend ? html`<legend>${legend}</legend>` : nothing}
+      <fieldset
+        data-path=${node.path}
+        class=${ifDefined(fieldsetClass)}
+        style=${ifDefined(layoutStyle || undefined)}
+      >
+        ${!this.hideLegend && !context.hideLegend
+          ? html`<legend>${legend}</legend>`
+          : nothing}
         ${node.children.map((child) => this.#renderNode(child, context))}
       </fieldset>
     `;
-    
+
     // Wrap in surface if specified
     if (surface) {
-      const surfaceClass = surface === "card" || surface === "elevated" || surface === "dialog"
-        ? `surface ${surface}`
-        : "surface";
+      const surfaceClass =
+        surface === "card" || surface === "elevated" || surface === "dialog"
+          ? `surface ${surface}`
+          : "surface";
       return html`<div class=${surfaceClass}>${fieldsetContent}</div>`;
     }
-    
+
     return fieldsetContent;
   }
 
   #renderFieldsetTabs(node, legend, ui) {
     const children = node.children || [];
     if (children.length === 0) return nothing;
-    
+
     // Create tab panels from child fields
     return html`
       <pds-tabstrip label=${legend} data-path=${node.path}>
         ${children.map((child, idx) => {
           const childTitle = child.title ?? `Tab ${idx + 1}`;
-          const childId = `${node.path}-tab-${idx}`.replace(/[^a-zA-Z0-9_-]/g, '-');
+          const childId = `${node.path}-tab-${idx}`.replace(
+            /[^a-zA-Z0-9_-]/g,
+            "-"
+          );
           return html`
             <pds-tabpanel id=${childId} label=${childTitle}>
               ${this.#renderNode(child)}
@@ -570,13 +602,17 @@ export class SchemaForm extends LitElement {
     if (children.length === 0) return nothing;
     const layoutOptions = ui?.["ui:layoutOptions"] || {};
     const openFirst = layoutOptions.openFirst ?? true;
-    
+
     return html`
       <section class="accordion" data-path=${node.path}>
         ${children.map((child, idx) => {
           const childTitle = child.title ?? `Section ${idx + 1}`;
-          const childId = `${node.path}-acc-${idx}`.replace(/[^a-zA-Z0-9_-]/g, '-');
-          const isOpen = ui?.["ui:defaultOpen"]?.includes(idx) ?? (openFirst && idx === 0);
+          const childId = `${node.path}-acc-${idx}`.replace(
+            /[^a-zA-Z0-9_-]/g,
+            "-"
+          );
+          const isOpen =
+            ui?.["ui:defaultOpen"]?.includes(idx) ?? (openFirst && idx === 0);
           return html`
             <details ?open=${isOpen}>
               <summary id=${childId}>${childTitle}</summary>
@@ -595,22 +631,27 @@ export class SchemaForm extends LitElement {
     const title = node.title ?? "Edit";
     const ui = node.ui || this.#uiFor(path);
     const dialogOpts = ui?.["ui:dialogOptions"] || {};
-    const buttonLabel = dialogOpts.buttonLabel || ui?.["ui:dialogButton"] || `Edit ${title}`;
+    const buttonLabel =
+      dialogOpts.buttonLabel || ui?.["ui:dialogButton"] || `Edit ${title}`;
     const dialogTitle = dialogOpts.dialogTitle || title;
-    
+
     const openDialog = async () => {
       // Read current value from this.#data on each open (not captured at render time)
       const currentValue = this.#getByPath(this.#data, path) || {};
-      
-      console.log('Opening dialog for path:', path);
-      console.log('Current this.#data:', this.#data);
-      console.log('Current value at path:', currentValue);
-      
-      this.#emit("pw:dialog-open", { path, schema: node.schema, value: currentValue });
-      
+
+      console.log("Opening dialog for path:", path);
+      console.log("Current this.#data:", this.#data);
+      console.log("Current value at path:", currentValue);
+
+      this.#emit("pw:dialog-open", {
+        path,
+        schema: node.schema,
+        value: currentValue,
+      });
+
       // Create a nested form schema for the dialog
       const dialogSchema = { ...node.schema, title: dialogTitle };
-      
+
       try {
         // Use PDS.ask to show dialog with form - it returns FormData when useForm: true
         const formData = await window.PDS.ask(
@@ -629,27 +670,40 @@ export class SchemaForm extends LitElement {
             size: dialogOpts.size || "lg",
             buttons: {
               ok: { name: dialogOpts.submitLabel || "Save", primary: true },
-              cancel: { name: dialogOpts.cancelLabel || "Cancel", cancel: true }
-            }
+              cancel: {
+                name: dialogOpts.cancelLabel || "Cancel",
+                cancel: true,
+              },
+            },
           }
         );
-        
+
         // formData is a FormData object if user clicked OK, null/false if cancelled
         if (formData && formData instanceof FormData) {
           // Convert FormData to nested object structure
           // Note: The nested form generates paths from its own root (e.g., /name, /email)
           // so we don't need to strip a basePath prefix
-          const updatedValue = this.#formDataToObject(formData, "", dialogSchema);
-          
-          console.log('Updating path:', path, 'with value:', updatedValue);
-          console.log('Before update - this.#data:', structuredClone(this.#data));
-          
+          const updatedValue = this.#formDataToObject(
+            formData,
+            "",
+            dialogSchema
+          );
+
+          console.log("Updating path:", path, "with value:", updatedValue);
+          console.log(
+            "Before update - this.#data:",
+            structuredClone(this.#data)
+          );
+
           // Update the data at the dialog's path
           this.#setByPath(this.#data, path, updatedValue);
-          
-          console.log('After update - this.#data:', structuredClone(this.#data));
-          console.log('Verify read back:', this.#getByPath(this.#data, path));
-          
+
+          console.log(
+            "After update - this.#data:",
+            structuredClone(this.#data)
+          );
+          console.log("Verify read back:", this.#getByPath(this.#data, path));
+
           this.requestUpdate();
           this.#emit("pw:dialog-submit", { path, value: updatedValue });
         }
@@ -657,37 +711,43 @@ export class SchemaForm extends LitElement {
         console.error("Dialog error:", err);
       }
     };
-    
+
     const buttonIcon = dialogOpts.icon;
-    
+
     return html`
       <div class="dialog-field" data-path=${path}>
         <button type="button" class="btn" @click=${openDialog}>
-          ${buttonIcon ? html`<pds-icon icon=${buttonIcon}></pds-icon>` : nothing}
+          ${buttonIcon
+            ? html`<pds-icon icon=${buttonIcon}></pds-icon>`
+            : nothing}
           ${buttonLabel}
         </button>
-        <input type="hidden" name=${path} .value=${JSON.stringify(this.#getByPath(this.#data, path) || {})} />
+        <input
+          type="hidden"
+          name=${path}
+          .value=${JSON.stringify(this.#getByPath(this.#data, path) || {})}
+        />
       </div>
     `;
   }
-  
+
   // Convert FormData to nested object, handling JSON pointer paths
   #formDataToObject(formData, basePath = "", schema = null) {
     const result = {};
     const arrays = new Map(); // Track array values from checkbox groups
-    
+
     for (const [key, value] of formData.entries()) {
       // Remove basePath prefix if present to get relative path
       let relativePath = key;
       if (basePath && key.startsWith(basePath)) {
         relativePath = key.substring(basePath.length);
       }
-      
+
       // Skip empty paths
       if (!relativePath || relativePath === "/") continue;
-      
+
       // Handle array notation for checkbox groups (path[])
-      if (relativePath.endsWith('[]')) {
+      if (relativePath.endsWith("[]")) {
         const arrayPath = relativePath.slice(0, -2);
         if (!arrays.has(arrayPath)) {
           arrays.set(arrayPath, []);
@@ -695,52 +755,61 @@ export class SchemaForm extends LitElement {
         arrays.get(arrayPath).push(value);
         continue;
       }
-      
+
       // Convert value based on schema type if available
       let convertedValue = value;
-      const fieldSchema = schema ? this.#schemaAtPath(schema, relativePath) : this.#schemaAt(relativePath);
-      
+      const fieldSchema = schema
+        ? this.#schemaAtPath(schema, relativePath)
+        : this.#schemaAt(relativePath);
+
       if (fieldSchema) {
-        if (fieldSchema.type === 'number') {
+        if (fieldSchema.type === "number") {
           convertedValue = parseFloat(value);
-        } else if (fieldSchema.type === 'integer') {
+        } else if (fieldSchema.type === "integer") {
           convertedValue = parseInt(value, 10);
-        } else if (fieldSchema.type === 'boolean') {
+        } else if (fieldSchema.type === "boolean") {
           // Checkbox inputs: if present in FormData, they're checked (true)
           // If not present, they're unchecked (false) - handled below
-          convertedValue = value === 'on' || value === 'true' || value === true;
+          convertedValue = value === "on" || value === "true" || value === true;
         }
       }
-      
+
       // Set value using JSON pointer path
       this.#setByPath(result, relativePath, convertedValue);
     }
-    
+
     // Add array values from checkbox groups
     for (const [arrayPath, values] of arrays) {
       this.#setByPath(result, arrayPath, values);
     }
-    
+
     // Handle unchecked checkboxes - they won't be in FormData
     // We need to set them to false based on schema
     this.#ensureCheckboxDefaults(result, basePath, schema);
-    
+
     return result;
   }
-  
+
   // Ensure boolean fields that weren't in FormData are set to false
   #ensureCheckboxDefaults(obj, basePath = "", schemaRoot = null) {
-    const schema = schemaRoot ? this.#schemaAtPath(schemaRoot, basePath) : this.#schemaAt(basePath);
+    const schema = schemaRoot
+      ? this.#schemaAtPath(schemaRoot, basePath)
+      : this.#schemaAt(basePath);
     if (!schema) return;
-    
-    if (schema.type === 'object' && schema.properties) {
+
+    if (schema.type === "object" && schema.properties) {
       for (const [key, propSchema] of Object.entries(schema.properties)) {
         const propPath = basePath + "/" + this.#escapeJsonPointer(key);
-        const relativePath = propPath.startsWith("/") ? propPath.substring(1) : propPath;
-        
-        if (propSchema.type === 'boolean' && this.#getByPath(obj, propPath) === undefined) {
+        const relativePath = propPath.startsWith("/")
+          ? propPath.substring(1)
+          : propPath;
+
+        if (
+          propSchema.type === "boolean" &&
+          this.#getByPath(obj, propPath) === undefined
+        ) {
           this.#setByPath(obj, propPath, false);
-        } else if (propSchema.type === 'object') {
+        } else if (propSchema.type === "object") {
           this.#ensureCheckboxDefaults(obj, propPath, schemaRoot);
         }
       }
@@ -786,94 +855,122 @@ export class SchemaForm extends LitElement {
     const arr = this.#ensureArrayAtPath(path);
     const ui = node.ui || this.#uiFor(path);
     const itemSchema = node.item?.schema;
-    
+
     // Check if this is a simple string array that should use the open group enhancement
-    const isSimpleStringArray = itemSchema?.type === "string" && 
-                                !itemSchema.format &&
-                                !itemSchema.enum &&
-                                (!itemSchema.maxLength || itemSchema.maxLength <= 100);
-    
+    const isSimpleStringArray =
+      itemSchema?.type === "string" &&
+      !itemSchema.format &&
+      !itemSchema.enum &&
+      (!itemSchema.maxLength || itemSchema.maxLength <= 100);
+
     // Check layout preference: use 'open' for simple string arrays by default, or if explicitly set
     let arrayLayout = ui?.["ui:arrayLayout"];
     if (!arrayLayout) {
       // If not explicitly set, use global option with smart default based on array type
-      const globalDefault = this.#getOption('layouts.arrays', 'default');
-      arrayLayout = globalDefault === 'default' && isSimpleStringArray ? 'open' : globalDefault;
+      const globalDefault = this.#getOption("layouts.arrays", "default");
+      arrayLayout =
+        globalDefault === "default" && isSimpleStringArray
+          ? "open"
+          : globalDefault;
     }
-    
-    const useOpenGroup = arrayLayout === 'open' && isSimpleStringArray;
-    
+
+    const useOpenGroup = arrayLayout === "open" && isSimpleStringArray;
+
     // Check if this is a single-selection array (maxItems: 1) for radio group
     const isSingleSelection = node.schema?.maxItems === 1;
     const inputType = isSingleSelection ? "radio" : "checkbox";
-    
+
     if (useOpenGroup) {
       // Render fieldset with data-open to let the enhancement handle UI
       // We sync state after the enhancement runs via MutationObserver
-      
+
       const syncFromDOM = (fieldset) => {
         // Read current state from DOM (after enhancement has modified it)
-        const inputs = Array.from(fieldset.querySelectorAll('input[type="radio"], input[type="checkbox"]'));
+        const inputs = Array.from(
+          fieldset.querySelectorAll(
+            'input[type="radio"], input[type="checkbox"]'
+          )
+        );
         const values = inputs
-          .map(input => input.value)
-          .filter(v => v && v.trim());
-        
+          .map((input) => input.value)
+          .filter((v) => v && v.trim());
+
         if (isSingleSelection) {
           // For radio groups, find the checked one
-          const checkedInput = inputs.find(input => input.checked);
-          this.#setByPath(this.#data, path, checkedInput && checkedInput.value ? [checkedInput.value] : []);
+          const checkedInput = inputs.find((input) => input.checked);
+          this.#setByPath(
+            this.#data,
+            path,
+            checkedInput && checkedInput.value ? [checkedInput.value] : []
+          );
         } else {
           // For checkbox groups, all items in DOM are in the array
           this.#setByPath(this.#data, path, values);
         }
-        this.#emit("pw:array-change", { path, values: this.#getByPath(this.#data, path) });
+        this.#emit("pw:array-change", {
+          path,
+          values: this.#getByPath(this.#data, path),
+        });
       };
-      
+
       const handleChange = (e) => {
         const fieldset = e.currentTarget;
         if (isSingleSelection) {
           // For radio groups, update to selected value immediately
-          const checkedInput = fieldset.querySelector('input[type="radio"]:checked');
-          this.#setByPath(this.#data, path, checkedInput && checkedInput.value ? [checkedInput.value] : []);
-          this.#emit("pw:array-change", { path, values: this.#getByPath(this.#data, path) });
+          const checkedInput = fieldset.querySelector(
+            'input[type="radio"]:checked'
+          );
+          this.#setByPath(
+            this.#data,
+            path,
+            checkedInput && checkedInput.value ? [checkedInput.value] : []
+          );
+          this.#emit("pw:array-change", {
+            path,
+            values: this.#getByPath(this.#data, path),
+          });
         }
       };
-      
+
       const afterRender = (fieldset) => {
         // Observe DOM changes made by the data-open enhancement
         const observer = new MutationObserver(() => {
           syncFromDOM(fieldset);
         });
-        observer.observe(fieldset, { 
-          childList: true, 
-          subtree: true 
+        observer.observe(fieldset, {
+          childList: true,
+          subtree: true,
         });
-        
+
         // Store observer for cleanup
         if (!fieldset._arrayObserver) {
           fieldset._arrayObserver = observer;
         }
       };
-      
+
       const selectedValue = isSingleSelection && arr.length > 0 ? arr[0] : null;
-      
+
       return html`
-        <fieldset 
+        <fieldset
           role="group"
           data-open
           data-path=${path}
           data-name=${path}
           @change=${handleChange}
-          ${ref((el) => { if (el) afterRender(el); })}
+          ${ref((el) => {
+            if (el) afterRender(el);
+          })}
         >
           <legend>${node.title ?? "List"}</legend>
           ${arr.map((value, i) => {
             const id = `${path}-${i}`;
-            const isChecked = isSingleSelection ? value === selectedValue : false;
+            const isChecked = isSingleSelection
+              ? value === selectedValue
+              : false;
             return html`
               <label for=${id}>
                 <span data-label>${value}</span>
-                <input 
+                <input
                   id=${id}
                   type=${inputType}
                   name=${path}
@@ -1014,13 +1111,18 @@ export class SchemaForm extends LitElement {
     // Wrap with icon if ui:icon is specified and enhancements.icons is enabled
     const iconName = ui?.["ui:icon"];
     const iconPos = ui?.["ui:iconPosition"] || "start";
-    if (iconName && this.#getOption('enhancements.icons', true)) {
-      const iconClasses = iconPos === "end" ? "input-icon input-icon-end" : "input-icon";
+    if (iconName && this.#getOption("enhancements.icons", true)) {
+      const iconClasses =
+        iconPos === "end" ? "input-icon input-icon-end" : "input-icon";
       controlTpl = html`
         <div class=${iconClasses}>
-          ${iconPos === "start" ? html`<pds-icon icon=${iconName}></pds-icon>` : nothing}
+          ${iconPos === "start"
+            ? html`<pds-icon icon=${iconName}></pds-icon>`
+            : nothing}
           ${controlTpl}
-          ${iconPos === "end" ? html`<pds-icon icon=${iconName}></pds-icon>` : nothing}
+          ${iconPos === "end"
+            ? html`<pds-icon icon=${iconName}></pds-icon>`
+            : nothing}
         </div>
       `;
     }
@@ -1040,7 +1142,11 @@ export class SchemaForm extends LitElement {
           : undefined;
       const fieldsetClass = ui?.["ui:class"];
       return html`
-        <fieldset data-path=${path} role=${ifDefined(role)} class=${ifDefined(fieldsetClass)}>
+        <fieldset
+          data-path=${path}
+          role=${ifDefined(role)}
+          class=${ifDefined(fieldsetClass)}
+        >
           <legend>${label}</legend>
           ${controlTpl} ${help ? html`<div data-help>${help}</div>` : nothing}
         </fieldset>
@@ -1054,25 +1160,22 @@ export class SchemaForm extends LitElement {
 
     // Add data-toggle for toggle switches
     const isToggle = node.widgetKey === "toggle";
-    
+
     // Add range-output class for range inputs if enabled
     const isRange = node.widgetKey === "input-range";
-    const useRangeOutput = isRange && this.#getOption('enhancements.rangeOutput', true);
+    const useRangeOutput =
+      isRange && this.#getOption("enhancements.rangeOutput", true);
     const labelClass = useRangeOutput ? "range-output" : undefined;
 
     const renderControlAndLabel = (isToggle) => {
-      if(isToggle)
-        return html`${controlTpl} <span data-label>${label}</span>`;
+      if (isToggle) return html`${controlTpl} <span data-label>${label}</span>`;
 
       return html`<span data-label>${label}</span> ${controlTpl}`;
+    };
 
-    }
-    
     return html`
-      <label for=${id} ?data-toggle=${isToggle} class=${ifDefined(labelClass)}>        
-      
+      <label for=${id} ?data-toggle=${isToggle} class=${ifDefined(labelClass)}>
         ${renderControlAndLabel(isToggle)}
-
         ${help ? html`<div data-help>${help}</div>` : nothing}
       </label>
     `;
@@ -1149,47 +1252,50 @@ export class SchemaForm extends LitElement {
       `
     );
 
-    this.defineRenderer("input-number", ({ id, path, value, attrs, set, schema }) => {
-      const step = attrs.step || getStep(value);
-      return html`
-        <input
-          id=${id}
-          name=${path}
-          type="number"
-          placeholder=${ifDefined(attrs.placeholder)}
-          .value=${value ?? ""}
-          min=${ifDefined(attrs.min)}
-          max=${ifDefined(attrs.max)}
-          step=${ifDefined(step)}
-          ?readonly=${!!attrs.readOnly}
-          ?required=${!!attrs.required}
-          @input=${(e) => {
-            const v = e.target.value;
-            const numValue =
-              schema.type === "integer" ? parseInt(v, 10) : parseFloat(v);
-            const step =
-              attrs.step ||
-              (numValue % 1 !== 0
-                ? `0.${"1".padStart(
-                    numValue.toString().split(".")[1]?.length || 0,
-                    "0"
-                  )}`
-                : "1");
-            e.target.step = step; // Dynamically set step based on value precision
-            if (
-              (attrs.min != null && numValue < attrs.min) ||
-              (attrs.max != null && numValue > attrs.max) ||
-              (attrs.step != null && numValue % parseFloat(attrs.step) !== 0)
-            ) {
-              e.target.setCustomValidity("Invalid value");
-            } else {
-              e.target.setCustomValidity("");
-              set(numValue);
-            }
-          }}
-    />
-      `;
-    });
+    this.defineRenderer(
+      "input-number",
+      ({ id, path, value, attrs, set, schema }) => {
+        const step = attrs.step || getStep(value);
+        return html`
+          <input
+            id=${id}
+            name=${path}
+            type="number"
+            placeholder=${ifDefined(attrs.placeholder)}
+            .value=${value ?? ""}
+            min=${ifDefined(attrs.min)}
+            max=${ifDefined(attrs.max)}
+            step=${ifDefined(step)}
+            ?readonly=${!!attrs.readOnly}
+            ?required=${!!attrs.required}
+            @input=${(e) => {
+              const v = e.target.value;
+              const numValue =
+                schema.type === "integer" ? parseInt(v, 10) : parseFloat(v);
+              const step =
+                attrs.step ||
+                (numValue % 1 !== 0
+                  ? `0.${"1".padStart(
+                      numValue.toString().split(".")[1]?.length || 0,
+                      "0"
+                    )}`
+                  : "1");
+              e.target.step = step; // Dynamically set step based on value precision
+              if (
+                (attrs.min != null && numValue < attrs.min) ||
+                (attrs.max != null && numValue > attrs.max) ||
+                (attrs.step != null && numValue % parseFloat(attrs.step) !== 0)
+              ) {
+                e.target.setCustomValidity("Invalid value");
+              } else {
+                e.target.setCustomValidity("");
+                set(numValue);
+              }
+            }}
+          />
+        `;
+      }
+    );
 
     // Range input renderer for ui:widget = 'input-range'
     this.defineRenderer(
@@ -1237,8 +1343,9 @@ export class SchemaForm extends LitElement {
       "input-password",
       ({ id, path, value, attrs, set, ui }) => {
         // Determine autocomplete value based on UI hints or use "current-password" as default
-        const autocomplete = ui?.["ui:autocomplete"] || attrs.autocomplete || "current-password";
-        
+        const autocomplete =
+          ui?.["ui:autocomplete"] || attrs.autocomplete || "current-password";
+
         return html`
           <input
             id=${id}
@@ -1371,8 +1478,9 @@ export class SchemaForm extends LitElement {
     this.defineRenderer(
       "select",
       ({ id, path, value, attrs, set, schema, ui, host }) => {
-        const useDropdown = host.#getOption('widgets.selects', 'standard') === 'dropdown' ||
-                           ui?.["ui:dropdown"] === true;
+        const useDropdown =
+          host.#getOption("widgets.selects", "standard") === "dropdown" ||
+          ui?.["ui:dropdown"] === true;
         const enumValues = schema.enum || [];
         const enumLabels = schema.enumNames || enumValues;
         return html`
@@ -1386,7 +1494,10 @@ export class SchemaForm extends LitElement {
           >
             <option value="" ?selected=${value == null}>—</option>
             ${enumValues.map(
-              (v, i) => html`<option value=${String(v)}>${String(enumLabels[i])}</option>`
+              (v, i) =>
+                html`<option value=${String(v)}>
+                  ${String(enumLabels[i])}
+                </option>`
             )}
           </select>
         `;
@@ -1395,34 +1506,31 @@ export class SchemaForm extends LitElement {
 
     // Radio group: returns ONLY the labeled inputs
     // Matches PDS pattern: input hidden, label styled as button
-    this.defineRenderer(
-      "radio",
-      ({ id, path, value, attrs, set, schema }) => {
-        const enumValues = schema.enum || [];
-        const enumLabels = schema.enumNames || enumValues;
-        return html`
-          ${enumValues.map((v, i) => {
-            const rid = `${id}-${i}`;
-            return html`
-              <label for=${rid}>
-                <input
-                  id=${rid}
-                  type="radio"
-                  name=${path}
-                  .value=${String(v)}
-                  .checked=${String(value) === String(v)}
-                  ?required=${!!attrs.required}
-                  @change=${(e) => {
-                    if (e.target.checked) set(enumValues[i]);
-                  }}
-                />
-                ${String(enumLabels[i])}
-              </label>
-            `;
-          })}
-        `;
-      }
-    );
+    this.defineRenderer("radio", ({ id, path, value, attrs, set, schema }) => {
+      const enumValues = schema.enum || [];
+      const enumLabels = schema.enumNames || enumValues;
+      return html`
+        ${enumValues.map((v, i) => {
+          const rid = `${id}-${i}`;
+          return html`
+            <label for=${rid}>
+              <input
+                id=${rid}
+                type="radio"
+                name=${path}
+                .value=${String(v)}
+                .checked=${String(value) === String(v)}
+                ?required=${!!attrs.required}
+                @change=${(e) => {
+                  if (e.target.checked) set(enumValues[i]);
+                }}
+              />
+              ${String(enumLabels[i])}
+            </label>
+          `;
+        })}
+      `;
+    });
 
     // Checkbox group: for multi-select from enum (array type with enum items)
     // Shows actual checkboxes (not button-style like radios)
@@ -1431,7 +1539,8 @@ export class SchemaForm extends LitElement {
       ({ id, path, value, attrs, set, schema }) => {
         const selected = Array.isArray(value) ? value : [];
         const options = schema.items?.enum || schema.enum || [];
-        const optionLabels = schema.items?.enumNames || schema.enumNames || options;
+        const optionLabels =
+          schema.items?.enumNames || schema.enumNames || options;
 
         return html`
           ${options.map((v, i) => {
@@ -1476,45 +1585,41 @@ export class SchemaForm extends LitElement {
     );
 
     // pds-upload: File upload component
-    this.defineRenderer(
-      "upload",
-      ({ id, value, attrs, set, ui, path }) => {
-        const uploadOpts = ui?.["ui:options"] || {};
-        return html`
-          <pds-upload
-            id=${id}
-            accept=${ifDefined(uploadOpts.accept)}
-            ?multiple=${uploadOpts.multiple ?? false}
-            max-files=${ifDefined(uploadOpts.maxFiles)}
-            max-size=${ifDefined(uploadOpts.maxSize)}
-            label=${ifDefined(uploadOpts.label)}
-            ?required=${!!attrs.required}
-            @pw:change=${(e) => set(e.detail.files)}
-          ></pds-upload>
-        `;
-      }
-    );
+    this.defineRenderer("upload", ({ id, value, attrs, set, ui, path }) => {
+      const uploadOpts = ui?.["ui:options"] || {};
+      return html`
+        <pds-upload
+          id=${id}
+          accept=${ifDefined(uploadOpts.accept)}
+          ?multiple=${uploadOpts.multiple ?? false}
+          max-files=${ifDefined(uploadOpts.maxFiles)}
+          max-size=${ifDefined(uploadOpts.maxSize)}
+          label=${ifDefined(uploadOpts.label)}
+          ?required=${!!attrs.required}
+          @pw:change=${(e) => set(e.detail.files)}
+        ></pds-upload>
+      `;
+    });
 
     // pds-richtext: Rich text editor
-    this.defineRenderer(
-      "richtext",
-      ({ id, value, attrs, set, ui, path }) => {
-        const richtextOpts = ui?.["ui:options"] || {};
-        return html`
-          <pds-richtext
-            id=${id}
-            name=${path}
-            placeholder=${ifDefined(richtextOpts.placeholder || attrs.placeholder)}
-            .value=${value ?? ""}
-            toolbar=${ifDefined(richtextOpts.toolbar)}
-            ?required=${!!attrs.required}
-            ?submit-on-enter=${richtextOpts.submitOnEnter ?? false}
-            spellcheck=${richtextOpts.spellcheck ?? true ? "true" : "false"}
-            @input=${(e) => set(e.target.value)}
-          ></pds-richtext>
-        `;
-      }
-    );
+    this.defineRenderer("richtext", ({ id, value, attrs, set, ui, path }) => {
+      const richtextOpts = ui?.["ui:options"] || {};
+      return html`
+        <pds-richtext
+          id=${id}
+          name=${path}
+          placeholder=${ifDefined(
+            richtextOpts.placeholder || attrs.placeholder
+          )}
+          .value=${value ?? ""}
+          toolbar=${ifDefined(richtextOpts.toolbar)}
+          ?required=${!!attrs.required}
+          ?submit-on-enter=${richtextOpts.submitOnEnter ?? false}
+          spellcheck=${richtextOpts.spellcheck ?? true ? "true" : "false"}
+          @input=${(e) => set(e.target.value)}
+        ></pds-richtext>
+      `;
+    });
   }
 
   // ===== Form submit =====
@@ -1549,34 +1654,34 @@ export class SchemaForm extends LitElement {
   // ===== Utilities =====
   #uiFor(path) {
     if (!this.uiSchema) return undefined;
-    
+
     // Try exact match first (flat structure)
     if (this.uiSchema[path]) return this.uiSchema[path];
-    
+
     // Try with leading slash
     const withSlash = this.#asRel(path);
     if (this.uiSchema[withSlash]) return this.uiSchema[withSlash];
-    
+
     // Try without leading slash for convenience
     const withoutSlash = path.startsWith("/") ? path.substring(1) : path;
     if (this.uiSchema[withoutSlash]) return this.uiSchema[withoutSlash];
-    
+
     // Try nested navigation (e.g., userProfile/settings/preferences/theme)
     // Skip array indices (numeric parts and wildcard *) when navigating UI schema
-    const parts = path.replace(/^\//, '').split('/');
+    const parts = path.replace(/^\//, "").split("/");
     let current = this.uiSchema;
     for (const part of parts) {
       // Skip numeric array indices and wildcard in UI schema navigation
-      if (/^\d+$/.test(part) || part === '*') continue;
-      
-      if (current && typeof current === 'object' && part in current) {
+      if (/^\d+$/.test(part) || part === "*") continue;
+
+      if (current && typeof current === "object" && part in current) {
         current = current[part];
       } else {
         return undefined;
       }
     }
     // Only return if we found a UI config object (not a nested parent)
-    return current && typeof current === 'object' ? current : undefined;
+    return current && typeof current === "object" ? current : undefined;
   }
   #asRel(path) {
     return path.startsWith("/") ? path : "/" + path;
@@ -1598,10 +1703,14 @@ export class SchemaForm extends LitElement {
 
   #nativeConstraints(path, schema) {
     // Use placeholder if explicitly set, otherwise use first example as placeholder
-    const attrs = { 
-      placeholder: schema.placeholder || (schema.examples && schema.examples.length > 0 ? schema.examples[0] : undefined)
+    const attrs = {
+      placeholder:
+        schema.placeholder ||
+        (schema.examples && schema.examples.length > 0
+          ? schema.examples[0]
+          : undefined),
     };
-    
+
     if (schema.type === "string") {
       if (schema.minLength != null) attrs.minLength = schema.minLength;
       if (schema.maxLength != null) attrs.maxLength = schema.maxLength;
@@ -1643,7 +1752,7 @@ export class SchemaForm extends LitElement {
   #schemaAt(path) {
     return this.#schemaAtPath(this.jsonSchema, path);
   }
-  
+
   #schemaAtPath(schemaRoot, path) {
     let cur = schemaRoot;
     for (const seg of path.split("/").filter(Boolean)) {
