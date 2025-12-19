@@ -323,9 +323,11 @@ export const SingleExpandAccordion = () => html`
             <input type="checkbox" />
             <span>Login alerts</span>
           </label>
-          <button class="btn-secondary btn-sm accordion-button-spacing">
-            Change Password
-          </button>
+          <div class="flex">
+            <button class="btn-secondary btn-sm accordion-button-spacing">
+              Change Password
+            </button>
+          </div>
         </div>
       </details>
 
