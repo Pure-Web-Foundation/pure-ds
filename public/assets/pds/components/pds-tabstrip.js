@@ -1,10 +1,20 @@
 /**
+ * A tab panel used as a child of `<pds-tabstrip>`. Each panel becomes a tab
+ * with its button label derived from the `label` attribute.
+ * 
  * @element pds-tabpanel
  * 
- * @attr {string} label - Label for the tab button
+ * @attr {string} label - Label text displayed on the tab button
  * @attr {string} id - Unique identifier for the panel (auto-generated if not provided)
  * 
- * @slot - Content of the tab panel
+ * @slot - Content displayed when this tab is active
+ * 
+ * @example
+ * ```html
+ * <pds-tabpanel label="Settings">
+ *   <p>Settings content here.</p>
+ * </pds-tabpanel>
+ * ```
  */
 class TabPanel extends HTMLElement {
   connectedCallback() {
@@ -36,18 +46,39 @@ class TabPanel extends HTMLElement {
 customElements.define("pds-tabpanel", TabPanel);
 
 /**
- * Tab navigation component that pairs anchors with `pds-tabpanel` children.
+ * Tab navigation component that displays content in switchable panels.
+ * 
+ * Use `<pds-tabpanel>` children with a `label` attribute to define each tab.
+ * The component auto-generates navigation buttons and handles URL hash synchronization.
  *
  * @element pds-tabstrip
+ * 
  * @fires tabchange - Fired when the active tab changes. Detail: `{ oldTab: string|null, newTab: string }`
  *
- * @attr {string} label - Accessible label announced for the tablist
+ * @attr {string} label - Accessible label announced for the tablist (default: "Tabs")
  * @attr {string} selected - Identifier of the currently active panel (synced with the location hash)
  *
- * @slot - Collection of `pds-tabpanel` nodes representing individual tab panels
+ * @slot - One or more `<pds-tabpanel>` elements, each with a `label` attribute
  *
  * @csspart tabs - Navigation container comprising the clickable tab buttons
  * @cssprop --color-accent-400 - Color of the active tab indicator underline
+ * 
+ * @example
+ * ```html
+ * <pds-tabstrip label="Account settings">
+ *   <pds-tabpanel label="General">
+ *     <p>General settings content here.</p>
+ *   </pds-tabpanel>
+ *   
+ *   <pds-tabpanel label="Security">
+ *     <p>Security settings content here.</p>
+ *   </pds-tabpanel>
+ *   
+ *   <pds-tabpanel label="Notifications">
+ *     <p>Notification preferences here.</p>
+ *   </pds-tabpanel>
+ * </pds-tabstrip>
+ * ```
  */
 class TabStrip extends HTMLElement {
   #shadow = this.attachShadow({ mode: "open" });

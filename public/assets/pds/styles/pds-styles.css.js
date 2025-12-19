@@ -2876,23 +2876,23 @@ tbody {
   background: var(--color-surface-base);
   border-radius: var(--radius-md);
   padding: var(--spacing-4);
+}
 
-  &-elevated {
-    background: var(--color-surface-elevated);
-    box-shadow: var(--shadow-md);
-  }
+.card-elevated {
+  background: var(--color-surface-elevated);
+  box-shadow: var(--shadow-md);
+}
 
-  &-outlined,
-  &-basic {
-    background: var(--color-surface-base);
-    border: 1px solid var(--color-border);
-  }
+.card-outlined,
+.card-basic {
+  background: var(--color-surface-base);
+  border: 1px solid var(--color-border);
+}
 
-  &-interactive:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-  }
+.card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 /* Custom Scrollbars */
@@ -2900,40 +2900,40 @@ tbody {
 ::-webkit-scrollbar {
   width: 12px;
   height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-secondary-300);
+  border-radius: var(--radius-full);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  transition: background-color var(--transition-fast);
   
-  &-track {
-    background: transparent;
+  &:hover {
+    background: var(--color-secondary-400);
+    border: 2px solid transparent;
+    background-clip: padding-box;
   }
   
-  &-thumb {
-    background: var(--color-secondary-300);
-    border-radius: var(--radius-full);
-    border: 3px solid transparent;
+  &:active {
+    background: var(--color-secondary-500);
+    border: 2px solid transparent;
     background-clip: padding-box;
-    transition: background-color var(--transition-fast);
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    background: var(--color-secondary-600);
     
     &:hover {
-      background: var(--color-secondary-400);
-      border: 2px solid transparent;
-      background-clip: padding-box;
+      background: var(--color-secondary-500);
     }
     
     &:active {
-      background: var(--color-secondary-500);
-      border: 2px solid transparent;
-      background-clip: padding-box;
-    }
-    
-    @media (prefers-color-scheme: dark) {
-      background: var(--color-secondary-600);
-      
-      &:hover {
-        background: var(--color-secondary-500);
-      }
-      
-      &:active {
-        background: var(--color-secondary-400);
-      }
+      background: var(--color-secondary-400);
     }
   }
 }
@@ -3272,29 +3272,29 @@ button, a {
     opacity: var(--backdrop-opacity, 1);
     pointer-events: auto;
   }
+}
 
-  /* Backdrop variants */
-  &-light {
-    --backdrop-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
-    --backdrop-brightness: 1.1;
-  }
+/* Backdrop variants */
+.backdrop-light {
+  --backdrop-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+  --backdrop-brightness: 1.1;
+}
 
-  &-dark {
-    --backdrop-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
-    --backdrop-brightness: 0.6;
-  }
+.backdrop-dark {
+  --backdrop-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+  --backdrop-brightness: 0.6;
+}
 
-  &-blur-sm {
-    --backdrop-blur: 5px;
-  }
+.backdrop-blur-sm {
+  --backdrop-blur: 5px;
+}
 
-  &-blur-md {
-    --backdrop-blur: 10px;
-  }
+.backdrop-blur-md {
+  --backdrop-blur: 10px;
+}
 
-  &-blur-lg {
-    --backdrop-blur: 20px;
-  }
+.backdrop-blur-lg {
+  --backdrop-blur: 20px;
 }
 
 
@@ -6639,23 +6639,23 @@ tbody {
   background: var(--color-surface-base);
   border-radius: var(--radius-md);
   padding: var(--spacing-4);
+}
 
-  &-elevated {
-    background: var(--color-surface-elevated);
-    box-shadow: var(--shadow-md);
-  }
+.card-elevated {
+  background: var(--color-surface-elevated);
+  box-shadow: var(--shadow-md);
+}
 
-  &-outlined,
-  &-basic {
-    background: var(--color-surface-base);
-    border: 1px solid var(--color-border);
-  }
+.card-outlined,
+.card-basic {
+  background: var(--color-surface-base);
+  border: 1px solid var(--color-border);
+}
 
-  &-interactive:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-  }
+.card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 /* Custom Scrollbars */
@@ -6663,40 +6663,40 @@ tbody {
 ::-webkit-scrollbar {
   width: 12px;
   height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-secondary-300);
+  border-radius: var(--radius-full);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  transition: background-color var(--transition-fast);
   
-  &-track {
-    background: transparent;
+  &:hover {
+    background: var(--color-secondary-400);
+    border: 2px solid transparent;
+    background-clip: padding-box;
   }
   
-  &-thumb {
-    background: var(--color-secondary-300);
-    border-radius: var(--radius-full);
-    border: 3px solid transparent;
+  &:active {
+    background: var(--color-secondary-500);
+    border: 2px solid transparent;
     background-clip: padding-box;
-    transition: background-color var(--transition-fast);
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    background: var(--color-secondary-600);
     
     &:hover {
-      background: var(--color-secondary-400);
-      border: 2px solid transparent;
-      background-clip: padding-box;
+      background: var(--color-secondary-500);
     }
     
     &:active {
-      background: var(--color-secondary-500);
-      border: 2px solid transparent;
-      background-clip: padding-box;
-    }
-    
-    @media (prefers-color-scheme: dark) {
-      background: var(--color-secondary-600);
-      
-      &:hover {
-        background: var(--color-secondary-500);
-      }
-      
-      &:active {
-        background: var(--color-secondary-400);
-      }
+      background: var(--color-secondary-400);
     }
   }
 }
@@ -7035,29 +7035,29 @@ button, a {
     opacity: var(--backdrop-opacity, 1);
     pointer-events: auto;
   }
+}
 
-  /* Backdrop variants */
-  &-light {
-    --backdrop-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
-    --backdrop-brightness: 1.1;
-  }
+/* Backdrop variants */
+.backdrop-light {
+  --backdrop-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+  --backdrop-brightness: 1.1;
+}
 
-  &-dark {
-    --backdrop-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
-    --backdrop-brightness: 0.6;
-  }
+.backdrop-dark {
+  --backdrop-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+  --backdrop-brightness: 0.6;
+}
 
-  &-blur-sm {
-    --backdrop-blur: 5px;
-  }
+.backdrop-blur-sm {
+  --backdrop-blur: 5px;
+}
 
-  &-blur-md {
-    --backdrop-blur: 10px;
-  }
+.backdrop-blur-md {
+  --backdrop-blur: 10px;
+}
 
-  &-blur-lg {
-    --backdrop-blur: 20px;
-  }
+.backdrop-blur-lg {
+  --backdrop-blur: 20px;
 }
 
 

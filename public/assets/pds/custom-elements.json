@@ -1432,11 +1432,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "",
+          "description": "A tab panel used as a child of `<pds-tabstrip>`. Each panel becomes a tab\nwith its button label derived from the `label` attribute.",
           "name": "TabPanel",
           "slots": [
             {
-              "description": "Content of the tab panel",
+              "description": "Content displayed when this tab is active",
               "name": ""
             }
           ],
@@ -1458,7 +1458,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Label for the tab button",
+              "description": "Label text displayed on the tab button",
               "name": "label"
             },
             {
@@ -1477,7 +1477,7 @@
         },
         {
           "kind": "class",
-          "description": "Tab navigation component that pairs anchors with `pds-tabpanel` children.",
+          "description": "Tab navigation component that displays content in switchable panels.\n\nUse `<pds-tabpanel>` children with a `label` attribute to define each tab.\nThe component auto-generates navigation buttons and handles URL hash synchronization.",
           "name": "TabStrip",
           "cssProperties": [
             {
@@ -1493,7 +1493,7 @@
           ],
           "slots": [
             {
-              "description": "Collection of `pds-tabpanel` nodes representing individual tab panels",
+              "description": "One or more `<pds-tabpanel>` elements, each with a `label` attribute",
               "name": ""
             }
           ],
@@ -1518,7 +1518,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "Accessible label announced for the tablist",
+              "description": "Accessible label announced for the tablist (default: \"Tabs\")",
               "name": "label"
             },
             {

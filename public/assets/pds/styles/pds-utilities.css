@@ -270,29 +270,29 @@ button, a {
     opacity: var(--backdrop-opacity, 1);
     pointer-events: auto;
   }
+}
 
-  /* Backdrop variants */
-  &-light {
-    --backdrop-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
-    --backdrop-brightness: 1.1;
-  }
+/* Backdrop variants */
+.backdrop-light {
+  --backdrop-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+  --backdrop-brightness: 1.1;
+}
 
-  &-dark {
-    --backdrop-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
-    --backdrop-brightness: 0.6;
-  }
+.backdrop-dark {
+  --backdrop-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+  --backdrop-brightness: 0.6;
+}
 
-  &-blur-sm {
-    --backdrop-blur: 5px;
-  }
+.backdrop-blur-sm {
+  --backdrop-blur: 5px;
+}
 
-  &-blur-md {
-    --backdrop-blur: 10px;
-  }
+.backdrop-blur-md {
+  --backdrop-blur: 10px;
+}
 
-  &-blur-lg {
-    --backdrop-blur: 20px;
-  }
+.backdrop-blur-lg {
+  --backdrop-blur: 20px;
 }
 
 

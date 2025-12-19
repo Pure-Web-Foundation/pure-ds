@@ -749,11 +749,11 @@
     },
     {
       "name": "pds-tabpanel",
-      "description": "TabPanel component",
+      "description": "A tab panel used as a child of `<pds-tabstrip>`. Each panel becomes a tab\nwith its button label derived from the `label` attribute.",
       "attributes": [
         {
           "name": "label",
-          "description": "Label for the tab button"
+          "description": "Label text displayed on the tab button"
         },
         {
           "name": "id",
@@ -763,11 +763,11 @@
     },
     {
       "name": "pds-tabstrip",
-      "description": "Tab navigation component that pairs anchors with `pds-tabpanel` children.",
+      "description": "Tab navigation component that displays content in switchable panels.\n\nUse `<pds-tabpanel>` children with a `label` attribute to define each tab.\nThe component auto-generates navigation buttons and handles URL hash synchronization.",
       "attributes": [
         {
           "name": "label",
-          "description": "Accessible label announced for the tablist"
+          "description": "Accessible label announced for the tablist (default: \"Tabs\")"
         },
         {
           "name": "selected",

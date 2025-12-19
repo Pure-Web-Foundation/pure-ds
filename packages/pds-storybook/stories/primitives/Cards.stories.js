@@ -57,7 +57,6 @@ const cardsStoryStyles = html`
       border-radius: var(--radius-md);
     }
     .cards-horizontal-icon {
-      color: white;
       opacity: 0.6;
     }
     .cards-horizontal-body {
@@ -96,7 +95,7 @@ const cardsStoryStyles = html`
       border-radius: 50%;
     }
     .cards-profile-avatar pds-icon {
-      color: white;
+      
     }
     .cards-profile-title {
       margin: 0;
@@ -115,7 +114,6 @@ const cardsStoryStyles = html`
     .cards-pro-badge {
       padding: var(--spacing-1) var(--spacing-2);
       background: var(--color-primary);
-      color: white;
       border-radius: var(--radius-full);
       font-size: 0.75rem;
       font-weight: 600;
@@ -148,24 +146,30 @@ export const BasicCards = () => html`
   <div class="cards-story-section">
     <h3>Basic Cards</h3>
     <div class="grid gap-md cards-basic-grid">
-      <article class="card">
+      <article class="card card-basic">
         <h3>Default Card</h3>
         <p>Card content goes here. This is a basic card primitive with automatic theming.</p>
         <button class="btn-primary">Action</button>
       </article>
       
-      <article class="card">
+      <article class="card grid grid-">
         <h3>With Icon</h3>
-        <div class="flex items-start gap-sm">
-          <pds-icon icon="star" size="lg" class="icon-primary"></pds-icon>
-          <div>
-            <p>Cards can contain icons, buttons, forms, and any other content.</p>
+        
+        
+
+          <div class="flex gap-sm justify-start">
+            <pds-icon icon="star" size="lg" class="icon-primary"></pds-icon>
+            <div>
+              Cards can contain icons, buttons, forms, and any other content.
+            </div>
           </div>
-        </div>
+          
+        
+        
         <button class="btn-outline">Learn More</button>
       </article>
 
-      <article class="card">
+      <article class="card card-interactive">
         <h3>Interactive Card</h3>
         <p>With multiple actions and rich content.</p>
         <div class="flex gap-sm cards-inline-actions">

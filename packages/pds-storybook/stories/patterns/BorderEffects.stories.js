@@ -18,9 +18,7 @@ const borderEffectsStoryStyles = html`
       grid-template-columns: repeat(auto-fit, minmax(15.625rem, 1fr));
       gap: var(--spacing-4);
     }
-    .border-effects-card {
-      padding: var(--spacing-4);
-    }
+    
     .border-effects-card-angle {
       --gradient-angle: 45deg;
     }
@@ -35,11 +33,11 @@ const borderEffectsStoryStyles = html`
 export const BorderGradient = () => html`
   ${borderEffectsStoryStyles}
   <div class="border-effects-grid">
-    <div class="border-gradient border-effects-card">
+    <div class="card border-gradient border-effects-card">
       <h3>Gradient Border</h3>
       <p>Animated gradient border effect that follows the primary color scheme.</p>
     </div>
-    <div class="border-gradient border-effects-card border-effects-card-angle">
+    <div class="card border-gradient border-effects-card border-effects-card-angle">
       <h3>Custom Angle</h3>
       <p>Use CSS variables to customize the gradient direction.</p>
     </div>
