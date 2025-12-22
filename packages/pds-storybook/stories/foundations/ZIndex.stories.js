@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Foundations/Z-Index',
+  tags: ['z-index', 'zindex', 'stacking', 'layer', 'overlay', 'modal'],
   parameters: {
+    pds: {
+      tags: ['z-index', 'zindex', 'stacking', 'layer', 'overlay', 'modal', 'dropdown', 'tokens']
+    },
     docs: {
       description: {
         component: 'Z-Index tokens define the stacking order of UI elements along the z-axis. These tokens ensure consistent layering across the application, preventing z-index conflicts and establishing clear visual hierarchy for overlays, modals, dropdowns, and other elevated UI components.'

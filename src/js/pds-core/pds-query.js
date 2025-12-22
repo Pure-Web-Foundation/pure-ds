@@ -266,7 +266,18 @@ export class PDSQuery {
 
     if (!ontology?.utilities) return results;
 
-    const utilities = ontology.utilities;
+    // Flatten utilities object into array of class names
+    const utilitiesObj = ontology.utilities;
+    const utilities = [];
+    for (const category of Object.values(utilitiesObj)) {
+      if (typeof category === 'object') {
+        for (const value of Object.values(category)) {
+          if (Array.isArray(value)) {
+            utilities.push(...value);
+          }
+        }
+      }
+    }
 
     // Border utilities
     if (context.intents.has('border')) {

@@ -43,10 +43,10 @@ const requiredFieldsStoryStyles = html`
 
 export default {
   title: 'Enhancements/Required Fields',
-  tags: ['forms', 'interaction'],
+  tags: ['required', 'validation', 'form', 'input', 'asterisk'],
   parameters: {
     pds: {
-      tags: ['forms', 'interaction']
+      tags: ['required', 'validation', 'form', 'input', 'asterisk', 'forms', 'interaction', 'enhancement']
     },
     docs: {
       description: {

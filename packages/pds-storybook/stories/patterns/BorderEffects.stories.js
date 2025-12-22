@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Patterns/Border Effects',
+  tags: ['border', 'gradient', 'glow', 'effect', 'decoration'],
   parameters: {
+    pds: {
+      tags: ['border', 'gradient', 'glow', 'effect', 'decoration', 'border-gradient', 'border-glow']
+    },
     docs: {
       description: {
         component: 'Special border effects including gradients and glows'

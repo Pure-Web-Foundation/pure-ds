@@ -488,7 +488,11 @@ const typographyStoryStyles = html`
 
 export default {
   title: 'Foundations/Typography',
+  tags: ['typography', 'font', 'text', 'heading', 'body', 'size', 'weight'],
   parameters: {
+    pds: {
+      tags: ['typography', 'font', 'text', 'heading', 'body', 'size', 'weight', 'family', 'tokens', 'scale']
+    },
     docs: {
       description: {
         component: 'Typography system with scales, weights, line heights, and semantic text styles for building clear content hierarchy and readable interfaces.'

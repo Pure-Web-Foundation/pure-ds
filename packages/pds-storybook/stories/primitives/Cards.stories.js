@@ -15,165 +15,47 @@ export default {
   }
 };
 
+// Minimal styles for demo-specific gradients only
 const cardsStoryStyles = html`
   <style>
-    .cards-story-section {
-      padding: var(--spacing-4);
-    }
-    .cards-basic-grid {
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    }
-    .cards-surface-grid {
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    }
-    .cards-helper {
-      margin-bottom: var(--spacing-4);
-      opacity: 0.8;
-    }
-    .cards-inline-actions {
-      margin-top: var(--spacing-3);
-    }
-    .cards-nested-shell {
-      max-width: 37.5rem;
-    }
-    .cards-nested-spacing {
-      margin-top: var(--spacing-4);
-    }
-    .cards-nested-deep {
-      margin-top: var(--spacing-3);
-    }
-    .cards-parent-action {
-      margin-top: var(--spacing-4);
-    }
-    .cards-horizontal-card {
-      max-width: 37.5rem;
-      margin-bottom: var(--spacing-6);
-    }
-    .cards-horizontal-media {
-      flex-shrink: 0;
-      width: 7.5rem;
-      height: 7.5rem;
-      background: var(--color-primary);
-      border-radius: var(--radius-md);
-    }
-    .cards-horizontal-icon {
-      opacity: 0.6;
-    }
-    .cards-horizontal-body {
-      flex: 1;
-    }
-    .cards-grid-visuals {
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-    .cards-visual-block {
-      height: 100px;
-      border-radius: var(--radius-sm);
-      margin-bottom: var(--spacing-3);
-    }
     .cards-gradient-one {
-      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      background: linear-gradient(135deg, var(--color-primary-500), var(--color-secondary-500));
     }
     .cards-gradient-two {
-      background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
+      background: linear-gradient(135deg, var(--color-secondary-500), var(--color-primary-500));
     }
     .cards-gradient-three {
-      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-    }
-    .cards-small-copy {
-      font-size: 0.9rem;
-    }
-    .cards-complex-grid {
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    }
-    .cards-profile-header {
-      margin-bottom: var(--spacing-4);
-    }
-    .cards-profile-avatar {
-      width: 48px;
-      height: 48px;
-      background: var(--color-primary);
-      border-radius: 50%;
-    }
-    .cards-profile-avatar pds-icon {
-      
-    }
-    .cards-profile-title {
-      margin: 0;
-    }
-    .cards-profile-meta {
-      margin: 0;
-      font-size: 0.85rem;
-      opacity: 0.7;
-    }
-    .cards-profile-actions {
-      margin-top: var(--spacing-4);
-    }
-    .cards-premium-header {
-      margin-bottom: var(--spacing-3);
-    }
-    .cards-pro-badge {
-      padding: var(--spacing-1) var(--spacing-2);
-      background: var(--color-primary);
-      border-radius: var(--radius-full);
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-    .cards-premium-list {
-      margin: var(--spacing-3) 0;
-    }
-    .cards-stats-grid {
-      margin: var(--spacing-4) 0;
-    }
-    .cards-stat-value {
-      font-size: 2rem;
-      font-weight: 700;
-    }
-    .cards-stat-value.primary {
-      color: var(--color-primary);
-    }
-    .cards-stat-value.secondary {
-      color: var(--color-secondary);
-    }
-    .cards-stat-label {
-      font-size: 0.85rem;
-      opacity: 0.7;
+      background: linear-gradient(135deg, var(--color-primary-500), var(--color-accent-500));
     }
   </style>
 `;
 
 export const BasicCards = () => html`
-  ${cardsStoryStyles}
-  <div class="cards-story-section">
+  <div class="card">
     <h3>Basic Cards</h3>
-    <div class="grid gap-md cards-basic-grid">
+    <div class="grid grid-auto-md gap-md">
       <article class="card card-basic">
         <h3>Default Card</h3>
         <p>Card content goes here. This is a basic card primitive with automatic theming.</p>
-        <button class="btn-primary">Action</button>
+        <button>Action</button>
       </article>
       
-      <article class="card grid grid-">
+      <article class="card">
         <h3>With Icon</h3>
-        
-        
-
-          <div class="flex gap-sm justify-start">
-            <pds-icon icon="star" size="lg" class="icon-primary"></pds-icon>
-            <div>
-              Cards can contain icons, buttons, forms, and any other content.
-            </div>
+        <div class="flex gap-sm justify-start">
+          <pds-icon icon="star" size="lg" class="icon-primary"></pds-icon>
+          <div>
+            Cards can contain icons, buttons, forms, and any other content.
           </div>
-          
-        
-        
-        <button class="btn-outline">Learn More</button>
+        </div>
+        <button class="btn-outline" style="margin-top: var(--spacing-3);">Learn More</button>
       </article>
 
       <article class="card card-interactive">
         <h3>Interactive Card</h3>
         <p>With multiple actions and rich content.</p>
-        <div class="flex gap-sm cards-inline-actions">
-          <button class="btn-primary btn-sm">
+        <div class="flex gap-sm" style="margin-top: var(--spacing-3);">
+          <button class="btn-sm">
             <pds-icon icon="heart" size="sm"></pds-icon>
             Like
           </button>
@@ -193,14 +75,13 @@ export const BasicCards = () => html`
 BasicCards.storyName = 'Basic Cards';
 
 export const SurfaceVariants = () => html`
-  ${cardsStoryStyles}
-  <div class="cards-story-section">
+  <div class="card">
     <h3>Surface Variants</h3>
-    <p class="cards-helper">
+    <p class="text-muted">
       Different surface levels create visual hierarchy
     </p>
     
-    <div class="grid gap-md cards-surface-grid">
+    <div class="grid grid-auto-md gap-md">
       <article class="card">
         <h4>Default Surface</h4>
         <p>Standard card surface level. Use for most content containers.</p>
@@ -225,32 +106,31 @@ export const SurfaceVariants = () => html`
 SurfaceVariants.storyName = 'Surface Variants';
 
 export const NestedCards = () => html`
-  ${cardsStoryStyles}
-  <div class="cards-story-section">
+  <div class="card">
     <h3>Nested Cards</h3>
-    <p class="cards-helper">
+    <p class="text-muted">
       Surface variants enable natural nesting without visual confusion
     </p>
     
-    <article class="card cards-nested-shell">
+    <article class="card max-w-md">
       <h3>Parent Card (Default Surface)</h3>
       <p>This is the outer container using the default card surface.</p>
 
-      <div class="cards-nested-spacing">
+      <div style="margin-top: var(--spacing-4);">
         <article class="card surface-elevated">
           <h4>Nested Card (Elevated)</h4>
           <p>This card is nested inside the parent and uses the elevated surface for clear visual separation.</p>
           
-          <div class="cards-nested-deep">
+          <div style="margin-top: var(--spacing-3);">
             <article class="card surface-overlay">
               <h5>Deeply Nested (Overlay)</h5>
-              <p class="cards-small-copy">Even deeper nesting maintains readability with the overlay surface.</p>
+              <p style="font-size: var(--font-size-sm);">Even deeper nesting maintains readability with the overlay surface.</p>
             </article>
           </div>
         </article>
       </div>
 
-      <button class="btn-primary cards-parent-action">Parent Action</button>
+      <button style="margin-top: var(--spacing-4);">Parent Action</button>
     </article>
   </div>
 `;
@@ -259,13 +139,13 @@ NestedCards.storyName = 'Nested Cards';
 
 export const CardLayouts = () => html`
   ${cardsStoryStyles}
-  <div class="cards-story-section">
+  <div class="card">
     <h3>Horizontal Card</h3>
-    <article class="card flex gap-md cards-horizontal-card">
-      <div class="flex items-center justify-center cards-horizontal-media">
-        <pds-icon icon="image" size="xl" class="cards-horizontal-icon"></pds-icon>
+    <article class="card flex gap-md max-w-md" style="margin-bottom: var(--spacing-6);">
+      <div class="flex items-center justify-center" style="flex-shrink: 0; width: 7.5rem; height: 7.5rem; background: var(--color-primary-500); border-radius: var(--radius-md);">
+        <pds-icon icon="image" size="xl" style="opacity: 0.6;"></pds-icon>
       </div>
-      <div class="cards-horizontal-body">
+      <div style="flex: 1;">
         <h4>Horizontal Layout</h4>
         <p>Cards work great with flexbox for horizontal layouts.</p>
         <button class="btn-outline btn-sm">View Details</button>
@@ -273,21 +153,21 @@ export const CardLayouts = () => html`
     </article>
 
     <h3>Card Grid</h3>
-    <div class="grid gap-sm cards-grid-visuals">
+    <div class="grid grid-auto-sm gap-sm">
       <article class="card">
-        <div class="cards-visual-block cards-gradient-one"></div>
+        <div class="cards-gradient-one" style="height: 100px; border-radius: var(--radius-sm); margin-bottom: var(--spacing-3);"></div>
         <h4>Card 1</h4>
-        <p class="cards-small-copy">Grid layout with cards.</p>
+        <p style="font-size: var(--font-size-sm);">Grid layout with cards.</p>
       </article>
       <article class="card">
-        <div class="cards-visual-block cards-gradient-two"></div>
+        <div class="cards-gradient-two" style="height: 100px; border-radius: var(--radius-sm); margin-bottom: var(--spacing-3);"></div>
         <h4>Card 2</h4>
-        <p class="cards-small-copy">Responsive and flexible.</p>
+        <p style="font-size: var(--font-size-sm);">Responsive and flexible.</p>
       </article>
       <article class="card">
-        <div class="cards-visual-block cards-gradient-three"></div>
+        <div class="cards-gradient-three" style="height: 100px; border-radius: var(--radius-sm); margin-bottom: var(--spacing-3);"></div>
         <h4>Card 3</h4>
-        <p class="cards-small-copy">Auto-fits to space.</p>
+        <p style="font-size: var(--font-size-sm);">Auto-fits to space.</p>
       </article>
     </div>
   </div>
@@ -296,40 +176,39 @@ export const CardLayouts = () => html`
 CardLayouts.storyName = 'Card Layouts';
 
 export const ComplexCards = () => html`
-  ${cardsStoryStyles}
-  <div class="cards-story-section">
+  <div class="card">
     <h3>Complex Card Examples</h3>
-    <div class="grid gap-md cards-complex-grid">
+    <div class="grid grid-auto-md gap-md">
       
       <article class="card">
-        <div class="flex items-center gap-sm cards-profile-header">
-          <div class="flex items-center justify-center cards-profile-avatar">
+        <div class="flex items-center gap-sm" style="margin-bottom: var(--spacing-4);">
+          <div class="flex items-center justify-center" style="width: 48px; height: 48px; background: var(--color-primary-500); border-radius: 50%;">
             <pds-icon icon="user"></pds-icon>
           </div>
           <div>
-            <h4 class="cards-profile-title">User Profile</h4>
-            <p class="cards-profile-meta">@username</p>
+            <h4 style="margin: 0;">User Profile</h4>
+            <p class="text-muted" style="margin: 0; font-size: var(--font-size-sm);">@username</p>
           </div>
         </div>
         <p>Profile description goes here with some interesting details about the user.</p>
-        <div class="flex gap-sm cards-profile-actions">
-          <button class="btn-primary btn-sm">Follow</button>
+        <div class="flex gap-sm" style="margin-top: var(--spacing-4);">
+          <button class="btn-sm">Follow</button>
           <button class="btn-outline btn-sm">Message</button>
         </div>
       </article>
 
       <article class="card surface-elevated">
-        <div class="flex justify-between items-start cards-premium-header">
+        <div class="flex justify-between items-start" style="margin-bottom: var(--spacing-3);">
           <h4>Premium Feature</h4>
-          <span class="cards-pro-badge">PRO</span>
+          <span class="badge badge-primary">PRO</span>
         </div>
         <p>This elevated card highlights a premium feature with a badge and special styling.</p>
-        <ul class="cards-premium-list">
+        <ul style="margin: var(--spacing-3) 0;">
           <li>Feature benefit one</li>
           <li>Feature benefit two</li>
           <li>Feature benefit three</li>
         </ul>
-        <button class="btn-primary">
+        <button>
           <pds-icon icon="star"></pds-icon>
           Upgrade Now
         </button>
@@ -337,14 +216,14 @@ export const ComplexCards = () => html`
 
       <article class="card">
         <h4>Stats Card</h4>
-        <div class="grid grid-cols-2 gap-md cards-stats-grid">
+        <div class="grid grid-cols-2 gap-md" style="margin: var(--spacing-4) 0;">
           <div>
-            <div class="cards-stat-value primary">1.2K</div>
-            <div class="cards-stat-label">Followers</div>
+            <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-primary-600);">1.2K</div>
+            <div class="text-muted" style="font-size: var(--font-size-sm);">Followers</div>
           </div>
           <div>
-            <div class="cards-stat-value secondary">847</div>
-            <div class="cards-stat-label">Following</div>
+            <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-secondary-600);">847</div>
+            <div class="text-muted" style="font-size: var(--font-size-sm);">Following</div>
           </div>
         </div>
         <button class="btn-outline btn-sm">View All</button>
@@ -355,3 +234,48 @@ export const ComplexCards = () => html`
 `;
 
 ComplexCards.storyName = 'Complex Cards';
+
+export const CardVariantsReference = () => html`
+  <div class="card">
+    <h2>Card Classes Reference</h2>
+  </div>
+  
+  <table class="table-bordered">
+    <thead>
+      <tr>
+        <th>Class</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>.card</code></td>
+        <td>Base card with padding and border-radius</td>
+      </tr>
+      <tr>
+        <td><code>.card-basic</code> / <code>.card-outlined</code></td>
+        <td>Card with border, no elevation</td>
+      </tr>
+      <tr>
+        <td><code>.card-elevated</code></td>
+        <td>Card with shadow and elevated background</td>
+      </tr>
+      <tr>
+        <td><code>.card-interactive</code></td>
+        <td>Card with hover lift and shadow transition</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div class="card">
+    <h3>Combine with Surface Utilities</h3>
+    <p>Cards work with any surface utility:</p>
+    <ul>
+      <li><code>.card.surface-elevated</code> – elevated background with card styling</li>
+      <li><code>.card.surface-overlay</code> – overlay-level card</li>
+      <li><code>.card.surface-subtle</code> – subtle background card</li>
+    </ul>
+  </div>
+`;
+
+CardVariantsReference.storyName = 'Reference';

@@ -72,10 +72,10 @@ const dropdownGlassDemoStyles = html`
 
 export default {
   title: "Enhancements/Dropdowns",
-  tags: ["forms", "interaction"],
+  tags: ['dropdown', 'menu', 'navigation', 'popover', 'forms', 'interaction'],
   parameters: {
     pds: {
-      tags: ["forms", "interaction"],
+      tags: ['dropdown', 'menu', 'navigation', 'popover', 'overlay', 'forms', 'interaction', 'data-dropdown']
     },
     docs: {
       description: {

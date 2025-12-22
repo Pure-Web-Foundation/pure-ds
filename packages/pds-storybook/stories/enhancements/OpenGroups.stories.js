@@ -54,10 +54,10 @@ const openGroupsStoryStyles = html`
 
 export default {
   title: 'Enhancements/Open Groups',
-  tags: ['forms', 'interaction'],
+  tags: ['fieldset', 'radio', 'checkbox', 'dynamic', 'custom-option'],
   parameters: {
     pds: {
-      tags: ['forms', 'interaction']
+      tags: ['fieldset', 'radio', 'checkbox', 'dynamic', 'custom-option', 'data-open', 'forms', 'interaction', 'enhancement']
     },
     docs: {
       description: {

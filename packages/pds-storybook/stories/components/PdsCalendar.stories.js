@@ -18,8 +18,11 @@ if (typeof window !== 'undefined') {
 
 export default {
   title: 'Components/Pds Calendar',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'calendar', 'date', 'datepicker', 'event', 'schedule'],
   parameters: {
+    pds: {
+      tags: ['calendar', 'date', 'datepicker', 'event', 'schedule', 'pds-calendar']
+    },
     docs: docsParameters
   },
   argTypes: {

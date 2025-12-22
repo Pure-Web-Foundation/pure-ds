@@ -18,10 +18,10 @@ if (typeof window !== 'undefined') {
 
 export default {
   title: 'Components/Pds Upload',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'upload', 'file', 'dropzone', 'input', 'forms'],
   parameters: {
     pds: {
-      tags: ['forms']
+      tags: ['upload', 'file', 'dropzone', 'input', 'pds-upload', 'forms']
     },
     docs: docsParameters
   },

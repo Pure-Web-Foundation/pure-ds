@@ -2,9 +2,10 @@ import { html } from 'lit';
 
 export default {
   title: 'Foundations/Smart Surfaces',
+  tags: ['surface', 'background', 'theming', 'contrast', 'elevated'],
   parameters: {
     pds: {
-      tags: ['surface', 'colors', 'layout']
+      tags: ['surface', 'background', 'theming', 'contrast', 'elevated', 'subtle', 'sunken', 'overlay', 'inverse', 'colors', 'layout']
     },
     docs: {
       description: {
@@ -365,3 +366,120 @@ export const BorderGradients = () => html`
 `;
 
 BorderGradients.storyName = 'Border Gradients';
+
+export const TranslucentSurfaces = () => html`
+  ${smartSurfacesStoryStyles}
+  <div class="smart-surfaces-section">
+    <h2>Translucent Surfaces</h2>
+    <p class="smart-surfaces-subtitle">
+      Semi-transparent surfaces for glassmorphism effects and layered UI. 
+      Works beautifully over images and gradients.
+    </p>
+    
+    <div style="position: relative; padding: var(--spacing-8); border-radius: var(--radius-lg); overflow: hidden;">
+      <img 
+        src="https://picsum.photos/1200/600?random=10" 
+        alt="Background" 
+        style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;"
+      />
+      
+      <div class="grid grid-auto-md gap-lg" style="position: relative; z-index: 1;">
+        <article class="surface-translucent-25 smart-surfaces-surface" style="backdrop-filter: blur(10px);">
+          <h4>.surface-translucent-25</h4>
+          <p>25% opacity - very subtle, mostly transparent</p>
+          <code>--color-surface-translucent-25</code>
+        </article>
+        
+        <article class="surface-translucent-50 smart-surfaces-surface" style="backdrop-filter: blur(10px);">
+          <h4>.surface-translucent-50</h4>
+          <p>50% opacity - balanced transparency</p>
+          <code>--color-surface-translucent-50</code>
+        </article>
+        
+        <article class="surface-translucent-75 smart-surfaces-surface" style="backdrop-filter: blur(10px);">
+          <h4>.surface-translucent-75</h4>
+          <p>75% opacity - more solid, less see-through</p>
+          <code>--color-surface-translucent-75</code>
+        </article>
+        
+        <article class="surface-translucent smart-surfaces-surface" style="backdrop-filter: blur(10px);">
+          <h4>.surface-translucent</h4>
+          <p>Default (50%) - alias for translucent-50</p>
+          <code>Shorthand class</code>
+        </article>
+      </div>
+    </div>
+  </div>
+`;
+
+TranslucentSurfaces.storyName = 'Translucent Surfaces';
+
+export const SurfaceInverseExpanded = () => html`
+  ${smartSurfacesStoryStyles}
+  <div class="smart-surfaces-section">
+    <h2>Inverse Surface Deep Dive</h2>
+    <p class="smart-surfaces-subtitle">
+      The <code>.surface-inverse</code> class automatically inverts all text, icon, and border colors 
+      for perfect contrast on dark backgrounds.
+    </p>
+    
+    <div class="grid grid-auto-md gap-lg">
+      <article class="surface-inverse smart-surfaces-surface">
+        <h3 class="smart-surfaces-title">
+          <pds-icon icon="moon"></pds-icon>
+          Inverse Surface
+        </h3>
+        <p>All text automatically uses light colors for dark backgrounds.</p>
+        <p class="text-muted">Even muted text adapts correctly.</p>
+        <div class="flex gap-sm smart-surfaces-button-spacing">
+          <button class="btn-primary">Primary</button>
+          <button class="btn-secondary">Secondary</button>
+        </div>
+      </article>
+      
+      <article class="surface-inverse smart-surfaces-surface">
+        <h4>Code on Inverse</h4>
+        <p>Inline <code>code elements</code> also adapt their background for visibility.</p>
+        <pre><code>// Code blocks work too
+const example = "Hello!";</code></pre>
+      </article>
+      
+      <article class="surface-inverse smart-surfaces-surface">
+        <h4>Icons on Inverse</h4>
+        <div class="flex gap-md flex-wrap">
+          <pds-icon icon="check" size="lg"></pds-icon>
+          <pds-icon icon="star" size="lg"></pds-icon>
+          <pds-icon icon="heart" size="lg"></pds-icon>
+          <pds-icon icon="settings" size="lg"></pds-icon>
+          <pds-icon icon="bell" size="lg"></pds-icon>
+        </div>
+        <p style="margin-top: var(--spacing-3);">Icons inherit the correct inverse color automatically.</p>
+      </article>
+      
+      <article class="surface-inverse smart-surfaces-surface">
+        <h4>Form Elements</h4>
+        <label style="margin-bottom: var(--spacing-3);">
+          <span>Input Field</span>
+          <input type="text" placeholder="Type here..." />
+        </label>
+        <button class="btn-outline" style="border-color: currentColor;">Outline Button</button>
+      </article>
+    </div>
+    
+    <div class="card" style="margin-top: var(--spacing-8);">
+      <h3>CSS Variables Set by .surface-inverse</h3>
+      <pre><code>.surface-inverse {
+  background-color: var(--color-surface-inverse);
+  color: var(--surface-inverse-text);
+  --color-text-primary: var(--surface-inverse-text);
+  --color-text-secondary: var(--surface-inverse-text-secondary);
+  --color-text-muted: var(--surface-inverse-text-muted);
+  --color-surface-muted: rgba(255, 255, 255, 0.08);
+  --color-border: var(--surface-inverse-border);
+}</code></pre>
+    </div>
+  </div>
+`;
+
+SurfaceInverseExpanded.storyName = 'Inverse Surface Details';
+

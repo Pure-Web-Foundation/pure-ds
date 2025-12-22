@@ -39,10 +39,10 @@ if (typeof window !== 'undefined') {
 
 export default {
   title: 'Components/Pds Jsonform',
-  tags: ['autodocs', 'buttons', 'forms', 'interaction'],
+  tags: ['autodocs', 'form', 'forms', 'jsonform', 'json-schema', 'validation', 'input'],
   parameters: {
     pds: {
-      tags: ['buttons', 'forms', 'interaction']
+      tags: ['form', 'forms', 'jsonform', 'json-schema', 'validation', 'input', 'pds-jsonform', 'interaction']
     },
     docs: docsParameters
   }

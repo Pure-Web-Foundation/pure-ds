@@ -26,10 +26,10 @@ const toasterStoryStyles = html`
 
 export default {
   title: 'Components/Pds Toaster',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'toast', 'toaster', 'notification', 'alert', 'message', 'feedback'],
   parameters: {
     pds: {
-      tags: ['interaction', 'notifications']
+      tags: ['toast', 'toaster', 'notification', 'alert', 'message', 'feedback', 'pds-toaster', 'interaction']
     },
     docs: docsParameters
   }

@@ -18,10 +18,10 @@ if (typeof window !== 'undefined') {
 
 export default {
   title: 'Components/Pds Icon',
-  tags: ['autodocs', 'icons', 'svg', 'sprite', 'buttons'],
+  tags: ['autodocs', 'icon', 'icons', 'svg', 'sprite', 'phosphor', 'graphic', 'symbol'],
   parameters: {
     pds: {
-      tags: ['icons', 'svg', 'sprite']
+      tags: ['icon', 'icons', 'svg', 'sprite', 'phosphor', 'graphic', 'symbol', 'pds-icon']
     },
     docs: docsParameters
   },

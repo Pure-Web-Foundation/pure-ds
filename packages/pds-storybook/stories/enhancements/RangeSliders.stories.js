@@ -45,10 +45,10 @@ const rangeSliderStoryStyles = html`
 
 export default {
   title: 'Enhancements/Range Sliders',
-  tags: ['forms', 'interaction'],
+  tags: ['range', 'slider', 'input', 'forms', 'interaction'],
   parameters: {
     pds: {
-      tags: ['forms', 'interaction']
+      tags: ['range', 'slider', 'input', 'forms', 'interaction', 'enhancement']
     },
     docs: {
       description: {

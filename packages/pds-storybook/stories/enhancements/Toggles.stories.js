@@ -41,10 +41,10 @@ const toggleStoryStyles = html`
 
 export default {
   title: 'Enhancements/Toggles',
-  tags: ['forms', 'interaction'],
+  tags: ['toggle', 'switch', 'checkbox', 'forms', 'interaction'],
   parameters: {
     pds: {
-      tags: ['forms', 'interaction']
+      tags: ['toggle', 'switch', 'checkbox', 'forms', 'interaction', 'data-toggle', 'enhancement']
     },
     docs: {
       description: {

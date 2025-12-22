@@ -1645,6 +1645,36 @@ html[data-theme="dark"] .liquid-glass {
   height: 0;
 }
 
+/* Labeled horizontal rule: <hr data-content="OR"> */
+:where(hr[data-content]) {
+  position: relative;
+  border: none;
+  text-align: center;
+  height: auto;
+  overflow: visible;
+  
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--color-border), transparent);
+  }
+  
+  &::after {
+    content: attr(data-content);
+    position: relative;
+    display: inline-block;
+    padding: 0 var(--spacing-3);
+    background-color: var(--color-surface-base);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+  }
+}
+
 :where(dl) {
   margin: 0 0 var(--spacing-4) 0;
 }
@@ -3843,6 +3873,11 @@ nav[data-dropdown] {
   flex-direction: row;
 }
 
+/* Flex grow - fill remaining space */
+.grow {
+  flex: 1 1 0%;
+}
+
 /* Flex alignment */
 .items-start { align-items: flex-start; }
 .items-center { align-items: center; }
@@ -3856,6 +3891,34 @@ nav[data-dropdown] {
 .justify-between { justify-content: space-between; }
 .justify-around { justify-content: space-around; }
 .justify-evenly { justify-content: space-evenly; }
+
+/* Text alignment utilities */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* Text overflow utility */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Max-width utilities (semantic breakpoints) */
+.max-w-sm { max-width: 400px; }
+.max-w-md { max-width: 600px; }
+.max-w-lg { max-width: 800px; }
+.max-w-xl { max-width: 1200px; }
+
+/* Stack utilities - vertical rhythm for stacked elements */
+.stack-sm { display: flex; flex-direction: column; gap: var(--spacing-2); }
+.stack-md { display: flex; flex-direction: column; gap: var(--spacing-4); }
+.stack-lg { display: flex; flex-direction: column; gap: var(--spacing-6); }
+.stack-xl { display: flex; flex-direction: column; gap: var(--spacing-8); }
+
+/* Section spacing - for major content blocks */
+.section { padding-block: var(--spacing-8); }
+.section-lg { padding-block: var(--spacing-12); }
 
 /* Responsive helpers */
 @media (max-width: ${breakpoints.md - 1}px) {
@@ -4743,6 +4806,34 @@ ${this.#generateBorderGradientUtilities()}
 
   pds-icon {
     color: var(--surface-inverse-icon);
+  }
+  
+  /* Default and secondary buttons on inverse - semi-transparent glass effect */
+  & button:not(.btn-primary):not(.btn-outline):not(.btn-danger):not(.btn-success):not(.btn-warning),
+  & .btn-secondary {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: var(--surface-inverse-text);
+    border-color: rgba(255, 255, 255, 0.25);
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    &:active {
+      background-color: rgba(255, 255, 255, 0.28);
+    }
+  }
+  
+  /* Ensure btn-primary stays vibrant on inverse */
+  & .btn-primary {
+    background-color: var(--color-primary-500);
+    border-color: var(--color-primary-500);
+    color: var(--color-primary-contrast, #ffffff);
+    
+    &:hover {
+      background-color: var(--color-primary-400);
+      border-color: var(--color-primary-400);
+    }
   }
 }
 

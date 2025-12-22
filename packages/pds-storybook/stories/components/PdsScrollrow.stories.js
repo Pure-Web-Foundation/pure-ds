@@ -18,10 +18,10 @@ if (typeof window !== 'undefined') {
 
 export default {
   title: 'Components/Pds Scrollrow',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'scrollrow', 'scroll', 'carousel', 'horizontal', 'overflow'],
   parameters: {
     pds: {
-      tags: ['layout' ]
+      tags: ['scrollrow', 'scroll', 'carousel', 'horizontal', 'overflow', 'pds-scrollrow', 'layout']
     },
     docs: docsParameters
   }

@@ -157,10 +157,10 @@ const bindToastForms = (selector) => {
 
 export default {
   title: 'Components/Pds Richtext',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'richtext', 'editor', 'wysiwyg', 'text', 'content'],
   parameters: {
     pds: {
-      tags: ['editor', 'richtext', 'forms']
+      tags: ['richtext', 'editor', 'wysiwyg', 'text', 'content', 'pds-richtext', 'forms']
     },
     docs: docsParameters
   },

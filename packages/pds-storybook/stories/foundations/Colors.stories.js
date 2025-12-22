@@ -130,9 +130,10 @@ const chooseReadableTextColor = (colorName, shade, fallback) => {
 
 export default {
   title: 'Foundations/Colors',
+  tags: ['color', 'colors', 'primary', 'secondary', 'accent', 'semantic', 'palette', 'tokens'],
   parameters: {
     pds: {
-      tags: ['colors']
+      tags: ['color', 'colors', 'primary', 'secondary', 'accent', 'success', 'warning', 'danger', 'info', 'neutral', 'gray', 'semantic', 'palette', 'tokens', 'theming']
     },
     docs: {
       description: {

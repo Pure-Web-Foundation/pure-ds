@@ -195,9 +195,10 @@ const meshVariableList = ['mesh-01', 'mesh-02', 'mesh-03', 'mesh-04', 'mesh-05']
 
 export default {
   title: 'Enhancements/Mesh Gradients',
+  tags: ['mesh', 'gradient', 'background', 'effect', 'decoration'],
   parameters: {
     pds: {
-      tags: ['colors']
+      tags: ['mesh', 'gradient', 'background', 'effect', 'decoration', 'colors', 'theming']
     },
     docs: {
       description: {

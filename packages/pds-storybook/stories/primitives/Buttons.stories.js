@@ -151,7 +151,7 @@ export const ButtonGroups = () => html`
   ${buttonsStoryStyles}
   <div class="buttons-story-section">
     <h3>Button Groups</h3>
-    <div class="btn-group">
+    <div class="flex gap-sm">
       <button class="btn-primary">
         <pds-icon icon="download"></pds-icon>
         Get Started
@@ -163,7 +163,7 @@ export const ButtonGroups = () => html`
     </div>
 
     <h3 class="buttons-story-heading-spacer">Icon-Only Group</h3>
-    <div class="btn-group">
+    <div class="flex gap-sm">
       <button class="icon-only btn-outline">
         <pds-icon icon="text-align-left" label="Align left"></pds-icon>
       </button>

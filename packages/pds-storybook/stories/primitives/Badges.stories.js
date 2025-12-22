@@ -2,7 +2,11 @@ import { html } from 'lit';
 
 export default {
   title: 'Primitives/Badges & Pills',
+  tags: ['badge', 'pill', 'tag', 'chip', 'status', 'label', 'indicator'],
   parameters: {
+    pds: {
+      tags: ['badge', 'pill', 'tag', 'chip', 'status', 'label', 'indicator', 'inline']
+    },
     docs: {
       description: {
         component: 'Badges and pills for labels, tags, status indicators, and categorization'

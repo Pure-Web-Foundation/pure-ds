@@ -247,10 +247,10 @@ const splitpanelStoryStyles = html`
 
 export default {
   title: 'Components/Pds Splitpanel',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'splitpanel', 'split', 'resizable', 'panel', 'layout'],
   parameters: {
     pds: {
-      tags: ['layout', 'sizing', 'interaction']
+      tags: ['splitpanel', 'split', 'resizable', 'panel', 'layout', 'sizing', 'interaction', 'pds-splitpanel']
     },
     docs: docsParameters
   }

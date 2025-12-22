@@ -140,7 +140,11 @@ const iconStoryStyles = html`
 
 export default {
   title: 'Foundations/Icons',
+  tags: ['icon', 'icons', 'svg', 'phosphor', 'graphic', 'symbol'],
   parameters: {
+    pds: {
+      tags: ['icon', 'icons', 'svg', 'phosphor', 'graphic', 'symbol', 'pds-icon', 'sprite']
+    },
     docs: {
       description: {
         component: 'Icon system using Phosphor icons with configurable sets per category'

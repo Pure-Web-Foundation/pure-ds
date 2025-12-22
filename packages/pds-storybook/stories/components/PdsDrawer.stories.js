@@ -18,10 +18,10 @@ if (typeof window !== 'undefined') {
 
 export default {
   title: 'Components/Pds Drawer',
-  tags: ['autodocs', 'grouping'],
+  tags: ['autodocs', 'drawer', 'panel', 'sidebar', 'overlay', 'navigation', 'modal'],
   parameters: {
     pds: {
-      tags: ['navigation', 'layout', 'grouping', 'interaction']
+      tags: ['drawer', 'panel', 'sidebar', 'overlay', 'navigation', 'modal', 'pds-drawer', 'layout', 'grouping', 'interaction']
     },
     docs: docsParameters
   },

@@ -75,7 +75,7 @@ const spacingStoryStyles = html`
     .spacing-demo-card__bar {
       height: 8px;
       border-radius: var(--radius-full);
-      background: var(--color-primary-quiet);
+      background: var(--color-primary-200);
     }
 
     .spacing-card-spacing-1 {
@@ -110,7 +110,11 @@ const spacingTokens = [
 
 export default {
   title: 'Foundations/Spacing',
+  tags: ['spacing', 'gap', 'padding', 'margin', 'rhythm', 'tokens'],
   parameters: {
+    pds: {
+      tags: ['spacing', 'gap', 'padding', 'margin', 'rhythm', 'tokens', 'layout', 'scale']
+    },
     docs: {
       description: {
         component: 'Spacing tokens ensure consistent rhythm, balance, and hierarchy across layouts.'
