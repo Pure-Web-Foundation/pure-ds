@@ -1,6 +1,6 @@
 {
   "name": "@pure-ds/storybook",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Storybook showcase for Pure Design System with live configuration",
   "type": "module",
   "private": false,
