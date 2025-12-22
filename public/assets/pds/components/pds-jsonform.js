@@ -546,7 +546,7 @@ export class SchemaForm extends LitElement {
     }
 
     const fieldsetClass =
-      layoutClasses.length > 0 ? layoutClasses.join(" ") : undefined;
+      layoutClasses.length > 0 ? layoutClasses.join(" ") : "stack-sm";
 
     // Render basic fieldset
     const fieldsetContent = html`
@@ -1140,7 +1140,7 @@ export class SchemaForm extends LitElement {
           : node.widgetKey === "checkbox-group"
           ? "group"
           : undefined;
-      const fieldsetClass = ui?.["ui:class"];
+      const fieldsetClass = ui?.["ui:class"] ?? "stack-sm";
       return html`
         <fieldset
           data-path=${path}

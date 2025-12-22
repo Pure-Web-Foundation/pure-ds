@@ -58,7 +58,7 @@ export default {
 
 export const BasicRequired = () => html`
   ${requiredFieldsStoryStyles}
-  <form
+  <form data-required
     class="required-form"
     @submit="${(event) => {
       event.preventDefault();
@@ -89,7 +89,7 @@ export const BasicRequired = () => html`
 
 export const MixedRequired = () => html`
   ${requiredFieldsStoryStyles}
-  <form
+  <form data-required
     class="required-form required-form--wide"
     @submit="${(event) => {
       event.preventDefault();
@@ -138,52 +138,6 @@ export const MixedRequired = () => html`
 
     <div class="required-actions">
       <button type="submit" class="btn-primary required-form__button">Create Account</button>
-    </div>
-  </form>
-`;
-
-export const InlineHelp = () => html`
-  ${requiredFieldsStoryStyles}
-  <form
-    class="required-form required-form--wide"
-    @submit="${(event) => {
-      event.preventDefault();
-      toastFormData(new FormData(event.target));
-    }}"
-  >
-    <label>
-      <span>Email Address</span>
-      <div class="input-icon">
-        <pds-icon icon="envelope"></pds-icon>
-        <input type="email" required placeholder="you@example.com">
-      </div>
-      <small class="required-help-text">
-        We'll never share your email with anyone else.
-      </small>
-    </label>
-    <label class="required-field--spaced">
-      <span>Password</span>
-      <div class="input-icon">
-        <pds-icon icon="lock"></pds-icon>
-        <input type="password" required placeholder="••••••••">
-      </div>
-      <small class="required-help-text">
-        Must be at least 8 characters long.
-      </small>
-    </label>
-    <label class="required-field--spaced">
-      <span>Newsletter Frequency</span>
-      <select>
-        <option>Weekly</option>
-        <option>Monthly</option>
-        <option>Never</option>
-      </select>
-      <small class="required-help-text">
-        Optional - choose how often you want updates.
-      </small>
-    </label>
-    <div class="required-actions">
-      <button type="submit" class="btn-primary required-form__button">Sign Up</button>
     </div>
   </form>
 `;

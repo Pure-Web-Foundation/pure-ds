@@ -34,11 +34,11 @@ export const enhancerMetadata = [
     `.trim(),
   },
   {
-    selector: "form [required]",
+    selector: "form[data-required]",
     description:
       "Enhances required form fields using an asterisk in the label.",
     demoHtml: `
-      <form action'#" method="post">
+      <form data-required action="#" method="post">
       <label>
         <span>Field Label</span>
         <input type="text" required>

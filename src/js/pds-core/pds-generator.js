@@ -1831,11 +1831,7 @@ form {
 }
 
 fieldset {
-  margin: 0 0 var(--spacing-${
-    Number.isFinite(Math.round((gapValue * sectionSpacingValue) / 4))
-      ? Math.round((gapValue * sectionSpacingValue) / 4)
-      : 1
-  }) 0;
+  margin: 0
   padding: var(--spacing-5);
   width: 100%;
   background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
@@ -1910,7 +1906,6 @@ fieldset fieldset fieldset > legend { font-size: var(--font-size-sm); }
 
 label {
   display: block;
-  margin-bottom: var(--spacing-3);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
@@ -2630,16 +2625,7 @@ a.btn-working {
   border: ${borderWidth}px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface-base);
-
-  fieldset {
-    background-color: transparent;
-    margin-bottom: var(--spacing-3);
-
-    &:last-of-type {
-      margin-bottom: 0;
-    }
-  }
-
+  
   .array-controls {
     padding-top: var(--spacing-3);
     border-top: ${borderWidth}px solid var(--color-border);
@@ -3093,8 +3079,7 @@ dialog {
     overlay 0.2s ease allow-discrete,
     display 0.2s ease allow-discrete;
   
-  /* Overflow handling */
-  overflow: hidden;
+  
 }
 
 /* Open state */
@@ -3196,7 +3181,7 @@ dialog {
   form > article,
   .dialog-body {
     flex: 1;
-    padding: var(--spacing-6);
+    padding: var(--spacing-3) var(--spacing-6);
     overflow-y: auto;
     overflow-x: hidden;
   }

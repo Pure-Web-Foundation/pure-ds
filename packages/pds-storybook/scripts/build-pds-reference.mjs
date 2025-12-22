@@ -25,9 +25,11 @@ let STORIES_ROOT;
 let OUTPUT_DIR;
 
 // Check if we are in the monorepo structure
-if (fs.existsSync(path.join(__dirname, '../../packages/pds-storybook'))) {
+// __dirname is packages/pds-storybook/scripts, so ../../.. is the monorepo root
+const potentialMonorepoRoot = path.join(__dirname, '../../..');
+if (fs.existsSync(path.join(potentialMonorepoRoot, 'packages/pds-storybook'))) {
     // We are in packages/pds-storybook/scripts
-    ROOT_DIR = path.join(__dirname, '../../..');
+    ROOT_DIR = potentialMonorepoRoot;
     STORIES_ROOT = path.join(ROOT_DIR, 'packages/pds-storybook/stories');
     OUTPUT_DIR = path.join(ROOT_DIR, 'packages/pds-storybook/dist');
 } else {

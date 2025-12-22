@@ -212,28 +212,38 @@ function enhanceRange(elem) {
 }
 
 function enhanceRequired(elem) {
-  const label = elem.closest("label");
-  if (!label) return;
-  if (label.querySelector(".required-asterisk")) return;
+  
+   if (elem.dataset.enhancedRequired) return;
+    elem.dataset.enhancedRequired = "true";
+  
+  const enhanceRequiredField = (input) => {
+   
+    const label = input.closest("label");
+    if (!label) return;
+    if (label.querySelector(".required-asterisk")) return;
 
-  const asterisk = document.createElement("span");
-  asterisk.classList.add("required-asterisk");
-  asterisk.textContent = "*";
-  asterisk.style.marginLeft = "4px";
-  label.querySelector("span").appendChild(asterisk);
+    const asterisk = document.createElement("span");
+    asterisk.classList.add("required-asterisk");
+    asterisk.textContent = "*";
+    asterisk.style.marginLeft = "4px";
+    label.querySelector("span").appendChild(asterisk);
 
-  const form = elem.closest("form");
-  if (form && !form.querySelector(".required-legend")) {
-    const legend = document.createElement("div");
-    legend.classList.add("required-legend", "pill", "pill-outline");
-    legend.style.fontSize = "0.9em";
-    legend.style.marginBottom = "8px";
-    legend.textContent = "* Required fields";
-    form.insertBefore(
-      legend,
-      form.querySelector(".form-actions") || form.lastElementChild
-    );
+    const form = input.closest("form");
+    if (form && !form.querySelector(".required-legend")) {
+      const legend = document.createElement("small");
+      legend.classList.add("required-legend");
+      legend.textContent = "* Required fields";
+      form.insertBefore(
+        legend,
+        form.querySelector(".form-actions") || form.lastElementChild
+      );
+    }
   }
+
+  elem.querySelectorAll("[required]").forEach((input) => {
+    enhanceRequiredField(input);
+  });
+  
 }
 
 function enhanceOpenGroup(elem) {
@@ -344,7 +354,7 @@ const enhancerRunners = new Map([
   ["nav[data-dropdown]", enhanceDropdown],
   ["label[data-toggle]", enhanceToggle],
   ['input[type="range"]', enhanceRange],
-  ["form [required]", enhanceRequired],
+  ["form[data-required]", enhanceRequired],
   ["fieldset[role=group][data-open]", enhanceOpenGroup],
   ["button, a[class*='btn-']", enhanceButtonWorking],
 ]);

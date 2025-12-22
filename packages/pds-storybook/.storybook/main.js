@@ -57,6 +57,10 @@ const config = {
     // This must be defined BEFORE @pds-src to take precedence
     if (!isPackage) {
        aliases['@pds-src/js/pds-configurator'] = resolve(currentDirname, '../../../packages/pds-configurator/src');
+       
+       // Map the local src folder to the monorepo root src folder
+       // This eliminates the need for a copied src folder during development
+       aliases[resolve(currentDirname, '../src')] = pdsSrcPath;
     }
 
     aliases['@pds-src'] = pdsSrcPath;
