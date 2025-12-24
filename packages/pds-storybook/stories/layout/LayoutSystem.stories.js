@@ -2,7 +2,7 @@ import { html } from "lit";
 
 export default {
   title: "Layout/System",
-  tags: ["layout", "flex", "grid", "container", "utilities"],
+  tags: ["layout", "flex", "grid", "container", "utilities", "text", "truncate", "spacing", "gap", "alignment"],
   parameters: {
     docs: {
       description: {

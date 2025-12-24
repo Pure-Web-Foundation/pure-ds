@@ -1,6 +1,6 @@
 {
   "name": "@pure-ds/storybook-cli",
-  "version": "0.1.0",
+  "version": "0.4.2",
   "description": "CLI tool to integrate Pure Design System into existing Storybook instances",
   "type": "module",
   "bin": {
@@ -23,7 +23,7 @@
     "ora": "^8.0.0"
   },
   "peerDependencies": {
-    "@pure-ds/core": ">=0.3.0",
+    "@pure-ds/core": ">=0.4.2",
     "@storybook/web-components": ">=8.0.0",
     "@storybook/web-components-vite": ">=8.0.0",
     "vite": ">=5.0.0"

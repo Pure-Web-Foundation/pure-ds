@@ -2,10 +2,10 @@ import { html } from 'lit';
 
 export default {
   title: 'Primitives/Alerts',
-  tags: ['alerts', 'notifications', 'feedback', 'colors'],
+  tags: ['alerts', 'notifications', 'feedback', 'colors', 'message', 'status', 'error', 'warning', 'success', 'info', 'danger'],
   parameters: {
     pds: {
-      tags: ['alerts', 'colors', 'feedback']
+      tags: ['alerts', 'colors', 'feedback', 'notification', 'message', 'status']
     },
     docs: {
       description: {

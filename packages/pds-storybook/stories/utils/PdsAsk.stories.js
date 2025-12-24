@@ -114,10 +114,10 @@ const askStoryStyles = html`
 
 export default {
   title: 'Utilities/PDS ask',
-  tags: ['interaction', 'dialogs', 'forms'],
+  tags: ['interaction', 'dialogs', 'forms', 'modal', 'dialog', 'alert', 'confirm', 'prompt', 'popup', 'overlay'],
   parameters: {
     pds: {
-      tags: ['interaction', 'dialogs', 'forms', 'pds-ask']
+      tags: ['interaction', 'dialogs', 'forms', 'pds-ask', 'modal', 'alert', 'confirm', 'prompt']
     },
     docs: {
       description: {

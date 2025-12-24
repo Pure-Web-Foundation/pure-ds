@@ -85,7 +85,7 @@ export const ontology = {
       name: "Dialog", 
       description: "Modal dialog element",
       selectors: ["dialog", ".dialog"],
-      tags: ["modal", "overlay", "popup"],
+      tags: ["modal", "overlay", "popup", "modal"],
       category: "overlay"
     },
     { 
@@ -521,6 +521,183 @@ export const ontology = {
     icons: { source: "svg", sets: ["core", "brand"] },
     interactive: ["focus", "hover", "active", "disabled"],
     states: ["success", "warning", "danger", "info", "muted"]
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SEARCH RELATIONS (Cross-concept mappings for intelligent search)
+  // Used by PDS.query() and Storybook ontology search to expand user queries
+  // ═══════════════════════════════════════════════════════════════════════════
+  searchRelations: {
+    // Typography & Text
+    text: ["typography", "truncate", "text-muted", "text-primary", "text-left", "text-center", "text-right", "pds-richtext", "heading", "font", "label", "paragraph", "content", "ellipsis", "overflow", "input"],
+    font: ["typography", "text", "heading", "font-size", "font-weight", "font-family"],
+    type: ["typography", "text", "font"],
+    typography: ["text", "font", "heading", "truncate", "text-muted"],
+    heading: ["typography", "text", "font-size", "h1", "h2", "h3"],
+    truncate: ["text", "overflow", "ellipsis", "clamp", "nowrap", "typography"],
+    ellipsis: ["truncate", "text", "overflow", "clamp"],
+    overflow: ["truncate", "scroll", "hidden", "text"],
+    paragraph: ["text", "typography", "content", "body"],
+    content: ["text", "typography", "body", "article"],
+    
+    // Forms & Inputs
+    form: ["input", "field", "label", "button", "fieldset", "pds-jsonform", "pds-upload", "pds-richtext", "pds-calendar", "required", "validation", "submit"],
+    input: ["form", "field", "text", "label", "required", "validation"],
+    field: ["form", "input", "label", "required"],
+    button: ["btn", "interactive", "action", "submit", "form", "btn-primary", "btn-secondary", "btn-working"],
+    btn: ["button", "interactive", "action"],
+    toggle: ["switch", "checkbox", "boolean", "form", "interactive"],
+    switch: ["toggle", "checkbox", "boolean"],
+    slider: ["range", "input", "form"],
+    range: ["slider", "input", "form"],
+    checkbox: ["toggle", "form", "fieldset", "boolean"],
+    radio: ["fieldset", "form", "group"],
+    select: ["dropdown", "form", "input", "menu"],
+    upload: ["file", "pds-upload", "form", "drag-drop"],
+    file: ["upload", "pds-upload", "form"],
+    
+    // Modals & Overlays
+    modal: ["dialog", "pds-ask", "overlay", "popup", "backdrop", "pds-drawer", "alert", "confirm", "prompt", "lightbox"],
+    dialog: ["modal", "pds-ask", "overlay", "popup", "backdrop", "alert", "confirm", "prompt"],
+    popup: ["modal", "dialog", "dropdown", "popover", "overlay", "tooltip"],
+    popover: ["popup", "tooltip", "overlay"],
+    overlay: ["modal", "dialog", "backdrop", "drawer", "popup"],
+    drawer: ["pds-drawer", "sidebar", "panel", "overlay", "modal"],
+    backdrop: ["overlay", "modal", "dialog", "blur"],
+    confirm: ["pds-ask", "dialog", "modal"],
+    prompt: ["pds-ask", "dialog", "modal", "input"],
+    ask: ["pds-ask", "dialog", "confirm", "prompt", "modal"],
+    
+    // Navigation & Menus
+    dropdown: ["menu", "nav-dropdown", "select", "popover"],
+    menu: ["dropdown", "navigation", "nav", "list"],
+    nav: ["navigation", "menu", "dropdown", "tabs", "links"],
+    navigation: ["nav", "menu", "tabs", "pds-tabstrip", "links", "routing"],
+    tabs: ["pds-tabstrip", "navigation", "panels"],
+    tab: ["tabs", "pds-tabstrip", "panel"],
+    link: ["navigation", "anchor", "href", "routing"],
+    
+    // Feedback & Notifications (alert also relates to modal/dialog for "user prompts")
+    alert: ["notification", "feedback", "message", "status", "toast", "modal", "dialog", "pds-ask", "confirm", "warning", "error", "info", "success", "danger"],
+    notification: ["alert", "toast", "pds-toaster", "feedback", "message", "popup"],
+    toast: ["pds-toaster", "notification", "alert", "feedback", "popup", "snackbar"],
+    feedback: ["alert", "notification", "toast", "status", "badge", "validation", "error", "success"],
+    message: ["alert", "notification", "feedback", "dialog", "toast"],
+    status: ["badge", "alert", "indicator", "feedback", "state"],
+    error: ["alert", "danger", "validation", "feedback", "warning"],
+    success: ["alert", "feedback", "badge", "status", "check"],
+    warning: ["alert", "caution", "feedback", "status"],
+    info: ["alert", "information", "feedback", "status"],
+    danger: ["alert", "error", "feedback", "destructive", "delete"],
+    badge: ["status", "pill", "tag", "chip", "indicator", "label"],
+    pill: ["badge", "tag", "chip"],
+    tag: ["badge", "pill", "chip", "label"],
+    chip: ["badge", "pill", "tag"],
+    
+    // Layout & Structure
+    layout: ["grid", "flex", "stack", "container", "gap", "spacing", "pds-splitpanel", "section"],
+    grid: ["layout", "columns", "css-grid", "table", "gallery"],
+    flex: ["layout", "flexbox", "alignment", "row", "column"],
+    stack: ["layout", "vertical", "spacing", "column", "gap"],
+    container: ["wrapper", "layout", "max-width", "centered"],
+    gap: ["spacing", "margin", "padding", "layout"],
+    spacing: ["gap", "margin", "padding", "section"],
+    section: ["spacing", "layout", "container", "page"],
+    split: ["pds-splitpanel", "resizable", "panels", "layout"],
+    panel: ["pds-splitpanel", "drawer", "sidebar", "section"],
+    
+    // Cards & Surfaces
+    card: ["surface", "container", "elevated", "content"],
+    surface: ["card", "background", "elevated", "theming", "color"],
+    box: ["card", "container", "surface"],
+    elevated: ["surface", "shadow", "card"],
+    
+    // Colors & Theming
+    color: ["palette", "theme", "surface", "primary", "secondary", "accent"],
+    colours: ["color", "palette", "theme"],
+    palette: ["color", "theme", "tokens"],
+    theme: ["color", "palette", "dark", "light", "surface"],
+    primary: ["color", "button", "badge", "surface"],
+    secondary: ["color", "button", "badge", "surface"],
+    accent: ["color", "highlight", "surface"],
+    
+    // Borders & Effects
+    border: ["border-gradient", "border-glow", "outline", "radius"],
+    effect: ["border-gradient", "border-glow", "shadow", "glass", "animation"],
+    gradient: ["border-gradient", "color", "background"],
+    glow: ["border-glow", "effect", "shadow"],
+    shadow: ["elevated", "effect", "depth", "card"],
+    radius: ["rounded", "border", "corner"],
+    rounded: ["radius", "border", "corner"],
+    glass: ["liquid-glass", "backdrop", "blur", "effect"],
+    
+    // Media & Icons
+    icon: ["pds-icon", "graphic", "symbol", "svg", "phosphor"],
+    image: ["img", "figure", "gallery", "media", "picture"],
+    img: ["image", "figure", "gallery", "media"],
+    figure: ["image", "media", "caption"],
+    gallery: ["images", "grid", "collection", "media"],
+    media: ["image", "icon", "figure", "gallery", "video"],
+    
+    // Tables & Data
+    table: ["data", "grid", "tabular", "rows", "columns"],
+    data: ["table", "json", "form", "display"],
+    
+    // Editors & Rich Content
+    editor: ["pds-richtext", "wysiwyg", "text", "content"],
+    wysiwyg: ["editor", "pds-richtext", "richtext"],
+    richtext: ["pds-richtext", "editor", "wysiwyg", "text"],
+    
+    // Calendar & Dates
+    calendar: ["pds-calendar", "date", "picker", "datepicker"],
+    date: ["calendar", "pds-calendar", "picker", "input"],
+    datepicker: ["calendar", "date", "pds-calendar"],
+    
+    // Scroll & Carousel
+    scroll: ["pds-scrollrow", "carousel", "horizontal", "overflow"],
+    carousel: ["scroll", "pds-scrollrow", "slider", "gallery"],
+    
+    // Accordion & Disclosure
+    accordion: ["details", "collapsible", "expandable", "disclosure"],
+    collapsible: ["accordion", "details", "expandable"],
+    expandable: ["accordion", "collapsible", "disclosure"],
+    details: ["accordion", "summary", "disclosure"],
+    
+    // Divider & Separator
+    divider: ["hr", "separator", "line", "rule"],
+    separator: ["divider", "hr", "line"],
+    hr: ["divider", "separator", "horizontal-rule"],
+    
+    // Interactive States
+    interactive: ["hover", "focus", "active", "disabled", "button", "link"],
+    hover: ["interactive", "effect", "state"],
+    focus: ["interactive", "accessibility", "state", "outline"],
+    disabled: ["interactive", "state", "muted"],
+    loading: ["btn-working", "spinner", "async", "progress"],
+    spinner: ["loading", "btn-working", "progress"],
+    
+    // Accessibility
+    accessibility: ["a11y", "aria", "focus", "label", "required"],
+    a11y: ["accessibility", "aria", "semantic"],
+    aria: ["accessibility", "a11y", "role"],
+    required: ["form", "validation", "asterisk", "input"],
+    validation: ["form", "required", "error", "feedback"],
+    
+    // Documentation & Getting Started
+    start: ["getting-started", "intro", "overview", "whatispds"],
+    intro: ["getting-started", "overview", "start", "docs"],
+    getting: ["getting-started", "start", "intro"],
+    overview: ["intro", "start", "summary", "layout-overview"],
+    docs: ["documentation", "reference", "guide"],
+    
+    // Category keywords (for searching by category name - ONE-WAY only, not bidirectional)
+    // These should NOT list individual items - that causes pollution when reversed
+    primitive: ["primitives"],
+    component: ["components"],
+    enhancement: ["enhancements"],
+    foundation: ["foundations", "color", "icon", "typography", "spacing", "tokens"],
+    utility: ["utilities", "text", "backdrop", "shadow", "border", "helper"],
+    pattern: ["patterns", "layout", "responsive", "mobile-stack"]
   }
 };
 

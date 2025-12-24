@@ -739,14 +739,23 @@ function buildEnhancements(ontology, enhancerMetadata = []) {
     });
   }
 
-  for (const selector of ontology.enhancements || []) {
-    const normalized = String(selector || '').trim();
-    if (!normalized || seen.has(normalized)) continue;
+  // Ontology enhancements can be either strings (selector) or objects with selector property
+  for (const enhancement of ontology.enhancements || []) {
+    // Handle object format { id, selector, description, ... }
+    const selector = typeof enhancement === 'object' && enhancement !== null
+      ? String(enhancement.selector || '').trim()
+      : String(enhancement || '').trim();
+    
+    if (!selector || seen.has(selector)) continue;
+    
+    // Extract additional info if it's an object
+    const enhancementObj = typeof enhancement === 'object' && enhancement !== null ? enhancement : {};
+    
     entries.push({
-      id: slugifySegment(normalized),
-      selector: normalized,
-      description: null,
-      demoHtml: null,
+      id: enhancementObj.id || slugifySegment(selector),
+      selector,
+      description: trimOrNull(enhancementObj.description) || null,
+      demoHtml: trimOrNull(enhancementObj.demoHtml) || null,
       source: ONTOLOGY_SOURCE_LABEL
     });
   }
@@ -767,6 +776,50 @@ function buildTokens(ontology) {
   return result;
 }
 
+/**
+ * Build the ontology data that includes searchRelations and categories
+ * This is the SSoT for Storybook's ontology-aware search
+ */
+function buildOntologyData(ontology) {
+  return {
+    primitives: (ontology.primitives || []).map(p => ({
+      id: p.id,
+      name: p.name,
+      tags: p.tags || [],
+      category: p.category,
+      selectors: p.selectors || []
+    })),
+    components: (ontology.components || []).map(c => ({
+      id: c.id,
+      name: c.name,
+      tags: c.tags || [],
+      category: c.category,
+      selectors: c.selectors || []
+    })),
+    layoutPatterns: (ontology.layoutPatterns || []).map(l => ({
+      id: l.id,
+      name: l.name,
+      tags: l.tags || [],
+      category: l.category,
+      selectors: l.selectors || []
+    })),
+    enhancements: (ontology.enhancements || []).map(e => {
+      if (typeof e === 'object' && e !== null) {
+        return {
+          id: e.id,
+          selector: e.selector,
+          tags: e.tags || [],
+          description: e.description
+        };
+      }
+      return { id: slugifySegment(String(e)), selector: String(e), tags: [] };
+    }),
+    utilities: ontology.utilities || {},
+    categories: ontology.categories || {},
+    searchRelations: ontology.searchRelations || {}
+  };
+}
+
 async function main() {
   try {
     const [customElements, ontology, storyIndex, enhancerMetadata] = await Promise.all([
@@ -780,6 +833,7 @@ async function main() {
     const primitives = buildPrimitives(ontology);
     const enhancements = buildEnhancements(ontology, enhancerMetadata);
     const tokens = buildTokens(ontology);
+    const ontologyData = buildOntologyData(ontology);
 
     const reference = {
       generatedAt: new Date().toISOString(),
@@ -792,7 +846,8 @@ async function main() {
       components,
       primitives,
       enhancements,
-      tokens
+      tokens,
+      ontologyData
     };
 
     await fs.promises.mkdir(OUTPUT_DIR, { recursive: true });

@@ -334,13 +334,37 @@ export class PdsReferenceCatalog extends LitElement {
         ${tokenGroups.map(([group, values]) => html`
           <article class="card surface-base flex flex-col gap-sm">
             <h3 style="margin: 0;">${group}</h3>
-            ${Array.isArray(values)
-              ? renderChipList(values)
-              : html`<pre class="surface-subtle radius-lg text-sm overflow-auto" style="margin: 0; padding: var(--spacing-3);">${JSON.stringify(values, null, 2)}</pre>`}
+            ${this.renderTokenValue(values)}
           </article>
         `)}
       </div>
     `;
+  }
+
+  renderTokenValue(values) {
+    // Handle arrays - render as chip list
+    if (Array.isArray(values)) {
+      return renderChipList(values);
+    }
+    
+    // Handle nested objects - render each key as a subsection
+    if (values && typeof values === 'object') {
+      return html`
+        <div class="flex flex-col gap-md">
+          ${Object.entries(values).map(([key, subValues]) => html`
+            <div class="flex flex-col gap-xs">
+              <span class="text-muted text-sm">${key}</span>
+              ${Array.isArray(subValues)
+                ? renderChipList(subValues)
+                : html`<code>${String(subValues)}</code>`}
+            </div>
+          `)}
+        </div>
+      `;
+    }
+    
+    // Handle primitives
+    return html`<code>${String(values)}</code>`;
   }
 
   renderEnhancementsView() {
@@ -358,8 +382,11 @@ export class PdsReferenceCatalog extends LitElement {
 
   renderEnhancementCard(enhancement) {
     if (!enhancement) return nothing;
-    const { selector, description, demoHtml, source } = enhancement;
-    const safeSelector = selector || '(unknown selector)';
+    const { selector, description, demoHtml, source, name, id } = enhancement;
+    // Handle selector being an object or string
+    const safeSelector = typeof selector === 'string' 
+      ? selector 
+      : (name || id || (selector?.toString?.() !== '[object Object]' ? String(selector) : '(unknown selector)'));
     const demoMarkup = typeof demoHtml === 'string' ? demoHtml.trim() : '';
     const formattedDemoHtml = demoMarkup ? formatDemoHtml(demoMarkup) : '';
     const highlightedDemoHtml = formattedDemoHtml ? highlightDemoHtml(formattedDemoHtml) : '';

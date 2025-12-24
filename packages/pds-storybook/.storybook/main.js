@@ -40,6 +40,8 @@ const config = {
   staticDirs: [
     { from: join(pdsAssetsPath, 'pds'), to: 'pds' },
     { from: pdsAssetsPath, to: 'assets' },
+    // Serve pds-reference.json for ontology search in manager
+    { from: join(currentDirname, '../dist'), to: 'pds-data' },
     // Add user's public folder if it exists
     ...(fs.existsSync(resolve(process.cwd(), 'public')) ? [{ from: resolve(process.cwd(), 'public'), to: '/' }] : [])
   ],
