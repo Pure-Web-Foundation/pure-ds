@@ -115,7 +115,7 @@ const complexSchema = {
 export const SimpleForm = {
   render: () => {
     return html`
-      <pds-jsonform 
+      <pds-jsonform data-required
         .jsonSchema=${simpleSchema}
         @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>

@@ -733,12 +733,7 @@ html[data-theme="dark"] {
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
   }
-
-  :where(body.drawer-open) {
-    /* overflow: hidden; */
-    /* scrollbar-gutter: stable; */
-  }
-
+  
   /* Button primitives */
   :where(button) {
     all: unset;
@@ -1459,6 +1454,7 @@ input[type="range"]:active::-moz-range-thumb {
 }
 
 input[type="color"] {
+  appearance: none;
   -webkit-appearance: none;
   padding: 0;
   width: 3rem;

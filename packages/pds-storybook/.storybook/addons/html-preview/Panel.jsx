@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useChannel } from '@storybook/manager-api';
 import { IconButton } from '@storybook/components';
 import { EVENTS } from './constants.js';
 import { styled } from '@storybook/theming';
+import { loadShiki, escapeHtml } from '../../shiki.js';
 
 const Container = styled.div`
   position: relative;
@@ -21,22 +22,16 @@ const CodeBlock = styled.pre`
   color: ${props => props.theme.color.defaultText};
   background: transparent;
   tab-size: 2;
-  
-  .html-token-tag {
-    color: #e06c75;
+
+  /* Shiki generates its own pre/code, style the inner content */
+  .shiki {
+    background: transparent !important;
+    margin: 0;
+    padding: 0;
   }
-  
-  .html-token-attr {
-    color: #d19a66;
-  }
-  
-  .html-token-value {
-    color: #98c379;
-  }
-  
-  .html-token-comment {
-    color: #5c6370;
-    font-style: italic;
+
+  .shiki code {
+    background: transparent;
   }
 `;
 
@@ -115,6 +110,50 @@ const CheckIcon = () => (
 export const Panel = ({ active }) => {
   const [source, setSource] = useState({ markup: '', jsonForms: [] });
   const [copied, setCopied] = useState(false);
+  const [highlightedMarkup, setHighlightedMarkup] = useState('');
+  const shikiRef = useRef(null);
+
+  // Load Shiki once on mount
+  useEffect(() => {
+    loadShiki().then(highlighter => {
+      shikiRef.current = highlighter;
+    });
+  }, []);
+
+  // Highlight markup when source changes
+  useEffect(() => {
+    if (!source.markup) {
+      setHighlightedMarkup('');
+      return;
+    }
+
+    const highlighter = shikiRef.current;
+    if (highlighter) {
+      try {
+        const html = highlighter.codeToHtml(source.markup, {
+          lang: 'html',
+          theme: 'github-dark'
+        });
+        setHighlightedMarkup(html);
+      } catch (err) {
+        setHighlightedMarkup(`<pre><code>${escapeHtml(source.markup)}</code></pre>`);
+      }
+    } else {
+      // Fallback while Shiki loads
+      setHighlightedMarkup(`<pre><code>${escapeHtml(source.markup)}</code></pre>`);
+      // Retry when Shiki becomes available
+      loadShiki().then(hl => {
+        if (hl && source.markup) {
+          try {
+            const html = hl.codeToHtml(source.markup, { lang: 'html', theme: 'github-dark' });
+            setHighlightedMarkup(html);
+          } catch (err) {
+            // Keep fallback
+          }
+        }
+      });
+    }
+  }, [source.markup]);
 
   useChannel({
     [EVENTS.UPDATE_HTML]: (payload) => {
@@ -162,94 +201,6 @@ export const Panel = ({ active }) => {
     }
   }, [source.markup]);
 
-  const highlightHTML = useCallback((code) => {
-    if (!code) return '';
-    
-    let result = '';
-    let i = 0;
-    
-    const escapeHtml = (text) => {
-      return text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-    };
-    
-    while (i < code.length) {
-      // Handle HTML comments
-      if (code.substr(i, 4) === '<!--') {
-        const end = code.indexOf('-->', i);
-        if (end !== -1) {
-          const comment = code.substring(i, end + 3);
-          result += `<span class="html-token-comment">${escapeHtml(comment)}</span>`;
-          i = end + 3;
-          continue;
-        }
-      }
-      
-      // Handle tags
-      if (code[i] === '<') {
-        const tagEnd = code.indexOf('>', i);
-        if (tagEnd !== -1) {
-          const tagContent = code.substring(i + 1, tagEnd);
-          result += '&lt;';
-          
-          // Check if it's a closing tag
-          if (tagContent[0] === '/') {
-            result += '/';
-            const tagName = tagContent.substring(1).split(/[\s>]/)[0];
-            result += `<span class="html-token-tag">${escapeHtml(tagName)}</span>`;
-          } else {
-            // Parse tag name and attributes
-            const parts = tagContent.match(/^([\w-]+)([\s\S]*?)(\/?)?$/);
-            if (parts) {
-              const [, tagName, attrsStr, slash] = parts;
-              result += `<span class="html-token-tag">${escapeHtml(tagName)}</span>`;
-              
-              // Parse attributes
-              if (attrsStr.trim()) {
-                const attrRegex = /([\w-]+)(?:=(?:"([^"]*)"|'([^']*)'|([^\s>]*)))?/g;
-                let match;
-                let lastIndex = 0;
-                
-                while ((match = attrRegex.exec(attrsStr)) !== null) {
-                  result += escapeHtml(attrsStr.substring(lastIndex, match.index));
-                  
-                  const [fullMatch, attrName, doubleQuoted, singleQuoted, unquoted] = match;
-                  result += `<span class="html-token-attr">${escapeHtml(attrName)}</span>`;
-                  
-                  if (doubleQuoted !== undefined) {
-                    result += `=<span class="html-token-value">"${escapeHtml(doubleQuoted)}"</span>`;
-                  } else if (singleQuoted !== undefined) {
-                    result += `=<span class="html-token-value">'${escapeHtml(singleQuoted)}'</span>`;
-                  } else if (unquoted !== undefined) {
-                    result += `=<span class="html-token-value">${escapeHtml(unquoted)}</span>`;
-                  }
-                  
-                  lastIndex = match.index + fullMatch.length;
-                }
-                
-                result += escapeHtml(attrsStr.substring(lastIndex));
-              }
-              
-              if (slash) result += '/';
-            }
-          }
-          
-          result += '&gt;';
-          i = tagEnd + 1;
-          continue;
-        }
-      }
-      
-      // Regular text
-      result += escapeHtml(code[i]);
-      i++;
-    }
-    
-    return result;
-  }, []);
-
   const hasMarkup = Boolean(source.markup);
   const hasJsonForms = source.jsonForms.length > 0;
 
@@ -269,9 +220,7 @@ export const Panel = ({ active }) => {
       {hasMarkup && (
         <SectionWrapper>
           <SectionHeading>Markup</SectionHeading>
-          <CodeBlock>
-            <code dangerouslySetInnerHTML={{ __html: highlightHTML(source.markup) }} />
-          </CodeBlock>
+          <CodeBlock dangerouslySetInnerHTML={{ __html: highlightedMarkup }} />
         </SectionWrapper>
       )}
 

@@ -6,18 +6,25 @@
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](#license)
 [![npm version](https://img.shields.io/npm/v/@pure-ds/core.svg)](https://www.npmjs.com/package/@pure-ds/core)
 
-**Why build a design system when you can generate one?**
-
 ![Pure Design System logo](public/assets/img/logo.png)
 
-> A radically lightweight, fully standards-based design system for the modern web
-> Everything optional. Nothing hidden. The force is within the platform.
+## With Great Standards Comes Great Power
 
-Pure Design System generates complete, production-ready design systems from JavaScript configuration. Write your design intent once—colors, typography, spacing—and get tokens, primitives, components, and utilities automatically.
+**The browser is the framework. Semantic HTML is the component model. Web Standards are enough.**
 
-### pds.config.js 
+PDS is a **configuration-first, standards-only design system generator**. Not a framework. Not a CSS library. Not tied to any toolchain.
+
+You write a small JavaScript config. PDS generates:
+- **Deterministic CSS** (global and Constructable Stylesheets for Web Components)
+- **A complete token hierarchy** (inspect via `PDS.compiled` in DevTools)
+- **Zero-specificity primitives** (`:where()` selectors—your CSS always wins)
+
+Everything is optional. Use only tokens, or CSS, or add enhancements, or include components. Nothing forces itself into your project.
+
+### The Config
 
 ```javascript
+// pds.config.js
 export const config = {
   design: {
     colors: { primary: '#007acc', secondary: '#5c2d91' },
@@ -27,43 +34,87 @@ export const config = {
 }
 ```
 
-### app.js
+### The Result
 
 ```javascript
+// app.js
 import { PDS } from '@pure-ds/core';
 import { config } from './pds.config.js';
 
 await PDS.start(config);
-
-// Start using components immediately
-// <pds-icon icon="star"></pds-icon>
+// That's it. Start writing semantic HTML.
 ```
 
-**Key Features:**
+---
 
-- 🎨 **Configuration-Driven** - Single source of truth generates everything
-- 🚀 **Live or Static** - Runtime generation or pre-built bundles
-- 🎯 **Framework Agnostic** - Vanilla, Lit, React, Vue, Svelte, Next.js
-- 🌐 **Web Standards** - EventTarget API, Constructable Stylesheets, Shadow DOM
-- 🧩 **Progressive Enhancement** - Semantic HTML first, enhance where needed
-- 🔍 **Smart Query System** - Ask questions: "what is the focus border color?"
-- ♿ **Accessibility Built-in** - WCAG AA validation, contrast checking
-- 🎛️ **Interactive Configurator** - Visual design tool with live preview
-- 🔤 **Automatic Font Loading** - Google Fonts loaded on demand
-- 📦 **Zero Build Required** - Works directly in browsers
-- 📋 **Custom Elements Manifest** - Full IDE integration with autocomplete and type checking
+## The PDS Philosophy
+
+### Semantic Classes First
+PDS generates **high-level primitives** that style semantic HTML:
+
+```html
+<article class="card">...</article>
+<button class="btn-primary">Save</button>
+<div class="alert alert-success">Done!</div>
+```
+
+### Layout Utilities—Sparingly
+A **small set** of layout utilities for composition:
+
+```html
+<div class="flex gap-md items-center">...</div>
+<section class="stack-lg">...</section>
+```
+
+No `.text-blue-500`. No `.p-4`. No `.rounded-lg`. **Spacing, colors, radii are tokens—not classes.**
+
+### Inline Styles? Only for Tokens
+The **only** valid `style=""` in PDS sets CSS custom properties:
+
+```html
+<!-- ✓ Token override -->
+<section style="--surface-bg: var(--color-primary-50);">
+
+<!-- ✗ Never do this -->
+<div style="display: flex; gap: 16px;">
+```
+
+---
+
+## Why PDS Exists
+
+| The Old Way | The PDS Way |
+|-------------|-------------|
+| `class="flex items-center gap-4 p-6 bg-white rounded-lg shadow-md"` | `class="card"` |
+| `style="color: #007acc;"` | Uses `--color-primary-500` token |
+| Import a Button component | `<button class="btn-primary">` |
+| 47 utility classes per element | Semantic class + maybe one layout utility |
+
+**The result:** Readable HTML. Inspectable CSS. Sites that work without JS. Code that lasts decades.
+
+PDS follows the [Pure Web Manifesto](https://pureweb.dev/manifesto)—sustainable architecture for long-lived applications.
+
+---
+
+## Key Features
+
+- 🎨 **Configuration-Driven** — Single source of truth generates everything
+- 🚀 **Live or Static** — Runtime generation or pre-built bundles
+- 🎯 **Framework Agnostic** — Vanilla, Lit, React, Vue, Svelte, Next.js
+- 🌐 **Web Standards** — EventTarget API, Constructable Stylesheets, Shadow DOM
+- 🧩 **Progressive Enhancement** — Semantic HTML first, enhance where needed
+- ♿ **Accessibility Built-in** — WCAG AA validation, contrast checking
+- 📦 **Zero Build Required** — Works directly in browsers
+- 📋 **IDE IntelliSense** — Full autocomplete via Custom Elements Manifest
 
 ---
 
 ## Table of Contents
 
-- [What is This?](#what-is-this)
+- [The Three Layers](#the-three-layers)
 - [Who is it For?](#who-is-it-for)
 - [Getting Started](#getting-started)
 - [Core Architecture](#core-architecture)
-  - [1. Style Generation & Injection](#1-style-generation--injection)
-  - [2. Progressive Enhancements](#2-progressive-enhancements)
-  - [3. Web Components](#3-web-components)
 - [Styling Layers](#styling-layers)
 - [Shadow DOM Adoption](#shadow-dom-adoption)
 - [Icon System](#icon-system)
@@ -81,40 +132,47 @@ await PDS.start(config);
 
 ---
 
-## What is This?
+## The Three Layers
 
-Pure Design System is based on the [Pure Web Manifesto](https://pureweb.dev/manifesto).
+PDS is built on **three fully optional layers**, each powered by your config:
 
-It transforms configuration into complete design systems using three integrated pillars:
+### 1. Styles — Deterministic Global CSS
 
-### 1. **Generated Styles** (Tokens → CSS)
-Your config defines design intent. PDS generates (in a deterministic way):
-- **Color scales** (50-900 shades from base colors)
-- **Surface semantics** (bg, text, border, shadow, interactive states)
-- **Spacing tokens** (mathematical progression)
-- **Typography scales** (modular scale from base size)
-- **Component primitives** (buttons, forms, cards, badges)
-- **Utility classes** (layout, borders, effects)
+Your config generates:
+- **Color scales** (50–900 from base colors)
+- **Surface semantics** (bg, text, border, shadow, states)
+- **Spacing system** (mathematical progression)
+- **Typography scale** (modular scale from base)
+- **Primitives** (`.btn-primary`, `.card`, `.badge`)
+- **Utilities** (`.flex`, `.gap-md`, `.stack-lg`)
 
-### 2. **Progressive Enhancements** (Lightweight DOM behaviors)
-Semantic HTML gets enhanced with JavaScript:
-- **Dropdowns** - `<nav data-dropdown>` auto-enhanced
-- **Toggles** - `<label data-toggle>` becomes switches
-- **Range sliders** - Value bubbles and visual feedback
-- **Required fields** - Automatic asterisks and validation hints
-- **Custom enhancements** - Extensible system for your patterns
+All exported as CSS Custom Properties. Zero specificity via `:where()`.
+Same values available in JS via `PDS.compiled.tokens`.
 
-### 3. **Web Components** (Rich UI, lazy-loaded using [AutoDefiner](https://www.npmjs.com/package/pure-web#user-content-autodefiner))
-Optional components loaded on demand:
-- `<pds-icon>` - SVG sprite icons
-- `<pds-drawer>` - Slide-out panels (top, bottom, lef, right)
-- `<pds-tabstrip>` - Accessible tabs 
-- `<pds-upload>` - File upload with drag & drop and preview
-- `<pds-toaster>` - Smart Toast notifications
-- `<pds-richtext>` - Rich text editor (prefers `#showdown` import map; `format="markdown"` keeps Markdown values)
-- `<pds-jsonform>` - Dynamic forms generated from JSON Schema 
-- `<pds-splitpanel>` - Resizable panes
-- `<pds-scrollrow>` - Horizontal scrolling containers
+### 2. Enhancements — Semantic HTML Made Powerful
+
+Optional selector-based upgrades that run in Light DOM and Shadow DOM:
+- Required fields show markers and help text automatically
+- `<label data-toggle>` becomes a switch
+- `<nav data-dropdown>` gets dropdown behavior
+- `<dialog>` gets better focus management
+- Form elements gain consistent theming
+
+**Think: HTML → UX upgrades, zero integration work.**
+
+### 3. Components — Auto-defined, Lazy-loaded Web Components
+
+A growing set of PDS components:
+- `<pds-icon>` — SVG sprite icons
+- `<pds-drawer>` — Slide-out panels
+- `<pds-tabstrip>` — Accessible tabs
+- `<pds-jsonform>` — Forms from JSON Schema
+- `<pds-upload>` — Drag & drop file upload
+- `<pds-richtext>` — Rich text / Markdown editor
+- `<pds-splitpanel>` — Resizable panes
+- `<pds-toaster>` — Toast notifications
+
+Auto-defined when used. Lazy-loaded via dynamic imports. Styled by your tokens. Zero dependencies.
 
 ### How It Works
 
@@ -146,7 +204,7 @@ Optional components loaded on demand:
 │ Tokens:      --color-primary-500, --spacing-4                │
 │ Primitives:  .btn-primary, .card, .badge                     │
 │ Components:  <pds-drawer>, <pds-icon>                        │
-│ Utilities:   .flex, .gap-4, .border-gradient                 │
+│ Utilities:   .flex, .gap-md, .border-gradient                │
 └──────────────────────────────────────────────────────────────┘
 ```
 

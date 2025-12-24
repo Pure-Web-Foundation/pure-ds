@@ -1,10 +1,14 @@
 /**
  * HTML Preview and Copy Utility for Storybook
  * Provides HTML source viewing and copy functionality for all stories
- * Uses Storybook's built-in source code display in Docs mode
+ * Uses Shiki for syntax highlighting
  */
 
 import { render as litRender } from 'lit';
+import { highlight, getCurrentTheme, escapeHtml, preloadShiki } from './shiki.js';
+
+// Pre-load Shiki in the background
+preloadShiki();
 
 /**
  * Format HTML string with proper indentation
@@ -145,96 +149,14 @@ export const withHTMLSource = (storyFn, context) => {
       }
       
       const codeEl = sourceSection.querySelector('.html-source-code');
-      if (codeEl && html) {
-        // Simple syntax highlighter that properly tokenizes HTML
-        const highlightHTML = (code) => {
-          let result = '';
-          let i = 0;
-          
-          while (i < code.length) {
-            // Handle HTML comments
-            if (code.substr(i, 4) === '<!--') {
-              const end = code.indexOf('-->', i);
-              if (end !== -1) {
-                const comment = code.substring(i, end + 3);
-                result += `<span class="html-token-comment">${escapeHtml(comment)}</span>`;
-                i = end + 3;
-                continue;
-              }
-            }
-            
-            // Handle tags
-            if (code[i] === '<') {
-              const tagEnd = code.indexOf('>', i);
-              if (tagEnd !== -1) {
-                const tagContent = code.substring(i + 1, tagEnd);
-                result += '&lt;';
-                
-                // Check if it's a closing tag
-                if (tagContent[0] === '/') {
-                  result += '/';
-                  const tagName = tagContent.substring(1).split(/[\s>]/)[0];
-                  result += `<span class="html-token-tag">${escapeHtml(tagName)}</span>`;
-                } else {
-                  // Parse tag name and attributes
-                  const parts = tagContent.match(/^([\w-]+)([\s\S]*?)(\/?)?$/);
-                  if (parts) {
-                    const [, tagName, attrsStr, slash] = parts;
-                    result += `<span class="html-token-tag">${escapeHtml(tagName)}</span>`;
-                    
-                    // Parse attributes
-                    if (attrsStr.trim()) {
-                      const attrRegex = /([\w-]+)(?:=(?:"([^"]*)"|'([^']*)'|([^\s>]*)))?/g;
-                      let match;
-                      let lastIndex = 0;
-                      
-                      while ((match = attrRegex.exec(attrsStr)) !== null) {
-                        // Add whitespace before attribute
-                        result += escapeHtml(attrsStr.substring(lastIndex, match.index));
-                        
-                        const [fullMatch, attrName, doubleQuoted, singleQuoted, unquoted] = match;
-                        result += `<span class="html-token-attr">${escapeHtml(attrName)}</span>`;
-                        
-                        if (doubleQuoted !== undefined) {
-                          result += `=<span class="html-token-value">"${escapeHtml(doubleQuoted)}"</span>`;
-                        } else if (singleQuoted !== undefined) {
-                          result += `=<span class="html-token-value">'${escapeHtml(singleQuoted)}'</span>`;
-                        } else if (unquoted !== undefined) {
-                          result += `=<span class="html-token-value">${escapeHtml(unquoted)}</span>`;
-                        }
-                        
-                        lastIndex = match.index + fullMatch.length;
-                      }
-                      
-                      result += escapeHtml(attrsStr.substring(lastIndex));
-                    }
-                    
-                    if (slash) result += '/';
-                  }
-                }
-                
-                result += '&gt;';
-                i = tagEnd + 1;
-                continue;
-              }
-            }
-            
-            // Regular text
-            result += escapeHtml(code[i]);
-            i++;
-          }
-          
-          return result;
-        };
+      const preEl = sourceSection.querySelector('.html-source-pre');
+      if (preEl && html) {
+        // Use Shiki for syntax highlighting
+        const theme = getCurrentTheme();
+        const highlighted = await highlight(html, 'html', theme);
         
-        const escapeHtml = (text) => {
-          return text
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
-        };
-        
-        codeEl.innerHTML = highlightHTML(html);
+        // Shiki returns complete <pre><code>...</code></pre>, replace the whole pre element
+        preEl.outerHTML = highlighted;
       }
       
       // Setup copy button

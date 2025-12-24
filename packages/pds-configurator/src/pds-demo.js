@@ -909,14 +909,13 @@ customElements.define(
     }
 
     /**
-     * Load Shiki syntax highlighter dynamically
+     * Load Shiki syntax highlighter (shared CDN module)
      */
     async loadShiki() {
       if (this.#shiki) return this.#shiki;
       if (this.#shikiLoading) {
-        // Wait for the loading to complete
         while (this.#shikiLoading) {
-          await new Promise((resolve) => setTimeout(resolve, 100));
+          await new Promise((resolve) => setTimeout(resolve, 50));
         }
         return this.#shiki;
       }
@@ -925,8 +924,8 @@ customElements.define(
       try {
         const shiki = await import("https://esm.sh/shiki@1.0.0");
         this.#shiki = await shiki.getHighlighter({
-          themes: ["dark-plus"],
-          langs: ["html"],
+          themes: ["github-dark", "github-light"],
+          langs: ["html", "css", "javascript", "json"],
         });
         return this.#shiki;
       } catch (error) {
@@ -940,19 +939,19 @@ customElements.define(
     /**
      * Highlight code with Shiki
      */
-    async highlightWithShiki(code) {
+    async highlightWithShiki(code, lang = "html") {
       const highlighter = await this.loadShiki();
       if (!highlighter) {
-        // Fallback to escaped HTML without highlighting
         return this.escapeHTML(code);
       }
 
       try {
-        const html = highlighter.codeToHtml(code, {
-          lang: "html",
-          theme: "dark-plus",
-        });
-        // Extract just the code content from the generated HTML
+        // Detect theme from document
+        const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        const theme = isDark ? "github-dark" : "github-light";
+        
+        const html = highlighter.codeToHtml(code, { lang, theme });
+        // Extract content - Shiki wraps in pre>code
         const match = html.match(/<code[^>]*>([\s\S]*)<\/code>/);
         return match ? match[1] : this.escapeHTML(code);
       } catch (error) {

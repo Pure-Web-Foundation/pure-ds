@@ -3,12 +3,19 @@ import { addons } from '@storybook/preview-api';
 import { SELECT_STORY } from '@storybook/core-events';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import showdown from 'showdown';
+import { highlight as shikiHighlight, escapeHtml as shikiEscapeHtml } from '../../.storybook/shiki.js';
 
 const REF_HELPER_STYLE_ID = 'pds-reference-helper-styles';
 const REF_HELPER_STYLE_CONTENT = `
   .pds-reference-docs-pre {
     margin: 0;
     padding: var(--spacing-3);
+  }
+  /* Shiki code blocks */
+  .pds-reference-docs-pre .shiki {
+    background: transparent !important;
+    margin: 0;
+    padding: 0;
   }
 `;
 
@@ -166,96 +173,28 @@ export function formatDemoHtml(html) {
 }
 
 export function escapeCodeFragment(text) {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+  return shikiEscapeHtml(text);
 }
 
-export function highlightDemoHtml(html) {
+/**
+ * Highlight demo HTML using Shiki (async)
+ * @param {string} html - Raw HTML string to highlight
+ * @returns {Promise<string>} - Highlighted HTML
+ */
+export async function highlightDemoHtml(html) {
   if (!html) return '';
-  let result = '';
-  let index = 0;
-  const attrRegex = /([\w:-@.]+)(?:=(?:"([^"]*)"|'([^']*)'|([^\s>]*)))?/g;
+  return shikiHighlight(html, 'html', 'github-dark');
+}
 
-  while (index < html.length) {
-    if (html.startsWith('<!--', index)) {
-      const commentEnd = html.indexOf('-->', index);
-      if (commentEnd !== -1) {
-        const comment = html.substring(index, commentEnd + 3);
-        result += `<span class="html-token-comment">${escapeCodeFragment(comment)}</span>`;
-        index = commentEnd + 3;
-        continue;
-      }
-    }
-
-    const char = html[index];
-
-    if (char === '\n' || char === '\r' || char === '\t' || char === ' ') {
-      result += char;
-      index += 1;
-      continue;
-    }
-
-    if (char === '<') {
-      const tagEnd = html.indexOf('>', index);
-      if (tagEnd !== -1) {
-        const tagContent = html.substring(index + 1, tagEnd);
-        result += '&lt;';
-
-        if (tagContent.startsWith('/')) {
-          const tagName = tagContent.substring(1).split(/[\s>]/)[0];
-          result += '/';
-          result += `<span class="html-token-tag">${escapeCodeFragment(tagName)}</span>`;
-        } else {
-          const parts = tagContent.match(/^([\w:-@.]+)([\s\S]*?)(\/?)?$/);
-          if (parts) {
-            const [, tagName, attrsStr, trailingSlash] = parts;
-            result += `<span class="html-token-tag">${escapeCodeFragment(tagName)}</span>`;
-
-            if (attrsStr && attrsStr.trim()) {
-              let lastIndex = 0;
-              attrRegex.lastIndex = 0;
-              let match;
-
-              while ((match = attrRegex.exec(attrsStr)) !== null) {
-                result += escapeCodeFragment(attrsStr.substring(lastIndex, match.index));
-                const [fullMatch, attrName, doubleQuoted, singleQuoted, unquoted] = match;
-                result += `<span class="html-token-attr">${escapeCodeFragment(attrName)}</span>`;
-
-                if (doubleQuoted !== undefined) {
-                  result += `=<span class="html-token-value">"${escapeCodeFragment(doubleQuoted)}"</span>`;
-                } else if (singleQuoted !== undefined) {
-                  result += `=<span class="html-token-value">'${escapeCodeFragment(singleQuoted)}'</span>`;
-                } else if (unquoted !== undefined && unquoted !== '') {
-                  result += `=<span class="html-token-value">${escapeCodeFragment(unquoted)}</span>`;
-                }
-
-                lastIndex = match.index + fullMatch.length;
-              }
-
-              result += escapeCodeFragment(attrsStr.substring(lastIndex));
-            }
-
-            if (trailingSlash) {
-              result += '/';
-            }
-          } else {
-            result += escapeCodeFragment(tagContent);
-          }
-        }
-
-        result += '&gt;';
-        index = tagEnd + 1;
-        continue;
-      }
-    }
-
-    result += escapeCodeFragment(char);
-    index += 1;
-  }
-
-  return result;
+/**
+ * Synchronous fallback for highlighting (escaped only, no colors)
+ * Use highlightDemoHtml for proper Shiki highlighting
+ * @param {string} code - Raw HTML string
+ * @returns {string} - Escaped HTML in a pre/code block
+ */
+export function highlightDemoHtmlSync(code) {
+  if (!code) return '';
+  return `<pre><code>${shikiEscapeHtml(code)}</code></pre>`;
 }
 
 export function renderChipList(values = []) {

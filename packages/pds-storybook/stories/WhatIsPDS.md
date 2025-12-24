@@ -1,194 +1,172 @@
 ![Pure Design System logo](/assets/img/logo.png) 
 
-## A standards-native design system built entirely on the Web Platform
+# With Great Standards Comes Great Power
 
-PDS is not a framework, not a CSS library, and not tied to Storybook.
+PDS is a **configuration-first, standards-only design system generator**.
 
-It is a **config-first, architecture-first, standards-only design system generator**.
+Not a framework. Not a utility library. Not tied to any toolchain.
 
-You write a small JavaScript config.
-PDS turns it into:
+The browser is the framework. Semantic HTML is the component model. **Web Standards are enough.**
 
-- Deterministic global CSS
-- AdoptedStyleSheets (for Web Components)
-- A full hierarchic token model. Just type `PDS.compiled` in Dev Console...
+---
 
-Apart from the layered token/styles generation, PDS offers:
+## The PDS Philosophy
 
-- Optional progressive enhancements for semantic HTML
-- Optional lazy-loaded Web Components
-- A custom-elements.json manifest for IDE IntelliSense
+PDS generates CSS from your config. But *how* that CSS is meant to be used is what sets PDS apart.
 
-This Storybook instance showcases the full power of PDS: layers, tokens, enhancements, and components.
+### 1. Semantic Classes First
 
-# Why PDS exists
+PDS generates **high-level, meaningful primitives**:
 
-Modern frontend is dominated by frameworks, utility libraries, and toolchains that *replace* the Web Platform rather than *use* it.
+```html
+<article class="card">
+  <h3>Title</h3>
+  <p>Content that speaks for itself.</p>
+</article>
 
-PDS takes the opposite path:
-- The browser is the framework.
-- Semantic HTML is the component model.
-- Web Standards are enough.
+<button class="btn-primary">Save Changes</button>
 
-PDS follows the [Pure Web Manifesto](https://pureweb.dev/manifesto) and provides sustainable architecture for long-lived apps without lock-in, complexity, or hidden magic.
-
-# The PDS Architecture
-
-PDS is built on **three fully optional layers**, each powered by your config:
-
-## 1. Styles — deterministic global CSS
-
-Generated from a single JavaScript config:
-
+<div class="alert alert-success">Operation completed.</div>
 ```
-export default {
-  colors: { primary: "#0891b2" },
-  typography: { baseFontSize: 16, scale: 1.2 },
-  radius: 6,
-  spacing: { base: 4, ratio: 1.5 }
-};
 
+These aren't "components" you import—they're **CSS classes that style semantic HTML**.
+Write the HTML you'd write anyway. PDS makes it look right.
+
+### 2. Layout Utilities—Sparingly
+
+PDS provides a **small set of layout utilities** for composition:
+
+```html
+<div class="flex gap-md items-center">
+  <pds-icon icon="user"></pds-icon>
+  <span>Profile</span>
+</div>
+
+<main class="container">
+  <section class="stack-lg">
+    <!-- Natural document flow with consistent spacing -->
+  </section>
+</main>
+```
+
+That's it. No `.text-blue-500`, no `.p-4`, no `.rounded-lg`.
+**Spacing, colors, radii are tokens—not classes.**
+
+### 3. Inline Styles? Only for Tokens
+
+The **only** recommended use of `style=""` in PDS is setting CSS custom properties:
+
+```html
+<!-- ✓ Setting a token override -->
+<section style="--surface-bg: var(--color-primary-50);">
+  <p>This section has a tinted background.</p>
+</section>
+
+<!-- ✗ NEVER do this -->
+<div style="display: flex; gap: 16px; padding: 20px;">
+```
+
+If you're writing `style="color: red"` or `style="margin: 1rem"`, you're doing it wrong.
+PDS gives you tokens. Use them.
+
+---
+
+## What PDS Generates
+
+You write a small JavaScript config:
+
+```js
+export const config = {
+  design: {
+    colors: { primary: "#0891b2", secondary: "#7c3aed" },
+    typography: { baseFontSize: 16, scale: 1.2 },
+    spacing: { base: 4, ratio: 1.5 },
+    radius: 6
+  }
+};
 ```
 
 PDS produces:
 
+| Layer | What You Get |
+|-------|--------------|
+| **Tokens** | `--color-primary-500`, `--spacing-4`, `--radius-md` |
+| **Primitives** | `.card`, `.btn-primary`, `.badge`, `.alert` |
+| **Layout** | `.flex`, `.grid`, `.stack-md`, `.gap-lg`, `.container` |
+| **Utilities** | `.text-muted`, `.surface-elevated`, `.border-subtle` |
+
+All as CSS Custom Properties. Zero specificity (`:where()` selectors).
+**Your CSS always wins.**
+
+---
+
+## The Three Layers
+
+Everything in PDS is optional. Use what you need.
+
+### Layer 1: Styles
+
+Deterministic CSS from your config. Use PDS purely as a token/CSS generator.
+
 - Color scales (50–900)
-- Semantic palettes (success, warning, info)
-- Typographic modular scale
+- Typography scale
 - Spacing system
-- Layout tokens
-- All exported as **CSS Custom Properties**
-- Zero specificity by design (`:where()` selectors)
-- Mirrors the same values in JS (`pds.compiled.tokens`)
+- Surface semantics
+- All in global CSS *and* `PDS.compiled.tokens` for JS
 
-Use **only this layer** if you want PDS as a token + CSS generator.
+### Layer 2: Enhancements
 
-## 2. Progressive Enhancements — semantic HTML made powerful
+Selector-based progressive enhancement. Semantic HTML gets superpowers:
 
-Optional selector-based enhancements that:
+- `<input required>` → automatic asterisk + help text
+- `<label data-toggle>` → becomes a switch
+- `<nav data-dropdown>` → dropdown behavior
+- `<dialog>` → better focus management
 
-- Run in both Light DOM and open Shadow DOM
-- Require no framework or build step
-- Upgrade semantic HTML automatically
-- Improve accessibility and defaults with zero JS integration work
+No framework. No build step. Just HTML that works better.
 
-Examples:
+### Layer 3: Components
 
-- Required fields automatically show markers and help text
-- Checkboxes can become toggles with one attribute
-- `<dialog>` elements get better focus management
-- Form elements gain consistent, theme-based styling
+Lazy-loaded Web Components for complex UI:
 
-Think **HTML → UX upgrades**, powered by your config.
+- `<pds-icon>` — SVG sprites
+- `<pds-drawer>` — slide-out panels
+- `<pds-tabstrip>` — accessible tabs
+- `<pds-jsonform>` — forms from JSON Schema
 
-## 3. Components — auto-defined, lazy-loaded Web Components
+Auto-defined when used. Styled by your tokens. Zero dependencies.
 
-A growing set of PDS components:
+---
 
-- Auto-defined when imported
-- Lazy-loaded via dynamic ESM imports
-- Styled by your tokens
-- Zero dependencies
-- Always optional: use none, some, or all
+## Why This Matters
 
-Examples:
+| The Old Way | The PDS Way |
+|-------------|-------------|
+| `class="flex items-center gap-4 p-6 bg-white rounded-lg shadow-md"` | `class="card"` |
+| `style="color: #007acc; font-weight: 600;"` | Uses `--color-primary-500` token |
+| Import a Button component | `<button class="btn-primary">` |
+| 47 utility classes per element | Semantic class + maybe a layout utility |
+| Learn a framework's abstraction | Learn HTML. That's it. |
 
-- `<pds-dialog>`
-- `<pds-button>`
-- `<pds-card>`
-- `<pds-form>` and JSON Schema–driven config editors
-- `<pds-autocomplete>`
+**The result:**
 
-PDS automatically generates a `custom-elements.json` (and editor-specific metadata) so editors like VSCode give full **IntelliSense**, autocomplete, and type info.
+- Readable HTML that describes content, not presentation
+- CSS you can inspect and understand
+- Sites that work without JavaScript
+- Code that lasts decades, not dev cycles
 
-# Why PDS is different
+---
 
-### ✓ 100% Web Standards — no dependencies
+## Who PDS is For
 
-### ✓ Extremely layered — everything optional
+You'll love PDS if you:
 
-Use only tokens.\
-Or only CSS.\
-Or CSS + enhancements.\
-Or the full component set.\
-Nothing forces itself into your project.
+- Believe the web platform is underrated
+- Want your HTML to be readable 10 years from now
+- Are tired of framework churn and breaking changes
+- Care about accessibility, performance, and sustainability
+- Build MPAs, PWAs, dashboards, static sites—anything HTML-based
 
-### ✓ Opinionated, but never restrictive
+---
 
-Clean defaults that stay out of your way.\
-Everything overrideable.\
-No generated specificity wars.
-
-### ✓ No magic, no opacity
-
-All generated CSS is readable, inspectable, and deterministic.\
-No toolchain tricks.\
-No runtime class generation.
-
-### ✓ Config → Tokens → CSS → JS (single source of truth)
-
-Breakpoints, spacing, color ramps all available in:
-
-- Global CSS
-- Shadow DOM CSS
-- JavaScript (`pds.compiled`)
-
-Your entire codebase stays in sync.
-
-# How Storybook fits in
-
-Storybook is **not part of PDS**.
-
-It is simply the **showcase and documentation environment** for exploring PDS:
-
-- It runs PDS in **live config mode**
-- Every story is affected instantly by config changes
-- You can toggle:
-  - Themes
-  - Layers
-  - Enhancements
-  - Components
-- It demonstrates how PDS behaves in real applications
-- It helps teams maintain visual consistency across projects
-
-Think of Storybook as **“the PDS showroom,”** not the engine.
-
-# What you can explore in this Storybook
-
-### Foundations
-
-The generated tokens — colors, spacing, typography, radii, elevation, surfaces.
-
-### Utilities
-
-Minimal, generated utility classes based entirely on tokens.
-
-### Enhancements
-
-Selector-driven UX improvements on semantic HTML.
-
-### Components
-
-Lazy-loaded Web Components styled by your config.
-
-### Patterns
-
-Common UI constructions built from the three PDS layers.
-
-### Configurator
-
-Open the toolbar → 🎨 icon to adjust the live configuration.
-
-# Who PDS is for
-
-- Teams who want a design system without a framework commitment
-- Developers tired of Tailwind’s utility sprawl or React’s re-render economics
-- Web Components users who want full token theming
-- Apps that need long-term sustainability and simplicity
-- PWAs, MPAs, SPAs, static sites, enterprise dashboards — anything HTML-based
-
-# In short
-
-> **PDS is a 100% standards-native, extremely layered, 
-> dependency-free, and completely transparent design system.
-> This Storybook instance simply demonstrates its power.**
+> *PDS follows the [Pure Web Manifesto](https://pureweb.dev/manifesto): sustainable architecture for long-lived applications, built entirely on the Web Platform.*

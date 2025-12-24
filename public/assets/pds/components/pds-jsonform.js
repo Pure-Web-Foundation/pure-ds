@@ -53,7 +53,7 @@ const DEFAULT_OPTIONS = {
  *
  * 5. Completely custom actions (hides default buttons):
  *    <pds-jsonform .jsonSchema=${schema} hide-actions>
- *      <div slot="actions" style="display: flex; gap: 1rem;">
+ *      <div slot="actions" class="flex gap-md">
  *        <button type="submit" class="btn btn-primary">Custom Submit</button>
  *        <button type="button" class="btn">Custom Action</button>
  *      </div>
@@ -416,10 +416,7 @@ export class SchemaForm extends LitElement {
   render() {
     const tree = this.#compiled;
     if (!tree)
-      return html`<div
-        class="pds-jsonform-error"
-        style="color: red; padding: 1rem; border: 1px solid red; background: #fee;"
-      >
+      return html`<div class="alert alert-error">
         <p>Failed to generate form schema.</p>
         <pre>${JSON.stringify(this.#data, null, 2)}</pre>
       </div>`;
@@ -431,6 +428,7 @@ export class SchemaForm extends LitElement {
         : "post";
     return html`
       <form
+        ?data-required=${this.hasAttribute("data-required")}
         method=${m}
         action=${this.action ?? nothing}
         @submit=${this.#onSubmit}
@@ -501,9 +499,8 @@ export class SchemaForm extends LitElement {
     // Check for surface wrapping
     const surface = ui?.["ui:surface"] || pathOptions.surface;
 
-    // Build layout classes and inline styles
+    // Build layout classes using PDS utilities
     const layoutClasses = [];
-    let layoutStyle = "";
     const layoutOptions = ui?.["ui:layoutOptions"] || {};
 
     if (layout === "flex") {
@@ -511,16 +508,8 @@ export class SchemaForm extends LitElement {
       if (layoutOptions.wrap) layoutClasses.push("flex-wrap");
       if (layoutOptions.direction === "column") layoutClasses.push("flex-col");
       if (layoutOptions.gap) {
-        // Check if gap is a CSS class name (e.g., 'md', 'lg') or a CSS value
-        if (
-          layoutOptions.gap.startsWith("var(") ||
-          layoutOptions.gap.includes("px") ||
-          layoutOptions.gap.includes("rem")
-        ) {
-          layoutStyle += `gap: ${layoutOptions.gap};`;
-        } else {
-          layoutClasses.push(`gap-${layoutOptions.gap}`);
-        }
+        // Use PDS gap utility classes (xs, sm, md, lg, xl, 0)
+        layoutClasses.push(`gap-${layoutOptions.gap}`);
       }
     } else if (layout === "grid") {
       layoutClasses.push("grid");
@@ -532,16 +521,8 @@ export class SchemaForm extends LitElement {
         layoutClasses.push(`grid-cols-${cols}`);
       }
       if (layoutOptions.gap) {
-        // Check if gap is a CSS class name (e.g., 'md', 'lg') or a CSS value
-        if (
-          layoutOptions.gap.startsWith("var(") ||
-          layoutOptions.gap.includes("px") ||
-          layoutOptions.gap.includes("rem")
-        ) {
-          layoutStyle += `gap: ${layoutOptions.gap};`;
-        } else {
-          layoutClasses.push(`gap-${layoutOptions.gap}`);
-        }
+        // Use PDS gap utility classes (xs, sm, md, lg, xl, 0)
+        layoutClasses.push(`gap-${layoutOptions.gap}`);
       }
     }
 
@@ -553,7 +534,6 @@ export class SchemaForm extends LitElement {
       <fieldset
         data-path=${node.path}
         class=${ifDefined(fieldsetClass)}
-        style=${ifDefined(layoutStyle || undefined)}
       >
         ${!this.hideLegend && !context.hideLegend
           ? html`<legend>${legend}</legend>`
@@ -1612,7 +1592,7 @@ export class SchemaForm extends LitElement {
             richtextOpts.placeholder || attrs.placeholder
           )}
           .value=${value ?? ""}
-          toolbar=${ifDefined(richtextOpts.toolbar)}
+          ?toolbar=${richtextOpts.toolbar}
           ?required=${!!attrs.required}
           ?submit-on-enter=${richtextOpts.submitOnEnter ?? false}
           spellcheck=${richtextOpts.spellcheck ?? true ? "true" : "false"}
