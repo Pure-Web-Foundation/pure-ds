@@ -32,7 +32,8 @@ async function loadOntology() {
   if (referenceData) return referenceData;
   
   try {
-    const response = await fetch('/pds-data/pds-reference.json');
+    // Use relative path so it works both in dev and when deployed to a subdirectory
+    const response = await fetch('./pds-data/pds-reference.json');
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     referenceData = await response.json();
     buildIndices();
