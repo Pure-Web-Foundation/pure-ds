@@ -4,7 +4,7 @@
  */
 
 import Showdown from 'showdown';
-import { loadShiki, highlight, getCurrentTheme, escapeHtml, preloadShiki } from '../../.storybook/shiki.js';
+import { loadShiki, highlight, getCurrentTheme, escapeHtml, preloadShiki } from './shiki.js';
 
 // Pre-load Shiki in background
 preloadShiki();

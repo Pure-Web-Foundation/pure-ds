@@ -287,7 +287,7 @@ const withGlobalsHandler = (story, context) => {
 const DEFAULT_STORY_TAGS = new Set(['dev', 'test', 'story', 'stories', 'autodocs', 'example', 'examples']);
 
 const TAG_SYNONYMS = new Map([
-  ['padding', 'spacing'],
+  ['padding', 'spacing', 'space'],
   ['gap', 'spacing'],
   ['grid', 'layout'],
   ['flex', 'layout'],

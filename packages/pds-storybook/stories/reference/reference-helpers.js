@@ -3,7 +3,7 @@ import { addons } from '@storybook/preview-api';
 import { SELECT_STORY } from '@storybook/core-events';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import showdown from 'showdown';
-import { highlight as shikiHighlight, escapeHtml as shikiEscapeHtml } from '../../.storybook/shiki.js';
+import { highlight as shikiHighlight, escapeHtml as shikiEscapeHtml } from '../utils/shiki.js';
 
 const REF_HELPER_STYLE_ID = 'pds-reference-helper-styles';
 const REF_HELPER_STYLE_CONTENT = `
