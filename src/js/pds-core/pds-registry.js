@@ -45,7 +45,7 @@ class PDSRegistry {
     } else {
       // Import from static path
       try {
-        const module = await import(this._staticPaths[layer]);
+        const module = await import(/* @vite-ignore */ this._staticPaths[layer]);
         return module[layer]; // Return exported stylesheet
       } catch (error) {
         // No access to config in static mode, fall back to console

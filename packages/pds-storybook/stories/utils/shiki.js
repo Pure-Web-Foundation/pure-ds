@@ -92,6 +92,8 @@ export function getCurrentTheme() {
  * @returns {string}
  */
 export function escapeHtml(text) {
+  if (text == null) return '';
+  if (typeof text !== 'string') text = String(text);
   return text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')

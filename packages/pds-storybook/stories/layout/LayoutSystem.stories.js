@@ -1,7 +1,7 @@
 import { html } from "lit";
 
 export default {
-  title: "Layout/System",
+  title: "Foundations/Layout",
   tags: ["layout", "flex", "grid", "container", "utilities", "text", "truncate", "spacing", "gap", "alignment"],
   parameters: {
     docs: {

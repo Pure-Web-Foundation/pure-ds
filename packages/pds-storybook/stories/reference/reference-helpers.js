@@ -41,7 +41,10 @@ const markdown = new showdown.Converter({
 
 export function renderMarkdown(text) {
   if (!text) return nothing;
-  return unsafeHTML(markdown.makeHtml(text));
+  if (typeof text !== 'string') text = String(text);
+  const htmlOutput = markdown.makeHtml(text);
+  if (!htmlOutput || typeof htmlOutput !== 'string') return nothing;
+  return unsafeHTML(htmlOutput);
 }
 
 export function renderCode(value) {
@@ -225,7 +228,11 @@ ${JSON.stringify(value, null, 2)}
   }
 
   const text = String(value);
-  return /[<>&]/.test(text) ? unsafeHTML(text) : html`${text}`;
+  if (/[<>&]/.test(text)) {
+    // Only use unsafeHTML for strings that actually need HTML rendering
+    return html`<span>${text}</span>`;
+  }
+  return html`${text}`;
 }
 
 export function renderTable(items = [], columns = []) {

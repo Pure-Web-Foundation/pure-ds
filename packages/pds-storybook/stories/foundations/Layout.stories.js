@@ -11,7 +11,9 @@ export default {
   }
 };
 
-export const LayoutIntroduction = () => html`
+export const Introduction = {
+  name: 'Introduction',
+  render: () => html`
   
   <h1>Layout in PDS</h1>
   <h3 class="text-muted" style="font-size: var(--font-size-lg);">
@@ -242,6 +244,5 @@ export const LayoutIntroduction = () => html`
       </tbody>
     </table>
   </article>
-`;
-
-LayoutIntroduction.storyName = 'Introduction';
+`
+};

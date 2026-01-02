@@ -6,11 +6,11 @@ import {
   renderDefault,
   formatTimestamp,
   formatDemoHtml,
-  highlightDemoHtml,
   renderChipList,
   renderTable,
   navigateToStory
 } from './reference-helpers.js';
+import { escapeHtml as shikiEscapeHtml } from '../utils/shiki.js';
 
 export class PdsReferenceCatalog extends LitElement {
   static properties = {
@@ -89,6 +89,7 @@ export class PdsReferenceCatalog extends LitElement {
       </section>
     `;
   }
+
 
   renderComponentsView() {
     const components = Object.values(this.data.components || {}).sort((a, b) => a.displayName.localeCompare(b.displayName));
@@ -389,7 +390,8 @@ export class PdsReferenceCatalog extends LitElement {
       : (name || id || (selector?.toString?.() !== '[object Object]' ? String(selector) : '(unknown selector)'));
     const demoMarkup = typeof demoHtml === 'string' ? demoHtml.trim() : '';
     const formattedDemoHtml = demoMarkup ? formatDemoHtml(demoMarkup) : '';
-    const highlightedDemoHtml = formattedDemoHtml ? highlightDemoHtml(formattedDemoHtml) : '';
+    // Use sync escaping instead of async shiki highlighting to avoid Promise in template
+    const highlightedDemoHtml = formattedDemoHtml ? shikiEscapeHtml(formattedDemoHtml) : '';
     const hasDetails = Boolean(description || demoMarkup);
 
     if (demoMarkup) {
@@ -403,13 +405,13 @@ export class PdsReferenceCatalog extends LitElement {
           ${source ? html`<span class="badge text-sm">${source}</span>` : nothing}
         </div>
         ${description ? html`<p class="text-muted" style="margin: 0;">${description}</p>` : nothing}
-        ${demoMarkup ? html`
+        ${demoMarkup && typeof demoMarkup === 'string' ? html`
           <div class="flex flex-col gap-xs">
             <span class="text-muted text-sm">Demo</span>
             <div class="surface-subtle radius-lg pds-ref-demo" style="padding: var(--spacing-3);">
               ${unsafeHTML(demoMarkup)}
             </div>
-            ${highlightedDemoHtml ? html`
+            ${highlightedDemoHtml && typeof highlightedDemoHtml === 'string' ? html`
               <pre class="html-source-pre radius-lg text-sm overflow-auto" style="margin: 0;"><code class="html-source-code">${unsafeHTML(highlightedDemoHtml)}</code></pre>
             ` : nothing}
           </div>

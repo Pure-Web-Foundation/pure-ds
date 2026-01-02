@@ -49,6 +49,19 @@ const config = {
     builder: '@storybook/builder-vite'
   },
   viteFinal: async (config) => {
+    // Add the cache directory to Vite's fs.allow list
+    const cacheDir = resolve(process.cwd(), 'node_modules', '.cache', 'pds-storybook');
+    
+    config.server = config.server || {};
+    config.server.fs = config.server.fs || {};
+    config.server.fs.allow = [
+      ...(config.server.fs.allow || []),
+      cacheDir,
+      // Also allow the package root and process.cwd() for good measure
+      resolve(currentDirname, '..'),
+      process.cwd()
+    ];
+    
     // Ensure Lit import alias is resolved
     const aliases = {
       ...config.resolve.alias,
