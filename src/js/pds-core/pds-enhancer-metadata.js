@@ -1,5 +1,26 @@
 export const enhancerMetadata = [
   {
+    selector: ".accordion",
+    description:
+      "Ensures only one <details> element can be open at a time within the accordion.",
+    demoHtml: `
+      <div class="accordion">
+        <details>
+          <summary>Section 1</summary>
+          <p>Content for section 1</p>
+        </details>
+        <details>
+          <summary>Section 2</summary>
+          <p>Content for section 2</p>
+        </details>
+        <details>
+          <summary>Section 3</summary>
+          <p>Content for section 3</p>
+        </details>
+      </div>
+    `.trim(),
+  },
+  {
     selector: "nav[data-dropdown]",
     description:
       "Enhances a nav element with data-dropdown to function as a dropdown menu.",

@@ -1,5 +1,20 @@
 import { enhancerMetadata } from "./pds-enhancer-metadata.js";
 
+function enhanceAccordion(elem) {
+  if (elem.dataset.enhancedAccordion) return;
+  elem.dataset.enhancedAccordion = "true";
+
+  elem.addEventListener("toggle", (event) => {
+    if (event.target.open) {
+      elem.querySelectorAll("details[open]").forEach((details) => {
+        if (details !== event.target) {
+          details.open = false;
+        }
+      });
+    }
+  }, true);
+}
+
 function enhanceDropdown(elem) {
   if (elem.dataset.enhancedDropdown) return;
   elem.dataset.enhancedDropdown = "true";
@@ -351,6 +366,7 @@ function enhanceButtonWorking(elem) {
 }
 
 const enhancerRunners = new Map([
+  [".accordion", enhanceAccordion],
   ["nav[data-dropdown]", enhanceDropdown],
   ["label[data-toggle]", enhanceToggle],
   ['input[type="range"]', enhanceRange],

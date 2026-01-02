@@ -19,7 +19,7 @@ export const Overview = {
   render: () => {
     const container = document.createElement('div');
     container.innerHTML = `
-      <header class="card">
+      <header >
         <h1>HTML Defaults</h1>
         <p class="text-muted">
           PDS applies an opinionated reset to semantic HTML elements using low-specificity 
@@ -388,7 +388,7 @@ export const DetailsAndSummary = {
         <div class="code-details"></div>
         
         <div class="alert alert-info" style="margin-top: var(--spacing-4);">
-          <strong>Note:</strong> For grouped accordion behavior (where only one item opens at a time), 
+          <strong>Note:</strong> For grouped accordion behavior (animated, and where only one item opens at a time), 
           see the <a href="/?path=/story/primitives-accordion--basic-accordion" target="_parent">Accordion primitive</a>.
         </div>
       </article>
