@@ -324,8 +324,10 @@ export const WorkingStates = () => {
         The PDS enhancer automatically swaps existing icons to spinners or adds a spinner if none exists.
       </p>
 
-      <h3>Buttons Without Icons</h3>
-      <p class="text-muted text-sm">Enhancer automatically adds spinner icon</p>
+      <header>
+        <h3>Buttons Without Icons</h3>
+        <p class="text-muted text-sm">Enhancer automatically adds spinner icon</p>
+      </header>
       <div class="flex flex-wrap gap-sm">
         <button class="btn-primary" @click=${(e) => toggleWorking(e.target)}>
           Save
@@ -340,8 +342,10 @@ export const WorkingStates = () => {
     </div>
 
     <div class="card">
-      <h3>Buttons With Existing Icons</h3>
-      <p class="text-muted text-sm">Enhancer swaps icon to spinner, restores original when complete</p>
+      <header>
+        <h3>Buttons With Existing Icons</h3>
+        <p class="text-muted text-sm">Enhancer swaps icon to spinner, restores original when complete</p>
+      </header>
       <div class="flex flex-wrap gap-sm">
         <button class="btn-primary" @click=${(e) => toggleWorking(e.target)}>
           <pds-icon icon="floppy-disk" size="sm"></pds-icon>
@@ -359,8 +363,10 @@ export const WorkingStates = () => {
     </div>
 
     <div class="card">
-      <h3>Icon Buttons</h3>
-      <p class="text-muted text-sm">Icon-only buttons with automatic spinner swap</p>
+      <header>
+        <h3>Icon-Only Buttons</h3>
+        <p class="text-muted text-sm">Icon-only buttons with automatic spinner swap</p>
+      </header>
       <div class="flex flex-wrap gap-sm">
         <button class="btn-primary icon-only" @click=${(e) => toggleWorking(e.target)} aria-label="Refresh">
           <pds-icon icon="arrow-counter-clockwise"></pds-icon>
@@ -375,8 +381,10 @@ export const WorkingStates = () => {
     </div>
 
     <div class="card">
-      <h3>Different Sizes</h3>
-      <p class="text-muted text-sm">Spinner size adapts to button size</p>
+      <header>
+        <h3>Different Sizes</h3>
+        <p class="text-muted text-sm">Spinner size adapts to button size</p>
+      </header>
       <div class="flex flex-wrap gap-sm align-center">
         <button class="btn-primary btn-sm" @click=${(e) => toggleWorking(e.target)}>
           <pds-icon icon="paper-plane-tilt" size="sm"></pds-icon>
@@ -394,8 +402,10 @@ export const WorkingStates = () => {
     </div>
 
     <div class="card">
-      <h3>Permanent Working State</h3>
-      <p class="text-muted">Buttons in continuous working state</p>
+      <header>
+        <h3>Permanent Working State</h3>
+        <p class="text-muted">Buttons in continuous working state</p>
+      </header>
       <div class="flex flex-wrap gap-sm">
         <button class="btn-primary btn-working">
           <pds-icon icon="circle-notch" size="sm"></pds-icon>
@@ -565,8 +575,10 @@ export const CombinedStates = () => html`
   </div>
 
   <div class="card">
-    <h3>Hover State</h3>
-    <p class="text-muted text-sm">Hover over buttons to see effect</p>
+    <header>
+      <h3>Hover State</h3>
+      <p class="text-muted text-sm">Hover over buttons to see effect</p>
+    </header>
     <div class="flex flex-wrap gap-sm">
       <button class="btn-primary">Primary</button>
       <button class="btn-secondary">Secondary</button>
@@ -575,8 +587,10 @@ export const CombinedStates = () => html`
   </div>
 
   <div class="card">
-    <h3>Active State</h3>
-    <p class="text-muted text-sm">Click and hold to see effect</p>
+    <header>
+      <h3>Active State</h3>
+      <p class="text-muted text-sm">Click and hold to see effect</p>
+    </header>
     <div class="flex flex-wrap gap-sm">
       <button class="btn-primary">Primary</button>
       <button class="btn-secondary">Secondary</button>
@@ -585,8 +599,10 @@ export const CombinedStates = () => html`
   </div>
 
   <div class="card">
-    <h3>Focus State</h3>
-    <p class="text-muted text-sm">Tab to focus on buttons</p>
+    <header>
+      <h3>Focus State</h3>
+      <p class="text-muted text-sm">Tab to focus on buttons</p>
+    </header>
     <div class="flex flex-wrap gap-sm">
       <button class="btn-primary">Primary</button>
       <button class="btn-secondary">Secondary</button>

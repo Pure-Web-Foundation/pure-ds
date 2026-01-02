@@ -16,13 +16,13 @@ export default {
 };
 
 export const BackdropVariants = () => html`
-  <div class="card">
+  <header class="card">
     <h2>Backdrop Utilities</h2>
     <p class="text-muted">
       The <code>.backdrop</code> class provides a full-screen overlay for modals and dialogs.
       Add <code>.active</code> to show the backdrop.
     </p>
-  </div>
+  </header>
 
   <div class="grid grid-auto-md gap-lg">
     <article class="card">
@@ -75,13 +75,13 @@ export const BackdropVariants = () => html`
 BackdropVariants.storyName = 'Backdrop Variants';
 
 export const BlurLevels = () => html`
-  <div class="card">
+  <header class="card">
     <h2>Backdrop Blur Levels</h2>
     <p class="text-muted">
       Control the blur intensity with <code>.backdrop-blur-sm</code>, <code>.backdrop-blur-md</code>, 
       and <code>.backdrop-blur-lg</code>.
     </p>
-  </div>
+  </header>
 
   <div class="grid grid-cols-3 gap-md">
     <article class="card">

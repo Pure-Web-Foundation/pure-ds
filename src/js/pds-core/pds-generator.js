@@ -1702,6 +1702,11 @@ html[data-theme="dark"] .liquid-glass {
   width: 100%;
 }
 
+/* Headings within header elements have tight spacing for intro content */
+:where(header) > :where(h1, h2, h3, h4, h5, h6) {
+  margin: 0;
+}
+
 :where(article), :where(section), :where(aside) {
   display: block;
   margin-bottom: var(--spacing-6);

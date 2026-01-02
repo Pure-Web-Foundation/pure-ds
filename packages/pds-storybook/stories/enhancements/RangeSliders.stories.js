@@ -1,48 +1,5 @@
 import { html } from 'lit';
 
-const rangeSliderStoryStyles = html`
-  <style>
-    .range-slider-section {
-      max-width: 400px;
-      display: grid;
-      gap: var(--spacing-4);
-    }
-
-    .range-slider-section--wide {
-      max-width: 500px;
-    }
-
-    .range-slider-section--comparison {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: var(--spacing-6);
-      max-width: 1000px;
-    }
-
-    .range-slider-description {
-      color: var(--color-text-secondary);
-      font-size: 0.875rem;
-      margin: 0 0 var(--spacing-4);
-    }
-
-    .range-slider-form {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-4);
-    }
-
-    .range-slider-actions {
-      margin-top: var(--spacing-2);
-      align-self: flex-start;
-    }
-
-    .range-slider-card {
-      display: grid;
-      gap: var(--spacing-4);
-    }
-  </style>
-`;
-
 export default {
   title: 'Enhancements/Range Sliders',
   tags: ['range', 'slider', 'input', 'forms', 'interaction'],
@@ -65,11 +22,10 @@ Both modes automatically generate proper ARIA attributes and use the \`<output>\
 };
 
 export const StandardFloatingBubble = () => html`
-  ${rangeSliderStoryStyles}
-  <section class="range-slider-section">
-    <p class="range-slider-description">
+  <section class="card stack-md max-w-sm">
+    <small class="text-muted">
       Default behavior: A floating bubble appears when you interact with the slider.
-    </p>
+    </small>
     <label>
       <span>Volume</span>
       <input type="range" min="0" max="100" value="50">
@@ -80,9 +36,8 @@ export const StandardFloatingBubble = () => html`
 StandardFloatingBubble.storyName = 'Standard (Floating Bubble)';
 
 export const MultipleRanges = () => html`
-  ${rangeSliderStoryStyles}
   <form
-    class="range-slider-section range-slider-form"
+    class="card stack-md max-w-sm"
     @submit="${(event) => {
       event.preventDefault();
       toastFormData(new FormData(event.target));
@@ -104,14 +59,13 @@ export const MultipleRanges = () => html`
       <span>Temperature</span>
       <input type="range" name="temperature" min="-100" max="100" value="0">
     </label>
-    <button type="submit" class="btn-primary range-slider-actions">Apply Settings</button>
+    <button type="submit" class="btn-primary">Apply Settings</button>
   </form>
 `;
 
 export const CustomSteps = () => html`
-  ${rangeSliderStoryStyles}
   <form
-    class="range-slider-section range-slider-form"
+    class="card stack-md max-w-sm"
     @submit="${(event) => {
       event.preventDefault();
       toastFormData(new FormData(event.target));
@@ -125,17 +79,16 @@ export const CustomSteps = () => html`
       <span>Font Size (0.25rem steps)</span>
       <input type="range" name="fontSize" min="0.5" max="3" value="1" step="0.25">
     </label>
-    <button type="submit" class="btn-primary range-slider-actions">Apply Settings</button>
+    <button type="submit" class="btn-primary">Apply Settings</button>
   </form>
 `;
 
 export const InlineOutputMode = () => html`
-  ${rangeSliderStoryStyles}
-  <section class="range-slider-section range-slider-section--wide">
-    <p class="range-slider-description">
+  <section class="card stack-md max-w-md">
+    <small class="text-muted">
       Add the <code>range-output</code> class to automatically create an inline output display.
-    </p>
-    <div class="range-slider-form">
+    </small>
+    <div class="stack-md">
       <label class="range-output">
         <span>Master Volume</span>
         <input type="range" min="0" max="100" value="75">
@@ -155,15 +108,14 @@ export const InlineOutputMode = () => html`
 InlineOutputMode.storyName = 'Inline Output (range-output class)';
 
 export const AudioControlsExample = () => html`
-  ${rangeSliderStoryStyles}
-  <article class="card range-slider-section range-slider-section--wide range-slider-card">
-    <div>
+  <article class="card stack-md max-w-md">
+    <header>
       <h3>Audio Controls</h3>
-      <p class="range-slider-description">
+      <small class="text-muted">
         Complete example using <code>range-output</code> class for a real-world audio control interface.
-      </p>
-    </div>
-    <div class="range-slider-form">
+      </small>
+    </header>
+    <div class="stack-md">
       <label class="range-output">
         <span>Master Volume</span>
         <input type="range" min="0" max="100" value="75">
@@ -187,16 +139,15 @@ export const AudioControlsExample = () => html`
 AudioControlsExample.storyName = 'Real-world Example (Audio Controls)';
 
 export const ComparisonView = () => html`
-  ${rangeSliderStoryStyles}
-  <div class="range-slider-section range-slider-section--comparison">
-    <article class="card range-slider-card">
-      <div>
+  <div class="grid grid-auto-md gap-lg max-w-3xl">
+    <article class="card stack-md">
+      <header>
         <h3>Standard Mode</h3>
-        <p class="range-slider-description">
+        <small class="text-muted">
           Floating bubble appears on hover/focus. Best for simple forms.
-        </p>
-      </div>
-      <div class="range-slider-form">
+        </small>
+      </header>
+      <div class="stack-md">
         <label>
           <span>Volume</span>
           <input type="range" min="0" max="100" value="75">
@@ -208,14 +159,14 @@ export const ComparisonView = () => html`
       </div>
     </article>
 
-    <article class="card range-slider-card">
-      <div>
+    <article class="card stack-md">
+      <header>
         <h3>Inline Output Mode</h3>
-        <p class="range-slider-description">
+        <small class="text-muted">
           Persistent value display. Best for settings and controls.
-        </p>
-      </div>
-      <div class="range-slider-form">
+        </small>
+      </header>
+      <div class="stack-md">
         <label class="range-output">
           <span>Volume</span>
           <input type="range" min="0" max="100" value="75">

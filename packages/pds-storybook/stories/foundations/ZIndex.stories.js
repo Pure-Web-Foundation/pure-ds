@@ -113,49 +113,49 @@ export const ZIndexScale = {
       </p>
       
       <div class="grid grid-cols-1 gap-md">
-        <div class="card surface-subtle">
+        <div class="card surface-translucent-50">
           <code class="z-index-value">--z-dropdown</code>
           <span class="z-index-number">1000</span>
           <p class="text-muted">Dropdown menus and select options</p>
         </div>
         
-        <div class="card surface-subtle">
+        <div class="card surface-translucent-50">
           <code class="z-index-value">--z-sticky</code>
           <span class="z-index-number">1020</span>
           <p class="text-muted">Sticky headers and navigation elements</p>
         </div>
         
-        <div class="card surface-subtle">
+        <div class="card surface-translucent-50">
           <code class="z-index-value">--z-fixed</code>
           <span class="z-index-number">1030</span>
           <p class="text-muted">Fixed position elements</p>
         </div>
         
-        <div class="card surface-subtle">
+        <div class="card surface-translucent-50">
           <code class="z-index-value">--z-modal</code>
           <span class="z-index-number">1040</span>
           <p class="text-muted">Modal dialogs and overlays</p>
         </div>
         
-        <div class="card surface-subtle">
+        <div class="card surface-translucent-50">
           <code class="z-index-value">--z-drawer</code>
           <span class="z-index-number">1050</span>
           <p class="text-muted">Drawer panels (side sheets)</p>
         </div>
         
-        <div class="card surface-subtle">
+        <div class="card surface-translucent-50">
           <code class="z-index-value">--z-popover</code>
           <span class="z-index-number">1060</span>
           <p class="text-muted">Popovers and context menus</p>
         </div>
         
-        <div class="card surface-subtle">
+        <div class="card surface-translucent-50">
           <code class="z-index-value">--z-tooltip</code>
           <span class="z-index-number">1070</span>
           <p class="text-muted">Tooltips and helper text</p>
         </div>
         
-        <div class="card surface-subtle">
+        <div class="card surface-translucent-50">
           <code class="z-index-value">--z-notification</code>
           <span class="z-index-number">1080</span>
           <p class="text-muted">Toast notifications and alerts</p>
@@ -252,7 +252,7 @@ export const UsageExamples = {
       
       <div class="grid grid-cols-1 gap-lg">
         
-        <article class="card surface-subtle">
+        <article class="card surface-translucent-50">
           <h3>Modal Dialog</h3>
           <pre><code>.modal {
   position: fixed;
@@ -264,7 +264,7 @@ export const UsageExamples = {
 }</code></pre>
         </article>
         
-        <article class="card surface-subtle">
+        <article class="card surface-translucent-50"> 
           <h3>Dropdown Menu</h3>
           <pre><code>.dropdown-menu {
   position: absolute;
@@ -275,7 +275,7 @@ export const UsageExamples = {
 }</code></pre>
         </article>
         
-        <article class="card surface-subtle">
+        <article class="card surface-translucent-50">
           <h3>Sticky Header</h3>
           <pre><code>.sticky-header {
   position: sticky;
@@ -286,7 +286,7 @@ export const UsageExamples = {
 }</code></pre>
         </article>
         
-        <article class="card surface-subtle">
+        <article class="card surface-translucent-50">
           <h3>Toast Notification</h3>
           <pre><code>.toast-notification {
   position: fixed;
@@ -299,7 +299,7 @@ export const UsageExamples = {
 }</code></pre>
         </article>
         
-        <article class="card surface-subtle">
+        <article class="card surface-translucent-50">
           <h3>Tooltip</h3>
           <pre><code>.tooltip {
   position: absolute;

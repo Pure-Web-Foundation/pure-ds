@@ -66,8 +66,10 @@ Container.storyName = "Container";
 // ─────────────────────────────────────────────────────────────
 
 export const GridFixed = () => html`
-  <h2>Fixed Column Grids</h2>
-  <p class="text-muted">Explicit column counts for predictable layouts.</p>
+  <header>
+    <h2>Fixed Column Grids</h2>
+    <p class="text-muted">Explicit column counts for predictable layouts.</p>
+  </header>
 
   <div class="stack-md">
     <div class="card">
@@ -120,13 +122,13 @@ export const GridFixed = () => html`
 GridFixed.storyName = "Grid: Fixed Columns";
 
 export const GridAuto = () => html`
-  <div class="card">
+  <header class="card">
     <h2>Auto-Fit Responsive Grids</h2>
     <p class="text-muted">
       Automatically adjust columns based on available space. Resize the browser
       to see the effect.
     </p>
-  </div>
+  </header>
 
   <div class="card">
     <h3>.grid-auto-sm (min 150px)</h3>
@@ -183,12 +185,12 @@ GridAuto.storyName = "Grid: Auto-Fit";
 // ─────────────────────────────────────────────────────────────
 
 export const FlexBasics = () => html`
-  <div class="card">
+  <header class="card">
     <h2>Flexbox Utilities</h2>
     <p class="text-muted">
       Compose layouts with <code>.flex</code> + modifiers.
     </p>
-  </div>
+  </header>
 
   <div class="card">
     <h3>.flex (row by default)</h3>
@@ -245,12 +247,12 @@ export const FlexBasics = () => html`
 FlexBasics.storyName = "Flex: Basics";
 
 export const FlexAlignment = () => html`
-  <div class="card">
+  <header class="card">
     <h2>Alignment Utilities</h2>
     <p class="text-muted">
       Cross-axis: <code>.items-*</code> | Main-axis: <code>.justify-*</code>
     </p>
-  </div>
+  </header>
 
   <div class="card">
     <h3>Items Alignment (Cross-Axis)</h3>
@@ -317,11 +319,13 @@ FlexAlignment.storyName = "Flex: Alignment";
 // ─────────────────────────────────────────────────────────────
 
 export const Stack = () => html`
-  <h2>Stack Utilities</h2>
-  <p class="text-muted">
-    Vertical layouts with consistent spacing.
-    <code>.stack-*</code> = <code>.flex .flex-col .gap-*</code> in one class.
-  </p>
+  <header>
+    <h2>Stack Utilities</h2>
+    <p class="text-muted">
+      Vertical layouts with consistent spacing.
+      <code>.stack-*</code> = <code>.flex .flex-col .gap-*</code> in one class.
+    </p>
+  </header>
 
   <div class="stack-md">
     <div class="card grid grid-cols-2 gap-lg">
@@ -373,8 +377,10 @@ Stack.storyName = "Stack";
 // ─────────────────────────────────────────────────────────────
 
 export const Gap = () => html`
-  <h2>Gap Utilities</h2>
-  <p class="text-muted">Control spacing between flex/grid children.</p>
+  <header>
+    <h2>Gap Utilities</h2>
+    <p class="text-muted">Control spacing between flex/grid children.</p>
+  </header>
 
   <div class="stack-md">
     ${[
@@ -417,10 +423,10 @@ Gap.storyName = "Gap";
 // ─────────────────────────────────────────────────────────────
 
 export const MaxWidth = () => html`
-  <div class="card">
+  <header class="card">
     <h2>Max-Width Utilities</h2>
     <p class="text-muted">Constrain content width for readability.</p>
-  </div>
+  </header>
 
   <div class="stack-lg">
     ${[
@@ -451,10 +457,10 @@ MaxWidth.storyName = "Max-Width";
 // ─────────────────────────────────────────────────────────────
 
 export const Section = () => html`
-  
-  <h2>Section Spacing</h2>
-  <p class="text-muted">Vertical padding for major content blocks.</p>
-
+  <header>
+    <h2>Section Spacing</h2>
+    <p class="text-muted">Vertical padding for major content blocks.</p>
+  </header>
 
   <div
     class="stack-lg"

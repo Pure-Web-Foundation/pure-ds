@@ -280,7 +280,7 @@ export const Default = () => html`
 
         <div>
           <h4 class="splitpanel-section-title">Agenda</h4>
-          <ul class="splitpanel-stack">
+          <ul class="splitpanel-stack-md">
             <li>Roadmap alignment and blockers</li>
             <li>Department resource updates</li>
             <li>Upcoming launch dependencies</li>
@@ -312,7 +312,7 @@ export const Default = () => html`
     <div slot="right" class="splitpanel-pane splitpanel-pane--stacked">
       <article class="card splitpanel-card">
         <h3 class="splitpanel-heading">Discussion Topics</h3>
-        <ul class="splitpanel-stack">
+        <ul class="splitpanel-stack-md">
           <li>Prioritize customer feedback integration for the Q4 release.</li>
           <li>Finalize facility budget for new team hires.</li>
           <li>Review outstanding action items from last sprint review.</li>

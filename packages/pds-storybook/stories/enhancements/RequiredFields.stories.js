@@ -1,46 +1,5 @@
 import { html } from 'lit';
 
-const requiredFieldsStoryStyles = html`
-  <style>
-    .required-form {
-      max-width: 400px;
-      display: grid;
-      gap: var(--spacing-3);
-    }
-
-    .required-form--wide {
-      max-width: 500px;
-    }
-
-    .required-fieldset {
-      display: grid;
-      gap: var(--spacing-3);
-    }
-
-    .required-fieldset--spaced {
-      margin-top: var(--spacing-4);
-    }
-
-    .required-actions {
-      margin-top: var(--spacing-4);
-    }
-
-    .required-help-text {
-      color: var(--surface-text-secondary);
-      display: block;
-      margin-top: 0.25rem;
-    }
-
-    .required-field--spaced {
-      margin-top: var(--spacing-3);
-    }
-
-    .required-form__button {
-      justify-self: start;
-    }
-  </style>
-`;
-
 export default {
   title: 'Enhancements/Required Fields',
   tags: ['required', 'validation', 'form', 'input', 'asterisk'],
@@ -57,9 +16,7 @@ export default {
 };
 
 export const BasicRequired = () => html`
-  ${requiredFieldsStoryStyles}
-  <form data-required
-    class="required-form"
+  <form data-required class="card max-w-sm"
     @submit="${(event) => {
       event.preventDefault();
       toastFormData(new FormData(event.target));
@@ -83,20 +40,18 @@ export const BasicRequired = () => html`
         <input type="tel" placeholder="+1 (555) 123-4567">
       </div>
     </label>
-    <button type="submit" class="btn-primary required-form__button">Submit</button>
+    <button type="submit" class="btn-primary">Submit</button>
   </form>
 `;
 
 export const MixedRequired = () => html`
-  ${requiredFieldsStoryStyles}
-  <form data-required
-    class="required-form required-form--wide"
+  <form data-required class="card max-w-md"
     @submit="${(event) => {
       event.preventDefault();
       toastFormData(new FormData(event.target));
     }}"
   >
-    <fieldset class="required-fieldset">
+    <fieldset>
       <legend>Account Information</legend>
       <label>
         <span>Username</span>
@@ -121,7 +76,7 @@ export const MixedRequired = () => html`
       </label>
     </fieldset>
 
-    <fieldset class="required-fieldset required-fieldset--spaced">
+    <fieldset>
       <legend>Optional Details</legend>
       <label>
         <span>Company</span>
@@ -136,8 +91,8 @@ export const MixedRequired = () => html`
       </label>
     </fieldset>
 
-    <div class="required-actions">
-      <button type="submit" class="btn-primary required-form__button">Create Account</button>
-    </div>
+    <nav class="flex gap-sm">
+      <button type="submit" class="btn-primary">Create Account</button>
+    </nav>
   </form>
 `;

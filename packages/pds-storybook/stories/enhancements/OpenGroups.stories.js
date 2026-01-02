@@ -1,57 +1,5 @@
 import { html } from 'lit';
 
-const openGroupsStoryStyles = html`
-  <style>
-    .open-groups-container {
-      max-width: 37.5rem;
-      display: grid;
-      gap: var(--spacing-4);
-    }
-
-    .open-groups-description {
-      color: var(--surface-text-secondary);
-      margin: 0;
-    }
-
-    .open-groups-description + .open-groups-fieldset,
-    .open-groups-description + .open-groups-form-fieldset {
-      margin-top: var(--spacing-4);
-    }
-
-    .open-groups-fieldset {
-      display: grid;
-      gap: var(--spacing-3);
-      margin: 0;
-    }
-
-    .open-groups-form {
-      max-width: 37.5rem;
-      display: grid;
-      gap: var(--spacing-4);
-    }
-
-    .open-groups-form-fieldset {
-      display: grid;
-      gap: var(--spacing-3);
-    }
-
-    .open-groups-actions {
-      display: flex;
-      gap: var(--spacing-3);
-    }
-
-    .open-groups-card {
-      max-width: 37.5rem;
-      display: grid;
-      gap: var(--spacing-4);
-    }
-
-    .open-groups-card-actions {
-      margin-top: var(--spacing-4);
-    }
-  </style>
-`;
-
 export default {
   title: 'Enhancements/Open Groups',
   tags: ['fieldset', 'radio', 'checkbox', 'dynamic', 'custom-option'],
@@ -69,13 +17,12 @@ export default {
 };
 
 export const RadioGroupOpen = () => html`
-  ${openGroupsStoryStyles}
-  <section class="open-groups-container">
-    <h3>Select Your Preferences</h3>
-    <p class="open-groups-description">
-      Choose from existing options or add your own
-    </p>
-    <fieldset role="group" data-open >
+  <section class="card stack-md max-w-md">
+    <header>
+      <h3>Select Your Preferences</h3>
+      <small class="text-muted">Choose from existing options or add your own</small>
+    </header>
+    <fieldset role="group" data-open>
       <legend>Favorite Programming Language</legend>
       <label>
         <span data-label>JavaScript</span>
@@ -94,12 +41,11 @@ export const RadioGroupOpen = () => html`
 `;
 
 export const CheckboxGroupOpen = () => html`
-  ${openGroupsStoryStyles}
-  <section class="open-groups-container">
-    <h3>Select Features</h3>
-    <p class="open-groups-description">
-      Select multiple features and add custom ones
-    </p>
+  <section class="card stack-md max-w-md">
+    <header>
+      <h3>Select Features</h3>
+      <small class="text-muted">Select multiple features and add custom ones</small>
+    </header>
     <fieldset role="group" data-open>
       <legend>Desired Features</legend>
       <label>
@@ -119,9 +65,8 @@ export const CheckboxGroupOpen = () => html`
 `;
 
 export const InForm = () => html`
-  ${openGroupsStoryStyles}
   <form
-    class="open-groups-form"
+    class="card stack-md max-w-md"
     @submit="${(event) => {
       event.preventDefault();
       window.toastFormData(new FormData(event.target));
@@ -161,20 +106,21 @@ export const InForm = () => html`
       </label>
     </fieldset>
 
-    <div class="open-groups-actions">
+    <div class="flex gap-sm">
       <button type="submit" class="btn-primary">Submit Survey</button>
     </div>
   </form>
 `;
 
 export const PrefilledValues = () => html`
-  ${openGroupsStoryStyles}
-  <section class="open-groups-container">
-    <h3>Tag Editor</h3>
-    <p class="open-groups-description">
-      Select existing tags or create new ones by typing and pressing Enter
-    </p>
-    <fieldset role="group" data-open >
+  <section class="card stack-md max-w-md">
+    
+    <header>
+      <h3>Tag Editor</h3>
+      <small class="text-muted">Select existing tags or create new ones by typing and pressing Enter</small>
+    </header>
+
+    <fieldset role="group" data-open>
       <legend>Article Tags</legend>
       <label>
         <span data-label>JavaScript</span>
@@ -197,12 +143,11 @@ export const PrefilledValues = () => html`
 `;
 
 export const InCard = () => html`
-  ${openGroupsStoryStyles}
-  <article class="card open-groups-card">
-    <h3>Customize Your Experience</h3>
-    <p class="open-groups-description">
-      Choose your preferences and add custom options as needed
-    </p>
+  <article class="card stack-md max-w-md">
+    <header>
+      <h3>Customize Your Experience</h3>
+      <small class="text-muted">Choose your preferences and add custom options as needed</small>
+    </header>
 
     <fieldset role="group" data-open>
       <legend>Notification Channels</legend>
@@ -220,8 +165,6 @@ export const InCard = () => html`
       </label>
     </fieldset>
 
-    <div class="open-groups-card-actions">
-      <button class="btn-primary">Save Preferences</button>
-    </div>
+    <button class="btn-primary">Save Preferences</button>
   </article>
 `;

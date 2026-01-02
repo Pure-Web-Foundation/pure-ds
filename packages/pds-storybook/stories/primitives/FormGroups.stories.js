@@ -37,72 +37,12 @@ Add the \`.buttons\` class to either type for outlined button-style controls:
   },
 };
 
-const formGroupsStoryStyles = html`
-  <style>
-    .form-groups-section {
-      padding: var(--spacing-4);
-    }
-    .form-groups-helper {
-      margin-bottom: var(--spacing-4);
-      opacity: 0.8;
-    }
-    .form-groups-helper-lg {
-      margin-bottom: var(--spacing-6);
-      opacity: 0.8;
-    }
-    .form-groups-comparison {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--spacing-8);
-    }
-    .form-groups-subheading {
-      margin-bottom: var(--spacing-4);
-    }
-    .form-groups-fieldset-spacing {
-      margin-bottom: var(--spacing-6);
-    }
-    .form-groups-card {
-      padding: var(--spacing-4);
-    }
-    .form-groups-horizontal {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--spacing-3);
-    }
-    .form-groups-grid {
-      display: grid;
-      gap: var(--spacing-6);
-      max-width: 50rem;
-    }
-    .form-groups-accessible-card {
-      padding: var(--spacing-6);
-      max-width: 37.5rem;
-    }
-    .form-groups-accessible-form {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-6);
-    }
-    .form-groups-topics-helper {
-      font-size: 0.9rem;
-      opacity: 0.8;
-      margin-bottom: var(--spacing-3);
-    }
-    .form-groups-actions {
-      margin-top: var(--spacing-6);
-      display: flex;
-      gap: var(--spacing-2);
-    }
-  </style>
-`;
-
 export const RadioGroupDefault = () => html`
-  ${formGroupsStoryStyles}
-  <div class="form-groups-section">
-    <h3>Radio Group - Default Style</h3>
-    <p class="form-groups-helper">
-      Default radio group with visible radio buttons, vertical layout
-    </p>
+  <div class="card stack-md">
+    <header>
+      <h3>Radio Group - Default Style</h3>
+      <small class="text-muted">Default radio group with visible radio buttons, vertical layout</small>
+    </header>
     <fieldset role="radiogroup">
       <legend>Select your plan</legend>
       <label>
@@ -124,12 +64,11 @@ export const RadioGroupDefault = () => html`
 RadioGroupDefault.storyName = "Radio Group - Default";
 
 export const RadioGroupButtons = () => html`
-  ${formGroupsStoryStyles}
-  <div class="form-groups-section">
-    <h3>Radio Group - Button Style</h3>
-    <p class="form-groups-helper">
-      Add <code>class="buttons"</code> for outlined button-style radio controls
-    </p>
+  <div class="card stack-md">
+    <header>
+      <h3>Radio Group - Button Style</h3>
+      <small class="text-muted">Add <code>class="buttons"</code> for outlined button-style radio controls</small>
+    </header>
     <fieldset role="radiogroup" class="buttons">
       <legend>Select your plan</legend>
       <label>
@@ -151,12 +90,11 @@ export const RadioGroupButtons = () => html`
 RadioGroupButtons.storyName = "Radio Group - Buttons";
 
 export const CheckboxGroupDefault = () => html`
-  ${formGroupsStoryStyles}
-  <div class="form-groups-section">
-    <h3>Checkbox Group - Default Style</h3>
-    <p class="form-groups-helper">
-      Default checkbox group with visible checkboxes, vertical layout
-    </p>
+  <div class="card stack-md">
+    <header>
+      <h3>Checkbox Group - Default Style</h3>
+      <small class="text-muted">Default checkbox group with visible checkboxes, vertical layout</small>
+    </header>
     <fieldset role="group">
       <legend>Select features</legend>
       <label>
@@ -187,12 +125,11 @@ export const CheckboxGroupDefault = () => html`
 CheckboxGroupDefault.storyName = "Checkbox Group - Default";
 
 export const CheckboxGroupButtons = () => html`
-  ${formGroupsStoryStyles}
-  <div class="form-groups-section">
-    <h3>Checkbox Group - Button Style</h3>
-    <p class="form-groups-helper">
-      Add <code>class="buttons"</code> for outlined button-style checkboxes
-    </p>
+  <div class="card stack-md">
+    <header>
+      <h3>Checkbox Group - Button Style</h3>
+      <small class="text-muted">Add <code>class="buttons"</code> for outlined button-style checkboxes</small>
+    </header>
     <fieldset role="group" class="buttons">
       <legend>Select features</legend>
       <label>
@@ -223,18 +160,16 @@ export const CheckboxGroupButtons = () => html`
 CheckboxGroupButtons.storyName = "Checkbox Group - Buttons";
 
 export const StyleComparison = () => html`
-  ${formGroupsStoryStyles}
-  <div class="form-groups-section">
-    <h3>Side-by-Side Comparison</h3>
-    <p class="form-groups-helper-lg">
-      Compare default vs button styles for both radio and checkbox groups
-    </p>
+  <div class="card stack-md">
+    <header>
+      <h3>Side-by-Side Comparison</h3>
+      <small class="text-muted">Compare default vs button styles for both radio and checkbox groups</small>
+    </header>
+    <div class="grid grid-cols-2 gap-lg">
+      <div class="stack-md">
+        <h4>Default Style</h4>
 
-    <div class="form-groups-comparison">
-      <div>
-        <h4 class="form-groups-subheading">Default Style</h4>
-
-        <fieldset role="radiogroup" class="form-groups-fieldset-spacing">
+        <fieldset role="radiogroup">
           <legend>Billing Cycle</legend>
           <label>
             <input
@@ -273,13 +208,10 @@ export const StyleComparison = () => html`
         </fieldset>
       </div>
 
-      <div>
-        <h4 class="form-groups-subheading">Button Style</h4>
+      <div class="stack-md">
+        <h4>Button Style</h4>
 
-        <fieldset
-          role="radiogroup"
-          class="buttons form-groups-fieldset-spacing"
-        >
+        <fieldset role="radiogroup" class="buttons">
           <legend>Billing Cycle</legend>
           <label>
             <input
@@ -324,15 +256,14 @@ export const StyleComparison = () => html`
 StyleComparison.storyName = "Style Comparison";
 
 export const ToggleSwitches = () => html`
-  ${formGroupsStoryStyles}
-  <div class="form-groups-section">
-    <h3>Toggle Switches</h3>
-    <p class="form-groups-helper">
-      Uses <code>data-toggle</code> attribute for enhanced toggle switch styling
-    </p>
+  <div class="card stack-md gap-lg">
+    <header>
+      <h3>Toggle Switches</h3>
+      <small class="text-muted">Uses <code>data-toggle</code> attribute for enhanced toggle switch styling</small>
+    </header>
 
-    <section class="card form-groups-card">
-      <fieldset class="card" role="group">
+    <section class="card">
+      <fieldset role="group">
         <legend>Preferences</legend>
 
         <label data-toggle>
@@ -343,12 +274,11 @@ export const ToggleSwitches = () => html`
         <label data-toggle>
           <input type="checkbox" name="prefs" value="dark" />
           <span>Dark mode</span>
-          
         </label>
       </fieldset>
     </section>
 
-    <section class="card form-groups-card">
+    <section class="card">
       <fieldset class="card" role="group">
         <legend>Left-aligned knob</legend>
         <label data-toggle>
@@ -368,14 +298,11 @@ export const ToggleSwitches = () => html`
 ToggleSwitches.storyName = "Toggle Switches";
 
 export const CustomLayout = () => html`
-  ${formGroupsStoryStyles}
-  <div class="card form-groups-card">
+  <div class="card stack-md">
     <h3>Custom Layout with Flex Utilities</h3>
-    <p class="alert alert-info">
-      Override default column layout using standard CSS flex properties
-    </p>
+    <div class="alert alert-info">Override default column layout using standard CSS flex properties</div>
 
-    <fieldset role="radiogroup" class="form-groups-horizontal">
+    <fieldset role="radiogroup" class="flex flex-wrap gap-sm">
       <legend>Horizontal Radio Group (flex-direction: row)</legend>
       <label>
         <input type="radio" name="horizontal-radio" value="1" checked />
@@ -391,7 +318,7 @@ export const CustomLayout = () => html`
       </label>
     </fieldset>
 
-    <fieldset role="group" class="form-groups-horizontal">
+    <fieldset role="group" class="flex flex-wrap gap-sm">
       <legend>Horizontal Checkbox Group (flex-direction: row)</legend>
       <label>
         <input type="checkbox" name="horizontal-check" value="1" checked />
@@ -412,14 +339,12 @@ export const CustomLayout = () => html`
 CustomLayout.storyName = "Custom Layout";
 
 export const ButtonStyleVariants = () => html`
-  ${formGroupsStoryStyles}
-  <div class="form-groups-section">
-    <h3>Button Style Variants</h3>
-    <p class="form-groups-helper-lg">
-      Examples of button-style groups in different contexts
-    </p>
-
-    <div class="form-groups-grid">
+  <div class="card stack-md">
+    <header>
+      <h3>Button Style Variants</h3>
+      <small class="text-muted">Examples of button-style groups in different contexts</small>
+    </header>
+    <div class="stack-md gap-lg max-w-lg">
       <fieldset role="radiogroup" class="buttons">
         <legend>Subscription Tier</legend>
         <label>
@@ -493,16 +418,13 @@ export const AccessibleFormGroups = {
     };
 
     return html`
-      ${formGroupsStoryStyles}
-      <div class="form-groups-section">
-        <h2>Accessibility Features</h2>
-        <p class="form-groups-helper-lg">
-          Form groups include proper ARIA attributes, semantic HTML, and keyboard
-          navigation support.
-        </p>
-
-        <div class="card form-groups-accessible-card">
-          <form class="form-groups-accessible-form" @submit=${handleSubmit}>
+      <div class="card stack-md">
+        <header>
+          <h2>Accessibility Features</h2>
+          <small class="text-muted">Form groups include proper ARIA attributes, semantic HTML, and keyboard navigation support.</small>
+        </header>
+        <div class="card max-w-md">
+          <form class="stack-md gap-lg" @submit=${handleSubmit}>
             <fieldset
               role="radiogroup"
               class="buttons"
@@ -532,15 +454,9 @@ export const AccessibleFormGroups = {
               </fieldset>
             </fieldset>
 
-            <fieldset
-              role="group"
-              class="form-groups-fieldset-spacing"
-              aria-describedby="topics-help"
-            >
+            <fieldset role="group" aria-describedby="topics-help">
               <legend>Topics to Follow</legend>
-              <p id="topics-help" class="form-groups-topics-helper">
-                Select all topics you're interested in
-              </p>
+              <small id="topics-help" class="text-muted">Select all topics you're interested in</small>
               <label data-toggle>
                 <input type="checkbox" name="topics" value="product" checked />
                 <span>Product Updates</span>
@@ -555,10 +471,10 @@ export const AccessibleFormGroups = {
               </label>
             </fieldset>
 
-            <div class="form-groups-actions">
+            <nav class="flex gap-sm">
               <button type="submit" class="btn-primary">Save Preferences</button>
               <button type="reset" class="btn-secondary">Reset</button>
-            </div>
+            </nav>
           </form>
         </div>
       </div>

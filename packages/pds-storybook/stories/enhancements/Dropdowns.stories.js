@@ -1,22 +1,6 @@
 import { html } from "lit";
 
-const dropdownStoryStyles = html`
-  <style>
-    .dropdown-story-align-right {
-      text-align: right;
-    }
-
-    .dropdown-story-dropup {
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
-      height: 260px;
-      padding: var(--spacing-6);
-      border-radius: var(--radius-lg);
-    }
-  </style>
-`;
-
+// Demo-specific styles (legitimate custom CSS for visual demos)
 const dropdownGlassDemoStyles = html`
   <style>
     .dropdown-story-glass-demo {
@@ -31,41 +15,6 @@ const dropdownGlassDemoStyles = html`
       background-image: var(--dropdown-demo-image);
       background-size: cover;
       background-position: center;
-      color: inherit;
-    }
-
-    .dropdown-story-glass-demo::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      /* background: linear-gradient(
-        rgba(12, 18, 28, 0.72),
-        rgba(12, 18, 28, 0.32)
-      ); */
-    }
-
-    .dropdown-story-glass-content {
-      position: relative;
-      display: grid;
-      gap: var(--spacing-4);
-      text-align: center;
-      max-width: 360px;
-    }
-
-    .dropdown-story-glass-content h3 {
-      margin: 0;
-      font-weight: var(--font-weight-semibold);
-      letter-spacing: 0.04em;
-    }
-
-    .dropdown-story-glass-content p {
-      margin: 0;
-      
-    }
-
-    .dropdown-story-glass-content menu {
-      margin: 0;
-      padding: var(--spacing-3);
     }
   </style>
 `;
@@ -99,8 +48,7 @@ export const BasicDropdown = () => html`
 `;
 
 export const RightAligned = () => html`
-  ${dropdownStoryStyles}
-  <div class="dropdown-story-align-right">
+  <div class="text-right">
     <nav data-dropdown class="align-right">
       <button class="btn-secondary">User Menu</button>
       <menu>
@@ -114,7 +62,6 @@ export const RightAligned = () => html`
 `;
 
 export const WithIcons = () => html`
-  ${dropdownStoryStyles}
   <nav data-dropdown>
     <button class="btn-outline">
       <pds-icon icon="list" size="sm"></pds-icon>
@@ -144,8 +91,7 @@ export const WithIcons = () => html`
 `;
 
 export const DropUp = () => html`
-  ${dropdownStoryStyles}
-  <div class="dropdown-story-dropup">
+  <div class="flex justify-center items-end card" style="height: 260px;">
     <nav data-dropdown data-mode="up">
       <button class="btn-primary">Resources</button>
       <menu>
@@ -158,18 +104,15 @@ export const DropUp = () => html`
 `;
 
 export const BackgroundImageLiquidGlass = () => html`
-  ${dropdownStoryStyles} ${dropdownGlassDemoStyles}
+  ${dropdownGlassDemoStyles}
   <section
     class="dropdown-story-glass-demo"
     style="--dropdown-demo-image: url('https://images.unsplash.com/photo-1517832207067-4db24a2ae47c?auto=format&fit=crop&w=1200&q=80');"
   >
-    <div class="dropdown-story-glass-content">
-      <div class="card liquid-glass">
+    <div class="stack-md gap-md text-center max-w-sm">
+      <div class="card liquid-glass stack-md">
         <h3>Plan Your Escape</h3>
-        <p>
-          Frosted dropdown blends with the hero photo while keeping content
-          readable.
-        </p>
+        <p>Frosted dropdown blends with the hero photo while keeping content readable.</p>
       </div>
       <nav data-dropdown data-mode="down">
         <button class="btn-primary">Featured Cities</button>

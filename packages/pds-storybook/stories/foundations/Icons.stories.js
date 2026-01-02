@@ -8,13 +8,7 @@ const iconStoryStyles = html`
       display: grid;
       gap: var(--spacing-4);
     }
-
-    .icon-story-description {
-      margin-bottom: var(--spacing-4);
-      opacity: 0.8;
-      max-width: 60ch;
-    }
-
+    
     .icon-story-grid {
       display: flex;
       gap: var(--spacing-3);
@@ -156,12 +150,12 @@ export default {
 export const CommonIcons = () => html`
   ${iconStoryStyles}
   <section class="icon-story-section">
-    <div>
+    <header>
       <h3>Common Icons</h3>
-      <p class="icon-story-description">
+      <small class="text-muted">
         Frequently used icons for everyday UI needs
-      </p>
-    </div>
+      </small>
+    </header>
     <div class="icon-story-grid">
       <pds-icon icon="heart" size="lg"></pds-icon>
       <pds-icon icon="star" size="lg"></pds-icon>
@@ -182,12 +176,12 @@ CommonIcons.storyName = 'Common Icons';
 export const IconSizes = () => html`
   ${iconStoryStyles}
   <section class="icon-story-section">
-    <div>
+    <header>
       <h3>Icon Sizes</h3>
-      <p class="icon-story-description">
+      <small class="text-muted">
         Built-in sizing scale keeps visual hierarchy consistent across the UI.
-      </p>
-    </div>
+      </small>
+    </header>
     <div class="icon-story-size-grid">
       <div class="icon-story-size-item">
         <pds-icon icon="heart" size="xs"></pds-icon>
@@ -225,12 +219,12 @@ export const AllIcons = () => {
   return html`
     ${iconStoryStyles}
     <section class="icon-story-section">
-      <div>
+      <header>
         <h2>All Available Icons</h2>
-        <p class="icon-story-description">
+        <small class="text-muted">
           Complete icon set from Phosphor Icons, organized by category. Click any icon name to copy it to clipboard.
-        </p>
-      </div>
+        </small>
+      </header>
 
       <div class="icon-story-filter">
         <span class="icon-story-filter__label" data-label>Filter icons</span>

@@ -1,22 +1,5 @@
 import { html } from 'lit';
 
-const tablesStoryStyles = html`
-  <style>
-    .table-story-section {
-      padding: var(--spacing-4);
-    }
-
-    .table-story-description {
-      margin: 0 0 var(--spacing-4);
-      font-style: italic;
-    }
-
-    .table-story-scroll {
-      overflow-x: auto;
-    }
-  </style>
-`;
-
 export default {
   title: 'Primitives/Tables',
   tags: ['table', 'data', 'grid', 'tabular', 'responsive'],
@@ -33,8 +16,7 @@ export default {
 };
 
 export const DefaultTable = () => html`
-  ${tablesStoryStyles}
-  <section class="table-story-section">
+  <section class="card stack-md">
     <table>
       <thead>
         <tr>
@@ -77,8 +59,7 @@ export const DefaultTable = () => html`
 DefaultTable.storyName = 'Default Table';
 
 export const StripedTable = () => html`
-  ${tablesStoryStyles}
-  <section class="table-story-section">
+  <section class="card stack-md">
     <table class="table-striped">
       <thead>
         <tr>
@@ -127,8 +108,7 @@ export const StripedTable = () => html`
 StripedTable.storyName = 'Striped Table';
 
 export const BorderedCompactTable = () => html`
-  ${tablesStoryStyles}
-  <section class="table-story-section">
+  <section class="card stack-md">
     <table class="table-bordered table-compact">
       <thead>
         <tr>
@@ -260,12 +240,9 @@ export const TableResponsiveWrapper = () => html`
 TableResponsiveWrapper.storyName = 'Responsive Wrapper';
 
 export const ResponsiveTable = () => html`
-  ${tablesStoryStyles}
-  <section class="table-story-section">
-    <p class="table-story-description">
-      Resize the window to see horizontal scrolling on small screens
-    </p>
-    <div class="table-story-scroll">
+  <section class="card stack-md">
+    <small class="text-muted">Resize the window to see horizontal scrolling on small screens</small>
+    <div class="table-responsive">
       <table class="table-striped">
         <thead>
           <tr>
@@ -319,11 +296,10 @@ export const ResponsiveTable = () => html`
 ResponsiveTable.storyName = 'Responsive Table';
 
 export const TablesReference = () => html`
-  <div class="card">
+  <div class="card stack-md">
     <h2>Table Classes Reference</h2>
-  </div>
   
-  <table class="table-bordered">
+    <table class="table-bordered">
     <thead>
       <tr>
         <th>Class</th>
@@ -353,6 +329,7 @@ export const TablesReference = () => html`
       </tr>
     </tbody>
   </table>
+  </div>
 `;
 
 TablesReference.storyName = 'Reference';

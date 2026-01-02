@@ -16,10 +16,10 @@ export default {
 };
 
 export const Default = () => html`
-  <div class="card">
+  <header class="card">
     <h2>Basic Alerts</h2>
     <p class="text-muted">Simple alert messages with semantic color variants.</p>
-  </div>
+  </header>
   
   <div class="flex flex-col gap-md">
     <div class="alert alert-info">This is an info alert — check it out!</div>
@@ -32,10 +32,10 @@ export const Default = () => html`
 Default.storyName = 'Basic Alerts';
 
 export const AlertsWithIcons = () => html`
-  <div class="card">
+  <header class="card">
     <h2>Alerts with Icons</h2>
     <p class="text-muted">Use <code>.alert-icon</code> to add visual context with icons.</p>
-  </div>
+  </header>
   
   <div class="flex flex-col gap-md">
     <div class="alert alert-info">
@@ -79,10 +79,10 @@ export const AlertsWithIcons = () => html`
 AlertsWithIcons.storyName = 'With Icons';
 
 export const AlertsWithTitles = () => html`
-  <div class="card">
+  <header class="card">
     <h2>Alerts with Titles</h2>
     <p class="text-muted">Use <code>.alert-title</code> for prominent headings within alerts.</p>
-  </div>
+  </header>
   
   <div class="flex flex-col gap-md">
     <div class="alert alert-info">
@@ -130,13 +130,13 @@ export const AlertsWithTitles = () => html`
 AlertsWithTitles.storyName = 'With Titles';
 
 export const DismissibleAlerts = () => html`
-  <div class="card">
+  <header class="card">
     <h2>Dismissible Alerts</h2>
     <p class="text-muted">
       Add <code>.alert-dismissible</code> and <code>.alert-close</code> for closeable alerts.
       Click the × to dismiss (demo only, JS required for actual dismissal).
     </p>
-  </div>
+  </header>
   
   <div class="flex flex-col gap-md">
     <div class="alert alert-info alert-dismissible">
@@ -171,13 +171,13 @@ export const DismissibleAlerts = () => html`
 DismissibleAlerts.storyName = 'Dismissible';
 
 export const SemanticMessages = () => html`
-  <div class="card">
+  <header class="card">
     <h2>Semantic Messages</h2>
     <p class="text-muted">
       The <code>.semantic-message</code> class is an alias for alerts with slightly different semantics.
       Useful for inline form feedback or contextual messages.
     </p>
-  </div>
+  </header>
   
   <div class="flex flex-col gap-md">
     <div class="semantic-message info">

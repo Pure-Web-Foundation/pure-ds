@@ -15,57 +15,8 @@ export default {
   }
 };
 
-const accordionStoryStyles = html`
-  <style>
-    .accordion-container {
-      padding: var(--spacing-4);
-      max-width: 43.75rem;
-    }
-    .accordion-container--wide {
-      max-width: 50rem;
-    }
-    .accordion-nested {
-      margin-top: var(--spacing-3);
-    }
-    .accordion-button-spacing-sm {
-      margin-top: var(--spacing-2);
-    }
-    .accordion-button-spacing {
-      margin-top: var(--spacing-3);
-    }
-    .accordion-badge-row {
-      display: flex;
-      gap: var(--spacing-2);
-      margin-top: var(--spacing-3);
-    }
-    .accordion-text-margin {
-      margin-top: var(--spacing-3);
-    }
-    .accordion-surface-card {
-      padding: var(--spacing-4);
-      border-radius: var(--radius-md);
-      text-align: center;
-    }
-    .accordion-code-sample {
-      background: var(--color-surface-subtle);
-      padding: var(--spacing-3);
-      border-radius: var(--radius-sm);
-      margin-top: var(--spacing-3);
-      overflow-x: auto;
-    }
-    .accordion-helper-text {
-      margin-bottom: var(--spacing-4);
-      opacity: 0.8;
-    }
-    .accordion-label-spacing {
-      margin-top: var(--spacing-3);
-    }
-  </style>
-`;
-
 export const BasicAccordion = () => html`
-  ${accordionStoryStyles}
-  <div class="accordion-container">
+  <div class="card max-w-lg">
     <section class="accordion" aria-label="FAQ">
       <details>
         <summary id="q1">How does billing work?</summary>
@@ -94,13 +45,12 @@ export const BasicAccordion = () => html`
 BasicAccordion.storyName = 'Basic Accordion';
 
 export const AccordionWithRichContent = () => html`
-  ${accordionStoryStyles}
-  <div class="accordion-container accordion-container--wide">
+  <div class="card stack-md max-w-xl">
     <h2>Feature Documentation</h2>
     <section class="accordion" aria-label="Features">
       <details open>
         <summary id="feature1">Getting Started</summary>
-        <div class="card" role="region" aria-labelledby="feature1">
+        <div class="card stack-md" role="region" aria-labelledby="feature1">
           <h4>Welcome to Pure Design System</h4>
           <p>Pure Design System is a generative design system that creates complete design tokens from just a few base colors.</p>
           <ul>
@@ -109,7 +59,7 @@ export const AccordionWithRichContent = () => html`
             <li>Responsive grid utilities</li>
             <li>Mesh gradient backgrounds</li>
           </ul>
-          <button class="btn-primary btn-sm accordion-button-spacing-sm">
+          <button class="btn-primary btn-sm">
             <pds-icon icon="download" size="sm"></pds-icon>
             Download
           </button>
@@ -118,33 +68,31 @@ export const AccordionWithRichContent = () => html`
 
       <details>
         <summary id="feature2">Color System</summary>
-        <div role="region" aria-labelledby="feature2">
+        <div class="stack-md" role="region" aria-labelledby="feature2">
           <p>The color system automatically generates semantic colors and full scales from your base palette.</p>
-          <div class="accordion-badge-row">
+          <div class="flex gap-xs flex-wrap">
             <span class="badge badge-primary">Primary</span>
             <span class="badge badge-success">Success</span>
             <span class="badge badge-warning">Warning</span>
             <span class="badge badge-danger">Danger</span>
           </div>
-          <p class="accordion-text-margin">
-            Each color includes a 9-step scale from 50 (lightest) to 800 (darkest).
-          </p>
+          <p>Each color includes a 9-step scale from 50 (lightest) to 800 (darkest).</p>
         </div>
       </details>
 
       <details>
         <summary id="feature3">Smart Surfaces</summary>
-        <div role="region" aria-labelledby="feature3">
+        <div class="stack-md" role="region" aria-labelledby="feature3">
           <h4>Automatic Contrast Management</h4>
           <p>Surfaces automatically adjust text, icons, and shadow colors to maintain WCAG AA contrast ratios.</p>
-          <div class="accordion-nested grid grid-cols-2 gap-sm">
-            <div class="surface-elevated accordion-surface-card">
+          <div class="grid grid-cols-2 gap-sm">
+            <div class="surface-elevated card text-center stack-md">
               <pds-icon icon="sun" size="lg"></pds-icon>
-              <p class="accordion-text-margin">Elevated Surface</p>
+              <small>Elevated Surface</small>
             </div>
-            <div class="surface-overlay accordion-surface-card">
+            <div class="surface-overlay card text-center stack-md">
               <pds-icon icon="moon" size="lg"></pds-icon>
-              <p class="accordion-text-margin">Overlay Surface</p>
+              <small>Overlay Surface</small>
             </div>
           </div>
         </div>
@@ -152,9 +100,9 @@ export const AccordionWithRichContent = () => html`
 
       <details>
         <summary id="feature4">Grid System</summary>
-        <div role="region" aria-labelledby="feature4">
+        <div class="stack-md" role="region" aria-labelledby="feature4">
           <p>Modern CSS Grid-based layout system with fixed and auto-fit responsive options.</p>
-          <pre class="accordion-code-sample"><code>/* Fixed columns */
+          <pre><code>/* Fixed columns */
 .grid-cols-3 { ... }
 
 /* Auto-fit responsive */
@@ -169,16 +117,15 @@ export const AccordionWithRichContent = () => html`
 AccordionWithRichContent.storyName = 'Accordion with Rich Content';
 
 export const NestedAccordion = () => html`
-  ${accordionStoryStyles}
-  <div class="accordion-container">
+  <div class="card stack-md max-w-lg">
     <h2>Nested Accordion Example</h2>
     <section class="accordion" aria-label="Product Categories">
       <details>
         <summary id="cat1">Electronics</summary>
-        <div role="region" aria-labelledby="cat1">
+        <div class="stack-md" role="region" aria-labelledby="cat1">
           <p>Browse our electronics collection:</p>
           
-          <section class="accordion accordion-nested" aria-label="Electronics Subcategories">
+          <section class="accordion" aria-label="Electronics Subcategories">
             <details>
               <summary id="cat1-1">Computers</summary>
               <div role="region" aria-labelledby="cat1-1">
@@ -206,10 +153,10 @@ export const NestedAccordion = () => html`
 
       <details>
         <summary id="cat2">Clothing</summary>
-        <div role="region" aria-labelledby="cat2">
+        <div class="stack-md" role="region" aria-labelledby="cat2">
           <p>Shop our clothing lines:</p>
           
-          <section class="accordion accordion-nested" aria-label="Clothing Subcategories">
+          <section class="accordion" aria-label="Clothing Subcategories">
             <details>
               <summary id="cat2-1">Men's</summary>
               <div role="region" aria-labelledby="cat2-1">
@@ -238,7 +185,6 @@ export const NestedAccordion = () => html`
       <details>
         <summary id="cat3">Home & Garden</summary>
         <div role="region" aria-labelledby="cat3">
-          <p>Everything for your home:</p>
           <ul>
             <li>Furniture</li>
             <li>Decor</li>
@@ -254,12 +200,13 @@ export const NestedAccordion = () => html`
 NestedAccordion.storyName = 'Nested Accordion';
 
 export const SingleExpandAccordion = () => html`
-  ${accordionStoryStyles}
-  <div class="accordion-container">
-    <h2>Settings</h2>
-    <p class="accordion-helper-text">
-      <em>Note: This example shows standard behavior. For single-expand (only one open at a time), add JavaScript.</em>
-    </p>
+  <div class="card stack-md max-w-lg">
+    <header>
+      <h2>Settings</h2>
+      <small class="text-muted">
+        <em>Note: This example shows standard behavior. For single-expand (only one open at a time), add JavaScript.</em>
+      </small>
+    </header>
     
     <section class="accordion" aria-label="Settings">
       <details>
@@ -267,20 +214,20 @@ export const SingleExpandAccordion = () => html`
           <pds-icon icon="user" size="sm"></pds-icon>
           <span>Profile Settings</span>
         </summary>
-        <div class="card" role="region" aria-labelledby="set1">
+        <div class="card stack-md" role="region" aria-labelledby="set1">
           <form method="post" action="#">
             <label>
               <span>Display Name</span>
               <input type="text" value="John Doe" placeholder="Enter your display name" />
             </label>
-            <label class="accordion-label-spacing">
+            <label>
               <span>Email</span>
               <div class="input-icon">
                 <pds-icon icon="envelope"></pds-icon>
                 <input type="email" value="john@example.com" placeholder="your.email@example.com" />
               </div>
             </label>
-            <button type="submit" class="btn-primary btn-sm accordion-button-spacing">
+            <button type="submit" class="btn-primary btn-sm">
               Save Changes
             </button>
           </form>
@@ -292,7 +239,7 @@ export const SingleExpandAccordion = () => html`
           <pds-icon icon="bell" size="sm"></pds-icon>
           <span>Notifications</span>
         </summary>
-        <div role="region" aria-labelledby="set2">
+        <div class="stack-md" role="region" aria-labelledby="set2">
           <label data-toggle>
             <input type="checkbox" checked />
             <span>Email notifications</span>
@@ -313,9 +260,9 @@ export const SingleExpandAccordion = () => html`
           <pds-icon icon="lock" size="sm"></pds-icon>
           <span>Privacy & Security</span>
         </summary>
-        <div role="region" aria-labelledby="set3">
+        <div class="stack-md" role="region" aria-labelledby="set3">
           <p>Manage your privacy and security settings.</p>
-          <label data-toggle class="accordion-label-spacing">
+          <label data-toggle>
             <input type="checkbox" checked />
             <span>Two-factor authentication</span>
           </label>
@@ -323,11 +270,9 @@ export const SingleExpandAccordion = () => html`
             <input type="checkbox" />
             <span>Login alerts</span>
           </label>
-          <div class="flex">
-            <button class="btn-secondary btn-sm accordion-button-spacing">
-              Change Password
-            </button>
-          </div>
+          <button class="btn-secondary btn-sm">
+            Change Password
+          </button>
         </div>
       </details>
 
