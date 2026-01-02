@@ -211,10 +211,12 @@ export default {
 export const AllMeshGradients = () => html`
   ${meshGradientStoryStyles}
   <section class="mesh-story">
+    <header>
     <h2>Mesh Gradient Backgrounds</h2>
-    <p class="mesh-story__intro">
+    <small class="text-muted">
       Subtle, beautiful mesh gradient backgrounds using <code>--background-mesh-01</code> through <code>--background-mesh-05</code>. Toggle dark mode to see automatic adaptation.
-    </p>
+    </small>
+    </header>
     <div class="mesh-story__grid mesh-story__grid--featured">
       ${featuredMeshCards.map(({ key, title, description }) => html`
         <div class="mesh-story__panel mesh-story__panel--${key}">
@@ -290,7 +292,7 @@ export const CodeSamples = () => html`
     <h2>Code Samples</h2>
 
     <h3 class="mesh-story__subheading">Apply as Background</h3>
-    <pre class="mesh-story__code-block"><code>/* Use CSS custom properties */
+    <pre class="mesh-story__code-block shiki github-dark"><code>/* Use CSS custom properties */
 .hero-section {
   background: var(--background-mesh-01);
 }
