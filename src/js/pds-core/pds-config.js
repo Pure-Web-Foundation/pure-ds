@@ -982,6 +982,7 @@ presets.default = {
     set: "phosphor", // https://phosphoricons.com/
     weight: "regular",
     defaultSize: 24,
+    externalPath: "/assets/img/icons/", // Path for on-demand external SVG icons
     sizes: {
       xs: 16,
       sm: 20,

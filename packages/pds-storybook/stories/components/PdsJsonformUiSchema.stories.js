@@ -1,7 +1,78 @@
 import { html } from 'lit';
-import { renderMarkdown } from '../utils/markdown.js';
 import { toastFormData } from '../utils/toast-utils.js';
-import uiSchemaRefMd from './PdsJsonformUiSchema.md?raw';
+
+const componentDescription = `Complete reference for all **uiSchema** configuration options in \`pds-jsonform\`.
+
+The uiSchema controls *how* fields are rendered while JSON Schema defines *what* data to collect.
+
+---
+
+## Quick Example
+
+| JSON Schema (what to collect) | uiSchema (how to render) |
+|------------------------------|--------------------------|
+| \`"email": { "type": "string", "format": "email" }\` | \`"email": { "ui:icon": "envelope" }\` |
+| \`"bio": { "type": "string" }\` | \`"bio": { "ui:widget": "textarea" }\` |
+
+---
+
+## uiSchema Options Reference
+
+| Option | Purpose | Example |
+|--------|---------|---------|
+| \`ui:widget\` | Override default widget | \`"ui:widget": "textarea"\` |
+| \`ui:options\` | Widget-specific config | \`"ui:options": { "rows": 6 }\` |
+| \`ui:layout\` | Arrange nested fields | \`"ui:layout": "grid"\` |
+| \`ui:layoutOptions\` | Configure layout | \`"ui:layoutOptions": { "columns": 3 }\` |
+| \`ui:icon\` | Add icon to input | \`"ui:icon": "user"\` |
+| \`ui:iconPosition\` | Icon placement | \`"ui:iconPosition": "end"\` |
+| \`ui:surface\` | Wrap in styled container | \`"ui:surface": "card"\` |
+| \`ui:dialog\` | Collect data in modal | \`"ui:dialog": true\` |
+| \`ui:datalist\` | Autocomplete suggestions | \`"ui:datalist": ["A", "B"]\` |
+| \`ui:class\` | Add CSS classes | \`"ui:class": "highlight"\` |
+| \`ui:hidden\` | Hide field from UI | \`"ui:hidden": true\` |
+| \`ui:readonly\` | Make field read-only | \`"ui:readonly": true\` |
+| \`ui:disabled\` | Disable field | \`"ui:disabled": true\` |
+
+---
+
+## Interactive Examples
+
+Click any link below to see the feature in action:
+
+### Widgets
+- **[Widget Selection](?path=/story/components-pds-jsonform-uischema-reference--widget-selection)** - Override default widgets (textarea, toggle, radio, range, color picker, etc.)
+- **[Widget Options](?path=/story/components-pds-jsonform-uischema-reference--widget-options)** - Configure widget-specific options (rows, steps, file limits)
+
+### Layouts
+- **[Flex Layout](?path=/story/components-pds-jsonform-uischema-reference--layout-flex)** - Arrange fields in flexible rows with wrapping
+- **[Grid Layout](?path=/story/components-pds-jsonform-uischema-reference--layout-grid)** - Multi-column forms with fixed or auto columns
+- **[Accordion Layout](?path=/story/components-pds-jsonform-uischema-reference--layout-accordion)** - Collapsible sections using \`<details>\`
+- **[Tabs Layout](?path=/story/components-pds-jsonform-uischema-reference--layout-tabs)** - Tabbed interface for multi-step forms
+
+### Enhancements
+- **[Icon Enhancement](?path=/story/components-pds-jsonform-uischema-reference--icon-enhancement)** - Add icons to input fields
+- **[Surface Wrapping](?path=/story/components-pds-jsonform-uischema-reference--surface-wrapping)** - Wrap fieldsets in card/elevated/sunken surfaces
+- **[Dialog Forms](?path=/story/components-pds-jsonform-uischema-reference--dialog-forms)** - Collect nested object data in modal dialogs
+- **[Datalist Autocomplete](?path=/story/components-pds-jsonform-uischema-reference--datalist-autocomplete)** - Native browser autocomplete
+
+### Complete
+- **[Complete Example](?path=/story/components-pds-jsonform-uischema-reference--complete-example)** - Comprehensive example combining multiple features
+
+---
+
+## Path Syntax for Nested Fields
+
+Use **slash notation** to target nested fields from the root uiSchema:
+
+\`\`\`javascript
+{
+  "address": { "ui:layout": "grid" },
+  "address/street": { "ui:icon": "map-pin" },
+  "address/city": { "ui:icon": "buildings" }
+}
+\`\`\`
+`;
 
 export default {
   title: 'Components/Pds Jsonform/uiSchema Reference',
@@ -9,9 +80,7 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: `Complete reference for all **uiSchema** configuration options in \`pds-jsonform\`.
-
-The uiSchema controls *how* fields are rendered while JSON Schema defines *what* data to collect.`
+        component: componentDescription
       }
     },
     pds: {
@@ -19,36 +88,6 @@ The uiSchema controls *how* fields are rendered while JSON Schema defines *what*
     }
   }
 };
-
-// ============================================================================
-// Documentation Story - Full Reference
-// ============================================================================
-
-export const Docs = {
-  name: 'Documentation',
-  parameters: {
-    docs: {
-      description: {
-        story: 'Complete uiSchema reference documentation with all available configuration options, widgets, layouts, and examples.'
-      }
-    }
-  },
-  render: () => {
-    const container = document.createElement('article');
-    container.className = 'container surface-base';
-    container.innerHTML = '<p class="text-muted">Loading documentation...</p>';
-    
-    renderMarkdown(uiSchemaRefMd).then(htmlContent => {
-      container.innerHTML = htmlContent;
-    });
-    
-    return container;
-  }
-};
-
-// ============================================================================
-// Interactive Examples
-// ============================================================================
 
 // ============================================================================
 // Widget Selection Examples

@@ -834,6 +834,8 @@ export class Generator {
       },
       // Default path for dev/demo; static export places it at [static.root]/icons/pds-icons.svg
       spritePath = "/assets/pds/icons/pds-icons.svg",
+      // Path for on-demand external SVG icons
+      externalPath = "/assets/img/icons/",
     } = iconConfig;
 
     return {
@@ -844,6 +846,7 @@ export class Generator {
         Object.entries(sizes).map(([key, value]) => [key, `${value}px`])
       ),
       spritePath,
+      externalPath,
     };
   }
 

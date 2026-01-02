@@ -1,5 +1,6 @@
 import { html } from 'lit';
 import { highlight, getCurrentTheme, preloadShiki } from '../utils/shiki.js';
+import { attachStoryLinkHandlers } from '../utils/navigation.js';
 
 // Pre-load Shiki
 preloadShiki();
@@ -86,7 +87,7 @@ export const Overview = {
             <tr>
               <td><strong>Typography</strong></td>
               <td><code>&lt;h1&gt;</code>-<code>&lt;h6&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;small&gt;</code>, <code>&lt;strong&gt;</code></td>
-              <td>See <a href="/?path=/story/foundations-typography--heading-scale" target="_parent">Typography</a></td>
+              <td>See <a data-story-link="foundations-typography--heading-scale">Typography</a></td>
             </tr>
             <tr>
               <td><strong>Quotations</strong></td>
@@ -116,12 +117,12 @@ export const Overview = {
             <tr>
               <td><strong>Forms</strong></td>
               <td><code>&lt;button&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;label&gt;</code>, <code>&lt;fieldset&gt;</code></td>
-              <td>See <a href="/?path=/story/primitives-forms--default" target="_parent">Forms</a></td>
+              <td>See <a data-story-link="primitives-forms--default">Forms</a></td>
             </tr>
             <tr>
               <td><strong>Tables</strong></td>
               <td><code>&lt;table&gt;</code>, <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, <code>&lt;th&gt;</code>, <code>&lt;td&gt;</code></td>
-              <td>See <a href="/?path=/story/primitives-tables--default-table" target="_parent">Tables</a></td>
+              <td>See <a data-story-link="primitives-tables--default-table">Tables</a></td>
             </tr>
           </tbody>
         </table>
@@ -157,6 +158,7 @@ button { all: unset; }`;
       container.querySelector('.code-specificity').innerHTML = h;
     });
     
+    attachStoryLinkHandlers(container);
     return container;
   }
 };
@@ -210,7 +212,7 @@ export const StructuralElements = {
         <h3><code>&lt;nav&gt;</code></h3>
         <p>
           Navigation containers reset list styling and work with the dropdown enhancement.
-          See <a href="/?path=/story/enhancements-dropdowns--basic-dropdown" target="_parent">Dropdown Menus</a> for details.
+          See <a data-story-link="enhancements-dropdowns--basic-dropdown">Dropdown Menus</a> for details.
         </p>
       </article>
     `;
@@ -224,6 +226,7 @@ export const StructuralElements = {
       container.querySelector('.code-header').innerHTML = h;
     });
     
+    attachStoryLinkHandlers(container);
     return container;
   }
 };
@@ -389,7 +392,7 @@ export const DetailsAndSummary = {
         
         <div class="alert alert-info" style="margin-top: var(--spacing-4);">
           <strong>Note:</strong> For grouped accordion behavior (animated, and where only one item opens at a time), 
-          see the <a href="/?path=/story/primitives-accordion--basic-accordion" target="_parent">Accordion primitive</a>.
+          see the <a data-story-link="primitives-accordion--basic-accordion">Accordion primitive</a>.
         </div>
       </article>
     `;
@@ -408,51 +411,59 @@ export const DetailsAndSummary = {
       container.querySelector('.code-details').innerHTML = h;
     });
     
+    attachStoryLinkHandlers(container);
     return container;
   }
 };
 
 DetailsAndSummary.storyName = 'Details & Summary';
 
-export const RelatedDocumentation = () => html`
-  <header class="card">
-    <h2>Related Documentation</h2>
-    <small class="text-muted">
-      Detailed coverage of specific element categories
-    </small>
-  </header>
+export const RelatedDocumentation = () => {
+  const container = document.createElement('div');
+  container.className = 'stack gap-md';
+  container.innerHTML = `
+    <header class="card">
+      <h2>Related Documentation</h2>
+      <small class="text-muted">
+        Detailed coverage of specific element categories
+      </small>
+    </header>
 
-  <div class="grid grid-auto-md gap-md">
-    <a href="/?path=/story/foundations-typography--heading-scale" target="_parent" class="card card-interactive">
-      <h3>Typography</h3>
-      <p class="text-muted">Headings, paragraphs, text utilities, and font scales</p>
-    </a>
-    
-    <a href="/?path=/story/primitives-forms--default" target="_parent" class="card card-interactive">
-      <h3>Forms</h3>
-      <p class="text-muted">Inputs, labels, validation, and form layout patterns</p>
-    </a>
-    
-    <a href="/?path=/story/primitives-buttons--button-variants" target="_parent" class="card card-interactive">
-      <h3>Buttons</h3>
-      <p class="text-muted">Button variants, states, and icon buttons</p>
-    </a>
-    
-    <a href="/?path=/story/primitives-tables--default-table" target="_parent" class="card card-interactive">
-      <h3>Tables</h3>
-      <p class="text-muted">Table styling, variants, and responsive patterns</p>
-    </a>
-    
-    <a href="/?path=/story/primitives-accordion--basic-accordion" target="_parent" class="card card-interactive">
-      <h3>Accordion</h3>
-      <p class="text-muted">Grouped collapsible sections with single-expand behavior</p>
-    </a>
-    
-    <a href="/?path=/story/enhancements-dropdowns--basic-dropdown" target="_parent" class="card card-interactive">
-      <h3>Dropdown Menus</h3>
-      <p class="text-muted">Navigation dropdowns using semantic HTML</p>
-    </a>
-  </div>
-`;
+    <div class="grid grid-auto-md gap-md">
+      <a data-story-link="foundations-typography--heading-scale" class="card card-interactive">
+        <h3>Typography</h3>
+        <p class="text-muted">Headings, paragraphs, text utilities, and font scales</p>
+      </a>
+      
+      <a data-story-link="primitives-forms--default" class="card card-interactive">
+        <h3>Forms</h3>
+        <p class="text-muted">Inputs, labels, validation, and form layout patterns</p>
+      </a>
+      
+      <a data-story-link="primitives-buttons--button-variants" class="card card-interactive">
+        <h3>Buttons</h3>
+        <p class="text-muted">Button variants, states, and icon buttons</p>
+      </a>
+      
+      <a data-story-link="primitives-tables--default-table" class="card card-interactive">
+        <h3>Tables</h3>
+        <p class="text-muted">Table styling, variants, and responsive patterns</p>
+      </a>
+      
+      <a data-story-link="primitives-accordion--basic-accordion" class="card card-interactive">
+        <h3>Accordion</h3>
+        <p class="text-muted">Grouped collapsible sections with single-expand behavior</p>
+      </a>
+      
+      <a data-story-link="enhancements-dropdowns--basic-dropdown" class="card card-interactive">
+        <h3>Dropdown Menus</h3>
+        <p class="text-muted">Navigation dropdowns using semantic HTML</p>
+      </a>
+    </div>
+  `;
+  
+  attachStoryLinkHandlers(container);
+  return container;
+};
 
 RelatedDocumentation.storyName = 'Related Documentation';

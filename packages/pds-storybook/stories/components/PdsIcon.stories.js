@@ -1,20 +1,42 @@
 import { html } from 'lit';
+import { storyLinkHandler } from '../utils/navigation.js';
+import { createComponentDocsPage } from '../reference/reference-docs.js';
+
+const componentDescription = `The \`<pds-icon>\` web component renders SVG icons from a sprite sheet with automatic fallbacks.
+
+👉 See **[Foundations / Icons / Overview](?path=/story/foundations-icons--overview)** for complete documentation.
+
+---
+
+## Quick Reference
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| \`icon\` | string | \`"missing"\` | Icon name from sprite |
+| \`size\` | string | \`"md"\` | Size: \`xs\`, \`sm\`, \`md\`, \`lg\`, \`xl\`, \`2xl\` |
+| \`color\` | string | \`currentColor\` | Icon color (CSS value or token) |
+| \`label\` | string | — | Accessible label (adds \`role="img"\`) |
+| \`rotate\` | number | \`0\` | Rotation in degrees |
+| \`sprite\` | string | — | Override sprite sheet path |
+| \`no-sprite\` | boolean | \`false\` | Force fallback rendering |
+
+---
+
+## Basic Usage
+
+\`\`\`html
+<pds-icon icon="heart"></pds-icon>
+<pds-icon icon="star" size="lg" color="gold"></pds-icon>
+<pds-icon icon="check" color="var(--color-success-500)"></pds-icon>
+\`\`\`
+`;
 
 const docsParameters = {
   description: {
-    component: 'SVG sprite icons with fallbacks'
-  }
+    component: componentDescription
+  },
+  page: createComponentDocsPage('pds-icon')
 };
-
-if (typeof window !== 'undefined') {
-  import('../reference/reference-docs.js')
-    .then(({ createComponentDocsPage }) => {
-      docsParameters.page = createComponentDocsPage('pds-icon');
-    })
-    .catch((error) => {
-      console.warn('storybook: docs page failed to load for pds-icon', error);
-    });
-}
 
 export default {
   title: 'Components/Pds Icon',
@@ -38,41 +60,49 @@ export default {
     color: {
       control: 'color',
       description: 'Icon color'
+    },
+    label: {
+      control: 'text',
+      description: 'Accessible label'
+    },
+    rotate: {
+      control: 'number',
+      description: 'Rotation angle in degrees'
     }
   }
 };
 
 export const Default = {
+  name: 'Interactive Playground',
+  parameters: {
+    docs: {
+      description: {
+        story: 'Use the controls below to explore icon attributes.'
+      }
+    }
+  },
   render: (args) => html`
+    <a href="/?path=/story/foundations-icons--overview" @click=${storyLinkHandler('foundations-icons--overview')} class="card card-interactive" style="display: block; margin-bottom: var(--spacing-lg); text-decoration: none;">
+      <h3 class="flex items-center gap-sm">
+        <pds-icon icon="book-open" size="md"></pds-icon>
+        PDS Icon System
+      </h3>
+      <p class="text-muted">Complete icon system documentation: available icons, sizes, colors, configuration, and more.</p>
+    </a>
+    
     <pds-icon 
       icon="${args.icon}" 
       size="${args.size}"
-      color="${args.color}">
+      color="${args.color}"
+      label="${args.label || ''}"
+      rotate="${args.rotate || 0}">
     </pds-icon>
   `,
   args: {
     icon: 'heart',
     size: 'lg',
-    color: 'currentColor'
+    color: 'currentColor',
+    label: '',
+    rotate: 0
   }
 };
-
-export const AllSizes = () => html`
-  <div style="display: flex; gap: 1rem; align-items: center;">
-    <pds-icon icon="star" size="xs"></pds-icon>
-    <pds-icon icon="star" size="sm"></pds-icon>
-    <pds-icon icon="star" size="md"></pds-icon>
-    <pds-icon icon="star" size="lg"></pds-icon>
-    <pds-icon icon="star" size="xl"></pds-icon>
-    <pds-icon icon="star" size="2xl"></pds-icon>
-  </div>
-`;
-
-export const ColoredIcons = () => html`
-  <div style="display: flex; gap: 1rem;">
-    <pds-icon icon="heart" size="lg" color="red"></pds-icon>
-    <pds-icon icon="star" size="lg" color="gold"></pds-icon>
-    <pds-icon icon="check" size="lg" color="green"></pds-icon>
-    <pds-icon icon="x" size="lg" color="var(--color-danger-500)"></pds-icon>
-  </div>
-`;

@@ -56,3 +56,59 @@ The component points to the sprite at `/assets/pds/icons/icons.svg` by default.
 - The component includes a minimal set of inline fallbacks for a few critical icons so UIs remain usable if the sprite fails to load.
 - Colors inherit from text color via `currentColor` unless overridden.
 - If you need different sprite placement or a CDN path, you can fork the component or serve a redirect at `/assets/img/pds-icons.svg`.
+
+## External Icon Fallback (On-Demand Loading)
+
+For icons not included in the sprite sheet, `<pds-icon>` can automatically fetch individual SVG files on demand. This provides the best of both worlds:
+
+- **Core icons**: Bundled in the cached sprite sheet for optimal performance
+- **Exotic icons**: Fetched individually on first use, then cached in memory
+
+### Configuration
+
+Configure the external icons path in `pds.config.js`:
+
+```javascript
+export const config = {
+  mode: "live",
+  design: {
+    icons: {
+      externalPath: "/assets/img/icons/", // Path for on-demand external SVG icons
+    }
+  }
+};
+```
+
+### Usage
+
+Simply use any icon name - if it's not in the sprite, the component will attempt to fetch it:
+
+```html
+<!-- Sprite icon (instant) -->
+<pds-icon icon="house"></pds-icon>
+
+<!-- External icon (fetched from /assets/img/icons/my-custom-icon.svg) -->
+<pds-icon icon="my-custom-icon"></pds-icon>
+```
+
+### How It Works
+
+1. When an icon is requested, the component first checks the sprite sheet
+2. If not found, it checks the in-memory external icon cache
+3. If not cached, it fetches from `{externalPath}/{icon-name}.svg`
+4. Once fetched, the icon is cached and all instances using that icon re-render
+5. If the fetch fails, the fallback "missing" icon is shown
+
+### External Icon Requirements
+
+External SVG files should:
+- Be standalone SVG files (not symbols)
+- Have a `viewBox` attribute (defaults to `0 0 24 24` if missing)
+- Use `currentColor` for fills/strokes if you want color inheritance
+
+Example external icon structure:
+```xml
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <path fill="currentColor" d="..."/>
+</svg>
+```

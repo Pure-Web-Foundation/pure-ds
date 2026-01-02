@@ -1,9 +1,28 @@
 import { html, nothing } from 'lit';
-import { addons } from '@storybook/preview-api';
-import { SELECT_STORY } from '@storybook/core-events';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import showdown from 'showdown';
 import { highlight as shikiHighlight, escapeHtml as shikiEscapeHtml } from '../utils/shiki.js';
+
+// Lazy-loaded storybook dependencies to avoid build-time import issues
+let storybookAddons = null;
+let storybookSelectStory = null;
+
+async function getStorybookChannel() {
+  if (storybookAddons === null) {
+    try {
+      const [{ addons }, { SELECT_STORY }] = await Promise.all([
+        import('@storybook/preview-api'),
+        import('@storybook/core-events')
+      ]);
+      storybookAddons = addons;
+      storybookSelectStory = SELECT_STORY;
+    } catch {
+      storybookAddons = false;
+      storybookSelectStory = null;
+    }
+  }
+  return { addons: storybookAddons, SELECT_STORY: storybookSelectStory };
+}
 
 const REF_HELPER_STYLE_ID = 'pds-reference-helper-styles';
 const REF_HELPER_STYLE_CONTENT = `
@@ -87,16 +106,19 @@ const getStorySlug = (storyId) => {
   return slug;
 };
 
-export function navigateToStory(storyId, viewMode = 'story') {
+export async function navigateToStory(storyId, viewMode = 'story') {
   if (!storyId || typeof window === 'undefined') return false;
 
   let navigated = false;
 
   try {
-    const channel = addons?.getChannel?.();
-    if (channel?.emit) {
-      channel.emit(SELECT_STORY, { storyId, viewMode });
-      navigated = true;
+    const { addons, SELECT_STORY } = await getStorybookChannel();
+    if (addons && SELECT_STORY) {
+      const channel = addons?.getChannel?.();
+      if (channel?.emit) {
+        channel.emit(SELECT_STORY, { storyId, viewMode });
+        navigated = true;
+      }
     }
   } catch (err) {
     console.warn('PDS reference docs: channel navigation failed', err);

@@ -1,5 +1,10 @@
 import { html } from 'lit';
 import { presets } from '../../../../src/js/pds-core/pds-config.js';
+import { highlight, getCurrentTheme, preloadShiki } from '../utils/shiki.js';
+import { attachStoryLinkHandlers } from '../utils/navigation.js';
+
+// Pre-load Shiki
+preloadShiki();
 
 const iconStoryStyles = html`
   <style>
@@ -147,6 +152,329 @@ export default {
   }
 };
 
+// ============================================================================
+// Overview - First story
+// ============================================================================
+
+export const Overview = () => {
+  const container = document.createElement('article');
+  container.className = 'stack gap-lg';
+  container.style.padding = 'var(--spacing-4)';
+  
+  container.innerHTML = /*html*/`
+    <header>
+      <h2>PDS Icon System</h2>
+      <p class="text-lg">PDS ships a simple, sprite-based icon solution and a lightweight <code>&lt;pds-icon&gt;</code> web component.</p>
+    </header>
+
+    <section class="card">
+      <h3>Quick Start</h3>
+      <p>The <code>&lt;pds-icon&gt;</code> element is registered by the Auto-Define system when it appears in the DOM (lazily, unless registered in the <code>autoDefine.predefine</code> array).</p>
+      <div class="code-quickstart"></div>
+    </section>
+
+    <section class="card">
+      <h3>Attributes</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>icon</code></td>
+            <td>string</td>
+            <td><code>"missing"</code></td>
+            <td>Symbol id from sprite (e.g., <code>house</code>, <code>gear</code>)</td>
+          </tr>
+          <tr>
+            <td><code>size</code></td>
+            <td>string | number</td>
+            <td><code>"md"</code> (24px)</td>
+            <td>Size in px or named: <code>xs</code>, <code>sm</code>, <code>md</code>, <code>lg</code>, <code>xl</code>, <code>2xl</code></td>
+          </tr>
+          <tr>
+            <td><code>color</code></td>
+            <td>string</td>
+            <td><code>currentColor</code></td>
+            <td>Any CSS color value or design token</td>
+          </tr>
+          <tr>
+            <td><code>label</code></td>
+            <td>string</td>
+            <td>—</td>
+            <td>Accessible name. Adds <code>role="img"</code>; otherwise <code>aria-hidden</code></td>
+          </tr>
+          <tr>
+            <td><code>rotate</code></td>
+            <td>number</td>
+            <td><code>0</code></td>
+            <td>Rotation angle in degrees</td>
+          </tr>
+          <tr>
+            <td><code>sprite</code></td>
+            <td>string</td>
+            <td>—</td>
+            <td>Override sprite sheet path</td>
+          </tr>
+          <tr>
+            <td><code>no-sprite</code></td>
+            <td>boolean</td>
+            <td><code>false</code></td>
+            <td>Force fallback rendering</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h3>Icon Configuration</h3>
+      <p>PDS provides sensible defaults for icons in <code>design.icons</code>. You can override any part in your <code>pds.config.js</code>:</p>
+      <div class="code-full-config"></div>
+      
+      <h4>Configuration Options</h4>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Option</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>set</code></td>
+            <td><code>"phosphor"</code></td>
+            <td>Icon set to use (currently Phosphor icons)</td>
+          </tr>
+          <tr>
+            <td><code>weight</code></td>
+            <td><code>"regular"</code></td>
+            <td>Icon weight variant</td>
+          </tr>
+          <tr>
+            <td><code>defaultSize</code></td>
+            <td><code>24</code></td>
+            <td>Default icon size in pixels</td>
+          </tr>
+          <tr>
+            <td><code>externalPath</code></td>
+            <td><code>"/assets/img/icons/"</code></td>
+            <td>Path for on-demand external SVG icons</td>
+          </tr>
+          <tr>
+            <td><code>sizes</code></td>
+            <td><code>{ xs: 16, sm: 20, md: 24, lg: 32, xl: 48, "2xl": 64 }</code></td>
+            <td>Named size mappings</td>
+          </tr>
+          <tr>
+            <td><code>include</code></td>
+            <td><em>(see below)</em></td>
+            <td>Categorized icon lists to include in sprite</td>
+          </tr>
+          <tr>
+            <td><code>spritePath</code></td>
+            <td><code>"public/assets/pds/icons/pds-icons.svg"</code></td>
+            <td>Output path for generated sprite</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h3>Customizing Icons</h3>
+      <p>Extend or override the default icon categories in your <code>pds.config.js</code>:</p>
+      <div class="code-customize"></div>
+      <p class="text-muted text-sm" style="margin-top: var(--spacing-2);">
+        The <code>include</code> object defines which icons are bundled into the sprite. Categories are: 
+        <code>navigation</code>, <code>actions</code>, <code>communication</code>, <code>content</code>, 
+        <code>status</code>, <code>time</code>, <code>commerce</code>, <code>formatting</code>, <code>system</code>.
+      </p>
+    </section>
+
+    <section class="card">
+      <h3>CLI Tools</h3>
+      
+      <h4><code>pds:build-icons</code></h4>
+      <p>Regenerate the sprite after changing your icon selection:</p>
+      <div class="code-build-icons"></div>
+      <p class="text-muted text-sm">Reads <code>design.icons.include</code> from config and generates the sprite at <code>spritePath</code>.</p>
+      
+      <h4><code>pds:export</code></h4>
+      <p>Export PDS assets (including icons) to your project's static folder:</p>
+      <div class="code-export"></div>
+      <p class="text-muted text-sm">Copies the sprite to <code>[config.static.root]/icons/pds-icons.svg</code> for production use.</p>
+    </section>
+
+    <section class="card">
+      <h3>Files</h3>
+      <ul>
+        <li><code>public/assets/pds/icons/pds-icons.svg</code> — SVG sprite sheet consumed at runtime</li>
+        <li><code>public/auto-define/pds-icon.js</code> — auto-defined component that renders icons</li>
+        <li><code>packages/pds-cli/bin/pds-build-icons.js</code> — CLI tool to regenerate the sprite</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h3>External Icon Fallback (On-Demand Loading)</h3>
+      <p>For icons not in the sprite sheet, <code>&lt;pds-icon&gt;</code> can automatically fetch individual SVG files on demand:</p>
+      <ul>
+        <li><strong>Core icons:</strong> Bundled in the cached sprite sheet for optimal performance</li>
+        <li><strong>Exotic icons:</strong> Fetched individually on first use, then cached in memory</li>
+      </ul>
+
+      <h4>How It Works</h4>
+      <ol>
+        <li>Component first checks the sprite sheet</li>
+        <li>If not found, checks the in-memory external icon cache</li>
+        <li>If not cached, fetches from <code>{externalPath}/{icon-name}.svg</code></li>
+        <li>Once fetched, the icon is cached and all instances re-render</li>
+        <li>If the fetch fails, the fallback "missing" icon is shown</li>
+      </ol>
+
+      <h4>External Icon Requirements</h4>
+      <p>External SVG files should:</p>
+      <ul>
+        <li>Be standalone SVG files (not symbols)</li>
+        <li>Have a <code>viewBox</code> attribute (defaults to <code>0 0 24 24</code> if missing)</li>
+        <li>Use <code>currentColor</code> for fills/strokes for color inheritance</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h3>Notes</h3>
+      <ul>
+        <li>The component includes minimal inline fallbacks for critical icons so UIs remain usable if the sprite fails to load</li>
+        <li>Colors inherit from text color via <code>currentColor</code> unless overridden</li>
+        <li>For different sprite placement or CDN path, you can fork the component or serve a redirect</li>
+      </ul>
+    </section>
+
+    <section>
+      <h3>Explore</h3>
+      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-md);">
+        <a data-story-link="foundations-icons--common-icons" class="card card-interactive">
+          <h4>Common Icons</h4>
+          <p class="text-muted text-sm">Most frequently used icons</p>
+        </a>
+        <a data-story-link="foundations-icons--icon-sizes" class="card card-interactive">
+          <h4>Icon Sizes</h4>
+          <p class="text-muted text-sm">Size scale from xs to 2xl</p>
+        </a>
+        <a data-story-link="foundations-icons--colored-icons" class="card card-interactive">
+          <h4>Colored Icons</h4>
+          <p class="text-muted text-sm">Color customization options</p>
+        </a>
+        <a data-story-link="foundations-icons--all-icons" class="card card-interactive">
+          <h4>All Icons</h4>
+          <p class="text-muted text-sm">Browse full icon library</p>
+        </a>
+        <a data-story-link="foundations-icons--external-icons" class="card card-interactive">
+          <h4>External Icons</h4>
+          <p class="text-muted text-sm">On-demand loading demo</p>
+        </a>
+      </div>
+    </section>
+  `;
+
+  // Add Shiki-highlighted code blocks
+  const quickstartCode = `<pds-icon icon="house"></pds-icon>
+<pds-icon icon="gear" size="lg"></pds-icon>
+<pds-icon icon="heart" size="32"></pds-icon>
+<pds-icon icon="list" label="Open menu"></pds-icon>`;
+
+  const fullConfigCode = `// PDS default icon configuration (from pds-config.js)
+design: {
+  icons: {
+    set: "phosphor",                              // Icon set
+    weight: "regular",                            // Icon weight
+    defaultSize: 24,                              // Default size in px
+    externalPath: "/assets/img/icons/",           // External SVG path
+    sizes: {
+      xs: 16, sm: 20, md: 24, lg: 32, xl: 48, "2xl": 64
+    },
+    include: {
+      navigation: ["arrow-left", "arrow-right", "house", "gear", ...],
+      actions: ["plus", "minus", "check", "trash", "pencil", ...],
+      communication: ["envelope", "bell", "chat-circle", "user", ...],
+      content: ["image", "file", "folder", "book-open", ...],
+      status: ["info", "warning", "check-circle", "x-circle", ...],
+      time: ["calendar", "clock", "timer", "hourglass"],
+      commerce: ["shopping-cart", "credit-card", "tag", ...],
+      formatting: ["text-align-left", "text-b", "list-bullets", ...],
+      system: ["cloud", "desktop", "globe", "sun", "moon", ...]
+    },
+    spritePath: "public/assets/pds/icons/pds-icons.svg"
+  }
+}`;
+
+  const customizeCode = `// pds.config.js - Customize your icon set
+export const config = {
+  design: {
+    icons: {
+      // Add custom icons to existing categories
+      include: {
+        actions: [
+          ...PDS.defaults.design.icons.include.actions,  // Keep defaults
+          "my-custom-action"                              // Add your own
+        ],
+        // Or replace a category entirely
+        commerce: ["cart", "wallet", "receipt"]
+      },
+      // Or add a completely new category
+      include: {
+        ...PDS.defaults.design.icons.include,
+        myBrand: ["logo", "brand-icon", "mascot"]
+      }
+    }
+  }
+};`;
+
+  const buildIconsCode = `# Rebuild sprite from config
+npm run pds:build-icons
+
+# Or via npx
+npx pds build-icons`;
+
+  const exportCode = `# Export all PDS assets including icons
+npm run pds:export
+
+# Icons are copied to: [static.root]/icons/pds-icons.svg`;
+
+  const theme = getCurrentTheme();
+  
+  highlight(quickstartCode, 'html', theme).then(h => {
+    container.querySelector('.code-quickstart').innerHTML = h;
+  });
+  highlight(fullConfigCode, 'javascript', theme).then(h => {
+    container.querySelector('.code-full-config').innerHTML = h;
+  });
+  highlight(customizeCode, 'javascript', theme).then(h => {
+    container.querySelector('.code-customize').innerHTML = h;
+  });
+  highlight(buildIconsCode, 'bash', theme).then(h => {
+    container.querySelector('.code-build-icons').innerHTML = h;
+  });
+  highlight(exportCode, 'bash', theme).then(h => {
+    container.querySelector('.code-export').innerHTML = h;
+  });
+
+  // Attach navigation handlers to story links
+  attachStoryLinkHandlers(container);
+
+  return container;
+};
+
+Overview.storyName = 'Overview';
+
+// ============================================================================
+// Common Icons
+// ============================================================================
+
 export const CommonIcons = () => html`
   ${iconStoryStyles}
   <section class="icon-story-section">
@@ -212,6 +540,76 @@ export const IconSizes = () => html`
 `;
 
 IconSizes.storyName = 'Icon Sizes';
+
+export const ColoredIcons = () => html`
+  ${iconStoryStyles}
+  <section class="icon-story-section">
+    <header>
+      <h3>Colored Icons</h3>
+      <small class="text-muted">
+        Icons inherit <code>currentColor</code> by default, or can be explicitly colored using the <code>color</code> attribute.
+      </small>
+    </header>
+    
+    <article class="card">
+      <h4>Using CSS Color Values</h4>
+      <div class="icon-story-grid">
+        <pds-icon icon="heart" size="lg" color="red"></pds-icon>
+        <pds-icon icon="star" size="lg" color="gold"></pds-icon>
+        <pds-icon icon="check" size="lg" color="green"></pds-icon>
+        <pds-icon icon="x" size="lg" color="crimson"></pds-icon>
+        <pds-icon icon="info" size="lg" color="dodgerblue"></pds-icon>
+      </div>
+    </article>
+
+    <article class="card">
+      <h4>Using Design Tokens</h4>
+      <p class="text-muted text-sm">Recommended approach for consistent theming.</p>
+      <div class="icon-story-grid">
+        <pds-icon icon="heart" size="lg" color="var(--color-primary-500)"></pds-icon>
+        <pds-icon icon="star" size="lg" color="var(--color-accent-500)"></pds-icon>
+        <pds-icon icon="check-circle" size="lg" color="var(--color-success-500)"></pds-icon>
+        <pds-icon icon="warning" size="lg" color="var(--color-warning-500)"></pds-icon>
+        <pds-icon icon="x-circle" size="lg" color="var(--color-error-500)"></pds-icon>
+      </div>
+    </article>
+
+    <article class="card">
+      <h4>Inheriting from Parent</h4>
+      <p class="text-muted text-sm">Icons use <code>currentColor</code> by default, inheriting text color.</p>
+      <div class="icon-story-grid">
+        <span style="color: var(--color-primary-500);">
+          <pds-icon icon="envelope" size="lg"></pds-icon>
+          Primary text with icon
+        </span>
+        <span style="color: var(--color-success-500);">
+          <pds-icon icon="check" size="lg"></pds-icon>
+          Success message
+        </span>
+        <span style="color: var(--color-error-500);">
+          <pds-icon icon="warning" size="lg"></pds-icon>
+          Error state
+        </span>
+      </div>
+    </article>
+
+    <div class="icon-story-usage">
+      <h4>Usage</h4>
+      <pre class="icon-story-usage__code"><code>&lt;!-- Named CSS color --&gt;
+&lt;pds-icon icon="heart" color="red"&gt;&lt;/pds-icon&gt;
+
+&lt;!-- Design token (recommended) --&gt;
+&lt;pds-icon icon="check" color="var(--color-success-500)"&gt;&lt;/pds-icon&gt;
+
+&lt;!-- Inherit from parent --&gt;
+&lt;span style="color: var(--color-primary-500);"&gt;
+  &lt;pds-icon icon="star"&gt;&lt;/pds-icon&gt; Rating
+&lt;/span&gt;</code></pre>
+    </div>
+  </section>
+`;
+
+ColoredIcons.storyName = 'Colored Icons';
 
 export const AllIcons = () => {
   const iconConfig = presets.default.icons.include;
@@ -301,3 +699,243 @@ export const AllIcons = () => {
 };
 
 AllIcons.storyName = 'All Icons';
+
+/**
+ * External Icons - On-demand SVG loading
+ * 
+ * When an icon is not found in the sprite sheet, pds-icon can automatically
+ * fetch individual SVG files from a configurable external path.
+ */
+export const ExternalIcons = () => html`
+  ${iconStoryStyles}
+  <style>
+    .external-icon-demo {
+      display: grid;
+      gap: var(--spacing-6);
+    }
+    
+    .external-icon-showcase {
+      display: flex;
+      gap: var(--spacing-4);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .external-icon-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-2);
+      padding: var(--spacing-4);
+      border-radius: var(--radius-md);
+      background: var(--surface-elevated-bg);
+      min-width: 100px;
+    }
+    
+    .external-icon-card__label {
+      font-size: 0.75rem;
+      text-align: center;
+      opacity: 0.7;
+    }
+    
+    .cache-status {
+      padding: var(--spacing-4);
+      border-radius: var(--radius-md);
+      background: var(--surface-bg);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      max-height: 200px;
+      overflow: auto;
+    }
+    
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--spacing-4);
+    }
+    
+    .comparison-card {
+      padding: var(--spacing-4);
+      border-radius: var(--radius-md);
+      background: var(--surface-elevated-bg);
+    }
+    
+    .comparison-card h4 {
+      margin: 0 0 var(--spacing-3) 0;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+    }
+  </style>
+  
+  <section class="icon-story-section external-icon-demo">
+    <header>
+      <h2>External Icons (On-Demand Loading)</h2>
+      <p class="text-muted">
+        Icons not in the sprite sheet are automatically fetched from an external path.
+        This provides the best of both worlds: core icons load instantly from the cached 
+        sprite, while exotic icons are fetched on-demand and cached in memory.
+      </p>
+    </header>
+
+    <article class="card">
+      <h3>How It Works</h3>
+      <div class="comparison-grid">
+        <div class="comparison-card">
+          <h4><pds-icon icon="lightning" size="sm"></pds-icon> Sprite Icons (Fast)</h4>
+          <p class="text-muted" style="margin: 0;">
+            Core icons bundled in the sprite sheet load instantly with a single HTTP request.
+          </p>
+          <div class="external-icon-showcase" style="margin-top: var(--spacing-3);">
+            <pds-icon icon="house" size="lg"></pds-icon>
+            <pds-icon icon="gear" size="lg"></pds-icon>
+            <pds-icon icon="heart" size="lg"></pds-icon>
+            <pds-icon icon="star" size="lg"></pds-icon>
+          </div>
+        </div>
+        
+        <div class="comparison-card">
+          <h4><pds-icon icon="cloud-arrow-down" size="sm"></pds-icon> External Icons (On-Demand)</h4>
+          <p class="text-muted" style="margin: 0;">
+            Exotic icons are fetched individually, then cached for subsequent use.
+          </p>
+          <div class="external-icon-showcase" style="margin-top: var(--spacing-3);">
+            <pds-icon icon="solid-anatomy-brain-1" size="lg" color="var(--color-primary-500)"></pds-icon>
+            <pds-icon icon="solid-anatomy-hand-bones" size="lg" color="var(--color-accent-500)"></pds-icon>
+            <pds-icon icon="solid-conditions-lung-condition-2" size="lg" color="var(--color-success-500)"></pds-icon>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <h3>External Icon Sizes</h3>
+      <p class="text-muted">External icons respect all standard size tokens.</p>
+      <div class="icon-story-size-grid">
+        <div class="icon-story-size-item">
+          <pds-icon icon="solid-anatomy-brain-1" size="xs"></pds-icon>
+          <small class="text-muted">xs (16px)</small>
+        </div>
+        <div class="icon-story-size-item">
+          <pds-icon icon="solid-anatomy-brain-1" size="sm"></pds-icon>
+          <small class="text-muted">sm (20px)</small>
+        </div>
+        <div class="icon-story-size-item">
+          <pds-icon icon="solid-anatomy-brain-1" size="md"></pds-icon>
+          <small class="text-muted">md (24px)</small>
+        </div>
+        <div class="icon-story-size-item">
+          <pds-icon icon="solid-anatomy-brain-1" size="lg"></pds-icon>
+          <small class="text-muted">lg (32px)</small>
+        </div>
+        <div class="icon-story-size-item">
+          <pds-icon icon="solid-anatomy-brain-1" size="xl"></pds-icon>
+          <small class="text-muted">xl (48px)</small>
+        </div>
+        <div class="icon-story-size-item">
+          <pds-icon icon="solid-anatomy-brain-1" size="2xl"></pds-icon>
+          <small class="text-muted">2xl (64px)</small>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <h3>Color Inheritance</h3>
+      <p class="text-muted">External icons support color customization just like sprite icons.</p>
+      <div class="external-icon-showcase">
+        <div class="external-icon-card">
+          <pds-icon icon="solid-anatomy-brain-1" size="xl" color="var(--color-primary-500)"></pds-icon>
+          <span class="external-icon-card__label">Primary</span>
+        </div>
+        <div class="external-icon-card">
+          <pds-icon icon="solid-anatomy-hand-bones" size="xl" color="var(--color-accent-500)"></pds-icon>
+          <span class="external-icon-card__label">Accent</span>
+        </div>
+        <div class="external-icon-card">
+          <pds-icon icon="solid-conditions-lung-condition-2" size="xl" color="var(--color-success-500)"></pds-icon>
+          <span class="external-icon-card__label">Success</span>
+        </div>
+        <div class="external-icon-card">
+          <pds-icon icon="solid-anatomy-brain-1" size="xl" color="var(--color-warning-500)"></pds-icon>
+          <span class="external-icon-card__label">Warning</span>
+        </div>
+        <div class="external-icon-card">
+          <pds-icon icon="solid-anatomy-hand-bones" size="xl" color="var(--color-error-500)"></pds-icon>
+          <span class="external-icon-card__label">Error</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <h3>Fallback Behavior</h3>
+      <p class="text-muted">
+        When an icon isn't found in the sprite <em>or</em> the external path, 
+        a fallback "missing" icon is shown.
+      </p>
+      <div class="external-icon-showcase">
+        <div class="external-icon-card">
+          <pds-icon icon="this-icon-does-not-exist" size="xl"></pds-icon>
+          <span class="external-icon-card__label">Missing icon</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <h3>Cache Inspector</h3>
+      <p class="text-muted">
+        Click the button to inspect the current external icon cache state.
+      </p>
+      <button class="btn-secondary" id="check-cache-btn">Check External Icon Cache</button>
+      <pre class="cache-status" id="cache-status">Click the button to see cache contents...</pre>
+    </article>
+
+    <article class="card surface-elevated">
+      <h4>Configuration</h4>
+      <p class="text-muted">Configure the external icons path in <code>pds.config.js</code>:</p>
+      <pre class="icon-story-usage__code"><code>export const config = {
+  design: {
+    icons: {
+      externalPath: "/assets/img/icons/", // Path for on-demand SVG icons
+    }
+  }
+};</code></pre>
+    </article>
+
+    <article class="card surface-elevated">
+      <h4>Usage</h4>
+      <pre class="icon-story-usage__code"><code>&lt;!-- Sprite icon (instant from cache) --&gt;
+&lt;pds-icon icon="house" size="lg"&gt;&lt;/pds-icon&gt;
+
+&lt;!-- External icon (fetched from /assets/img/icons/my-custom-icon.svg) --&gt;
+&lt;pds-icon icon="my-custom-icon" size="lg"&gt;&lt;/pds-icon&gt;</code></pre>
+    </article>
+  </section>
+`;
+
+ExternalIcons.storyName = 'External Icons';
+ExternalIcons.play = async ({ canvasElement }) => {
+  // Set up cache inspector button
+  const btn = canvasElement.querySelector('#check-cache-btn');
+  const status = canvasElement.querySelector('#cache-status');
+  
+  if (btn && status) {
+    btn.addEventListener('click', () => {
+      const SvgIcon = customElements.get('pds-icon');
+      if (SvgIcon && SvgIcon.externalIconCache) {
+        const cacheEntries = Array.from(SvgIcon.externalIconCache.entries()).map(([name, data]) => ({
+          name,
+          loaded: data.loaded,
+          error: data.error,
+          hasContent: !!data.content,
+          viewBox: data.viewBox
+        }));
+        status.textContent = cacheEntries.length 
+          ? JSON.stringify(cacheEntries, null, 2)
+          : 'Cache is empty (no external icons fetched yet)';
+      } else {
+        status.textContent = 'pds-icon component not registered or cache not available';
+      }
+    });
+  }
+};

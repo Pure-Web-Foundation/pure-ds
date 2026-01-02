@@ -45,6 +45,11 @@ export class SvgIcon extends HTMLElement {
   static spritePromises = new Map();
   static inlineSprites = new Map();
 
+  // Cache for externally fetched SVG icons (icon name -> { content, viewBox, loaded, error })
+  static externalIconCache = new Map();
+  // Promises for in-flight external icon fetches
+  static externalIconPromises = new Map();
+
   static instances = new Set();
 
   static #spriteSupport = false;
@@ -167,50 +172,98 @@ export class SvgIcon extends HTMLElement {
     let inlineSymbolContent = null;
     let inlineSymbolViewBox = null;
     let inlineSymbolPreserveAspectRatio = null;
+    let useExternalIcon = false;
+    let externalIconData = null;
+    let spriteIconNotFound = false;
+    let spriteStillLoading = false;
 
     if (!useFallback && typeof window !== 'undefined' && spriteHref) {
       try {
         const spriteURL = new URL(spriteHref, window.location.href);
-        const sameOrigin = spriteURL.origin === window.location.origin;
+        const spriteKey = spriteURL.href;
+        const inlineSpriteData = SvgIcon.inlineSprites.get(spriteKey);
 
-        if (!sameOrigin) {
-          const spriteKey = spriteURL.href;
-          const inlineSpriteData = SvgIcon.inlineSprites.get(spriteKey);
-
-          if (inlineSpriteData && inlineSpriteData.loaded) {
-            const symbolData = inlineSpriteData.symbols.get(icon);
-            if (symbolData) {
-              inlineSymbolContent = symbolData.content;
-              inlineSymbolViewBox = symbolData.viewBox;
-              inlineSymbolPreserveAspectRatio = symbolData.preserveAspectRatio;
-            } else {
-              useFallback = true;
-            }
-          } else if (inlineSpriteData && inlineSpriteData.error) {
-            useFallback = true;
+        // For both same-origin and cross-origin, we inline the sprite to verify icon existence
+        if (inlineSpriteData && inlineSpriteData.loaded) {
+          const symbolData = inlineSpriteData.symbols.get(icon);
+          if (symbolData) {
+            inlineSymbolContent = symbolData.content;
+            inlineSymbolViewBox = symbolData.viewBox;
+            inlineSymbolPreserveAspectRatio = symbolData.preserveAspectRatio;
           } else {
-            SvgIcon.ensureInlineSprite(spriteKey);
-            useFallback = true;
+            spriteIconNotFound = true;
           }
+        } else if (inlineSpriteData && inlineSpriteData.error) {
+          spriteIconNotFound = true;
         } else {
-          inlineSymbolContent = null;
+          SvgIcon.ensureInlineSprite(spriteKey);
+          spriteStillLoading = true;
+          useFallback = true;
         }
       } catch (e) {
         // Ignore URL errors and fall back to default behaviour
       }
     }
+
+    // If icon not found in sprite (or we're using fallback), try external icon
+    // Skip external fetch for known fallback icons
+    // IMPORTANT: Don't try external icons while sprite is still loading
+    const hasFallback = SvgIcon.#fallbackIcons.hasOwnProperty(icon);
+    if (spriteIconNotFound && !hasFallback && !spriteStillLoading) {
+      const cached = SvgIcon.externalIconCache.get(icon);
+      if (cached) {
+        if (cached.loaded && cached.content) {
+          useExternalIcon = true;
+          externalIconData = cached;
+        } else if (cached.error) {
+          // External fetch failed, use fallback
+          useFallback = true;
+        }
+      } else {
+        // Trigger async fetch - will re-render when complete
+        SvgIcon.fetchExternalIcon(icon);
+        useFallback = true;
+      }
+    }
+
+    // If sprite icon not found and external didn't work, use fallback
+    if (spriteIconNotFound && !useExternalIcon) {
+      useFallback = true;
+    }
     
     // Build transform string for rotation
     const transform = rotate !== '0' ? `rotate(${rotate} 128 128)` : '';
     const defaultViewBox = '0 0 256 256';
-    const viewBox = inlineSymbolViewBox || defaultViewBox;
-    const preserveAspectRatioAttr = inlineSymbolPreserveAspectRatio
-      ? ` preserveAspectRatio="${inlineSymbolPreserveAspectRatio}"`
-      : '';
+    
+    // Determine viewBox: external icons may have different viewBox (often 24x24)
+    let viewBox = defaultViewBox;
+    let preserveAspectRatioAttr = '';
+    
+    if (useExternalIcon && externalIconData) {
+      viewBox = externalIconData.viewBox || '0 0 24 24';
+      if (externalIconData.preserveAspectRatio) {
+        preserveAspectRatioAttr = ` preserveAspectRatio="${externalIconData.preserveAspectRatio}"`;
+      }
+    } else if (inlineSymbolViewBox) {
+      viewBox = inlineSymbolViewBox;
+      if (inlineSymbolPreserveAspectRatio) {
+        preserveAspectRatioAttr = ` preserveAspectRatio="${inlineSymbolPreserveAspectRatio}"`;
+      }
+    }
+
     const hasInlineSymbol = inlineSymbolContent !== null;
-    const symbolMarkup = useFallback
-      ? this.#getFallbackIcon(icon)
-      : (hasInlineSymbol ? inlineSymbolContent : `<use href="${effectiveHref}"></use>`);
+    
+    // Determine symbol markup based on priority: external > inline sprite > use href > fallback
+    let symbolMarkup;
+    if (useExternalIcon && externalIconData?.content) {
+      symbolMarkup = externalIconData.content;
+    } else if (useFallback) {
+      symbolMarkup = this.#getFallbackIcon(icon);
+    } else if (hasInlineSymbol) {
+      symbolMarkup = inlineSymbolContent;
+    } else {
+      symbolMarkup = `<use href="${effectiveHref}"></use>`;
+    }
     
     this.shadowRoot.innerHTML = `
       <svg
@@ -242,6 +295,114 @@ export class SvgIcon extends HTMLElement {
    */
   spriteAvailable() {
     return SvgIcon.#spriteSupport;
+  }
+
+  /**
+   * Get the external icons path from PDS config or use default
+   * @private
+   * @returns {string} The base path for external SVG icons
+   */
+  static getExternalIconPath() {
+    try {
+      // Try to get from PDS.compiled.tokens.icons.externalPath (live mode)
+      if (typeof window !== 'undefined' && window.PDS?.compiled?.tokens?.icons?.externalPath) {
+        return window.PDS.compiled.tokens.icons.externalPath;
+      }
+      // Fallback: check compiled.config.design.icons.externalPath
+      if (typeof window !== 'undefined' && window.PDS?.compiled?.config?.design?.icons?.externalPath) {
+        return window.PDS.compiled.config.design.icons.externalPath;
+      }
+      // Fallback: check currentConfig
+      if (typeof window !== 'undefined' && window.PDS?.currentConfig?.design?.icons?.externalPath) {
+        return window.PDS.currentConfig.design.icons.externalPath;
+      }
+    } catch (e) {
+      // Ignore errors accessing config
+    }
+    // Default path
+    return '/assets/img/icons/';
+  }
+
+  /**
+   * Fetch an external SVG icon and cache it
+   * @param {string} iconName - The icon name (without .svg extension)
+   * @returns {Promise<boolean>} True if successfully fetched
+   */
+  static async fetchExternalIcon(iconName) {
+    if (!iconName || typeof document === 'undefined') {
+      return false;
+    }
+
+    // Check if already cached
+    const cached = SvgIcon.externalIconCache.get(iconName);
+    if (cached) {
+      return cached.loaded;
+    }
+
+    // Check if fetch is already in progress
+    if (SvgIcon.externalIconPromises.has(iconName)) {
+      return SvgIcon.externalIconPromises.get(iconName);
+    }
+
+    const basePath = SvgIcon.getExternalIconPath();
+    const iconUrl = `${basePath}${iconName}.svg`;
+
+    const promise = fetch(iconUrl)
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to load icon: ${response.status} ${response.statusText}`);
+        }
+        const svgText = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(svgText, 'image/svg+xml');
+        const svg = doc.querySelector('svg');
+
+        if (!svg) {
+          throw new Error('Invalid SVG: no <svg> element found');
+        }
+
+        // Extract viewBox and content
+        const viewBox = svg.getAttribute('viewBox') || '0 0 24 24';
+        const preserveAspectRatio = svg.getAttribute('preserveAspectRatio');
+        
+        // Serialize the inner content
+        const serializer = new XMLSerializer();
+        const content = Array.from(svg.childNodes)
+          .map((node) => serializer.serializeToString(node))
+          .join('');
+
+        SvgIcon.externalIconCache.set(iconName, {
+          loaded: true,
+          error: false,
+          content,
+          viewBox,
+          preserveAspectRatio,
+        });
+
+        SvgIcon.notifyInstances();
+        return true;
+      })
+      .catch((error) => {
+        // Only log if not a 404 (expected for non-existent icons)
+        if (!error.message?.includes('404')) {
+          console.debug('[pds-icon] External icon not found:', iconName, error.message);
+        }
+        SvgIcon.externalIconCache.set(iconName, {
+          loaded: false,
+          error: true,
+          content: null,
+          viewBox: null,
+          preserveAspectRatio: null,
+        });
+        SvgIcon.notifyInstances();
+        return false;
+      })
+      .finally(() => {
+        SvgIcon.externalIconPromises.delete(iconName);
+      });
+
+    SvgIcon.externalIconPromises.set(iconName, promise);
+    return promise;
   }
 
   static async ensureInlineSprite(spriteURL) {
