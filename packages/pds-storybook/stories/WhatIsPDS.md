@@ -1,73 +1,68 @@
 ![Pure Design System logo](/assets/img/logo.png) 
 
-# With Great Standards Comes Great Power
+Imagine you’re standing at the edge of a new project. The browser is empty, but full of potential. You don’t start by choosing a framework. You start by deciding *how deep you want to go*.
 
-PDS is a **configuration-first, standards-only design system generator**.
+# The **Three Layers of the Pure Design System**
 
-Not a framework. Not a utility library. Not tied to any toolchain.
+They are not steps you *must* take.
 
-The browser is the framework. Semantic HTML is the component model. **Web Standards are enough.**
+They are **layers you may choose**, each one building on the guarantees of the one below it.
 
----
+## Layer 1 — The Ground: Deterministic Design Language
 
-## The PDS Philosophy
+The first layer is quiet. Almost invisible.
 
-PDS generates CSS from your config. But *how* that CSS is meant to be used is what sets PDS apart.
+You define a handful of values: a primary color, a base font size, a spacing unit, a radius preference. Or even simpler: to get started, just select one of the **presets** avaliable. Nothing more. From that minimal intent, PDS *deterministically* generates a complete, production-ready design language: tokens, scales, semantics, surfaces, states.
 
-### 1. Semantic Classes First
+At runtime, CSS is injected via Adopted StyleSheets (both in the main document and in Shadow documents).
 
-PDS generates **high-level, meaningful primitives**:
+This layer answers a fundamental question:
 
-```html
-<article class="card">
-  <h3>Title</h3>
-  <p>Content that speaks for itself.</p>
-</article>
+> *“What does my product look like — everywhere, consistently, and forever?”*
 
-<button class="btn-primary">Save Changes</button>
+At this level:
 
-<div class="alert alert-success">Operation completed.</div>
-```
+- HTML stays HTML
+- CSS stays CSS
+- Your design language becomes portable, inspectable, and future-proof
 
-These aren't "components" you import—they're **CSS classes that style semantic HTML**.
-Write the HTML you'd write anyway. PDS makes it look right.
+You can stop here and already have something most teams never achieve:
 
-### 2. Layout Utilities—Sparingly
+**a coherent, mathematically sound, tokenized design system that works across documents, shadow DOMs, and apps.** readme
 
-PDS provides a **small set of layout utilities** for composition:
+## Layer 2 — The Pulse: Progressive Enhancement
 
-```html
-<div class="flex gap-md items-center">
-  <pds-icon icon="user"></pds-icon>
-  <span>Profile</span>
-</div>
+The second layer introduces *motion* — but carefully.
 
-<main class="container">
-  <section class="stack-lg">
-    <!-- Natural document flow with consistent spacing -->
-  </section>
-</main>
-```
+Here, PDS adds **behavior**, not structure. Enhancements that respect the browser, accessibility, and user preferences. Focus handling, transitions, dialogs, toasts, form logic. All optional. All progressive.
 
-That's it. No `.text-blue-500`, no `.p-4`, no `.rounded-lg`.
-**Spacing, colors, radii are tokens—not classes.**
+> *“How do we add behavior without coupling ourselves to a framework?”*
 
-### 3. Inline Styles? Only for Tokens
+At this level:
 
-The **only** recommended use of `style=""` in PDS is setting CSS custom properties:
+- HTML remains the source of truth
+- CSS still defines appearance
+- JavaScript enhances intent, does not replace it
 
-```html
-<!-- ✓ Setting a token override -->
-<section style="--surface-bg: var(--color-primary-50);">
-  <p>This section has a tinted background.</p>
-</section>
+## Layer 3 — The Instruments: Web Components
 
-<!-- ✗ NEVER do this -->
-<div style="display: flex; gap: 16px; padding: 20px;">
-```
+Web Components are only used for complex controls.
 
-If you're writing `style="color: red"` or `style="margin: 1rem"`, you're doing it wrong.
-PDS gives you tokens. Use them.
+The third layer provides **Web Components**, built on the previous two layers. They are thin, composable instruments: not replacements for native elements, but amplifiers of them.
+
+They assume the design tokens already exist.
+They assume the behaviors are already defined.
+They do not reinvent HTML — they cooperate with it.
+
+This layer is for teams who say:
+
+> *“Now that the foundation is solid, let’s move faster — without regret.”*
+
+At this level:
+
+- Components are optional, lazy, and standards-based
+- Shadow DOM uses the same global design language
+- Your system scales across apps, brands, and time
 
 ---
 
@@ -97,46 +92,6 @@ PDS produces:
 
 All as CSS Custom Properties. Zero specificity (`:where()` selectors).
 **Your CSS always wins.**
-
----
-
-## The Three Layers
-
-Everything in PDS is optional. Use what you need.
-
-### Layer 1: Styles
-
-Deterministic CSS from your config. Use PDS purely as a token/CSS generator.
-
-- Color scales (50–900)
-- Typography scale
-- Spacing system
-- Surface semantics
-- All in global CSS *and* `PDS.compiled.tokens` for JS
-
-### Layer 2: Enhancements
-
-Selector-based progressive enhancement. Semantic HTML gets superpowers:
-
-- `<input required>` → automatic asterisk + help text
-- `<label data-toggle>` → becomes a switch
-- `<nav data-dropdown>` → dropdown behavior
-- `<dialog>` → better focus management
-
-No framework. No build step. Just HTML that works better.
-
-### Layer 3: Components
-
-Lazy-loaded Web Components for complex UI:
-
-- `<pds-icon>` — SVG sprites
-- `<pds-drawer>` — slide-out panels
-- `<pds-tabstrip>` — accessible tabs
-- `<pds-jsonform>` — forms from JSON Schema
-
-Auto-defined when used. Styled by your tokens. Zero dependencies.
-
----
 
 ## Why This Matters
 

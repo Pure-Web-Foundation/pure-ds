@@ -324,7 +324,7 @@ export const Overview = () => {
       <p>For icons not in the sprite sheet, <code>&lt;pds-icon&gt;</code> can automatically fetch individual SVG files on demand:</p>
       <ul>
         <li><strong>Core icons:</strong> Bundled in the cached sprite sheet for optimal performance</li>
-        <li><strong>Exotic icons:</strong> Fetched individually on first use, then cached in memory</li>
+        <li><strong>'Exotic' icons:</strong> Fetched individually on first use, then cached in memory</li>
       </ul>
 
       <h4>How It Works</h4>
@@ -775,7 +775,7 @@ export const ExternalIcons = () => html`
       <p class="text-muted">
         Icons not in the sprite sheet are automatically fetched from an external path.
         This provides the best of both worlds: core icons load instantly from the cached 
-        sprite, while exotic icons are fetched on-demand and cached in memory.
+        sprite, while more 'exotic' icons are fetched on-demand and cached in memory.
       </p>
     </header>
 
@@ -798,7 +798,7 @@ export const ExternalIcons = () => html`
         <div class="comparison-card">
           <h4><pds-icon icon="cloud-arrow-down" size="sm"></pds-icon> External Icons (On-Demand)</h4>
           <p class="text-muted" style="margin: 0;">
-            Exotic icons are fetched individually, then cached for subsequent use.
+            More 'exotic' icons are fetched individually, then cached for subsequent use.
           </p>
           <div class="external-icon-showcase" style="margin-top: var(--spacing-3);">
             <pds-icon icon="solid-anatomy-brain-1" size="lg" color="var(--color-primary-500)"></pds-icon>

@@ -62,7 +62,7 @@ The component points to the sprite at `/assets/pds/icons/icons.svg` by default.
 For icons not included in the sprite sheet, `<pds-icon>` can automatically fetch individual SVG files on demand. This provides the best of both worlds:
 
 - **Core icons**: Bundled in the cached sprite sheet for optimal performance
-- **Exotic icons**: Fetched individually on first use, then cached in memory
+- **'Exotic' icons**: Fetched individually on first use, then cached in memory
 
 ### Configuration
 

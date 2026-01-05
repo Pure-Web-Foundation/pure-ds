@@ -4,18 +4,18 @@ import { renderMarkdown } from './utils/markdown.js';
 import markdownContent from './GettingStarted.md?raw';
 
 export default {
-  title: 'General/Getting Started',
+  title: 'About PDS/Getting Started',
   parameters: {
     layout: 'fullscreen',
     docs: {
       description: {
-        component: 'Quick start guide to using PDS Storybook and exploring components'
+        component: 'Complete beginner guide: installation, philosophy, configuration, enhancements, components, and console API'
       }
     }
   }
 };
 
-export const Default = {
+export const GettingStarted = {
   render: () => {
     // Create container and render async with Shiki highlighting
     const container = document.createElement('article');

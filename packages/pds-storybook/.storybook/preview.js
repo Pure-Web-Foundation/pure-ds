@@ -1292,10 +1292,12 @@ const preview = {
     options: {
       storySort: {
         order: [
+          'About PDS',
+          ['What Is PDS', 'Getting Started'],
           'PDS',
           [
-            'General',
-            ['What is PDS', 'Getting Started'],
+            'About PDS',
+            ['What Is PDS', 'Getting Started'],
             'Foundations',
             ['Colors', 'Typography', 'HTML Defaults', 'Icons', 'Spacing', 'Smart Surfaces'],
             'Primitives',
@@ -1312,7 +1314,7 @@ const preview = {
             ['Pds Jsonform', 'Pds Icon', 'Pds Drawer', 'Pds Toaster', 'Pds Tabstrip', 'Pds Splitpanel', 'Pds Scrollrow', 'Pds Richtext', 'Pds Upload'],
             'Reference'
           ],
-          'General',
+          'About PDS',
           ['What is PDS', 'Getting Started'],
           'Foundations',
           ['Colors', 'Typography', 'HTML Defaults', 'Icons', 'Spacing', 'Smart Surfaces'],

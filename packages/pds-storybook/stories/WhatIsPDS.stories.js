@@ -4,7 +4,7 @@ import { renderMarkdown } from './utils/markdown.js';
 import markdownContent from './WhatIsPDS.md?raw';
 
 export default {
-  title: 'General/What is PDS',
+  title: 'About PDS/What Is PDS',
   parameters: {
     layout: 'fullscreen',
     docs: {
@@ -15,7 +15,7 @@ export default {
   }
 };
 
-export const Default = {
+export const WhatIsPDS = {
   render: () => {
     // Create container and render async with Shiki highlighting
     const container = document.createElement('article');
