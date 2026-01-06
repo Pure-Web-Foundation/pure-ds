@@ -1,268 +1,168 @@
 # PDS (Pure Design System) - Copilot Instructions
 
-> **CRITICAL**: This workspace uses **Pure Design System (PDS)**. All code generation MUST follow PDS patterns. Never use generic web patterns, inline styles, or hardcoded values.
+> **CRITICAL**: This workspace uses **Pure Design System (PDS)**. All code generation MUST follow PDS and vanilla Web Platform patterns. Never use 3rd party framework patterns, non-PDS utility classes, inline styles, or hardcoded CSS values.
 
-## What is PDS?
+## Philosophy
 
-PDS is a **configuration-driven design system generator** following the [Pure Web Manifesto](https://pureweb.dev/manifesto): "The browser is the framework."
+PDS follows the [Pure Web Manifesto](https://pureweb.dev/manifesto): "The browser is the framework."
 
-### Core Principles
 1. **Standards-first**: Web Platform APIs only (no framework dependencies)
-2. **Configuration-driven**: Single `pds.config.js` generates everything
+2. **Configuration-driven**: `pds.config.js` generates everything
 3. **Progressive Enhancement**: Semantic HTML first, enhance where needed
-4. **Token-based styling**: Use CSS custom properties, never hardcoded values
+4. **Components as Last Resort**: Web Components only when native HTML cannot achieve it
+
+### The Three Layers
+
+**Layer 1 — Styles**: From minimal config, PDS generates complete CSS: tokens, scales, semantics, surfaces, states. Zero specificity via `:where()`.
+
+**Layer 2 — Enhancements**: Behavior added to semantic HTML via selector-based upgrades (`data-dropdown`, `data-toggle`, etc.).
+
+**Layer 3 — Web Components**: `<pds-tabstrip>`, `<pds-drawer>`, etc. only when native HTML has no equivalent.
 
 ---
 
-## 🚫 NEVER DO THIS
+## 🔍 Single Sources of Truth (ALWAYS CONSULT THESE FIRST)
+
+**Before generating code, read the relevant SSoT file to get accurate class names, tokens, and APIs.**
+
+| Need | SSoT File | What It Contains |
+|------|-----------|------------------|
+| **CSS Tokens** | `public/assets/pds/pds.css-data.json` | All `--color-*`, `--spacing-*`, `--radius-*`, `--shadow-*`, `--font-*` |
+| **Web Components** | `custom-elements.json` | Complete component APIs, attributes, methods, events, slots |
+| **HTML Tags** | `public/assets/pds/vscode-custom-data.json` | Component HTML structure, attribute values |
+| **Primitives & Utilities** | `src/js/pds-core/pds-ontology.js` | `.card`, `.badge`, `.btn-*`, `.flex`, `.gap-*`, `.surface-*` |
+| **Enhancements** | `src/js/pds-core/pds-enhancer-metadata.js` | Selectors + `demoHtml` examples for each enhancement |
+| **Generator Logic** | `src/js/pds-core/pds-generator.js` | How CSS is generated, token naming conventions |
+| **Config** | `pds.config.js` | What's enabled in this workspace |
+
+**For consuming projects** using `@pure-ds/core`, files are in `node_modules/@pure-ds/core/`:
+- `custom-elements.json`
+- `public/assets/pds/pds.css-data.json`
+- `public/assets/pds/vscode-custom-data.json`
+- `src/js/pds-core/pds-ontology.js`
+
+---
+
+## 🚫 Critical Anti-Patterns (NEVER DO THIS)
 
 ```html
-<!-- ❌ WRONG: Inline styles -->
+<!-- ❌ NEVER: Inline styles -->
 <div style="display: flex; gap: 16px; padding: 20px;">
 
-<!-- ❌ WRONG: Hardcoded colors -->
+<!-- ❌ NEVER: Hardcoded colors -->
 <button style="background: #007acc; color: white;">
 
-<!-- ❌ WRONG: Non-semantic HTML -->
+<!-- ❌ NEVER: Non-semantic HTML -->
 <div class="button" onclick="handleClick()">Click me</div>
 
-<!-- ❌ WRONG: Custom CSS when utilities exist -->
-<style>
-  .my-card { border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-</style>
+<!-- ❌ NEVER: Custom CSS when primitives exist -->
+<style>.my-card { border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }</style>
 ```
 
 ```javascript
-// ❌ WRONG: alert/confirm/prompt
-alert("Something happened");
-if (confirm("Are you sure?")) { ... }
+// ❌ NEVER: Browser dialogs - Use PDS.ask() and PDS.toast()
+alert("message");   // → PDS.toast("message", { type: "info" })
+confirm("sure?");   // → await PDS.ask("sure?", { type: "confirm" })
+prompt("name?");    // → await PDS.ask("name?", { type: "prompt" })
 
-// ❌ WRONG: Manual DOM manipulation for common patterns
-const dropdown = document.createElement('div');
-dropdown.className = 'dropdown-menu';
-// ... 50 lines of dropdown logic
+// ❌ NEVER: Manual dropdown/modal/tab implementations
+// → Use <nav data-dropdown>, PDS.ask(), <pds-tabstrip>
 ```
 
 ---
 
-## ✅ ALWAYS DO THIS
+## ✅ Quick Reference Patterns
 
-### Use PDS CSS Tokens
-
-**→ Consult `public/assets/pds/pds.css-data.json` for the complete, authoritative list of all CSS custom properties.**
-
-Token naming patterns:
-- `--color-{semantic}-{shade}` → colors (e.g., `--color-primary-500`)
-- `--spacing-{size}` → spacing (e.g., `--spacing-4`)
-- `--font-size-{size}` → typography (e.g., `--font-size-lg`)
-- `--radius-{size}` → border radius (e.g., `--radius-md`)
-- `--shadow-{size}` → shadows (e.g., `--shadow-lg`)
-- `--surface-{property}` → surface context (e.g., `--surface-bg`, `--surface-text`)
-
-### Use PDS Utility Classes
-
-**→ Consult `src/js/pds-core/pds-ontology.js` for layout patterns and utility class definitions.**
-
-Layout utilities: `.flex`, `.grid`, `.stack`, `.gap-*`, `.items-*`, `.justify-*`
-Special effects: `.border-gradient`, `.border-glow`, `.border-gradient-*`
-
-### Use PDS Primitives
-
-**→ Consult `src/js/pds-core/pds-ontology.js` → `primitives` array for all available primitives with their selectors.**
-
-Includes: badge, card, surface, alert, dialog, table, button, fieldset, accordion, icon, figure, gallery, etc.
-
-### Use PDS Progressive Enhancements
-
-**→ Consult `src/js/pds-core/pds-enhancer-metadata.js` for all available enhancements with their selectors and `demoHtml` examples.**
-
-Each enhancement has:
-- `selector` - The HTML pattern that triggers the enhancement
-- `description` - What it does
-- `demoHtml` - Copy-paste ready example code
-
-### Use PDS Web Components
-
-**→ Consult `custom-elements.json` for complete component APIs (properties, methods, events, slots).**
-**→ Consult `public/assets/pds/vscode-custom-data.json` for HTML tag definitions and attribute values.**
-
-All components are prefixed with `pds-` and are auto-defined via the mappers in `pds.config.js`.
-Available components are in `public/assets/pds/components/`.
-
-### Use PDS Dialog API (NOT alert/confirm/prompt)
-
-```javascript
-// Simple alert replacement
-await PDS.ask("Operation completed successfully!");
-
-// Confirm dialog
-const confirmed = await PDS.ask("Are you sure you want to delete this?", {
-  title: "Confirm Delete",
-  type: "confirm",
-  buttons: {
-    ok: { name: "Delete", primary: true, variant: "danger" },
-    cancel: { name: "Cancel" }
-  }
-});
-
-// Prompt for input
-const name = await PDS.ask("Enter your name:", {
-  title: "Name Required",
-  type: "prompt",
-  placeholder: "John Doe"
-});
-
-// Custom form dialog
-const result = await PDS.ask({
-  title: "Create New Item",
-  form: {
-    name: { type: "string", label: "Name", required: true },
-    category: { type: "string", enum: ["A", "B", "C"], label: "Category" },
-    priority: { type: "number", minimum: 1, maximum: 5 }
-  }
-});
-```
-
-### Use PDS Toast Notifications
-
-```javascript
-// Success toast
-PDS.toast("Changes saved successfully", { type: "success" });
-
-// Error toast
-PDS.toast("Failed to save changes", { type: "error" });
-
-// Warning toast
-PDS.toast("Your session will expire soon", { type: "warning" });
-
-// Info toast with action
-PDS.toast("New update available", {
-  type: "info",
-  action: { label: "Refresh", callback: () => location.reload() }
-});
-```
-
----
-
-## 📚 Authoritative Data Sources
-
-**ALWAYS consult these auto-generated files before implementing anything. They are the single source of truth.**
-
-| File | What It Contains | When to Use |
-|------|------------------|-------------|
-| `public/assets/pds/pds.css-data.json` | All CSS custom properties with descriptions, syntax, and current values | When you need any CSS token (colors, spacing, typography, effects) |
-| `public/assets/pds/vscode-custom-data.json` | HTML tag definitions for all PDS components with attributes and allowed values | When you need component HTML structure or attribute options |
-| `custom-elements.json` | Complete web component APIs (properties, methods, events, slots, types) | When you need component JavaScript API details |
-| `src/js/pds-core/pds-ontology.js` | Primitives, layout patterns, utilities, semantic categories | When you need class names, selectors, or design system structure |
-| `src/js/pds-core/pds-enhancer-metadata.js` | Progressive enhancement selectors with `demoHtml` examples | When you need to enhance semantic HTML with behaviors |
-| `pds.config.js` | Current workspace configuration, autoDefine component mappings | When you need to know what's enabled/configured |
-| `readme.md` | Comprehensive PDS documentation, API reference, examples | For deep understanding of any PDS concept |
-| `ICON-SYSTEM.md` | Icon sprite system documentation | When working with icons |
-| `pds-jsonform-docs.md` | JSON Schema form component documentation | When building forms with `<pds-jsonform>` |
-
----
-
-## Common Patterns
-
-**→ For HTML patterns, consult `src/js/pds-core/pds-enhancer-metadata.js` which contains `demoHtml` for each enhancement.**
-
-### Card with Surface
 ```html
+<!-- Buttons: semantic HTML + PDS classes (see pds-ontology.js → primitives) -->
+<button class="btn-primary">Save</button>
+<button class="btn-secondary">Cancel</button>
+<button class="btn-outline">Details</button>
+<button class="btn-primary icon-only" aria-label="Settings">
+  <pds-icon icon="gear"></pds-icon>
+</button>
+
+<!-- Layout: utility classes (see pds-ontology.js → layoutPatterns, utilities) -->
+<div class="flex gap-md items-center">
+<div class="grid grid-cols-3 gap-lg">
+<div class="stack-md">
+
+<!-- Cards & Surfaces: primitives -->
 <article class="card surface-elevated">
   <header class="flex justify-between items-center">
-    <h3>Card Title</h3>
-    <pds-icon icon="more-vertical" size="sm"></pds-icon>
+    <h3>Title</h3>
   </header>
-  <p class="text-muted">Card description text here.</p>
-  <footer class="flex gap-sm justify-end">
-    <button class="btn-secondary">Cancel</button>
-    <button class="btn-primary">Save</button>
-  </footer>
+  <p class="text-muted">Content</p>
 </article>
-```
 
-### Form Layout (uses auto-enhancement for required fields)
-```html
-<form>
-  <label>
-    <span>Email</span>
-    <input type="email" required placeholder="you@example.com">
-  </label>
-  <label>
-    <span>Password</span>
-    <input type="password" required>
-  </label>
-  <nav class="form-actions">
-    <button type="submit" class="btn-primary">Sign In</button>
-  </nav>
-</form>
-```
+<!-- Icons: web component (see custom-elements.json) -->
+<pds-icon icon="heart" size="sm"></pds-icon>
+<pds-icon icon="check" size="lg" color="var(--color-success-500)"></pds-icon>
 
-### Automatic Forms
-For forms with complex data, use `<pds-jsonform>` which auto-generates fields based on JSON Schema.
-
-> ask the user whether they want to create a regular form, or  pds-jsonform structures (html tag, jsonSchema, uiSchema)
-
-
-```html
-
-### Navigation with Dropdown (uses `nav[data-dropdown]` enhancement)
-```html
+<!-- Enhancements: data attributes (see pds-enhancer-metadata.js) -->
 <nav data-dropdown>
-  <button class="btn-primary">Products</button>
-  <menu>
-    <li><a href="/products/a">Product A</a></li>
-    <li><a href="/products/b">Product B</a></li>
-  </menu>
+  <button>Menu</button>
+  <menu><li><a href="#">Item</a></li></menu>
 </nav>
+
+<label data-toggle>
+  <input type="checkbox">
+  <span data-label>Enable feature</span>
+</label>
+
+<form data-required>
+  <label><span>Email</span><input type="email" required></label>
+</form>
+
+<!-- Tabs: web component -->
+<pds-tabstrip>
+  <button slot="tab">Tab 1</button>
+  <div slot="panel">Content 1</div>
+  <button slot="tab">Tab 2</button>
+  <div slot="panel">Content 2</div>
+</pds-tabstrip>
 ```
 
-### Modal/Dialog Pattern
 ```javascript
-// Always use PDS.ask for dialogs, never create custom modals
-const result = await PDS.ask({
-  title: "Edit Item",
-  size: "lg",
-  form: {
-    name: { type: "string", label: "Name", default: item.name },
-    description: { type: "string", format: "textarea", label: "Description" }
-  }
+// Dialogs & Toasts: PDS API
+const confirmed = await PDS.ask("Delete this item?", { 
+  type: "confirm",
+  buttons: { ok: { name: "Delete", variant: "danger" } }
 });
 
-if (result) {
-  await saveItem(result);
-  PDS.toast("Item updated", { type: "success" });
-}
+PDS.toast("Saved successfully!", { type: "success" });
+
+// Theme management
+PDS.theme = 'dark';  // 'light' | 'dark' | 'system'
+
+// Query the design system
+const results = await PDS.query("border gradient classes");
 ```
 
 ---
 
-## Anti-Patterns to Avoid
+## How to Look Things Up
 
-| ❌ Don't | ✅ Do Instead |
-|----------|---------------|
-| `style="color: #333"` | `class="text-muted"` or `color: var(--color-text-muted)` |
-| `style="padding: 16px"` | Use CSS with `padding: var(--spacing-4)` |
-| `style="border-radius: 8px"` | Use CSS with `border-radius: var(--radius-lg)` |
-| `alert("message")` | `PDS.toast("message")` or `await PDS.ask("message")` |
-| `confirm("sure?")` | `await PDS.ask("sure?", { type: "confirm" })` |
-| `prompt("name?")` | `await PDS.ask("name?", { type: "prompt" })` |
-| Custom dropdown JS | `<nav data-dropdown>` enhancement |
-| Custom tab implementation | `<pds-tabstrip>` component |
-| Manual icon SVG | `<pds-icon icon="name">` component |
-| `createElement('dialog')` | `PDS.ask()` API |
-| `.gap-4`, `.p-4` (Tailwind) | `.gap-md`, `.gap-lg` (PDS uses xs/sm/md/lg/xl) |
+| Question | Action |
+|----------|--------|
+| "What CSS tokens exist?" | Read `pds.css-data.json` |
+| "What components are available?" | Read `custom-elements.json` |
+| "What utility classes exist?" | Read `pds-ontology.js` → `layoutPatterns`, `utilities` |
+| "What primitives exist?" | Read `pds-ontology.js` → `primitives` |
+| "How do I enhance HTML?" | Read `pds-enhancer-metadata.js` → `demoHtml` |
+| "How are tokens named?" | Read `pds-generator.js` or `pds.css-data.json` |
 
 ---
 
 ## Summary Checklist
 
-Before generating any code:
+Before generating code:
 
-1. **Consult authoritative files first** - Don't guess class names or token names
-2. **No inline `style` attributes** - Use CSS tokens via custom properties
-3. **No hardcoded values** - Colors, spacing, radii, shadows all have tokens
-4. **No `alert()`, `confirm()`, `prompt()`** - Use `PDS.ask()` and `PDS.toast()`
-5. **Use semantic HTML** - `<button>`, `<nav>`, `<article>`, `<label>`, etc.
-6. **Apply enhancements via `data-*` attributes** - See `pds-enhancer-metadata.js`
-7. **Use PDS components** - Prefixed with `pds-`, see `custom-elements.json`
+1. ✅ **Consult SSoT files** — Don't guess class names or token names
+2. ✅ **No inline styles** — Use CSS tokens via custom properties
+3. ✅ **No hardcoded values** — Colors, spacing, radii all have tokens
+4. ✅ **No alert/confirm/prompt** — Use `PDS.ask()` and `PDS.toast()`
+5. ✅ **Use semantic HTML** — `<button>`, `<nav>`, `<article>`, `<label>`, `<details>`
+6. ✅ **Apply enhancements via data-* attributes** — See `pds-enhancer-metadata.js`
+7. ✅ **Components as last resort** — Only when native HTML can't achieve it
+8. ✅ **Prefer primitives** — `.card`, `.badge`, `.alert` over custom components

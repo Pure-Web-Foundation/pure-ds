@@ -136,6 +136,62 @@ async function ensureExportScript(consumerRoot) {
 }
 
 /**
+ * Copy PDS Copilot instructions to consumer's .github folder
+ */
+async function copyCopilotInstructions(consumerRoot) {
+  try {
+    const sourceFile = path.join(repoRoot, '.github', 'copilot-instructions.md');
+    const targetDir = path.join(consumerRoot, '.github');
+    const targetFile = path.join(targetDir, 'copilot-instructions.md');
+    
+    // Create .github directory if it doesn't exist
+    await mkdir(targetDir, { recursive: true });
+    
+    // Check if file already exists
+    try {
+      await access(targetFile);
+      // File exists - check if it's a PDS file by looking for our marker
+      const existingContent = await readFile(targetFile, 'utf8');
+      if (!existingContent.includes('Pure Design System (PDS)')) {
+        // Not a PDS file, don't overwrite
+        console.log('📋 Existing .github/copilot-instructions.md found (not PDS), skipping...');
+        console.log('   💡 To use PDS instructions, run: npx pds-setup-copilot --force');
+        return;
+      }
+    } catch {
+      // File doesn't exist, we'll create it
+    }
+    
+    await copyFile(sourceFile, targetFile);
+    console.log('📋 Copied PDS Copilot instructions to .github/copilot-instructions.md');
+    
+    // Also copy .cursorrules for Cursor IDE users
+    try {
+      const cursorSource = path.join(repoRoot, '.cursorrules');
+      const cursorTarget = path.join(consumerRoot, '.cursorrules');
+      
+      try {
+        await access(cursorTarget);
+        const existingCursor = await readFile(cursorTarget, 'utf8');
+        if (!existingCursor.includes('Pure Design System (PDS)')) {
+          console.log('📋 Existing .cursorrules found (not PDS), skipping...');
+          return;
+        }
+      } catch {
+        // File doesn't exist
+      }
+      
+      await copyFile(cursorSource, cursorTarget);
+      console.log('📋 Copied PDS instructions to .cursorrules (for Cursor IDE)');
+    } catch (e) {
+      // .cursorrules copy is optional
+    }
+  } catch (e) {
+    console.warn('⚠️  Could not copy Copilot instructions:', e.message);
+  }
+}
+
+/**
  * Discover the web root directory using common patterns
  */
 async function discoverWebRoot(baseDir) {
@@ -274,6 +330,9 @@ async function copyPdsAssets() {
     }
     
   console.log('📦 Proceeding with asset copying...');
+
+    // Copy Copilot instructions to consumer project
+    await copyCopilotInstructions(consumerRoot);
 
     // Proactively add export & build-icons scripts to consumer package.json (still helpful)
     await ensureExportScript(consumerRoot);

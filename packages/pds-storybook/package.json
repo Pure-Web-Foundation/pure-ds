@@ -1,6 +1,6 @@
 {
   "name": "@pure-ds/storybook",
-  "version": "0.4.11",
+  "version": "0.4.12",
   "description": "Storybook showcase for Pure Design System with live configuration",
   "type": "module",
   "private": false,
@@ -35,7 +35,7 @@
     "storybook:build": "npm run build-storybook"
   },
   "peerDependencies": {
-    "@pure-ds/core": "^0.4.11"
+    "@pure-ds/core": "^0.4.12"
   },
   "dependencies": {
     "@custom-elements-manifest/analyzer": "^0.11.0",

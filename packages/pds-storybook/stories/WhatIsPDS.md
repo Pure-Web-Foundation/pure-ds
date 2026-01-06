@@ -1,12 +1,29 @@
 ![Pure Design System logo](/assets/img/logo.png) 
 
-Imagine you’re standing at the edge of a new project. The browser is empty, but full of potential. You don’t start by choosing a framework. You start by deciding *how deep you want to go*.
+With PDS, we deliver on the promise [Pure Web Foundation](//pureweb.dev) has made with the [Pure Web Manifesto](//pureweb.dev/manifesto)
 
-# The **Three Layers of the Pure Design System**
+# The Philosophy
 
-They are not steps you *must* take.
+We embrace HTML and CSS as an extremely powerful—purely declarative—combination that can achieve far more than most developers realize.
 
-They are **layers you may choose**, each one building on the guarantees of the one below it.
+**For over a decade, the frontend world has been led to believe that frameworks and heavy bundling were necessary to build anything meaningful. Meanwhile, evidence keeps mounting: the modern web platform has caught up to such a degree that today's most popular stacks are solving a problem that no longer exists.**
+
+The advantages of going native compound at every level. Browsers are highly optimized runtimes—HTML streams instantly while CSS applies in parallel, whereas large JavaScript bundles block content. Native elements bring accessibility for free: keyboard navigation, screen reader support, and focus management refined over decades. Search engines understand semantic markup perfectly, with no hydration delays hiding your content.
+
+Semantic HTML works with any backend, any toolchain, any future technology—the universal interface that outlasts every abstraction built on top of it.
+
+Less JavaScript means sustainability: less CPU, less battery drain, less carbon.
+
+HTML from 2005 still renders perfectly today. Framework code from 2023? We already call it legacy—tech debt incurred simply because of the framework's volatile nature.
+
+Going native means MDN is your documentation. And when you instruct an LLM to write standards-compliant markup and code, it draws on vast resources to help you achieve anything with ease.
+
+> **Using AI with PDS**: When you install `@pure-ds/core`, LLM instructions are automatically copied to your project (`.github/copilot-instructions.md` for GitHub Copilot, `.cursorrules` for Cursor). These teach your AI assistant to use PDS patterns correctly—referencing the actual source files (`custom-elements.json`, `pds.css-data.json`, `pds-ontology.js`) instead of guessing. To manually install or update: `npx pds-setup-copilot`
+
+# The Three Optional Layers of the Pure Design System
+
+Whatever you're building, you can pick and choose what you need.
+
 
 ## Layer 1 — The Ground: Deterministic Design Language
 
@@ -14,55 +31,62 @@ The first layer is quiet. Almost invisible.
 
 You define a handful of values: a primary color, a base font size, a spacing unit, a radius preference. Or even simpler: to get started, just select one of the **presets** avaliable. Nothing more. From that minimal intent, PDS *deterministically* generates a complete, production-ready design language: tokens, scales, semantics, surfaces, states.
 
-At runtime, CSS is injected via Adopted StyleSheets (both in the main document and in Shadow documents).
+At runtime, CSS is injected via Adopted StyleSheets (both in the main document and in your Web Components' Shadow DOMs).
 
-This layer answers a fundamental question:
+You can stop here and already have something most teams never achieve: **A coherent, mathematically sound, tokenized design system that works across documents, shadow DOMs, and apps.** 
 
-> *“What does my product look like — everywhere, consistently, and forever?”*
-
-At this level:
-
-- HTML stays HTML
-- CSS stays CSS
-- Your design language becomes portable, inspectable, and future-proof
-
-You can stop here and already have something most teams never achieve:
-
-**a coherent, mathematically sound, tokenized design system that works across documents, shadow DOMs, and apps.** readme
+*If you want, you can generate only the style tokens (CSS variables) at design time, deploy them as a CSS include in your project, and never use any PDS runtime functionality.*
 
 ## Layer 2 — The Pulse: Progressive Enhancement
 
-The second layer introduces *motion* — but carefully.
+PDS can add simple **behavior** to semantic HTML structures in the form of Progressive Enhancements. These enhancers are automatically triggered by CSS selector ¹. For instance, if you use `class="accordion"` on a `section` or other HTML element, you make a group of `<details>` elements into an [accordion](https://puredesignsystem.z6.web.core.windows.net/storybook/?path=/story/primitives-accordion--basic-accordion) without the need to resort to a component.
 
-Here, PDS adds **behavior**, not structure. Enhancements that respect the browser, accessibility, and user preferences. Focus handling, transitions, dialogs, toasts, form logic. All optional. All progressive.
 
-> *“How do we add behavior without coupling ourselves to a framework?”*
-
-At this level:
-
-- HTML remains the source of truth
-- CSS still defines appearance
-- JavaScript enhances intent, does not replace it
+¹ PDS comes with a lightweight DOM observer that is smart enough to monitor the DOM (including Shadow DOMs) and activate enhancers when they're needed.
 
 ## Layer 3 — The Instruments: Web Components
 
-Web Components are only used for complex controls.
+The third layer provides lazy-loaded ² **Web Components** that fully leverage the PDS design system.
 
-The third layer provides **Web Components**, built on the previous two layers. They are thin, composable instruments: not replacements for native elements, but amplifiers of them.
+² The DOM observer mentioned above is also used to detect any Web Component that matches patterns declared in the `pds.config.js`. By default, `pds-*` is used. Any web component that matches is defined automatically when first rendered, which means you can build apps with numerous Web Components that are *not bundled*, and their behavior is only attached when they are first rendered 🤯.
 
-They assume the design tokens already exist.
-They assume the behaviors are already defined.
-They do not reinvent HTML — they cooperate with it.
+*Think about what this means for your app development, if you don't ever need to think about bundle splitting anymore when your app grows.* 
 
-This layer is for teams who say:
+### The Principle: Components as Last Resort
 
-> *“Now that the foundation is solid, let’s move faster — without regret.”*
+This is where PDS diverges fundamentally from mainstream frameworks. In React, Vue, or Angular, *everything* is a component. A button is a component. A link is a component. A div with some styling is a component.
 
-At this level:
+**PDS inverts this.** Web Components are only introduced when:
 
-- Components are optional, lazy, and standards-based
-- Shadow DOM uses the same global design language
-- Your system scales across apps, brands, and time
+1. **Native HTML has no equivalent** — There's no `<tabs>`, `<combobox>`, or `<color-picker>` in the spec
+2. **Progressive Enhancement cannot achieve it** — The behavior requires encapsulated state or complex internal DOM
+3. **The complexity justifies the cost** — Every component adds JavaScript, API surface, and maintenance burden
+
+### What This Means in Practice
+
+| Need | ❌ Framework Approach | ✅ PDS Approach |
+|------|----------------------|-----------------|
+| Button | `<Button variant="primary">` | `<button class="btn-primary|btn-secondary|btn-outline|...">` |
+| Card layout | `<Card><CardHeader>...` | `<article class="card"><header>...` |
+| Dropdown menu | `<Dropdown items={...}>` | `<nav data-dropdown><button>...</button><menu>...` (enhanced) |
+| Tabs interface | `<Tabs>` component | `<pds-tabstrip>` ✓ (justified) |
+| Rich text editor | `<RichTextEditor>` | `<pds-richtext>` ✓ (justified) |
+
+
+### Why This Matters
+
+**Fewer components means:**
+- Less JavaScript to ship, parse, and execute
+- Fewer APIs to learn and maintain
+- More HTML that works without JavaScript
+- Better accessibility by default (native elements are already accessible)
+- Easier debugging (View Source shows real elements)
+
+**When we do use components, they:**
+- Inherit all design tokens automatically (via Adopted StyleSheets)
+- Follow the same patterns as enhanced HTML
+- Extend native elements where possible (`<button is="pds-button">`)
+- Provide progressive enhancement, not replacement
 
 ---
 
@@ -90,27 +114,8 @@ PDS produces:
 | **Layout** | `.flex`, `.grid`, `.stack-md`, `.gap-lg`, `.container` |
 | **Utilities** | `.text-muted`, `.surface-elevated`, `.border-subtle` |
 
-All as CSS Custom Properties. Zero specificity (`:where()` selectors).
-**Your CSS always wins.**
+> Where PDS styles affect default HTML structures, CSS `:where()` is used. This ensures **ZERO** specificity, so **your CSS always wins**.
 
-## Why This Matters
-
-| The Old Way | The PDS Way |
-|-------------|-------------|
-| `class="flex items-center gap-4 p-6 bg-white rounded-lg shadow-md"` | `class="card"` |
-| `style="color: #007acc; font-weight: 600;"` | Uses `--color-primary-500` token |
-| Import a Button component | `<button class="btn-primary">` |
-| 47 utility classes per element | Semantic class + maybe a layout utility |
-| Learn a framework's abstraction | Learn HTML. That's it. |
-
-**The result:**
-
-- Readable HTML that describes content, not presentation
-- CSS you can inspect and understand
-- Sites that work without JavaScript
-- Code that lasts decades, not dev cycles
-
----
 
 ## Who PDS is For
 

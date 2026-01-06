@@ -1,7 +1,7 @@
 {
   "name": "@pure-ds/core",
   "shortname": "pds",
-  "version": "0.4.11",
+  "version": "0.4.12",
   "description": "Pure Design System - Why develop a Design System when you can generate one?",
   "repository": {
     "type": "git",
@@ -28,7 +28,8 @@
   "bin": {
     "pds-export": "packages/pds-cli/bin/pds-static.js",
     "pds-sync-assets": "packages/pds-cli/bin/sync-assets.js",
-    "pds-build-icons": "packages/pds-cli/bin/pds-build-icons.js"
+    "pds-build-icons": "packages/pds-cli/bin/pds-build-icons.js",
+    "pds-setup-copilot": "packages/pds-cli/bin/pds-setup-copilot.js"
   },
   "exports": {
     ".": {
@@ -40,6 +41,8 @@
     "./auto-define/*": "./public/auto-define/*"
   },
   "files": [
+    ".github/copilot-instructions.md",
+    ".cursorrules",
     "dist/types/",
     "public/assets/js/",
     "public/assets/pds/components/",
