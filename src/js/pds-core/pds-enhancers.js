@@ -5,8 +5,10 @@ function enhanceAccordion(elem) {
   elem.dataset.enhancedAccordion = "true";
 
   elem.addEventListener("toggle", (event) => {
-    if (event.target.open) {
-      elem.querySelectorAll("details[open]").forEach((details) => {
+    // Only handle toggle events from direct child details elements
+    // to avoid closing parent details when nested accordions are used
+    if (event.target.open && event.target.parentElement === elem) {
+      elem.querySelectorAll(":scope > details[open]").forEach((details) => {
         if (details !== event.target) {
           details.open = false;
         }

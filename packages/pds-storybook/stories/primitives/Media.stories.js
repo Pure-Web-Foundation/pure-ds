@@ -125,7 +125,12 @@ ImageGallery.storyName = 'Image Gallery';
 export const ScrollRowGallery = () => html`
   ${mediaStoryStyles}
   <div class="media-story-section">
-    <h3>Netflix-Style Horizontal Scroll Row</h3>
+    <header>
+      <h3>Netflix-Style Horizontal Scroll Row</h3>
+      <p class="text-muted">
+        Use the <code>&lt;pds-scrollrow&gt;</code> component to create a horizontally scrollable row of images.
+      </p>
+    </header>
     <pds-scrollrow>
       ${Array.from({ length: 20 }, (_, i) => html`
         <img
