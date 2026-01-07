@@ -1,21 +1,18 @@
 import { html } from 'lit';
+import { enhancementHeader } from './_enhancement-header.js';
 
 export default {
-  title: 'Primitives/Accordion',
-  tags: ['grouping'],
+  title: 'Enhancements/Accordion',
+  tags: ['grouping', 'enhancement', 'accordion'],
   parameters: {
     pds: {
-      tags: ['grouping', 'navigation']
-    },
-    docs: {
-      description: {
-        component: 'Accessible accordion using native HTML details/summary elements with proper ARIA attributes and progressive enhancement.'
-      }
+      tags: ['grouping', 'navigation', 'enhancement', 'accordion']
     }
   }
 };
 
 export const BasicAccordion = () => html`
+  ${enhancementHeader('accordion')}
   <div class="card max-w-lg">
     <section class="accordion" aria-label="FAQ">
       <details>
@@ -45,6 +42,7 @@ export const BasicAccordion = () => html`
 BasicAccordion.storyName = 'Basic Accordion';
 
 export const AccordionWithRichContent = () => html`
+  ${enhancementHeader('accordion')}
   <div class="card stack-md max-w-xl">
     <h2>Feature Documentation</h2>
     <section class="accordion" aria-label="Features">
@@ -117,6 +115,7 @@ export const AccordionWithRichContent = () => html`
 AccordionWithRichContent.storyName = 'Accordion with Rich Content';
 
 export const NestedAccordion = () => html`
+  ${enhancementHeader('accordion')}
   <div class="card stack-md max-w-lg">
     <h2>Nested Accordion Example</h2>
     <section class="accordion" aria-label="Product Categories">
@@ -200,6 +199,7 @@ export const NestedAccordion = () => html`
 NestedAccordion.storyName = 'Nested Accordion';
 
 export const SingleExpandAccordion = () => html`
+  ${enhancementHeader('accordion')}
   <div class="card stack-md max-w-lg">
     <header>
       <h2>Settings</h2>

@@ -76,7 +76,7 @@ const interactiveSkeletonStoryStyles = html`
 `;
 
 export default {
-  title: "Enhancements/Interactive States",
+  title: "Patterns/Interactive States",
   tags: ["hover", "focus", "active", "disabled", "loading", "interaction"],
   parameters: {
     pds: {

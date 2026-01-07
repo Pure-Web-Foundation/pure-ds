@@ -1,4 +1,5 @@
 import { html } from 'lit';
+import { enhancementHeader } from './_enhancement-header.js';
 
 export default {
   title: 'Enhancements/Required Fields',
@@ -6,16 +7,12 @@ export default {
   parameters: {
     pds: {
       tags: ['required', 'validation', 'form', 'input', 'asterisk', 'forms', 'interaction', 'enhancement']
-    },
-    docs: {
-      description: {
-        component: 'Automatic asterisk indicators for required form fields'
-      }
     }
   }
 };
 
 export const BasicRequired = () => html`
+  ${enhancementHeader('required')}
   <form data-required class="card max-w-sm"
     @submit="${(event) => {
       event.preventDefault();
@@ -45,6 +42,7 @@ export const BasicRequired = () => html`
 `;
 
 export const MixedRequired = () => html`
+  ${enhancementHeader('required')}
   <form data-required class="card max-w-md"
     @submit="${(event) => {
       event.preventDefault();

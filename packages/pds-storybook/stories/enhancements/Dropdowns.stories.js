@@ -1,4 +1,5 @@
 import { html } from "lit";
+import { enhancementHeader } from './_enhancement-header.js';
 
 // Demo-specific styles (legitimate custom CSS for visual demos)
 const dropdownGlassDemoStyles = html`
@@ -25,17 +26,12 @@ export default {
   parameters: {
     pds: {
       tags: ['dropdown', 'menu', 'navigation', 'popover', 'overlay', 'forms', 'interaction', 'data-dropdown']
-    },
-    docs: {
-      description: {
-        component:
-          "Progressive enhancement for dropdown menus using data-dropdown attribute",
-      },
-    },
+    }
   },
 };
 
 export const BasicDropdown = () => html`
+  ${enhancementHeader('dropdown')}
   <nav data-dropdown>
     <button class="btn-primary">Open Menu</button>
     <menu>
@@ -48,6 +44,10 @@ export const BasicDropdown = () => html`
 `;
 
 export const RightAligned = () => html`
+  ${enhancementHeader('dropdown', {
+    selector: '.align-right',
+    description: ' Adds `.align-right` to align the dropdown menu to the right edge of the trigger button.'
+  })}
   <div class="text-right">
     <nav data-dropdown class="align-right">
       <button class="btn-secondary">User Menu</button>
@@ -62,6 +62,7 @@ export const RightAligned = () => html`
 `;
 
 export const WithIcons = () => html`
+  ${enhancementHeader('dropdown')}
   <nav data-dropdown>
     <button class="btn-outline">
       <pds-icon icon="list" size="sm"></pds-icon>
@@ -91,6 +92,10 @@ export const WithIcons = () => html`
 `;
 
 export const DropUp = () => html`
+  ${enhancementHeader('dropdown', {
+    selector: '[data-mode="up"]',
+    description: ' Adds `data-mode="up"` to make the dropdown menu open upwards instead of downwards.'
+  })}
   <div class="flex justify-center items-end card" style="height: 260px;">
     <nav data-dropdown data-mode="up">
       <button class="btn-primary">Resources</button>
@@ -105,6 +110,7 @@ export const DropUp = () => html`
 
 export const BackgroundImageLiquidGlass = () => html`
   ${dropdownGlassDemoStyles}
+  ${enhancementHeader('dropdown')}
   <section
     class="dropdown-story-glass-demo"
     style="--dropdown-demo-image: url('https://images.unsplash.com/photo-1517832207067-4db24a2ae47c?auto=format&fit=crop&w=1200&q=80');"

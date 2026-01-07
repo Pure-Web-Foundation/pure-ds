@@ -1,4 +1,5 @@
 import { html } from 'lit';
+import { enhancementHeader } from './_enhancement-header.js';
 
 export default {
   title: 'Enhancements/Range Sliders',
@@ -6,22 +7,12 @@ export default {
   parameters: {
     pds: {
       tags: ['range', 'slider', 'input', 'forms', 'interaction', 'enhancement']
-    },
-    docs: {
-      description: {
-        component: `Enhanced range inputs with two display modes:
-
-**Standard Mode** (default): Floating bubble that appears on interaction.
-
-**Inline Output Mode**: Add \`range-output\` class to the label for persistent inline value display using semantic \`<output>\` element.
-
-Both modes automatically generate proper ARIA attributes and use the \`<output>\` tag for accessibility.`
-      }
     }
   }
 };
 
 export const StandardFloatingBubble = () => html`
+  ${enhancementHeader('range')}
   <section class="card stack-md max-w-sm">
     <small class="text-muted">
       Default behavior: A floating bubble appears when you interact with the slider.
@@ -36,6 +27,7 @@ export const StandardFloatingBubble = () => html`
 StandardFloatingBubble.storyName = 'Standard (Floating Bubble)';
 
 export const MultipleRanges = () => html`
+  ${enhancementHeader('range')}
   <form
     class="card stack-md max-w-sm"
     @submit="${(event) => {
@@ -64,6 +56,7 @@ export const MultipleRanges = () => html`
 `;
 
 export const CustomSteps = () => html`
+  ${enhancementHeader('range')}
   <form
     class="card stack-md max-w-sm"
     @submit="${(event) => {
@@ -84,6 +77,7 @@ export const CustomSteps = () => html`
 `;
 
 export const InlineOutputMode = () => html`
+  ${enhancementHeader('range')}
   <section class="card stack-md max-w-md">
     <small class="text-muted">
       Add the <code>range-output</code> class to automatically create an inline output display.
@@ -108,6 +102,7 @@ export const InlineOutputMode = () => html`
 InlineOutputMode.storyName = 'Inline Output (range-output class)';
 
 export const AudioControlsExample = () => html`
+  ${enhancementHeader('range')}
   <article class="card stack-md max-w-md">
     <header>
       <h3>Audio Controls</h3>
@@ -139,6 +134,7 @@ export const AudioControlsExample = () => html`
 AudioControlsExample.storyName = 'Real-world Example (Audio Controls)';
 
 export const ComparisonView = () => html`
+  ${enhancementHeader('range')}
   <div class="grid grid-auto-md gap-lg max-w-3xl">
     <article class="card stack-md">
       <header>

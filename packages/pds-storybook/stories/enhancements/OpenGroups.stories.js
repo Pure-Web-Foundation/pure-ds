@@ -1,4 +1,5 @@
 import { html } from 'lit';
+import { enhancementHeader } from './_enhancement-header.js';
 
 export default {
   title: 'Enhancements/Open Groups',
@@ -6,17 +7,12 @@ export default {
   parameters: {
     pds: {
       tags: ['fieldset', 'radio', 'checkbox', 'dynamic', 'custom-option', 'data-open', 'forms', 'interaction', 'enhancement']
-    },
-    docs: {
-      description: {
-        component:
-          'Dynamic checkbox/radio groups that allow users to add custom options at runtime using the data-open attribute'
-      }
     }
   }
 };
 
 export const RadioGroupOpen = () => html`
+  ${enhancementHeader('openGroup')}
   <section class="card stack-md max-w-md">
     <header>
       <h3>Select Your Preferences</h3>
@@ -41,6 +37,7 @@ export const RadioGroupOpen = () => html`
 `;
 
 export const CheckboxGroupOpen = () => html`
+  ${enhancementHeader('openGroup')}
   <section class="card stack-md max-w-md">
     <header>
       <h3>Select Features</h3>
@@ -65,6 +62,7 @@ export const CheckboxGroupOpen = () => html`
 `;
 
 export const InForm = () => html`
+  ${enhancementHeader('openGroup')}
   <form
     class="card stack-md max-w-md"
     @submit="${(event) => {
@@ -113,6 +111,7 @@ export const InForm = () => html`
 `;
 
 export const PrefilledValues = () => html`
+  ${enhancementHeader('openGroup')}
   <section class="card stack-md max-w-md">
     
     <header>
@@ -143,6 +142,7 @@ export const PrefilledValues = () => html`
 `;
 
 export const InCard = () => html`
+  ${enhancementHeader('openGroup')}
   <article class="card stack-md max-w-md">
     <header>
       <h3>Customize Your Experience</h3>

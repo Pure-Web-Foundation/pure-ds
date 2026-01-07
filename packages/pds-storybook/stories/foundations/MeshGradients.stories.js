@@ -194,7 +194,7 @@ const meshTileBackgrounds = ['mesh-03', 'mesh-04', 'mesh-05'];
 const meshVariableList = ['mesh-01', 'mesh-02', 'mesh-03', 'mesh-04', 'mesh-05'];
 
 export default {
-  title: 'Enhancements/Mesh Gradients',
+  title: 'Foundations/Mesh Gradients',
   tags: ['mesh', 'gradient', 'background', 'effect', 'decoration'],
   parameters: {
     pds: {

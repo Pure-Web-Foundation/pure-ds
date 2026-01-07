@@ -1,4 +1,5 @@
 import { html } from 'lit';
+import { enhancementHeader } from './_enhancement-header.js';
 
 const toggleStoryStyles = html`
   <style>
@@ -45,17 +46,13 @@ export default {
   parameters: {
     pds: {
       tags: ['toggle', 'switch', 'checkbox', 'forms', 'interaction', 'data-toggle', 'enhancement']
-    },
-    docs: {
-      description: {
-        component: 'Transform checkboxes into toggle switches using data-toggle attribute'
-      }
     }
   }
 };
 
 export const BasicToggle = () => html`
   ${toggleStoryStyles}
+  ${enhancementHeader('toggle')}
   <label data-toggle>
     <span data-label>Enable notifications</span>
     <input type="checkbox">
@@ -64,6 +61,7 @@ export const BasicToggle = () => html`
 
 export const PreChecked = () => html`
   ${toggleStoryStyles}
+  ${enhancementHeader('toggle')}
   <label data-toggle>
     <span data-label>Dark mode</span>
     <input type="checkbox" checked>
@@ -72,6 +70,7 @@ export const PreChecked = () => html`
 
 export const MultipleToggles = () => html`
   ${toggleStoryStyles}
+  ${enhancementHeader('toggle')}
   <form
     class="flex flex-col gap-sm toggle-story-form"
     @submit="${(event) => {
@@ -101,6 +100,7 @@ export const MultipleToggles = () => html`
 
 export const TogglePositions = () => html`
   ${toggleStoryStyles}
+  ${enhancementHeader('toggle')}
   <div class="toggle-story-layout">
     <div>
       <h3>Toggle Position Variations</h3>
@@ -142,6 +142,7 @@ export const TogglePositions = () => html`
 
 export const InCard = () => html`
   ${toggleStoryStyles}
+  ${enhancementHeader('toggle')}
   <article class="card toggle-story-card">
     <div>
       <h3>Privacy Settings</h3>
