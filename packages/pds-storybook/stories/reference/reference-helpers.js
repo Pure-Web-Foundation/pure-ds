@@ -28,7 +28,7 @@ const REF_HELPER_STYLE_ID = 'pds-reference-helper-styles';
 const REF_HELPER_STYLE_CONTENT = `
   .pds-reference-docs-pre {
     margin: 0;
-    padding: var(--spacing-3);
+    padding: 12px;
   }
   /* Shiki code blocks */
   .pds-reference-docs-pre .shiki {
@@ -67,13 +67,13 @@ export function renderMarkdown(text) {
 }
 
 export function renderCode(value) {
-  if (!value) return html`<span class="text-muted">&#8212;</span>`;
+  if (!value) return html`<span class="pds-reference-docs-muted">&#8212;</span>`;
   return html`<code>${value}</code>`;
 }
 
 export function renderDefault(value) {
   if (value === undefined || value === null || value === '') {
-    return html`<span class="text-muted">&#8212;</span>`;
+    return html`<span class="pds-reference-docs-muted">&#8212;</span>`;
   }
   if (typeof value === 'string') {
     const trimmed = value.trim();
@@ -225,25 +225,25 @@ export function highlightDemoHtmlSync(code) {
 export function renderChipList(values = []) {
   if (!values.length) return nothing;
   return html`
-    <div class="flex flex-wrap gap-xs">
-      ${values.map((value) => html`<span class="badge">${value}</span>`)}
+    <div class="pds-reference-docs-badges">
+      ${values.map((value) => html`<span class="pds-reference-docs-badge">${value}</span>`)}
     </div>
   `;
 }
 
 export function formatTableValue(value) {
   if (value === undefined || value === null || value === '') {
-    return html`<span class="text-muted">&#8212;</span>`;
+    return html`<span class="pds-reference-docs-muted">&#8212;</span>`;
   }
 
   if (Array.isArray(value)) {
-    if (!value.length) return html`<span class="text-muted">&#8212;</span>`;
+    if (!value.length) return html`<span class="pds-reference-docs-muted">&#8212;</span>`;
     return renderChipList(value.map((entry) => (typeof entry === 'object' ? JSON.stringify(entry) : entry)));
   }
 
   if (typeof value === 'object') {
     return html`
-      <pre class="surface-subtle radius-lg text-sm overflow-auto pds-reference-docs-pre">
+      <pre class="pds-reference-docs-pre">
 ${JSON.stringify(value, null, 2)}
       </pre>
     `;
@@ -260,7 +260,7 @@ ${JSON.stringify(value, null, 2)}
 export function renderTable(items = [], columns = []) {
   if (!items.length) return nothing;
   return html`
-    <table class="table-bordered table-compact">
+    <table class="pds-reference-docs-table">
       <thead>
         <tr>
           ${columns.map((col) => html`<th scope="col">${col.label}</th>`)}

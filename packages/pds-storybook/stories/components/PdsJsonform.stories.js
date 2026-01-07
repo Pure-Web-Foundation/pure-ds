@@ -1,33 +1,10 @@
 import { html } from 'lit';
 import { createComponentDocsPage } from '../reference/reference-docs.js';
+import showdown from 'showdown';
 
-const docsParameters = {
-  description: {
-    component: `**⭐ Recommended for modern applications** - Automatically generate complete forms from JSON Schema definitions.
+const markdownConverter = new showdown.Converter({ tables: true });
 
-### Key Features
-- 🎯 **Zero boilerplate** - Define form structure in JSON, get a working form with validation
-- ✅ **Built-in validation** - Automatic validation based on schema rules (required, min/max, patterns, etc.)
-- 🔄 **Data binding** - Two-way data binding with form state management
-- 🎨 **PDS styled** - Uses all PDS design tokens automatically
-- 📱 **Responsive** - Mobile-friendly layouts out of the box
-- 🧩 **Conditional logic** - Show/hide fields based on other field values
-- 🌐 **Nested objects** - Support for complex nested data structures
-- 🔧 **Extensible** - Custom field types and validators
-
-### Why JSON Schema Forms?
-Instead of manually writing HTML for every form field, validation rule, and error message, you define your data schema once and get:
-- Form UI generation
-- Client-side validation
-- Server-side validation (same schema)
-- API documentation
-- Type definitions
-- Database schemas
-
-See the examples below to get started, or check the [primitive forms](/story/primitives-forms--default) for manual form building.
-
----
-
+const uiSchemaReferenceMarkdown = `
 # uiSchema Reference
 
 Complete reference for all **uiSchema** configuration options in \`pds-jsonform\`.
@@ -250,9 +227,38 @@ Use enhanced dropdown menu instead of native select.
 | Option | Type | Description |
 |--------|------|-------------|
 | \`ui:dropdown\` | boolean | Enable enhanced dropdown |
+`;
+
+const docsParameters = {
+  description: {
+    component: `**⭐ Recommended for modern applications** - Automatically generate complete forms from JSON Schema definitions.
+
+### Key Features
+- 🎯 **Zero boilerplate** - Define form structure in JSON, get a working form with validation
+- ✅ **Built-in validation** - Automatic validation based on schema rules (required, min/max, patterns, etc.)
+- 🔄 **Data binding** - Two-way data binding with form state management
+- 🎨 **PDS styled** - Uses all PDS design tokens automatically
+- 📱 **Responsive** - Mobile-friendly layouts out of the box
+- 🧩 **Conditional logic** - Show/hide fields based on other field values
+- 🌐 **Nested objects** - Support for complex nested data structures
+- 🔧 **Extensible** - Custom field types and validators
+
+### Why JSON Schema Forms?
+Instead of manually writing HTML for every form field, validation rule, and error message, you define your data schema once and get:
+- Form UI generation
+- Client-side validation
+- Server-side validation (same schema)
+- API documentation
+- Type definitions
+- Database schemas
+
+See the examples below to get started, or check the [primitive forms](/story/primitives-forms--default) for manual form building.
 `
   },
-  page: createComponentDocsPage('pds-jsonform', { hideStories: true }),
+  page: createComponentDocsPage('pds-jsonform', { 
+    hideStories: true,
+    additionalContent: markdownConverter.makeHtml(uiSchemaReferenceMarkdown)
+  }),
   toc: true
 };
 

@@ -17,19 +17,19 @@
   display: none !important;
 }
 
-/* Show only the description block */
+/* Docs pages use Storybook defaults - no PDS tokens */
 .sbdocs-wrapper {
-  background: var(--surface-bg);
-  color: var(--color-text-primary);
+  background: #ffffff;
+  color: #333333;
 }
 
 .sbdocs .sbdocs-title,
 .sbdocs .sbdocs-subtitle {
-  color: var(--color-text-primary);
+  color: #333333;
 }
 
 .sbdocs-description,
 .sbdocs .sbdocs-p {
-  color: var(--color-text-secondary);
+  color: #666666;
   line-height: 1.6;
 }

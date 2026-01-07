@@ -13,50 +13,204 @@ import {
 
 const DOC_STYLE_ID = 'pds-reference-component-docs-styles';
 const DOC_STYLE_CONTENT = `
+  /* Minimal styles for docs pages - uses Storybook defaults, no PDS tokens */
   .pds-reference-docs-wrapper {
-    padding: var(--spacing-5);
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-5);
+    gap: 20px;
   }
 
   .pds-reference-docs-content {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-5);
+    gap: 20px;
   }
 
   .pds-reference-docs-reset {
     margin: 0;
   }
 
+  .pds-reference-docs-pre {
+    margin: 0;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    overflow: auto;
+    font-size: 13px;
+  }
+
+  .pds-reference-docs-section {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pds-reference-docs-section h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .pds-reference-docs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .pds-reference-docs-table th,
+  .pds-reference-docs-table td {
+    padding: 8px 12px;
+    text-align: left;
+    border: 1px solid #e0e0e0;
+    vertical-align: top;
+  }
+
+  .pds-reference-docs-table th {
+    background: #f5f5f5;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .pds-reference-docs-table td:first-child {
+    font-family: monospace;
+    white-space: nowrap;
+  }
+
+  .pds-reference-docs-table code {
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+  }
+
+  .pds-reference-docs-badge {
+    display: inline-block;
+    background: #e8e8e8;
+    color: #333;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+  }
+
+  .pds-reference-docs-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .pds-reference-docs-muted {
+    color: #666;
+    font-size: 14px;
+  }
+
+  .pds-reference-docs-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: #666;
+    font-size: 13px;
+  }
+
+  .pds-reference-docs-subsection {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .pds-reference-docs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .pds-reference-docs-story-card {
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
   .pds-reference-docs-list {
     list-style: none;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
 
-  .pds-reference-docs-pre {
-    margin: 0;
-    padding: var(--spacing-3);
+  .pds-reference-docs-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
-  .pds-reference-docs-content code {
-    white-space: normal;
-    word-break: break-word;
+  /* Additional content section styling */
+  .pds-reference-additional-content {
+    margin-top: 24px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
   }
 
-  /* Override Storybook autodocs token styles that force nowrap chips */
-  .css-qa4clq :where(li:not(.sb-anchor, .sb-unstyled, .sb-unstyled li)) code {
-    line-height: inherit;
-    margin: 0;
-    padding: 0;
-    white-space: normal !important;
-    border-radius: 0;
-    font-size: inherit;
+  .pds-reference-additional-content h1,
+  .pds-reference-additional-content h2,
+  .pds-reference-additional-content h3,
+  .pds-reference-additional-content h4 {
+    margin-top: 24px;
+    margin-bottom: 12px;
+  }
+
+  .pds-reference-additional-content h1:first-child {
+    margin-top: 0;
+  }
+
+  .pds-reference-additional-content p {
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+
+  .pds-reference-additional-content code {
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 13px;
+  }
+
+  .pds-reference-additional-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+  }
+
+  .pds-reference-additional-content th,
+  .pds-reference-additional-content td {
+    padding: 8px 12px;
+    text-align: left;
+    border: 1px solid #e0e0e0;
+  }
+
+  .pds-reference-additional-content th {
+    background: #f5f5f5;
+    font-weight: 600;
+  }
+
+  .pds-reference-additional-content hr {
     border: none;
-    color: inherit;
-    background-color: transparent;
+    border-top: 1px solid #e0e0e0;
+    margin: 24px 0;
   }
 `;
 
@@ -101,17 +255,17 @@ class PdsReferenceComponentDocs extends LitElement {
 
     if (!component) {
       return html`
-        <article class="card surface-base">
-          <p class="text-muted pds-reference-docs-reset">
+        <div class="pds-reference-docs-section">
+          <p class="pds-reference-docs-muted pds-reference-docs-reset">
             No reference metadata found for <code>${this.component || '(unknown component)'}</code>.
             Run <code>npm run build-reference</code> to refresh docs.
           </p>
-        </article>
+        </div>
       `;
     }
 
     return html`
-      <div class="flex flex-col gap-lg pds-reference-docs-content">
+      <div class="pds-reference-docs-content">
         ${this.renderHeader(component)}
         ${component.pdsTags?.length ? this.renderTags(component.pdsTags) : nothing}
         ${component.description ? this.renderManifestNotes(component.description) : nothing}
@@ -143,14 +297,14 @@ class PdsReferenceComponentDocs extends LitElement {
             label: 'Parameters',
             render: (value) => {
               if (!value || !value.length) {
-                return html`<span class="text-muted">&#8212;</span>`;
+                return html`<span class="pds-reference-docs-muted">&#8212;</span>`;
               }
               return html`
-                <ul class="pds-reference-docs-list flex flex-col gap-xs">
+                <ul class="pds-reference-docs-list">
                   ${value.map((param) => html`
-                    <li class="flex flex-wrap gap-xs items-baseline">
+                    <li>
                       <code>${param.name}${param.type ? `: ${param.type}` : ''}</code>
-                      ${param.description ? html`<span class="text-muted text-sm">- ${param.description}</span>` : nothing}
+                      ${param.description ? html`<span class="pds-reference-docs-muted"> - ${param.description}</span>` : nothing}
                     </li>
                   `)}
                 </ul>
@@ -173,14 +327,14 @@ class PdsReferenceComponentDocs extends LitElement {
 
   renderHeader(component) {
     return html`
-      <section class="card surface-base flex flex-col gap-sm">
-        <div class="flex flex-wrap gap-xs">
-          <span class="badge">Web Component</span>
-          ${component.ontology?.id ? html`<span class="badge">${component.ontology.id}</span>` : nothing}
-          ${component.superclass ? html`<span class="badge">extends ${component.superclass}</span>` : nothing}
+      <section class="pds-reference-docs-section">
+        <div class="pds-reference-docs-badges">
+          <span class="pds-reference-docs-badge">Web Component</span>
+          ${component.ontology?.id ? html`<span class="pds-reference-docs-badge">${component.ontology.id}</span>` : nothing}
+          ${component.superclass ? html`<span class="pds-reference-docs-badge">extends ${component.superclass}</span>` : nothing}
         </div>
         <h2 class="pds-reference-docs-reset">${component.displayName}</h2>
-        <div class="flex flex-wrap gap-sm text-muted text-sm">
+        <div class="pds-reference-docs-meta">
           <span><code>${component.tag}</code></span>
           ${component.className ? html`<span>class <code>${component.className}</code></span>` : nothing}
           ${component.sourceModule ? html`<span>${component.sourceModule}</span>` : nothing}
@@ -192,7 +346,7 @@ class PdsReferenceComponentDocs extends LitElement {
 
   renderTags(tags) {
     return html`
-      <section class="card surface-base flex flex-col gap-sm">
+      <section class="pds-reference-docs-section">
         <h3 class="pds-reference-docs-reset">Experience Tags</h3>
         ${renderChipList(tags)}
       </section>
@@ -201,33 +355,33 @@ class PdsReferenceComponentDocs extends LitElement {
 
   renderManifestNotes(description) {
     return html`
-      <section class="card surface-base flex flex-col gap-sm">
+      <section class="pds-reference-docs-section">
         <h3 id="manifest-notes" class="pds-reference-docs-reset">Manifest Notes</h3>
-        <pre class="surface-subtle radius-lg text-sm overflow-auto pds-reference-docs-pre">${description}</pre>
+        <pre class="pds-reference-docs-pre">${description}</pre>
       </section>
     `;
   }
 
   renderImplementationNotes(notes) {
     return html`
-      <section class="card surface-base flex flex-col gap-xs">
+      <section class="pds-reference-docs-section">
         <h3 id="implementation-notes" class="pds-reference-docs-reset">Implementation Notes</h3>
-        ${notes.map((note) => html`<p class="text-muted pds-reference-docs-reset">${note}</p>`)}
+        ${notes.map((note) => html`<p class="pds-reference-docs-muted pds-reference-docs-reset">${note}</p>`)}
       </section>
     `;
   }
 
   renderOntology(ontology) {
     return html`
-      <section class="card surface-base flex flex-col gap-sm">
+      <section class="pds-reference-docs-section">
         <h3 id="ontology" class="pds-reference-docs-reset">Ontology</h3>
-        <div class="flex flex-wrap gap-xs items-center">
-          <span class="badge">${ontology.id}</span>
-          ${ontology.name ? html`<span class="badge">${ontology.name}</span>` : nothing}
+        <div class="pds-reference-docs-badges">
+          <span class="pds-reference-docs-badge">${ontology.id}</span>
+          ${ontology.name ? html`<span class="pds-reference-docs-badge">${ontology.name}</span>` : nothing}
         </div>
         ${ontology.selectors?.length ? html`
-          <div class="flex flex-col gap-xs">
-            <span class="text-muted text-sm">Selectors</span>
+          <div class="pds-reference-docs-subsection">
+            <span class="pds-reference-docs-muted">Selectors</span>
             ${renderChipList(ontology.selectors)}
           </div>
         ` : nothing}
@@ -237,19 +391,19 @@ class PdsReferenceComponentDocs extends LitElement {
 
   renderStories(stories) {
     return html`
-      <section class="card surface-base flex flex-col gap-md">
+      <section class="pds-reference-docs-section">
         <h3 class="pds-reference-docs-reset">Storybook Coverage</h3>
-        <div class="grid grid-auto-md gap-md">
+        <div class="pds-reference-docs-grid">
           ${stories.map((story) => html`
-            <div class="card surface-elevated flex flex-col gap-xs">
+            <div class="pds-reference-docs-story-card">
               <a
                 href="/?path=/story/${story.id}"
                 @click=${(event) => this.handleStoryNavigation(event, story.id)}
               >${story.name}</a>
-              <div class="flex flex-wrap gap-sm text-muted text-sm">
+              <div class="pds-reference-docs-meta">
                 <span>${story.id}</span>
               </div>
-              ${story.description ? html`<p class="text-muted pds-reference-docs-reset">${story.description}</p>` : nothing}
+              ${story.description ? html`<p class="pds-reference-docs-muted pds-reference-docs-reset">${story.description}</p>` : nothing}
               ${story.tags?.length ? renderChipList(story.tags) : nothing}
             </div>
           `)}
@@ -268,7 +422,7 @@ class PdsReferenceComponentDocs extends LitElement {
     if (!items || !items.length) return nothing;
     const id = title.toLowerCase().replace(/\s+/g, '-');
     return html`
-      <section class="card surface-base flex flex-col gap-sm">
+      <section class="pds-reference-docs-section">
         <h3 id="${id}" class="pds-reference-docs-reset">${title}</h3>
         ${renderTable(items, columns)}
       </section>
@@ -282,7 +436,7 @@ if (typeof customElements !== 'undefined' && !customElements.get('pds-reference-
 }
 
 export function createComponentDocsPage(tag, options = {}) {
-  const { hideStories = false } = options;
+  const { hideStories = false, additionalContent = null } = options;
   return function ComponentDocsPage() {
     return React.createElement(
       React.Fragment,
@@ -295,10 +449,17 @@ export function createComponentDocsPage(tag, options = {}) {
       React.createElement(
         'div',
         {
-          className: 'card surface-elevated pds-reference-docs-wrapper'
+          className: 'pds-reference-docs-wrapper'
         },
         React.createElement('pds-reference-component-docs', { component: tag })
       ),
+      additionalContent ? React.createElement(
+        'div',
+        {
+          className: 'pds-reference-additional-content',
+          dangerouslySetInnerHTML: { __html: additionalContent }
+        }
+      ) : null,
       hideStories ? null : React.createElement(Stories, { includePrimary: false })
     );
   };

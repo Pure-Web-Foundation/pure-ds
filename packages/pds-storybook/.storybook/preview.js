@@ -40,9 +40,23 @@ const getInitialPreset = () => {
 const initialPreset = getInitialPreset();
 console.log('🎨 Starting PDS initialization with preset:', initialPreset);
 
+// Helper to detect docs pages - used to prevent PDS from interfering
+function isDocsPage() {
+  try {
+    return window.location.search.includes('/docs/') || 
+           window.location.search.includes('viewMode=docs') ||
+           window.parent?.location?.search?.includes('/docs/');
+  } catch {
+    return false;
+  }
+}
+
 // Wrap top-level await in IIFE for production build compatibility
 (async () => {
   PDS.initializing = true;
+  
+  // NEVER apply global styles on init - only apply in story decorator
+  // This prevents PDS from affecting docs pages
   const pdsOptions = {
     mode: 'live',
     preset: initialPreset,
@@ -53,8 +67,8 @@ console.log('🎨 Starting PDS initialization with preset:', initialPreset);
       observeShadows: true,
       patchAttachShadow: true
     },
-    applyGlobalStyles: true,
-    manageTheme: true
+    applyGlobalStyles: false, // Never apply on init - decorator handles this
+    manageTheme: false // Never manage on init - decorator handles this
   };
 
   // Merge user config
@@ -79,25 +93,28 @@ console.log('🎨 Starting PDS initialization with preset:', initialPreset);
   PDS.currentPreset = initialPreset;
 })();
 
-// Set up persistent style protection - monitor and restore PDS sheets if cleared
-let protectionActive = false;
-function ensurePDSStyles() {
-  const sheets = document.adoptedStyleSheets || [];
-  const hasPDS = sheets.some(s => s._pds === true);
-  
-  if (!hasPDS && PDS.Generator.instance) {
-    console.log('🛡️ PDS sheets missing - restoring...');
-    PDS.Generator.applyStyles();
-  }
-}
-
-// Check periodically
-setInterval(ensurePDSStyles, 100);
+// Style protection disabled - decorator controls when PDS styles are applied
+// This prevents PDS from affecting docs pages
 
 /**
  * Global decorator to ensure Shadow DOM components get PDS styles and run enhancers
  */
+// Track current view mode globally for other code to check
+let currentViewMode = 'story';
+
 const withPDS = (story, context) => {
+  currentViewMode = context.viewMode;
+  
+  // For docs pages - actively REMOVE PDS styles and skip decorator
+  if (context.viewMode === 'docs') {
+    // Clear any PDS adopted stylesheets
+    if (document.adoptedStyleSheets?.length > 0) {
+      const nonPdsSheets = document.adoptedStyleSheets.filter(s => !s._pds);
+      document.adoptedStyleSheets = nonPdsSheets;
+    }
+    return story();
+  }
+  
   console.log('🎬 withPDS decorator called for:', context.title);
   
   // Check adoptedStyleSheets status
