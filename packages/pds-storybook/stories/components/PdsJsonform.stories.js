@@ -24,11 +24,236 @@ Instead of manually writing HTML for every form field, validation rule, and erro
 - Type definitions
 - Database schemas
 
-📚 **See the [uiSchema Reference](/story/components-pds-jsonform-uischema-reference--docs)** for complete documentation on all customization options including widgets, layouts, icons, surfaces, and dialog forms.
+See the examples below to get started, or check the [primitive forms](/story/primitives-forms--default) for manual form building.
 
-See the examples below to get started, or check the [primitive forms](/story/primitives-forms--default) for manual form building.`
+---
+
+# uiSchema Reference
+
+Complete reference for all **uiSchema** configuration options in \`pds-jsonform\`.
+
+The uiSchema controls *how* fields are rendered while JSON Schema defines *what* data to collect.
+
+---
+
+## Path Syntax
+
+Use **slash notation** (JSON Pointer) to target fields:
+
+| Target | Path |
+|--------|------|
+| Root form | \`"/"\` |
+| Top-level field | \`"/fieldName"\` or \`"fieldName"\` |
+| Nested field | \`"/parent/child"\` or \`"parent/child"\` |
+
+---
+
+## Widget Selection
+
+### \`ui:widget\`
+
+Override the automatically selected widget for a field.
+
+| Widget | Use For | Notes |
+|--------|---------|-------|
+| \`input-text\` | String | Default for strings |
+| \`textarea\` | String | Multi-line text |
+| \`password\` | String | Masked input |
+| \`input-email\` | String | Email with validation |
+| \`input-url\` | String | URL with validation |
+| \`input-number\` | Number | Default for numbers |
+| \`input-range\` | Number | Slider control |
+| \`input-date\` | String | Date picker |
+| \`input-time\` | String | Time picker |
+| \`input-datetime\` | String | Date + time picker |
+| \`input-color\` | String | Color picker |
+| \`checkbox\` | Boolean | Default for booleans |
+| \`toggle\` | Boolean | Toggle switch |
+| \`select\` | String (enum) | Default for enums |
+| \`radio\` | String (enum) | Radio button group |
+| \`checkbox-group\` | Array (enum items) | Multi-select checkboxes |
+| \`upload\` | String | File upload (pds-upload) |
+| \`richtext\` | String | Rich text editor (pds-richtext) |
+| \`const\` | Any | Read-only display |
+
+---
+
+## Widget Options
+
+### \`ui:options\`
+
+Widget-specific configuration object.
+
+#### Textarea Options
+| Option | Type | Description |
+|--------|------|-------------|
+| \`rows\` | number | Number of visible rows |
+| \`cols\` | number | Number of visible columns |
+
+#### Range Slider Options
+| Option | Type | Description |
+|--------|------|-------------|
+| \`min\` | number | Minimum value |
+| \`max\` | number | Maximum value |
+| \`step\` | number | Step increment |
+
+#### Upload Options (pds-upload)
+| Option | Type | Description |
+|--------|------|-------------|
+| \`accept\` | string | MIME types (e.g., \`"image/*"\`) |
+| \`maxSize\` | number | Max file size in bytes |
+| \`multiple\` | boolean | Allow multiple files |
+| \`label\` | string | Upload button label |
+
+#### Rich Text Options (pds-richtext)
+| Option | Type | Description |
+|--------|------|-------------|
+| \`toolbar\` | string | \`"minimal"\`, \`"standard"\`, \`"full"\` |
+| \`spellcheck\` | boolean | Enable spellcheck |
+| \`format\` | string | \`"html"\` or \`"markdown"\` for output |
+| \`submitOnEnter\` | boolean | Submit form on Enter |
+
+---
+
+## Layout Options
+
+### \`ui:layout\`
+
+Control how nested object fields are arranged.
+
+| Value | Description |
+|-------|-------------|
+| \`default\` | Standard vertical fieldset |
+| \`flex\` | Flexbox row layout |
+| \`grid\` | CSS Grid layout |
+| \`accordion\` | Collapsible \`<details>\` sections |
+| \`tabs\` | Tabbed interface (pds-tabstrip) |
+
+### \`ui:layoutOptions\`
+
+Layout-specific configuration.
+
+#### Flex Layout Options
+| Option | Type | Description |
+|--------|------|-------------|
+| \`wrap\` | boolean | Allow wrapping |
+| \`gap\` | string | Gap size: \`"sm"\`, \`"md"\`, \`"lg"\` |
+| \`direction\` | string | \`"row"\` or \`"column"\` |
+
+#### Grid Layout Options
+| Option | Type | Description |
+|--------|------|-------------|
+| \`columns\` | number | Number of columns |
+| \`gap\` | string | Gap size: \`"sm"\`, \`"md"\`, \`"lg"\` |
+
+#### Accordion Layout Options
+| Option | Type | Description |
+|--------|------|-------------|
+| \`openFirst\` | boolean | First section open by default |
+
+---
+
+## Field Customization
+
+### Display Options
+
+| Option | Type | Description |
+|--------|------|-------------|
+| \`ui:help\` | string | Help text below field (overrides \`description\`) |
+| \`ui:placeholder\` | string | Placeholder text (overrides \`examples\`) |
+| \`ui:class\` | string | Additional CSS classes |
+| \`ui:order\` | string[] | Field order within object |
+
+### State Options
+
+| Option | Type | Description |
+|--------|------|-------------|
+| \`ui:hidden\` | boolean | Hide field from UI (still in data) |
+| \`ui:readonly\` | boolean | Make field read-only |
+| \`ui:disabled\` | boolean | Disable field |
+
+---
+
+## Icon Enhancement
+
+### \`ui:icon\`
+
+Add an icon to the input field. Requires \`pds-icon\` component.
+
+| Option | Type | Description |
+|--------|------|-------------|
+| \`ui:icon\` | string | Icon name from sprite |
+| \`ui:iconPosition\` | string | \`"start"\` or \`"end"\` |
+
+---
+
+## Surface Wrapping
+
+### \`ui:surface\`
+
+Wrap a fieldset in a styled container.
+
+| Value | Description |
+|-------|-------------|
+| \`card\` | Card surface |
+| \`elevated\` | Elevated surface with shadow |
+| \`sunken\` | Sunken/inset surface |
+
+---
+
+## Dialog Forms
+
+### \`ui:dialog\`
+
+Collect nested object data in a modal dialog instead of inline.
+
+| Option | Type | Description |
+|--------|------|-------------|
+| \`ui:dialog\` | boolean | Enable dialog mode |
+
+### \`ui:dialogOptions\`
+
+| Option | Type | Description |
+|--------|------|-------------|
+| \`buttonLabel\` | string | Trigger button label |
+| \`dialogTitle\` | string | Dialog title |
+| \`icon\` | string | Icon for trigger button |
+
+---
+
+## Autocomplete
+
+### \`ui:datalist\`
+
+Provide autocomplete suggestions using native \`<datalist>\`.
+
+| Option | Type | Description |
+|--------|------|-------------|
+| \`ui:datalist\` | string[] | Array of suggestion values |
+
+### \`ui:autocomplete\`
+
+HTML autocomplete attribute hint.
+
+| Option | Type | Description |
+|--------|------|-------------|
+| \`ui:autocomplete\` | string | e.g., \`"email"\`, \`"new-password"\`, \`"tel"\` |
+
+---
+
+## Enhanced Select
+
+### \`ui:dropdown\`
+
+Use enhanced dropdown menu instead of native select.
+
+| Option | Type | Description |
+|--------|------|-------------|
+| \`ui:dropdown\` | boolean | Enable enhanced dropdown |
+`
   },
-  page: createComponentDocsPage('pds-jsonform')
+  page: createComponentDocsPage('pds-jsonform', { hideStories: true }),
+  toc: true
 };
 
 export default {

@@ -202,7 +202,7 @@ class PdsReferenceComponentDocs extends LitElement {
   renderManifestNotes(description) {
     return html`
       <section class="card surface-base flex flex-col gap-sm">
-        <h3 class="pds-reference-docs-reset">Manifest Notes</h3>
+        <h3 id="manifest-notes" class="pds-reference-docs-reset">Manifest Notes</h3>
         <pre class="surface-subtle radius-lg text-sm overflow-auto pds-reference-docs-pre">${description}</pre>
       </section>
     `;
@@ -211,7 +211,7 @@ class PdsReferenceComponentDocs extends LitElement {
   renderImplementationNotes(notes) {
     return html`
       <section class="card surface-base flex flex-col gap-xs">
-        <h3 class="pds-reference-docs-reset">Implementation Notes</h3>
+        <h3 id="implementation-notes" class="pds-reference-docs-reset">Implementation Notes</h3>
         ${notes.map((note) => html`<p class="text-muted pds-reference-docs-reset">${note}</p>`)}
       </section>
     `;
@@ -220,7 +220,7 @@ class PdsReferenceComponentDocs extends LitElement {
   renderOntology(ontology) {
     return html`
       <section class="card surface-base flex flex-col gap-sm">
-        <h3 class="pds-reference-docs-reset">Ontology</h3>
+        <h3 id="ontology" class="pds-reference-docs-reset">Ontology</h3>
         <div class="flex flex-wrap gap-xs items-center">
           <span class="badge">${ontology.id}</span>
           ${ontology.name ? html`<span class="badge">${ontology.name}</span>` : nothing}
@@ -266,20 +266,23 @@ class PdsReferenceComponentDocs extends LitElement {
 
   renderTableSection(title, items, columns) {
     if (!items || !items.length) return nothing;
+    const id = title.toLowerCase().replace(/\s+/g, '-');
     return html`
       <section class="card surface-base flex flex-col gap-sm">
-        <h3 class="pds-reference-docs-reset">${title}</h3>
+        <h3 id="${id}" class="pds-reference-docs-reset">${title}</h3>
         ${renderTable(items, columns)}
       </section>
     `;
   }
 }
 
-if (!customElements.get('pds-reference-component-docs')) {
+// Guard for Node.js environment (Storybook static analysis)
+if (typeof customElements !== 'undefined' && !customElements.get('pds-reference-component-docs')) {
   customElements.define('pds-reference-component-docs', PdsReferenceComponentDocs);
 }
 
-export function createComponentDocsPage(tag) {
+export function createComponentDocsPage(tag, options = {}) {
+  const { hideStories = false } = options;
   return function ComponentDocsPage() {
     return React.createElement(
       React.Fragment,
@@ -296,7 +299,11 @@ export function createComponentDocsPage(tag) {
         },
         React.createElement('pds-reference-component-docs', { component: tag })
       ),
-      React.createElement(Stories, { includePrimary: false })
+      hideStories ? null : React.createElement(Stories, { includePrimary: false })
     );
   };
+}
+
+export function createComponentDocsPageNoStories(tag) {
+  return createComponentDocsPage(tag, { hideStories: true });
 }
