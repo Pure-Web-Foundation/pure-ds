@@ -19,7 +19,7 @@ const PDS = window.PDS;
  * @csspart grab-handle - The drag handle indicator
  * @csspart content - The drawer content section
  */
-customElements.define("pds-drawer", class extends HTMLElement {
+class PdsDrawer extends HTMLElement {
   #isDragging = false;
   #startX = 0;
   #startY = 0;
@@ -854,4 +854,5 @@ customElements.define("pds-drawer", class extends HTMLElement {
       }
     }
   }
-})
+}
+customElements.define("pds-drawer", PdsDrawer);

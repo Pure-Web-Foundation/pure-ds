@@ -16,6 +16,7 @@
  * @slot right - Content for the right (or bottom) panel.
  *
  * @csspart toggle - The mobile toggle button.
+ * @csspart splitter - The draggable splitter bar between panels.
  *
  * @cssprop --left-width - Width of the left panel in horizontal layout.
  * @cssprop --color-border - Color of the splitter bar.
@@ -39,9 +40,7 @@
  *   <div slot="right">Bottom Panel Content</div>
  * </pds-splitpanel>
  */
-customElements.define(
-  "pds-splitpanel",
-  class extends HTMLElement {
+class PdsSplitpanel extends HTMLElement {
     static get observedAttributes() {
       return ["layout", "defaultsplit", "breakpoint", "open"];
     }
@@ -165,7 +164,7 @@ customElements.define(
         <div class="left-panel">
           <slot name="left"></slot>
         </div>
-        <div class="splitter"></div>
+        <div class="splitter" part="splitter"></div>
         <div class="right-panel">
           <slot name="right"></slot>
         </div>
@@ -186,7 +185,7 @@ customElements.define(
       :host {
         display: flex;
         position: relative;
-        height: 100%;
+        min-height: 0;
         width: 100%;
       }
 
@@ -218,11 +217,11 @@ customElements.define(
         cursor: col-resize;
         position: relative;
         z-index: 1;
+        align-self: stretch;
       }
 
       :host([layout="horizontal"]) .splitter {
         width: 5px;
-        height: 100%;
       }
 
       :host([layout="vertical"]) .splitter {
@@ -398,4 +397,4 @@ customElements.define(
       this.$icon.setAttribute("icon", this._open ? "x" : "list");
     }
   }
-);
+customElements.define("pds-splitpanel", PdsSplitpanel);

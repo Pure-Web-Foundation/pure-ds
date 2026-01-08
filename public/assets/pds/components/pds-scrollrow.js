@@ -4,7 +4,10 @@
  * @element pds-scrollrow
  * @slot default - Scrollable tile content
  * @slot heading - Optional heading content rendered in the component header
+ * 
  * @csspart viewport - The scrollable container element
+ * @csspart prev - The previous/left scroll navigation button
+ * @csspart next - The next/right scroll navigation button
  *
  * @attr {string} label - Accessible label for the scroll region; also used as fallback heading copy
  * @attr {"start"|"center"} snap - Snap alignment for tiles when scrolling (default: start)

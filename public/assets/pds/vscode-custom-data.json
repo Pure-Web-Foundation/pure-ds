@@ -3,17 +3,17 @@
   "tags": [
     {
       "name": "pds-calendar",
-      "description": "anonymous_0 component",
+      "description": "PdsCalendar component",
       "attributes": [
         {
           "name": "date",
-          "description": ""
+          "description": "The date to display (defaults to current date). Accepts any valid date string"
         }
       ]
     },
     {
-      "name": "pds-calendar",
-      "description": "anonymous_0 component",
+      "name": "pds-drawer",
+      "description": "PdsDrawer component",
       "attributes": [
         {
           "name": "open",
@@ -726,24 +726,24 @@
       ]
     },
     {
-      "name": "pds-calendar",
-      "description": "anonymous_0 component",
+      "name": "pds-splitpanel",
+      "description": "PdsSplitpanel component",
       "attributes": [
         {
           "name": "layout",
-          "description": ""
+          "description": "The layout direction of the panels. Can be \"horizontal\" or \"vertical\". Defaults to \"horizontal\"."
         },
         {
           "name": "defaultsplit",
-          "description": ""
+          "description": "The initial size of the primary (left/top) panel. Defaults to \"450px\"."
         },
         {
           "name": "breakpoint",
-          "description": ""
+          "description": "The viewport width in pixels below which the component switches to mobile view. Defaults to 1024."
         },
         {
           "name": "open",
-          "description": ""
+          "description": "Controls the visibility of the primary panel in mobile view."
         }
       ]
     },
@@ -813,6 +813,11 @@
     {
       "name": "data-toggle",
       "description": "Creates a toggle switch element from a checkbox.\n\nExample:\n<label data-toggle>\n<input type=\"checkbox\">\n<span data-label>Enable notifications</span>\n</label>",
+      "valueSet": "v"
+    },
+    {
+      "name": "data-required",
+      "description": "Enhances required form fields using an asterisk in the label.\n\nExample:\n<form data-required action=\"#\" method=\"post\">\n<label>\n<span>Field Label</span>\n<input type=\"text\" required>\n</label>\n<nav class=\"form-actions\">\n<button type=\"submit\" class=\"btn-primary\">Submit</button>\n</nav>\n</form>",
       "valueSet": "v"
     },
     {

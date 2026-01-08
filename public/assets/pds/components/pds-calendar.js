@@ -135,10 +135,7 @@ class DateHelper {
  * @csspart day - Individual day cells
  * @csspart task - Event items within days
  */
-customElements.define(
-  "pds-calendar",
-
-  class extends HTMLElement {
+class PdsCalendar extends HTMLElement {
     #date;
     #dayNames;
     #monthNames;
@@ -520,8 +517,8 @@ button.btn-xs {
       this.startDay = new Date(this.year, this.month, 0).getDay();
 
       const calendarHtml = /*html*/ `
-        <div class="calendar-container">
-          <nav class="calendar-header">
+        <div class="calendar-container" part="calendar-container">
+          <nav class="calendar-header" part="calendar-header">
             <button class="btn-outline prev btn-xs"><pds-icon icon="arrow-left" size="xs"></pds-icon></button>
             <div class="current-month">
               <h3 class="month-name">${this.#monthNames[this.month]}</h3>
@@ -530,7 +527,7 @@ button.btn-xs {
             <button class="btn-outline next btn-xs"><pds-icon icon="arrow-right" size="xs"></pds-icon></button>
           </nav>
 
-          <div class="calendar">
+          <div class="calendar" part="calendar">
             ${this.getDayNamesHtml()}
             ${this.getDaysHtml()}
           </div>
@@ -763,7 +760,7 @@ button.btn-xs {
                   for (const item of list) {
                     const html = /*html*/ `<div class="task task--${
                       item.type || "info"
-                    }">
+                    }" part="task">
                     <div class="task__detail">
                       <h3>
                         ${item.title}
@@ -816,22 +813,23 @@ button.btn-xs {
         this.month === todayMonth && this.year === todayYear;
 
       for (let i = 0; i < this.startDay; i++) {
-        html.add(/*html*/ `<div class="day day-disabled"></div>`);
+        html.add(/*html*/ `<div class="day day-disabled" part="day"></div>`);
       }
       for (let i = 1; i <= this.daysInMonth; i++) {
         const isTodayClass =
           isCurrentMonth && i === todayDay ? "day-today" : "";
         html.add(/*html*/ `
-        <div data-day="${i}" class="day ${isTodayClass}">
+        <div data-day="${i}" class="day ${isTodayClass}" part="day">
           <span class="nr">${i}<span>
         </div>`);
       }
       const endDay =
         6 - new Date(this.year, this.month, this.daysInMonth).getDay();
       for (let i = 1; i <= endDay; i++) {
-        html.add(/*html*/ `<div class="day day-disabled"></div>`);
+        html.add(/*html*/ `<div class="day day-disabled" part="day"></div>`);
       }
       return html.toHTML();
     }
   }
-);
+}
+customElements.define("pds-calendar", PdsCalendar);

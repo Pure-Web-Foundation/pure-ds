@@ -39,12 +39,64 @@
         {
           "kind": "class",
           "description": "",
-          "name": "anonymous_0",
+          "name": "PdsCalendar",
+          "cssProperties": [
+            {
+              "description": "Calendar background color",
+              "name": "--surface-bg"
+            },
+            {
+              "description": "Border color for calendar elements",
+              "name": "--surface-border"
+            },
+            {
+              "description": "Secondary text color",
+              "name": "--surface-text-secondary"
+            },
+            {
+              "description": "Primary color for events and highlights",
+              "name": "--color-primary-500"
+            },
+            {
+              "description": "Warning event color",
+              "name": "--color-warning-500"
+            },
+            {
+              "description": "Danger event color",
+              "name": "--color-danger-500"
+            },
+            {
+              "description": "Info event color",
+              "name": "--color-info-500"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "The main container for the calendar",
+              "name": "calendar-container"
+            },
+            {
+              "description": "The header containing month name and navigation",
+              "name": "calendar-header"
+            },
+            {
+              "description": "The grid container for the calendar days",
+              "name": "calendar"
+            },
+            {
+              "description": "Individual day cells",
+              "name": "day"
+            },
+            {
+              "description": "Event items within days",
+              "name": "task"
+            }
+          ],
           "members": [
             {
               "kind": "field",
               "name": "date",
-              "description": "Gets the current date",
+              "description": "Gets or sets the current date being displayed",
               "parameters": [
                 {
                   "description": "Date string or Date object",
@@ -58,6 +110,9 @@
                 "type": {
                   "text": "Date"
                 }
+              },
+              "type": {
+                "text": "Date"
               }
             },
             {
@@ -78,11 +133,19 @@
               "type": {
                 "text": "CustomEvent"
               }
+            },
+            {
+              "description": "Dispatched after the calendar month is rendered with event fill capability",
+              "name": "pds-calendar#month-rendered"
             }
           ],
           "attributes": [
             {
-              "name": "date"
+              "name": "date",
+              "type": {
+                "text": "String"
+              },
+              "description": "The date to display (defaults to current date). Accepts any valid date string"
             }
           ],
           "superclass": {
@@ -105,7 +168,7 @@
           "kind": "custom-element-definition",
           "name": "pds-calendar",
           "declaration": {
-            "name": "anonymous_0",
+            "name": "PdsCalendar",
             "module": "public/assets/pds/components/pds-calendar.js"
           }
         }
@@ -118,7 +181,61 @@
         {
           "kind": "class",
           "description": "",
-          "name": "anonymous_0",
+          "name": "PdsDrawer",
+          "cssProperties": [
+            {
+              "description": "Animation duration (default: var(--transition-normal))",
+              "name": "--drawer-duration"
+            },
+            {
+              "description": "Animation easing function (default: var(--easing-emphasized))",
+              "name": "--drawer-easing"
+            },
+            {
+              "description": "Maximum height when position is top/bottom (default: 70vh)",
+              "name": "--drawer-max-height"
+            },
+            {
+              "description": "Minimum height when position is top/bottom (default: auto)",
+              "name": "--drawer-min-height"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "The semi-transparent backdrop overlay",
+              "name": "backdrop"
+            },
+            {
+              "description": "The drawer panel container",
+              "name": "panel"
+            },
+            {
+              "description": "The drawer header section",
+              "name": "header"
+            },
+            {
+              "description": "The close button",
+              "name": "close-button"
+            },
+            {
+              "description": "The drag handle indicator",
+              "name": "grab-handle"
+            },
+            {
+              "description": "The drawer content section",
+              "name": "content"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Header content for the drawer",
+              "name": "drawer-header"
+            },
+            {
+              "description": "Main content of the drawer",
+              "name": "drawer-content"
+            }
+          ],
           "members": [
             {
               "kind": "field",
@@ -310,6 +427,12 @@
               "default": "false"
             }
           ],
+          "events": [
+            {
+              "description": "Fired when the drawer opens or closes",
+              "name": "toggle"
+            }
+          ],
           "attributes": [
             {
               "name": "open",
@@ -368,7 +491,7 @@
           "superclass": {
             "name": "HTMLElement"
           },
-          "tagName": "pds-calendar",
+          "tagName": "pds-drawer",
           "customElement": true
         }
       ],
@@ -377,7 +500,7 @@
           "kind": "custom-element-definition",
           "name": "pds-drawer",
           "declaration": {
-            "name": "anonymous_0",
+            "name": "PdsDrawer",
             "module": "public/assets/pds/components/pds-drawer.js"
           }
         }
@@ -406,6 +529,18 @@
             },
             {
               "kind": "field",
+              "name": "externalIconCache",
+              "static": true,
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "externalIconPromises",
+              "static": true,
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
               "name": "instances",
               "static": true,
               "default": "new Set()"
@@ -418,6 +553,26 @@
               "return": {
                 "type": {
                   "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "fetchExternalIcon",
+              "static": true,
+              "parameters": [
+                {
+                  "name": "iconName",
+                  "description": "The icon name (without .svg extension)",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Fetch an external SVG icon and cache it",
+              "return": {
+                "type": {
+                  "text": "Promise<boolean>"
                 }
               }
             },
@@ -1174,6 +1329,14 @@
             {
               "description": "The scrollable container element",
               "name": "viewport"
+            },
+            {
+              "description": "The previous/left scroll navigation button",
+              "name": "prev"
+            },
+            {
+              "description": "The next/right scroll navigation button",
+              "name": "next"
             }
           ],
           "slots": [
@@ -1278,23 +1441,89 @@
         {
           "kind": "class",
           "description": "",
-          "name": "anonymous_0",
+          "name": "PdsSplitpanel",
+          "cssProperties": [
+            {
+              "description": "Width of the left panel in horizontal layout.",
+              "name": "--left-width"
+            },
+            {
+              "description": "Color of the splitter bar.",
+              "name": "--color-border"
+            },
+            {
+              "description": "Background color of the left panel in mobile view.",
+              "name": "--color-surface-base"
+            },
+            {
+              "description": "Transition duration for the mobile panel animation.",
+              "name": "--transition-fast"
+            },
+            {
+              "description": "Positioning spacing for the mobile toggle button.",
+              "name": "--spacing-4"
+            },
+            {
+              "description": "Padding for the mobile toggle button.",
+              "name": "--spacing-1"
+            },
+            {
+              "description": "Padding for the mobile toggle button.",
+              "name": "--spacing-2"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "The mobile toggle button.",
+              "name": "toggle"
+            },
+            {
+              "description": "The draggable splitter bar between panels.",
+              "name": "splitter"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Content for the left (or top) panel.",
+              "name": "left"
+            },
+            {
+              "description": "Content for the right (or bottom) panel.",
+              "name": "right"
+            }
+          ],
           "members": [
             {
               "kind": "field",
-              "name": "layout"
+              "name": "layout",
+              "type": {
+                "text": "String"
+              },
+              "description": "Gets or sets the layout direction."
             },
             {
               "kind": "field",
-              "name": "defaultSplit"
+              "name": "defaultSplit",
+              "type": {
+                "text": "String"
+              },
+              "description": "Gets or sets the default split size."
             },
             {
               "kind": "field",
-              "name": "breakpoint"
+              "name": "breakpoint",
+              "type": {
+                "text": "Number"
+              },
+              "description": "Gets or sets the mobile breakpoint."
             },
             {
               "kind": "field",
-              "name": "open"
+              "name": "open",
+              "type": {
+                "text": "Boolean"
+              },
+              "description": "Gets or sets the open state of the mobile panel."
             },
             {
               "kind": "method",
@@ -1396,22 +1625,38 @@
           ],
           "attributes": [
             {
-              "name": "layout"
+              "name": "layout",
+              "type": {
+                "text": "String"
+              },
+              "description": "The layout direction of the panels. Can be \"horizontal\" or \"vertical\". Defaults to \"horizontal\"."
             },
             {
-              "name": "defaultsplit"
+              "name": "defaultsplit",
+              "type": {
+                "text": "String"
+              },
+              "description": "The initial size of the primary (left/top) panel. Defaults to \"450px\"."
             },
             {
-              "name": "breakpoint"
+              "name": "breakpoint",
+              "type": {
+                "text": "Number"
+              },
+              "description": "The viewport width in pixels below which the component switches to mobile view. Defaults to 1024."
             },
             {
-              "name": "open"
+              "name": "open",
+              "type": {
+                "text": "Boolean"
+              },
+              "description": "Controls the visibility of the primary panel in mobile view."
             }
           ],
           "superclass": {
             "name": "HTMLElement"
           },
-          "tagName": "pds-calendar",
+          "tagName": "pds-splitpanel",
           "customElement": true
         }
       ],
@@ -1420,7 +1665,7 @@
           "kind": "custom-element-definition",
           "name": "pds-splitpanel",
           "declaration": {
-            "name": "anonymous_0",
+            "name": "PdsSplitpanel",
             "module": "public/assets/pds/components/pds-splitpanel.js"
           }
         }

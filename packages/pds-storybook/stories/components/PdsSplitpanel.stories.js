@@ -16,6 +16,26 @@ if (typeof window !== 'undefined') {
     });
 }
 
+// Minimal styles for split panel demos
+const splitpanelStoryStyles = html`
+  <style>
+    pds-splitpanel.card {
+      padding: 0;
+    }
+    [slot="left"], [slot="right"] { padding: var(--spacing-2); }
+    .splitpanel-console { 
+      background: #1e1e1e; 
+      color: #d4d4d4;
+      & .cmd { color: #4ec9b0; }
+      & .meta { color: #6a9955; }
+    }
+    .splitpanel-stat { 
+      font-size: 2.5rem; 
+      font-weight: 700; 
+      margin: var(--spacing-2) 0;
+    }
+  </style>
+`;
 
 export default {
   title: 'Components/Pds Splitpanel',
@@ -29,16 +49,17 @@ export default {
 };
 
 export const Default = () => html`
-  <pds-splitpanel class="splitpanel-story splitpanel-story--tall" orientation="horizontal" default-split="360px">
-    <div slot="left" class="splitpanel-pane splitpanel-pane--surface splitpanel-pane--stacked">
-      <article class="card surface-elevated splitpanel-card">
+  ${splitpanelStoryStyles}
+  <pds-splitpanel class="card" orientation="horizontal" default-split="360px">
+    <div slot="left" class="stack-md">
+      <div class="stack-sm">
         <div>
-          <p class="splitpanel-eyebrow">Leadership Sync</p>
-          <h3 class="splitpanel-heading">Q4 Roadmap Planning</h3>
-          <p class="splitpanel-meta">Monday, 2:00 PM • Conference Room Aurora</p>
+          <p class="text-muted text-xs" style="text-transform: uppercase; letter-spacing: 0.08em;">Leadership Sync</p>
+          <h3>Q4 Roadmap Planning</h3>
+          <p class="text-muted">Monday, 2:00 PM • Conference Room Aurora</p>
         </div>
 
-        <div class="splitpanel-action-group">
+        <div class="flex flex-wrap gap-sm">
           <button class="btn-primary btn-sm">
             <pds-icon icon="video"></pds-icon>
             Join Meeting
@@ -50,60 +71,60 @@ export const Default = () => html`
         </div>
 
         <div>
-          <h4 class="splitpanel-section-title">Agenda</h4>
-          <ul class="splitpanel-stack-md">
+          <h4>Agenda</h4>
+          <ul class="stack-sm">
             <li>Roadmap alignment and blockers</li>
             <li>Department resource updates</li>
             <li>Upcoming launch dependencies</li>
           </ul>
         </div>
-      </article>
+      </div>
 
-      <article class="card surface-elevated splitpanel-card">
-        <h4 class="splitpanel-section-title">Attachments (2)</h4>
+      <div class="stack-sm">
+        <h4>Attachments (2)</h4>
         <div class="stack-sm">
-          <div class="flex gap-md justify-between">
-            <span>
+          <div class="flex gap-md items-center justify-between">
+            <span class="flex gap-sm items-center">
               <pds-icon icon="file-text"></pds-icon>
-              <span class="splitpanel-attachment__label">meeting-agenda.pdf</span>
+              meeting-agenda.pdf
             </span>
             <button class="icon-only btn-outline btn-sm">
               <pds-icon icon="download" size="sm" label="Download"></pds-icon>
             </button>
           </div>
-          <div class="flex gap-md justify-between">
-          <span>
-            <pds-icon icon="file-text"></pds-icon>
-            <span class="splitpanel-attachment__label">q4-report.xlsx</span>
+          <div class="flex gap-md items-center justify-between">
+            <span class="flex gap-sm items-center">
+              <pds-icon icon="file-text"></pds-icon>
+              q4-report.xlsx
             </span>
             <button class="icon-only btn-outline btn-sm">
               <pds-icon icon="download" size="sm" label="Download"></pds-icon>
             </button>
           </div>
         </div>
-      </article>
+      </div>
     </div>
 
-    <div slot="right" class="splitpanel-pane splitpanel-pane--stacked">
-      <article class="card splitpanel-card">
-        <h3 class="splitpanel-heading">Discussion Topics</h3>
-        <ul class="splitpanel-stack-md">
+    <div slot="right" class="stack-md">
+      <div class="stack-sm">
+        <h3>Discussion Topics</h3>
+        <ul class="stack-sm">
           <li>Prioritize customer feedback integration for the Q4 release.</li>
           <li>Finalize facility budget for new team hires.</li>
           <li>Review outstanding action items from last sprint review.</li>
         </ul>
-      </article>
+      </div>
 
-      <article class="card surface-elevated splitpanel-card">
+      <div class="stack-sm">
         <h4>Notes</h4>
-        <p class="splitpanel-message">
+        <p>
           Please come prepared with your updates and any questions you might have. Looking forward to seeing everyone there!
         </p>
         <div class="stack-xs">
           <strong>Sarah Johnson</strong>
-          <span>Team Lead</span>
+          <span class="text-muted">Team Lead</span>
         </div>
-      </article>
+      </div>
     </div>
   </pds-splitpanel>
 `;
@@ -111,19 +132,18 @@ export const Default = () => html`
 Default.storyName = 'Project Workspace';
 
 export const CodeEditorLayout = () => html`
-  <pds-splitpanel orientation="horizontal" default-split="50%">
-    <div slot="left" class="">
-      <h3 class="splitpanel-heading">Code Editor</h3>
+  ${splitpanelStoryStyles}
+  <pds-splitpanel class="card" orientation="horizontal" default-split="50%">
+    <div slot="left" class="stack-md">
+      <h3>Code Editor</h3>
 
-      <article class="card surface-elevated splitpanel-card">
-        <pre class="splitpanel-code-block"><code>function greet(name) {
+      <pre style="padding: var(--spacing-3); border-radius: var(--radius-md); font-family: var(--font-family-mono); font-size: 0.875rem; overflow: auto; background: var(--surface-bg-secondary);"><code>function greet(name) {
   console.log('Hello, ' + name + '!');
 }
 
 greet('World');</code></pre>
-      </article>
 
-      <div class="splitpanel-action-group">
+      <div class="flex flex-wrap gap-sm">
         <button class="btn-primary">
           <pds-icon icon="play"></pds-icon>
           Run Code
@@ -135,16 +155,14 @@ greet('World');</code></pre>
       </div>
     </div>
 
-    <div slot="right" class="splitpanel-pane splitpanel-pane--surface-alt splitpanel-pane--stacked">
-      <h3 class="splitpanel-heading">Output Console</h3>
+    <div slot="right" class="stack-md">
+      <h3>Output Console</h3>
 
-      <article class="card splitpanel-card splitpanel-card--tight">
-        <div class="splitpanel-console">
-          <div class="splitpanel-console__cmd">$ node script.js</div>
-          <div>Hello, World!</div>
-          <div class="splitpanel-console__meta">// Execution completed in 0.23s</div>
-        </div>
-      </article>
+      <div class="splitpanel-console stack-xs" style="padding: var(--spacing-3); border-radius: var(--radius-md); font-family: var(--font-family-mono);">
+        <div class="cmd">$ node script.js</div>
+        <div>Hello, World!</div>
+        <div class="meta">// Execution completed in 0.23s</div>
+      </div>
     </div>
   </pds-splitpanel>
 `;
@@ -152,70 +170,69 @@ greet('World');</code></pre>
 CodeEditorLayout.storyName = 'Code Editor Layout';
 
 export const DashboardLayout = () => html`
-  <pds-splitpanel orientation="horizontal" default-split="250px">
-    <div slot="left" >
-      <h3 class="splitpanel-heading splitpanel-dashboard-heading">Navigation</h3>
+  ${splitpanelStoryStyles}
+  <pds-splitpanel class="card" orientation="horizontal" default-split="250px">
+    <div slot="left" class="stack-md">
+      <h3>Navigation</h3>
 
-      <nav class="splitpanel-nav">
-        <button class="btn-outline">
+      <nav class="stack-sm">
+        <button class="btn-outline" style="justify-content: flex-start;">
           <pds-icon icon="house"></pds-icon>
           Dashboard
         </button>
-        <button class="btn-outline">
+        <button class="btn-outline" style="justify-content: flex-start;">
           <pds-icon icon="bar-chart"></pds-icon>
           Analytics
         </button>
-        <button class="btn-outline">
+        <button class="btn-outline" style="justify-content: flex-start;">
           <pds-icon icon="users"></pds-icon>
           Users
         </button>
-        <button class="btn-outline">
+        <button class="btn-outline" style="justify-content: flex-start;">
           <pds-icon icon="gear"></pds-icon>
           Settings
         </button>
       </nav>
     </div>
 
-    <div slot="right" class="splitpanel-pane splitpanel-pane--stacked">
-      <h2 class="splitpanel-heading">Dashboard Overview</h2>
+    <div slot="right" class="stack-md">
+      <h2>Dashboard Overview</h2>
 
-      <div class="splitpanel-grid">
-        <article class="card surface-elevated splitpanel-card splitpanel-card--tight">
-          <h4 class="splitpanel-section-title">Total Users</h4>
-          <div class="splitpanel-stat splitpanel-stat--primary">1,284</div>
-          <p class="splitpanel-stat-note">↑ 12% from last month</p>
-        </article>
+      <div class="grid grid-auto-sm gap-md">
+        <div>
+          <h4>Total Users</h4>
+          <div class="splitpanel-stat text-primary">1,284</div>
+          <p class="text-muted text-sm">↑ 12% from last month</p>
+        </div>
 
-        <article class="card surface-elevated splitpanel-card splitpanel-card--tight">
-          <h4 class="splitpanel-section-title">Revenue</h4>
-          <div class="splitpanel-stat splitpanel-stat--secondary">$42.5K</div>
-          <p class="splitpanel-stat-note">↑ 8% from last month</p>
-        </article>
+        <div>
+          <h4>Revenue</h4>
+          <div class="splitpanel-stat text-secondary">$42.5K</div>
+          <p class="text-muted text-sm">↑ 8% from last month</p>
+        </div>
 
-        <article class="card surface-elevated splitpanel-card splitpanel-card--tight">
-          <h4 class="splitpanel-section-title">Active Now</h4>
-          <div class="splitpanel-stat splitpanel-stat--accent">127</div>
-          <p class="splitpanel-stat-note">Current active users</p>
-        </article>
+        <div>
+          <h4>Active Now</h4>
+          <div class="splitpanel-stat text-accent">127</div>
+          <p class="text-muted text-sm">Current active users</p>
+        </div>
       </div>
 
-      <article class="card surface-elevated splitpanel-card splitpanel-activity-card">
-        <h3 class="splitpanel-heading">Recent Activity</h3>
-        <div class="splitpanel-activity-list">
+      <div class="stack-sm">
+        <h3>Recent Activity</h3>
+        <div class="stack-sm">
           ${Array.from({ length: 5 }, (_, i) => html`
-            <div class="splitpanel-activity-item">
-              <div class="splitpanel-activity-avatar">
-                <pds-icon icon="user"></pds-icon>
-              </div>
-              <div class="splitpanel-activity-body">
+            <div class="flex items-center gap-md" style="padding: var(--spacing-2); border-radius: var(--radius-sm);">
+              <pds-icon icon="user"></pds-icon>
+              <div class="grow stack-xs">
                 <strong>User ${i + 1}</strong>
-                <span class="splitpanel-activity-sub">Completed an action</span>
+                <span class="text-muted text-sm">Completed an action</span>
               </div>
-              <span class="splitpanel-activity-time">${i + 1}h ago</span>
+              <span class="text-muted text-sm">${i + 1}h ago</span>
             </div>
           `)}
         </div>
-      </article>
+      </div>
     </div>
   </pds-splitpanel>
 `;
@@ -223,6 +240,7 @@ export const DashboardLayout = () => html`
 DashboardLayout.storyName = 'Dashboard Layout';
 
 export const StyledToggle = () => html`
+  ${splitpanelStoryStyles}
   <style>
     .styled-toggle-panel::part(toggle) {
       top: auto;
@@ -241,34 +259,133 @@ export const StyledToggle = () => html`
     </div>
   </div>
 
-  <pds-splitpanel class="splitpanel-story splitpanel-story--tall styled-toggle-panel" layout="horizontal" defaultsplit="360px">
-    <div slot="left" class="splitpanel-pane splitpanel-pane--surface splitpanel-pane--stacked">
-      <h3 class="splitpanel-heading">Mobile Menu</h3>
-      <nav class="splitpanel-nav">
-        <button class="btn-outline">
+  <pds-splitpanel class="card styled-toggle-panel" layout="horizontal" defaultsplit="360px">
+    <div slot="left" class="stack-md">
+      <h3>Mobile Menu</h3>
+      <nav class="stack-sm">
+        <button class="btn-outline" style="justify-content: flex-start;">
           <pds-icon icon="house"></pds-icon>
           Home
         </button>
-        <button class="btn-outline">
+        <button class="btn-outline" style="justify-content: flex-start;">
           <pds-icon icon="user"></pds-icon>
           Profile
         </button>
-        <button class="btn-outline">
+        <button class="btn-outline" style="justify-content: flex-start;">
           <pds-icon icon="gear"></pds-icon>
           Settings
         </button>
       </nav>
     </div>
-    <div slot="right" class="splitpanel-pane splitpanel-pane--stacked">
-      <h3 class="splitpanel-heading">Main Content</h3>
+    <div slot="right" class="stack-md">
+      <h3>Main Content</h3>
       <p>This is the main content area. In mobile view, use the floating toggle button at the bottom right to access the menu.</p>
-      <article class="card surface-elevated splitpanel-card">
-        <h4 class="splitpanel-section-title">Content Section</h4>
+      <div class="stack-sm">
+        <h4>Content Section</h4>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-      </article>
+      </div>
     </div>
   </pds-splitpanel>
 `;
 
 StyledToggle.storyName = 'Styled Mobile Toggle';
 
+export const StyledSplitter = () => html`
+  ${splitpanelStoryStyles}
+  <style>
+    .primary-splitter::part(splitter) {
+      background-color: var(--color-primary-500);
+      width: 6px;
+      transition: background-color 0.15s ease;
+      &:hover { background-color: var(--color-primary-400); }
+    }
+    .wide-splitter::part(splitter) {
+      background-color: var(--color-accent-500);
+      width: 10px;
+      transition: background-color 0.15s ease;
+      &:hover { background-color: var(--color-accent-400); }
+    }
+    .subtle-splitter::part(splitter) {
+      background-color: var(--surface-elevated-bg);
+      transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .subtle-splitter::part(splitter):hover { 
+      background-color: var(--color-primary-500); 
+      box-shadow: var(--shadow-md);
+    }
+    .gradient-splitter::part(splitter) {
+      background: linear-gradient(180deg, var(--color-secondary-400), var(--color-accent-500));
+      width: 8px;
+      transition: opacity 0.15s ease;
+      &:hover { opacity: 0.8; }
+    }
+  </style>
+
+  <div class="stack-lg">
+    <div class="alert alert-info">
+      <div class="alert-icon">
+        <pds-icon icon="info" class="icon-info" size="lg"></pds-icon>
+      </div>
+      <div>
+        <div class="alert-title">Styling the Splitter with ::part()</div>
+        <p>The splitter bar can be fully customized using the <code>::part(splitter)</code> CSS selector. This allows you to style:</p>
+        <ul class="stack-xs" style="margin-top: var(--spacing-2);">
+          <li><code>background-color</code> or <code>background</code> (for gradients)</li>
+          <li><code>width</code> (horizontal) or <code>height</code> (vertical)</li>
+          <li><code>:hover</code> state styling</li>
+          <li><code>border-radius</code>, <code>box-shadow</code>, and more</li>
+        </ul>
+      </div>
+    </div>
+
+    <h4>Primary Colored Splitter</h4>
+    <pds-splitpanel class="card primary-splitter" orientation="horizontal" default-split="50%">
+      <div slot="left" class="stack-sm">
+        <h4>Left Panel</h4>
+        <p>Uses primary color with hover effect.</p>
+      </div>
+      <div slot="right" class="stack-sm">
+        <h4>Right Panel</h4>
+        <p>Hover over the splitter to see the effect.</p>
+      </div>
+    </pds-splitpanel>
+
+    <h4>Wide Accent Splitter (10px)</h4>
+    <pds-splitpanel class="card wide-splitter" orientation="horizontal" default-split="40%">
+      <div slot="left" class="stack-sm">
+        <h4>Navigation</h4>
+        <p>Wider splitters are easier to grab.</p>
+      </div>
+      <div slot="right" class="stack-sm">
+        <h4>Content</h4>
+        <p>10px width set via <code>::part(splitter)</code>.</p>
+      </div>
+    </pds-splitpanel>
+
+    <h4>Subtle Splitter (highlights on hover)</h4>
+    <pds-splitpanel class="card subtle-splitter" orientation="horizontal" default-split="60%">
+      <div slot="left" class="stack-sm">
+        <h4>Editor</h4>
+        <p>Subtle by default, primary on hover.</p>
+      </div>
+      <div slot="right" class="stack-sm">
+        <h4>Preview</h4>
+        <p>Hover over the divider to see the effect.</p>
+      </div>
+    </pds-splitpanel>
+
+    <h4>Gradient Splitter</h4>
+    <pds-splitpanel class="card gradient-splitter" orientation="horizontal" default-split="50%">
+      <div slot="left" class="stack-sm">
+        <h4>Left Panel</h4>
+        <p>Gradient background via <code>::part(splitter)</code>.</p>
+      </div>
+      <div slot="right" class="stack-sm">
+        <h4>Right Panel</h4>
+        <p>CSS parts enable any styling.</p>
+      </div>
+    </pds-splitpanel>
+  </div>
+`;
+
+StyledSplitter.storyName = 'Styled Splitter';
