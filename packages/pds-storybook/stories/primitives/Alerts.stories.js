@@ -203,16 +203,16 @@ export const SemanticMessages = () => html`
   
   <div class="card">
     <h3>In a Form Context</h3>
-    <form class="max-w-md">
+    <form class="max-w-md stack-sm">
       <label>
         <span>Email Address</span>
         <input type="email" value="invalid-email" />
       </label>
-      <div class="semantic-message danger" style="margin-top: var(--spacing-2);">
+      <div class="semantic-message danger">
         <strong>Invalid email format</strong>
         <p>Please enter a valid email address (e.g., user@example.com)</p>
       </div>
-      <div class="flex gap-sm justify-end" style="margin-top: var(--spacing-4);">
+      <div class="flex gap-sm justify-end">
         <button type="submit">Submit</button>
       </div>
     </form>

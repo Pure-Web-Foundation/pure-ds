@@ -36,7 +36,7 @@ export const Overview = {
           approach. Semantic HTML elements receive sensible, design-token-based styling automatically.
         </p>
         
-        <div class="grid grid-cols-2 gap-lg" style="margin: var(--spacing-4) 0;">
+        <div class="grid grid-cols-2 gap-lg">
           <div class="card surface-subtle">
             <h3>Traditional Reset</h3>
             <div class="code-traditional"></div>
@@ -390,7 +390,7 @@ export const DetailsAndSummary = {
         
         <div class="code-details"></div>
         
-        <div class="alert alert-info" style="margin-top: var(--spacing-4);">
+        <div class="alert alert-info">
           <strong>Note:</strong> For grouped accordion behavior (animated, and where only one item opens at a time), 
           see the <a data-story-link="primitives-accordion--basic-accordion">Accordion primitive</a>.
         </div>

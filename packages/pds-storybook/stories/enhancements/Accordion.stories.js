@@ -5,6 +5,9 @@ export default {
   title: 'Enhancements/Accordion',
   tags: ['grouping', 'enhancement', 'accordion'],
   parameters: {
+    options: {
+      selectedPanel: 'html-preview/panel'
+    },
     pds: {
       tags: ['grouping', 'navigation', 'enhancement', 'accordion']
     }

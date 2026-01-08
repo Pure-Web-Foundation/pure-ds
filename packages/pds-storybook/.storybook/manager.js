@@ -3,6 +3,7 @@
 // Uses experimental_setFilter API to enrich search with PDS ontology concepts
 // ALL DATA IS LOADED FROM pds-reference.json (Single Source of Truth from pds-ontology.js)
 import { addons } from '@storybook/manager-api';
+import { STORY_CHANGED } from '@storybook/core-events';
 
 const ADDON_ID = 'pds-ontology-filter';
 const FILTER_ID = 'pds-ontology';
@@ -548,4 +549,30 @@ addons.register(ADDON_ID, (api) => {
     tags: () => Object.fromEntries([...tagIndex].map(([k, v]) => [k, [...v]])),
     currentQuery: () => currentQuery
   };
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AUTO-SELECT CODE PANEL FOR ENHANCEMENT STORIES
+  // Switch to the "Code" panel when navigating to Enhancement stories
+  // ═══════════════════════════════════════════════════════════════════════════
+  const CODE_PANEL_ID = 'html-preview/panel';
+  
+  // Listen for story changes and auto-switch panel based on story parameters
+  api.on(STORY_CHANGED, (storyId) => {
+    if (!storyId) return;
+    
+    // Get the story data to check its parameters
+    const story = api.getData(storyId);
+    if (!story) return;
+    
+    // Check if this is an Enhancement story (by title path)
+    const isEnhancement = story.title?.startsWith('Enhancements/');
+    
+    // Also check parameters.options.selectedPanel
+    const selectedPanel = story.parameters?.options?.selectedPanel;
+    
+    if (isEnhancement || selectedPanel === CODE_PANEL_ID) {
+      // Switch to Code panel
+      api.setSelectedPanel(CODE_PANEL_ID);
+    }
+  });
 });

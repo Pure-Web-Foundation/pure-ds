@@ -1621,25 +1621,13 @@ When \`hide-actions\` is set, the default Submit and Reset buttons are hidden, a
     };
 
     return html`
-      <style>
-        .custom-actions {
-          margin-top: var(--spacing-6, 1.5rem);
-          display: flex;
-          gap: var(--spacing-3, 0.75rem);
-          align-items: center;
-        }
-        .custom-actions .btn-secondary {
-          margin-left: auto;
-        }
-      </style>
-      
       <pds-jsonform 
         .jsonSchema=${schema}
         hide-actions
         @pw:value-change=${(e) => console.log('🔄 Field changed:', e.detail)}
         @pw:submit=${(e) => toastFormData(e.detail)}
       >
-        <div slot="actions" class="custom-actions">
+        <div slot="actions" class="flex gap-sm items-center">
           <button 
             type="submit" 
             class="btn btn-primary"
@@ -1657,7 +1645,7 @@ When \`hide-actions\` is set, the default Submit and Reset buttons are hidden, a
           </button>
           <button 
             type="button" 
-            class="btn btn-secondary btn-outline"
+            class="btn btn-secondary btn-outline grow text-right"
             @click=${() => console.log('Registration cancelled')}
           >
             Cancel

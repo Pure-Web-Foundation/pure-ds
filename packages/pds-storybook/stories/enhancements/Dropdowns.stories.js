@@ -24,6 +24,9 @@ export default {
   title: "Enhancements/Dropdowns",
   tags: ['dropdown', 'menu', 'navigation', 'popover', 'forms', 'interaction'],
   parameters: {
+    options: {
+      selectedPanel: 'html-preview/panel'
+    },
     pds: {
       tags: ['dropdown', 'menu', 'navigation', 'popover', 'overlay', 'forms', 'interaction', 'data-dropdown']
     }

@@ -5,6 +5,9 @@ export default {
   title: 'Enhancements/Open Groups',
   tags: ['fieldset', 'radio', 'checkbox', 'dynamic', 'custom-option'],
   parameters: {
+    options: {
+      selectedPanel: 'html-preview/panel'
+    },
     pds: {
       tags: ['fieldset', 'radio', 'checkbox', 'dynamic', 'custom-option', 'data-open', 'forms', 'interaction', 'enhancement']
     }

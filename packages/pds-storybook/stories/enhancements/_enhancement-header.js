@@ -35,6 +35,10 @@ export const enhancementHeader = (key, extraInfo = {}) => {
  * Default parameters for enhancement stories to show code panel
  */
 export const enhancementParameters = {
+  options: {
+    // Auto-select the "Code" panel when viewing enhancement stories
+    selectedPanel: 'html-preview/panel'
+  },
   previewTabs: {
     'storybook/docs/panel': { hidden: true },
     canvas: { hidden: false }

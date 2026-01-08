@@ -16,107 +16,20 @@ if (typeof window !== 'undefined') {
     });
 }
 
+// Minimal story-specific styles - only for demo-specific visuals not covered by PDS
 const richtextStoryStyles = html`
   <style>
-    .richtext-form {
-      max-width: 37.5rem;
-      display: grid;
-      gap: var(--spacing-4);
-    }
-
-    .richtext-form-actions {
-      display: flex;
-      gap: var(--spacing-3);
-    }
-
-    .richtext-article-shell {
-      max-width: 50rem;
-      display: grid;
-      gap: var(--spacing-3);
-    }
-
-    .richtext-article-editor {
-      min-height: 25rem;
-    }
-
-    .richtext-email-card {
-      max-width: 43.75rem;
-      display: grid;
-      gap: var(--spacing-4);
-    }
-
-    .richtext-email-form {
-      display: grid;
-      gap: var(--spacing-3);
-    }
-
-    .richtext-email-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--spacing-2);
-    }
-
-    .richtext-comment-shell {
-      max-width: 37.5rem;
-      display: grid;
-      gap: var(--spacing-4);
-    }
-
-    .richtext-comment-card {
-      margin-bottom: var(--spacing-4);
-    }
-
-    .richtext-comment-header {
-      display: flex;
-      gap: var(--spacing-3);
-    }
-
-    .richtext-comment-avatar {
+    /* Avatar circle - demo-specific */
+    .richtext-avatar {
       width: 3rem;
       height: 3rem;
       background: var(--color-primary);
-      border-radius: 50%;
+      border-radius: var(--radius-full);
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--color-primary-contrast, #fff);
       flex-shrink: 0;
-    }
-
-    .richtext-comment-body {
-      flex: 1;
-    }
-
-    .richtext-comment-text {
-      margin: var(--spacing-2) 0;
-      opacity: 0.9;
-    }
-
-    .richtext-comment-meta {
-      display: flex;
-      gap: var(--spacing-2);
-      font-size: 0.85rem;
-      opacity: 0.7;
-    }
-
-    .richtext-comment-meta button {
-      padding: 0;
-      font-size: 0.85rem;
-    }
-
-    .richtext-comment-editor {
-      min-height: 9.375rem;
-      margin: var(--spacing-3) 0;
-    }
-
-    .richtext-comment-actions {
-      display: flex;
-      gap: var(--spacing-2);
-    }
-
-    .richtext-comment-form {
-      display: grid;
-      gap: var(--spacing-3);
     }
   </style>
 `;
@@ -210,7 +123,7 @@ export const InForm = () => {
 
   return html`
     ${richtextStoryStyles}
-    <form class="richtext-form">
+    <form class="richtext-form max-w-md stack-md">
       <label>
         <span>Blog Post Content</span>
         <pds-richtext 
@@ -219,7 +132,7 @@ export const InForm = () => {
         >
         </pds-richtext>
       </label>
-      <div class="richtext-form-actions">
+      <div class="flex gap-sm">
         <button type="submit" class="btn-primary">Publish</button>
         <button type="button" class="btn-ghost">Save Draft</button>
       </div>
@@ -229,10 +142,9 @@ export const InForm = () => {
 
 export const ArticleContent = () => html`
   ${richtextStoryStyles}
-  <div class="richtext-article-shell">
+  <div class="max-w-xl stack-sm">
     <h3>Article Editor</h3>
     <pds-richtext 
-      class="richtext-article-editor"
       value="<h2>The Future of Web Development</h2><p>Web development has evolved dramatically over the past decade. Modern frameworks and tools have made it easier than ever to build sophisticated applications.</p><h3>Key Trends</h3><ul><li><strong>Component-Based Architecture</strong> - Reusable, modular components</li><li><strong>Progressive Web Apps</strong> - Native-like experiences on the web</li><li><strong>AI Integration</strong> - Smart features powered by machine learning</li></ul><h3>Best Practices</h3><p>When building modern web applications, consider:</p><ol><li>Performance optimization</li><li>Accessibility standards</li><li>Mobile-first design</li><li>Security considerations</li></ol><blockquote><p>The web is the platform of the future, and it's more powerful than ever before.</p></blockquote><p>For more information, visit <a href='https://example.com'>our documentation</a>.</p>"
     >
     </pds-richtext>
@@ -246,10 +158,10 @@ export const EmailComposer = () => {
 
   return html`
     ${richtextStoryStyles}
-    <article class="card richtext-email-card">
+    <article class="card max-w-lg stack-md">
       <h3>Compose Email</h3>
       
-      <form class="richtext-email-form">
+      <form class="richtext-email-form stack-sm">
         <label>
           <strong>To:</strong>
           <div class="input-icon">
@@ -276,7 +188,7 @@ export const EmailComposer = () => {
           </pds-richtext>
         </label>
         
-        <div class="richtext-email-actions">
+        <div class="flex flex-wrap gap-sm">
           <button type="submit" class="btn-primary">
             <pds-icon icon="arrow-up"></pds-icon>
             Send Email
@@ -299,34 +211,33 @@ export const CommentEditor = () => {
 
   return html`
     ${richtextStoryStyles}
-    <div class="richtext-comment-shell">
-      <article class="card surface-elevated richtext-comment-card">
-        <div class="richtext-comment-header">
-          <div class="richtext-comment-avatar">
+    <div class="max-w-md stack-md">
+      <article class="card surface-elevated">
+        <div class="flex gap-sm">
+          <div class="richtext-avatar">
             <pds-icon icon="user"></pds-icon>
           </div>
-          <div class="richtext-comment-body">
+          <div class="grow stack-sm">
             <strong>John Doe</strong>
-            <p class="richtext-comment-text">This is a great article! I really enjoyed reading about the latest trends in web development. The section on component architecture was particularly insightful.</p>
-            <div class="richtext-comment-meta">
+            <p class="text-muted">This is a great article! I really enjoyed reading about the latest trends in web development. The section on component architecture was particularly insightful.</p>
+            <div class="flex gap-sm text-muted">
               <span>2 hours ago</span>
-              <button class="btn-ghost">Reply</button>
-              <button class="btn-ghost">Like</button>
+              <button class="btn-ghost btn-sm">Reply</button>
+              <button class="btn-ghost btn-sm">Like</button>
             </div>
           </div>
         </div>
       </article>
 
       <article class="card">
-        <form class="richtext-comment-form">
+        <form class="richtext-comment-form stack-sm">
           <h4>Add a Comment</h4>
           <pds-richtext 
-            class="richtext-comment-editor"
             name="comment-body"
             value="<p>Share your thoughts...</p>"
           >
           </pds-richtext>
-          <div class="richtext-comment-actions">
+          <div class="flex gap-sm">
             <button type="submit" class="btn-primary">
               <pds-icon icon="chat-circle"></pds-icon>
               Post Comment
@@ -346,7 +257,7 @@ export const MarkdownForm = () => {
 
   return html`
     ${richtextStoryStyles}
-    <form class="richtext-form richtext-markdown-form">
+    <form class="richtext-markdown-form max-w-md stack-md">
       <label>
         <span>Release Notes (Markdown)</span>
         <pds-richtext
@@ -356,7 +267,7 @@ export const MarkdownForm = () => {
           value="${markdownSample}"
         ></pds-richtext>
       </label>
-      <div class="richtext-form-actions">
+      <div class="flex gap-sm">
         <button type="submit" class="btn-primary">Submit Markdown</button>
         <button type="reset" class="btn-ghost">Reset</button>
       </div>

@@ -15,65 +15,20 @@ export default {
   }
 };
 
+// Minimal story-specific styles - only for demo-specific visuals not covered by PDS
 const mediaStoryStyles = html`
   <style>
-    .media-story-section {
-      padding: var(--spacing-4);
-    }
-    .media-responsive-grid {
-      display: grid;
-      gap: var(--spacing-6);
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    }
-    .media-gallery-grid {
-      display: grid;
-      gap: var(--spacing-3);
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    }
-    .media-scroll-image,
-    .media-gallery-image {
-      width: 100%;
-      height: auto;
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-    }
-    .media-scroll-image {
-      width: auto;
-    }
+    /* Video shell max-width constraint */
     .media-video-shell {
       max-width: 56.25rem;
-    }
-    .media-video-figure {
-      margin-top: var(--spacing-4);
-    }
-    .media-video-element {
-      width: 100%;
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-    }
-    .media-mixed-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--spacing-6);
-      margin-top: var(--spacing-4);
-    }
-    .media-thumbnail-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--spacing-2);
-    }
-    .media-thumbnail-image {
-      width: 100%;
-      border-radius: var(--radius-sm);
-      box-shadow: var(--shadow-sm);
     }
   </style>
 `;
 
 export const ResponsiveImages = () => html`
   ${mediaStoryStyles}
-  <div class="media-story-section">
-    <div class="media-responsive-grid">
+  <div class="stack-md">
+    <div class="grid grid-auto-md gap-lg">
       <figure class="media-figure">
         <img
           class="media-image"
@@ -105,12 +60,12 @@ ResponsiveImages.storyName = 'Responsive Images';
 
 export const ImageGallery = () => html`
   ${mediaStoryStyles}
-  <div class="media-story-section">
+  <div class="stack-md">
     <h3>Image Gallery Grid</h3>
-    <div class="gallery-grid media-gallery-grid">
+    <div class="grid grid-auto-sm gap-sm">
       ${Array.from({ length: 8 }, (_, i) => html`
         <img
-          class="gallery-image media-gallery-image"
+          class="img-gallery img-rounded-md shadow-sm"
           src="https://picsum.photos/400/400?random=${i + 3}"
           alt="Gallery image ${i + 1}"
           loading="lazy"
@@ -124,7 +79,7 @@ ImageGallery.storyName = 'Image Gallery';
 
 export const ScrollRowGallery = () => html`
   ${mediaStoryStyles}
-  <div class="media-story-section">
+  <div class="stack-md">
     <header>
       <h3>Netflix-Style Horizontal Scroll Row</h3>
       <p class="text-muted">
@@ -135,7 +90,7 @@ export const ScrollRowGallery = () => html`
       ${Array.from({ length: 20 }, (_, i) => html`
         <img
           loading="lazy"
-          class="gallery-image media-scroll-image"
+          class="img-rounded-md shadow-sm"
           src="https://picsum.photos/200/200?random=${i + 10}"
           alt="Gallery image ${i + 1}"
         />
@@ -237,7 +192,7 @@ export const InlineImages = () => html`
     </p>
   </div>
   
-  <div class="card">
+  <div class="card stack-md">
     <p>
       The team includes 
       <img src="https://i.pravatar.cc/60?img=1" alt="Alice" class="img-inline" />
@@ -248,7 +203,7 @@ export const InlineImages = () => html`
       Carol who have been working on this project.
     </p>
     
-    <p style="margin-top: var(--spacing-4);">
+    <p>
       Click the 
       <img src="https://picsum.photos/60/60?random=60" alt="Settings icon" class="img-inline" />
       icon to access settings, or the 
@@ -328,11 +283,11 @@ FigureResponsive.storyName = '.figure-responsive';
 
 export const VideoElement = () => html`
   ${mediaStoryStyles}
-  <div class="media-story-section media-video-shell">
+  <div class="stack-md media-video-shell">
     <h3>Video Element with Controls</h3>
-    <figure class="video-container media-video-figure">
+    <figure class="video-container">
       <video
-        class="video-element media-video-element"
+        class="video-responsive shadow-md"
         controls
         poster="https://picsum.photos/1200/675?random=7"
       >
@@ -353,10 +308,10 @@ VideoElement.storyName = 'Video Element';
 
 export const MixedMedia = () => html`
   ${mediaStoryStyles}
-  <div class="media-story-section">
+  <div class="stack-md">
     <h2>Mixed Media Layout</h2>
     
-    <div class="media-mixed-layout">
+    <div class="grid grid-cols-2 gap-lg">
       <div>
         <h3>Featured Image</h3>
         <figure class="media-figure">
@@ -374,13 +329,13 @@ export const MixedMedia = () => html`
       
       <div>
         <h3>Thumbnail Grid</h3>
-        <div class="media-thumbnail-grid">
+        <div class="grid grid-cols-2 gap-sm">
           ${Array.from({ length: 4 }, (_, i) => html`
             <img
               src="https://picsum.photos/200/200?random=${i + 30}"
               alt="Thumbnail ${i + 1}"
               loading="lazy"
-              class="media-thumbnail-image"
+              class="img-rounded-sm shadow-sm"
             />
           `)}
         </div>

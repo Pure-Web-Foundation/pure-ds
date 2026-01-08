@@ -82,21 +82,23 @@ export const Default = {
     }
   },
   render: (args) => html`
-    <a href="/?path=/story/foundations-icons--overview" @click=${storyLinkHandler('foundations-icons--overview')} class="card card-interactive" style="display: block; margin-bottom: var(--spacing-lg); text-decoration: none;">
-      <h3 class="flex items-center gap-sm">
-        <pds-icon icon="book-open" size="md"></pds-icon>
-        PDS Icon System
-      </h3>
-      <p class="text-muted">Complete icon system documentation: available icons, sizes, colors, configuration, and more.</p>
-    </a>
-    
-    <pds-icon 
-      icon="${args.icon}" 
-      size="${args.size}"
-      color="${args.color}"
-      label="${args.label || ''}"
-      rotate="${args.rotate || 0}">
-    </pds-icon>
+    <div class="stack-lg">
+      <a href="/?path=/story/foundations-icons--overview" @click=${storyLinkHandler('foundations-icons--overview')} class="card card-interactive">
+        <h3 class="flex items-center gap-sm">
+          <pds-icon icon="book-open" size="md"></pds-icon>
+          PDS Icon System
+        </h3>
+        <p class="text-muted">Complete icon system documentation: available icons, sizes, colors, configuration, and more.</p>
+      </a>
+      
+      <pds-icon 
+        icon="${args.icon}" 
+        size="${args.size}"
+        color="${args.color}"
+        label="${args.label || ''}"
+        rotate="${args.rotate || 0}">
+      </pds-icon>
+    </div>
   `,
   args: {
     icon: 'heart',

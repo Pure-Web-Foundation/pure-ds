@@ -16,14 +16,6 @@ if (typeof window !== 'undefined') {
     });
 }
 
-const toasterStoryStyles = html`
-  <style>
-    .toaster-story-description {
-      margin: 0 0 var(--spacing-4);
-    }
-  </style>
-`;
-
 export default {
   title: 'Components/Pds Toaster',
   tags: ['autodocs', 'toast', 'toaster', 'notification', 'alert', 'message', 'feedback'],
@@ -79,14 +71,14 @@ export const Default = () => {
   }, 0);
   
   return html`
-    ${toasterStoryStyles}
     <pds-toaster id="demo-toaster"></pds-toaster>
     
-    <p class="toaster-story-description">
-      Toast notifications appear in the top-right corner and auto-dismiss after a few seconds. Click the buttons below to see them in action:
-    </p>
-    
-    <div class="flex flex-wrap gap-md">
+    <div class="stack-md">
+      <p class="text-muted">
+        Toast notifications appear in the top-right corner and auto-dismiss after a few seconds. Click the buttons below to see them in action:
+      </p>
+      
+      <div class="flex flex-wrap gap-md">
       <button id="toast-success" class="btn-primary btn-sm">
         <pds-icon icon="check-circle" size="sm"></pds-icon>
         Success
@@ -111,6 +103,7 @@ export const Default = () => {
         <pds-icon icon="bell" size="sm"></pds-icon>
         Persistent
       </button>
+      </div>
     </div>
   `;
 };
@@ -157,7 +150,6 @@ export const ViaEvents = () => {
   }, 0);
   
   return html`
-    ${toasterStoryStyles}
     <pds-toaster id="event-toaster"></pds-toaster>
     
     <p class="toaster-story-description">

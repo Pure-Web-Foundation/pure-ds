@@ -5,6 +5,9 @@ export default {
   title: 'Enhancements/Range Sliders',
   tags: ['range', 'slider', 'input', 'forms', 'interaction'],
   parameters: {
+    options: {
+      selectedPanel: 'html-preview/panel'
+    },
     pds: {
       tags: ['range', 'slider', 'input', 'forms', 'interaction', 'enhancement']
     }

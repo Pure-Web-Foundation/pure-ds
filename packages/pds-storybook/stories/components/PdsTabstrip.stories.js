@@ -16,206 +16,24 @@ if (typeof window !== 'undefined') {
     });
 }
 
+// Minimal story-specific styles - only for demo-specific visuals not covered by PDS
 const tabstripStoryStyles = html`
   <style>
-    .tabstrip-panel {
-      padding: var(--spacing-4);
-      display: grid;
-      gap: var(--spacing-4);
-    }
-
-    .tabstrip-panel__description {
-      margin-bottom: var(--spacing-4);
-      opacity: 0.9;
-      max-width: 60ch;
-    }
-
-    .tabstrip-metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: var(--spacing-4);
-      margin-bottom: var(--spacing-6);
-    }
-
-    .tabstrip-metric-card {
-      display: grid;
-      gap: var(--spacing-2);
-    }
-
-    .tabstrip-metric-value {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin: var(--spacing-2) 0;
-    }
-
-    .tabstrip-metric-value--primary {
-      color: var(--color-primary);
-    }
-
-    .tabstrip-metric-value--secondary {
-      color: var(--color-secondary);
-    }
-
-    .tabstrip-metric-value--accent {
-      color: var(--color-accent);
-    }
-
-    .tabstrip-metric-delta {
-      font-size: 0.85rem;
-      opacity: 0.7;
-      margin: 0;
-    }
-
-    .tabstrip-activity-card {
-      display: grid;
-      gap: var(--spacing-3);
-    }
-
-    .tabstrip-activity-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-2);
-    }
-
-    .tabstrip-activity-item {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-3);
-      padding: var(--spacing-2);
-      border-radius: var(--radius-sm);
-    }
-
-    .tabstrip-activity-icon {
-      color: var(--color-primary);
-    }
-
-    .tabstrip-activity-content {
-      flex: 1;
-    }
-
-    .tabstrip-activity-meta {
-      font-size: 0.85rem;
-      opacity: 0.7;
-    }
-
-    .tabstrip-activity-time {
-      font-size: 0.75rem;
-      opacity: 0.6;
-      white-space: nowrap;
-    }
-
-    .tabstrip-analytics-card {
-      margin-bottom: var(--spacing-4);
-      display: grid;
-      gap: var(--spacing-3);
-    }
-
-    .tabstrip-traffic-list {
-      display: grid;
-      gap: var(--spacing-3);
-    }
-
-    .tabstrip-traffic-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: var(--spacing-1);
-      align-items: center;
-    }
-
-    .tabstrip-traffic-bar-track {
+    /* Progress bar visualization - demo-specific */
+    .tabstrip-bar-track {
       height: 8px;
       background: var(--surface-elevated);
       border-radius: var(--radius-full);
       overflow: hidden;
     }
-
-    .tabstrip-traffic-bar-fill {
+    .tabstrip-bar-fill {
       height: 100%;
       border-radius: inherit;
     }
-
-    .tabstrip-traffic-bar-fill--45 {
-      width: 45%;
-    }
-
-    .tabstrip-traffic-bar-fill--32 {
-      width: 32%;
-    }
-
-    .tabstrip-traffic-bar-fill--23 {
-      width: 23%;
-    }
-
-    .tabstrip-traffic-bar-fill--primary {
-      background: var(--color-primary);
-    }
-
-    .tabstrip-traffic-bar-fill--secondary {
-      background: var(--color-secondary);
-    }
-
-    .tabstrip-traffic-bar-fill--accent {
-      background: var(--color-accent);
-    }
-
-    .tabstrip-features-card {
-      display: grid;
-      gap: var(--spacing-3);
-    }
-
-    .tabstrip-features-list {
-      margin: 0;
-      padding-left: var(--spacing-4);
-      display: grid;
-      gap: var(--spacing-2);
-    }
-
-    .tabstrip-settings-card,
-    .tabstrip-notifications-card {
-      margin-bottom: var(--spacing-4);
-      display: grid;
-      gap: var(--spacing-3);
-    }
-
-    .tabstrip-settings-fields {
-      display: grid;
-      gap: var(--spacing-3);
-    }
-
-    .tabstrip-form-label {
-      display: grid;
-      gap: var(--spacing-1);
-    }
-
-    .tabstrip-field-heading {
-      font-weight: 600;
-    }
-
-    .tabstrip-input,
-    .tabstrip-select {
-      width: 100%;
-      padding: var(--spacing-2);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-sm);
-      font: inherit;
-      background: var(--color-surface);
-    }
-
-    .tabstrip-notification-group {
-      display: grid;
-      gap: var(--spacing-2);
-    }
-
-    .tabstrip-checkbox {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-2);
-    }
-
-    .tabstrip-actions {
-      display: flex;
-      gap: var(--spacing-2);
-      flex-wrap: wrap;
+    /* Large stat values - demo-specific typography */
+    .tabstrip-stat-value {
+      font-size: var(--font-size-4xl);
+      font-weight: var(--font-weight-bold);
     }
   </style>
 `;
@@ -225,19 +43,19 @@ const tabstripMetrics = [
     title: "Total Sales",
     value: "$127.5K",
     delta: "↑ 23% from last month",
-    valueClass: "tabstrip-metric-value--primary",
+    colorClass: "text-primary",
   },
   {
     title: "Active Users",
     value: "8,432",
     delta: "↑ 12% from last month",
-    valueClass: "tabstrip-metric-value--secondary",
+    colorClass: "text-secondary",
   },
   {
     title: "Conversion Rate",
     value: "3.8%",
     delta: "↑ 0.5% from last month",
-    valueClass: "tabstrip-metric-value--accent",
+    colorClass: "text-accent",
   },
 ];
 
@@ -251,17 +69,20 @@ const tabstripTrafficSources = [
   {
     label: "Direct",
     value: "45%",
-    fillClass: "tabstrip-traffic-bar-fill--45 tabstrip-traffic-bar-fill--primary",
+    width: "45%",
+    colorVar: "var(--color-primary)",
   },
   {
     label: "Search Engines",
     value: "32%",
-    fillClass: "tabstrip-traffic-bar-fill--32 tabstrip-traffic-bar-fill--secondary",
+    width: "32%",
+    colorVar: "var(--color-secondary)",
   },
   {
     label: "Social Media",
     value: "23%",
-    fillClass: "tabstrip-traffic-bar-fill--23 tabstrip-traffic-bar-fill--accent",
+    width: "23%",
+    colorVar: "var(--color-accent)",
   },
 ];
 
@@ -301,42 +122,42 @@ export const Default = () => html`
   ${tabstripStoryStyles}
   <pds-tabstrip label="Product Dashboard">
     <pds-tabpanel id="overview" label="Overview">
-      <div class="tabstrip-panel">
+      <div class="stack-md">
         <div>
           <h3>Product Overview</h3>
-          <p class="tabstrip-panel__description">
+          <p class="text-muted max-w-lg">
             Complete analytics and insights for your product performance.
           </p>
         </div>
 
-        <div class="tabstrip-metrics-grid">
+        <div class="grid grid-auto-sm gap-md">
           ${tabstripMetrics.map(
             (metric) => html`
-              <article class="card surface-elevated tabstrip-metric-card">
+              <article class="card surface-elevated stack-sm">
                 <h4>${metric.title}</h4>
-                <div class="tabstrip-metric-value ${metric.valueClass}">
+                <div class="tabstrip-stat-value ${metric.colorClass}">
                   ${metric.value}
                 </div>
-                <p class="tabstrip-metric-delta">${metric.delta}</p>
+                <p class="text-muted">${metric.delta}</p>
               </article>
             `
           )}
         </div>
 
-        <article class="card tabstrip-activity-card">
+        <article class="card stack-sm">
           <h4>Recent Activity</h4>
-          <div class="tabstrip-activity-list">
+          <div class="stack-sm">
             ${tabstripActivityItems.map(
               (activity) => html`
-                <div class="tabstrip-activity-item">
-                  <pds-icon class="tabstrip-activity-icon" icon="activity"></pds-icon>
-                  <div class="tabstrip-activity-content">
+                <div class="flex items-center gap-md">
+                  <pds-icon class="text-primary" icon="activity"></pds-icon>
+                  <div class="grow">
                     <strong>New sale recorded</strong>
-                    <div class="tabstrip-activity-meta">
+                    <div class="text-muted">
                       Order #${activity.orderId} - ${activity.amount}
                     </div>
                   </div>
-                  <span class="tabstrip-activity-time">${activity.time}</span>
+                  <span class="text-muted">${activity.time}</span>
                 </div>
               `
             )}
@@ -346,26 +167,26 @@ export const Default = () => html`
     </pds-tabpanel>
 
     <pds-tabpanel id="details" label="Analytics">
-      <div class="tabstrip-panel">
+      <div class="stack-md">
         <div>
           <h3>Detailed Analytics</h3>
-          <p class="tabstrip-panel__description">
+          <p class="text-muted max-w-lg">
             Deep dive into your product metrics and user behavior.
           </p>
         </div>
 
-        <article class="card tabstrip-analytics-card">
+        <article class="card stack-sm">
           <h4>Traffic Sources</h4>
-          <div class="tabstrip-traffic-list">
+          <div class="stack-sm">
             ${tabstripTrafficSources.map(
               (source) => html`
                 <div>
-                  <div class="tabstrip-traffic-row">
+                  <div class="flex justify-between items-center">
                     <span>${source.label}</span>
                     <strong>${source.value}</strong>
                   </div>
-                  <div class="tabstrip-traffic-bar-track">
-                    <div class="tabstrip-traffic-bar-fill ${source.fillClass}"></div>
+                  <div class="tabstrip-bar-track">
+                    <div class="tabstrip-bar-fill" style="width: ${source.width}; background: ${source.colorVar}"></div>
                   </div>
                 </div>
               `
@@ -373,9 +194,9 @@ export const Default = () => html`
           </div>
         </article>
 
-        <article class="card surface-elevated tabstrip-features-card">
+        <article class="card surface-elevated stack-sm">
           <h4>Top Features</h4>
-          <ul class="tabstrip-features-list">
+          <ul class="stack-sm">
             ${tabstripFeatures.map((feature) => html`<li>${feature}</li>`)}
           </ul>
         </article>
@@ -383,30 +204,29 @@ export const Default = () => html`
     </pds-tabpanel>
 
     <pds-tabpanel id="settings" label="Settings">
-      <div class="tabstrip-panel">
+      <div class="stack-md">
         <div>
           <h3>Product Settings</h3>
-          <p class="tabstrip-panel__description">
+          <p class="text-muted max-w-lg">
             Configure your product preferences and options.
           </p>
         </div>
 
-        <article class="card tabstrip-settings-card">
+        <article class="card stack-sm">
           <h4>General Settings</h4>
-          <div class="tabstrip-settings-fields">
-            <label class="tabstrip-form-label">
-              <span class="tabstrip-field-heading">Product Name</span>
+          <div class="stack-sm">
+            <label>
+              <span>Product Name</span>
               <input
-                class="tabstrip-input"
                 type="text"
                 value="My Awesome Product"
                 placeholder="Enter product name"
               />
             </label>
 
-            <label class="tabstrip-form-label">
-              <span class="tabstrip-field-heading">Product Category</span>
-              <select class="tabstrip-select">
+            <label>
+              <span>Product Category</span>
+              <select>
                 ${tabstripCategories.map(
                   (category) => html`<option>${category}</option>`
                 )}
@@ -415,12 +235,12 @@ export const Default = () => html`
           </div>
         </article>
 
-        <article class="card surface-elevated tabstrip-notifications-card">
+        <article class="card surface-elevated stack-sm">
           <h4>Notifications</h4>
-          <fieldset class="tabstrip-notification-group" role="radiogroup">
+          <fieldset role="group" class="stack-sm">
             ${tabstripNotificationOptions.map(
               (option) => html`
-                <label class="tabstrip-checkbox">
+                <label class="flex items-center gap-sm">
                   <input type="checkbox" ?checked=${option.checked} />
                   <span>${option.label}</span>
                 </label>
@@ -429,7 +249,7 @@ export const Default = () => html`
           </fieldset>
         </article>
 
-        <div class="tabstrip-actions">
+        <div class="flex gap-sm flex-wrap">
           <button class="btn-primary">
             <pds-icon icon="check"></pds-icon>
             Save Settings

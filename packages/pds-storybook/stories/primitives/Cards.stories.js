@@ -15,9 +15,10 @@ export default {
   }
 };
 
-// Minimal styles for demo-specific gradients only
+// Minimal styles for demo-specific visuals only
 const cardsStoryStyles = html`
   <style>
+    /* Demo-specific gradient backgrounds */
     .cards-gradient-one {
       background: linear-gradient(135deg, var(--color-primary-500), var(--color-secondary-500));
     }
@@ -26,6 +27,22 @@ const cardsStoryStyles = html`
     }
     .cards-gradient-three {
       background: linear-gradient(135deg, var(--color-primary-500), var(--color-accent-500));
+    }
+    /* Demo placeholder dimensions */
+    .cards-placeholder {
+      height: 100px;
+      border-radius: var(--radius-sm);
+    }
+    .cards-avatar-placeholder {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-full);
+    }
+    .cards-media-placeholder {
+      flex-shrink: 0;
+      width: 7.5rem;
+      height: 7.5rem;
+      border-radius: var(--radius-md);
     }
   </style>
 `;
@@ -135,7 +152,7 @@ export const CardLayouts = () => html`
     <section class="stack-md">
       <h3>Horizontal Card</h3>
       <article class="card flex gap-md max-w-md">
-        <div class="flex items-center justify-center surface-subtle" style="flex-shrink: 0; width: 7.5rem; height: 7.5rem; border-radius: var(--radius-md);">
+        <div class="flex items-center justify-center surface-subtle cards-media-placeholder">
           <pds-icon icon="image" size="xl" class="text-muted"></pds-icon>
         </div>
         <div class="grow stack-md">
@@ -150,17 +167,17 @@ export const CardLayouts = () => html`
       <h3>Card Grid</h3>
       <div class="grid grid-auto-sm gap-sm">
         <article class="card stack-md">
-          <div class="cards-gradient-one" style="height: 100px; border-radius: var(--radius-sm);"></div>
+          <div class="cards-gradient-one cards-placeholder"></div>
           <h4>Card 1</h4>
           <small>Grid layout with cards.</small>
         </article>
         <article class="card stack-md">
-          <div class="cards-gradient-two" style="height: 100px; border-radius: var(--radius-sm);"></div>
+          <div class="cards-gradient-two cards-placeholder"></div>
           <h4>Card 2</h4>
           <small>Responsive and flexible.</small>
         </article>
         <article class="card stack-md">
-          <div class="cards-gradient-three" style="height: 100px; border-radius: var(--radius-sm);"></div>
+          <div class="cards-gradient-three cards-placeholder"></div>
           <h4>Card 3</h4>
           <small>Auto-fits to space.</small>
         </article>
@@ -172,13 +189,14 @@ export const CardLayouts = () => html`
 CardLayouts.storyName = 'Card Layouts';
 
 export const ComplexCards = () => html`
+  ${cardsStoryStyles}
   <div class="card stack-md">
     <h3>Complex Card Examples</h3>
     <div class="grid grid-auto-md gap-md">
       
       <article class="card stack-md">
         <div class="flex items-center gap-sm">
-          <div class="flex items-center justify-center surface-subtle" style="width: 48px; height: 48px; border-radius: 50%;">
+          <div class="flex items-center justify-center surface-subtle cards-avatar-placeholder">
             <pds-icon icon="user"></pds-icon>
           </div>
           <div class="grow">

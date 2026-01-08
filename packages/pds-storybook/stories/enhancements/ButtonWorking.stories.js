@@ -5,6 +5,9 @@ export default {
   title: "Enhancements/Button Working",
   tags: ['button', 'loading', 'working', 'spinner', 'enhancement'],
   parameters: {
+    options: {
+      selectedPanel: 'html-preview/panel'
+    },
     pds: {
       tags: ['button', 'loading', 'working', 'spinner', 'interaction', 'feedback', 'enhancement']
     }

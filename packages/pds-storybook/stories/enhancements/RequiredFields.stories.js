@@ -5,6 +5,9 @@ export default {
   title: 'Enhancements/Required Fields',
   tags: ['required', 'validation', 'form', 'input', 'asterisk'],
   parameters: {
+    options: {
+      selectedPanel: 'html-preview/panel'
+    },
     pds: {
       tags: ['required', 'validation', 'form', 'input', 'asterisk', 'forms', 'interaction', 'enhancement']
     }

@@ -16,234 +16,6 @@ if (typeof window !== 'undefined') {
     });
 }
 
-const splitpanelStoryStyles = html`
-  <style>
-    .splitpanel-story {
-      width: 100%;
-      height: 560px;
-    }
-
-    .splitpanel-story--tall {
-      height: 600px;
-    }
-
-    .splitpanel-story--xl {
-      height: 700px;
-    }
-
-    .splitpanel-pane {
-      box-sizing: border-box;
-      padding: var(--spacing-4);
-      overflow: auto;
-      background: transparent;
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-4);
-    }
-
-    .splitpanel-pane--surface {
-      background: var(--surface-bg);
-    }
-
-    .splitpanel-pane--surface-alt {
-      background: var(--surface-bg-secondary);
-    }
-
-    .splitpanel-pane--stacked {
-      gap: var(--spacing-3);
-    }
-
-    .splitpanel-card {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-3);
-    }
-
-    .splitpanel-card--tight {
-      gap: var(--spacing-2);
-    }
-
-    .splitpanel-eyebrow {
-      margin: 0;
-      text-transform: uppercase;
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      color: var(--text-subtle, rgba(0, 0, 0, 0.6));
-    }
-
-    .splitpanel-heading {
-      margin: 0;
-    }
-
-    .splitpanel-section-title {
-      margin: 0;
-    }
-
-    .splitpanel-meta {
-      margin: 0;
-      font-size: 0.9rem;
-      color: var(--text-muted, rgba(0, 0, 0, 0.65));
-    }
-
-    .splitpanel-action-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--spacing-2);
-    }
-
-    .splitpanel-stack {
-      margin: 0;
-      padding-left: var(--spacing-5);
-    }
-
-    .splitpanel-stack li + li {
-      margin-top: var(--spacing-2);
-    }
-
-    .splitpanel-attachments {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-2);
-    }
-
-    .splitpanel-attachment {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-2);
-      padding: var(--spacing-2);
-      border-radius: var(--radius-sm);
-      background: var(--surface-bg-secondary);
-    }
-
-    .splitpanel-attachment__label {
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .splitpanel-message {
-      margin: 0;
-      line-height: 1.6;
-    }
-
-    .splitpanel-signoff {
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-1);
-    }
-
-    .splitpanel-code-block {
-      margin: 0;
-      padding: var(--spacing-3);
-      border-radius: var(--radius-md);
-      background: var(--surface-bg-secondary);
-      font-family: var(--font-family-mono, 'Fira Code', 'Courier New', monospace);
-      font-size: 0.875rem;
-      overflow: auto;
-    }
-
-    .splitpanel-console {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-1);
-      padding: var(--spacing-3);
-      border-radius: var(--radius-md);
-      background: #1e1e1e;
-      color: #d4d4d4;
-      font-family: var(--font-family-mono, 'Fira Code', 'Courier New', monospace);
-    }
-
-    .splitpanel-console__cmd {
-      color: #4ec9b0;
-    }
-
-    .splitpanel-console__meta {
-      color: #6a9955;
-    }
-
-    .splitpanel-dashboard-heading {
-      margin: 0 0 var(--spacing-4);
-    }
-
-    .splitpanel-nav {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-2);
-    }
-
-    .splitpanel-nav .btn-outline {
-      justify-content: flex-start;
-    }
-
-    .splitpanel-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: var(--spacing-4);
-    }
-
-    .splitpanel-stat {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin: var(--spacing-2) 0;
-    }
-
-    .splitpanel-stat--primary {
-      color: var(--color-primary);
-    }
-
-    .splitpanel-stat--secondary {
-      color: var(--color-secondary);
-    }
-
-    .splitpanel-stat--accent {
-      color: var(--color-accent);
-    }
-
-    .splitpanel-stat-note {
-      margin: 0;
-      font-size: 0.85rem;
-      opacity: 0.7;
-    }
-
-    .splitpanel-activity-card {
-      gap: var(--spacing-3);
-    }
-
-    .splitpanel-activity-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-3);
-    }
-
-    .splitpanel-activity-item {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-3);
-      padding: var(--spacing-2);
-      border-radius: var(--radius-sm);
-      background: var(--surface-bg-secondary);
-    }
-
-    .splitpanel-activity-body {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-1);
-    }
-
-    .splitpanel-activity-sub {
-      font-size: 0.85rem;
-      opacity: 0.7;
-    }
-
-    .splitpanel-activity-time {
-      font-size: 0.85rem;
-      opacity: 0.6;
-    }
-  </style>
-`;
 
 export default {
   title: 'Components/Pds Splitpanel',
@@ -257,7 +29,6 @@ export default {
 };
 
 export const Default = () => html`
-  ${splitpanelStoryStyles}
   <pds-splitpanel class="splitpanel-story splitpanel-story--tall" orientation="horizontal" default-split="360px">
     <div slot="left" class="splitpanel-pane splitpanel-pane--surface splitpanel-pane--stacked">
       <article class="card surface-elevated splitpanel-card">
@@ -288,19 +59,23 @@ export const Default = () => html`
         </div>
       </article>
 
-      <article class="card surface-elevated splitpanel-card splitpanel-card--tight">
+      <article class="card surface-elevated splitpanel-card">
         <h4 class="splitpanel-section-title">Attachments (2)</h4>
-        <div class="splitpanel-attachments">
-          <div class="splitpanel-attachment">
-            <pds-icon icon="file-text"></pds-icon>
-            <span class="splitpanel-attachment__label">meeting-agenda.pdf</span>
+        <div class="stack-sm">
+          <div class="flex gap-md justify-between">
+            <span>
+              <pds-icon icon="file-text"></pds-icon>
+              <span class="splitpanel-attachment__label">meeting-agenda.pdf</span>
+            </span>
             <button class="icon-only btn-outline btn-sm">
               <pds-icon icon="download" size="sm" label="Download"></pds-icon>
             </button>
           </div>
-          <div class="splitpanel-attachment">
+          <div class="flex gap-md justify-between">
+          <span>
             <pds-icon icon="file-text"></pds-icon>
             <span class="splitpanel-attachment__label">q4-report.xlsx</span>
+            </span>
             <button class="icon-only btn-outline btn-sm">
               <pds-icon icon="download" size="sm" label="Download"></pds-icon>
             </button>
@@ -320,14 +95,14 @@ export const Default = () => html`
       </article>
 
       <article class="card surface-elevated splitpanel-card">
-        <h4 class="splitpanel-section-title">Notes</h4>
+        <h4>Notes</h4>
         <p class="splitpanel-message">
           Please come prepared with your updates and any questions you might have. Looking forward to seeing everyone there!
         </p>
-        <p class="splitpanel-signoff">
+        <div class="stack-xs">
           <strong>Sarah Johnson</strong>
           <span>Team Lead</span>
-        </p>
+        </div>
       </article>
     </div>
   </pds-splitpanel>
@@ -336,9 +111,8 @@ export const Default = () => html`
 Default.storyName = 'Project Workspace';
 
 export const CodeEditorLayout = () => html`
-  ${splitpanelStoryStyles}
-  <pds-splitpanel class="splitpanel-story splitpanel-story--tall" orientation="horizontal" default-split="50%">
-    <div slot="left" class="splitpanel-pane splitpanel-pane--surface splitpanel-pane--stacked">
+  <pds-splitpanel orientation="horizontal" default-split="50%">
+    <div slot="left" class="">
       <h3 class="splitpanel-heading">Code Editor</h3>
 
       <article class="card surface-elevated splitpanel-card">
@@ -378,9 +152,8 @@ greet('World');</code></pre>
 CodeEditorLayout.storyName = 'Code Editor Layout';
 
 export const DashboardLayout = () => html`
-  ${splitpanelStoryStyles}
-  <pds-splitpanel class="splitpanel-story splitpanel-story--xl" orientation="horizontal" default-split="250px">
-    <div slot="left" class="splitpanel-pane splitpanel-pane--surface splitpanel-pane--stacked">
+  <pds-splitpanel orientation="horizontal" default-split="250px">
+    <div slot="left" >
       <h3 class="splitpanel-heading splitpanel-dashboard-heading">Navigation</h3>
 
       <nav class="splitpanel-nav">
@@ -450,7 +223,6 @@ export const DashboardLayout = () => html`
 DashboardLayout.storyName = 'Dashboard Layout';
 
 export const StyledToggle = () => html`
-  ${splitpanelStoryStyles}
   <style>
     .styled-toggle-panel::part(toggle) {
       top: auto;

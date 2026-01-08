@@ -1,49 +1,13 @@
 import { html } from 'lit';
 import { enhancementHeader } from './_enhancement-header.js';
 
-const toggleStoryStyles = html`
-  <style>
-    .toggle-story-form {
-      max-width: 400px;
-    }
-
-    .toggle-story-form__button {
-      margin-top: var(--spacing-3);
-      align-self: flex-start;
-    }
-
-    .toggle-story-layout {
-      max-width: 600px;
-      display: grid;
-      gap: var(--spacing-4);
-    }
-
-    .toggle-story-muted {
-      color: var(--surface-text-secondary);
-      margin-bottom: var(--spacing-4);
-    }
-
-    .toggle-story-section {
-      display: grid;
-      gap: var(--spacing-3);
-    }
-
-    .toggle-story-subheading {
-      margin-bottom: var(--spacing-2);
-    }
-
-    .toggle-story-card {
-      max-width: 500px;
-      display: grid;
-      gap: var(--spacing-4);
-    }
-  </style>
-`;
-
 export default {
   title: 'Enhancements/Toggles',
   tags: ['toggle', 'switch', 'checkbox', 'forms', 'interaction'],
   parameters: {
+    options: {
+      selectedPanel: 'html-preview/panel'
+    },
     pds: {
       tags: ['toggle', 'switch', 'checkbox', 'forms', 'interaction', 'data-toggle', 'enhancement']
     }
@@ -51,7 +15,6 @@ export default {
 };
 
 export const BasicToggle = () => html`
-  ${toggleStoryStyles}
   ${enhancementHeader('toggle')}
   <label data-toggle>
     <span data-label>Enable notifications</span>
@@ -60,7 +23,6 @@ export const BasicToggle = () => html`
 `;
 
 export const PreChecked = () => html`
-  ${toggleStoryStyles}
   ${enhancementHeader('toggle')}
   <label data-toggle>
     <span data-label>Dark mode</span>
@@ -69,7 +31,6 @@ export const PreChecked = () => html`
 `;
 
 export const MultipleToggles = () => html`
-  ${toggleStoryStyles}
   ${enhancementHeader('toggle')}
   <form
     class="flex flex-col gap-sm toggle-story-form"
@@ -99,7 +60,6 @@ export const MultipleToggles = () => html`
 `;
 
 export const TogglePositions = () => html`
-  ${toggleStoryStyles}
   ${enhancementHeader('toggle')}
   <div class="toggle-story-layout">
     <div>
@@ -141,7 +101,6 @@ export const TogglePositions = () => html`
 `;
 
 export const InCard = () => html`
-  ${toggleStoryStyles}
   ${enhancementHeader('toggle')}
   <article class="card toggle-story-card">
     <div>
