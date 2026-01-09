@@ -312,32 +312,30 @@ async function extractCSSClasses(ontology) {
     }
   }
 
-  // Utilities
-  if (ontology.utilities) {
-    for (const utility of ontology.utilities) {
-      if (utility.startsWith('.')) {
-        const className = utility.slice(1);
-        
-        // Handle wildcard utilities
-        if (className.includes('*')) {
-          const baseClass = className.replace('*', '');
-          const variants = generateUtilityVariants(baseClass);
-          for (const variant of variants) {
-            classes.push({
-              name: variant.name,
-              description: variant.description,
-              category: 'Utilities'
-            });
+  // Utilities - handle nested object structure
+  if (ontology.utilities && typeof ontology.utilities === 'object') {
+    // Recursively extract all selectors from nested utility categories
+    const extractSelectors = (obj, category = 'Utilities') => {
+      for (const [key, value] of Object.entries(obj)) {
+        if (Array.isArray(value)) {
+          // It's an array of selectors
+          for (const selector of value) {
+            if (typeof selector === 'string' && selector.startsWith('.')) {
+              const className = selector.slice(1);
+              classes.push({
+                name: className,
+                description: `${key} utility class`,
+                category
+              });
+            }
           }
-        } else {
-          classes.push({
-            name: className,
-            description: `${className} utility class`,
-            category: 'Utilities'
-          });
+        } else if (typeof value === 'object' && value !== null) {
+          // It's a nested object, recurse
+          extractSelectors(value, key);
         }
       }
-    }
+    };
+    extractSelectors(ontology.utilities);
   }
 
   return classes;

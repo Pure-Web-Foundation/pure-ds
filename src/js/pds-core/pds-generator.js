@@ -1149,6 +1149,8 @@ export class Generator {
       mesh,
     ].join("");
 
+    // Dark mode selector only - .surface-inverse is handled separately in utilities
+    // to avoid inheriting the full dark palette (which would override --color-surface-inverse)
     return `html[data-theme="dark"] {\n${body}}\n`;
   }
 
@@ -4447,40 +4449,27 @@ ${this.#generateBorderGradientUtilities()}
 }
 
 
-/* Inverse surface (dark) using PDS tokens; text/icons inherit currentColor */
+/* 
+ * SURFACE-INVERSE: Local Theme Context Flip
+ * 
+ * We can't simply add .surface-inverse to the dark mode selector because that would
+ * also apply the dark color PALETTE (grays, surfaces, etc.), which would override
+ * --color-surface-inverse itself. Instead, we duplicate only the SEMANTIC tokens.
+ * 
+ * Light theme .surface-inverse → dark semantic tokens
+ * Dark theme .surface-inverse  → light semantic tokens (flip back)
+ */
+
+/* Surface-inverse visual properties (shared, uses smart surface tokens) */
 .surface-inverse {
   background-color: var(--color-surface-inverse);
-  /* Ensure foregrounds inside use the correct smart-surface tokens */
   color: var(--surface-inverse-text);
-  --color-text-primary: var(--surface-inverse-text);
-  --color-text-secondary: var(--surface-inverse-text-secondary);
-  --color-text-muted: var(--surface-inverse-text-muted);
-  /* Ensure code/pre and other muted surfaces have contrast on inverse */
-  --color-surface-muted: rgba(255, 255, 255, 0.08);
-  /* Optional: adjust borders/shadows if utilities/components read these */
-  --color-border: var(--surface-inverse-border);
 
   pds-icon {
     color: var(--surface-inverse-icon);
   }
   
-  /* Default and secondary buttons on inverse - semi-transparent glass effect */
-  & button:not(.btn-primary):not(.btn-outline):not(.btn-danger):not(.btn-success):not(.btn-warning),
-  & .btn-secondary {
-    background-color: rgba(255, 255, 255, 0.12);
-    color: var(--surface-inverse-text);
-    border-color: rgba(255, 255, 255, 0.25);
-    
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
-    
-    &:active {
-      background-color: rgba(255, 255, 255, 0.28);
-    }
-  }
-  
-  /* Ensure btn-primary stays vibrant on inverse */
+  /* btn-primary stays vibrant in any context */
   & .btn-primary {
     background-color: var(--color-primary-500);
     border-color: var(--color-primary-500);
@@ -4490,6 +4479,70 @@ ${this.#generateBorderGradientUtilities()}
       background-color: var(--color-primary-400);
       border-color: var(--color-primary-400);
     }
+  }
+}
+
+/* Light-mode inverse: apply dark semantic tokens */
+html:not([data-theme="dark"]) .surface-inverse {
+  --color-text-primary: var(--color-gray-100);
+  --color-text-secondary: var(--color-gray-300);
+  --color-text-muted: var(--color-gray-400);
+  --color-border: var(--color-gray-700);
+  --color-input-bg: var(--color-gray-800);
+  --color-input-disabled-bg: var(--color-gray-900);
+  --color-input-disabled-text: var(--color-gray-600);
+  --color-code-bg: var(--color-gray-800);
+  --color-surface-muted: rgba(255, 255, 255, 0.08);
+  
+  & button:not(.btn-primary):not(.btn-outline):not(.btn-danger):not(.btn-success):not(.btn-warning),
+  & .btn-secondary {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: var(--surface-inverse-text);
+    border-color: rgba(255, 255, 255, 0.25);
+    
+    &:hover { background-color: rgba(255, 255, 255, 0.2); }
+    &:active { background-color: rgba(255, 255, 255, 0.28); }
+  }
+  
+  & select {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--surface-inverse-text);
+  }
+  
+  & a:not([class*="btn"]) {
+    color: var(--color-primary-300, #7dd3fc);
+  }
+}
+
+/* Dark-mode inverse: flip back to light semantic tokens */
+html[data-theme="dark"] .surface-inverse {
+  --color-text-primary: var(--color-gray-900);
+  --color-text-secondary: var(--color-gray-600);
+  --color-text-muted: var(--color-gray-600);
+  --color-border: var(--color-gray-300);
+  --color-input-bg: var(--color-surface-base);
+  --color-input-disabled-bg: var(--color-gray-50);
+  --color-input-disabled-text: var(--color-gray-500);
+  --color-code-bg: var(--color-gray-100);
+  --color-surface-muted: var(--color-gray-100);
+  
+  & button:not(.btn-primary):not(.btn-outline):not(.btn-danger):not(.btn-success):not(.btn-warning),
+  & .btn-secondary {
+    background-color: rgba(0, 0, 0, 0.06);
+    color: var(--surface-inverse-text);
+    border-color: rgba(0, 0, 0, 0.15);
+    
+    &:hover { background-color: rgba(0, 0, 0, 0.1); }
+    &:active { background-color: rgba(0, 0, 0, 0.15); }
+  }
+  
+  & select {
+    background-color: #ffffff;
+    color: var(--surface-inverse-text);
+  }
+  
+  & a:not([class*="btn"]) {
+    color: var(--color-primary-600, #0284c7);
   }
 }
 

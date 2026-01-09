@@ -1927,3 +1927,81 @@ export const RootThreeColumnGrid = {
     `;
   }
 };
+
+export const EnumWithEnumNames = {
+  name: 'Enum with enumNames',
+  parameters: {
+    docs: {
+      description: {
+        story: `Use \`enumNames\` to provide human-friendly display labels for enum values.
+
+This is useful when you want to store technical values (like language codes or IDs) while showing user-friendly labels.
+
+\`\`\`javascript
+const schema = {
+  properties: {
+    language: {
+      type: 'string',
+      title: 'Language',
+      enum: ['en', 'es', 'fr', 'de', 'zh', 'ja'],           // Values stored
+      enumNames: ['English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese']  // Labels shown
+    }
+  }
+};
+\`\`\`
+
+The \`enumNames\` array must match the length and order of the \`enum\` array. Works with select dropdowns, radio buttons, and checkbox groups.`
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Preferences',
+      properties: {
+        language: {
+          type: 'string',
+          title: 'Language',
+          enum: ['en', 'es', 'fr', 'de', 'zh', 'ja'],
+          enumNames: ['English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese'],
+          default: 'en'
+        },
+        country: {
+          type: 'string',
+          title: 'Country',
+          enum: ['US', 'GB', 'CA', 'AU', 'DE', 'FR'],
+          enumNames: ['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France']
+        },
+        priority: {
+          type: 'string',
+          title: 'Priority Level',
+          enum: ['p1', 'p2', 'p3', 'p4'],
+          enumNames: ['🔴 Critical', '🟠 High', '🟡 Medium', '🟢 Low'],
+          default: 'p3'
+        },
+        interests: {
+          type: 'array',
+          title: 'Interests (checkbox group)',
+          items: {
+            type: 'string',
+            enum: ['dev', 'design', 'pm', 'qa', 'devops'],
+            enumNames: ['Development', 'Design', 'Project Management', 'Quality Assurance', 'DevOps']
+          },
+          uniqueItems: true
+        }
+      }
+    };
+
+    const uiSchema = {
+      '/priority': { 'ui:widget': 'radio' }
+    };
+
+    return html`
+      <pds-jsonform
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};

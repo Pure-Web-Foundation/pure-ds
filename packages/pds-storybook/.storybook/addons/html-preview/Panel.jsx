@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useChannel } from '@storybook/manager-api';
 import { IconButton } from '@storybook/components';
 import { EVENTS } from './constants.js';
-import { styled } from '@storybook/theming';
+import { styled, useTheme } from '@storybook/theming';
 import { loadShiki, escapeHtml } from '../../shiki.js';
 
 const Container = styled.div`
@@ -112,7 +112,12 @@ export const Panel = ({ active }) => {
   const [source, setSource] = useState({ markup: '', jsonForms: [] });
   const [copied, setCopied] = useState(false);
   const [highlightedMarkup, setHighlightedMarkup] = useState('');
+  const [highlightedJsonForms, setHighlightedJsonForms] = useState([]);
   const shikiRef = useRef(null);
+  
+  // Get Storybook theme to detect light/dark mode
+  const storybookTheme = useTheme();
+  const shikiTheme = storybookTheme.base === 'dark' ? 'github-dark' : 'github-light';
 
   // Load Shiki once on mount
   useEffect(() => {
@@ -121,7 +126,7 @@ export const Panel = ({ active }) => {
     });
   }, []);
 
-  // Highlight markup when source changes
+  // Highlight markup when source or theme changes
   useEffect(() => {
     if (!source.markup) {
       setHighlightedMarkup('');
@@ -133,7 +138,7 @@ export const Panel = ({ active }) => {
       try {
         const html = highlighter.codeToHtml(source.markup, {
           lang: 'html',
-          theme: 'github-dark'
+          theme: shikiTheme
         });
         setHighlightedMarkup(html);
       } catch (err) {
@@ -146,7 +151,7 @@ export const Panel = ({ active }) => {
       loadShiki().then(hl => {
         if (hl && source.markup) {
           try {
-            const html = hl.codeToHtml(source.markup, { lang: 'html', theme: 'github-dark' });
+            const html = hl.codeToHtml(source.markup, { lang: 'html', theme: shikiTheme });
             setHighlightedMarkup(html);
           } catch (err) {
             // Keep fallback
@@ -154,7 +159,43 @@ export const Panel = ({ active }) => {
         }
       });
     }
-  }, [source.markup]);
+  }, [source.markup, shikiTheme]);
+
+  // Highlight jsonForms schemas when source or theme changes
+  useEffect(() => {
+    if (!source.jsonForms || source.jsonForms.length === 0) {
+      setHighlightedJsonForms([]);
+      return;
+    }
+
+    const highlightJsonCode = async (code) => {
+      if (!code) return '';
+      const highlighter = shikiRef.current || await loadShiki();
+      if (highlighter) {
+        try {
+          return highlighter.codeToHtml(code, { lang: 'json', theme: shikiTheme });
+        } catch (err) {
+          return `<pre><code>${escapeHtml(code)}</code></pre>`;
+        }
+      }
+      return `<pre><code>${escapeHtml(code)}</code></pre>`;
+    };
+
+    const processJsonForms = async () => {
+      const highlighted = await Promise.all(
+        source.jsonForms.map(async (form, index) => ({
+          id: form.id ?? index,
+          label: form.label,
+          jsonSchema: await highlightJsonCode(form.jsonSchema),
+          uiSchema: await highlightJsonCode(form.uiSchema),
+          options: await highlightJsonCode(form.options)
+        }))
+      );
+      setHighlightedJsonForms(highlighted);
+    };
+
+    processJsonForms();
+  }, [source.jsonForms, shikiTheme]);
 
   useChannel({
     [EVENTS.UPDATE_HTML]: (payload) => {
@@ -225,38 +266,48 @@ export const Panel = ({ active }) => {
         </SectionWrapper>
       )}
 
-      {hasJsonForms && source.jsonForms.map((form, index) => {
-        const key = form.id ?? index;
-        const heading = source.jsonForms.length > 1 ? (form.label || `Form ${index + 1}`) : 'pds-jsonform';
+      {hasJsonForms && source.jsonForms.map((sourceForm, index) => {
+        const key = sourceForm.id ?? index;
+        const highlightedForm = highlightedJsonForms[index];
+        const heading = source.jsonForms.length > 1 ? (sourceForm.label || `Form ${index + 1}`) : 'pds-jsonform';
 
         return (
           <SectionWrapper key={key}>
             <SectionHeading>{heading}</SectionHeading>
 
-            {form.jsonSchema && (
+            {sourceForm.jsonSchema && (
               <>
                 <Subheading>jsonSchema</Subheading>
-                <CodeBlock $compact>
-                  <code>{form.jsonSchema}</code>
-                </CodeBlock>
+                <CodeBlock 
+                  $compact 
+                  dangerouslySetInnerHTML={{ 
+                    __html: highlightedForm?.jsonSchema || `<pre><code>${escapeHtml(sourceForm.jsonSchema)}</code></pre>` 
+                  }} 
+                />
               </>
             )}
 
-            {form.uiSchema && (
+            {sourceForm.uiSchema && (
               <>
                 <Subheading>uiSchema</Subheading>
-                <CodeBlock $compact>
-                  <code>{form.uiSchema}</code>
-                </CodeBlock>
+                <CodeBlock 
+                  $compact 
+                  dangerouslySetInnerHTML={{ 
+                    __html: highlightedForm?.uiSchema || `<pre><code>${escapeHtml(sourceForm.uiSchema)}</code></pre>` 
+                  }} 
+                />
               </>
             )}
 
-            {form.options && (
+            {sourceForm.options && (
               <>
                 <Subheading>options</Subheading>
-                <CodeBlock $compact>
-                  <code>{form.options}</code>
-                </CodeBlock>
+                <CodeBlock 
+                  $compact 
+                  dangerouslySetInnerHTML={{ 
+                    __html: highlightedForm?.options || `<pre><code>${escapeHtml(sourceForm.options)}</code></pre>` 
+                  }} 
+                />
               </>
             )}
           </SectionWrapper>

@@ -6,81 +6,9 @@ import { attachStoryLinkHandlers } from '../utils/navigation.js';
 // Pre-load Shiki
 preloadShiki();
 
-const iconStoryStyles = html`
+// Minimal styles for AllIcons interactive grid only
+const iconGridStyles = html`
   <style>
-    .icon-story-section {
-      padding: var(--spacing-4);
-      display: grid;
-      gap: var(--spacing-4);
-    }
-    
-    .icon-story-grid {
-      display: flex;
-      gap: var(--spacing-3);
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .icon-story-size-grid {
-      display: grid;
-      gap: var(--spacing-4);
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    }
-
-    .icon-story-size-item {
-      display: grid;
-      gap: var(--spacing-2);
-      text-align: center;
-      justify-items: center;
-    }
-
-    .icon-story-filter {
-      display: grid;
-      justify-items: center;
-      gap: var(--spacing-2);
-      margin-bottom: var(--spacing-6);
-    }
-
-    .icon-story-filter__label {
-      font-weight: 600;
-    }
-
-    .icon-story-filter__input {
-      width: 100%;
-      max-width: 400px;
-      padding: var(--spacing-3);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      font-size: 1rem;
-      text-align: center;
-      background: var(--color-surface);
-    }
-
-    .icon-category {
-      display: grid;
-      gap: var(--spacing-4);
-    }
-
-    .icon-category__title {
-      text-transform: capitalize;
-      display: flex;
-      align-items: baseline;
-      gap: var(--spacing-2);
-      flex-wrap: wrap;
-    }
-
-    .icon-category__count {
-      font-size: 0.85rem;
-      font-weight: normal;
-      opacity: 0.6;
-    }
-
-    .icon-category__grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: var(--spacing-3);
-    }
-
     .icon-item {
       display: flex;
       flex-direction: column;
@@ -91,48 +19,16 @@ const iconStoryStyles = html`
       cursor: pointer;
       transition: background-color 0.2s ease, color 0.2s ease;
     }
-
-    .icon-item:hover {
-      background: var(--surface-elevated);
-    }
-
+    .icon-item:hover { background: var(--surface-elevated); }
     .icon-item--copied {
       animation: iconItemCopied 0.4s ease;
       background: var(--color-primary);
       color: var(--color-surface);
     }
-
-    .icon-item__label {
-      font-size: 0.75rem;
-      text-align: center;
-      word-break: break-word;
-      opacity: 0.8;
-    }
-
-    .icon-story-usage {
-      margin-top: var(--spacing-6);
-      display: grid;
-      gap: var(--spacing-3);
-    }
-
-    .icon-story-usage__code {
-      margin: 0;
-      padding: var(--spacing-3);
-      background: var(--surface-bg);
-      border-radius: var(--radius-sm);
-      overflow-x: auto;
-    }
-
     @keyframes iconItemCopied {
-      0% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(0.98);
-      }
-      100% {
-        transform: scale(1);
-      }
+      0% { transform: scale(1); }
+      50% { transform: scale(0.98); }
+      100% { transform: scale(1); }
     }
   </style>
 `;
@@ -476,15 +372,12 @@ Overview.storyName = 'Overview';
 // ============================================================================
 
 export const CommonIcons = () => html`
-  ${iconStoryStyles}
-  <section class="icon-story-section">
+  <section class="stack-lg" style="padding: var(--spacing-4);">
     <header>
       <h3>Common Icons</h3>
-      <small class="text-muted">
-        Frequently used icons for everyday UI needs
-      </small>
+      <small class="text-muted">Frequently used icons for everyday UI needs</small>
     </header>
-    <div class="icon-story-grid">
+    <div class="flex gap-md flex-wrap items-center">
       <pds-icon icon="heart" size="lg"></pds-icon>
       <pds-icon icon="star" size="lg"></pds-icon>
       <pds-icon icon="user" size="lg"></pds-icon>
@@ -502,36 +395,33 @@ export const CommonIcons = () => html`
 CommonIcons.storyName = 'Common Icons';
 
 export const IconSizes = () => html`
-  ${iconStoryStyles}
-  <section class="icon-story-section">
+  <section class="stack-lg" style="padding: var(--spacing-4);">
     <header>
       <h3>Icon Sizes</h3>
-      <small class="text-muted">
-        Built-in sizing scale keeps visual hierarchy consistent across the UI.
-      </small>
+      <small class="text-muted">Built-in sizing scale keeps visual hierarchy consistent across the UI.</small>
     </header>
-    <div class="icon-story-size-grid">
-      <div class="icon-story-size-item">
+    <div class="grid grid-auto-sm gap-lg">
+      <div class="stack-sm text-center items-center">
         <pds-icon icon="heart" size="xs"></pds-icon>
         <small class="text-muted">xs (16px)</small>
       </div>
-      <div class="icon-story-size-item">
+      <div class="stack-sm text-center items-center">
         <pds-icon icon="heart" size="sm"></pds-icon>
         <small class="text-muted">sm (20px)</small>
       </div>
-      <div class="icon-story-size-item">
+      <div class="stack-sm text-center items-center">
         <pds-icon icon="heart" size="md"></pds-icon>
         <small class="text-muted">md (24px)</small>
       </div>
-      <div class="icon-story-size-item">
+      <div class="stack-sm text-center items-center">
         <pds-icon icon="heart" size="lg"></pds-icon>
         <small class="text-muted">lg (32px)</small>
       </div>
-      <div class="icon-story-size-item">
+      <div class="stack-sm text-center items-center">
         <pds-icon icon="heart" size="xl"></pds-icon>
         <small class="text-muted">xl (48px)</small>
       </div>
-      <div class="icon-story-size-item">
+      <div class="stack-sm text-center items-center">
         <pds-icon icon="heart" size="2xl"></pds-icon>
         <small class="text-muted">2xl (64px)</small>
       </div>
@@ -542,18 +432,15 @@ export const IconSizes = () => html`
 IconSizes.storyName = 'Icon Sizes';
 
 export const ColoredIcons = () => html`
-  ${iconStoryStyles}
-  <section class="icon-story-section">
+  <section class="stack-lg" style="padding: var(--spacing-4);">
     <header>
       <h3>Colored Icons</h3>
-      <small class="text-muted">
-        Icons inherit <code>currentColor</code> by default, or can be explicitly colored using the <code>color</code> attribute.
-      </small>
+      <small class="text-muted">Icons inherit <code>currentColor</code> by default, or can be explicitly colored using the <code>color</code> attribute.</small>
     </header>
     
-    <article class="card">
+    <article class="card stack-md">
       <h4>Using CSS Color Values</h4>
-      <div class="icon-story-grid">
+      <div class="flex gap-md flex-wrap items-center">
         <pds-icon icon="heart" size="lg" color="red"></pds-icon>
         <pds-icon icon="star" size="lg" color="gold"></pds-icon>
         <pds-icon icon="check" size="lg" color="green"></pds-icon>
@@ -562,10 +449,10 @@ export const ColoredIcons = () => html`
       </div>
     </article>
 
-    <article class="card">
+    <article class="card stack-md">
       <h4>Using Design Tokens</h4>
       <p class="text-muted text-sm">Recommended approach for consistent theming.</p>
-      <div class="icon-story-grid">
+      <div class="flex gap-md flex-wrap items-center">
         <pds-icon icon="heart" size="lg" color="var(--color-primary-500)"></pds-icon>
         <pds-icon icon="star" size="lg" color="var(--color-accent-500)"></pds-icon>
         <pds-icon icon="check-circle" size="lg" color="var(--color-success-500)"></pds-icon>
@@ -574,38 +461,38 @@ export const ColoredIcons = () => html`
       </div>
     </article>
 
-    <article class="card">
+    <article class="card stack-md">
       <h4>Inheriting from Parent</h4>
       <p class="text-muted text-sm">Icons use <code>currentColor</code> by default, inheriting text color.</p>
-      <div class="icon-story-grid">
-        <span style="color: var(--color-primary-500);">
+      <div class="flex gap-md flex-wrap items-center">
+        <span class="flex gap-sm items-center text-primary">
           <pds-icon icon="envelope" size="lg"></pds-icon>
           Primary text with icon
         </span>
-        <span style="color: var(--color-success-500);">
+        <span class="flex gap-sm items-center text-success">
           <pds-icon icon="check" size="lg"></pds-icon>
           Success message
         </span>
-        <span style="color: var(--color-error-500);">
+        <span class="flex gap-sm items-center text-danger">
           <pds-icon icon="warning" size="lg"></pds-icon>
           Error state
         </span>
       </div>
     </article>
 
-    <div class="icon-story-usage">
+    <article class="card surface-elevated stack-md">
       <h4>Usage</h4>
-      <pre class="icon-story-usage__code"><code>&lt;!-- Named CSS color --&gt;
+      <pre><code>&lt;!-- Named CSS color --&gt;
 &lt;pds-icon icon="heart" color="red"&gt;&lt;/pds-icon&gt;
 
 &lt;!-- Design token (recommended) --&gt;
 &lt;pds-icon icon="check" color="var(--color-success-500)"&gt;&lt;/pds-icon&gt;
 
 &lt;!-- Inherit from parent --&gt;
-&lt;span style="color: var(--color-primary-500);"&gt;
+&lt;span class="text-primary"&gt;
   &lt;pds-icon icon="star"&gt;&lt;/pds-icon&gt; Rating
 &lt;/span&gt;</code></pre>
-    </div>
+    </article>
   </section>
 `;
 
@@ -615,24 +502,22 @@ export const AllIcons = () => {
   const iconConfig = presets.default.icons.include;
 
   return html`
-    ${iconStoryStyles}
-    <section class="icon-story-section">
+    ${iconGridStyles}
+    <section class="stack-lg" style="padding: var(--spacing-4);">
       <header>
         <h2>All Available Icons</h2>
-        <small class="text-muted">
-          Complete icon set from Phosphor Icons, organized by category. Click any icon name to copy it to clipboard.
-        </small>
+        <small class="text-muted">Complete icon set from Phosphor Icons, organized by category. Click any icon name to copy it to clipboard.</small>
       </header>
 
-      <div class="icon-story-filter">
-        <span class="icon-story-filter__label" data-label>Filter icons</span>
+      <label class="stack-sm text-center">
+        <span class="text-semibold">Filter icons</span>
         <input
-          class="icon-story-filter__input"
           type="search"
           placeholder="Type to filter..."
+          style="max-width: 400px; text-align: center; margin: 0 auto;"
           @input="${(event) => {
             const searchTerm = event.target.value.toLowerCase();
-            const storyRoot = event.target.closest('.icon-story-section');
+            const storyRoot = event.target.closest('section');
             const categories = storyRoot?.querySelectorAll('.icon-category');
 
             categories?.forEach((category) => {
@@ -653,17 +538,17 @@ export const AllIcons = () => {
             });
           }}"
         />
-      </div>
+      </label>
 
       ${Object.entries(iconConfig).map(
         ([category, icons]) => html`
-          <article class="card icon-category">
-            <h3 class="icon-category__title">
+          <article class="card stack-lg icon-category">
+            <h3 class="flex items-baseline gap-sm flex-wrap" style="text-transform: capitalize;">
               ${category.replace(/([A-Z])/g, ' $1').trim()}
-              <span class="icon-category__count">(${icons.length} icons)</span>
+              <span class="text-muted text-sm">(${icons.length} icons)</span>
             </h3>
 
-            <div class="icon-category__grid">
+            <div class="grid grid-auto-sm gap-md">
               ${icons.map(
                 (icon) => html`
                   <div
@@ -679,7 +564,7 @@ export const AllIcons = () => {
                     }}"
                   >
                     <pds-icon icon="${icon}" size="lg"></pds-icon>
-                    <span class="icon-item__label">${icon}</span>
+                    <small class="text-muted text-center" style="word-break: break-word;">${icon}</small>
                   </div>
                 `
               )}
@@ -688,9 +573,9 @@ export const AllIcons = () => {
         `
       )}
 
-      <article class="card surface-elevated icon-story-usage">
+      <article class="card surface-elevated stack-md">
         <h4>Usage</h4>
-        <pre class="icon-story-usage__code"><code>&lt;pds-icon icon="heart" size="lg"&gt;&lt;/pds-icon&gt;
+        <pre><code>&lt;pds-icon icon="heart" size="lg"&gt;&lt;/pds-icon&gt;
 &lt;pds-icon icon="star" size="md"&gt;&lt;/pds-icon&gt;
 &lt;pds-icon icon="user" size="sm"&gt;&lt;/pds-icon&gt;</code></pre>
       </article>
@@ -707,69 +592,7 @@ AllIcons.storyName = 'All Icons';
  * fetch individual SVG files from a configurable external path.
  */
 export const ExternalIcons = () => html`
-  ${iconStoryStyles}
-  <style>
-    .external-icon-demo {
-      display: grid;
-      gap: var(--spacing-6);
-    }
-    
-    .external-icon-showcase {
-      display: flex;
-      gap: var(--spacing-4);
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    
-    .external-icon-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: var(--spacing-2);
-      padding: var(--spacing-4);
-      border-radius: var(--radius-md);
-      background: var(--surface-elevated-bg);
-      min-width: 100px;
-    }
-    
-    .external-icon-card__label {
-      font-size: 0.75rem;
-      text-align: center;
-      opacity: 0.7;
-    }
-    
-    .cache-status {
-      padding: var(--spacing-4);
-      border-radius: var(--radius-md);
-      background: var(--surface-bg);
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      white-space: pre-wrap;
-      max-height: 200px;
-      overflow: auto;
-    }
-    
-    .comparison-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: var(--spacing-4);
-    }
-    
-    .comparison-card {
-      padding: var(--spacing-4);
-      border-radius: var(--radius-md);
-      background: var(--surface-elevated-bg);
-    }
-    
-    .comparison-card h4 {
-      margin: 0 0 var(--spacing-3) 0;
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-2);
-    }
-  </style>
-  
-  <section class="icon-story-section external-icon-demo">
+  <section class="stack-lg" style="padding: var(--spacing-4);">
     <header>
       <h2>External Icons (On-Demand Loading)</h2>
       <p class="text-muted">
@@ -779,121 +602,115 @@ export const ExternalIcons = () => html`
       </p>
     </header>
 
-    <article class="card">
+    <article class="card stack-md">
       <h3>How It Works</h3>
-      <div class="comparison-grid">
-        <div class="comparison-card">
-          <h4><pds-icon icon="lightning" size="sm"></pds-icon> Sprite Icons (Fast)</h4>
-          <p class="text-muted" style="margin: 0;">
-            Core icons bundled in the sprite sheet load instantly with a single HTTP request.
-          </p>
-          <div class="external-icon-showcase" style="margin-top: var(--spacing-3);">
+      <div class="grid grid-auto-md gap-lg">
+        <article class="card surface-elevated stack-md">
+          <h4 class="flex items-center gap-sm"><pds-icon icon="lightning" size="sm"></pds-icon> Sprite Icons (Fast)</h4>
+          <p class="text-muted">Core icons bundled in the sprite sheet load instantly with a single HTTP request.</p>
+          <div class="flex gap-lg flex-wrap items-center">
             <pds-icon icon="house" size="lg"></pds-icon>
             <pds-icon icon="gear" size="lg"></pds-icon>
             <pds-icon icon="heart" size="lg"></pds-icon>
             <pds-icon icon="star" size="lg"></pds-icon>
           </div>
-        </div>
+        </article>
         
-        <div class="comparison-card">
-          <h4><pds-icon icon="cloud-arrow-down" size="sm"></pds-icon> External Icons (On-Demand)</h4>
-          <p class="text-muted" style="margin: 0;">
-            More 'exotic' icons are fetched individually, then cached for subsequent use.
-          </p>
-          <div class="external-icon-showcase" style="margin-top: var(--spacing-3);">
+        <article class="card surface-elevated stack-md">
+          <h4 class="flex items-center gap-sm"><pds-icon icon="cloud-arrow-down" size="sm"></pds-icon> External Icons (On-Demand)</h4>
+          <p class="text-muted">More 'exotic' icons are fetched individually, then cached for subsequent use.</p>
+          <div class="flex gap-lg flex-wrap items-center">
             <pds-icon icon="solid-anatomy-brain-1" size="lg" color="var(--color-primary-500)"></pds-icon>
             <pds-icon icon="solid-anatomy-hand-bones" size="lg" color="var(--color-accent-500)"></pds-icon>
             <pds-icon icon="solid-conditions-lung-condition-2" size="lg" color="var(--color-success-500)"></pds-icon>
           </div>
-        </div>
+        </article>
       </div>
     </article>
 
-    <article class="card">
+    <article class="card stack-md">
       <h3>External Icon Sizes</h3>
       <p class="text-muted">External icons respect all standard size tokens.</p>
-      <div class="icon-story-size-grid">
-        <div class="icon-story-size-item">
+      <div class="grid grid-auto-sm gap-lg">
+        <div class="stack-sm text-center items-center">
           <pds-icon icon="solid-anatomy-brain-1" size="xs"></pds-icon>
           <small class="text-muted">xs (16px)</small>
         </div>
-        <div class="icon-story-size-item">
+        <div class="stack-sm text-center items-center">
           <pds-icon icon="solid-anatomy-brain-1" size="sm"></pds-icon>
           <small class="text-muted">sm (20px)</small>
         </div>
-        <div class="icon-story-size-item">
+        <div class="stack-sm text-center items-center">
           <pds-icon icon="solid-anatomy-brain-1" size="md"></pds-icon>
           <small class="text-muted">md (24px)</small>
         </div>
-        <div class="icon-story-size-item">
+        <div class="stack-sm text-center items-center">
           <pds-icon icon="solid-anatomy-brain-1" size="lg"></pds-icon>
           <small class="text-muted">lg (32px)</small>
         </div>
-        <div class="icon-story-size-item">
+        <div class="stack-sm text-center items-center">
           <pds-icon icon="solid-anatomy-brain-1" size="xl"></pds-icon>
           <small class="text-muted">xl (48px)</small>
         </div>
-        <div class="icon-story-size-item">
+        <div class="stack-sm text-center items-center">
           <pds-icon icon="solid-anatomy-brain-1" size="2xl"></pds-icon>
           <small class="text-muted">2xl (64px)</small>
         </div>
       </div>
     </article>
 
-    <article class="card">
+    <article class="card stack-md">
       <h3>Color Inheritance</h3>
       <p class="text-muted">External icons support color customization just like sprite icons.</p>
-      <div class="external-icon-showcase">
-        <div class="external-icon-card">
+      <div class="flex gap-lg flex-wrap items-center">
+        <div class="card surface-elevated stack-sm text-center items-center" style="min-width: 100px;">
           <pds-icon icon="solid-anatomy-brain-1" size="xl" color="var(--color-primary-500)"></pds-icon>
-          <span class="external-icon-card__label">Primary</span>
+          <small class="text-muted">Primary</small>
         </div>
-        <div class="external-icon-card">
+        <div class="card surface-elevated stack-sm text-center items-center" style="min-width: 100px;">
           <pds-icon icon="solid-anatomy-hand-bones" size="xl" color="var(--color-accent-500)"></pds-icon>
-          <span class="external-icon-card__label">Accent</span>
+          <small class="text-muted">Accent</small>
         </div>
-        <div class="external-icon-card">
+        <div class="card surface-elevated stack-sm text-center items-center" style="min-width: 100px;">
           <pds-icon icon="solid-conditions-lung-condition-2" size="xl" color="var(--color-success-500)"></pds-icon>
-          <span class="external-icon-card__label">Success</span>
+          <small class="text-muted">Success</small>
         </div>
-        <div class="external-icon-card">
+        <div class="card surface-elevated stack-sm text-center items-center" style="min-width: 100px;">
           <pds-icon icon="solid-anatomy-brain-1" size="xl" color="var(--color-warning-500)"></pds-icon>
-          <span class="external-icon-card__label">Warning</span>
+          <small class="text-muted">Warning</small>
         </div>
-        <div class="external-icon-card">
+        <div class="card surface-elevated stack-sm text-center items-center" style="min-width: 100px;">
           <pds-icon icon="solid-anatomy-hand-bones" size="xl" color="var(--color-error-500)"></pds-icon>
-          <span class="external-icon-card__label">Error</span>
+          <small class="text-muted">Error</small>
         </div>
       </div>
     </article>
 
-    <article class="card">
+    <article class="card stack-md">
       <h3>Fallback Behavior</h3>
       <p class="text-muted">
         When an icon isn't found in the sprite <em>or</em> the external path, 
         a fallback "missing" icon is shown.
       </p>
-      <div class="external-icon-showcase">
-        <div class="external-icon-card">
+      <div class="flex gap-lg">
+        <div class="card surface-elevated stack-sm text-center items-center" style="min-width: 100px;">
           <pds-icon icon="this-icon-does-not-exist" size="xl"></pds-icon>
-          <span class="external-icon-card__label">Missing icon</span>
+          <small class="text-muted">Missing icon</small>
         </div>
       </div>
     </article>
 
-    <article class="card">
+    <article class="card stack-md">
       <h3>Cache Inspector</h3>
-      <p class="text-muted">
-        Click the button to inspect the current external icon cache state.
-      </p>
+      <p class="text-muted">Click the button to inspect the current external icon cache state.</p>
       <button class="btn-secondary" id="check-cache-btn">Check External Icon Cache</button>
-      <pre class="cache-status" id="cache-status">Click the button to see cache contents...</pre>
+      <pre id="cache-status" style="max-height: 200px; overflow: auto;">Click the button to see cache contents...</pre>
     </article>
 
-    <article class="card surface-elevated">
+    <article class="card surface-elevated stack-md">
       <h4>Configuration</h4>
       <p class="text-muted">Configure the external icons path in <code>pds.config.js</code>:</p>
-      <pre class="icon-story-usage__code"><code>export const config = {
+      <pre><code>export const config = {
   design: {
     icons: {
       externalPath: "/assets/img/icons/", // Path for on-demand SVG icons
@@ -902,9 +719,9 @@ export const ExternalIcons = () => html`
 };</code></pre>
     </article>
 
-    <article class="card surface-elevated">
+    <article class="card surface-elevated stack-md">
       <h4>Usage</h4>
-      <pre class="icon-story-usage__code"><code>&lt;!-- Sprite icon (instant from cache) --&gt;
+      <pre><code>&lt;!-- Sprite icon (instant from cache) --&gt;
 &lt;pds-icon icon="house" size="lg"&gt;&lt;/pds-icon&gt;
 
 &lt;!-- External icon (fetched from /assets/img/icons/my-custom-icon.svg) --&gt;

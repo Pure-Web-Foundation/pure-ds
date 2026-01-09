@@ -380,7 +380,7 @@ export const ontology = {
   utilities: {
     text: {
       alignment: [".text-left", ".text-center", ".text-right"],
-      color: [".text-muted", ".text-primary", ".text-success", ".text-warning", ".text-danger", ".text-info"],
+      color: [".text-muted"],
       overflow: [".truncate"]
     },
     backdrop: {
