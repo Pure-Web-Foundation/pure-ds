@@ -1635,6 +1635,16 @@ export class SchemaForm extends LitElement {
   #uiFor(path) {
     if (!this.uiSchema) return undefined;
 
+    // Root path: return root-level ui: properties directly
+    if (!path || path === "" || path === "/") {
+      // Check if uiSchema has ui: prefixed keys at root level (not nested under a path)
+      const hasRootUiKeys = Object.keys(this.uiSchema).some(k => k.startsWith("ui:"));
+      if (hasRootUiKeys) {
+        return this.uiSchema;
+      }
+      // Fall through to check for "/" key
+    }
+
     // Try exact match first (flat structure)
     if (this.uiSchema[path]) return this.uiSchema[path];
 

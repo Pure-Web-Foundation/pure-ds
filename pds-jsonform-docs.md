@@ -439,6 +439,47 @@ const uiSchema = {
 
 Control how fieldsets are rendered:
 
+#### Root-Level Layout
+
+Apply layout to the **entire form** without modifying JSON Schema. Place `ui:layout` and `ui:layoutOptions` at the root level of your uiSchema:
+
+```javascript
+// Apply 2-column grid to entire form
+const uiSchema = {
+  "ui:layout": "grid",
+  "ui:layoutOptions": {
+    columns: 2,
+    gap: "md"
+  }
+};
+```
+
+You can combine root-level layout with field-specific options:
+
+```javascript
+const uiSchema = {
+  // Root form layout
+  "ui:layout": "grid",
+  "ui:layoutOptions": {
+    columns: 2,
+    gap: "md"
+  },
+  // Field-specific options
+  "/email": {
+    "ui:icon": "envelope",
+    "ui:help": "We will never share your email"
+  },
+  "/bio": {
+    "ui:widget": "textarea",
+    "ui:class": "grid-col-span-2"           // Span full width
+  }
+};
+```
+
+#### Path-Based Layout
+
+Target specific nested objects with layout options:
+
 ```javascript
 const uiSchema = {
   "/": {
@@ -1012,6 +1053,53 @@ const uiSchema = {
 ---
 
 ## Layouts and Grouping
+
+Layouts can be applied at two levels:
+1. **Root-level**: Apply to the entire form (no nested objects required)
+2. **Path-based**: Apply to specific nested objects
+
+### Root-Level Layout (Entire Form)
+
+Apply layout to all top-level fields without modifying your JSON Schema:
+
+```javascript
+const schema = {
+  type: "object",
+  title: "Contact Form",
+  properties: {
+    firstName: { type: "string", title: "First Name" },
+    lastName: { type: "string", title: "Last Name" },
+    email: { type: "string", format: "email", title: "Email" },
+    phone: { type: "string", title: "Phone" }
+  }
+};
+
+// Root-level ui:layout applies to entire form
+const uiSchema = {
+  "ui:layout": "grid",
+  "ui:layoutOptions": {
+    columns: 2,
+    gap: "md"
+  }
+};
+```
+
+Combine with field-specific options:
+
+```javascript
+const uiSchema = {
+  // Root form layout
+  "ui:layout": "grid",
+  "ui:layoutOptions": { columns: 2, gap: "md" },
+  
+  // Field-specific customization
+  "/email": { "ui:icon": "envelope" },
+  "/bio": { 
+    "ui:widget": "textarea",
+    "ui:class": "grid-col-span-2"    // Full-width field
+  }
+};
+```
 
 ### Flex Layout
 

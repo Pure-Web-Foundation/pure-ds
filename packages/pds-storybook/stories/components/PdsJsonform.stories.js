@@ -19,9 +19,39 @@ Use **slash notation** (JSON Pointer) to target fields:
 
 | Target | Path |
 |--------|------|
-| Root form | \`"/"\` |
+| Root form | \`"/"\` or root-level \`ui:*\` keys |
 | Top-level field | \`"/fieldName"\` or \`"fieldName"\` |
 | Nested field | \`"/parent/child"\` or \`"parent/child"\` |
+
+---
+
+## Root-Level Layout
+
+Apply layout to the **entire form** without modifying your JSON Schema:
+
+\`\`\`javascript
+const uiSchema = {
+  'ui:layout': 'grid',
+  'ui:layoutOptions': {
+    columns: 2,
+    gap: 'md'
+  }
+};
+\`\`\`
+
+You can combine root-level layout with field-specific options:
+
+\`\`\`javascript
+const uiSchema = {
+  // Root form layout
+  'ui:layout': 'grid',
+  'ui:layoutOptions': { columns: 2, gap: 'md' },
+  
+  // Field-specific options
+  '/email': { 'ui:icon': 'envelope' },
+  '/bio': { 'ui:widget': 'textarea' }
+};
+\`\`\`
 
 ---
 
@@ -1652,6 +1682,248 @@ When \`hide-actions\` is set, the default Submit and Reset buttons are hidden, a
           </button>
         </div>
       </pds-jsonform>
+    `;
+  }
+};
+
+// =============================================================================
+// Root-Level Layout Stories
+// =============================================================================
+
+export const RootGridLayout = {
+  name: 'Root-Level Grid Layout',
+  parameters: {
+    docs: {
+      description: {
+        story: `Apply a grid layout to the entire form using root-level \`ui:layout\` and \`ui:layoutOptions\`.
+        
+This allows you to control the form layout **without modifying your JSON Schema** — keeping data structure separate from presentation.
+
+\`\`\`javascript
+const uiSchema = {
+  'ui:layout': 'grid',
+  'ui:layoutOptions': {
+    columns: 2,
+    gap: 'md'
+  }
+};
+\`\`\``
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Contact Form',
+      properties: {
+        firstName: { type: 'string', title: 'First Name', examples: ['John'] },
+        lastName: { type: 'string', title: 'Last Name', examples: ['Doe'] },
+        email: { type: 'string', format: 'email', title: 'Email', examples: ['john.doe@example.com'] },
+        phone: { type: 'string', title: 'Phone', examples: ['+1 (555) 123-4567'] },
+        company: { type: 'string', title: 'Company', examples: ['Acme Inc.'] },
+        role: { type: 'string', title: 'Role', examples: ['Developer'] }
+      },
+      required: ['firstName', 'lastName', 'email']
+    };
+
+    const uiSchema = {
+      'ui:layout': 'grid',
+      'ui:layoutOptions': {
+        columns: 2,
+        gap: 'md'
+      }
+    };
+
+    return html`
+      <pds-jsonform
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const RootFlexLayout = {
+  name: 'Root-Level Flex Layout',
+  parameters: {
+    docs: {
+      description: {
+        story: `Apply a flex layout to the entire form using root-level \`ui:layout\` and \`ui:layoutOptions\`.
+        
+\`\`\`javascript
+const uiSchema = {
+  'ui:layout': 'flex',
+  'ui:layoutOptions': {
+    gap: 'lg',
+    wrap: true
+  }
+};
+\`\`\``
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Quick Settings',
+      properties: {
+        theme: { 
+          type: 'string', 
+          enum: ['light', 'dark', 'system'], 
+          title: 'Theme',
+          default: 'system'
+        },
+        notifications: { 
+          type: 'boolean', 
+          title: 'Notifications',
+          default: true
+        },
+        language: { 
+          type: 'string', 
+          enum: ['en', 'es', 'fr', 'de'], 
+          title: 'Language',
+          default: 'en'
+        }
+      }
+    };
+
+    const uiSchema = {
+      'ui:layout': 'flex',
+      'ui:layoutOptions': {
+        gap: 'lg',
+        wrap: true
+      }
+    };
+
+    return html`
+      <pds-jsonform
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const RootLayoutWithFieldOptions = {
+  name: 'Root Layout + Field Options',
+  parameters: {
+    docs: {
+      description: {
+        story: `Combine root-level layout with field-specific UI options.
+        
+Root-level \`ui:*\` properties control the overall form layout, while path-keyed entries (like \`'/email'\`) customize individual fields.
+
+\`\`\`javascript
+const uiSchema = {
+  // Root form layout
+  'ui:layout': 'grid',
+  'ui:layoutOptions': { columns: 2, gap: 'md' },
+  
+  // Field-specific options
+  '/email': { 'ui:icon': 'envelope' },
+  '/bio': { 'ui:widget': 'textarea', 'ui:options': { rows: 4 } }
+};
+\`\`\``
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'User Profile',
+      properties: {
+        username: { type: 'string', title: 'Username', minLength: 3, examples: ['johndoe'] },
+        email: { type: 'string', format: 'email', title: 'Email', examples: ['john@example.com'] },
+        bio: { type: 'string', title: 'Bio', maxLength: 500, examples: ['Tell us about yourself...'] },
+        website: { type: 'string', format: 'uri', title: 'Website', examples: ['https://yoursite.com'] }
+      },
+      required: ['username', 'email']
+    };
+
+    const uiSchema = {
+      // Root form layout
+      'ui:layout': 'grid',
+      'ui:layoutOptions': {
+        columns: 2,
+        gap: 'md'
+      },
+      // Field-specific options
+      '/username': {
+        'ui:icon': 'user'
+      },
+      '/email': {
+        'ui:icon': 'envelope',
+        'ui:help': 'We will never share your email'
+      },
+      '/bio': {
+        'ui:widget': 'textarea',
+        'ui:options': { rows: 4 },
+        'ui:class': 'grid-col-span-2'
+      },
+      '/website': {
+        'ui:icon': 'globe',
+        'ui:class': 'grid-col-span-2'
+      }
+    };
+
+    return html`
+      <pds-jsonform
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const RootThreeColumnGrid = {
+  name: 'Root 3-Column Grid',
+  parameters: {
+    docs: {
+      description: {
+        story: `A more complex form using a 3-column root grid layout with various field types.`
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Product Registration',
+      properties: {
+        productName: { type: 'string', title: 'Product Name', examples: ['Widget Pro'] },
+        serialNumber: { type: 'string', title: 'Serial Number', examples: ['SN-12345'] },
+        purchaseDate: { type: 'string', format: 'date', title: 'Purchase Date' },
+        retailer: { type: 'string', title: 'Retailer', examples: ['Amazon'] },
+        price: { type: 'number', title: 'Price', minimum: 0, examples: [99.99] },
+        currency: { type: 'string', enum: ['USD', 'EUR', 'GBP'], title: 'Currency', default: 'USD' },
+        condition: { type: 'string', enum: ['new', 'refurbished', 'used'], title: 'Condition', default: 'new' },
+        extendedWarranty: { type: 'boolean', title: 'Extended Warranty' },
+        newsletter: { type: 'boolean', title: 'Subscribe to Newsletter' }
+      },
+      required: ['productName', 'serialNumber', 'purchaseDate']
+    };
+
+    const uiSchema = {
+      'ui:layout': 'grid',
+      'ui:layoutOptions': {
+        columns: 3,
+        gap: 'md'
+      }
+    };
+
+    const options = {
+      widgets: { booleans: 'toggle' }
+    };
+
+    return html`
+      <pds-jsonform
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        .options=${options}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
     `;
   }
 };
