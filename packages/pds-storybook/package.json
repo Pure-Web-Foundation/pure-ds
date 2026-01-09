@@ -7,7 +7,7 @@
   "bin": {
     "pds-storybook": "./bin/index.js"
   },
-   "publishConfig": {
+  "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
@@ -32,7 +32,9 @@
     "storybook": "npm run build-reference && storybook dev -p 6006",
     "build-storybook": "npm run build-reference && storybook build --output-dir storybook-static",
     "storybook:dev": "npm run storybook",
-    "storybook:build": "npm run build-storybook"
+    "storybook:build": "npm run build-storybook",
+    "pds:export": "pds-export",
+    "pds:build-icons": "pds-build-icons"
   },
   "peerDependencies": {
     "@pure-ds/core": "^0.4.13"
