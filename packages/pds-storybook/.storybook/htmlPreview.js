@@ -68,6 +68,29 @@ export function extractHTML(element) {
 }
 
 /**
+ * Strip Lit template comments from rendered HTML
+ * Removes markers like <!--?lit$641514976$-->, <!---->, etc.
+ */
+export function stripLitComments(html) {
+  if (!html) return '';
+  
+  // Remove Lit binding markers: <!--?lit$...$-->
+  html = html.replace(/<!--\?lit\$[^$]+\$-->/g, '');
+  
+  // Remove empty Lit comments: <!---->
+  html = html.replace(/<!---->/g, '');
+  
+  // Remove Lit template marker comments: <!--lit-part...-->
+  html = html.replace(/<!--lit-part[^>]*-->/g, '');
+  html = html.replace(/<!--\/lit-part-->/g, '');
+  
+  // Clean up any resulting multiple whitespace/newlines
+  html = html.replace(/\n\s*\n\s*\n/g, '\n\n');
+  
+  return html;
+}
+
+/**
  * Transform Lit template result to HTML string
  */
 export async function litToHTML(templateResult) {
@@ -81,7 +104,10 @@ export async function litToHTML(templateResult) {
   // Wait for any custom elements to upgrade
   await new Promise(resolve => setTimeout(resolve, 50));
   
-  return formatHTML(temp.innerHTML);
+  // Strip Lit comments before formatting
+  const cleanedHTML = stripLitComments(temp.innerHTML);
+  
+  return formatHTML(cleanedHTML);
 }
 
 /**

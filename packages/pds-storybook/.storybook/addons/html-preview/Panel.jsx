@@ -16,9 +16,9 @@ const CodeBlock = styled.pre`
   margin: 0;
   padding: 16px;
   padding-bottom: ${props => (props.$compact ? '24px' : '60px')}; /* Space for fixed button */
-  font-family: ${props => props.theme.typography.fonts.mono};
-  font-size: 13px;
-  line-height: 1.6;
+  font-family: 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 13.6px;
+  line-height: 24px;
   color: ${props => props.theme.color.defaultText};
   background: transparent;
   tab-size: 2;
@@ -32,6 +32,7 @@ const CodeBlock = styled.pre`
 
   .shiki code {
     background: transparent;
+    font-family: inherit !important;
   }
 `;
 

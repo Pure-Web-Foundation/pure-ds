@@ -661,7 +661,17 @@ customElements.define(
       }
 
       if (node.nodeType === Node.COMMENT_NODE) {
-        return indent(level) + `<!-- ${escapeText(node.textContent)} -->\n`;
+        // Skip Lit template comments (empty comments or ?lit$...$)
+        const commentText = node.textContent || "";
+        if (
+          commentText === "" ||
+          commentText.startsWith("?lit$") ||
+          commentText.startsWith("lit-part") ||
+          commentText === "/lit-part"
+        ) {
+          return "";
+        }
+        return indent(level) + `<!-- ${escapeText(commentText)} -->\n`;
       }
 
       if (node.nodeType === Node.ELEMENT_NODE) {

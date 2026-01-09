@@ -39,13 +39,13 @@
   padding: var(--spacing-4, 1rem);
   border-radius: var(--radius-md, 4px);
   overflow-x: auto;
-  font-size: 0.875rem;
-  line-height: 1.6;
+  font-size: 13.6px;
+  line-height: 24px;
   tab-size: 2;
 }
 
 .html-source-content pre code {
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+  font-family: 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 /* Fallback pre styling (before Shiki loads) */
@@ -54,9 +54,9 @@
   padding: var(--spacing-4, 1rem);
   border-radius: var(--radius-md, 4px);
   overflow-x: auto;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
-  font-size: 0.875rem;
-  line-height: 1.6;
+  font-family: 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13.6px;
+  line-height: 24px;
   tab-size: 2;
   background: var(--color-surface-raised, #282c34);
   color: var(--color-text-primary, #abb2bf);

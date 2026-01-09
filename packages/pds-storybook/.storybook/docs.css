@@ -1,5 +1,12 @@
 /* Custom Docs page styling - hide all examples, show only description */
 
+/* Override Storybook's default mono font for code panels */
+pre, code, .docblock-source pre, .docblock-source code {
+  font-family: 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 13.6px;
+  line-height: 24px;
+}
+
 /* Hide ALL story previews and interactive elements in Docs */
 .docs-story,
 .sbdocs-preview,

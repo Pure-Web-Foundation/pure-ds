@@ -1304,7 +1304,7 @@ const preview = {
       ]
     },
     docs: {
-      page: DocsPage
+      page: DocsPage,
     },
     options: {
       storySort: {
