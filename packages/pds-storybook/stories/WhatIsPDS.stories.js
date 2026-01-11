@@ -7,6 +7,9 @@ export default {
   title: 'About PDS/What Is PDS',
   parameters: {
     layout: 'fullscreen',
+    pds: {
+      tags: ['what is pds', 'introduction', 'overview', 'design system', 'philosophy', 'progressive enhancements', 'web components', 'adoptedt stylesheets']
+    },
     docs: {
       description: {
         component: 'Learn about Pure Design System and its revolutionary approach to design systems'

@@ -224,6 +224,62 @@ async function walkStories(dir) {
   return files;
 }
 
+/**
+ * Extract story metadata statically from file content when dynamic import fails
+ * This is a fallback for files with non-JS dependencies (e.g., markdown imports)
+ * @param {string} content - File content
+ * @param {string} relPath - Relative path for logging
+ * @returns {Object|null} - Extracted metadata or null
+ */
+function extractStaticMetadata(content, relPath) {
+  // Look for: export default { title: '...', parameters: { pds: { tags: [...] } } }
+  // This is a simple regex-based extraction, not a full parser
+  
+  // Extract title
+  const titleMatch = content.match(/title:\s*['"`]([^'"`]+)['"`]/);
+  if (!titleMatch) return null;
+  
+  const title = titleMatch[1];
+  
+  // Extract pds.tags array
+  // Look for: pds: { tags: ['tag1', 'tag2', ...] }
+  const pdsTagsMatch = content.match(/pds:\s*\{[^}]*tags:\s*\[([\s\S]*?)\]/);
+  let pdsTags = [];
+  if (pdsTagsMatch) {
+    // Extract individual tags from the array
+    const tagsContent = pdsTagsMatch[1];
+    const tagMatches = tagsContent.matchAll(/['"`]([^'"`]+)['"`]/g);
+    for (const match of tagMatches) {
+      pdsTags.push(match[1]);
+    }
+  }
+  
+  // Extract standard tags array
+  // Look for: tags: ['tag1', 'tag2', ...] (not inside pds: {})
+  const standardTagsMatch = content.match(/(?<!pds:\s*\{[^}]*)tags:\s*\[([\s\S]*?)\]/);
+  let standardTags = [];
+  if (standardTagsMatch && !standardTagsMatch[0].includes('pds:')) {
+    const tagsContent = standardTagsMatch[1];
+    const tagMatches = tagsContent.matchAll(/['"`]([^'"`]+)['"`]/g);
+    for (const match of tagMatches) {
+      standardTags.push(match[1]);
+    }
+  }
+  
+  // Extract description
+  const descMatch = content.match(/description:\s*\{[^}]*component:\s*['"`]([^'"`]+)['"`]/);
+  const description = descMatch ? descMatch[1] : null;
+  
+  return {
+    title,
+    tags: standardTags,
+    parameters: {
+      pds: pdsTags.length > 0 ? { tags: pdsTags } : undefined,
+      docs: description ? { description: { component: description } } : undefined
+    }
+  };
+}
+
 async function collectStoryMetadata() {
   const storyFiles = await walkStories(STORIES_ROOT);
   const index = new Map();
@@ -232,20 +288,35 @@ async function collectStoryMetadata() {
     if (file.includes(`${path.sep}reference${path.sep}`)) continue;
 
     const fileUrl = pathToFileURL(file).href;
+    const relPath = path.relative(ROOT_DIR, file);
     let mod;
+    let meta = null;
+    
     try {
       mod = await import(fileUrl);
+      meta = mod.default;
     } catch (error) {
-      const rel = path.relative(ROOT_DIR, file);
-      if (error.code === 'ERR_UNKNOWN_FILE_EXTENSION') {
-        console.warn(`[pds-reference] Skipped ${rel} (non-JS dependency: ${error.message.split(' for ').pop() || error.message})`);
-      } else {
-        console.warn(`[pds-reference] Skipped ${rel}: ${error.message}`);
+      // Import failed - try to extract metadata statically from the file
+      try {
+        const content = await fs.promises.readFile(file, 'utf-8');
+        meta = extractStaticMetadata(content, relPath);
+        if (meta) {
+          console.log(`[pds-reference] Extracted static metadata from ${relPath}`);
+        }
+      } catch (parseError) {
+        // Ignore parse errors
       }
-      continue;
+      
+      if (!meta) {
+        if (error.code === 'ERR_UNKNOWN_FILE_EXTENSION') {
+          console.warn(`[pds-reference] Skipped ${relPath} (non-JS dependency: ${error.message.split(' for ').pop() || error.message})`);
+        } else {
+          console.warn(`[pds-reference] Skipped ${relPath}: ${error.message}`);
+        }
+        continue;
+      }
     }
 
-    const meta = mod.default;
     if (!meta || !meta.title) {
       continue;
     }
@@ -256,7 +327,6 @@ async function collectStoryMetadata() {
     if (!slug) continue;
 
     const idBase = slugifyTitle(meta.title);
-    const relPath = path.relative(ROOT_DIR, file);
 
     const entry = index.get(slug) || {
       slug,
@@ -287,24 +357,27 @@ async function collectStoryMetadata() {
       entry.description = meta.parameters.docs.description.component;
     }
 
-    for (const [exportName, story] of Object.entries(mod)) {
-      if (exportName === 'default' || exportName === '__namedExportsOrder') continue;
+    // Only iterate over exports if we have the actual module
+    if (mod) {
+      for (const [exportName, story] of Object.entries(mod)) {
+        if (exportName === 'default' || exportName === '__namedExportsOrder') continue;
 
-      const storyItem = typeof story === 'object' ? story : null;
-      if (!storyItem) continue;
+        const storyItem = typeof story === 'object' ? story : null;
+        if (!storyItem) continue;
 
-      const storyTags = [];
-      if (Array.isArray(storyItem.tags)) storyTags.push(...storyItem.tags);
-      if (Array.isArray(storyItem.parameters?.pds?.tags)) storyTags.push(...storyItem.parameters.pds.tags);
+        const storyTags = [];
+        if (Array.isArray(storyItem.tags)) storyTags.push(...storyItem.tags);
+        if (Array.isArray(storyItem.parameters?.pds?.tags)) storyTags.push(...storyItem.parameters.pds.tags);
 
-      entry.stories.push({
-        exportName,
-        name: storyItem.storyName || storyItem.name || exportName,
-        id: `${idBase}--${slugifySegment(exportName)}`,
-        tags: dedupe(storyTags),
-        description: trimOrNull(storyItem.parameters?.docs?.description?.story || storyItem.parameters?.docs?.description?.component),
-        source: relPath
-      });
+        entry.stories.push({
+          exportName,
+          name: storyItem.storyName || storyItem.name || exportName,
+          id: `${idBase}--${slugifySegment(exportName)}`,
+          tags: dedupe(storyTags),
+          description: trimOrNull(storyItem.parameters?.docs?.description?.story || storyItem.parameters?.docs?.description?.component),
+          source: relPath
+        });
+      }
     }
 
     index.set(slug, entry);
@@ -847,7 +920,8 @@ async function main() {
       primitives,
       enhancements,
       tokens,
-      ontologyData
+      ontologyData,
+      storyIndex  // Include story metadata with pds.tags for search
     };
 
     await fs.promises.mkdir(OUTPUT_DIR, { recursive: true });

@@ -7,6 +7,9 @@ export default {
   title: 'About PDS/Getting Started',
   parameters: {
     layout: 'fullscreen',
+    pds: {
+      tags: ['getting started', 'introduction', 'cli', 'npm', 'cdn', 'overview', 'guide', 'themes', 'dark mode', 'light mode']
+    },
     docs: {
       description: {
         component: 'Complete beginner guide: installation, philosophy, configuration, enhancements, components, and console API'
