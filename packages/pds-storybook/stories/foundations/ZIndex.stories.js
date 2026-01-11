@@ -15,89 +15,66 @@ export default {
   }
 };
 
+// Minimal styles - only what's needed for the z-index visual demo
 const zIndexStoryStyles = html`
   <style>
-    .z-index-section {
-      padding: var(--spacing-8);
-      max-width: 75rem;
-    }
-    .z-index-value {
-      font-weight: 600;
-    }
-    .z-index-number {
-      font-family: var(--font-mono, monospace);
+    .story-z-index-value {
+      font-weight: var(--font-weight-semibold);
+      font-family: var(--font-family-mono);
       margin-left: var(--spacing-3);
     }
-    .z-index-callout {
-      margin-top: var(--spacing-8);
-      border-left-width: 4px;
-    }
-    .z-index-callout--info {
-      border-left-color: var(--color-info);
-    }
-    .z-index-callout--warning {
-      border-left-color: var(--color-warning);
-    }
-    .z-index-demo-wrapper {
+    .story-z-index-demo {
       position: relative;
       height: 37.5rem;
       overflow: hidden;
-    }
-    .z-index-demo-base {
-      padding: var(--spacing-6);
-    }
-    .z-index-demo-dropdown {
-      position: absolute;
-      top: 100px;
-      left: 50px;
-      z-index: var(--z-dropdown);
-      min-width: 12.5rem;
-    }
-    .z-index-demo-sticky {
-      position: absolute;
-      top: 180px;
-      left: 100px;
-      z-index: var(--z-sticky);
-      min-width: 12.5rem;
-    }
-    .z-index-demo-fixed {
-      position: absolute;
-      top: 260px;
-      left: 150px;
-      z-index: var(--z-fixed);
-      min-width: 12.5rem;
-    }
-    .z-index-demo-modal-overlay {
-      position: absolute;
-      border-radius: var(--radius-md);
-      inset: 0;
-      z-index: var(--z-modal);
-      background: rgba(0, 0, 0, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .z-index-demo-modal-card {
-      max-width: 25rem;
-    }
-    .z-index-demo-tooltip {
-      position: absolute;
-      top: 50px;
-      right: 50px;
-      z-index: var(--z-tooltip);
-      padding: var(--spacing-2) var(--spacing-3);
-    }
-    .z-index-demo-toast {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      z-index: var(--z-notification);
-      background: var(--color-success);
-      color: var(--color-text-inverse, #ffffff);
-      min-width: 15.625rem;
-    }
-    .z-index-note {
-      margin-top: var(--spacing-6);
+
+      .story-dropdown {
+        position: absolute;
+        top: 100px;
+        left: 50px;
+        z-index: var(--z-dropdown);
+        min-width: 12.5rem;
+      }
+      .story-sticky {
+        position: absolute;
+        top: 180px;
+        left: 100px;
+        z-index: var(--z-sticky);
+        min-width: 12.5rem;
+      }
+      .story-fixed {
+        position: absolute;
+        top: 260px;
+        left: 150px;
+        z-index: var(--z-fixed);
+        min-width: 12.5rem;
+      }
+      .story-modal-overlay {
+        position: absolute;
+        border-radius: var(--radius-md);
+        inset: 0;
+        z-index: var(--z-modal);
+        background: rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .story-tooltip {
+        position: absolute;
+        top: 50px;
+        right: 50px;
+        z-index: var(--z-tooltip);
+        padding: var(--spacing-2) var(--spacing-3);
+      }
+      .story-toast {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: var(--z-notification);
+        background: var(--color-success);
+        color: var(--color-text-inverse, #ffffff);
+        min-width: 15.625rem;
+      }
     }
   </style>
 `;
@@ -106,63 +83,65 @@ export const ZIndexScale = {
   name: 'Z-Index Scale',
   render: () => html`
     ${zIndexStoryStyles}
-    <div class="z-index-section">
-      <h2>Z-Index Token Scale</h2>
-      <p class="text-muted">
-        Tokens are organized from lowest to highest z-index values, ensuring proper stacking of UI layers.
-      </p>
+    <section class="stack-lg max-w-5xl">
+      <header>
+        <h2>Z-Index Token Scale</h2>
+        <p class="text-muted">
+          Tokens are organized from lowest to highest z-index values, ensuring proper stacking of UI layers.
+        </p>
+      </header>
       
       <div class="grid grid-cols-1 gap-md">
-        <div class="card surface-translucent-50">
-          <code class="z-index-value">--z-dropdown</code>
-          <span class="z-index-number">1000</span>
-          <p class="text-muted">Dropdown menus and select options</p>
+        <div class="card surface-translucent-50 flex items-center gap-sm">
+          <code>--z-dropdown</code>
+          <span class="story-z-index-value">1000</span>
+          <p class="text-muted grow text-right">Dropdown menus and select options</p>
         </div>
         
-        <div class="card surface-translucent-50">
-          <code class="z-index-value">--z-sticky</code>
-          <span class="z-index-number">1020</span>
-          <p class="text-muted">Sticky headers and navigation elements</p>
+        <div class="card surface-translucent-50 flex items-center gap-sm">
+          <code>--z-sticky</code>
+          <span class="story-z-index-value">1020</span>
+          <p class="text-muted grow text-right">Sticky headers and navigation elements</p>
         </div>
         
-        <div class="card surface-translucent-50">
-          <code class="z-index-value">--z-fixed</code>
-          <span class="z-index-number">1030</span>
-          <p class="text-muted">Fixed position elements</p>
+        <div class="card surface-translucent-50 flex items-center gap-sm">
+          <code>--z-fixed</code>
+          <span class="story-z-index-value">1030</span>
+          <p class="text-muted grow text-right">Fixed position elements</p>
         </div>
         
-        <div class="card surface-translucent-50">
-          <code class="z-index-value">--z-modal</code>
-          <span class="z-index-number">1040</span>
-          <p class="text-muted">Modal dialogs and overlays</p>
+        <div class="card surface-translucent-50 flex items-center gap-sm">
+          <code>--z-modal</code>
+          <span class="story-z-index-value">1040</span>
+          <p class="text-muted grow text-right">Modal dialogs and overlays</p>
         </div>
         
-        <div class="card surface-translucent-50">
-          <code class="z-index-value">--z-drawer</code>
-          <span class="z-index-number">1050</span>
-          <p class="text-muted">Drawer panels (side sheets)</p>
+        <div class="card surface-translucent-50 flex items-center gap-sm">
+          <code>--z-drawer</code>
+          <span class="story-z-index-value">1050</span>
+          <p class="text-muted grow text-right">Drawer panels (side sheets)</p>
         </div>
         
-        <div class="card surface-translucent-50">
-          <code class="z-index-value">--z-popover</code>
-          <span class="z-index-number">1060</span>
-          <p class="text-muted">Popovers and context menus</p>
+        <div class="card surface-translucent-50 flex items-center gap-sm">
+          <code>--z-popover</code>
+          <span class="story-z-index-value">1060</span>
+          <p class="text-muted grow text-right">Popovers and context menus</p>
         </div>
         
-        <div class="card surface-translucent-50">
-          <code class="z-index-value">--z-tooltip</code>
-          <span class="z-index-number">1070</span>
-          <p class="text-muted">Tooltips and helper text</p>
+        <div class="card surface-translucent-50 flex items-center gap-sm">
+          <code>--z-tooltip</code>
+          <span class="story-z-index-value">1070</span>
+          <p class="text-muted grow text-right">Tooltips and helper text</p>
         </div>
         
-        <div class="card surface-translucent-50">
-          <code class="z-index-value">--z-notification</code>
-          <span class="z-index-number">1080</span>
-          <p class="text-muted">Toast notifications and alerts</p>
+        <div class="card surface-translucent-50 flex items-center gap-sm">
+          <code>--z-notification</code>
+          <span class="story-z-index-value">1080</span>
+          <p class="text-muted grow text-right">Toast notifications and alerts</p>
         </div>
       </div>
       
-      <div class="card card-outlined z-index-callout z-index-callout--info">
+      <aside class="alert alert-info">
         <h3><pds-icon icon="info"></pds-icon> Best Practices</h3>
         <ul>
           <li>Always use these tokens instead of hard-coded z-index values</li>
@@ -171,8 +150,8 @@ export const ZIndexScale = {
           <li>Notifications have the highest z-index to ensure visibility</li>
           <li>Never exceed these values unless absolutely necessary</li>
         </ul>
-      </div>
-    </div>
+      </aside>
+    </section>
   `
 };
 
@@ -180,49 +159,51 @@ export const VisualDemo = {
   name: 'Visual Stacking Demo',
   render: () => html`
     ${zIndexStoryStyles}
-    <div class="z-index-section">
-      <h2>Interactive Stacking Example</h2>
-      <p class="text-muted">
-        This demo shows how different z-index tokens create proper layering. 
-        Lower elements appear behind higher ones.
-      </p>
+    <section class="stack-lg max-w-5xl">
+      <header>
+        <h2>Interactive Stacking Example</h2>
+        <p class="text-muted">
+          This demo shows how different z-index tokens create proper layering. 
+          Lower elements appear behind higher ones.
+        </p>
+      </header>
       
-      <div class="surface z-index-demo-wrapper">
+      <div class="surface story-z-index-demo">
         
-        <div class="z-index-demo-base">
+        <div class="card">
           <h3>Base Content (z-index: auto)</h3>
           <p>This is the base layer of content with no explicit z-index.</p>
         </div>
         
-        <div class="card card-elevated z-index-demo-dropdown">
+        <div class="card card-elevated story-dropdown">
           <strong>Dropdown Menu</strong>
           <p><small>z-index: var(--z-dropdown) = 1000</small></p>
         </div>
         
-        <div class="card surface-elevated z-index-demo-sticky">
+        <div class="card surface-elevated story-sticky">
           <strong>Sticky Header</strong>
           <p><small>z-index: var(--z-sticky) = 1020</small></p>
         </div>
         
-        <div class="card surface-elevated z-index-demo-fixed">
+        <div class="card surface-elevated story-fixed">
           <strong>Fixed Element</strong>
           <p><small>z-index: var(--z-fixed) = 1030</small></p>
         </div>
         
-        <div class="z-index-demo-modal-overlay">
-          <article class="card card-elevated z-index-demo-modal-card">
+        <div class="story-modal-overlay">
+          <article class="card card-elevated">
             <h4>Modal Dialog</h4>
             <p><small>z-index: var(--z-modal) = 1040</small></p>
             <p class="text-muted">Modal dialogs appear above most other content.</p>
           </article>
         </div>
         
-        <div class="surface-inverse z-index-demo-tooltip">
+        <div class="surface-inverse story-tooltip">
           <strong>Tooltip</strong>
           <p><small>--z-tooltip: 1070</small></p>
         </div>
         
-        <div class="card z-index-demo-toast">
+        <div class="card story-toast">
           <strong>🎉 Notification Toast</strong>
           <p><small>z-index: var(--z-notification) = 1080</small></p>
           <p><small>Highest layer</small></p>
@@ -230,13 +211,13 @@ export const VisualDemo = {
         
       </div>
       
-      <div class="card card-outlined z-index-note">
+      <aside class="alert alert-neutral">
         <p>
           <strong>Note:</strong> In this demo, elements are positioned to overlap. 
           Notice how higher z-index values appear above lower ones, with notifications at the top.
         </p>
-      </div>
-    </div>
+      </aside>
+    </section>
   `
 };
 
@@ -244,11 +225,13 @@ export const UsageExamples = {
   name: 'Usage Examples',
   render: () => html`
     ${zIndexStoryStyles}
-    <div class="z-index-section">
-      <h2>Code Examples</h2>
-      <p class="text-muted">
-        How to use z-index tokens in your components and styles.
-      </p>
+    <section class="stack-lg max-w-5xl">
+      <header>
+        <h2>Code Examples</h2>
+        <p class="text-muted">
+          How to use z-index tokens in your components and styles.
+        </p>
+      </header>
       
       <div class="grid grid-cols-1 gap-lg">
         
@@ -314,7 +297,7 @@ export const UsageExamples = {
         
       </div>
       
-      <aside class="card card-outlined z-index-callout z-index-callout--warning">
+      <aside class="alert alert-warning">
         <h3><pds-icon icon="warning"></pds-icon> Important Guidelines</h3>
         <ul>
           <li><strong>Never use magic numbers:</strong> Always reference these tokens instead of hardcoded values</li>
@@ -324,6 +307,6 @@ export const UsageExamples = {
           <li><strong>Component libraries:</strong> Ensure third-party components don't conflict with these ranges</li>
         </ul>
       </aside>
-    </div>
+    </section>
   `
 };

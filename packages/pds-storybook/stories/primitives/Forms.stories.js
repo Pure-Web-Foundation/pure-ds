@@ -1,6 +1,13 @@
 import { html } from 'lit';
 import { toastFormData } from '../utils/toast-utils.js';
 
+// Story-specific styles (not PDS classes - demo only)
+const formsStoryStyles = html`
+  <style>
+    .story-form-max { max-width: 24rem; }
+  </style>
+`;
+
 export default {
   title: 'Primitives/Forms',
   tags: ['buttons', 'forms'],
@@ -44,21 +51,22 @@ export const Default = {
     };
     
     return html`
+      ${formsStoryStyles}
       <div class="card">
-        <form class="max-w-sm" @submit=${handleSubmit}>
+        <form class="story-form-max" @submit=${handleSubmit}>
           <label>
-            <span>Text Input</span>
+            <span data-label>Text Input</span>
             <input type="text" name="text" placeholder="Enter text...">
           </label>
           <label>
-            <span>Email</span>
+            <span data-label>Email</span>
             <div class="input-icon">
               <pds-icon icon="envelope"></pds-icon>
               <input type="email" name="email" required placeholder="email@example.com">
             </div>
           </label>
           <label>
-            <span>Select</span>
+            <span data-label>Select</span>
             <select name="select">
               <option>Option 1</option>
               <option>Option 2</option>
@@ -66,7 +74,7 @@ export const Default = {
             </select>
           </label>
           <label>
-            <span>Textarea</span>
+            <span data-label>Textarea</span>
             <textarea name="textarea" rows="4" placeholder="Enter longer text..."></textarea>
           </label>
           <button type="submit" class="btn-primary">Submit</button>
@@ -82,13 +90,14 @@ export const Default = {
 export const InputsWithIcons = {
   render: (args) => {
     return html`
+      ${formsStoryStyles}
       <div class="card stack-md">
         <h3>Inputs with Icons</h3>
         <p>Enhance inputs with icons for better UX. Icons can be positioned at the start or end of the input.</p>
         
-        <div class="flex flex-col gap-lg max-w-sm">
+        <div class="stack-lg story-form-max">
           <label>
-            <span>Search (Icon Start)</span>
+            <span data-label>Search (Icon Start)</span>
             <div class="input-icon">
               <pds-icon icon="magnifying-glass"></pds-icon>
               <input type="search" placeholder="Search..." />
@@ -96,7 +105,7 @@ export const InputsWithIcons = {
           </label>
           
           <label>
-            <span>Username (Icon End)</span>
+            <span data-label>Username (Icon End)</span>
             <div class="input-icon input-icon-end">
               <input type="text" placeholder="Username" />
               <pds-icon icon="user"></pds-icon>

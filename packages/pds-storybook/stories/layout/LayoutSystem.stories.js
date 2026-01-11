@@ -1,5 +1,19 @@
 import { html } from "lit";
 
+const layoutSystemStyles = html`
+  <style>
+    .story-demo-area { padding: var(--spacing-4); border-radius: var(--radius-md); }
+    .story-demo-area-sm { padding: var(--spacing-2); border-radius: var(--radius-md); }
+    .story-demo-area-md { padding: var(--spacing-3); border-radius: var(--radius-md); }
+    .story-demo-item { padding: var(--spacing-2); }
+    .story-demo-item-lg { padding: var(--spacing-4); }
+    .story-demo-height { height: 100px; }
+    .story-fixed-width { width: 100px; }
+    .story-min-width { min-width: 120px; }
+    .story-margin-top { margin-block-start: var(--spacing-2); }
+  </style>
+`;
+
 export default {
   title: "Foundations/Layout",
   tags: ["layout", "flex", "grid", "container", "utilities", "text", "truncate", "spacing", "gap", "alignment"],
@@ -18,16 +32,14 @@ export default {
 // ─────────────────────────────────────────────────────────────
 
 export const Container = () => html`
-  <div class="card surface-subtle" style="padding: var(--spacing-2);">
+  ${layoutSystemStyles}
+  <div class="card surface-subtle story-demo-area-sm">
     <p class="text-muted text-center">
       Gray background shows viewport width. Container centers content with
       max-width.
     </p>
 
-    <div
-      class="container surface-base"
-      style="border-radius: var(--radius-md);"
-    >
+    <div class="container surface-base story-demo-area">
       <h2>Container</h2>
       <p>
         <code>.container</code> centers content with a max-width (default
@@ -66,6 +78,7 @@ Container.storyName = "Container";
 // ─────────────────────────────────────────────────────────────
 
 export const GridFixed = () => html`
+  ${layoutSystemStyles}
   <header>
     <h2>Fixed Column Grids</h2>
     <p class="text-muted">Explicit column counts for predictable layouts.</p>
@@ -122,6 +135,7 @@ export const GridFixed = () => html`
 GridFixed.storyName = "Grid: Fixed Columns";
 
 export const GridAuto = () => html`
+  ${layoutSystemStyles}
   <header class="card">
     <h2>Auto-Fit Responsive Grids</h2>
     <p class="text-muted">
@@ -185,6 +199,7 @@ GridAuto.storyName = "Grid: Auto-Fit";
 // ─────────────────────────────────────────────────────────────
 
 export const FlexBasics = () => html`
+  ${layoutSystemStyles}
   <header class="card">
     <h2>Flexbox Utilities</h2>
     <p class="text-muted">
@@ -194,10 +209,7 @@ export const FlexBasics = () => html`
 
   <div class="card">
     <h3>.flex (row by default)</h3>
-    <div
-      class="flex gap-md surface-subtle"
-      style="padding: var(--spacing-4); border-radius: var(--radius-md);"
-    >
+    <div class="flex gap-md surface-subtle story-demo-area">
       <div class="card">Item 1</div>
       <div class="card">Item 2</div>
       <div class="card">Item 3</div>
@@ -205,11 +217,8 @@ export const FlexBasics = () => html`
   </div>
 
   <div class="card">
-    <h3>.flex .flex-col</h3>
-    <div
-      class="flex flex-col gap-sm surface-subtle"
-      style="padding: var(--spacing-4); border-radius: var(--radius-md);"
-    >
+    <h3>.stack-sm (vertical)</h3>
+    <div class="stack-sm surface-subtle story-demo-area">
       <div class="card">Item 1</div>
       <div class="card">Item 2</div>
       <div class="card">Item 3</div>
@@ -218,14 +227,11 @@ export const FlexBasics = () => html`
 
   <div class="card">
     <h3>.flex .flex-wrap</h3>
-    <div
-      class="flex flex-wrap gap-sm surface-subtle"
-      style="padding: var(--spacing-4); border-radius: var(--radius-md);"
-    >
+    <div class="flex flex-wrap gap-sm surface-subtle story-demo-area">
       ${Array.from(
         { length: 8 },
         (_, i) => html`
-          <div class="card" style="min-width: 120px;">Item ${i + 1}</div>
+          <div class="card story-min-width">Item ${i + 1}</div>
         `
       )}
     </div>
@@ -233,13 +239,10 @@ export const FlexBasics = () => html`
 
   <div class="card">
     <h3>.grow (fill remaining space)</h3>
-    <div
-      class="flex gap-md surface-subtle"
-      style="padding: var(--spacing-4); border-radius: var(--radius-md);"
-    >
-      <div class="card" style="width: 100px;">Fixed</div>
+    <div class="flex gap-md surface-subtle story-demo-area">
+      <div class="card story-fixed-width">Fixed</div>
       <div class="card grow">This item grows to fill available space</div>
-      <div class="card" style="width: 100px;">Fixed</div>
+      <div class="card story-fixed-width">Fixed</div>
     </div>
   </div>
 `;
@@ -247,6 +250,7 @@ export const FlexBasics = () => html`
 FlexBasics.storyName = "Flex: Basics";
 
 export const FlexAlignment = () => html`
+  ${layoutSystemStyles}
   <header class="card">
     <h2>Alignment Utilities</h2>
     <p class="text-muted">
@@ -259,32 +263,23 @@ export const FlexAlignment = () => html`
     <div class="grid grid-cols-3 gap-md">
       <div>
         <code>.items-start</code>
-        <div
-          class="flex items-start gap-sm surface-subtle"
-          style="height: 100px; padding: var(--spacing-2); border-radius: var(--radius-md);"
-        >
-          <div class="card" style="padding: var(--spacing-2);">A</div>
-          <div class="card" style="padding: var(--spacing-4);">B</div>
+        <div class="flex items-start gap-sm surface-subtle story-demo-area-sm story-demo-height">
+          <div class="card story-demo-item">A</div>
+          <div class="card story-demo-item-lg">B</div>
         </div>
       </div>
       <div>
         <code>.items-center</code>
-        <div
-          class="flex items-center gap-sm surface-subtle"
-          style="height: 100px; padding: var(--spacing-2); border-radius: var(--radius-md);"
-        >
-          <div class="card" style="padding: var(--spacing-2);">A</div>
-          <div class="card" style="padding: var(--spacing-4);">B</div>
+        <div class="flex items-center gap-sm surface-subtle story-demo-area-sm story-demo-height">
+          <div class="card story-demo-item">A</div>
+          <div class="card story-demo-item-lg">B</div>
         </div>
       </div>
       <div>
         <code>.items-end</code>
-        <div
-          class="flex items-end gap-sm surface-subtle"
-          style="height: 100px; padding: var(--spacing-2); border-radius: var(--radius-md);"
-        >
-          <div class="card" style="padding: var(--spacing-2);">A</div>
-          <div class="card" style="padding: var(--spacing-4);">B</div>
+        <div class="flex items-end gap-sm surface-subtle story-demo-area-sm story-demo-height">
+          <div class="card story-demo-item">A</div>
+          <div class="card story-demo-item-lg">B</div>
         </div>
       </div>
     </div>
@@ -297,13 +292,10 @@ export const FlexAlignment = () => html`
         (justify) => html`
           <div>
             <code>.justify-${justify}</code>
-            <div
-              class="flex justify-${justify} gap-sm surface-subtle"
-              style="padding: var(--spacing-2); border-radius: var(--radius-md);"
-            >
-              <div class="card" style="padding: var(--spacing-2);">A</div>
-              <div class="card" style="padding: var(--spacing-2);">B</div>
-              <div class="card" style="padding: var(--spacing-2);">C</div>
+            <div class="flex justify-${justify} gap-sm surface-subtle story-demo-area-sm">
+              <div class="card story-demo-item">A</div>
+              <div class="card story-demo-item">B</div>
+              <div class="card story-demo-item">C</div>
             </div>
           </div>
         `
@@ -319,6 +311,7 @@ FlexAlignment.storyName = "Flex: Alignment";
 // ─────────────────────────────────────────────────────────────
 
 export const Stack = () => html`
+  ${layoutSystemStyles}
   <header>
     <h2>Stack Utilities</h2>
     <p class="text-muted">
@@ -333,13 +326,10 @@ export const Stack = () => html`
         (size) => html`
           <div class="card">
             <h3>.stack-${size}</h3>
-            <div
-              class="stack-${size} surface-subtle"
-              style="padding: var(--spacing-3); border-radius: var(--radius-md);"
-            >
-              <div class="card" style="padding: var(--spacing-2);">Item 1</div>
-              <div class="card" style="padding: var(--spacing-2);">Item 2</div>
-              <div class="card" style="padding: var(--spacing-2);">Item 3</div>
+            <div class="stack-${size} surface-subtle story-demo-area-md">
+              <div class="card story-demo-item">Item 1</div>
+              <div class="card story-demo-item">Item 2</div>
+              <div class="card story-demo-item">Item 3</div>
             </div>
           </div>
         `
@@ -350,15 +340,15 @@ export const Stack = () => html`
       <h3>Practical: Form Layout</h3>
       <form class="stack-md max-w-md">
         <label>
-          <span>Name</span>
+          <span data-label>Name</span>
           <input type="text" placeholder="John Doe" />
         </label>
         <label>
-          <span>Email</span>
+          <span data-label>Email</span>
           <input type="email" placeholder="john@example.com" />
         </label>
         <label>
-          <span>Message</span>
+          <span data-label>Message</span>
           <textarea rows="3" placeholder="Your message..."></textarea>
         </label>
         <div class="flex gap-sm justify-end">
@@ -377,6 +367,7 @@ Stack.storyName = "Stack";
 // ─────────────────────────────────────────────────────────────
 
 export const Gap = () => html`
+  ${layoutSystemStyles}
   <header>
     <h2>Gap Utilities</h2>
     <p class="text-muted">Control spacing between flex/grid children.</p>
@@ -394,17 +385,11 @@ export const Gap = () => html`
       ({ cls, label }) => html`
         <div class="card">
           <code>.${cls}</code> <span class="text-muted">(${label})</span>
-          <div
-            class="grid grid-cols-4 ${cls}"
-            style="margin-top: var(--spacing-2);"
-          >
+          <div class="grid grid-cols-4 ${cls} story-margin-top">
             ${Array.from(
               { length: 4 },
               (_, i) => html`
-                <div
-                  class="card surface-elevated text-center"
-                  style="padding: var(--spacing-2);"
-                >
+                <div class="card surface-elevated text-center story-demo-item">
                   ${i + 1}
                 </div>
               `
@@ -423,6 +408,7 @@ Gap.storyName = "Gap";
 // ─────────────────────────────────────────────────────────────
 
 export const MaxWidth = () => html`
+  ${layoutSystemStyles}
   <header class="card">
     <h2>Max-Width Utilities</h2>
     <p class="text-muted">Constrain content width for readability.</p>
@@ -438,10 +424,7 @@ export const MaxWidth = () => html`
       ({ cls, px, use }) => html`
         <div>
           <code>.${cls}</code> <span class="text-muted">(${px}) — ${use}</span>
-          <div
-            class="${cls} surface-subtle"
-            style="padding: var(--spacing-4); border-radius: var(--radius-md); margin-top: var(--spacing-2);"
-          >
+          <div class="${cls} surface-subtle story-demo-area story-margin-top">
             Content constrained to ${px}
           </div>
         </div>
@@ -457,6 +440,7 @@ MaxWidth.storyName = "Max-Width";
 // ─────────────────────────────────────────────────────────────
 
 export const Section = () => html`
+  ${layoutSystemStyles}
   <header>
     <h2>Section Spacing</h2>
     <p class="text-muted">Vertical padding for major content blocks.</p>
@@ -484,6 +468,7 @@ Section.storyName = "Section";
 // ─────────────────────────────────────────────────────────────
 
 export const Responsive = () => html`
+  ${layoutSystemStyles}
   <div class="card">
     <h2>Responsive Utilities</h2>
   </div>
@@ -529,6 +514,7 @@ Responsive.storyName = "Responsive";
 // ─────────────────────────────────────────────────────────────
 
 export const TextUtilities = () => html`
+  ${layoutSystemStyles}
   <div class="card">
     <h2>Text Utilities</h2>
   </div>
@@ -554,10 +540,7 @@ export const TextUtilities = () => html`
   <div class="card">
     <h3>.truncate</h3>
     <p class="text-muted">Truncates text with ellipsis when overflowing.</p>
-    <div
-      class="max-w-sm surface-subtle"
-      style="padding: var(--spacing-3); border-radius: var(--radius-md);"
-    >
+    <div class="max-w-sm surface-subtle story-demo-area-md">
       <p class="truncate">
         This is a very long piece of text that will be truncated with an
         ellipsis when it overflows its container because it has the .truncate
@@ -574,6 +557,7 @@ TextUtilities.storyName = "Text";
 // ─────────────────────────────────────────────────────────────
 
 export const Reference = () => html`
+  ${layoutSystemStyles}
   <div class="card">
     <h2>Complete Layout Reference</h2>
     <p class="text-muted">All layout utilities in PDS.</p>

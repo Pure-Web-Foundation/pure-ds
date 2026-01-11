@@ -4,6 +4,28 @@ import { highlight, getCurrentTheme, preloadShiki } from "../utils/shiki.js";
 // Pre-load Shiki
 preloadShiki();
 
+// Minimal story-specific styles - most layout handled by PDS classes
+const meshGradientsStoryStyles = html`
+  <style>
+    .story-mesh-demo {
+      border: 1px solid var(--color-border);
+
+      &.card { min-height: 12.5rem; }
+    }
+    .story-variable-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        padding: var(--spacing-2) 0;
+        border-bottom: 1px solid var(--color-border);
+        &:last-child { border-bottom: 0; }
+      }
+    }
+  </style>
+`;
+
 const featuredMeshCards = [
   {
     key: "mesh-01",
@@ -52,6 +74,7 @@ export default {
 };
 
 export const AllMeshGradients = () => html`
+  ${meshGradientsStoryStyles}
   <section class="stack gap-lg">
     <header>
       <h2>Mesh Gradient Backgrounds</h2>
@@ -63,42 +86,30 @@ export const AllMeshGradients = () => html`
       </small>
     </header>
     <div class="stack-lg">
-      <div
-        class="grid gap-lg"
-        style="grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr));"
-      >
+      <div class="grid grid-auto-md gap-lg">
         ${featuredMeshCards.map(
           ({ key, title, description }) => html`
             <div
-              class="relative p-6 flex items-center justify-center rounded-lg border border-border"
-              style="min-height: 12.5rem; background: var(--background-${key});"
+              class="card radius-lg flex items-center justify-center story-mesh-demo"
+              style="background: var(--background-${key});"
             >
-              <div
-                class="card surface-base p-4 rounded-md shadow-md text-center stack gap-2"
-              >
-                <h4 class="m-0">${title}</h4>
-                <p class="m-0 text-muted">${description}</p>
+              <div class="card surface-base shadow-md stack gap-xs text-center">
+                <h4>${title}</h4>
+                <p class="text-muted">${description}</p>
               </div>
             </div>
           `
         )}
       </div>
-      <div
-        class="grid gap-md"
-        style="grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));"
-      >
+      <div class="flex gap-md">
         ${meshTileBackgrounds.map(
           (meshKey) => html`
             <div
-              class="relative p-5 flex flex-col items-center justify-center text-center rounded-md border border-border"
-              style="min-height: 9.375rem; background: var(--background-${meshKey});"
+              class="card stack-sm text-center"
+              style="background: var(--background-${meshKey});"
             >
-              <pds-icon
-                icon="sparkle"
-                size="xl"
-                class="opacity-90 mb-2"
-              ></pds-icon>
-              <code class="text-xs">${meshKey}</code>
+              <pds-icon icon="sparkle" size="xl"></pds-icon>
+              <code>${meshKey}</code>
             </div>
           `
         )}
@@ -110,54 +121,55 @@ export const AllMeshGradients = () => html`
 AllMeshGradients.storyName = "All Mesh Gradients";
 
 export const MeshUsageExamples = () => html`
-  <section class="stack gap-lg p-4">
+  ${meshGradientsStoryStyles}
+  <section class="stack gap-lg">
     <h2>Usage Examples</h2>
 
     <h3>Hero Section</h3>
     <div
-      class="rounded-lg border border-border p-8 text-center"
+      class="card radius-lg text-center story-mesh-demo"
       style="background: var(--background-mesh-01);"
     >
       <h1>Welcome to Pure Design System</h1>
-      <p class="text-lg mt-3">
-        Beautiful backgrounds generated from your color palette
-      </p>
-      <div class="flex justify-center gap-3 mt-4">
+      <p>Beautiful backgrounds generated from your color palette</p>
+      <nav class="flex justify-center gap-sm">
         <button class="btn-primary btn-lg">Get Started</button>
         <button class="btn-secondary btn-lg">Learn More</button>
-      </div>
+      </nav>
     </div>
 
     <h3>Card with Mesh Background</h3>
     <div
-      class="rounded-lg border border-border p-6"
+      class="card radius-lg story-mesh-demo"
       style="background: var(--background-mesh-03);"
     >
-      <div class="card surface-elevated p-6 max-w-md">
+      <article class="card surface-elevated stack-sm max-w-md">
         <h4>Layered Design</h4>
         <p>
           Mesh gradients work beautifully as backgrounds with overlaid content
           using surface tokens.
         </p>
-        <button class="btn-primary mt-3">
-          <pds-icon icon="rocket"></pds-icon>
-          Take Action
-        </button>
-      </div>
+        <nav>
+          <a href="#" class="btn btn-primary">
+            <pds-icon icon="rocket"></pds-icon>
+            Take Action
+          </a>
+        </nav>
+      </article>
     </div>
 
     <h3>Grid Layout with Mesh</h3>
     <div
-      class="rounded-lg border border-border p-6"
+      class="card radius-lg story-mesh-demo"
       style="background: var(--background-mesh-05);"
     >
       <div class="grid grid-cols-3 gap-md">
         ${Array.from(
           { length: 3 },
           (_, index) => html`
-            <div class="card surface-base p-5 text-center">
+            <div class="card surface-translucent-75 stack-sm text-center">
               <pds-icon icon="star" size="xl" class="icon-accent"></pds-icon>
-              <h5 class="mt-2">Feature ${index + 1}</h5>
+              <h5>Feature ${index + 1}</h5>
               <p>
                 Mesh backgrounds create visual interest without overwhelming
                 content
@@ -174,7 +186,7 @@ MeshUsageExamples.storyName = "Usage Examples";
 
 export const CodeSamples = () => {
   const container = document.createElement("section");
-  container.className = "stack gap-lg p-4";
+  container.className = "stack gap-lg";
 
   const cssCode = `/* Use CSS custom properties */
 .hero-section {
@@ -194,20 +206,18 @@ export const CodeSamples = () => {
 }`;
 
   const variablesList = meshVariableList
-    .map(
-      (key) =>
-        `<li class="py-2 border-b border-b-border last:border-b-0"><code>--background-${key}</code></li>`
-    )
+    .map((key) => `<li><code>--background-${key}</code></li>`)
     .join("\n      ");
 
   container.innerHTML = /*html*/ `
+    ${meshGradientsStoryStyles.strings[0]}
     <h2>Code Samples</h2>
 
     <h3>Apply as Background</h3>
     <div class="code-css"></div>
 
     <h3>Available Variables</h3>
-    <ul class="list-none m-0 p-0">
+    <ul class="story-variable-list">
       ${variablesList}
     </ul>
   `;

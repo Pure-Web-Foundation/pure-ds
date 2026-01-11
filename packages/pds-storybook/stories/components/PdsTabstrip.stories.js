@@ -20,18 +20,18 @@ if (typeof window !== 'undefined') {
 const tabstripStoryStyles = html`
   <style>
     /* Progress bar visualization - demo-specific */
-    .tabstrip-bar-track {
+    .story-tabstrip-bar-track {
       height: 8px;
       background: var(--surface-elevated);
       border-radius: var(--radius-full);
       overflow: hidden;
     }
-    .tabstrip-bar-fill {
+    .story-tabstrip-bar-fill {
       height: 100%;
       border-radius: inherit;
     }
     /* Large stat values - demo-specific typography */
-    .tabstrip-stat-value {
+    .story-tabstrip-stat-value {
       font-size: var(--font-size-4xl);
       font-weight: var(--font-weight-bold);
     }
@@ -185,8 +185,8 @@ export const Default = () => html`
                     <span>${source.label}</span>
                     <strong>${source.value}</strong>
                   </div>
-                  <div class="tabstrip-bar-track">
-                    <div class="tabstrip-bar-fill" style="width: ${source.width}; background: ${source.colorVar}"></div>
+                  <div class="story-tabstrip-bar-track">
+                    <div class="story-tabstrip-bar-fill" style="width: ${source.width}; background: ${source.colorVar}"></div>
                   </div>
                 </div>
               `
@@ -216,7 +216,7 @@ export const Default = () => html`
           <h4>General Settings</h4>
           <div class="stack-sm">
             <label>
-              <span>Product Name</span>
+              <span data-label>Product Name</span>
               <input
                 type="text"
                 value="My Awesome Product"
@@ -225,7 +225,7 @@ export const Default = () => html`
             </label>
 
             <label>
-              <span>Product Category</span>
+              <span data-label>Product Category</span>
               <select>
                 ${tabstripCategories.map(
                   (category) => html`<option>${category}</option>`

@@ -2,74 +2,74 @@ import { html } from "lit";
 
 const interactiveSkeletonStoryStyles = html`
   <style>
-    .interactive-skeleton-card {
+    .story-interactive-skeleton-card {
       display: grid;
       gap: var(--spacing-3);
     }
 
-    .interactive-skeleton-block {
+    .story-interactive-skeleton-block {
       display: block;
     }
 
-    .interactive-skeleton-height-24 {
+    .story-interactive-skeleton-height-24 {
       height: 1.5rem;
     }
 
-    .interactive-skeleton-height-20 {
+    .story-interactive-skeleton-height-20 {
       height: 1.25rem;
     }
 
-    .interactive-skeleton-height-16 {
+    .story-interactive-skeleton-height-16 {
       height: 1rem;
     }
 
-    .interactive-skeleton-height-14 {
+    .story-interactive-skeleton-height-14 {
       height: 0.875rem;
     }
 
-    .interactive-skeleton-width-60 {
+    .story-interactive-skeleton-width-60 {
       width: 60%;
     }
 
-    .interactive-skeleton-width-80 {
+    .story-interactive-skeleton-width-80 {
       width: 80%;
     }
 
-    .interactive-skeleton-width-70 {
+    .story-interactive-skeleton-width-70 {
       width: 70%;
     }
 
-    .interactive-skeleton-width-50 {
+    .story-interactive-skeleton-width-50 {
       width: 50%;
     }
 
-    .interactive-skeleton-width-40 {
+    .story-interactive-skeleton-width-40 {
       width: 40%;
     }
 
-    .interactive-skeleton-width-85 {
+    .story-interactive-skeleton-width-85 {
       width: 85%;
     }
 
-    .interactive-skeleton-margin-lg {
+    .story-interactive-skeleton-margin-lg {
       margin-bottom: var(--spacing-3);
     }
 
-    .interactive-skeleton-margin-md {
+    .story-interactive-skeleton-margin-md {
       margin-bottom: var(--spacing-2);
     }
 
-    .interactive-skeleton-avatar {
+    .story-interactive-skeleton-avatar {
       width: 2.5rem;
       height: 2.5rem;
       border-radius: 50%;
     }
 
-    .interactive-skeleton-list-item {
+    .story-interactive-skeleton-list-item {
       padding: var(--spacing-3);
     }
 
-    .interactive-skeleton-details {
+    .story-interactive-skeleton-details {
       flex: 1;
     }
   </style>
@@ -128,12 +128,12 @@ export const FocusStates = () => html`
     <h3>Form Controls</h3>
     <div class="max-w-md">
       <label>
-        <span>Text Input</span>
+        <span data-label>Text Input</span>
         <input type="text" placeholder="Tab to focus" />
       </label>
 
       <label>
-        <span>Textarea</span>
+        <span data-label>Textarea</span>
         <textarea rows="3" placeholder="Tab to focus"></textarea>
       </label>
 
@@ -317,7 +317,7 @@ export const TransitionSpeeds = () => {
       <pre
         class="surface-subtle radius-md overflow-auto"
       ><code>/* Use transition tokens in your CSS */
-.button {
+.story-button {
   transition: background-color var(--transition-fast);
 }
 
@@ -327,7 +327,7 @@ export const TransitionSpeeds = () => {
     box-shadow var(--transition-normal);
 }
 
-.modal {
+.story-modal {
   transition: opacity var(--transition-slow);
 }</code></pre>
     </div>
@@ -437,7 +437,7 @@ export const WorkingStates = () => {
       <div class="stack-md">
         <header>
           <h3>Different Sizes</h3>
-          <small class="text-muted text-sm">Spinner size adapts to button size</small>
+          <small class="text-muted">Spinner size adapts to button size</small>
         </header>
         <div class="flex flex-wrap gap-sm align-center">
           <button
@@ -538,7 +538,7 @@ export const SkeletonLoading = () => html`
             class="flex gap-sm align-center border-bottom interactive-skeleton-list-item"
           >
             <div class="skeleton interactive-skeleton-avatar"></div>
-            <div class="interactive-skeleton-details">
+            <div class="story-interactive-skeleton-details">
               <div
                 class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-width-70 interactive-skeleton-margin-md"
               ></div>
@@ -622,19 +622,19 @@ export const DisabledStates = () => html`
     <h3>Form Controls</h3>
     <div class="max-w-md">
       <label>
-        <span>Disabled Input</span>
+        <span data-label>Disabled Input</span>
         <input type="text" disabled value="Cannot edit" />
       </label>
 
       <label>
-        <span>Disabled Select</span>
+        <span data-label>Disabled Select</span>
         <select disabled>
           <option>Cannot select</option>
         </select>
       </label>
 
       <label>
-        <span>Disabled Textarea</span>
+        <span data-label>Disabled Textarea</span>
         <textarea disabled rows="3">Cannot edit this text</textarea>
       </label>
 
@@ -676,7 +676,7 @@ export const CombinedStates = () => html`
     <div>
       <header>
         <h3>Hover State</h3>
-        <p class="text-muted text-sm">Hover over buttons to see effect</p>
+        <p class="text-muted"><small>Hover over buttons to see effect</small></p>
       </header>
       <div class="flex flex-wrap gap-sm">
         <button class="btn-primary">Primary</button>
@@ -688,7 +688,7 @@ export const CombinedStates = () => html`
     <div>
       <header>
         <h3>Active State</h3>
-        <p class="text-muted text-sm">Click and hold to see effect</p>
+        <p class="text-muted"><small>Click and hold to see effect</small></p>
       </header>
       <div class="flex flex-wrap gap-sm">
         <button class="btn-primary">Primary</button>
@@ -700,7 +700,7 @@ export const CombinedStates = () => html`
     <div>
       <header>
         <h3>Focus State</h3>
-        <p class="text-muted text-sm">Tab to focus on buttons</p>
+        <p class="text-muted"><small>Tab to focus on buttons</small></p>
       </header>
       <div class="flex flex-wrap gap-sm">
         <button class="btn-primary">Primary</button>

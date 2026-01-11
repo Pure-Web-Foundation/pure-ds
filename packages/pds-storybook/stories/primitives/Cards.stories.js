@@ -19,30 +19,41 @@ export default {
 const cardsStoryStyles = html`
   <style>
     /* Demo-specific gradient backgrounds */
-    .cards-gradient-one {
+    .story-cards-gradient-one {
       background: linear-gradient(135deg, var(--color-primary-500), var(--color-secondary-500));
     }
-    .cards-gradient-two {
+    .story-cards-gradient-two {
       background: linear-gradient(135deg, var(--color-secondary-500), var(--color-primary-500));
     }
-    .cards-gradient-three {
+    .story-cards-gradient-three {
       background: linear-gradient(135deg, var(--color-primary-500), var(--color-accent-500));
     }
     /* Demo placeholder dimensions */
-    .cards-placeholder {
+    .story-cards-placeholder {
       height: 100px;
       border-radius: var(--radius-sm);
     }
-    .cards-avatar-placeholder {
+    .story-cards-avatar-placeholder {
       width: 48px;
       height: 48px;
       border-radius: var(--radius-full);
     }
-    .cards-media-placeholder {
+    .story-cards-media-placeholder {
       flex-shrink: 0;
       width: 7.5rem;
       height: 7.5rem;
       border-radius: var(--radius-md);
+    }
+    /* Stats card */
+    .story-stat-number {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+    }
+    .story-stat-primary {
+      color: var(--color-primary-600);
+    }
+    .story-stat-secondary {
+      color: var(--color-secondary-600);
     }
   </style>
 `;
@@ -167,17 +178,17 @@ export const CardLayouts = () => html`
       <h3>Card Grid</h3>
       <div class="grid grid-auto-sm gap-sm">
         <article class="card stack-md">
-          <div class="cards-gradient-one cards-placeholder"></div>
+          <div class="story-cards-gradient-one cards-placeholder"></div>
           <h4>Card 1</h4>
           <small>Grid layout with cards.</small>
         </article>
         <article class="card stack-md">
-          <div class="cards-gradient-two cards-placeholder"></div>
+          <div class="story-cards-gradient-two cards-placeholder"></div>
           <h4>Card 2</h4>
           <small>Responsive and flexible.</small>
         </article>
         <article class="card stack-md">
-          <div class="cards-gradient-three cards-placeholder"></div>
+          <div class="story-cards-gradient-three cards-placeholder"></div>
           <h4>Card 3</h4>
           <small>Auto-fits to space.</small>
         </article>
@@ -232,11 +243,11 @@ export const ComplexCards = () => html`
         <h4>Stats Card</h4>
         <div class="grid grid-cols-2 gap-md">
           <div>
-            <div class="text-2xl font-bold text-primary">1.2K</div>
+            <div class="story-stat-number story-stat-primary">1.2K</div>
             <small class="text-muted">Followers</small>
           </div>
           <div>
-            <div class="text-2xl font-bold text-secondary">847</div>
+            <div class="story-stat-number story-stat-secondary">847</div>
             <small class="text-muted">Following</small>
           </div>
         </div>

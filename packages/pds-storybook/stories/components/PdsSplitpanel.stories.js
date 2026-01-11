@@ -16,23 +16,58 @@ if (typeof window !== 'undefined') {
     });
 }
 
-// Minimal styles for split panel demos
+// Story-specific styles for split panel demos
 const splitpanelStoryStyles = html`
   <style>
     pds-splitpanel.card {
       padding: 0;
     }
     [slot="left"], [slot="right"] { padding: var(--spacing-2); }
-    .splitpanel-console { 
+    .story-splitpanel-console { 
       background: #1e1e1e; 
       color: #d4d4d4;
-      & .cmd { color: #4ec9b0; }
-      & .meta { color: #6a9955; }
+      & .story-cmd { color: #4ec9b0; }
+      & .story-meta { color: #6a9955; }
     }
-    .splitpanel-stat { 
+    .story-splitpanel-stat { 
       font-size: 2.5rem; 
       font-weight: 700; 
       margin: var(--spacing-2) 0;
+    }
+    /* Violations fixed */
+    .story-label-uppercase {
+      font-size: var(--font-size-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .story-label-sm {
+      font-size: var(--font-size-sm);
+    }
+    .story-code-block {
+      padding: var(--spacing-3);
+      border-radius: var(--radius-md);
+      font-family: var(--font-family-mono);
+      font-size: 0.875rem;
+      overflow: auto;
+      background: var(--surface-bg-secondary);
+    }
+    .story-console {
+      padding: var(--spacing-3);
+      border-radius: var(--radius-md);
+      font-family: var(--font-family-mono);
+    }
+    .story-nav-btn {
+      justify-content: flex-start;
+    }
+    .story-activity-item {
+      padding: var(--spacing-2);
+      border-radius: var(--radius-sm);
+    }
+    .story-alert-list {
+      margin-top: var(--spacing-2);
+    }
+    .story-alert-margin {
+      margin-bottom: var(--spacing-4);
     }
   </style>
 `;
@@ -54,7 +89,7 @@ export const Default = () => html`
     <div slot="left" class="stack-md">
       <div class="stack-sm">
         <div>
-          <p class="text-muted text-xs" style="text-transform: uppercase; letter-spacing: 0.08em;">Leadership Sync</p>
+          <p class="text-muted story-label-uppercase">Leadership Sync</p>
           <h3>Q4 Roadmap Planning</h3>
           <p class="text-muted">Monday, 2:00 PM • Conference Room Aurora</p>
         </div>
@@ -137,7 +172,7 @@ export const CodeEditorLayout = () => html`
     <div slot="left" class="stack-md">
       <h3>Code Editor</h3>
 
-      <pre style="padding: var(--spacing-3); border-radius: var(--radius-md); font-family: var(--font-family-mono); font-size: 0.875rem; overflow: auto; background: var(--surface-bg-secondary);"><code>function greet(name) {
+      <pre class="story-code-block"><code>function greet(name) {
   console.log('Hello, ' + name + '!');
 }
 
@@ -158,10 +193,10 @@ greet('World');</code></pre>
     <div slot="right" class="stack-md">
       <h3>Output Console</h3>
 
-      <div class="splitpanel-console stack-xs" style="padding: var(--spacing-3); border-radius: var(--radius-md); font-family: var(--font-family-mono);">
-        <div class="cmd">$ node script.js</div>
+      <div class="story-splitpanel-console stack-xs story-console">
+        <div class="story-cmd">$ node script.js</div>
         <div>Hello, World!</div>
-        <div class="meta">// Execution completed in 0.23s</div>
+        <div class="story-meta">// Execution completed in 0.23s</div>
       </div>
     </div>
   </pds-splitpanel>
@@ -176,19 +211,19 @@ export const DashboardLayout = () => html`
       <h3>Navigation</h3>
 
       <nav class="stack-sm">
-        <button class="btn-outline" style="justify-content: flex-start;">
+        <button class="btn-outline story-nav-btn">
           <pds-icon icon="house"></pds-icon>
           Dashboard
         </button>
-        <button class="btn-outline" style="justify-content: flex-start;">
+        <button class="btn-outline story-nav-btn">
           <pds-icon icon="bar-chart"></pds-icon>
           Analytics
         </button>
-        <button class="btn-outline" style="justify-content: flex-start;">
+        <button class="btn-outline story-nav-btn">
           <pds-icon icon="users"></pds-icon>
           Users
         </button>
-        <button class="btn-outline" style="justify-content: flex-start;">
+        <button class="btn-outline story-nav-btn">
           <pds-icon icon="gear"></pds-icon>
           Settings
         </button>
@@ -201,20 +236,20 @@ export const DashboardLayout = () => html`
       <div class="grid grid-auto-sm gap-md">
         <div>
           <h4>Total Users</h4>
-          <div class="splitpanel-stat text-primary">1,284</div>
-          <p class="text-muted text-sm">↑ 12% from last month</p>
+          <div class="story-splitpanel-stat text-primary">1,284</div>
+          <p class="text-muted story-label-sm">↑ 12% from last month</p>
         </div>
 
         <div>
           <h4>Revenue</h4>
-          <div class="splitpanel-stat text-secondary">$42.5K</div>
-          <p class="text-muted text-sm">↑ 8% from last month</p>
+          <div class="story-splitpanel-stat text-secondary">$42.5K</div>
+          <p class="text-muted story-label-sm">↑ 8% from last month</p>
         </div>
 
         <div>
           <h4>Active Now</h4>
-          <div class="splitpanel-stat text-accent">127</div>
-          <p class="text-muted text-sm">Current active users</p>
+          <div class="story-splitpanel-stat text-accent">127</div>
+          <p class="text-muted story-label-sm">Current active users</p>
         </div>
       </div>
 
@@ -222,13 +257,13 @@ export const DashboardLayout = () => html`
         <h3>Recent Activity</h3>
         <div class="stack-sm">
           ${Array.from({ length: 5 }, (_, i) => html`
-            <div class="flex items-center gap-md" style="padding: var(--spacing-2); border-radius: var(--radius-sm);">
+            <div class="flex items-center gap-md story-activity-item">
               <pds-icon icon="user"></pds-icon>
               <div class="grow stack-xs">
                 <strong>User ${i + 1}</strong>
-                <span class="text-muted text-sm">Completed an action</span>
+                <span class="text-muted story-label-sm">Completed an action</span>
               </div>
-              <span class="text-muted text-sm">${i + 1}h ago</span>
+              <span class="text-muted story-label-sm">${i + 1}h ago</span>
             </div>
           `)}
         </div>
@@ -249,7 +284,7 @@ export const StyledToggle = () => html`
     }
   </style>
 
-  <div class="alert alert-info" style="margin-bottom: var(--spacing-4);">
+  <div class="alert alert-info story-alert-margin">
     <div class="alert-icon">
       <pds-icon icon="info" class="icon-info" size="lg"></pds-icon>
     </div>
@@ -263,15 +298,15 @@ export const StyledToggle = () => html`
     <div slot="left" class="stack-md">
       <h3>Mobile Menu</h3>
       <nav class="stack-sm">
-        <button class="btn-outline" style="justify-content: flex-start;">
+        <button class="btn-outline story-nav-btn">
           <pds-icon icon="house"></pds-icon>
           Home
         </button>
-        <button class="btn-outline" style="justify-content: flex-start;">
+        <button class="btn-outline story-nav-btn">
           <pds-icon icon="user"></pds-icon>
           Profile
         </button>
-        <button class="btn-outline" style="justify-content: flex-start;">
+        <button class="btn-outline story-nav-btn">
           <pds-icon icon="gear"></pds-icon>
           Settings
         </button>
@@ -329,7 +364,7 @@ export const StyledSplitter = () => html`
       <div>
         <div class="alert-title">Styling the Splitter with ::part()</div>
         <p>The splitter bar can be fully customized using the <code>::part(splitter)</code> CSS selector. This allows you to style:</p>
-        <ul class="stack-xs" style="margin-top: var(--spacing-2);">
+        <ul class="stack-xs story-alert-list">
           <li><code>background-color</code> or <code>background</code> (for gradients)</li>
           <li><code>width</code> (horizontal) or <code>height</code> (vertical)</li>
           <li><code>:hover</code> state styling</li>

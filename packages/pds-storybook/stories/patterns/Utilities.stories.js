@@ -1,5 +1,16 @@
 import { html } from "lit";
 
+// Story-specific styles (not PDS classes - demo only)
+const utilitiesStoryStyles = html`
+  <style>
+    /* Radius demo */
+    .story-radius-sm { border-radius: var(--radius-sm); }
+    .story-radius-md { border-radius: var(--radius-md); }
+    .story-radius-lg { border-radius: var(--radius-lg); }
+    .story-radius-full { border-radius: var(--radius-full); }
+  </style>
+`;
+
 export default {
   title: "Patterns/Utilities",
   tags: ["utilities", "spacing", "layout", "gap"],
@@ -16,7 +27,7 @@ export default {
 };
 
 export const SpacingUtilities = () => html`
-  <div class="flex flex-col gap-md">
+  <div class="stack-md">
     <div class="gap-xs flex">
       <div class="badge">Gap 1</div>
       <div class="badge">Between</div>
@@ -64,10 +75,11 @@ export const BorderUtilities = () => html`
 `;
 
 export const RoundedUtilities = () => html`
+  ${utilitiesStoryStyles}
   <div class="flex gap-md flex-wrap">
-    <div class="card surface-inverse" style="border-radius: var(--radius-sm);">--radius-sm</div>
-    <div class="card surface-inverse" style="border-radius: var(--radius-md);">--radius-md</div>
-    <div class="card surface-inverse" style="border-radius: var(--radius-lg);">--radius-lg</div>
-    <div class="card surface-inverse" style="border-radius: var(--radius-full);">--radius-full</div>
+    <div class="card surface-inverse story-radius-sm">--radius-sm</div>
+    <div class="card surface-inverse story-radius-md">--radius-md</div>
+    <div class="card surface-inverse story-radius-lg">--radius-lg</div>
+    <div class="card surface-inverse story-radius-full">--radius-full</div>
   </div>
 `;

@@ -23,18 +23,18 @@ export const BasicRequired = () => html`
     }}"
   >
     <label>
-      <span>Full Name</span>
+      <span data-label>Full Name</span>
       <input type="text" required placeholder="John Doe">
     </label>
     <label>
-      <span>Email</span>
+      <span data-label>Email</span>
       <div class="input-icon">
         <pds-icon icon="envelope"></pds-icon>
         <input type="email" required placeholder="john@example.com">
       </div>
     </label>
     <label>
-      <span>Phone (optional)</span>
+      <span data-label>Phone (optional)</span>
       <div class="input-icon">
         <pds-icon icon="phone"></pds-icon>
         <input type="tel" placeholder="+1 (555) 123-4567">
@@ -55,21 +55,21 @@ export const MixedRequired = () => html`
     <fieldset>
       <legend>Account Information</legend>
       <label>
-        <span>Username</span>
+        <span data-label>Username</span>
         <div class="input-icon">
           <pds-icon icon="user"></pds-icon>
           <input type="text" required placeholder="username">
         </div>
       </label>
       <label>
-        <span>Password</span>
+        <span data-label>Password</span>
         <div class="input-icon">
           <pds-icon icon="lock"></pds-icon>
           <input type="password" required placeholder="••••••••">
         </div>
       </label>
       <label>
-        <span>Confirm Password</span>
+        <span data-label>Confirm Password</span>
         <div class="input-icon">
           <pds-icon icon="lock"></pds-icon>
           <input type="password" required placeholder="••••••••">
@@ -80,11 +80,11 @@ export const MixedRequired = () => html`
     <fieldset>
       <legend>Optional Details</legend>
       <label>
-        <span>Company</span>
+        <span data-label>Company</span>
         <input type="text" placeholder="Acme Corp">
       </label>
       <label>
-        <span>Website</span>
+        <span data-label>Website</span>
         <div class="input-icon">
           <pds-icon icon="globe"></pds-icon>
           <input type="url" placeholder="https://example.com">

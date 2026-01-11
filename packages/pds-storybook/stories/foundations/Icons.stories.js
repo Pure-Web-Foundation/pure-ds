@@ -6,9 +6,10 @@ import { attachStoryLinkHandlers } from '../utils/navigation.js';
 // Pre-load Shiki
 preloadShiki();
 
-// Minimal styles for AllIcons interactive grid only
-const iconGridStyles = html`
+// Story-specific styles (not PDS classes - demo only)
+const iconStoryStyles = html`
   <style>
+    /* Icon grid for AllIcons */
     .icon-item {
       display: flex;
       flex-direction: column;
@@ -30,8 +31,26 @@ const iconGridStyles = html`
       50% { transform: scale(0.98); }
       100% { transform: scale(1); }
     }
+    /* Layout & sections */
+    .story-section { padding: var(--spacing-4); }
+    .story-intro { font-size: var(--font-size-lg); }
+    .story-desc { font-size: var(--font-size-sm); }
+    /* Navigation grid */
+    .story-nav-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--spacing-4); }
+    /* Icon preview cards */
+    .story-icon-card { min-width: 80px; }
+    .story-icon-demo { max-width: 400px; text-align: center; margin: 0 auto; }
+    /* Category header */
+    .story-cat-header { margin-top: var(--spacing-4); }
+    /* Icon name display */
+    .story-icon-name { font-size: var(--font-size-xs); word-break: break-all; text-align: center; }
+    /* Status display */
+    .story-cache-status { max-height: 200px; overflow: auto; }
   </style>
 `;
+
+// Alias for backwards compatibility
+const iconGridStyles = iconStoryStyles;
 
 export default {
   title: 'Foundations/Icons',
@@ -54,13 +73,12 @@ export default {
 
 export const Overview = () => {
   const container = document.createElement('article');
-  container.className = 'stack gap-lg';
-  container.style.padding = 'var(--spacing-4)';
+  container.className = 'stack gap-lg story-section';
   
   container.innerHTML = /*html*/`
     <header>
       <h2>PDS Icon System</h2>
-      <p class="text-lg">PDS ships a simple, sprite-based icon solution and a lightweight <code>&lt;pds-icon&gt;</code> web component.</p>
+      <p class="story-intro">PDS ships a simple, sprite-based icon solution and a lightweight <code>&lt;pds-icon&gt;</code> web component.</p>
     </header>
 
     <section class="card">
@@ -185,7 +203,7 @@ export const Overview = () => {
       <h3>Customizing Icons</h3>
       <p>Extend or override the default icon categories in your <code>pds.config.js</code>:</p>
       <div class="code-customize"></div>
-      <p class="text-muted text-sm" style="margin-top: var(--spacing-2);">
+      <p class="text-muted story-desc">
         The <code>include</code> object defines which icons are bundled into the sprite. Categories are: 
         <code>navigation</code>, <code>actions</code>, <code>communication</code>, <code>content</code>, 
         <code>status</code>, <code>time</code>, <code>commerce</code>, <code>formatting</code>, <code>system</code>.
@@ -198,12 +216,12 @@ export const Overview = () => {
       <h4><code>pds:build-icons</code></h4>
       <p>Regenerate the sprite after changing your icon selection:</p>
       <div class="code-build-icons"></div>
-      <p class="text-muted text-sm">Reads <code>design.icons.include</code> from config and generates the sprite at <code>spritePath</code>.</p>
+      <p class="text-muted story-desc">Reads <code>design.icons.include</code> from config and generates the sprite at <code>spritePath</code>.</p>
       
       <h4><code>pds:export</code></h4>
       <p>Export PDS assets (including icons) to your project's static folder:</p>
       <div class="code-export"></div>
-      <p class="text-muted text-sm">Copies the sprite to <code>[config.static.root]/icons/pds-icons.svg</code> for production use.</p>
+      <p class="text-muted story-desc">Copies the sprite to <code>[config.static.root]/icons/pds-icons.svg</code> for production use.</p>
     </section>
 
     <section class="card">
@@ -252,26 +270,26 @@ export const Overview = () => {
 
     <section>
       <h3>Explore</h3>
-      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-md);">
+      <div class="grid grid-auto-sm gap-md">
         <a data-story-link="foundations-icons--common-icons" class="card card-interactive">
           <h4>Common Icons</h4>
-          <p class="text-muted text-sm">Most frequently used icons</p>
+          <p class="text-muted story-desc">Most frequently used icons</p>
         </a>
         <a data-story-link="foundations-icons--icon-sizes" class="card card-interactive">
           <h4>Icon Sizes</h4>
-          <p class="text-muted text-sm">Size scale from xs to 2xl</p>
+          <p class="text-muted story-desc">Size scale from xs to 2xl</p>
         </a>
         <a data-story-link="foundations-icons--colored-icons" class="card card-interactive">
           <h4>Colored Icons</h4>
-          <p class="text-muted text-sm">Color customization options</p>
+          <p class="text-muted story-desc">Color customization options</p>
         </a>
         <a data-story-link="foundations-icons--all-icons" class="card card-interactive">
           <h4>All Icons</h4>
-          <p class="text-muted text-sm">Browse full icon library</p>
+          <p class="text-muted story-desc">Browse full icon library</p>
         </a>
         <a data-story-link="foundations-icons--external-icons" class="card card-interactive">
           <h4>External Icons</h4>
-          <p class="text-muted text-sm">On-demand loading demo</p>
+          <p class="text-muted story-desc">On-demand loading demo</p>
         </a>
       </div>
     </section>
@@ -372,7 +390,7 @@ Overview.storyName = 'Overview';
 // ============================================================================
 
 export const CommonIcons = () => html`
-  <section class="stack-lg" style="padding: var(--spacing-4);">
+  <section class="stack-lg story-section">
     <header>
       <h3>Common Icons</h3>
       <small class="text-muted">Frequently used icons for everyday UI needs</small>
@@ -395,7 +413,7 @@ export const CommonIcons = () => html`
 CommonIcons.storyName = 'Common Icons';
 
 export const IconSizes = () => html`
-  <section class="stack-lg" style="padding: var(--spacing-4);">
+  <section class="stack-lg story-section">
     <header>
       <h3>Icon Sizes</h3>
       <small class="text-muted">Built-in sizing scale keeps visual hierarchy consistent across the UI.</small>
@@ -432,7 +450,7 @@ export const IconSizes = () => html`
 IconSizes.storyName = 'Icon Sizes';
 
 export const ColoredIcons = () => html`
-  <section class="stack-lg" style="padding: var(--spacing-4);">
+  <section class="stack-lg story-section">
     <header>
       <h3>Colored Icons</h3>
       <small class="text-muted">Icons inherit <code>currentColor</code> by default, or can be explicitly colored using the <code>color</code> attribute.</small>
@@ -451,7 +469,7 @@ export const ColoredIcons = () => html`
 
     <article class="card stack-md">
       <h4>Using Design Tokens</h4>
-      <p class="text-muted text-sm">Recommended approach for consistent theming.</p>
+      <p class="text-muted story-desc">Recommended approach for consistent theming.</p>
       <div class="flex gap-md flex-wrap items-center">
         <pds-icon icon="heart" size="lg" color="var(--color-primary-500)"></pds-icon>
         <pds-icon icon="star" size="lg" color="var(--color-accent-500)"></pds-icon>
@@ -463,7 +481,7 @@ export const ColoredIcons = () => html`
 
     <article class="card stack-md">
       <h4>Inheriting from Parent</h4>
-      <p class="text-muted text-sm">Icons use <code>currentColor</code> by default, inheriting text color.</p>
+      <p class="text-muted story-desc">Icons use <code>currentColor</code> by default, inheriting text color.</p>
       <div class="flex gap-md flex-wrap items-center">
         <span class="flex gap-sm items-center text-primary">
           <pds-icon icon="envelope" size="lg"></pds-icon>
@@ -503,7 +521,7 @@ export const AllIcons = () => {
 
   return html`
     ${iconGridStyles}
-    <section class="stack-lg" style="padding: var(--spacing-4);">
+    <section class="stack-lg story-section">
       <header>
         <h2>All Available Icons</h2>
         <small class="text-muted">Complete icon set from Phosphor Icons, organized by category. Click any icon name to copy it to clipboard.</small>
@@ -514,7 +532,7 @@ export const AllIcons = () => {
         <input
           type="search"
           placeholder="Type to filter..."
-          style="max-width: 400px; text-align: center; margin: 0 auto;"
+          class="story-icon-demo"
           @input="${(event) => {
             const searchTerm = event.target.value.toLowerCase();
             const storyRoot = event.target.closest('section');
@@ -543,9 +561,9 @@ export const AllIcons = () => {
       ${Object.entries(iconConfig).map(
         ([category, icons]) => html`
           <article class="card stack-lg icon-category">
-            <h3 class="flex items-baseline gap-sm flex-wrap" style="text-transform: capitalize;">
+            <h3 class="flex items-baseline gap-sm flex-wrap story-cat-header">
               ${category.replace(/([A-Z])/g, ' $1').trim()}
-              <span class="text-muted text-sm">(${icons.length} icons)</span>
+              <span class="text-muted story-desc">(${icons.length} icons)</span>
             </h3>
 
             <div class="grid grid-auto-sm gap-md">
@@ -564,7 +582,7 @@ export const AllIcons = () => {
                     }}"
                   >
                     <pds-icon icon="${icon}" size="lg"></pds-icon>
-                    <small class="text-muted text-center" style="word-break: break-word;">${icon}</small>
+                    <small class="text-muted story-icon-name">${icon}</small>
                   </div>
                 `
               )}
@@ -592,7 +610,7 @@ AllIcons.storyName = 'All Icons';
  * fetch individual SVG files from a configurable external path.
  */
 export const ExternalIcons = () => html`
-  <section class="stack-lg" style="padding: var(--spacing-4);">
+  <section class="stack-lg story-section">
     <header>
       <h2>External Icons (On-Demand Loading)</h2>
       <p class="text-muted">
@@ -663,23 +681,23 @@ export const ExternalIcons = () => html`
       <h3>Color Inheritance</h3>
       <p class="text-muted">External icons support color customization just like sprite icons.</p>
       <div class="flex gap-lg flex-wrap items-center">
-        <div class="card surface-elevated stack-sm text-center items-center" style="min-width: 100px;">
+        <div class="card surface-elevated stack-sm text-center items-center story-icon-card">
           <pds-icon icon="solid-anatomy-brain-1" size="xl" color="var(--color-primary-500)"></pds-icon>
           <small class="text-muted">Primary</small>
         </div>
-        <div class="card surface-elevated stack-sm text-center items-center" style="min-width: 100px;">
+        <div class="card surface-elevated stack-sm text-center items-center story-icon-card">
           <pds-icon icon="solid-anatomy-hand-bones" size="xl" color="var(--color-accent-500)"></pds-icon>
           <small class="text-muted">Accent</small>
         </div>
-        <div class="card surface-elevated stack-sm text-center items-center" style="min-width: 100px;">
+        <div class="card surface-elevated stack-sm text-center items-center story-icon-card">
           <pds-icon icon="solid-conditions-lung-condition-2" size="xl" color="var(--color-success-500)"></pds-icon>
           <small class="text-muted">Success</small>
         </div>
-        <div class="card surface-elevated stack-sm text-center items-center" style="min-width: 100px;">
+        <div class="card surface-elevated stack-sm text-center items-center story-icon-card">
           <pds-icon icon="solid-anatomy-brain-1" size="xl" color="var(--color-warning-500)"></pds-icon>
           <small class="text-muted">Warning</small>
         </div>
-        <div class="card surface-elevated stack-sm text-center items-center" style="min-width: 100px;">
+        <div class="card surface-elevated stack-sm text-center items-center story-icon-card">
           <pds-icon icon="solid-anatomy-hand-bones" size="xl" color="var(--color-error-500)"></pds-icon>
           <small class="text-muted">Error</small>
         </div>
@@ -693,7 +711,7 @@ export const ExternalIcons = () => html`
         a fallback "missing" icon is shown.
       </p>
       <div class="flex gap-lg">
-        <div class="card surface-elevated stack-sm text-center items-center" style="min-width: 100px;">
+        <div class="card surface-elevated stack-sm text-center items-center story-icon-card">
           <pds-icon icon="this-icon-does-not-exist" size="xl"></pds-icon>
           <small class="text-muted">Missing icon</small>
         </div>
@@ -704,7 +722,7 @@ export const ExternalIcons = () => html`
       <h3>Cache Inspector</h3>
       <p class="text-muted">Click the button to inspect the current external icon cache state.</p>
       <button class="btn-secondary" id="check-cache-btn">Check External Icon Cache</button>
-      <pre id="cache-status" style="max-height: 200px; overflow: auto;">Click the button to see cache contents...</pre>
+      <pre id="cache-status" class="story-cache-status">Click the button to see cache contents...</pre>
     </article>
 
     <article class="card surface-elevated stack-md">

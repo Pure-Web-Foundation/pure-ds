@@ -1,10 +1,13 @@
 import { html } from "lit";
 import { enhancementHeader } from './_enhancement-header.js';
 
-// Demo-specific styles (legitimate custom CSS for visual demos)
-const dropdownGlassDemoStyles = html`
+// Story-specific styles for dropdown demos
+const dropdownStoryStyles = html`
   <style>
-    .dropdown-story-glass-demo {
+    .story-dropdown-container {
+      height: 260px;
+    }
+    .story-glass-demo {
       position: relative;
       display: flex;
       justify-content: center;
@@ -13,9 +16,11 @@ const dropdownGlassDemoStyles = html`
       padding: var(--spacing-8);
       border-radius: var(--radius-xl);
       overflow: hidden;
-      background-image: var(--dropdown-demo-image);
       background-size: cover;
       background-position: center;
+    }
+    .story-glass-demo-travel {
+      background-image: url('https://images.unsplash.com/photo-1517832207067-4db24a2ae47c?auto=format&fit=crop&w=1200&q=80');
     }
   </style>
 `;
@@ -95,11 +100,12 @@ export const WithIcons = () => html`
 `;
 
 export const DropUp = () => html`
+  ${dropdownStoryStyles}
   ${enhancementHeader('dropdown', {
     selector: '[data-mode="up"]',
     description: ' Adds `data-mode="up"` to make the dropdown menu open upwards instead of downwards.'
   })}
-  <div class="flex justify-center items-end card" style="height: 260px;">
+  <div class="flex justify-center items-end card story-dropdown-container">
     <nav data-dropdown data-mode="up">
       <button class="btn-primary">Resources</button>
       <menu>
@@ -112,12 +118,9 @@ export const DropUp = () => html`
 `;
 
 export const BackgroundImageLiquidGlass = () => html`
-  ${dropdownGlassDemoStyles}
+  ${dropdownStoryStyles}
   ${enhancementHeader('dropdown')}
-  <section
-    class="dropdown-story-glass-demo"
-    style="--dropdown-demo-image: url('https://images.unsplash.com/photo-1517832207067-4db24a2ae47c?auto=format&fit=crop&w=1200&q=80');"
-  >
+  <section class="story-glass-demo story-glass-demo-travel">
     <div class="stack-md gap-md text-center max-w-sm">
       <div class="card liquid-glass stack-md">
         <h3>Plan Your Escape</h3>

@@ -52,7 +52,7 @@ export const Overview = {
       </article>
 
       <article class="card">
-        <h2>Why <code>:where()</code>?</h2>
+        <h2>Why :where()?</h2>
         <p>
           All semantic element styles use the <code>:where()</code> pseudo-class, which has 
           <strong>zero specificity</strong>. This means:
@@ -246,11 +246,11 @@ export const TextElements = {
 
       <article class="card">
         <h3><code>&lt;blockquote&gt;</code></h3>
-        <p>Styled with a left border, subtle background, and optional citation.</p>
+        <p>Styled with a left border, elevated surface, and optional citation that matches the border color.</p>
         
         <blockquote>
-          <p>The browser is the framework. Every line of JavaScript you write is technical debt against the platform itself.</p>
-          <cite>Pure Web Manifesto</cite>
+          <p>The most important investment you can make is not in stocks, bonds, or real estate. The most important investment is in yourself—your skills, your knowledge, and your ability to adapt to changing market conditions. This has never been more relevant than in today's rapidly evolving financial landscape.</p>
+          <cite>Warren Buffett, CEO, Berkshire Hathaway</cite>
         </blockquote>
         
         <div class="code-blockquote"></div>

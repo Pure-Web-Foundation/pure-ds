@@ -177,26 +177,26 @@ const getFallbackTextColor = (color, shade) =>
 
 const colorScaleStoryStyles = html`
   <style>
-    .color-scale-story-container {
+    .story-color-scale-story-container {
       padding: var(--spacing-8);
     }
-    .color-scale-container {
+    .story-color-scale-container {
       margin-bottom: var(--spacing-8);
     }
-    .color-scale-row {
+    .story-color-scale-row {
       display: flex;
       align-items: center;
       gap: var(--spacing-4);
     }
-    .color-scale-label {
+    .story-color-scale-label {
       width: 7.5rem;
       font-weight: 600;
     }
-    .color-scale-swatches {
+    .story-color-scale-swatches {
       display: flex;
       flex: 1;
     }
-    .color-scale-swatch {
+    .story-color-scale-swatch {
       flex: 1;
       min-height: 3.75rem;
       padding: var(--spacing-4);
@@ -206,7 +206,7 @@ const colorScaleStoryStyles = html`
       position: relative;
       z-index: 1;
     }
-    .color-scale-swatch--hover {
+    .story-color-scale-swatch--hover {
       transform: translateY(-0.25rem);
       z-index: 10;
       box-shadow: var(--shadow-md);
@@ -217,7 +217,7 @@ const colorScaleStoryStyles = html`
           .map((shade) => {
             const textColor = getFallbackTextColor(color, shade);
             return `
-              .color-scale-swatch[data-color="${color}"][data-shade="${shade}"] {
+              .story-color-scale-swatch[data-color="${color}"][data-shade="${shade}"] {
                 background: var(--color-${color}-${shade});
                 color: ${textColor};
               }
@@ -238,14 +238,14 @@ const handleSwatchHoverLeave = (event) => {
 };
 
 const renderColorScale = (colorName) => html`
-  <div class="color-scale-container">
-    <div class="color-scale-row">
-      <div class="color-scale-label">${colorName}</div>
-      <div class="color-scale-swatches">
+  <div class="story-color-scale-container">
+    <div class="story-color-scale-row">
+      <div class="story-color-scale-label">${colorName}</div>
+      <div class="story-color-scale-swatches">
         ${colorShades.map(
           (shade) => html`
             <div
-              class="color-scale-swatch"
+              class="story-color-scale-swatch"
               data-color=${colorName}
               data-shade=${shade}
               style=${`color: ${chooseReadableTextColor(colorName, shade, getFallbackTextColor(colorName, shade))}`}

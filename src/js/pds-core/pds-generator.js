@@ -1591,12 +1591,13 @@ html[data-theme="dark"] .liquid-glass {
 
 :where(blockquote) {
   margin: 0 0 var(--spacing-4) 0;
-  padding: var(--spacing-4) var(--spacing-6);
+  padding: var(--spacing-6) var(--spacing-8);
   border-left: 4px solid var(--color-primary-500);
-  background-color: var(--color-surface-subtle);
-  border-radius: var(--radius-md);
-  font-style: italic;
-  color: var(--color-text-secondary);
+  background-color: var(--color-surface-elevated);
+  border-radius: var(--radius-none);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-primary);
   
   :where(p):last-child {
     margin-bottom: 0;
@@ -1604,14 +1605,10 @@ html[data-theme="dark"] .liquid-glass {
   
   :where(cite) {
     display: block;
-    margin-top: var(--spacing-2);
-    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-4);
+    font-size: var(--font-size-base);
     font-style: normal;
-    color: var(--color-text-tertiary);
-    
-    &::before {
-      content: "— ";
-    }
+    color: var(--color-primary-500);
   }
 }
 

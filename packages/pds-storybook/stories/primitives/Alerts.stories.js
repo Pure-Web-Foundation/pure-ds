@@ -21,7 +21,7 @@ export const Default = () => html`
     <p class="text-muted">Simple alert messages with semantic color variants.</p>
   </header>
   
-  <div class="flex flex-col gap-md">
+  <div class="stack-md">
     <div class="alert alert-info">This is an info alert — check it out!</div>
     <div class="alert alert-success">This is a success alert — great job!</div>
     <div class="alert alert-warning">This is a warning alert — be careful!</div>
@@ -37,7 +37,7 @@ export const AlertsWithIcons = () => html`
     <p class="text-muted">Use <code>.alert-icon</code> to add visual context with icons.</p>
   </header>
   
-  <div class="flex flex-col gap-md">
+  <div class="stack-md">
     <div class="alert alert-info">
       <span class="alert-icon">
         <pds-icon icon="info" size="md"></pds-icon>
@@ -84,7 +84,7 @@ export const AlertsWithTitles = () => html`
     <p class="text-muted">Use <code>.alert-title</code> for prominent headings within alerts.</p>
   </header>
   
-  <div class="flex flex-col gap-md">
+  <div class="stack-md">
     <div class="alert alert-info">
       <span class="alert-icon">
         <pds-icon icon="info" size="md"></pds-icon>
@@ -138,7 +138,7 @@ export const DismissibleAlerts = () => html`
     </p>
   </header>
   
-  <div class="flex flex-col gap-md">
+  <div class="stack-md">
     <div class="alert alert-info alert-dismissible">
       <span class="alert-icon">
         <pds-icon icon="info" size="md"></pds-icon>
@@ -179,7 +179,7 @@ export const SemanticMessages = () => html`
     </p>
   </header>
   
-  <div class="flex flex-col gap-md">
+  <div class="stack-md">
     <div class="semantic-message info">
       <strong>Tip:</strong>
       <p>Use semantic messages for inline feedback within forms or content areas.</p>
@@ -205,7 +205,7 @@ export const SemanticMessages = () => html`
     <h3>In a Form Context</h3>
     <form class="max-w-md stack-sm">
       <label>
-        <span>Email Address</span>
+        <span data-label>Email Address</span>
         <input type="email" value="invalid-email" />
       </label>
       <div class="semantic-message danger">

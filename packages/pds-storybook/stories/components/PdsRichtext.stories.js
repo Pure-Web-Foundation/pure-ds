@@ -18,20 +18,7 @@ if (typeof window !== 'undefined') {
 
 // Minimal story-specific styles - only for demo-specific visuals not covered by PDS
 const richtextStoryStyles = html`
-  <style>
-    /* Avatar circle - demo-specific */
-    .richtext-avatar {
-      width: 3rem;
-      height: 3rem;
-      background: var(--color-primary);
-      border-radius: var(--radius-full);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--color-primary-contrast, #fff);
-      flex-shrink: 0;
-    }
-  </style>
+ 
 `;
 
 const bindToastForms = (selector) => {
@@ -125,7 +112,7 @@ export const InForm = () => {
     ${richtextStoryStyles}
     <form class="richtext-form max-w-md stack-md">
       <label>
-        <span>Blog Post Content</span>
+        <span data-label>Blog Post Content</span>
         <pds-richtext 
           name="blog-content"
           value="<h3>My Blog Post</h3><p>Write your content here...</p>"
@@ -214,7 +201,7 @@ export const CommentEditor = () => {
     <div class="max-w-md stack-md">
       <article class="card surface-elevated">
         <div class="flex gap-sm">
-          <div class="richtext-avatar">
+          <div class="story-richtext-avatar">
             <pds-icon icon="user"></pds-icon>
           </div>
           <div class="grow stack-sm">
@@ -259,7 +246,7 @@ export const MarkdownForm = () => {
     ${richtextStoryStyles}
     <form class="richtext-markdown-form max-w-md stack-md">
       <label>
-        <span>Release Notes (Markdown)</span>
+        <span data-label>Release Notes (Markdown)</span>
         <pds-richtext
           name="release-notes"
           format="markdown"

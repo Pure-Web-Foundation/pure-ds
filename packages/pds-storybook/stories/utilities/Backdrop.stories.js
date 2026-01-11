@@ -1,5 +1,44 @@
 import { html } from 'lit';
 
+// Story-specific styles for backdrop demos
+const backdropStoryStyles = html`
+  <style>
+    .story-demo-container {
+      position: relative;
+      height: 200px;
+      margin-top: var(--spacing-4);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .story-demo-container-sm {
+      position: relative;
+      height: 150px;
+      margin-top: var(--spacing-3);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .story-demo-bg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .story-backdrop-positioned {
+      position: absolute;
+    }
+    .story-content-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+    .story-text-center {
+      text-align: center;
+    }
+  </style>
+`;
+
 export default {
   title: 'Utilities/Backdrop',
   tags: ['layout', 'backdrop', 'modal', 'overlay', 'utilities'],
@@ -16,6 +55,7 @@ export default {
 };
 
 export const BackdropVariants = () => html`
+  ${backdropStoryStyles}
   <header class="card">
     <h2>Backdrop Utilities</h2>
     <p class="text-muted">
@@ -29,11 +69,11 @@ export const BackdropVariants = () => html`
       <h3>Default Backdrop</h3>
       <p>Uses theme backdrop variables with subtle blur and gradient.</p>
       <code>.backdrop.active</code>
-      <div style="position: relative; height: 200px; margin-top: var(--spacing-4); border-radius: var(--radius-md); overflow: hidden;">
-        <img src="https://picsum.photos/400/200?random=1" alt="Background" style="width: 100%; height: 100%; object-fit: cover;" />
-        <div class="backdrop active" style="position: absolute;"></div>
-        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1;">
-          <div class="card surface-overlay" style="text-align: center;">
+      <div class="story-demo-container">
+        <img src="https://picsum.photos/400/200?random=1" alt="Background" class="story-demo-bg" />
+        <div class="backdrop active story-backdrop-positioned"></div>
+        <div class="story-content-overlay">
+          <div class="card surface-overlay story-text-center">
             <p>Modal content</p>
           </div>
         </div>
@@ -44,11 +84,11 @@ export const BackdropVariants = () => html`
       <h3>Light Backdrop</h3>
       <p>For light-themed overlays or subtle dimming.</p>
       <code>.backdrop.backdrop-light.active</code>
-      <div style="position: relative; height: 200px; margin-top: var(--spacing-4); border-radius: var(--radius-md); overflow: hidden;">
-        <img src="https://picsum.photos/400/200?random=2" alt="Background" style="width: 100%; height: 100%; object-fit: cover;" />
-        <div class="backdrop backdrop-light active" style="position: absolute;"></div>
-        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1;">
-          <div class="card" style="text-align: center;">
+      <div class="story-demo-container">
+        <img src="https://picsum.photos/400/200?random=2" alt="Background" class="story-demo-bg" />
+        <div class="backdrop backdrop-light active story-backdrop-positioned"></div>
+        <div class="story-content-overlay">
+          <div class="card story-text-center">
             <p>Light overlay</p>
           </div>
         </div>
@@ -59,11 +99,11 @@ export const BackdropVariants = () => html`
       <h3>Dark Backdrop</h3>
       <p>For dramatic dimming and focus on content.</p>
       <code>.backdrop.backdrop-dark.active</code>
-      <div style="position: relative; height: 200px; margin-top: var(--spacing-4); border-radius: var(--radius-md); overflow: hidden;">
-        <img src="https://picsum.photos/400/200?random=3" alt="Background" style="width: 100%; height: 100%; object-fit: cover;" />
-        <div class="backdrop backdrop-dark active" style="position: absolute;"></div>
-        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1;">
-          <div class="card surface-overlay" style="text-align: center; color: white;">
+      <div class="story-demo-container">
+        <img src="https://picsum.photos/400/200?random=3" alt="Background" class="story-demo-bg" />
+        <div class="backdrop backdrop-dark active story-backdrop-positioned"></div>
+        <div class="story-content-overlay">
+          <div class="card surface-overlay story-text-center text-inverse">
             <p>Dark overlay</p>
           </div>
         </div>
@@ -75,6 +115,7 @@ export const BackdropVariants = () => html`
 BackdropVariants.storyName = 'Backdrop Variants';
 
 export const BlurLevels = () => html`
+  ${backdropStoryStyles}
   <header class="card">
     <h2>Backdrop Blur Levels</h2>
     <p class="text-muted">
@@ -87,10 +128,10 @@ export const BlurLevels = () => html`
     <article class="card">
       <h4>Small Blur</h4>
       <code>.backdrop-blur-sm</code>
-      <div style="position: relative; height: 150px; margin-top: var(--spacing-3); border-radius: var(--radius-md); overflow: hidden;">
-        <img src="https://picsum.photos/300/150?random=4" alt="Background" style="width: 100%; height: 100%; object-fit: cover;" />
-        <div class="backdrop backdrop-blur-sm active" style="position: absolute;"></div>
-        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1;">
+      <div class="story-demo-container-sm">
+        <img src="https://picsum.photos/300/150?random=4" alt="Background" class="story-demo-bg" />
+        <div class="backdrop backdrop-blur-sm active story-backdrop-positioned"></div>
+        <div class="story-content-overlay">
           <span class="badge badge-primary">5px blur</span>
         </div>
       </div>
@@ -99,10 +140,10 @@ export const BlurLevels = () => html`
     <article class="card">
       <h4>Medium Blur</h4>
       <code>.backdrop-blur-md</code>
-      <div style="position: relative; height: 150px; margin-top: var(--spacing-3); border-radius: var(--radius-md); overflow: hidden;">
-        <img src="https://picsum.photos/300/150?random=5" alt="Background" style="width: 100%; height: 100%; object-fit: cover;" />
-        <div class="backdrop backdrop-blur-md active" style="position: absolute;"></div>
-        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1;">
+      <div class="story-demo-container-sm">
+        <img src="https://picsum.photos/300/150?random=5" alt="Background" class="story-demo-bg" />
+        <div class="backdrop backdrop-blur-md active story-backdrop-positioned"></div>
+        <div class="story-content-overlay">
           <span class="badge badge-secondary">10px blur</span>
         </div>
       </div>
@@ -111,10 +152,10 @@ export const BlurLevels = () => html`
     <article class="card">
       <h4>Large Blur</h4>
       <code>.backdrop-blur-lg</code>
-      <div style="position: relative; height: 150px; margin-top: var(--spacing-3); border-radius: var(--radius-md); overflow: hidden;">
-        <img src="https://picsum.photos/300/150?random=6" alt="Background" style="width: 100%; height: 100%; object-fit: cover;" />
-        <div class="backdrop backdrop-blur-lg active" style="position: absolute;"></div>
-        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1;">
+      <div class="story-demo-container-sm">
+        <img src="https://picsum.photos/300/150?random=6" alt="Background" class="story-demo-bg" />
+        <div class="backdrop backdrop-blur-lg active story-backdrop-positioned"></div>
+        <div class="story-content-overlay">
           <span class="badge badge-info">20px blur</span>
         </div>
       </div>

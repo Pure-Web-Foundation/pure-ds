@@ -215,7 +215,7 @@ export const QuickConfirm = {
 
       const decision = await ask(
         html`
-          <div class="flex flex-col gap-sm">
+          <div class="stack-sm">
             <p>This dialog comes from <code>PDS.ask()</code> and resolves with a simple boolean.</p>
             <ul class="ask-card-list list-disc">
               <li>Handles focus trapping and ESC cancel automatically.</li>

@@ -21,7 +21,7 @@ export const StandardFloatingBubble = () => html`
       Default behavior: A floating bubble appears when you interact with the slider.
     </small>
     <label>
-      <span>Volume</span>
+      <span data-label>Volume</span>
       <input type="range" min="0" max="100" value="50">
     </label>
   </section>
@@ -39,19 +39,19 @@ export const MultipleRanges = () => html`
     }}"
   >
     <label>
-      <span>Brightness</span>
+      <span data-label>Brightness</span>
       <input type="range" name="brightness" min="0" max="100" value="75">
     </label>
     <label>
-      <span>Contrast</span>
+      <span data-label>Contrast</span>
       <input type="range" name="contrast" min="0" max="100" value="50">
     </label>
     <label>
-      <span>Saturation</span>
+      <span data-label>Saturation</span>
       <input type="range" name="saturation" min="0" max="100" value="60">
     </label>
     <label>
-      <span>Temperature</span>
+      <span data-label>Temperature</span>
       <input type="range" name="temperature" min="-100" max="100" value="0">
     </label>
     <button type="submit" class="btn-primary">Apply Settings</button>
@@ -68,11 +68,11 @@ export const CustomSteps = () => html`
     }}"
   >
     <label>
-      <span>Opacity (10% steps)</span>
+      <span data-label>Opacity (10% steps)</span>
       <input type="range" name="opacity" min="0" max="100" value="100" step="10">
     </label>
     <label>
-      <span>Font Size (0.25rem steps)</span>
+      <span data-label>Font Size (0.25rem steps)</span>
       <input type="range" name="fontSize" min="0.5" max="3" value="1" step="0.25">
     </label>
     <button type="submit" class="btn-primary">Apply Settings</button>
@@ -148,11 +148,11 @@ export const ComparisonView = () => html`
       </header>
       <div class="stack-md">
         <label>
-          <span>Volume</span>
+          <span data-label>Volume</span>
           <input type="range" min="0" max="100" value="75">
         </label>
         <label>
-          <span>Brightness</span>
+          <span data-label>Brightness</span>
           <input type="range" min="0" max="100" value="50">
         </label>
       </div>

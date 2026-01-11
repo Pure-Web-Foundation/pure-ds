@@ -15,12 +15,20 @@ export default {
   }
 };
 
-// Minimal story-specific styles - only for demo-specific visuals not covered by PDS
+// Story-specific styles - only for demo-specific visuals not covered by PDS
 const mediaStoryStyles = html`
   <style>
     /* Video shell max-width constraint */
-    .media-video-shell {
+    .story-media-video-shell {
       max-width: 56.25rem;
+    }
+    /* Violations fixed */
+    .story-img-full-width {
+      width: 100%;
+    }
+    .story-img-circle {
+      width: 200px;
+      aspect-ratio: 1;
     }
   </style>
 `;
@@ -112,8 +120,7 @@ export const ImageRoundedUtilities = () => html`
       <img 
         src="https://picsum.photos/300/200?random=40" 
         alt="Small radius" 
-        class="img-rounded-sm"
-        style="width: 100%;"
+        class="img-rounded-sm story-img-full-width"
       />
       <figcaption><code>.img-rounded-sm</code></figcaption>
     </figure>
@@ -122,8 +129,7 @@ export const ImageRoundedUtilities = () => html`
       <img 
         src="https://picsum.photos/300/200?random=41" 
         alt="Medium radius" 
-        class="img-rounded-md"
-        style="width: 100%;"
+        class="img-rounded-md story-img-full-width"
       />
       <figcaption><code>.img-rounded-md</code></figcaption>
     </figure>
@@ -132,8 +138,7 @@ export const ImageRoundedUtilities = () => html`
       <img 
         src="https://picsum.photos/300/200?random=42" 
         alt="Large radius" 
-        class="img-rounded-lg"
-        style="width: 100%;"
+        class="img-rounded-lg story-img-full-width"
       />
       <figcaption><code>.img-rounded-lg</code></figcaption>
     </figure>
@@ -142,8 +147,7 @@ export const ImageRoundedUtilities = () => html`
       <img 
         src="https://picsum.photos/300/200?random=43" 
         alt="Extra large radius" 
-        class="img-rounded-xl"
-        style="width: 100%;"
+        class="img-rounded-xl story-img-full-width"
       />
       <figcaption><code>.img-rounded-xl</code></figcaption>
     </figure>
@@ -152,8 +156,7 @@ export const ImageRoundedUtilities = () => html`
       <img 
         src="https://picsum.photos/200/200?random=44" 
         alt="Full radius (circle)" 
-        class="img-rounded-full"
-        style="width: 200px; aspect-ratio: 1;"
+        class="img-rounded-full story-img-circle"
       />
       <figcaption><code>.img-rounded-full</code></figcaption>
     </figure>
@@ -195,26 +198,26 @@ export const InlineImages = () => html`
   <div class="card stack-md">
     <p>
       The team includes 
-      <img src="https://i.pravatar.cc/60?img=1" alt="Alice" class="img-inline" />
+      <img src="https://i.pravatar.cc/60?img=1" alt="Alice" class="story-img-inline" />
       Alice, 
-      <img src="https://i.pravatar.cc/60?img=2" alt="Bob" class="img-inline" />
+      <img src="https://i.pravatar.cc/60?img=2" alt="Bob" class="story-img-inline" />
       Bob, and 
-      <img src="https://i.pravatar.cc/60?img=3" alt="Carol" class="img-inline" />
+      <img src="https://i.pravatar.cc/60?img=3" alt="Carol" class="story-img-inline" />
       Carol who have been working on this project.
     </p>
     
     <p>
       Click the 
-      <img src="https://picsum.photos/60/60?random=60" alt="Settings icon" class="img-inline" />
+      <img src="https://picsum.photos/60/60?random=60" alt="Settings icon" class="story-img-inline" />
       icon to access settings, or the 
-      <img src="https://picsum.photos/60/60?random=61" alt="Help icon" class="img-inline" />
+      <img src="https://picsum.photos/60/60?random=61" alt="Help icon" class="story-img-inline" />
       icon for help.
     </p>
   </div>
   
   <div class="card">
     <h3>CSS Properties</h3>
-    <pre><code>.img-inline {
+    <pre><code>.story-img-inline {
   display: inline;
   vertical-align: middle;
   border-radius: var(--radius-xs);
@@ -236,7 +239,7 @@ export const VideoResponsive = () => html`
   </div>
   
   <video 
-    class="video-responsive" 
+    class="story-video-responsive" 
     controls 
     poster="https://picsum.photos/600/338?random=70"
   >
@@ -249,7 +252,7 @@ export const VideoResponsive = () => html`
   
   <div class="card">
     <h3>CSS Properties</h3>
-    <pre><code>.video-responsive {
+    <pre><code>.story-video-responsive {
   width: 100%;
   max-width: 600px;
   height: auto;

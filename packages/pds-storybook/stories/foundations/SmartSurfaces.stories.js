@@ -1,25 +1,68 @@
-import { html } from 'lit';
+import { html } from "lit";
+
+// Story-specific styles for smart surfaces demos
+const smartSurfacesStoryStyles = html`
+  <style>
+    .story-translucent-container {
+      position: relative;
+      padding: var(--spacing-8);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .story-translucent-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+    .story-translucent-content {
+      position: relative;
+      z-index: 1;
+    }
+    .story-border-current {
+      border-color: currentColor;
+    }
+  </style>
+`;
 
 export default {
-  title: 'Foundations/Smart Surfaces',
-  tags: ['surface', 'background', 'theming', 'contrast', 'elevated'],
+  title: "Foundations/Smart Surfaces",
+  tags: ["surface", "background", "theming", "contrast", "elevated"],
   parameters: {
     pds: {
-      tags: ['surface', 'background', 'theming', 'contrast', 'elevated', 'subtle', 'sunken', 'overlay', 'inverse', 'colors', 'layout']
+      tags: [
+        "surface",
+        "background",
+        "theming",
+        "contrast",
+        "elevated",
+        "subtle",
+        "sunken",
+        "overlay",
+        "inverse",
+        "colors",
+        "layout",
+      ],
     },
     docs: {
       description: {
-        component: 'Smart surface system that automatically adapts text, icons, shadows, and borders based on backgrounds. Maintains WCAG AA contrast ratios automatically.'
-      }
-    }
-  }
+        component:
+          "Smart surface system that automatically adapts text, icons, shadows, and borders based on backgrounds. Maintains WCAG AA contrast ratios automatically.",
+      },
+    },
+  },
 };
 
 export const SurfaceVariants = () => html`
   <div class="card stack-md">
     <h2>Surface Variants</h2>
-    <p class="text-muted">All surfaces automatically adjust text, icon, shadow, and border colors to maintain proper contrast.</p>
-    
+    <p class="text-muted">
+      All surfaces automatically adjust text, icon, shadow, and border colors to
+      maintain proper contrast.
+    </p>
+
     <div class="grid grid-auto-sm gap-md">
       <div class="card surface-base stack-md">
         <strong class="flex items-center gap-xs">
@@ -29,7 +72,7 @@ export const SurfaceVariants = () => html`
         <p>Default background with auto-adjusted text and icons</p>
         <button class="btn-primary">Button</button>
       </div>
-      
+
       <div class="card surface-subtle stack-md">
         <strong class="flex items-center gap-xs">
           <pds-icon icon="square"></pds-icon>
@@ -38,7 +81,7 @@ export const SurfaceVariants = () => html`
         <p>Slightly different tone for visual hierarchy</p>
         <button class="btn-secondary">Button</button>
       </div>
-      
+
       <div class="card surface-elevated stack-md">
         <strong class="flex items-center gap-xs">
           <pds-icon icon="arrow-up"></pds-icon>
@@ -47,7 +90,7 @@ export const SurfaceVariants = () => html`
         <p>Raised with smart shadows that adapt in dark mode</p>
         <button class="btn-primary">Button</button>
       </div>
-      
+
       <div class="card surface-overlay stack-md">
         <strong class="flex items-center gap-xs">
           <pds-icon icon="desktop"></pds-icon>
@@ -60,26 +103,29 @@ export const SurfaceVariants = () => html`
   </div>
 `;
 
-SurfaceVariants.storyName = 'Surface Variants';
+SurfaceVariants.storyName = "Surface Variants";
 
 export const ContextAwareShadows = () => html`
-  <div class="card stack-md">
+  <div class="stack-md">
     <h2>Context-Aware Shadows</h2>
-    <p class="text-muted">Shadows automatically invert in dark mode: dark shadows on light surfaces, light shadows on dark surfaces.</p>
-    
+    <p class="text-muted">
+      Shadows automatically invert in dark mode: dark shadows on light surfaces,
+      light shadows on dark surfaces.
+    </p>
+
     <div class="grid grid-auto-sm gap-lg">
       <div class="card shadow-sm surface-elevated text-center stack-md">
         <pds-icon icon="feather" size="lg"></pds-icon>
         <strong>Small</strong>
         <small class="text-muted">--shadow-sm</small>
       </div>
-      
+
       <div class="card shadow-md surface-elevated text-center stack-md">
         <pds-icon icon="grid-four" size="lg"></pds-icon>
         <strong>Medium</strong>
         <small class="text-muted">--shadow-md</small>
       </div>
-      
+
       <div class="card shadow-lg surface-elevated text-center stack-md">
         <pds-icon icon="rocket" size="lg"></pds-icon>
         <strong>Large</strong>
@@ -89,19 +135,25 @@ export const ContextAwareShadows = () => html`
   </div>
 `;
 
-ContextAwareShadows.storyName = 'Context-Aware Shadows';
+ContextAwareShadows.storyName = "Context-Aware Shadows";
 
 export const NestedSurfaces = () => html`
   <div class="card stack-md">
     <h2>Nested Surfaces</h2>
-    <p class="text-muted">Surfaces can be nested infinitely. Each level maintains proper contrast and visual hierarchy automatically.</p>
-    
+    <p class="text-muted">
+      Surfaces can be nested infinitely. Each level maintains proper contrast
+      and visual hierarchy automatically.
+    </p>
+
     <div class="card surface-base stack-md">
       <h4 class="flex items-center gap-xs">
         <pds-icon icon="circle"></pds-icon>
         Level 1: Base Surface
       </h4>
-      <p>Notice how icons and text adapt at each nesting level to maintain readability.</p>
+      <p>
+        Notice how icons and text adapt at each nesting level to maintain
+        readability.
+      </p>
 
       <div class="card surface-elevated stack-md">
         <h5 class="flex items-center gap-xs">
@@ -143,20 +195,26 @@ export const NestedSurfaces = () => html`
   </div>
 `;
 
-NestedSurfaces.storyName = 'Nested Surfaces';
+NestedSurfaces.storyName = "Nested Surfaces";
 
 export const SurfaceInversion = () => html`
   <div class="card stack-md">
     <h2>Surface Inversion</h2>
-    <p class="text-muted">The smart surface system automatically inverts text and icon colors on contrasting backgrounds. Toggle dark mode to see the magic!</p>
-    
+    <p class="text-muted">
+      The smart surface system automatically inverts text and icon colors on
+      contrasting backgrounds. Toggle dark mode to see the magic!
+    </p>
+
     <div class="grid grid-auto-md gap-md">
       <div class="card surface-inverse stack-md">
         <h4 class="flex items-center gap-xs">
           <pds-icon icon="moon"></pds-icon>
           Automatic Inversion
         </h4>
-        <p>This inverted surface automatically uses contrasting text and icons for perfect readability</p>
+        <p>
+          This inverted surface automatically uses contrasting text and icons
+          for perfect readability
+        </p>
         <button class="btn-primary">Primary Button</button>
       </div>
 
@@ -166,36 +224,45 @@ export const SurfaceInversion = () => html`
           Overlay Surface
         </h4>
         <p>Text and icons auto-adapt to maintain WCAG AA contrast</p>
-        <button class="btn-secondary">Secondary Button
-        </button>
+        <button class="btn-secondary">Secondary Button</button>
       </div>
     </div>
   </div>
 `;
 
-SurfaceInversion.storyName = 'Surface Inversion';
+SurfaceInversion.storyName = "Surface Inversion";
 
 export const BorderGradients = () => html`
   <div class="card stack-md">
     <h2>Surface Border Effects</h2>
-    <p class="text-muted">Advanced border gradient effects for standout surfaces. All gradients are animated and adapt to your theme.</p>
-    
+    <p class="text-muted">
+      Advanced border gradient effects for standout surfaces. All gradients are
+      animated and adapt to your theme.
+    </p>
+
     <div class="grid grid-auto-md gap-lg">
       <article class="card border-gradient stack-md">
         <h3>Default Gradient</h3>
-        <p>A card with a subtle animated border gradient that follows your color palette.</p>
+        <p>
+          A card with a subtle animated border gradient that follows your color
+          palette.
+        </p>
         <code class="text-muted">.border-gradient</code>
       </article>
 
       <article class="card border-gradient-primary stack-md">
         <h3>Primary Gradient</h3>
-        <p>Border gradient using the primary color scheme for brand emphasis.</p>
+        <p>
+          Border gradient using the primary color scheme for brand emphasis.
+        </p>
         <code class="text-muted">.border-gradient-primary</code>
       </article>
 
       <article class="card border-gradient-accent stack-md">
         <h3>Accent Gradient</h3>
-        <p>Border gradient using the accent color for highlights and attention.</p>
+        <p>
+          Border gradient using the accent color for highlights and attention.
+        </p>
         <code class="text-muted">.border-gradient-accent</code>
       </article>
 
@@ -225,46 +292,53 @@ export const BorderGradients = () => html`
 
       <article class="card border-gradient-glow stack-md">
         <h3>Glowing Border</h3>
-        <p>A card with a glowing border gradient effect for emphasis and visual interest.</p>
+        <p>
+          A card with a glowing border gradient effect for emphasis and visual
+          interest.
+        </p>
         <code class="text-muted">.border-gradient-glow</code>
       </article>
     </div>
   </div>
 `;
 
-BorderGradients.storyName = 'Border Gradients';
+BorderGradients.storyName = "Border Gradients";
 
 export const TranslucentSurfaces = () => html`
+  ${smartSurfacesStoryStyles}
   <div class="card stack-md">
     <h2>Translucent Surfaces</h2>
-    <p class="text-muted">Semi-transparent surfaces for glassmorphism effects and layered UI. Works beautifully over images and gradients.</p>
-    
-    <div style="position: relative; padding: var(--spacing-8); border-radius: var(--radius-lg); overflow: hidden;">
-      <img 
-        src="https://picsum.photos/1200/600?random=10" 
-        alt="Background" 
-        style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;"
+    <p class="text-muted">
+      Semi-transparent surfaces for glassmorphism effects and layered UI. Works
+      beautifully over images and gradients.
+    </p>
+
+    <div class="story-translucent-container">
+      <img
+        src="https://picsum.photos/1200/600?random=10"
+        alt="Background"
+        class="story-translucent-bg"
       />
-      
-      <div class="grid grid-auto-md gap-lg" style="position: relative; z-index: 1;">
+
+      <div class="grid grid-auto-md gap-lg story-translucent-content">
         <article class="card surface-translucent-25 stack-md backdrop-blur">
           <h4>.surface-translucent-25</h4>
           <p>25% opacity - very subtle, mostly transparent</p>
           <code>--color-surface-translucent-25</code>
         </article>
-        
+
         <article class="card surface-translucent-50 stack-md backdrop-blur">
           <h4>.surface-translucent-50</h4>
           <p>50% opacity - balanced transparency</p>
           <code>--color-surface-translucent-50</code>
         </article>
-        
+
         <article class="card surface-translucent-75 stack-md backdrop-blur">
           <h4>.surface-translucent-75</h4>
           <p>75% opacity - more solid, less see-through</p>
           <code>--color-surface-translucent-75</code>
         </article>
-        
+
         <article class="card surface-translucent stack-md backdrop-blur">
           <h4>.surface-translucent</h4>
           <p>Default (50%) - alias for translucent-50</p>
@@ -275,13 +349,16 @@ export const TranslucentSurfaces = () => html`
   </div>
 `;
 
-TranslucentSurfaces.storyName = 'Translucent Surfaces';
+TranslucentSurfaces.storyName = "Translucent Surfaces";
 
 export const SurfaceInverseExpanded = () => html`
   <div class="card stack-md">
     <h2>Inverse Surface Deep Dive</h2>
-    <p class="text-muted">The <code>.surface-inverse</code> class automatically inverts all text, icon, and border colors for perfect contrast on dark backgrounds.</p>
-    
+    <p class="text-muted">
+      The <code>.surface-inverse</code> class automatically inverts all text,
+      icon, and border colors for perfect contrast on dark backgrounds.
+    </p>
+
     <div class="grid grid-auto-md gap-lg">
       <article class="card surface-inverse stack-md">
         <h3 class="flex items-center gap-xs">
@@ -295,14 +372,17 @@ export const SurfaceInverseExpanded = () => html`
           <button class="btn-secondary">Secondary</button>
         </div>
       </article>
-      
+
       <article class="card surface-inverse stack-md">
         <h4>Code on Inverse</h4>
-        <p>Inline <code>code elements</code> also adapt their background for visibility.</p>
+        <p>
+          Inline <code>code elements</code> also adapt their background for
+          visibility.
+        </p>
         <pre><code>// Code blocks work too
 const example = "Hello!";</code></pre>
       </article>
-      
+
       <article class="card surface-inverse stack-md">
         <h4>Icons on Inverse</h4>
         <div class="flex gap-md flex-wrap">
@@ -312,20 +392,24 @@ const example = "Hello!";</code></pre>
           <pds-icon icon="settings" size="lg"></pds-icon>
           <pds-icon icon="bell" size="lg"></pds-icon>
         </div>
-        <small class="text-muted">Icons inherit the correct inverse color automatically.</small>
+        <small class="text-muted"
+          >Icons inherit the correct inverse color automatically.</small
+        >
       </article>
-      
+
       <article class="card surface-inverse stack-md">
         <h4>Form Elements</h4>
         <label>
-          <span>Input Field</span>
+          <span data-label>Input Field</span>
           <input type="text" placeholder="Type here..." />
         </label>
-        <button class="btn-outline" style="border-color: currentColor;">Outline Button</button>
+        <button class="btn-outline story-border-current">
+          Outline Button
+        </button>
       </article>
     </div>
-    
-    <article class="card stack-md">
+
+    <section class="card stack-md">
       <h3>CSS Variables Set by .surface-inverse</h3>
       <pre><code>.surface-inverse {
   background-color: var(--color-surface-inverse);
@@ -336,9 +420,8 @@ const example = "Hello!";</code></pre>
   --color-surface-muted: rgba(255, 255, 255, 0.08);
   --color-border: var(--surface-inverse-border);
 }</code></pre>
-    </div>
+    </section>
   </div>
 `;
 
-SurfaceInverseExpanded.storyName = 'Inverse Surface Details';
-
+SurfaceInverseExpanded.storyName = "Inverse Surface Details";

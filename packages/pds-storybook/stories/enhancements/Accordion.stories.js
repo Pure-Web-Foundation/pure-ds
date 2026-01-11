@@ -220,11 +220,11 @@ export const SingleExpandAccordion = () => html`
         <div class="card stack-md" role="region" aria-labelledby="set1">
           <form method="post" action="#">
             <label>
-              <span>Display Name</span>
+              <span data-label>Display Name</span>
               <input type="text" value="John Doe" placeholder="Enter your display name" />
             </label>
             <label>
-              <span>Email</span>
+              <span data-label>Email</span>
               <div class="input-icon">
                 <pds-icon icon="envelope"></pds-icon>
                 <input type="email" value="john@example.com" placeholder="your.email@example.com" />

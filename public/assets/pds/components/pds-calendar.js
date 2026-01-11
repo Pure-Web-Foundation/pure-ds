@@ -831,5 +831,5 @@ button.btn-xs {
       return html.toHTML();
     }
   }
-}
+
 customElements.define("pds-calendar", PdsCalendar);

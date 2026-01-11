@@ -61,7 +61,7 @@ export const Default = {
           <h2>Drawer from ${args.position}</h2>
         </div>
         
-        <div slot="drawer-content" class="flex flex-col gap-md">
+        <div slot="drawer-content" class="stack-md">
           <article class="card">
             <h4>About this Drawer</h4>
             <p>This drawer slides from the <strong>${args.position}</strong> edge of the screen. Drawers are perfect for:</p>
@@ -75,7 +75,7 @@ export const Default = {
 
           <article class="card surface-elevated">
             <h4>Quick Actions</h4>
-            <nav class="flex flex-col gap-sm">
+            <nav class="stack-sm">
               <button class="btn-outline">
                 <pds-icon icon="download"></pds-icon>
                 <span>Download Report</span>
@@ -145,12 +145,12 @@ export const AllPositions = () => {
         <pds-icon icon="list" size="lg"></pds-icon>
         <h2>Main Navigation</h2>
       </div>
-      <div slot="drawer-content" class="flex flex-col gap-md">
+      <div slot="drawer-content" class="stack-md">
         <p>
           <strong>Use case:</strong> Primary navigation menu for web applications
         </p>
         
-        <nav class="flex flex-col gap-sm">
+        <nav class="stack-sm">
           <button class="btn-outline">
             <pds-icon icon="house"></pds-icon>
             <span>Dashboard</span>
@@ -194,7 +194,7 @@ export const AllPositions = () => {
           <pds-icon icon="x" label="Close"></pds-icon>
         </button>
       </div>
-      <div slot="drawer-content" class="flex flex-col gap-md">
+      <div slot="drawer-content" class="stack-md">
         <p>
           <strong>Use case:</strong> Filters, detail panels, or property inspectors
         </p>
@@ -223,7 +223,7 @@ export const AllPositions = () => {
         
         <article class="card surface-elevated">
           <label>
-            <span>Sort By</span>
+            <span data-label>Sort By</span>
             <select>
               <option>Date Created (Newest)</option>
               <option>Date Created (Oldest)</option>
@@ -253,12 +253,12 @@ export const AllPositions = () => {
         <h2>Notifications</h2>
         <span class="badge badge-primary">3 new</span>
       </div>
-      <div slot="drawer-content" class="flex flex-col gap-md">
+      <div slot="drawer-content" class="stack-md">
         <p>
           <strong>Use case:</strong> Notification center or announcement banners
         </p>
         
-        <div class="flex flex-col gap-md">
+        <div class="stack-md">
           <article class="card surface-elevated">
             <div class="flex gap-md items-start">
               <div class="badge badge-success">
@@ -323,7 +323,7 @@ export const AllPositions = () => {
         <pds-icon icon="toolbox" size="lg"></pds-icon>
         <h2>Quick Actions</h2>
       </div>
-      <div slot="drawer-content" class="flex flex-col gap-md">
+      <div slot="drawer-content" class="stack-md">
         <p>
           <strong>Use case:</strong> Command palette, quick actions, or contextual toolbars
         </p>
@@ -390,7 +390,7 @@ export const NavigationDrawer = () => {
         <h2>Navigation</h2>
       </div>
       
-      <nav slot="drawer-content" class="flex flex-col gap-sm">
+      <nav slot="drawer-content" class="stack-sm">
         <button class="btn-outline">
           <pds-icon icon="house"></pds-icon>
           <span>Home</span>
@@ -458,19 +458,19 @@ export const SettingsDrawer = () => {
         <h2>Settings</h2>
       </div>
       
-      <div slot="drawer-content" class="flex flex-col gap-md">
+      <div slot="drawer-content" class="stack-md">
         <article class="card">
           <fieldset>
             <legend>Profile Settings</legend>
             <label>
-              <span>Username</span>
+              <span data-label>Username</span>
               <div class="input-icon">
                 <pds-icon icon="user"></pds-icon>
                 <input type="text" value="john_doe" placeholder="Enter your username">
               </div>
             </label>
             <label>
-              <span>Email</span>
+              <span data-label>Email</span>
               <div class="input-icon">
                 <pds-icon icon="envelope"></pds-icon>
                 <input type="email" value="john@example.com" placeholder="your.email@example.com">
@@ -555,7 +555,7 @@ export const DetailDrawer = () => {
         </button>
       </div>
       
-      <div slot="drawer-content" class="flex flex-col gap-md">
+      <div slot="drawer-content" class="stack-md">
         <div class="card border-gradient flex items-center justify-center">
           <pds-icon icon="image" size="xl"></pds-icon>
         </div>
@@ -579,7 +579,7 @@ export const DetailDrawer = () => {
 
         <article class="card surface-elevated">
           <h4>Recent Activity</h4>
-          <div class="flex flex-col gap-md">
+          <div class="stack-md">
             <div class="flex gap-sm">
               <pds-icon icon="check" class="icon-primary"></pds-icon>
               <div>

@@ -1,39 +1,48 @@
-import { html } from 'lit';
-import { enhancementHeader } from './_enhancement-header.js';
+import { html } from "lit";
+import { enhancementHeader } from "./_enhancement-header.js";
 
 export default {
-  title: 'Enhancements/Toggles',
-  tags: ['toggle', 'switch', 'checkbox', 'forms', 'interaction'],
+  title: "Enhancements/Toggles",
+  tags: ["toggle", "switch", "checkbox", "forms", "interaction"],
   parameters: {
     options: {
-      selectedPanel: 'html-preview/panel'
+      selectedPanel: "html-preview/panel",
     },
     pds: {
-      tags: ['toggle', 'switch', 'checkbox', 'forms', 'interaction', 'data-toggle', 'enhancement']
-    }
-  }
+      tags: [
+        "toggle",
+        "switch",
+        "checkbox",
+        "forms",
+        "interaction",
+        "data-toggle",
+        "enhancement",
+      ],
+    },
+  },
 };
 
 export const BasicToggle = () => html`
-  ${enhancementHeader('toggle')}
+  ${enhancementHeader("toggle")}
+
   <label data-toggle>
+    <input type="checkbox" />
     <span data-label>Enable notifications</span>
-    <input type="checkbox">
   </label>
 `;
 
 export const PreChecked = () => html`
-  ${enhancementHeader('toggle')}
+  ${enhancementHeader("toggle")}
   <label data-toggle>
     <span data-label>Dark mode</span>
-    <input type="checkbox" checked>
+    <input type="checkbox" checked />
   </label>
 `;
 
 export const MultipleToggles = () => html`
-  ${enhancementHeader('toggle')}
+  ${enhancementHeader("toggle")}
   <form
-    class="flex flex-col gap-sm toggle-story-form"
+    class="stack-sm toggle-story-form"
     @submit="${(event) => {
       event.preventDefault();
       toastFormData(new FormData(event.target));
@@ -41,26 +50,28 @@ export const MultipleToggles = () => html`
   >
     <label data-toggle>
       <span data-label>Email notifications</span>
-      <input type="checkbox" name="email" checked>
+      <input type="checkbox" name="email" checked />
     </label>
     <label data-toggle>
       <span data-label>Push notifications</span>
-      <input type="checkbox" name="push">
+      <input type="checkbox" name="push" />
     </label>
     <label data-toggle>
       <span data-label>SMS notifications</span>
-      <input type="checkbox" name="sms">
+      <input type="checkbox" name="sms" />
     </label>
     <label data-toggle>
       <span data-label>Weekly digest</span>
-      <input type="checkbox" name="digest" checked>
+      <input type="checkbox" name="digest" checked />
     </label>
-    <button type="submit" class="btn-primary toggle-story-form__button">Save Preferences</button>
+    <button type="submit" class="btn-primary toggle-story-form__button">
+      Save Preferences
+    </button>
   </form>
 `;
 
 export const TogglePositions = () => html`
-  ${enhancementHeader('toggle')}
+  ${enhancementHeader("toggle")}
   <div class="toggle-story-layout">
     <div>
       <h3>Toggle Position Variations</h3>
@@ -68,30 +79,30 @@ export const TogglePositions = () => html`
         Toggle knob position adapts based on label placement in DOM
       </p>
     </div>
-    <div class="flex flex-col gap-md">
+    <div class="stack-md">
       <section class="toggle-story-section">
         <h4 class="toggle-story-subheading">Label First (Knob on Right)</h4>
-        <div class="flex flex-col gap-sm">
+        <div class="stack-sm">
           <label data-toggle>
             <span data-label>Email notifications</span>
-            <input type="checkbox" checked>
+            <input type="checkbox" checked />
           </label>
           <label data-toggle>
             <span data-label>Push notifications</span>
-            <input type="checkbox">
+            <input type="checkbox" />
           </label>
         </div>
       </section>
 
       <section class="toggle-story-section">
         <h4 class="toggle-story-subheading">Label Last (Knob on Left)</h4>
-        <div class="flex flex-col gap-sm">
+        <div class="stack-sm">
           <label data-toggle>
-            <input type="checkbox" checked>
+            <input type="checkbox" checked />
             <span data-label>Dark mode enabled</span>
           </label>
           <label data-toggle>
-            <input type="checkbox">
+            <input type="checkbox" />
             <span data-label>Auto-save changes</span>
           </label>
         </div>
@@ -101,26 +112,24 @@ export const TogglePositions = () => html`
 `;
 
 export const InCard = () => html`
-  ${enhancementHeader('toggle')}
-  <article class="card toggle-story-card">
+  ${enhancementHeader("toggle")}
+  <article class="card toggle-story-card stack-md max-w-sm">
     <div>
       <h3>Privacy Settings</h3>
-      <p class="toggle-story-muted">
-        Control your privacy preferences
-      </p>
+      <p class="toggle-story-muted">Control your privacy preferences</p>
     </div>
-    <div class="flex flex-col gap-sm">
+    <div class="stack-sm">
       <label data-toggle>
+        <input type="checkbox" checked />
         <span data-label>Profile visibility</span>
-        <input type="checkbox" checked>
       </label>
       <label data-toggle>
+        <input type="checkbox" />
         <span data-label>Show online status</span>
-        <input type="checkbox">
       </label>
       <label data-toggle>
+        <input type="checkbox" checked />
         <span data-label>Allow message requests</span>
-        <input type="checkbox" checked>
       </label>
     </div>
   </article>

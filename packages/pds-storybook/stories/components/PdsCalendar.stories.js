@@ -173,7 +173,7 @@ export const EventTypes = {
     }, 0);
     
     return html`
-      <div class="flex flex-col gap-lg">
+      <div class="stack-lg">
         <pds-calendar id="event-types-calendar"></pds-calendar>
         
         <div class="card">
@@ -234,7 +234,7 @@ export const DynamicEvents = {
     }, 0);
     
     return html`
-      <div class="flex flex-col gap-lg">
+      <div class="stack-lg">
         <div class="card">
           <h3>Add Events Dynamically</h3>
           <div class="flex gap-md items-end">
