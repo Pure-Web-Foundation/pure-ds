@@ -84,9 +84,6 @@ function buildStoryTagsIndex() {
     
     tagCount += normalizedTags.length;
   });
-  
-  console.log('%c🏷️ Story tags indexed from reference:', 'color: #f59e0b', storyTagsIndex.size, 'entries with', tagCount, 'unique tags');
-  console.log('%c📖 allWords now has:', 'color: #f59e0b', allWords.size, 'words');
 }
 
 /**
@@ -102,14 +99,7 @@ async function loadOntology() {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     referenceData = await response.json();
     buildIndices();
-    buildStoryTagsIndex();  // Index story pds.tags from the reference file
-    console.log('%c🎨 PDS Ontology loaded from SSoT', 'color: #029cfd; font-weight: bold', {
-      searchRelations: Object.keys(referenceData.ontologyData?.searchRelations || {}).length,
-      primitives: referenceData.ontologyData?.primitives?.length || 0,
-      components: referenceData.ontologyData?.components?.length || 0,
-      enhancements: referenceData.ontologyData?.enhancements?.length || 0,
-      storyIndex: Object.keys(referenceData.storyIndex || {}).length
-    });
+    buildStoryTagsIndex();
     return referenceData;
   } catch (err) {
     console.warn('PDS Ontology: Failed to load pds-reference.json', err);
@@ -268,12 +258,6 @@ function buildIndices() {
     });
   });
   
-  console.log('%c📚 Ontology indices built', 'color: #10b981', {
-    relations: relationIndex.size,
-    categories: categoryIndex.size,
-    tags: tagIndex.size
-  });
-  
   // ═══════════════════════════════════════════════════════════════════════════
   // 6. Build allWords set for prefix matching
   // Collect ALL words from all indices for comprehensive prefix search
@@ -312,8 +296,6 @@ function buildIndices() {
     if (e.selector) allWords.add(e.selector.replace(/[[\]]/g, '').toLowerCase());
     (e.tags || []).forEach(t => allWords.add(t.toLowerCase()));
   });
-  
-  console.log('%c📖 Word index built:', 'color: #10b981', allWords.size, 'words');
 }
 
 /**
@@ -748,17 +730,7 @@ addons.register(ADDON_ID, (api) => {
     
     const expandedTerms = expandQuery(currentQuery);
     
-    // Debug: log first few items to see their structure
-    let debugCount = 0;
-    
-    api.experimental_setFilter(FILTER_ID, (item) => {
-      // Log first 3 items to see what properties they have
-      if (debugCount < 3) {
-        console.log('Filter item:', item);
-        debugCount++;
-      }
-      return matchesOntology(item, expandedTerms);
-    });
+    api.experimental_setFilter(FILTER_ID, (item) => matchesOntology(item, expandedTerms));
     
     setTimeout(() => {
       const tree = document.getElementById('storybook-explorer-tree');
@@ -780,9 +752,6 @@ addons.register(ADDON_ID, (api) => {
     
     if (searchField.dataset.pdsHooked) return;
     searchField.dataset.pdsHooked = 'true';
-    
-    console.log('%c🎨 PDS Ontology Search Active', 'color: #029cfd; font-weight: bold; font-size: 14px');
-    console.log('%cSearch expands via ontology relations. Try: "text", "form", "modal"', 'color: #999');
     
     let debounceTimer;
     searchField.addEventListener('input', (e) => {
@@ -848,7 +817,7 @@ addons.register(ADDON_ID, (api) => {
   });
   mutationObserver.observe(document.body, { childList: true, subtree: true });
 
-  // Debug API
+  // Public API for programmatic search
   window.pdsOntology = {
     search: (query) => {
       const field = document.getElementById('storybook-explorer-searchfield');
@@ -866,26 +835,6 @@ addons.register(ADDON_ID, (api) => {
         field.dispatchEvent(new Event('input', { bubbles: true }));
       }
       applyFilter('');
-    },
-    data: () => referenceData,
-    relations: () => Object.fromEntries([...relationIndex].map(([k, v]) => [k, [...v]])),
-    categories: () => Object.fromEntries([...categoryIndex].map(([k, v]) => [k, [...v]])),
-    tags: () => Object.fromEntries([...tagIndex].map(([k, v]) => [k, [...v]])),
-    storyTags: () => Object.fromEntries([...storyTagsIndex]),
-    allWords: () => [...allWords],
-    currentQuery: () => currentQuery,
-    // Debug: test if a mock item would match a query
-    testMatch: (itemId, query) => {
-      const expandedTerms = expandQuery(query);
-      const mockItem = { id: itemId, name: itemId, title: itemId };
-      const result = matchesOntology(mockItem, expandedTerms);
-      console.log('Testing:', { itemId, query, expandedTerms, result });
-      return result;
-    },
-    // Debug: show all story IDs from Storybook
-    storyIds: () => {
-      const index = api.getStoryIndex?.();
-      return Object.keys(index?.entries || index?.stories || {});
     }
   };
 

@@ -3044,11 +3044,20 @@ dialog[open]::backdrop {
   }
 }
 
+/* Dialog - constrain max height to 90vh, support custom maxHeight via CSS variable */
+dialog {
+  max-height: var(--dialog-max-height, 90vh);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevent dialog itself from scrolling - let .dialog-body handle it */
+}
+
 /* Form structure - use flexbox instead of contents */
 dialog form {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
+  min-height: 0; /* Allow flex child to shrink */
   margin: 0;
 }
 
@@ -3107,7 +3116,8 @@ dialog {
   article,
   form > article,
   .dialog-body {
-    flex: 1;
+    flex: 1 1 auto;
+    min-height: 0; /* Critical: allow flex child to shrink and scroll */
     padding: var(--spacing-3) var(--spacing-6);
     overflow-y: auto;
     overflow-x: hidden;
@@ -3133,9 +3143,17 @@ dialog.dialog-lg { max-width: min(800px, calc(100vw - var(--spacing-8))); }
 dialog.dialog-xl { max-width: min(1200px, calc(100vw - var(--spacing-8))); }
 dialog.dialog-full { max-width: calc(100vw - var(--spacing-8)); max-height: calc(100vh - var(--spacing-8)); }
 
-/* Mobile responsiveness */
+/* Mobile responsiveness - maximize on mobile */
 @media (max-width: ${breakpoints.sm - 1}px) {
-  dialog { max-width: 100vw; max-height: 100vh; border-radius: 0; top: 50%; transform: translateY(-50%); margin: 0; }
+  dialog { 
+    max-width: 100vw; 
+    max-height: 100vh; 
+    --dialog-max-height: 100vh; /* Override custom maxHeight on mobile */
+    border-radius: 0; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    margin: 0; 
+  }
   dialog header, dialog form > header, dialog article, dialog form > article, dialog footer, dialog form > footer { padding: var(--spacing-4); }
 }
 

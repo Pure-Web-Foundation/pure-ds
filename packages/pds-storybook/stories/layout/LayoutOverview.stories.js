@@ -15,18 +15,20 @@ const layoutOverviewStyles = html`
 `;
 
 // Code samples for comparison
-const tailwindCode = `<div class="p-4 mt-2 rounded-lg shadow-md bg-white 
-  flex flex-col gap-2">
-  <div class="text-lg font-bold">
-    A Nice Box With a Title
-  </div>
-  <div class="text-sm text-gray-500">
-    The subtitle of the item
-  </div>
-  <div class="text-base">
+const tailwindCode = `<article class="max-w-md rounded-lg bg-white p-4 shadow-md">
+  <header class="space-y-1">
+    <h3 class="text-lg font-semibold">
+      A Nice Box With a Title
+    </h3>
+    <small class="text-sm text-slate-500">
+      The subtitle of the item
+    </small>
+  </header>
+  <p class="mt-3 text-base">
     The body of the item with some descriptive text.
-  </div>
-</div>`;
+  </p>
+</article>
+`;
 
 const pdsCode = `<article class="card surface-overlay">
   <header>

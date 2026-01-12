@@ -50,13 +50,13 @@ const marketingSchema = {
 
 const marketingUiSchema = {
   description: {
-    'ui:widget': 'textarea',
-    'ui:options': {
-      rows: 3
-    }
+    'ui:widget': 'richtext'
+  },
+  emphasis: {
+    'ui:class': 'buttons'
   },
   audiences: {
-    'ui:widget': 'checkboxes'
+    'ui:class': 'buttons'
   }
 };
 
@@ -291,6 +291,7 @@ export const JsonformSubdialog = {
         {
           title: 'Marketing spotlight',
           useForm: true,
+          maxHeight: '500px',
           buttons: {
             ok: { name: 'Save changes', primary: true },
             cancel: { name: 'Cancel', cancel: true }

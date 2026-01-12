@@ -50,6 +50,11 @@ export async function ask(message, options = {}) {
         dialog.classList.add(options.class);
       }
     }
+    
+    // Set maxHeight via CSS custom property (constrained to 90vh by default)
+    if (options.maxHeight) {
+      dialog.style.setProperty('--dialog-max-height', options.maxHeight);
+    }
 
     // Build button elements
     const buttons = Object.entries(options.buttons).map(([code, obj]) => {
@@ -61,33 +66,55 @@ export async function ask(message, options = {}) {
     // Create PDS-compliant dialog structure
     // When useForm is true, don't wrap in a form - let the content provide the form
     if (options.useForm) {
-      dialog.innerHTML = /*html*/ `
-        <header>
-          <h2>${options.title}</h2>
-        </header>
-        
-        <article id="msg-container"></article>
-      `;
-      
-      // Render message content first
-      const article = dialog.querySelector("#msg-container");
+      // Create a temporary container to render the message content
+      const tempContainer = document.createElement("div");
       if (typeof message === "object" && message._$litType$) {
-        render(message, article);
+        render(message, tempContainer);
       } else if (typeof message === "string") {
-        article.textContent = message;
+        tempContainer.textContent = message;
       } else {
-        render(message, article);
+        render(message, tempContainer);
       }
       
-      // Wait for content to render, then find the form and add buttons to it
-      requestAnimationFrame(() => {
-        const form = dialog.querySelector("form");
-        if (form) {
-          const footer = document.createElement("footer");
-          footer.innerHTML = buttons.join("");
-          form.appendChild(footer);
+      // Find the form in the rendered content
+      const form = tempContainer.querySelector("form");
+      if (form) {
+        // Build dialog structure with form as direct child for proper flex layout
+        dialog.innerHTML = /*html*/ `
+          <header>
+            <h2>${options.title}</h2>
+          </header>
+        `;
+        
+        // Create article wrapper and move form children into it (preserves DOM nodes & bindings)
+        const article = document.createElement("article");
+        article.className = "dialog-body";
+        while (form.firstChild) {
+          article.appendChild(form.firstChild);
         }
-      });
+        form.appendChild(article);
+        
+        // Add footer with buttons
+        const footer = document.createElement("footer");
+        footer.innerHTML = buttons.join("");
+        form.appendChild(footer);
+        
+        // Append the restructured form to dialog
+        dialog.appendChild(form);
+      } else {
+        // No form found, use standard article structure
+        dialog.innerHTML = /*html*/ `
+          <header>
+            <h2>${options.title}</h2>
+          </header>
+          <article id="msg-container"></article>
+          <footer>
+            ${buttons.join("")}
+          </footer>
+        `;
+        const article = dialog.querySelector("#msg-container");
+        article.appendChild(tempContainer);
+      }
     } else {
       dialog.innerHTML = /*html*/ `
         <form method="dialog">

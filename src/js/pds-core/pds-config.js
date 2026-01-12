@@ -23,7 +23,7 @@ export const presets = {
       darkMode: {
         background: "#0c1821",
         secondary: "#94a3b8",
-        primary: "#0891b2", // Tailwind cyan-600 as base - generates darker 600 shade
+        primary: "#0891b2", // cyan-600 as base - generates darker 600 shade
       },
     },
     typography: {
@@ -55,7 +55,7 @@ export const presets = {
       darkMode: {
         background: "#18181b",
         secondary: "#71717a",
-        primary: "#3b82f6", // Tailwind blue-500 - optimized mid-tone
+        primary: "#3b82f6", // blue-500 - optimized mid-tone
       },
     },
     typography: {
@@ -88,7 +88,7 @@ export const presets = {
       darkMode: {
         background: "#0f0a1a",
         secondary: "#818cf8",
-        primary: "#8b5cf6", // Tailwind violet-500 - optimized mid-tone
+        primary: "#8b5cf6", // violet-500 - optimized mid-tone
       },
     },
     typography: {
@@ -122,7 +122,7 @@ export const presets = {
       darkMode: {
         background: "#0a0a0a",
         secondary: "#a3a3a3",
-        primary: "#737373", // Tailwind gray-500 - optimized mid-tone
+        primary: "#737373", // gray-500 - optimized mid-tone
       },
     },
     typography: {
@@ -159,7 +159,7 @@ export const presets = {
         background: "#1a0f0a",
         secondary: "#c9a482",
         // Ensure sufficient contrast for primary-filled components with white text in dark mode
-        primary: "#f97316", // Tailwind orange-500 - optimized mid-tone
+        primary: "#f97316", // orange-500 - optimized mid-tone
       },
     },
     typography: {
@@ -190,7 +190,7 @@ export const presets = {
         background: "#1a0a1f",
         secondary: "#c4b5fd",
         // Deepen primary for dark mode to meet AA contrast with white text
-        primary: "#d946ef", // Tailwind fuchsia-500 - optimized mid-tone
+        primary: "#d946ef", // fuchsia-500 - optimized mid-tone
       },
     },
     typography: {
@@ -224,7 +224,7 @@ export const presets = {
       darkMode: {
         background: "#0a1410",
         secondary: "#a8a29e",
-        primary: "#10b981", // Tailwind emerald-500 - optimized mid-tone
+        primary: "#10b981", // emerald-500 - optimized mid-tone
       },
     },
     typography: {
@@ -254,7 +254,7 @@ export const presets = {
       darkMode: {
         background: "#1b0808",
         secondary: "#d1d5db",
-        primary: "#ef4444", // Tailwind red-500 - optimized mid-tone
+        primary: "#ef4444", // red-500 - optimized mid-tone
       },
     },
     typography: {
@@ -288,7 +288,7 @@ export const presets = {
         background: "#12100e",
         secondary: "#d1d5db",
         // Deepen primary in dark to keep white text AA-compliant
-        primary: "#f59e0b", // Tailwind amber-500 - optimized mid-tone
+        primary: "#f59e0b", // amber-500 - optimized mid-tone
       },
     },
     typography: {
@@ -323,7 +323,7 @@ export const presets = {
         // has strong contrast against the very-dark surface. The generator
         // will still pick appropriate darker fill shades for buttons so
         // white-on-fill contrast is preserved.
-        primary: "#9ca3af", // Tailwind gray-400 - optimized mid-tone
+        primary: "#9ca3af", // gray-400 - optimized mid-tone
       },
     },
     typography: {
@@ -361,7 +361,7 @@ export const presets = {
       darkMode: {
         background: "#1a1016",
         secondary: "#c4b5fd",
-        primary: "#ec4899", // Tailwind pink-500 - optimized mid-tone
+        primary: "#ec4899", // pink-500 - optimized mid-tone
       },
     },
     typography: {
@@ -401,7 +401,7 @@ export const presets = {
         // - outline/link contrast on dark surface, and
         // - sufficient button fill contrast against white text.
         // Cyan signal aligns with preset accent and produces high-contrast dark fills.
-        primary: "#06b6d4", // Tailwind cyan-500 - optimized mid-tone
+        primary: "#06b6d4", // cyan-500 - optimized mid-tone
       },
     },
     typography: {
@@ -437,7 +437,7 @@ export const presets = {
       darkMode: {
         background: "#0d130a",
         secondary: "#a3a3a3",
-        primary: "#84cc16", // Tailwind lime-500 - optimized mid-tone
+        primary: "#84cc16", // lime-500 - optimized mid-tone
       },
     },
     typography: {
@@ -845,7 +845,7 @@ presets.default = {
     darkMode: {
       background: "#16171a", // Custom dark mode background (cool blue-gray)
       secondary: "#8b9199", // Optional: custom dark grays (uses light secondary if omitted)
-      primary: "#06b6d4", // Tailwind cyan-500 - optimized mid-tone
+      primary: "#06b6d4", // cyan-500 - optimized mid-tone
       // accent: null,       // Optional: override accent color for dark mode
     },
 
