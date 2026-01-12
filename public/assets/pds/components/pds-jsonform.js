@@ -1,4 +1,4 @@
-import { LitElement, html, nothing, ifDefined, ref } from "#pds/lit";
+import { LitElement, html, nothing, ifDefined, ref, keyed } from "#pds/lit";
 
 function getStep(value) {
   if (typeof value === "number") {
@@ -89,6 +89,8 @@ export class SchemaForm extends LitElement {
   #idBase = `sf-${Math.random().toString(36).slice(2)}`;
   #mergedOptions = null;
   #slottedActions = [];
+  #dependencies = new Map(); // targetPath → Set of sourcePaths that affect it
+  #resetKey = 0; // Incremented on reset to force Lit to recreate DOM elements
 
   constructor() {
     super();
@@ -154,6 +156,12 @@ export class SchemaForm extends LitElement {
 
   async submit() {
     return this.#onSubmit(new Event("submit", { cancelable: true }));
+  }
+
+  reset() {
+    const form = this.renderRoot?.querySelector("form");
+    if (form) form.reset(); // Triggers native reset which calls #onReset
+    else this.#onReset(new Event("reset")); // Manual fallback
   }
 
   connectedCallback() {
@@ -234,6 +242,212 @@ export class SchemaForm extends LitElement {
     return current !== undefined ? current : defaultValue;
   }
 
+  // ===== Condition Evaluation =====
+  /**
+   * Evaluate a condition object against current form data.
+   * Supports:
+   *   - Simple equality: { "/path": "value" }
+   *   - Operators: { "/path": { "$eq": "value" } }
+   *   - Multiple conditions (implicit AND): { "/a": "x", "/b": "y" }
+   *   - Explicit logical: { "$and": [...] }, { "$or": [...] }, { "$not": {...} }
+   *
+   * Operators: $eq, $ne, $in, $nin, $gt, $gte, $lt, $lte, $exists, $regex
+   */
+  #evaluateCondition(condition) {
+    if (!condition || typeof condition !== "object") return true;
+
+    // Handle logical operators
+    if ("$and" in condition) {
+      return condition.$and.every((c) => this.#evaluateCondition(c));
+    }
+    if ("$or" in condition) {
+      return condition.$or.some((c) => this.#evaluateCondition(c));
+    }
+    if ("$not" in condition) {
+      return !this.#evaluateCondition(condition.$not);
+    }
+
+    // Multiple path conditions = implicit AND
+    for (const [key, expected] of Object.entries(condition)) {
+      if (key.startsWith("$")) continue; // Skip operators at root
+      const actualValue = this.#getByPath(this.#data, key);
+      if (!this.#matchValue(actualValue, expected)) return false;
+    }
+    return true;
+  }
+
+  #matchValue(actual, expected) {
+    // Simple equality shorthand
+    if (expected === null || typeof expected !== "object" || Array.isArray(expected)) {
+      return actual === expected;
+    }
+
+    // Operator object
+    for (const [op, operand] of Object.entries(expected)) {
+      switch (op) {
+        case "$eq":
+          if (actual !== operand) return false;
+          break;
+        case "$ne":
+          if (actual === operand) return false;
+          break;
+        case "$in":
+          if (!Array.isArray(operand) || !operand.includes(actual)) return false;
+          break;
+        case "$nin":
+          if (Array.isArray(operand) && operand.includes(actual)) return false;
+          break;
+        case "$gt":
+          if (!(actual > operand)) return false;
+          break;
+        case "$gte":
+          if (!(actual >= operand)) return false;
+          break;
+        case "$lt":
+          if (!(actual < operand)) return false;
+          break;
+        case "$lte":
+          if (!(actual <= operand)) return false;
+          break;
+        case "$exists":
+          if (operand && actual === undefined) return false;
+          if (!operand && actual !== undefined) return false;
+          break;
+        case "$regex": {
+          const regex = operand instanceof RegExp ? operand : new RegExp(operand);
+          if (!regex.test(String(actual ?? ""))) return false;
+          break;
+        }
+        default:
+          // Unknown operator, ignore
+          break;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Evaluate a calculate expression to compute a derived value.
+   * Supports:
+   *   - Path reference: "/path" → returns value at path
+   *   - Concatenation: { "$concat": ["/firstName", " ", "/lastName"] }
+   *   - Math: { "$sum": ["/a", "/b"] }, { "$multiply": ["/a", 2] }
+   *   - Conditional: { "$if": { "cond": {...}, "then": expr, "else": expr } }
+   */
+  #evaluateCalculation(expr) {
+    if (expr === null || expr === undefined) return undefined;
+
+    // String path reference
+    if (typeof expr === "string") {
+      if (expr.startsWith("/")) {
+        return this.#getByPath(this.#data, expr);
+      }
+      return expr; // Literal string
+    }
+
+    // Number or boolean literal
+    if (typeof expr !== "object") return expr;
+
+    // Array = literal array
+    if (Array.isArray(expr)) {
+      return expr.map((e) => this.#evaluateCalculation(e));
+    }
+
+    // Operators
+    if ("$concat" in expr) {
+      return expr.$concat
+        .map((e) => this.#evaluateCalculation(e) ?? "")
+        .join("");
+    }
+    if ("$sum" in expr) {
+      return expr.$sum.reduce(
+        (acc, e) => acc + (Number(this.#evaluateCalculation(e)) || 0),
+        0
+      );
+    }
+    if ("$multiply" in expr) {
+      return expr.$multiply.reduce(
+        (acc, e) => acc * (Number(this.#evaluateCalculation(e)) || 0),
+        1
+      );
+    }
+    if ("$subtract" in expr) {
+      const [a, b] = expr.$subtract;
+      return (Number(this.#evaluateCalculation(a)) || 0) - (Number(this.#evaluateCalculation(b)) || 0);
+    }
+    if ("$divide" in expr) {
+      const [a, b] = expr.$divide;
+      const divisor = Number(this.#evaluateCalculation(b)) || 1;
+      return (Number(this.#evaluateCalculation(a)) || 0) / divisor;
+    }
+    if ("$if" in expr) {
+      const { cond, then: thenExpr, else: elseExpr } = expr.$if;
+      return this.#evaluateCondition(cond)
+        ? this.#evaluateCalculation(thenExpr)
+        : this.#evaluateCalculation(elseExpr);
+    }
+    if ("$coalesce" in expr) {
+      for (const e of expr.$coalesce) {
+        const val = this.#evaluateCalculation(e);
+        if (val !== null && val !== undefined && val !== "") return val;
+      }
+      return null;
+    }
+
+    // Unknown object, return as-is
+    return expr;
+  }
+
+  /**
+   * Extract all path dependencies from a condition or calculation expression.
+   */
+  #extractDependencies(expr, deps = new Set()) {
+    if (!expr) return deps;
+
+    if (typeof expr === "string" && expr.startsWith("/")) {
+      deps.add(expr);
+      return deps;
+    }
+
+    if (Array.isArray(expr)) {
+      for (const e of expr) this.#extractDependencies(e, deps);
+      return deps;
+    }
+
+    if (typeof expr === "object") {
+      for (const [key, value] of Object.entries(expr)) {
+        if (key.startsWith("/")) {
+          deps.add(key);
+        }
+        this.#extractDependencies(value, deps);
+      }
+    }
+
+    return deps;
+  }
+
+  /**
+   * Register dependencies for a target path based on its UI conditions.
+   */
+  #registerDependencies(targetPath, ui) {
+    const deps = new Set();
+
+    // Extract from all condition properties
+    for (const prop of ["ui:visibleWhen", "ui:disabledWhen", "ui:requiredWhen", "ui:calculate"]) {
+      if (ui?.[prop]) {
+        this.#extractDependencies(ui[prop], deps);
+      }
+    }
+
+    // Register reverse mapping: when source changes, target needs update
+    for (const sourcePath of deps) {
+      if (!this.#dependencies.has(sourcePath)) {
+        this.#dependencies.set(sourcePath, new Set());
+      }
+      this.#dependencies.get(sourcePath).add(targetPath);
+    }
+  }
+
   // ===== Schema compilation =====
   #compile() {
     const root = this.jsonSchema;
@@ -241,6 +455,9 @@ export class SchemaForm extends LitElement {
       this.#compiled = null;
       return;
     }
+    // Clear dependency graph for fresh build
+    this.#dependencies.clear();
+
     const resolved =
       this.#emitCancelable("pw:schema-resolve", { schema: root })?.schema ||
       root;
@@ -252,6 +469,12 @@ export class SchemaForm extends LitElement {
   #compileNode(schema, path) {
     const title = schema.title ?? this.#titleFromPath(path);
     const ui = this.#uiFor(path);
+
+    // Register dependencies for conditional rendering
+    if (ui) {
+      this.#registerDependencies(path, ui);
+    }
+
     const custom = this.#emitCancelable("pw:compile-node", {
       path,
       schema,
@@ -432,9 +655,12 @@ export class SchemaForm extends LitElement {
         method=${m}
         action=${this.action ?? nothing}
         @submit=${this.#onSubmit}
+        @reset=${this.#onReset}
         ?disabled=${this.disabled}
       >
-        ${tree ? this.#renderNode(tree) : html`<slot></slot>`}
+        ${keyed(this.#resetKey, html`
+          ${tree ? this.#renderNode(tree) : html`<slot></slot>`}
+        `)}
         ${!this.hideActions
           ? html`
               <div class="form-actions">
@@ -457,6 +683,16 @@ export class SchemaForm extends LitElement {
   }
 
   #renderNode(node, context = {}) {
+    // Check visibility condition
+    const ui = node.ui || this.#uiFor(node.path);
+    if (ui?.["ui:visibleWhen"] && !this.#evaluateCondition(ui["ui:visibleWhen"])) {
+      return nothing;
+    }
+    // Also check static ui:hidden
+    if (ui?.["ui:hidden"]) {
+      return nothing;
+    }
+
     switch (node.kind) {
       case "fieldset":
         return this.#renderFieldset(node, context);
@@ -1045,9 +1281,29 @@ export class SchemaForm extends LitElement {
     const path = node.path;
     const id = this.#idFromPath(path);
     const label = node.title ?? this.#titleFromPath(path);
-    const value = this.#getByPath(this.#data, path);
-    const required = this.#isRequired(path);
+    let value = this.#getByPath(this.#data, path);
     const ui = node.ui || this.#uiFor(path);
+
+    // Evaluate calculated value if present
+    if (ui?.["ui:calculate"]) {
+      const calculatedValue = this.#evaluateCalculation(ui["ui:calculate"]);
+      // Apply calculated value if field is empty or override not allowed
+      if (value === undefined || value === null || !ui["ui:calculateOverride"]) {
+        value = calculatedValue;
+        // Also update internal data to keep in sync
+        if (this.#getByPath(this.#data, path) !== calculatedValue) {
+          this.#setByPath(this.#data, path, calculatedValue);
+        }
+      }
+    }
+
+    // Evaluate conditional states
+    const isDisabled = ui?.["ui:disabled"] ||
+      (ui?.["ui:disabledWhen"] && this.#evaluateCondition(ui["ui:disabledWhen"]));
+    const isRequired = this.#isRequired(path) ||
+      (ui?.["ui:requiredWhen"] && this.#evaluateCondition(ui["ui:requiredWhen"]));
+    const isReadonly = ui?.["ui:readonly"] ||
+      (ui?.["ui:calculate"] && !ui["ui:calculateOverride"]);
 
     // Override hook before default field render
     {
@@ -1061,6 +1317,14 @@ export class SchemaForm extends LitElement {
       if (override?.render) return override.render();
     }
 
+    // Build attributes including conditional states
+    const attrs = {
+      ...this.#nativeConstraints(path, node.schema),
+      disabled: isDisabled,
+      required: isRequired,
+      readOnly: isReadonly,
+    };
+
     // Default renderer lookup: returns ONLY the control markup
     const renderer =
       this.#renderers.get(node.widgetKey) || this.#renderers.get("*");
@@ -1070,12 +1334,12 @@ export class SchemaForm extends LitElement {
           path,
           label,
           value,
-          required,
+          required: isRequired,
           ui,
           schema: node.schema,
           get: (p) => this.#getByPath(this.#data, p ?? path),
           set: (val, p) => this.#assignValue(p ?? path, val),
-          attrs: this.#nativeConstraints(path, node.schema),
+          attrs,
           host: this,
         })
       : nothing;
@@ -1177,6 +1441,7 @@ export class SchemaForm extends LitElement {
           maxlength=${ifDefined(attrs.maxLength)}
           pattern=${ifDefined(attrs.pattern)}
           ?readonly=${!!attrs.readOnly}
+          ?disabled=${!!attrs.disabled}
           ?required=${!!attrs.required}
           autocomplete=${ifDefined(attrs.autocomplete)}
           @input=${(e) => set(e.target.value)}
@@ -1197,6 +1462,7 @@ export class SchemaForm extends LitElement {
           maxlength=${ifDefined(attrs.maxLength)}
           pattern=${ifDefined(attrs.pattern)}
           ?readonly=${!!attrs.readOnly}
+          ?disabled=${!!attrs.disabled}
           ?required=${!!attrs.required}
           autocomplete=${ifDefined(attrs.autocomplete)}
           list=${ifDefined(ui?.["ui:datalist"] ? `${id}-datalist` : attrs.list)}
@@ -1226,6 +1492,7 @@ export class SchemaForm extends LitElement {
           minlength=${ifDefined(attrs.minLength)}
           maxlength=${ifDefined(attrs.maxLength)}
           ?readonly=${!!attrs.readOnly}
+          ?disabled=${!!attrs.disabled}
           ?required=${!!attrs.required}
           @input=${(e) => set(e.target.value)}
         ></textarea>
@@ -1247,6 +1514,7 @@ export class SchemaForm extends LitElement {
             max=${ifDefined(attrs.max)}
             step=${ifDefined(step)}
             ?readonly=${!!attrs.readOnly}
+            ?disabled=${!!attrs.disabled}
             ?required=${!!attrs.required}
             @input=${(e) => {
               const v = e.target.value;
@@ -1294,6 +1562,7 @@ export class SchemaForm extends LitElement {
               max=${max}
               step=${step}
               .value=${value ?? min}
+              ?disabled=${!!attrs.disabled}
               @input=${(e) => set(Number(e.target.value))}
             />
             <div class="range-bubble" aria-hidden="true">${value ?? min}</div>
@@ -1312,6 +1581,7 @@ export class SchemaForm extends LitElement {
           type="email"
           .value=${value ?? ""}
           ?readonly=${!!attrs.readOnly}
+          ?disabled=${!!attrs.disabled}
           ?required=${!!attrs.required}
           autocomplete=${ifDefined(attrs.autocomplete)}
           @input=${(e) => set(e.target.value)}
@@ -1336,6 +1606,7 @@ export class SchemaForm extends LitElement {
             minlength=${ifDefined(attrs.minLength)}
             maxlength=${ifDefined(attrs.maxLength)}
             ?readonly=${!!attrs.readOnly}
+            ?disabled=${!!attrs.disabled}
             ?required=${!!attrs.required}
             autocomplete=${autocomplete}
             @input=${(e) => set(e.target.value)}
@@ -1354,6 +1625,7 @@ export class SchemaForm extends LitElement {
           type="url"
           .value=${value ?? ""}
           ?readonly=${!!attrs.readOnly}
+          ?disabled=${!!attrs.disabled}
           ?required=${!!attrs.required}
           @input=${(e) => set(e.target.value)}
         />
@@ -1372,6 +1644,7 @@ export class SchemaForm extends LitElement {
           min=${ifDefined(attrs.min)}
           max=${ifDefined(attrs.max)}
           ?readonly=${!!attrs.readOnly}
+          ?disabled=${!!attrs.disabled}
           ?required=${!!attrs.required}
           @input=${(e) => set(e.target.value)}
         />
@@ -1388,6 +1661,7 @@ export class SchemaForm extends LitElement {
           type="time"
           .value=${value ?? ""}
           ?readonly=${!!attrs.readOnly}
+          ?disabled=${!!attrs.disabled}
           ?required=${!!attrs.required}
           @input=${(e) => set(e.target.value)}
         />
@@ -1404,6 +1678,7 @@ export class SchemaForm extends LitElement {
           type="color"
           .value=${value ?? ""}
           ?readonly=${!!attrs.readOnly}
+          ?disabled=${!!attrs.disabled}
           ?required=${!!attrs.required}
           @input=${(e) => set(e.target.value)}
         />
@@ -1420,6 +1695,7 @@ export class SchemaForm extends LitElement {
           type="datetime-local"
           .value=${value ?? ""}
           ?readonly=${!!attrs.readOnly}
+          ?disabled=${!!attrs.disabled}
           ?required=${!!attrs.required}
           @input=${(e) => set(e.target.value)}
         />
@@ -1434,6 +1710,7 @@ export class SchemaForm extends LitElement {
           name=${path}
           type="checkbox"
           .checked=${!!value}
+          ?disabled=${!!attrs.disabled}
           ?required=${!!attrs.required}
           @change=${(e) => set(!!e.target.checked)}
         />
@@ -1449,6 +1726,7 @@ export class SchemaForm extends LitElement {
           name=${path}
           type="checkbox"
           .checked=${!!value}
+          ?disabled=${!!attrs.disabled}
           ?required=${!!attrs.required}
           @change=${(e) => set(!!e.target.checked)}
         />
@@ -1468,6 +1746,7 @@ export class SchemaForm extends LitElement {
             id=${id}
             name=${path}
             .value=${value ?? ""}
+            ?disabled=${!!attrs.disabled}
             ?required=${!!attrs.required}
             ?data-dropdown=${useDropdown}
             @change=${(e) => set(e.target.value)}
@@ -1631,6 +1910,44 @@ export class SchemaForm extends LitElement {
     return final;
   }
 
+  // ===== Form reset =====
+  #onReset(e) {
+    // Prevent native reset - we'll handle everything ourselves
+    // Native reset clears DOM inputs but doesn't sync with Lit's reactive state
+    e.preventDefault();
+    
+    // Reset internal data to initial values (or empty if no initial values)
+    if (this.values) {
+      const v = this.values;
+      const newData = {};
+      for (const [key, value] of Object.entries(v)) {
+        if (key.startsWith("/")) {
+          this.#setByPath(newData, key, value);
+        } else {
+          newData[key] = value;
+        }
+      }
+      this.#data = newData;
+    } else {
+      this.#data = {};
+    }
+    
+    // Recompile form - this rebuilds the tree, re-applies defaults, 
+    // and rebuilds dependency graph
+    this.#compile();
+    
+    // Re-apply calculated values after compile
+    this.#applyCalculatedValues();
+    
+    // Emit reset event
+    this.#emit("pw:reset", { data: structuredClone(this.#data) });
+    
+    // Increment reset key to force Lit to recreate all DOM elements
+    // This ensures .value bindings properly reflect reset values
+    this.#resetKey++;
+    this.requestUpdate();
+  }
+
   // ===== Utilities =====
   #uiFor(path) {
     if (!this.uiSchema) return undefined;
@@ -1789,9 +2106,36 @@ export class SchemaForm extends LitElement {
 
   #assignValue(path, val) {
     this.#setByPath(this.#data, path, val);
+
+    // Apply calculated values for any dependent fields
+    this.#applyCalculatedValues(path);
+
     this.requestUpdate();
     const validity = { valid: true };
     this.#emit("pw:value-change", { name: path, value: val, validity });
+  }
+
+  #applyCalculatedValues(changedPath) {
+    // Find fields that depend on the changed path
+    const dependents = this.#dependencies.get(changedPath);
+    if (!dependents) return;
+
+    for (const targetPath of dependents) {
+      const ui = this.#uiFor(targetPath);
+      if (ui?.["ui:calculate"]) {
+        // Check if override is allowed and user has modified the field
+        const allowOverride = ui["ui:calculateOverride"] === true;
+        const currentValue = this.#getByPath(this.#data, targetPath);
+        const calculatedValue = this.#evaluateCalculation(ui["ui:calculate"]);
+
+        // Only update if:
+        // 1. Override is not allowed, OR
+        // 2. Override is allowed but field hasn't been manually modified (still matches previous calc)
+        if (!allowOverride || currentValue === undefined || currentValue === null) {
+          this.#setByPath(this.#data, targetPath, calculatedValue);
+        }
+      }
+    }
   }
 
   #getByPath(obj, path) {

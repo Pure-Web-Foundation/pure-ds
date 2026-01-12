@@ -257,6 +257,75 @@ Use enhanced dropdown menu instead of native select.
 | Option | Type | Description |
 |--------|------|-------------|
 | \`ui:dropdown\` | boolean | Enable enhanced dropdown |
+
+---
+
+## Conditional Logic (Interactions)
+
+Declarative XForms-inspired conditions for dynamic form behavior.
+
+### Visibility
+
+| Option | Type | Description |
+|--------|------|-------------|
+| \`ui:visibleWhen\` | object | Show field when condition is true |
+| \`ui:hidden\` | boolean | Always hide field |
+
+### State
+
+| Option | Type | Description |
+|--------|------|-------------|
+| \`ui:disabledWhen\` | object | Disable field when condition is true |
+| \`ui:requiredWhen\` | object | Require field when condition is true |
+
+### Calculated Values
+
+| Option | Type | Description |
+|--------|------|-------------|
+| \`ui:calculate\` | object | Compute value from expression |
+| \`ui:calculateOverride\` | boolean | Allow user to edit calculated value |
+
+### Condition Operators
+
+**Comparison**: \`$eq\`, \`$ne\`, \`$gt\`, \`$gte\`, \`$lt\`, \`$lte\`, \`$in\`, \`$nin\`, \`$exists\`, \`$regex\`
+
+**Logical**: \`$and\`, \`$or\`, \`$not\`
+
+**Calculation**: \`$concat\`, \`$sum\`, \`$subtract\`, \`$multiply\`, \`$divide\`, \`$if\`, \`$coalesce\`
+
+### Examples
+
+\`\`\`javascript
+// Show field conditionally
+"/otherReason": {
+  "ui:visibleWhen": { "/reason": "other" }
+}
+
+// Disable based on condition
+"/email": {
+  "ui:disabledWhen": { "/usePhone": true }
+}
+
+// Conditional requirement
+"/companyName": {
+  "ui:requiredWhen": { "/accountType": "business" }
+}
+
+// Calculated value
+"/fullName": {
+  "ui:calculate": { "$concat": ["/firstName", " ", "/lastName"] }
+}
+
+// Complex condition
+"/premiumFeature": {
+  "ui:visibleWhen": {
+    "$and": [
+      { "/isPremium": true },
+      { "/country": { "$in": ["US", "CA", "UK"] } }
+    ]
+  }
+}
+\`\`\`
 `;
 
 const docsParameters = {
@@ -269,7 +338,7 @@ const docsParameters = {
 - 🔄 **Data binding** - Two-way data binding with form state management
 - 🎨 **PDS styled** - Uses all PDS design tokens automatically
 - 📱 **Responsive** - Mobile-friendly layouts out of the box
-- 🧩 **Conditional logic** - Show/hide fields based on other field values
+- 🧩 **Conditional logic** - Show/hide/disable fields, computed values
 - 🌐 **Nested objects** - Support for complex nested data structures
 - 🔧 **Extensible** - Custom field types and validators
 
@@ -2005,6 +2074,1090 @@ The \`enumNames\` array must match the length and order of the \`enum\` array. W
     };
 
     return html`
+      <pds-jsonform
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const ConditionalShowHide = {
+  parameters: {
+    docs: {
+      description: {
+        story: `Use \`ui:visibleWhen\` to show/hide fields based on other field values.
+
+In this example, selecting "Other" from the dropdown reveals a text field to specify details.
+
+\`\`\`javascript
+const uiSchema = {
+  '/otherReason': {
+    'ui:visibleWhen': { '/reason': 'other' },
+    'ui:requiredWhen': { '/reason': 'other' }
+  }
+};
+\`\`\``
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Feedback Form',
+      properties: {
+        reason: {
+          type: 'string',
+          title: 'How did you hear about us?',
+          enum: ['search', 'social', 'friend', 'other'],
+          enumNames: ['Search Engine', 'Social Media', 'Friend Referral', 'Other... (please specify)']
+        },
+        otherReason: {
+          type: 'string',
+          title: 'Please specify',
+          examples: ['Tell us more...']
+        }
+      }
+    };
+
+    const uiSchema = {
+      '/otherReason': {
+        'ui:visibleWhen': { '/reason': 'other' },
+        'ui:requiredWhen': { '/reason': 'other' }
+      }
+    };
+
+    return html`
+      <pds-jsonform
+        data-required
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const ConditionalRequired = {
+  parameters: {
+    docs: {
+      description: {
+        story: `Use \`ui:requiredWhen\` to make fields conditionally required.
+
+In this example, toggling "Prefer phone contact" makes the phone field required and disables the email field.
+
+\`\`\`javascript
+const uiSchema = {
+  '/email': {
+    'ui:disabledWhen': { '/preferPhone': true }
+  },
+  '/phone': {
+    'ui:requiredWhen': { '/preferPhone': true }
+  }
+};
+\`\`\``
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Contact Preferences',
+      properties: {
+        preferPhone: {
+          type: 'boolean',
+          title: 'I prefer to be contacted by phone',
+          default: false
+        },
+        email: {
+          type: 'string',
+          format: 'email',
+          title: 'Email Address',
+          examples: ['you@example.com']
+        },
+        phone: {
+          type: 'string',
+          title: 'Phone Number',
+          examples: ['555-123-4567']
+        }
+      },
+      required: ['email']
+    };
+
+    const uiSchema = {
+      '/email': {
+        'ui:disabledWhen': { '/preferPhone': true },
+        'ui:icon': 'envelope'
+      },
+      '/phone': {
+        'ui:requiredWhen': { '/preferPhone': true },
+        'ui:icon': 'phone'
+      }
+    };
+
+    return html`
+      <pds-jsonform
+        data-required
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const ConditionalComplex = {
+  parameters: {
+    docs: {
+      description: {
+        story: `A comprehensive example combining multiple conditional features: visibility, required states, and calculated values.
+
+### Features demonstrated:
+- **Show/Hide**: Company name appears for business accounts; shipping address hidden for pickup
+- **Conditional Required**: Company name required for business; phone required when preferred
+- **Disable**: Email disabled when phone is preferred
+- **Calculations**: Full name, subtotal, shipping cost, and total are all computed automatically`
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Order Form',
+      properties: {
+        accountType: {
+          type: 'string',
+          title: 'Account Type',
+          enum: ['personal', 'business'],
+          enumNames: ['Personal', 'Business'],
+          default: 'personal'
+        },
+        companyName: {
+          type: 'string',
+          title: 'Company Name',
+          examples: ['Acme Inc.']
+        },
+        preferPhone: {
+          type: 'boolean',
+          title: 'I prefer to be contacted by phone',
+          default: false
+        },
+        email: {
+          type: 'string',
+          format: 'email',
+          title: 'Email',
+          examples: ['you@example.com']
+        },
+        phone: {
+          type: 'string',
+          title: 'Phone',
+          examples: ['555-123-4567']
+        },
+        firstName: {
+          type: 'string',
+          title: 'First Name',
+          examples: ['John']
+        },
+        lastName: {
+          type: 'string',
+          title: 'Last Name',
+          examples: ['Doe']
+        },
+        fullName: {
+          type: 'string',
+          title: 'Full Name (calculated)'
+        },
+        deliveryType: {
+          type: 'string',
+          title: 'Delivery Type',
+          enum: ['standard', 'express', 'pickup'],
+          enumNames: ['Standard (5-7 days)', 'Express (1-2 days)', 'Pickup'],
+          default: 'standard'
+        },
+        quantity: {
+          type: 'integer',
+          title: 'Quantity',
+          minimum: 1,
+          default: 1
+        },
+        unitPrice: {
+          type: 'number',
+          title: 'Unit Price',
+          default: 29.99
+        },
+        subtotal: {
+          type: 'number',
+          title: 'Subtotal'
+        },
+        shippingCost: {
+          type: 'number',
+          title: 'Shipping Cost'
+        },
+        total: {
+          type: 'number',
+          title: 'Total'
+        },
+        shippingAddress: {
+          type: 'object',
+          title: 'Shipping Address',
+          properties: {
+            street: { type: 'string', title: 'Street', examples: ['123 Main St'] },
+            city: { type: 'string', title: 'City', examples: ['New York'] },
+            zip: { type: 'string', title: 'ZIP Code', examples: ['10001'] }
+          }
+        }
+      },
+      required: ['email', 'firstName', 'lastName', 'deliveryType']
+    };
+
+    const uiSchema = {
+      'ui:layout': 'grid',
+      'ui:layoutOptions': { columns: 2, gap: 'md' },
+      
+      '/companyName': {
+        'ui:visibleWhen': { '/accountType': 'business' },
+        'ui:requiredWhen': { '/accountType': 'business' }
+      },
+      '/email': {
+        'ui:disabledWhen': { '/preferPhone': true },
+        'ui:icon': 'envelope'
+      },
+      '/phone': {
+        'ui:requiredWhen': { '/preferPhone': true },
+        'ui:icon': 'phone'
+      },
+      '/fullName': {
+        'ui:calculate': { '$concat': ['/firstName', ' ', '/lastName'] }
+      },
+      '/subtotal': {
+        'ui:calculate': { '$multiply': ['/quantity', '/unitPrice'] }
+      },
+      '/shippingCost': {
+        'ui:calculate': {
+          '$if': {
+            'cond': { '/deliveryType': 'express' },
+            'then': 25,
+            'else': {
+              '$if': {
+                'cond': { '/deliveryType': 'pickup' },
+                'then': 0,
+                'else': 10
+              }
+            }
+          }
+        }
+      },
+      '/total': {
+        'ui:calculate': { '$sum': ['/subtotal', '/shippingCost'] }
+      },
+      '/shippingAddress': {
+        'ui:visibleWhen': { '/deliveryType': { '$ne': 'pickup' } },
+        'ui:layout': 'flex',
+        'ui:layoutOptions': { gap: 'sm', wrap: true }
+      }
+    };
+
+    return html`
+      <div class="alert alert-info">
+        <p><strong>Try these interactions:</strong></p>
+        <ul>
+          <li>Change <strong>Account Type</strong> to "Business" → Company Name field appears and becomes required</li>
+          <li>Toggle <strong>"Prefer phone contact"</strong> → Email is disabled, Phone becomes required</li>
+          <li>Type in <strong>First/Last Name</strong> → Full Name is calculated automatically</li>
+          <li>Change <strong>Quantity</strong> or <strong>Unit Price</strong> → Subtotal and Total update</li>
+          <li>Select <strong>Delivery Type</strong> → Shipping cost changes (Express: $25, Standard: $10, Pickup: $0)</li>
+          <li>Select <strong>"Pickup"</strong> → Shipping Address section is hidden</li>
+        </ul>
+      </div>
+      <pds-jsonform
+        data-required
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const CalculatedValues = {
+  parameters: {
+    docs: {
+      description: {
+        story: `Use \`ui:calculate\` to compute values from other fields. Calculated fields are **read-only by default**.
+
+### Available Operators
+- \`$concat\`: Join strings → \`{ "$concat": ["/first", " ", "/last"] }\`
+- \`$sum\`: Add numbers → \`{ "$sum": ["/a", "/b", "/c"] }\`
+- \`$subtract\`: Subtract → \`{ "$subtract": ["/total", "/discount"] }\`
+- \`$multiply\`: Multiply → \`{ "$multiply": ["/qty", "/price"] }\`
+- \`$divide\`: Divide → \`{ "$divide": ["/total", "/count"] }\`
+- \`$coalesce\`: First non-empty → \`{ "$coalesce": ["/nickname", "/firstName"] }\``
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Invoice Calculator',
+      properties: {
+        firstName: { type: 'string', title: 'First Name', examples: ['John'] },
+        lastName: { type: 'string', title: 'Last Name', examples: ['Doe'] },
+        nickname: { type: 'string', title: 'Nickname (optional)', examples: ['Johnny'] },
+        displayName: { type: 'string', title: 'Display Name (nickname or first name)' },
+        fullName: { type: 'string', title: 'Full Name' },
+        quantity: { type: 'integer', title: 'Quantity', minimum: 1, default: 2 },
+        unitPrice: { type: 'number', title: 'Unit Price ($)', default: 49.99 },
+        subtotal: { type: 'number', title: 'Subtotal' },
+        taxRate: { type: 'number', title: 'Tax Rate (%)', default: 8.5 },
+        taxAmount: { type: 'number', title: 'Tax Amount' },
+        discount: { type: 'number', title: 'Discount ($)', default: 10 },
+        total: { type: 'number', title: 'Grand Total' }
+      }
+    };
+
+    const uiSchema = {
+      'ui:layout': 'grid',
+      'ui:layoutOptions': { columns: 2, gap: 'md' },
+      
+      // String concatenation
+      '/fullName': {
+        'ui:calculate': { '$concat': ['/firstName', ' ', '/lastName'] }
+      },
+      
+      // Coalesce: use nickname if provided, otherwise first name
+      '/displayName': {
+        'ui:calculate': { '$coalesce': ['/nickname', '/firstName'] }
+      },
+      
+      // Multiply: quantity × price
+      '/subtotal': {
+        'ui:calculate': { '$multiply': ['/quantity', '/unitPrice'] }
+      },
+      
+      // Divide + multiply for tax: (subtotal × taxRate) / 100
+      '/taxAmount': {
+        'ui:calculate': { 
+          '$divide': [
+            { '$multiply': ['/subtotal', '/taxRate'] },
+            100
+          ]
+        }
+      },
+      
+      // Sum and subtract: subtotal + tax - discount
+      '/total': {
+        'ui:calculate': { 
+          '$subtract': [
+            { '$sum': ['/subtotal', '/taxAmount'] },
+            '/discount'
+          ]
+        }
+      }
+    };
+
+    return html`
+      <div class="alert alert-info">
+        <p><strong>All calculated fields update automatically:</strong></p>
+        <ul>
+          <li><strong>Full Name</strong> = First + Last (using <code>$concat</code>)</li>
+          <li><strong>Display Name</strong> = Nickname if set, otherwise First Name (using <code>$coalesce</code>)</li>
+          <li><strong>Subtotal</strong> = Quantity × Unit Price (using <code>$multiply</code>)</li>
+          <li><strong>Tax Amount</strong> = Subtotal × Tax Rate ÷ 100 (using <code>$divide</code>)</li>
+          <li><strong>Grand Total</strong> = Subtotal + Tax - Discount (using <code>$sum</code> and <code>$subtract</code>)</li>
+        </ul>
+      </div>
+      <pds-jsonform
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const CalculateWithOverride = {
+  parameters: {
+    docs: {
+      description: {
+        story: `Use \`ui:calculateOverride: true\` to allow users to edit calculated values.
+
+The field starts with a computed value but the user can modify it. This is useful for:
+- Suggested values that can be customized
+- Default calculations that may need manual adjustment
+- "Smart defaults" that users can override
+
+\`\`\`javascript
+'/suggestedPrice': {
+  'ui:calculate': { '$multiply': ['/baseCost', 1.25] },
+  'ui:calculateOverride': true  // User can edit
+}
+\`\`\``
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Product Pricing',
+      properties: {
+        productName: { type: 'string', title: 'Product Name', examples: ['Widget Pro'] },
+        baseCost: { type: 'number', title: 'Base Cost ($)', default: 100 },
+        suggestedPrice: { type: 'number', title: 'Suggested Price (editable)' },
+        finalPrice: { type: 'number', title: 'Final Price (read-only)' },
+        profit: { type: 'number', title: 'Profit Margin' }
+      }
+    };
+
+    const uiSchema = {
+      // Suggested price: calculated but editable
+      '/suggestedPrice': {
+        'ui:calculate': { '$multiply': ['/baseCost', 1.5] },
+        'ui:calculateOverride': true,
+        'ui:help': '💡 Calculated as 1.5× base cost, but you can adjust it'
+      },
+      
+      // Final price: read-only calculation
+      '/finalPrice': {
+        'ui:calculate': { '$coalesce': ['/suggestedPrice', { '$multiply': ['/baseCost', 1.5] }] },
+        'ui:help': '🔒 Read-only: uses your suggested price'
+      },
+      
+      // Profit: final - base
+      '/profit': {
+        'ui:calculate': { '$subtract': ['/finalPrice', '/baseCost'] }
+      }
+    };
+
+    return html`
+      <div class="alert alert-info">
+        <p><strong>Compare editable vs read-only calculations:</strong></p>
+        <ul>
+          <li><strong>Suggested Price</strong> starts at 1.5× base cost but <em>you can edit it</em></li>
+          <li><strong>Final Price</strong> is read-only and reflects your suggested price</li>
+          <li><strong>Profit Margin</strong> updates based on final price - base cost</li>
+        </ul>
+        <p>Try changing the base cost, then manually adjusting the suggested price!</p>
+      </div>
+      <pds-jsonform
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const ConditionalWithIf = {
+  parameters: {
+    docs: {
+      description: {
+        story: `Use \`$if\` for conditional calculations based on other field values.
+
+\`\`\`javascript
+'/shippingCost': {
+  'ui:calculate': {
+    '$if': {
+      'cond': { '/membership': 'premium' },
+      'then': 0,
+      'else': 9.99
+    }
+  }
+}
+\`\`\`
+
+You can nest \`$if\` expressions for multiple conditions.`
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Membership Pricing',
+      properties: {
+        membership: {
+          type: 'string',
+          title: 'Membership Level',
+          enum: ['basic', 'standard', 'premium'],
+          enumNames: ['Basic', 'Standard', 'Premium'],
+          default: 'basic'
+        },
+        orderAmount: { type: 'number', title: 'Order Amount ($)', default: 75 },
+        discountPercent: { type: 'number', title: 'Discount (%)' },
+        discountAmount: { type: 'number', title: 'Discount Amount ($)' },
+        shippingCost: { type: 'number', title: 'Shipping Cost ($)' },
+        finalTotal: { type: 'number', title: 'Final Total ($)' }
+      }
+    };
+
+    const uiSchema = {
+      // Discount percent based on membership: basic=0%, standard=10%, premium=20%
+      '/discountPercent': {
+        'ui:calculate': {
+          '$if': {
+            'cond': { '/membership': 'premium' },
+            'then': 20,
+            'else': {
+              '$if': {
+                'cond': { '/membership': 'standard' },
+                'then': 10,
+                'else': 0
+              }
+            }
+          }
+        }
+      },
+      
+      // Discount amount
+      '/discountAmount': {
+        'ui:calculate': {
+          '$divide': [
+            { '$multiply': ['/orderAmount', '/discountPercent'] },
+            100
+          ]
+        }
+      },
+      
+      // Shipping: free for premium, $5.99 for standard, $9.99 for basic
+      '/shippingCost': {
+        'ui:calculate': {
+          '$if': {
+            'cond': { '/membership': 'premium' },
+            'then': 0,
+            'else': {
+              '$if': {
+                'cond': { '/membership': 'standard' },
+                'then': 5.99,
+                'else': 9.99
+              }
+            }
+          }
+        }
+      },
+      
+      // Final total
+      '/finalTotal': {
+        'ui:calculate': {
+          '$sum': [
+            { '$subtract': ['/orderAmount', '/discountAmount'] },
+            '/shippingCost'
+          ]
+        }
+      }
+    };
+
+    return html`
+      <div class="alert alert-info">
+        <p><strong>Pricing varies by membership level:</strong></p>
+        <table style="width: 100%; text-align: left;">
+          <thead><tr><th>Level</th><th>Discount</th><th>Shipping</th></tr></thead>
+          <tbody>
+            <tr><td>Basic</td><td>0%</td><td>$9.99</td></tr>
+            <tr><td>Standard</td><td>10%</td><td>$5.99</td></tr>
+            <tr><td>Premium</td><td>20%</td><td>FREE</td></tr>
+          </tbody>
+        </table>
+        <p>Change the <strong>Membership Level</strong> to see all values update!</p>
+      </div>
+      <pds-jsonform
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const ConditionalWithRegex = {
+  parameters: {
+    docs: {
+      description: {
+        story: `Use \`$regex\` to match patterns in field values.
+
+\`\`\`javascript
+'/warning': {
+  'ui:visibleWhen': { 
+    '/email': { '$regex': '@(gmail|yahoo|hotmail)\\\\.com$' }
+  }
+}
+\`\`\`
+
+This is useful for:
+- Validating formats (emails, phone numbers, URLs)
+- Showing warnings for specific patterns
+- Enabling features based on input format`
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Email Verification',
+      properties: {
+        email: {
+          type: 'string',
+          format: 'email',
+          title: 'Email Address',
+          examples: ['you@company.com']
+        },
+        personalEmailWarning: {
+          type: 'string',
+          title: 'Personal Email Notice',
+          default: '⚠️ Personal email detected. Consider using a work email for business accounts.'
+        },
+        workEmailConfirmation: {
+          type: 'string',
+          title: 'Work Email Confirmed',
+          default: '✅ Work email detected. You qualify for enterprise features.'
+        },
+        websiteUrl: {
+          type: 'string',
+          title: 'Website URL',
+          examples: ['https://example.com']
+        },
+        secureUrlBadge: {
+          type: 'string',
+          title: 'Security Status',
+          default: '🔒 Secure connection (HTTPS)'
+        },
+        insecureUrlWarning: {
+          type: 'string',
+          title: 'Security Warning',
+          default: '⚠️ Insecure connection. Consider using HTTPS.'
+        }
+      }
+    };
+
+    const uiSchema = {
+      // Show warning for personal email providers
+      '/personalEmailWarning': {
+        'ui:visibleWhen': { 
+          '/email': { '$regex': '@(gmail|yahoo|hotmail|outlook|aol)\\.(com|net|org)$' }
+        },
+        'ui:widget': 'const'
+      },
+      
+      // Show confirmation for non-personal emails (work domains)
+      '/workEmailConfirmation': {
+        'ui:visibleWhen': {
+          '$and': [
+            { '/email': { '$regex': '@.+\\..+$' } },  // Has @ and domain
+            { '/email': { '$regex': '^(?!.*@(gmail|yahoo|hotmail|outlook|aol)\\.)' } }  // NOT personal
+          ]
+        },
+        'ui:widget': 'const'
+      },
+      
+      // Show secure badge for HTTPS URLs
+      '/secureUrlBadge': {
+        'ui:visibleWhen': { '/websiteUrl': { '$regex': '^https://' } },
+        'ui:widget': 'const'
+      },
+      
+      // Show warning for HTTP URLs
+      '/insecureUrlWarning': {
+        'ui:visibleWhen': { '/websiteUrl': { '$regex': '^http://[^s]' } },
+        'ui:widget': 'const'
+      }
+    };
+
+    return html`
+      <div class="alert alert-info">
+        <p><strong>Pattern matching with <code>$regex</code>:</strong></p>
+        <ul>
+          <li>Type a <strong>personal email</strong> (gmail, yahoo, etc.) → Warning appears</li>
+          <li>Type a <strong>work email</strong> (company.com) → Confirmation appears</li>
+          <li>Enter an <strong>https://</strong> URL → Secure badge shown</li>
+          <li>Enter an <strong>http://</strong> URL → Insecure warning shown</li>
+        </ul>
+      </div>
+      <pds-jsonform
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const ConditionalWithLogicalOperators = {
+  parameters: {
+    docs: {
+      description: {
+        story: `Combine conditions with \`$and\`, \`$or\`, and \`$not\` for complex logic.
+
+\`\`\`javascript
+// AND: All conditions must be true
+'ui:visibleWhen': {
+  '$and': [
+    { '/age': { '$gte': 18 } },
+    { '/country': 'US' }
+  ]
+}
+
+// OR: Any condition can be true
+'ui:visibleWhen': {
+  '$or': [
+    { '/role': 'admin' },
+    { '/role': 'moderator' }
+  ]
+}
+
+// NOT: Invert a condition
+'ui:visibleWhen': {
+  '$not': { '/status': 'banned' }
+}
+\`\`\``
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Feature Access Control',
+      properties: {
+        userRole: {
+          type: 'string',
+          title: 'User Role',
+          enum: ['guest', 'member', 'moderator', 'admin'],
+          enumNames: ['Guest', 'Member', 'Moderator', 'Admin'],
+          default: 'guest'
+        },
+        accountStatus: {
+          type: 'string',
+          title: 'Account Status',
+          enum: ['pending', 'active', 'suspended'],
+          enumNames: ['Pending Verification', 'Active', 'Suspended'],
+          default: 'active'
+        },
+        premiumMember: {
+          type: 'boolean',
+          title: 'Premium Membership',
+          default: false
+        },
+        age: {
+          type: 'integer',
+          title: 'Age',
+          minimum: 13,
+          default: 25
+        },
+        // Feature flags (shown/hidden based on conditions)
+        basicFeatures: { type: 'string', title: 'Basic Features', default: '✅ You have access to basic features' },
+        premiumFeatures: { type: 'string', title: 'Premium Features', default: '⭐ Premium features unlocked!' },
+        moderatorTools: { type: 'string', title: 'Moderator Tools', default: '🛡️ Moderator tools available' },
+        adminPanel: { type: 'string', title: 'Admin Panel', default: '👑 Full admin access granted' },
+        ageRestrictedContent: { type: 'string', title: 'Age-Restricted Content', default: '🔞 Adult content unlocked' },
+        suspendedNotice: { type: 'string', title: 'Account Suspended', default: '🚫 Your account is suspended. Contact support.' }
+      }
+    };
+
+    const uiSchema = {
+      'ui:layout': 'grid',
+      'ui:layoutOptions': { columns: 2, gap: 'md' },
+      
+      // Basic features: available to active non-guest users
+      // $and + $not combined
+      '/basicFeatures': {
+        'ui:visibleWhen': {
+          '$and': [
+            { '$not': { '/userRole': 'guest' } },
+            { '/accountStatus': 'active' }
+          ]
+        },
+        'ui:widget': 'const'
+      },
+      
+      // Premium features: premium member OR admin (admins get everything)
+      // $or operator
+      '/premiumFeatures': {
+        'ui:visibleWhen': {
+          '$and': [
+            { '/accountStatus': 'active' },
+            {
+              '$or': [
+                { '/premiumMember': true },
+                { '/userRole': 'admin' }
+              ]
+            }
+          ]
+        },
+        'ui:widget': 'const'
+      },
+      
+      // Moderator tools: moderator OR admin
+      '/moderatorTools': {
+        'ui:visibleWhen': {
+          '$and': [
+            { '/accountStatus': 'active' },
+            {
+              '$or': [
+                { '/userRole': 'moderator' },
+                { '/userRole': 'admin' }
+              ]
+            }
+          ]
+        },
+        'ui:widget': 'const'
+      },
+      
+      // Admin panel: admin only
+      '/adminPanel': {
+        'ui:visibleWhen': {
+          '$and': [
+            { '/userRole': 'admin' },
+            { '/accountStatus': 'active' }
+          ]
+        },
+        'ui:widget': 'const'
+      },
+      
+      // Age-restricted: 18+ and active
+      '/ageRestrictedContent': {
+        'ui:visibleWhen': {
+          '$and': [
+            { '/age': { '$gte': 18 } },
+            { '/accountStatus': 'active' },
+            { '$not': { '/userRole': 'guest' } }
+          ]
+        },
+        'ui:widget': 'const'
+      },
+      
+      // Suspended notice: shown when suspended
+      '/suspendedNotice': {
+        'ui:visibleWhen': { '/accountStatus': 'suspended' },
+        'ui:widget': 'const'
+      }
+    };
+
+    return html`
+      <div class="alert alert-info">
+        <p><strong>Combine conditions with logical operators:</strong></p>
+        <ul>
+          <li><strong>$and</strong>: All conditions must be true</li>
+          <li><strong>$or</strong>: Any condition can be true</li>
+          <li><strong>$not</strong>: Inverts a condition</li>
+        </ul>
+        <p>Try different combinations of Role, Status, Premium, and Age to see which features appear!</p>
+      </div>
+      <pds-jsonform
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const ConditionalWithComparison = {
+  parameters: {
+    docs: {
+      description: {
+        story: `Use comparison operators for numeric and value-based conditions.
+
+| Operator | Description | Example |
+|----------|-------------|---------|
+| \`$eq\` | Equals | \`{ "/status": { "$eq": "active" } }\` |
+| \`$ne\` | Not equals | \`{ "/role": { "$ne": "guest" } }\` |
+| \`$gt\` | Greater than | \`{ "/age": { "$gt": 18 } }\` |
+| \`$gte\` | Greater or equal | \`{ "/score": { "$gte": 80 } }\` |
+| \`$lt\` | Less than | \`{ "/qty": { "$lt": 10 } }\` |
+| \`$lte\` | Less or equal | \`{ "/price": { "$lte": 100 } }\` |
+| \`$in\` | In array | \`{ "/tier": { "$in": ["gold", "platinum"] } }\` |
+| \`$nin\` | Not in array | \`{ "/country": { "$nin": ["XX", "YY"] } }\` |
+| \`$exists\` | Has value | \`{ "/email": { "$exists": true } }\` |`
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Order Validation',
+      properties: {
+        quantity: { type: 'integer', title: 'Quantity', minimum: 1, default: 5 },
+        lowStockWarning: { type: 'string', title: 'Low Stock', default: '⚠️ Low quantity - ships within 24h' },
+        bulkOrderNotice: { type: 'string', title: 'Bulk Order', default: '📦 Bulk order! Contact sales for discount.' },
+        outOfStockError: { type: 'string', title: 'Out of Stock', default: '❌ Quantity too high - only 100 in stock' },
+        
+        country: {
+          type: 'string',
+          title: 'Shipping Country',
+          enum: ['US', 'CA', 'UK', 'DE', 'FR', 'AU', 'JP', 'OTHER'],
+          enumNames: ['United States', 'Canada', 'United Kingdom', 'Germany', 'France', 'Australia', 'Japan', 'Other'],
+          default: 'US'
+        },
+        domesticShipping: { type: 'string', title: 'Domestic Shipping', default: '🚚 Free domestic shipping (US/CA)' },
+        euShipping: { type: 'string', title: 'EU Shipping', default: '🇪🇺 EU shipping available - 5-7 days' },
+        internationalShipping: { type: 'string', title: 'International', default: '✈️ International shipping - 10-14 days' },
+        restrictedCountry: { type: 'string', title: 'Restricted', default: '🚫 Sorry, we cannot ship to this location' },
+        
+        couponCode: { type: 'string', title: 'Coupon Code (optional)', examples: ['SAVE20'] },
+        couponApplied: { type: 'string', title: 'Coupon Status', default: '🎟️ Coupon code detected! Will be validated at checkout.' }
+      }
+    };
+
+    const uiSchema = {
+      // $lt: Low quantity warning (1-3)
+      '/lowStockWarning': {
+        'ui:visibleWhen': { '/quantity': { '$lte': 3 } },
+        'ui:widget': 'const'
+      },
+      
+      // $gte: Bulk order notice (50+)
+      '/bulkOrderNotice': {
+        'ui:visibleWhen': { '/quantity': { '$gte': 50 } },
+        'ui:widget': 'const'
+      },
+      
+      // $gt: Out of stock (>100)
+      '/outOfStockError': {
+        'ui:visibleWhen': { '/quantity': { '$gt': 100 } },
+        'ui:widget': 'const'
+      },
+      
+      // $in: Domestic shipping (US, CA)
+      '/domesticShipping': {
+        'ui:visibleWhen': { '/country': { '$in': ['US', 'CA'] } },
+        'ui:widget': 'const'
+      },
+      
+      // $in: EU shipping
+      '/euShipping': {
+        'ui:visibleWhen': { '/country': { '$in': ['UK', 'DE', 'FR'] } },
+        'ui:widget': 'const'
+      },
+      
+      // $in: International (AU, JP)
+      '/internationalShipping': {
+        'ui:visibleWhen': { '/country': { '$in': ['AU', 'JP'] } },
+        'ui:widget': 'const'
+      },
+      
+      // $eq: Restricted country
+      '/restrictedCountry': {
+        'ui:visibleWhen': { '/country': { '$eq': 'OTHER' } },
+        'ui:widget': 'const'
+      },
+      
+      // $exists: Coupon code entered
+      '/couponApplied': {
+        'ui:visibleWhen': { '/couponCode': { '$exists': true } },
+        'ui:widget': 'const'
+      }
+    };
+
+    return html`
+      <div class="alert alert-info">
+        <p><strong>Comparison operators in action:</strong></p>
+        <ul>
+          <li>Set <strong>Quantity</strong> to 1-3 → Low stock warning (<code>$lte</code>)</li>
+          <li>Set <strong>Quantity</strong> to 50+ → Bulk order notice (<code>$gte</code>)</li>
+          <li>Set <strong>Quantity</strong> over 100 → Out of stock error (<code>$gt</code>)</li>
+          <li>Select <strong>Country</strong> → Different shipping messages (<code>$in</code>)</li>
+          <li>Enter a <strong>Coupon Code</strong> → Confirmation appears (<code>$exists</code>)</li>
+        </ul>
+      </div>
+      <pds-jsonform
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const ConditionalDisabledFields = {
+  parameters: {
+    docs: {
+      description: {
+        story: `Use \`ui:disabledWhen\` to disable fields based on conditions.
+
+Disabled fields remain visible but cannot be edited. Use this for:
+- Mutually exclusive options
+- Fields that become irrelevant based on other choices
+- Read-only states based on form context
+
+\`\`\`javascript
+'/billingAddress': {
+  'ui:disabledWhen': { '/sameAsShipping': true }
+}
+\`\`\``
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Checkout Form',
+      properties: {
+        shippingAddress: { type: 'string', title: 'Shipping Address', examples: ['123 Main St, City, ST 12345'] },
+        sameAsShipping: { type: 'boolean', title: 'Billing address same as shipping', default: true },
+        billingAddress: { type: 'string', title: 'Billing Address', examples: ['456 Oak Ave, Town, ST 67890'] },
+        
+        paymentMethod: {
+          type: 'string',
+          title: 'Payment Method',
+          enum: ['credit', 'debit', 'paypal', 'crypto'],
+          enumNames: ['Credit Card', 'Debit Card', 'PayPal', 'Cryptocurrency'],
+          default: 'credit'
+        },
+        cardNumber: { type: 'string', title: 'Card Number', examples: ['4111 1111 1111 1111'] },
+        cardExpiry: { type: 'string', title: 'Expiry (MM/YY)', examples: ['12/25'] },
+        cardCvv: { type: 'string', title: 'CVV', examples: ['123'] },
+        paypalEmail: { type: 'string', format: 'email', title: 'PayPal Email', examples: ['you@paypal.com'] },
+        cryptoWallet: { type: 'string', title: 'Wallet Address', examples: ['0x1234...'] },
+        
+        orderLocked: { type: 'boolean', title: '🔒 Lock order (prevent changes)', default: false },
+        notes: { type: 'string', title: 'Order Notes', examples: ['Special instructions...'] }
+      }
+    };
+
+    const uiSchema = {
+      // Billing address disabled when "same as shipping" is checked
+      '/billingAddress': {
+        'ui:disabledWhen': { '/sameAsShipping': true },
+        'ui:help': 'Uncheck "same as shipping" to edit'
+      },
+      
+      // Card fields disabled when not using card payment
+      '/cardNumber': {
+        'ui:disabledWhen': { '/paymentMethod': { '$nin': ['credit', 'debit'] } }
+      },
+      '/cardExpiry': {
+        'ui:disabledWhen': { '/paymentMethod': { '$nin': ['credit', 'debit'] } }
+      },
+      '/cardCvv': {
+        'ui:disabledWhen': { '/paymentMethod': { '$nin': ['credit', 'debit'] } }
+      },
+      
+      // PayPal email disabled when not using PayPal
+      '/paypalEmail': {
+        'ui:disabledWhen': { '/paymentMethod': { '$ne': 'paypal' } }
+      },
+      
+      // Crypto wallet disabled when not using crypto
+      '/cryptoWallet': {
+        'ui:disabledWhen': { '/paymentMethod': { '$ne': 'crypto' } }
+      },
+      
+      // Notes disabled when order is locked
+      '/notes': {
+        'ui:disabledWhen': { '/orderLocked': true },
+        'ui:widget': 'textarea',
+        'ui:help': 'Lock order to prevent changes'
+      }
+    };
+
+    return html`
+      <div class="alert alert-info">
+        <p><strong>Fields become disabled based on conditions:</strong></p>
+        <ul>
+          <li>Check <strong>"Same as shipping"</strong> → Billing address disabled</li>
+          <li>Change <strong>Payment Method</strong> → Only relevant fields stay enabled</li>
+          <li>Check <strong>"Lock order"</strong> → Notes field disabled</li>
+        </ul>
+        <p>Disabled fields show their value but prevent editing.</p>
+      </div>
       <pds-jsonform
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}

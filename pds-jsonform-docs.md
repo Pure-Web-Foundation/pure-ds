@@ -675,6 +675,246 @@ To have the submitted value stay as Markdown, set `format` to `"markdown"`:
 
 ---
 
+## Conditional Logic (Interactions)
+
+`pds-jsonform` supports XForms-inspired declarative interactions for showing/hiding fields, enabling/disabling inputs, conditional requirements, and computed values—all defined in the uiSchema.
+
+### Show/Hide Fields (`ui:visibleWhen`)
+
+Conditionally show a field based on other field values:
+
+```javascript
+const uiSchema = {
+  // Show "Other" text field only when category is "other"
+  "/otherCategory": {
+    "ui:visibleWhen": { "/category": "other" }
+  },
+  
+  // Show shipping address only when "different address" is checked
+  "/shippingAddress": {
+    "ui:visibleWhen": { "/useDifferentAddress": true }
+  }
+};
+```
+
+### Disable Fields (`ui:disabledWhen`)
+
+Conditionally disable a field:
+
+```javascript
+const uiSchema = {
+  // Disable email field when "use phone instead" is checked
+  "/email": {
+    "ui:disabledWhen": { "/usePhoneInstead": true }
+  },
+  
+  // Disable submit fields until terms accepted
+  "/promoCode": {
+    "ui:disabledWhen": { "/termsAccepted": { "$ne": true } }
+  }
+};
+```
+
+### Conditional Required (`ui:requiredWhen`)
+
+Make a field required based on conditions:
+
+```javascript
+const uiSchema = {
+  // Require company name when account type is "business"
+  "/companyName": {
+    "ui:requiredWhen": { "/accountType": "business" }
+  },
+  
+  // Require phone when email is empty
+  "/phone": {
+    "ui:requiredWhen": { "/email": { "$eq": "" } }
+  }
+};
+```
+
+### Calculated Values (`ui:calculate`)
+
+Compute field values from other fields. Calculated fields are **read-only by default**.
+
+```javascript
+const uiSchema = {
+  // Full name from first + last
+  "/fullName": {
+    "ui:calculate": { "$concat": ["/firstName", " ", "/lastName"] }
+  },
+  
+  // Total price = quantity × unit price
+  "/totalPrice": {
+    "ui:calculate": { "$multiply": ["/quantity", "/unitPrice"] }
+  },
+  
+  // Allow user to override calculated value
+  "/estimatedDelivery": {
+    "ui:calculate": { "$concat": ["/city", " - 3-5 days"] },
+    "ui:calculateOverride": true
+  }
+};
+```
+
+### Condition Operators
+
+#### Comparison Operators
+
+| Operator | Description | Example |
+|----------|-------------|---------|
+| (none) | Equals (shorthand) | `{ "/field": "value" }` |
+| `$eq` | Equals | `{ "/field": { "$eq": "value" } }` |
+| `$ne` | Not equals | `{ "/field": { "$ne": "value" } }` |
+| `$gt` | Greater than | `{ "/age": { "$gt": 18 } }` |
+| `$gte` | Greater than or equal | `{ "/age": { "$gte": 18 } }` |
+| `$lt` | Less than | `{ "/quantity": { "$lt": 100 } }` |
+| `$lte` | Less than or equal | `{ "/quantity": { "$lte": 100 } }` |
+| `$in` | Value in array | `{ "/status": { "$in": ["active", "pending"] } }` |
+| `$nin` | Value not in array | `{ "/role": { "$nin": ["guest", "banned"] } }` |
+| `$exists` | Field has value | `{ "/optionalField": { "$exists": true } }` |
+| `$regex` | Regex match | `{ "/email": { "$regex": "@company\\.com$" } }` |
+
+#### Logical Operators
+
+Combine conditions with `$and`, `$or`, `$not`:
+
+```javascript
+const uiSchema = {
+  // Show only for premium users in US
+  "/premiumFeature": {
+    "ui:visibleWhen": {
+      "$and": [
+        { "/isPremium": true },
+        { "/country": "US" }
+      ]
+    }
+  },
+  
+  // Show for either admin or moderator
+  "/modTools": {
+    "ui:visibleWhen": {
+      "$or": [
+        { "/role": "admin" },
+        { "/role": "moderator" }
+      ]
+    }
+  },
+  
+  // Hide for guests
+  "/dashboard": {
+    "ui:visibleWhen": {
+      "$not": { "/role": "guest" }
+    }
+  }
+};
+```
+
+### Calculation Operators
+
+| Operator | Description | Example |
+|----------|-------------|---------|
+| `$concat` | Join strings | `{ "$concat": ["/first", " ", "/last"] }` |
+| `$sum` | Add numbers | `{ "$sum": ["/a", "/b", "/c"] }` |
+| `$subtract` | Subtract | `{ "$subtract": ["/total", "/discount"] }` |
+| `$multiply` | Multiply | `{ "$multiply": ["/qty", "/price"] }` |
+| `$divide` | Divide | `{ "$divide": ["/total", "/count"] }` |
+| `$if` | Conditional | `{ "$if": { "cond": {...}, "then": expr, "else": expr } }` |
+| `$coalesce` | First non-empty | `{ "$coalesce": ["/nickname", "/firstName"] }` |
+
+#### Conditional Calculations
+
+```javascript
+const uiSchema = {
+  // Apply discount based on member status
+  "/finalPrice": {
+    "ui:calculate": {
+      "$if": {
+        "cond": { "/isMember": true },
+        "then": { "$multiply": ["/subtotal", 0.9] },
+        "else": "/subtotal"
+      }
+    }
+  }
+};
+```
+
+### Complete Example
+
+```javascript
+const schema = {
+  type: "object",
+  properties: {
+    orderType: { 
+      type: "string", 
+      enum: ["standard", "express", "pickup"],
+      title: "Order Type"
+    },
+    quantity: { type: "integer", minimum: 1, title: "Quantity" },
+    unitPrice: { type: "number", title: "Unit Price" },
+    subtotal: { type: "number", title: "Subtotal" },
+    shippingCost: { type: "number", title: "Shipping" },
+    total: { type: "number", title: "Total" },
+    shippingAddress: {
+      type: "object",
+      title: "Shipping Address",
+      properties: {
+        street: { type: "string" },
+        city: { type: "string" },
+        zip: { type: "string" }
+      }
+    }
+  }
+};
+
+const uiSchema = {
+  // Calculate subtotal
+  "/subtotal": {
+    "ui:calculate": { "$multiply": ["/quantity", "/unitPrice"] }
+  },
+  
+  // Shipping cost depends on order type
+  "/shippingCost": {
+    "ui:calculate": {
+      "$if": {
+        "cond": { "/orderType": "express" },
+        "then": 25,
+        "else": {
+          "$if": {
+            "cond": { "/orderType": "pickup" },
+            "then": 0,
+            "else": 10
+          }
+        }
+      }
+    }
+  },
+  
+  // Calculate total
+  "/total": {
+    "ui:calculate": { "$sum": ["/subtotal", "/shippingCost"] }
+  },
+  
+  // Hide shipping address for pickup orders
+  "/shippingAddress": {
+    "ui:visibleWhen": { "/orderType": { "$ne": "pickup" } }
+  },
+  
+  // Require address fields when visible
+  "/shippingAddress/street": {
+    "ui:requiredWhen": { "/orderType": { "$ne": "pickup" } }
+  },
+  "/shippingAddress/city": {
+    "ui:requiredWhen": { "/orderType": { "$ne": "pickup" } }
+  },
+  "/shippingAddress/zip": {
+    "ui:requiredWhen": { "/orderType": { "$ne": "pickup" } }
+  }
+};
+```
+
+---
+
 ## Options System
 
 The options system provides global and per-path control over form behavior.
