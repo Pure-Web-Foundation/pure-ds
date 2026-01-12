@@ -1142,6 +1142,14 @@ export const WithDialogForms = {
         fiscalYear: { 'ui:icon': 'calendar', 'ui:iconPosition': 'start' },
         department: { 'ui:icon': 'building', 'ui:iconPosition': 'start' }
       },
+      // Flat path for dialog inner form - currency field inside budget dialog
+      '/currency': { 'ui:widget': 'select' },
+      // Flat path for dialog inner form - status field inside timeline dialog
+      '/status': { 'ui:class': 'buttons' },
+      // Flat path for dialog inner form - email field inside teamLead dialog
+      '/email': { 'ui:icon': 'at', 'ui:iconPosition': 'start' },
+      // Flat path for dialog inner form - phone field inside teamLead dialog
+      '/phone': { 'ui:icon': 'phone', 'ui:iconPosition': 'start' },
       timeline: {
         'ui:dialog': true,
         'ui:dialogOptions': {

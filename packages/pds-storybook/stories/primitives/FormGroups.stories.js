@@ -1,12 +1,20 @@
-import { html } from 'lit';
-import { toastFormData } from '../utils/toast-utils.js';
+import { html } from "lit";
+import { toastFormData } from "../utils/toast-utils.js";
 
+const styles = html`
+  <style>
+    /* Story-specific styles for form group demos */
+    .card:has(fieldset) {
+      max-width: 28rem;
+    }
+  </style>
+`;
 export default {
   title: "Primitives/Form Groups",
-  tags: ['grouping'],
+  tags: ["grouping"],
   parameters: {
     pds: {
-      tags: ['forms', 'grouping']
+      tags: ["forms", "radio", "checkbox", "grouping"],
     },
     docs: {
       description: {
@@ -38,10 +46,13 @@ Add the \`.buttons\` class to either type for outlined button-style controls:
 };
 
 export const RadioGroupDefault = () => html`
+  ${styles}
   <div class="card stack-md">
     <header>
       <h3>Radio Group - Default Style</h3>
-      <small class="text-muted">Default radio group with visible radio buttons, vertical layout</small>
+      <small class="text-muted"
+        >Default radio group with visible radio buttons, vertical layout</small
+      >
     </header>
     <fieldset role="radiogroup">
       <legend>Select your plan</legend>
@@ -64,10 +75,14 @@ export const RadioGroupDefault = () => html`
 RadioGroupDefault.storyName = "Radio Group - Default";
 
 export const RadioGroupButtons = () => html`
+  ${styles}
   <div class="card stack-md">
     <header>
       <h3>Radio Group - Button Style</h3>
-      <small class="text-muted">Add <code>class="buttons"</code> for outlined button-style radio controls</small>
+      <small class="text-muted"
+        >Add <code>class="buttons"</code> for outlined button-style radio
+        controls</small
+      >
     </header>
     <fieldset role="radiogroup" class="buttons">
       <legend>Select your plan</legend>
@@ -90,10 +105,13 @@ export const RadioGroupButtons = () => html`
 RadioGroupButtons.storyName = "Radio Group - Buttons";
 
 export const CheckboxGroupDefault = () => html`
+${styles}
   <div class="card stack-md">
     <header>
       <h3>Checkbox Group - Default Style</h3>
-      <small class="text-muted">Default checkbox group with visible checkboxes, vertical layout</small>
+      <small class="text-muted"
+        >Default checkbox group with visible checkboxes, vertical layout</small
+      >
     </header>
     <fieldset role="group">
       <legend>Select features</legend>
@@ -125,10 +143,14 @@ export const CheckboxGroupDefault = () => html`
 CheckboxGroupDefault.storyName = "Checkbox Group - Default";
 
 export const CheckboxGroupButtons = () => html`
+${styles}
   <div class="card stack-md">
     <header>
       <h3>Checkbox Group - Button Style</h3>
-      <small class="text-muted">Add <code>class="buttons"</code> for outlined button-style checkboxes</small>
+      <small class="text-muted"
+        >Add <code>class="buttons"</code> for outlined button-style
+        checkboxes</small
+      >
     </header>
     <fieldset role="group" class="buttons">
       <legend>Select features</legend>
@@ -160,10 +182,15 @@ export const CheckboxGroupButtons = () => html`
 CheckboxGroupButtons.storyName = "Checkbox Group - Buttons";
 
 export const StyleComparison = () => html`
+
+${styles}
   <div class="card stack-md">
     <header>
       <h3>Side-by-Side Comparison</h3>
-      <small class="text-muted">Compare default vs button styles for both radio and checkbox groups</small>
+      <small class="text-muted"
+        >Compare default vs button styles for both radio and checkbox
+        groups</small
+      >
     </header>
     <div class="grid grid-cols-2 gap-lg">
       <div class="stack-md">
@@ -256,10 +283,14 @@ export const StyleComparison = () => html`
 StyleComparison.storyName = "Style Comparison";
 
 export const ToggleSwitches = () => html`
+${styles}
   <div class="card stack-md gap-lg">
     <header>
       <h3>Toggle Switches</h3>
-      <small class="text-muted">Uses <code>data-toggle</code> attribute for enhanced toggle switch styling</small>
+      <small class="text-muted"
+        >Uses <code>data-toggle</code> attribute for enhanced toggle switch
+        styling</small
+      >
     </header>
 
     <section class="card">
@@ -298,11 +329,14 @@ export const ToggleSwitches = () => html`
 ToggleSwitches.storyName = "Toggle Switches";
 
 export const CustomLayout = () => html`
+${styles}
   <div class="card stack-md">
     <h3>Custom Layout with Flex Utilities</h3>
-    <div class="alert alert-info">Override default column layout using standard CSS flex properties</div>
+    <div class="alert alert-info">
+      Override default column layout using standard CSS flex properties
+    </div>
 
-    <fieldset role="radiogroup" class="flex flex-wrap gap-sm">
+    <fieldset role="radiogroup" class="flex-row flex-wrap gap-sm">
       <legend>Horizontal Radio Group (flex-direction: row)</legend>
       <label>
         <input type="radio" name="horizontal-radio" value="1" checked />
@@ -318,7 +352,7 @@ export const CustomLayout = () => html`
       </label>
     </fieldset>
 
-    <fieldset role="group" class="flex flex-wrap gap-sm">
+    <fieldset role="group" class="flex-row flex-wrap gap-sm">
       <legend>Horizontal Checkbox Group (flex-direction: row)</legend>
       <label>
         <input type="checkbox" name="horizontal-check" value="1" checked />
@@ -339,10 +373,13 @@ export const CustomLayout = () => html`
 CustomLayout.storyName = "Custom Layout";
 
 export const ButtonStyleVariants = () => html`
+${styles}
   <div class="card stack-md">
     <header>
       <h3>Button Style Variants</h3>
-      <small class="text-muted">Examples of button-style groups in different contexts</small>
+      <small class="text-muted"
+        >Examples of button-style groups in different contexts</small
+      >
     </header>
     <div class="stack-md gap-lg max-w-lg">
       <fieldset role="radiogroup" class="buttons">
@@ -421,7 +458,10 @@ export const AccessibleFormGroups = {
       <div class="card stack-md">
         <header>
           <h2>Accessibility Features</h2>
-          <small class="text-muted">Form groups include proper ARIA attributes, semantic HTML, and keyboard navigation support.</small>
+          <small class="text-muted"
+            >Form groups include proper ARIA attributes, semantic HTML, and
+            keyboard navigation support.</small
+          >
         </header>
         <div class="card max-w-md">
           <form class="stack-md gap-lg" @submit=${handleSubmit}>
@@ -436,7 +476,12 @@ export const AccessibleFormGroups = {
 
               <fieldset role="group" class="flex flex-row">
                 <label>
-                  <input type="radio" name="notification" value="email" checked />
+                  <input
+                    type="radio"
+                    name="notification"
+                    value="email"
+                    checked
+                  />
                   <span>Email only</span>
                 </label>
                 <label>
@@ -456,7 +501,9 @@ export const AccessibleFormGroups = {
 
             <fieldset role="group" aria-describedby="topics-help">
               <legend>Topics to Follow</legend>
-              <small id="topics-help" class="text-muted">Select all topics you're interested in</small>
+              <small id="topics-help" class="text-muted"
+                >Select all topics you're interested in</small
+              >
               <label data-toggle>
                 <input type="checkbox" name="topics" value="product" checked />
                 <span>Product Updates</span>
@@ -472,14 +519,16 @@ export const AccessibleFormGroups = {
             </fieldset>
 
             <nav class="flex gap-sm">
-              <button type="submit" class="btn-primary">Save Preferences</button>
+              <button type="submit" class="btn-primary">
+                Save Preferences
+              </button>
               <button type="reset" class="btn-secondary">Reset</button>
             </nav>
           </form>
         </div>
       </div>
     `;
-  }
+  },
 };
 
 AccessibleFormGroups.storyName = "Accessible Form Groups";

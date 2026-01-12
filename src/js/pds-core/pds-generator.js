@@ -1810,10 +1810,8 @@ form {
 }
 
 fieldset {
-  margin: 0;
-  padding: var(--spacing-5);
+  margin: 0;  
   width: 100%;
-  background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
   
   /* Unified styling for radio groups and checkbox groups */
   &[role="radiogroup"],
@@ -4231,9 +4229,6 @@ nav[data-dropdown] {
 
   :where(fieldset) {
     border: none;
-    padding: var(--spacing-4);
-    margin: 0 0 var(--spacing-4) 0;
-    background-color: var(--color-surface-subtle);
   }
 
   :where(legend) {
