@@ -2091,12 +2091,12 @@ export const RootThreeColumnGrid = {
   }
 };
 
-export const EnumWithEnumNames = {
-  name: 'Enum with enumNames',
+export const EnumWithOneOfAnyOf = {
+  name: 'Selection Fields with Custom Labels (oneOf/anyOf)',
   parameters: {
     docs: {
       description: {
-        story: `Use \`enumNames\` to provide human-friendly display labels for enum values.
+        story: `Use \`oneOf\` or \`anyOf\` with \`const\` and \`title\` to provide human-friendly display labels for enum values.
 
 This is useful when you want to store technical values (like language codes or IDs) while showing user-friendly labels.
 
@@ -2106,14 +2106,20 @@ const schema = {
     language: {
       type: 'string',
       title: 'Language',
-      enum: ['en', 'es', 'fr', 'de', 'zh', 'ja'],           // Values stored
-      enumNames: ['English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese']  // Labels shown
+      oneOf: [                            // Use oneOf or anyOf
+        { const: 'en', title: 'English' },
+        { const: 'es', title: 'Spanish' },
+        { const: 'fr', title: 'French' },
+        { const: 'de', title: 'German' },
+        { const: 'zh', title: 'Chinese' },
+        { const: 'ja', title: 'Japanese' }
+      ]
     }
   }
 };
 \`\`\`
 
-The \`enumNames\` array must match the length and order of the \`enum\` array. Works with select dropdowns, radio buttons, and checkbox groups.`
+Both \`oneOf\` and \`anyOf\` work identically for this purpose. Each option should have \`const\` (the value stored) and \`title\` (the label displayed). Works with select dropdowns, radio buttons, and checkbox groups.`
       }
     }
   },
@@ -2125,21 +2131,37 @@ The \`enumNames\` array must match the length and order of the \`enum\` array. W
         language: {
           type: 'string',
           title: 'Language',
-          enum: ['en', 'es', 'fr', 'de', 'zh', 'ja'],
-          enumNames: ['English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese'],
+          oneOf: [
+            { const: 'en', title: 'English' },
+            { const: 'es', title: 'Spanish' },
+            { const: 'fr', title: 'French' },
+            { const: 'de', title: 'German' },
+            { const: 'zh', title: 'Chinese' },
+            { const: 'ja', title: 'Japanese' }
+          ],
           default: 'en'
         },
         country: {
           type: 'string',
           title: 'Country',
-          enum: ['US', 'GB', 'CA', 'AU', 'DE', 'FR'],
-          enumNames: ['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France']
+          anyOf: [
+            { const: 'US', title: 'United States' },
+            { const: 'GB', title: 'United Kingdom' },
+            { const: 'CA', title: 'Canada' },
+            { const: 'AU', title: 'Australia' },
+            { const: 'DE', title: 'Germany' },
+            { const: 'FR', title: 'France' }
+          ]
         },
         priority: {
           type: 'string',
           title: 'Priority Level',
-          enum: ['p1', 'p2', 'p3', 'p4'],
-          enumNames: ['🔴 Critical', '🟠 High', '🟡 Medium', '🟢 Low'],
+          oneOf: [
+            { const: 'p1', title: '🔴 Critical' },
+            { const: 'p2', title: '🟠 High' },
+            { const: 'p3', title: '🟡 Medium' },
+            { const: 'p4', title: '🟢 Low' }
+          ],
           default: 'p3'
         },
         interests: {
@@ -2147,8 +2169,13 @@ The \`enumNames\` array must match the length and order of the \`enum\` array. W
           title: 'Interests (checkbox group)',
           items: {
             type: 'string',
-            enum: ['dev', 'design', 'pm', 'qa', 'devops'],
-            enumNames: ['Development', 'Design', 'Project Management', 'Quality Assurance', 'DevOps']
+            oneOf: [
+              { const: 'dev', title: 'Development' },
+              { const: 'design', title: 'Design' },
+              { const: 'pm', title: 'Project Management' },
+              { const: 'qa', title: 'Quality Assurance' },
+              { const: 'devops', title: 'DevOps' }
+            ]
           },
           uniqueItems: true
         }
@@ -2196,8 +2223,12 @@ const uiSchema = {
         reason: {
           type: 'string',
           title: 'How did you hear about us?',
-          enum: ['search', 'social', 'friend', 'other'],
-          enumNames: ['Search Engine', 'Social Media', 'Friend Referral', 'Other... (please specify)']
+          oneOf: [
+            { const: 'search', title: 'Search Engine' },
+            { const: 'social', title: 'Social Media' },
+            { const: 'friend', title: 'Friend Referral' },
+            { const: 'other', title: 'Other... (please specify)' }
+          ]
         },
         otherReason: {
           type: 'string',
@@ -2315,8 +2346,10 @@ export const ConditionalComplex = {
         accountType: {
           type: 'string',
           title: 'Account Type',
-          enum: ['personal', 'business'],
-          enumNames: ['Personal', 'Business'],
+          oneOf: [
+            { const: 'personal', title: 'Personal' },
+            { const: 'business', title: 'Business' }
+          ],
           default: 'personal'
         },
         companyName: {
@@ -2357,8 +2390,11 @@ export const ConditionalComplex = {
         deliveryType: {
           type: 'string',
           title: 'Delivery Type',
-          enum: ['standard', 'express', 'pickup'],
-          enumNames: ['Standard (5-7 days)', 'Express (1-2 days)', 'Pickup'],
+          oneOf: [
+            { const: 'standard', title: 'Standard (5-7 days)' },
+            { const: 'express', title: 'Express (1-2 days)' },
+            { const: 'pickup', title: 'Pickup' }
+          ],
           default: 'standard'
         },
         quantity: {
@@ -2664,8 +2700,11 @@ You can nest \`$if\` expressions for multiple conditions.`
         membership: {
           type: 'string',
           title: 'Membership Level',
-          enum: ['basic', 'standard', 'premium'],
-          enumNames: ['Basic', 'Standard', 'Premium'],
+          oneOf: [
+            { const: 'basic', title: 'Basic' },
+            { const: 'standard', title: 'Standard' },
+            { const: 'premium', title: 'Premium' }
+          ],
           default: 'basic'
         },
         orderAmount: { type: 'number', title: 'Order Amount ($)', default: 75 },
@@ -2905,15 +2944,22 @@ export const ConditionalWithLogicalOperators = {
         userRole: {
           type: 'string',
           title: 'User Role',
-          enum: ['guest', 'member', 'moderator', 'admin'],
-          enumNames: ['Guest', 'Member', 'Moderator', 'Admin'],
+          oneOf: [
+            { const: 'guest', title: 'Guest' },
+            { const: 'member', title: 'Member' },
+            { const: 'moderator', title: 'Moderator' },
+            { const: 'admin', title: 'Admin' }
+          ],
           default: 'guest'
         },
         accountStatus: {
           type: 'string',
           title: 'Account Status',
-          enum: ['pending', 'active', 'suspended'],
-          enumNames: ['Pending Verification', 'Active', 'Suspended'],
+          oneOf: [
+            { const: 'pending', title: 'Pending Verification' },
+            { const: 'active', title: 'Active' },
+            { const: 'suspended', title: 'Suspended' }
+          ],
           default: 'active'
         },
         premiumMember: {
@@ -3068,8 +3114,16 @@ export const ConditionalWithComparison = {
         country: {
           type: 'string',
           title: 'Shipping Country',
-          enum: ['US', 'CA', 'UK', 'DE', 'FR', 'AU', 'JP', 'OTHER'],
-          enumNames: ['United States', 'Canada', 'United Kingdom', 'Germany', 'France', 'Australia', 'Japan', 'Other'],
+          oneOf: [
+            { const: 'US', title: 'United States' },
+            { const: 'CA', title: 'Canada' },
+            { const: 'UK', title: 'United Kingdom' },
+            { const: 'DE', title: 'Germany' },
+            { const: 'FR', title: 'France' },
+            { const: 'AU', title: 'Australia' },
+            { const: 'JP', title: 'Japan' },
+            { const: 'OTHER', title: 'Other' }
+          ],
           default: 'US'
         },
         domesticShipping: { type: 'string', title: 'Domestic Shipping', default: '🚚 Free domestic shipping (US/CA)' },
@@ -3183,8 +3237,12 @@ Disabled fields remain visible but cannot be edited. Use this for:
         paymentMethod: {
           type: 'string',
           title: 'Payment Method',
-          enum: ['credit', 'debit', 'paypal', 'crypto'],
-          enumNames: ['Credit Card', 'Debit Card', 'PayPal', 'Cryptocurrency'],
+          oneOf: [
+            { const: 'credit', title: 'Credit Card' },
+            { const: 'debit', title: 'Debit Card' },
+            { const: 'paypal', title: 'PayPal' },
+            { const: 'crypto', title: 'Cryptocurrency' }
+          ],
           default: 'credit'
         },
         cardNumber: { type: 'string', title: 'Card Number', examples: ['4111 1111 1111 1111'] },

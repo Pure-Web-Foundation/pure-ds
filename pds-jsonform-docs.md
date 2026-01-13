@@ -209,7 +209,62 @@ render(template, document.getElementById('app'));
   maxLength: 100,            // Maximum characters
   pattern: "^[A-Z].*",       // Regex pattern
   format: "email",           // email, url, date, time, color, etc.
-  enum: ["small", "medium", "large"]  // Fixed choices
+  enum: ["small", "medium", "large"]  // Fixed choices (simple values)
+}
+```
+
+#### Selection Fields with Custom Labels
+
+For selection fields where you want different display labels than the stored values, use `oneOf` or `anyOf` with `const` and `title`:
+
+```javascript
+{
+  type: "string",
+  title: "Language",
+  oneOf: [
+    { const: "en", title: "English" },
+    { const: "es", title: "Spanish" },
+    { const: "fr", title: "French" },
+    { const: "de", title: "German" }
+  ]
+}
+```
+
+This generates a select/radio field that displays "English" but stores "en" when selected. Works with:
+- Select dropdowns (>5 options)
+- Radio buttons (≤5 options)  
+- Checkbox groups (when used with array type)
+
+You can also use `anyOf` instead of `oneOf` - both work identically for this purpose:
+
+```javascript
+{
+  type: "string",
+  title: "Priority",
+  anyOf: [
+    { const: "p1", title: "🔴 Critical" },
+    { const: "p2", title: "🟠 High" },
+    { const: "p3", title: "🟡 Medium" },
+    { const: "p4", title: "🟢 Low" }
+  ]
+}
+```
+
+For checkbox groups (multi-select), use with array type:
+
+```javascript
+{
+  type: "array",
+  title: "Interests",
+  items: {
+    type: "string",
+    oneOf: [
+      { const: "dev", title: "Development" },
+      { const: "design", title: "Design" },
+      { const: "pm", title: "Project Management" }
+    ]
+  },
+  uniqueItems: true
 }
 ```
 

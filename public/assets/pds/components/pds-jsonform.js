@@ -491,7 +491,16 @@ export class SchemaForm extends LitElement {
     });
     if (custom?.node) return custom.node;
 
+    // Check if oneOf/anyOf is used for enum-like selections (all have const)
+    // If so, treat as a field with enum options, not as a complex choice
     if (schema.oneOf || schema.anyOf) {
+      const { values } = this.#extractEnumOptions(schema);
+      // If all options have const values, treat as enum field
+      if (values.length > 0) {
+        const widgetKey = this.#decideWidget(schema, ui, path);
+        return { kind: "field", path, title, schema, ui, widgetKey };
+      }
+      // Otherwise, treat as complex choice (for actual oneOf/anyOf schemas)
       const choices = (schema.oneOf || schema.anyOf).map((s, i) => ({
         kind: "choice-option",
         index: i,
@@ -520,8 +529,9 @@ export class SchemaForm extends LitElement {
           ? { type: "object", properties: {} }
           : schema.items || {};
 
-        // Special case: array with enum items → checkbox-group
-        if (itemSchema.enum && Array.isArray(itemSchema.enum)) {
+        // Special case: array with enum/oneOf/anyOf items → checkbox-group
+        const { values } = this.#extractEnumOptions(itemSchema);
+        if (values.length > 0) {
           return {
             kind: "field",
             path,
@@ -559,6 +569,49 @@ export class SchemaForm extends LitElement {
     return ordered;
   }
 
+  // Helper to extract enum values and labels from enum, oneOf, or anyOf
+  #extractEnumOptions(schema) {
+    // Support standard enum array
+    if (schema.enum && Array.isArray(schema.enum)) {
+      return {
+        values: schema.enum,
+        labels: schema.enum.map(String)
+      };
+    }
+
+    // Support oneOf pattern: [{ const: value, title: label }, ...]
+    if (schema.oneOf && Array.isArray(schema.oneOf)) {
+      const values = [];
+      const labels = [];
+      for (const option of schema.oneOf) {
+        if (option.const !== undefined) {
+          values.push(option.const);
+          labels.push(option.title ?? String(option.const));
+        }
+      }
+      if (values.length > 0) {
+        return { values, labels };
+      }
+    }
+
+    // Support anyOf pattern: [{ const: value, title: label }, ...]
+    if (schema.anyOf && Array.isArray(schema.anyOf)) {
+      const values = [];
+      const labels = [];
+      for (const option of schema.anyOf) {
+        if (option.const !== undefined) {
+          values.push(option.const);
+          labels.push(option.title ?? String(option.const));
+        }
+      }
+      if (values.length > 0) {
+        return { values, labels };
+      }
+    }
+
+    return { values: [], labels: [] };
+  }
+
   #decideWidget(schema, ui, path) {
     const picked = this.#emitCancelable("pw:choose-widget", {
       path,
@@ -569,7 +622,8 @@ export class SchemaForm extends LitElement {
     if (picked?.widget) return picked.widget;
     // Honor explicit uiSchema widget hints
     if (ui?.["ui:widget"]) return ui["ui:widget"];
-    if (schema.enum) return schema.enum.length <= 5 ? "radio" : "select";
+    const { values } = this.#extractEnumOptions(schema);
+    if (values.length > 0) return values.length <= 5 ? "radio" : "select";
     if (schema.const !== undefined) return "const";
     if (schema.type === "string") {
       // Check for binary/upload content via JSON Schema contentMediaType
@@ -1806,8 +1860,7 @@ export class SchemaForm extends LitElement {
         const useDropdown =
           host.#getOption("widgets.selects", "standard") === "dropdown" ||
           ui?.["ui:dropdown"] === true;
-        const enumValues = schema.enum || [];
-        const enumLabels = schema.enumNames || enumValues;
+        const { values: enumValues, labels: enumLabels } = host.#extractEnumOptions(schema);
         return html`
           <select
             id=${id}
@@ -1832,9 +1885,8 @@ export class SchemaForm extends LitElement {
 
     // Radio group: returns ONLY the labeled inputs
     // Matches PDS pattern: input hidden, label styled as button
-    this.defineRenderer("radio", ({ id, path, value, attrs, set, schema }) => {
-      const enumValues = schema.enum || [];
-      const enumLabels = schema.enumNames || enumValues;
+    this.defineRenderer("radio", ({ id, path, value, attrs, set, schema, host }) => {
+      const { values: enumValues, labels: enumLabels } = host.#extractEnumOptions(schema);
       return html`
         ${enumValues.map((v, i) => {
           const rid = `${id}-${i}`;
@@ -1862,11 +1914,11 @@ export class SchemaForm extends LitElement {
     // Shows actual checkboxes (not button-style like radios)
     this.defineRenderer(
       "checkbox-group",
-      ({ id, path, value, attrs, set, schema }) => {
+      ({ id, path, value, attrs, set, schema, host }) => {
         const selected = Array.isArray(value) ? value : [];
-        const options = schema.items?.enum || schema.enum || [];
-        const optionLabels =
-          schema.items?.enumNames || schema.enumNames || options;
+        // For array items, check items schema first, then fallback to root schema
+        const itemSchema = schema.items || schema;
+        const { values: options, labels: optionLabels } = host.#extractEnumOptions(itemSchema);
 
         return html`
           ${options.map((v, i) => {
