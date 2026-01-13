@@ -1,4 +1,4 @@
-import { html } from 'lit';
+﻿import { html } from 'lit';
 import { toastFormData } from '../utils/toast-utils.js';
 
 // Story-specific styles (not PDS classes - demo only)
@@ -9,7 +9,7 @@ const formsStoryStyles = html`
 `;
 
 export default {
-  title: 'Primitives/Forms',
+  title: 'Primitives/Form Elements',
   tags: ['buttons', 'forms'],
   parameters: {
     pds: {
@@ -19,7 +19,7 @@ export default {
       description: {
         component: `Standard HTML form controls styled by PDS. 
 
-**💡 For modern apps, consider using [pds-jsonform](/story/components-pds-jsonform--simple-form)** - a powerful web component that automatically generates forms from JSON Schema with built-in validation, conditional logic, and data binding.
+**💡 For modern apps, consider using [pds-form](/story/components-pds-form--simple-form)** - a powerful web component that automatically generates forms from JSON Schema with built-in validation, conditional logic, and data binding.
 
 These primitive form controls provide the foundation for manual form building when you need full control over the markup.`
       }

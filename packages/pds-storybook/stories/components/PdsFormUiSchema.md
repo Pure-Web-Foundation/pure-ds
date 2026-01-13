@@ -1,6 +1,6 @@
-# pds-jsonform uiSchema Reference
+﻿# pds-form uiSchema Reference
 
-The **uiSchema** is the configuration object that controls how `pds-jsonform` renders and behaves. While JSON Schema defines *what* data to collect, uiSchema defines *how* to collect it.
+The **uiSchema** is the configuration object that controls how `pds-form` renders and behaves. While JSON Schema defines *what* data to collect, uiSchema defines *how* to collect it.
 
 ## Path Notation
 

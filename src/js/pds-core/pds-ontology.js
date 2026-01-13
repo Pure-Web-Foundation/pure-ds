@@ -1,4 +1,4 @@
-// Pure Design System Ontology (PDS)
+﻿// Pure Design System Ontology (PDS)
 // This file is the single source-of-truth metadata for primitives, components, tokens, themes and enhancements.
 // Used by PDS.query() for searching and correlating concepts.
 
@@ -223,10 +223,10 @@ export const ontology = {
       category: "feedback"
     },
     { 
-      id: "pds-jsonform", 
+      id: "pds-form", 
       name: "JSON Form", 
       description: "Auto-generated form from JSON Schema",
-      selectors: ["pds-jsonform"],
+      selectors: ["pds-form"],
       tags: ["form", "schema", "auto-generate"],
       category: "form"
     },
@@ -481,7 +481,7 @@ export const ontology = {
     form: {
       description: "Form inputs and controls",
       primitives: ["button", "fieldset", "label-field", "form"],
-      components: ["pds-upload", "pds-jsonform", "pds-richtext", "pds-calendar"]
+      components: ["pds-upload", "pds-form", "pds-richtext", "pds-calendar"]
     },
     layout: {
       description: "Page structure and content arrangement",
@@ -541,7 +541,7 @@ export const ontology = {
     content: ["text", "typography", "body", "article"],
     
     // Forms & Inputs
-    form: ["input", "field", "label", "button", "fieldset", "pds-jsonform", "pds-upload", "pds-richtext", "pds-calendar", "required", "validation", "submit"],
+    form: ["input", "field", "label", "button", "fieldset", "pds-form", "pds-upload", "pds-richtext", "pds-calendar", "required", "validation", "submit"],
     input: ["form", "field", "text", "label", "required", "validation"],
     field: ["form", "input", "label", "required"],
     button: ["btn", "interactive", "action", "submit", "form", "btn-primary", "btn-secondary", "btn-working"],

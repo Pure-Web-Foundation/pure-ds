@@ -1,10 +1,10 @@
-# pds-jsonform Documentation
+﻿# pds-form Documentation
 
 A powerful, extensible JSON Schema form generator for the Pure Design System (PDS). Automatically generates accessible, styled forms from JSON Schema with extensive customization through UI schemas and options.
 
 ## Overview
 
-`pds-jsonform` transforms JSON Schema definitions into fully-styled, validated forms with zero boilerplate. It leverages JSON Schema for validation and structure, while providing extensive UI customization through UI schemas.
+`pds-form` transforms JSON Schema definitions into fully-styled, validated forms with zero boilerplate. It leverages JSON Schema for validation and structure, while providing extensive UI customization through UI schemas.
 
 ### Key Features
 
@@ -77,7 +77,7 @@ A powerful, extensible JSON Schema form generator for the Pure Design System (PD
 
 ```javascript
 import { html, render } from 'lit';
-import '/assets/pds/components/pds-jsonform.js';
+import '/assets/pds/components/pds-form.js';
 
 const schema = {
   type: "object",
@@ -111,7 +111,7 @@ const schema = {
 };
 
 const template = html`
-  <pds-jsonform
+  <pds-form
     .jsonSchema=${schema}
     @pw:submit=${(e) => {
       console.log('Form submitted:', e.detail);
@@ -119,7 +119,7 @@ const template = html`
         console.log('Data:', e.detail.json);
       }
     }}
-  ></pds-jsonform>
+  ></pds-form>
 `;
 
 render(template, document.getElementById('app'));
@@ -137,7 +137,7 @@ render(template, document.getElementById('app'));
   <div id="form-container"></div>
   
   <script type="module">
-    import '/assets/pds/components/pds-jsonform.js';
+    import '/assets/pds/components/pds-form.js';
     
     const schema = {
       type: "object",
@@ -161,7 +161,7 @@ render(template, document.getElementById('app'));
       }
     };
     
-    const form = document.createElement('pds-jsonform');
+    const form = document.createElement('pds-form');
     form.jsonSchema = schema;
     
     form.addEventListener('pw:submit', (e) => {
@@ -180,7 +180,7 @@ render(template, document.getElementById('app'));
 
 ## JSON Schema Basics
 
-`pds-jsonform` uses [JSON Schema](https://json-schema.org/) to define form structure and validation.
+`pds-form` uses [JSON Schema](https://json-schema.org/) to define form structure and validation.
 
 ### Supported Types
 
@@ -399,7 +399,7 @@ const uiSchema = {
 ### Public Methods
 
 ```javascript
-const form = document.querySelector('pds-jsonform');
+const form = document.querySelector('pds-form');
 
 // Define custom widget renderer
 form.defineRenderer('my-widget', ({ id, value, set }) => {
@@ -743,7 +743,7 @@ To have the submitted value stay as Markdown, set `format` to `"markdown"`:
 
 ## Conditional Logic (Interactions)
 
-`pds-jsonform` supports XForms-inspired declarative interactions for showing/hiding fields, enabling/disabling inputs, conditional requirements, and computed values—all defined in the uiSchema.
+`pds-form` supports XForms-inspired declarative interactions for showing/hiding fields, enabling/disabling inputs, conditional requirements, and computed values—all defined in the uiSchema.
 
 ### Show/Hide Fields (`ui:visibleWhen`)
 
@@ -1041,7 +1041,7 @@ Functions receive a `field` object with the full render context:
   attrs,   // Native constraint attributes
   get,     // Get value at path: field.get("/otherField")
   set,     // Set value: field.set(newValue)
-  host     // Reference to pds-jsonform element
+  host     // Reference to pds-form element
 }
 ```
 
@@ -1050,7 +1050,7 @@ Functions receive a `field` object with the full render context:
 Define content in HTML and reference it in uiSchema:
 
 ```html
-<pds-jsonform .jsonSchema=${schema} .uiSchema=${uiSchema}>
+<pds-form .jsonSchema=${schema} .uiSchema=${uiSchema}>
   <div slot="welcome-header" class="alert alert-success">
     <strong>Welcome!</strong> Fill out the form below.
   </div>
@@ -1058,7 +1058,7 @@ Define content in HTML and reference it in uiSchema:
   <p slot="terms-footer" class="text-sm text-muted">
     By submitting, you agree to our <a href="#">Terms</a>.
   </p>
-</pds-jsonform>
+</pds-form>
 ```
 
 ```javascript
@@ -1254,7 +1254,7 @@ const myOptions = {
   }
 };
 
-html`<pds-jsonform .jsonSchema=${schema} .options=${myOptions}></pds-jsonform>`;
+html`<pds-form .jsonSchema=${schema} .options=${myOptions}></pds-form>`;
 ```
 
 ### Path-Specific Options
@@ -1925,7 +1925,7 @@ const initialValues = {
 Define custom widgets for complete control:
 
 ```javascript
-const form = document.querySelector('pds-jsonform');
+const form = document.querySelector('pds-form');
 
 form.defineRenderer('color-picker', ({ id, value, set, ui }) => {
   return html`
@@ -1966,7 +1966,7 @@ const uiSchema = {
 
 ## Event Hooks
 
-`pds-jsonform` emits events throughout the form lifecycle:
+`pds-form` emits events throughout the form lifecycle:
 
 ### Compilation Events
 
@@ -2169,13 +2169,13 @@ const options = {
 };
 
 html`
-  <pds-jsonform
+  <pds-form
     .jsonSchema=${schema}
     .uiSchema=${uiSchema}
     .options=${options}
     submit-label="Create Account"
     @pw:submit=${handleSubmit}
-  ></pds-jsonform>
+  ></pds-form>
 `;
 ```
 
@@ -2277,7 +2277,7 @@ const schema = {
 ### Form with Custom Validation
 
 ```javascript
-const form = document.querySelector('pds-jsonform');
+const form = document.querySelector('pds-form');
 
 form.useValidator(async (data, schema) => {
   const errors = [];
@@ -2499,13 +2499,13 @@ const options = {
 };
 
 html`
-  <pds-jsonform 
+  <pds-form 
     .jsonSchema=${schema}
     .uiSchema=${uiSchema}
     .options=${options}
     @pw:value-change=${(e) => console.log('Changed:', e.detail)}
     @pw:submit=${(e) => console.log('Submitted:', e.detail)}
-  ></pds-jsonform>
+  ></pds-form>
 `;
 ```
 

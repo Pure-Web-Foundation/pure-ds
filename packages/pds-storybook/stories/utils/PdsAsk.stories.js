@@ -1,4 +1,4 @@
-import { html } from 'lit';
+﻿import { html } from 'lit';
 import { ask as askFallback } from '../../../../src/js/common/ask.js';
 import { toastFormData } from './toast-utils.js';
 
@@ -128,7 +128,7 @@ export const BareConfirm = {
   }
 };
 
-export const SimpleForm = {
+export const MiniForm = {
   name: 'Mini form submission',
   render: () => {
     const handleClick = async (event) => {
@@ -263,8 +263,8 @@ export const QuickConfirm = {
   }
 };
 
-export const JsonformSubdialog = {
-  name: 'Embed a pds-jsonform subform',
+export const formSubdialog = {
+  name: 'Embed a pds-form subform',
   render: () => {
     const handleClick = async (event) => {
       const ask = ensureAsk();
@@ -278,13 +278,13 @@ export const JsonformSubdialog = {
       const dialogResult = await ask(
         html`
           <form method="dialog" class="stack-md min-w-sm">
-            <pds-jsonform
+            <pds-form
               id="spotlight-form"
               .jsonSchema=${marketingSchema}
               .uiSchema=${marketingUiSchema}
               .values=${marketingInitialValues}
               hide-actions
-            ></pds-jsonform>
+            ></pds-form>
             <input type="hidden" name="spotlight" value="" />
           </form>
         `,
@@ -330,7 +330,7 @@ export const JsonformSubdialog = {
               });
 
               if (typeof customElements?.whenDefined === 'function') {
-                customElements.whenDefined('pds-jsonform').then(() => syncHidden());
+                customElements.whenDefined('pds-form').then(() => syncHidden());
               } else {
                 syncHidden();
               }
@@ -367,7 +367,7 @@ export const JsonformSubdialog = {
       >
         <h3>Deep editing workflows</h3>
         <p>
-          Use <code>PDS.ask()</code> with <code>useForm: true</code> to mount an entire <code>&lt;pds-jsonform&gt;</code>
+          Use <code>PDS.ask()</code> with <code>useForm: true</code> to mount an entire <code>&lt;pds-form&gt;</code>
           inside the dialog. The promise resolves with the form data, letting you merge the changes into the parent flow.
         </p>
         <button class="btn btn-outline" @click=${handleClick}>Edit spotlight copy</button>

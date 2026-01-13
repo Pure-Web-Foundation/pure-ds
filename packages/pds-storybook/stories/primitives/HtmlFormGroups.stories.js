@@ -10,7 +10,7 @@ const styles = html`
   </style>
 `;
 export default {
-  title: "Primitives/Form Groups",
+  title: 'Primitives/HTML Form Groups',
   tags: ["grouping"],
   parameters: {
     pds: {

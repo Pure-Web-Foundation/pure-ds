@@ -42,7 +42,7 @@ stories/
 │   ├── PdsUpload.stories.js
 │   ├── PdsToaster.stories.js
 │   ├── PdsRichtext.stories.js
-│   ├── PdsJsonform.stories.js
+│   ├── PdsForm.stories.js
 │   ├── PdsSplitpanel.stories.js
 │   └── PdsScrollrow.stories.js
 ├── patterns/              # Layout & utilities

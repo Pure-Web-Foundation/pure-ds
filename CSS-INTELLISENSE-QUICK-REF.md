@@ -1,4 +1,4 @@
-# CSS IntelliSense Quick Reference
+﻿# CSS IntelliSense Quick Reference
 
 Quick reference for using PDS IntelliSense in your projects.
 
@@ -208,7 +208,7 @@ Progressive enhancement attributes (with IntelliSense):
 <pds-drawer position="right|left|top|bottom">
 <pds-icon icon="star|heart|bell|...">
 <pds-upload accept="image/*">
-<pds-jsonform>
+<pds-form>
 <pds-tabstrip>
 <pds-toaster>
 <pds-richtext>

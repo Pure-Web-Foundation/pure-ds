@@ -1,4 +1,4 @@
-# Pure Design System (PDS)
+﻿# Pure Design System (PDS)
 
 > ⚠️ **Beta Software** - APIs are stabilizing but may still change. Pin versions in production: `"@pure-ds/core": "~0.3.0"`
 
@@ -166,7 +166,7 @@ A growing set of PDS components:
 - `<pds-icon>` — SVG sprite icons
 - `<pds-drawer>` — Slide-out panels
 - `<pds-tabstrip>` — Accessible tabs
-- `<pds-jsonform>` — Forms from JSON Schema
+- `<pds-form>` — Forms from JSON Schema
 - `<pds-upload>` — Drag & drop file upload
 - `<pds-richtext>` — Rich text / Markdown editor
 - `<pds-splitpanel>` — Resizable panes
@@ -707,9 +707,9 @@ Features:
 - Undo/redo
 - Markdown shortcuts
 
-**`<pds-jsonform>`** - Dynamic forms from JSON Schema
+**`<pds-form>`** - Dynamic forms from JSON Schema
 ```html
-<pds-jsonform schema='{"type":"object","properties":{...}}'></pds-jsonform>
+<pds-form schema='{"type":"object","properties":{...}}'></pds-form>
 ```
 
 Generates complete forms with validation from JSON Schema.

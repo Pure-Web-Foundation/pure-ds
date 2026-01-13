@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Story Generator for Pure Design System Storybook
  * 
  * Reads pds-ontology.js and pds-demo.js to auto-generate stories
@@ -51,7 +51,7 @@ const STORY_GROUPS = {
       'pds-upload',
       'pds-toaster',
       'pds-richtext',
-      'pds-jsonform',
+      'pds-form',
       'pds-splitpanel',
       'pds-scrollrow'
     ]

@@ -1,4 +1,4 @@
-import { useEffect } from '@storybook/preview-api';
+﻿import { useEffect } from '@storybook/preview-api';
 import { addons } from '@storybook/preview-api';
 import { EVENTS } from './constants.js';
 import { render as litRender } from 'lit';
@@ -166,13 +166,12 @@ export const withHTMLExtractor = (storyFn, context) => {
         html = formatHTML(extractHTML(container));
       }
 
-      const forms = Array.from(container.querySelectorAll('pds-jsonform'));
-      const jsonForms = forms
+      const forms = Array.from(container.querySelectorAll('pds-form'))
         .map((form, index) => {
           const label =
             form.getAttribute?.('id') ||
             form.getAttribute?.('name') ||
-            (forms.length > 1 ? `Form ${index + 1}` : 'Form');
+            (Array.from(container.querySelectorAll('pds-form')).length > 1 ? `Form ${index + 1}` : 'Form');
 
           const jsonSchema = serializeForDisplay(form.jsonSchema);
           const uiSchema = serializeForDisplay(form.uiSchema);
@@ -190,7 +189,7 @@ export const withHTMLExtractor = (storyFn, context) => {
 
       channel.emit(EVENTS.UPDATE_HTML, {
         markup: html || '',
-        jsonForms
+        forms
       });
     }
   };

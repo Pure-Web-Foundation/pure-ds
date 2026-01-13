@@ -1,4 +1,4 @@
-import { LitElement, html, nothing, render, unsafeHTML } from "../../../src/js/lit.js";
+﻿import { LitElement, html, nothing, render, unsafeHTML } from "../../../src/js/lit.js";
 import { PDS } from "../../../src/js/pds.js";
 
 import { AutoComplete } from "pure-web/ac";
@@ -1056,7 +1056,7 @@ customElements.define(
     scrollToRelevantSection(fieldPath) {
       console.log("🎯 Scrolling to section for field:", fieldPath);
 
-      // Remove leading slash if present (pds-jsonform sends "/behavior.transitionSpeed")
+      // Remove leading slash if present (pds-form sends "/behavior.transitionSpeed")
       const normalizedPath = fieldPath.startsWith("/")
         ? fieldPath.slice(1)
         : fieldPath;

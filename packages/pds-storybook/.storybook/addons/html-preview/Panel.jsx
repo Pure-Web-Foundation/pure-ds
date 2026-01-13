@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+﻿import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useChannel } from '@storybook/manager-api';
 import { IconButton } from '@storybook/components';
 import { EVENTS } from './constants.js';
@@ -109,10 +109,10 @@ const CheckIcon = () => (
 );
 
 export const Panel = ({ active }) => {
-  const [source, setSource] = useState({ markup: '', jsonForms: [] });
+  const [source, setSource] = useState({ markup: '', forms: [] });
   const [copied, setCopied] = useState(false);
   const [highlightedMarkup, setHighlightedMarkup] = useState('');
-  const [highlightedJsonForms, setHighlightedJsonForms] = useState([]);
+  const [highlightedforms, setHighlightedforms] = useState([]);
   const shikiRef = useRef(null);
   
   // Get Storybook theme to detect light/dark mode
@@ -161,10 +161,10 @@ export const Panel = ({ active }) => {
     }
   }, [source.markup, shikiTheme]);
 
-  // Highlight jsonForms schemas when source or theme changes
+  // Highlight forms schemas when source or theme changes
   useEffect(() => {
-    if (!source.jsonForms || source.jsonForms.length === 0) {
-      setHighlightedJsonForms([]);
+    if (!source.forms || source.forms.length === 0) {
+      setHighlightedforms([]);
       return;
     }
 
@@ -181,9 +181,9 @@ export const Panel = ({ active }) => {
       return `<pre><code>${escapeHtml(code)}</code></pre>`;
     };
 
-    const processJsonForms = async () => {
+    const processforms = async () => {
       const highlighted = await Promise.all(
-        source.jsonForms.map(async (form, index) => ({
+        source.forms.map(async (form, index) => ({
           id: form.id ?? index,
           label: form.label,
           jsonSchema: await highlightJsonCode(form.jsonSchema),
@@ -191,34 +191,34 @@ export const Panel = ({ active }) => {
           options: await highlightJsonCode(form.options)
         }))
       );
-      setHighlightedJsonForms(highlighted);
+      setHighlightedforms(highlighted);
     };
 
-    processJsonForms();
-  }, [source.jsonForms, shikiTheme]);
+    processforms();
+  }, [source.forms, shikiTheme]);
 
   useChannel({
     [EVENTS.UPDATE_HTML]: (payload) => {
       if (typeof payload === 'string') {
-        setSource({ markup: payload || '', jsonForms: [] });
+        setSource({ markup: payload || '', forms: [] });
         return;
       }
 
       if (payload && typeof payload === 'object') {
         setSource({
           markup: payload.markup || '',
-          jsonForms: Array.isArray(payload.jsonForms) ? payload.jsonForms : []
+          forms: Array.isArray(payload.forms) ? payload.forms : []
         });
         return;
       }
 
-      setSource({ markup: '', jsonForms: [] });
+      setSource({ markup: '', forms: [] });
     }
   });
 
   // Request HTML update when panel becomes active
   React.useEffect(() => {
-    if (active && !source.markup && source.jsonForms.length === 0) {
+    if (active && !source.markup && source.forms.length === 0) {
       // Trigger a re-extraction by emitting a request event
       // The decorator will pick this up on the next render cycle
       const container = document.querySelector('#storybook-root');
@@ -230,7 +230,7 @@ export const Panel = ({ active }) => {
         }, 100);
       }
     }
-  }, [active, source.markup, source.jsonForms.length]);
+  }, [active, source.markup, source.forms.length]);
 
   const copyToClipboard = useCallback(async () => {
     try {
@@ -244,9 +244,9 @@ export const Panel = ({ active }) => {
   }, [source.markup]);
 
   const hasMarkup = Boolean(source.markup);
-  const hasJsonForms = source.jsonForms.length > 0;
+  const hasforms = source.forms.length > 0;
 
-  if (!hasMarkup && !hasJsonForms) {
+  if (!hasMarkup && !hasforms) {
     return (
       <Container>
         <EmptyState>
@@ -266,10 +266,10 @@ export const Panel = ({ active }) => {
         </SectionWrapper>
       )}
 
-      {hasJsonForms && source.jsonForms.map((sourceForm, index) => {
+      {hasforms && source.forms.map((sourceForm, index) => {
         const key = sourceForm.id ?? index;
-        const highlightedForm = highlightedJsonForms[index];
-        const heading = source.jsonForms.length > 1 ? (sourceForm.label || `Form ${index + 1}`) : 'pds-jsonform';
+        const highlightedForm = highlightedforms[index];
+        const heading = source.forms.length > 1 ? (sourceForm.label || `Form ${index + 1}`) : 'pds-form';
 
         return (
           <SectionWrapper key={key}>

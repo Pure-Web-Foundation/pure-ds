@@ -1,4 +1,4 @@
-{
+﻿{
   "schemaVersion": "1.0.0",
   "readme": "",
   "modules": [
@@ -671,11 +671,11 @@
     },
     {
       "kind": "javascript-module",
-      "path": "public/assets/pds/components/pds-jsonform.js",
+      "path": "public/assets/pds/components/pds-form.js",
       "declarations": [
         {
           "kind": "class",
-          "description": "<pds-jsonform>\n\nForm Actions:\nBy default, the form includes Submit and Reset buttons inside the <form> element.\n\nUsage options:\n1. Default buttons:\n   <pds-jsonform .jsonSchema=${schema}></pds-jsonform>\n\n2. Customize labels:\n   <pds-jsonform .jsonSchema=${schema} submit-label=\"Save\" reset-label=\"Clear\"></pds-jsonform>\n\n3. Hide reset button:\n   <pds-jsonform .jsonSchema=${schema} hide-reset></pds-jsonform>\n\n4. Add extra buttons (slot):\n   <pds-jsonform .jsonSchema=${schema}>\n     <button type=\"button\" slot=\"actions\"",
+          "description": "<pds-form>\n\nForm Actions:\nBy default, the form includes Submit and Reset buttons inside the <form> element.\n\nUsage options:\n1. Default buttons:\n   <pds-form .jsonSchema=${schema}></pds-form>\n\n2. Customize labels:\n   <pds-form .jsonSchema=${schema} submit-label=\"Save\" reset-label=\"Clear\"></pds-form>\n\n3. Hide reset button:\n   <pds-form .jsonSchema=${schema} hide-reset></pds-form>\n\n4. Add extra buttons (slot):\n   <pds-form .jsonSchema=${schema}>\n     <button type=\"button\" slot=\"actions\"",
           "name": "SchemaForm",
           "members": [
             {
@@ -953,9 +953,9 @@
           ],
           "superclass": {
             "name": "LitElement",
-            "module": "/public/assets/pds/components/pds-jsonform.js"
+            "module": "/public/assets/pds/components/pds-form.js"
           },
-          "tagName": "pds-jsonform",
+          "tagName": "pds-form",
           "customElement": true
         }
       ],
@@ -965,15 +965,15 @@
           "name": "SchemaForm",
           "declaration": {
             "name": "SchemaForm",
-            "module": "public/assets/pds/components/pds-jsonform.js"
+            "module": "public/assets/pds/components/pds-form.js"
           }
         },
         {
           "kind": "custom-element-definition",
-          "name": "pds-jsonform",
+          "name": "pds-form",
           "declaration": {
             "name": "SchemaForm",
-            "module": "public/assets/pds/components/pds-jsonform.js"
+            "module": "public/assets/pds/components/pds-form.js"
           }
         }
       ]

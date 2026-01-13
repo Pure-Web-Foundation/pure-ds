@@ -1,4 +1,4 @@
-import { LitElement, html, nothing } from "../../../src/js/lit.js";
+﻿import { LitElement, html, nothing } from "../../../src/js/lit.js";
 //import { config } from "../config";
 import { Generator } from "../../../src/js/pds-core/pds-generator.js";
 import { presets } from "../../../src/js/pds-core/pds-config.js";
@@ -429,7 +429,7 @@ customElements.define(
       );
     }
 
-    // Flatten nested config to dot-notation for pds-jsonform
+    // Flatten nested config to dot-notation for pds-form
     flattenConfig(obj, prefix = "") {
       const flattened = {};
       for (const [key, value] of Object.entries(obj)) {
@@ -444,7 +444,7 @@ customElements.define(
       return flattened;
     }
 
-    // Get schema property paths in JSON Pointer format for pds-jsonform
+    // Get schema property paths in JSON Pointer format for pds-form
     getSchemaProperties(schema, prefix = "") {
       const paths = new Set();
       if (!schema || !schema.properties) return paths;
@@ -486,7 +486,7 @@ customElements.define(
     }
 
     handleFormChange = (event) => {
-      // Get values from the pds-jsonform's serialize method or from event detail
+      // Get values from the pds-form's serialize method or from event detail
       let values;
       let changedField = null;
 
@@ -501,9 +501,9 @@ customElements.define(
       } else {
         // pw:value-change event - get values directly from the form element
         const form =
-          event.currentTarget?.tagName?.toUpperCase() === "PDS-JSONFORM"
+          event.currentTarget?.tagName?.toUpperCase() === "pds-form"
             ? event.currentTarget
-            : this.querySelector("pds-jsonform");
+            : this.querySelector("pds-form");
 
         if (form) {
           // Use getValuesFlat() to get JSON Pointer formatted keys
@@ -873,7 +873,7 @@ export const pdsConfig = ${JSON.stringify(this.config, null, 2)};
           </div>
 
           <div class="designer-form-container">
-            <pds-jsonform
+            <pds-form
               .jsonSchema=${this.schema}
               .uiSchema=${this._designerUiSchema()}
               .values=${this.formValues || {}}
@@ -882,7 +882,7 @@ export const pdsConfig = ${JSON.stringify(this.config, null, 2)};
               @pw:value-change=${this.handleFormChange}
               @pw:serialize=${this.handleFormChange}
             >
-            </pds-jsonform>
+            </pds-form>
           </div>
 
           <div class="designer-actions">
@@ -1009,7 +1009,7 @@ export const pdsConfig = ${JSON.stringify(this.config, null, 2)};
         "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
       ];
 
-      // UI schema (paths use the pds-jsonform path notation, e.g. /typography/fontFamilyHeadings)
+      // UI schema (paths use the pds-form path notation, e.g. /typography/fontFamilyHeadings)
       const ui = {};
 
       // Font family fields: use datalist via ui.datalist

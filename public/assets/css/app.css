@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Pure Design System Builder - App-Specific Styles
  * These styles are for the design system builder interface itself,
  * NOT part of the generated design system CSS
@@ -214,7 +214,7 @@ pds-config-form {
   }
 }
 
-pds-jsonform form > fieldset {
+pds-form form > fieldset {
   _padding: 0;
   margin: 0;
 

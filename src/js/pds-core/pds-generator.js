@@ -1,4 +1,4 @@
-import { registry as pdsRegistry } from "./pds-registry.js";
+﻿import { registry as pdsRegistry } from "./pds-registry.js";
 
 /**
  * Generator - A JS-config-first design system
@@ -3059,7 +3059,7 @@ dialog form {
   margin: 0;
 }
 
-/* Dialog fields - to open pds-jsonform subforms */
+/* Dialog fields - to open pds-form subforms */
 .dialog-field {
     margin-top: var(--spacing-3);
 }

@@ -154,11 +154,11 @@ export const SpacingScale = {
           <h3>Vertical Stacks</h3>
           <article class="card spacing-demo-card">
             <div class="story-spacing-demo-card__stack">
-              <div class="story-spacing-demo-card__bar spacing-card-spacing-1"></div>
-              <div class="story-spacing-demo-card__bar spacing-card-spacing-2"></div>
-              <div class="story-spacing-demo-card__bar spacing-card-spacing-3"></div>
-              <div class="story-spacing-demo-card__bar spacing-card-spacing-4"></div>
-              <div class="story-spacing-demo-card__bar spacing-card-spacing-5"></div>
+              <div class="story-spacing-demo-card__bar story-spacing-card-spacing-1"></div>
+              <div class="story-spacing-demo-card__bar story-spacing-card-spacing-2"></div>
+              <div class="story-spacing-demo-card__bar story-spacing-card-spacing-3"></div>
+              <div class="story-spacing-demo-card__bar story-spacing-card-spacing-4"></div>
+              <div class="story-spacing-demo-card__bar story-spacing-card-spacing-5"></div>
             </div>
           </article>
         </div>

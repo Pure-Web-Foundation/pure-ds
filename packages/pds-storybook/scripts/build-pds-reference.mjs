@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 
 // Consolidated reference data generator for Pure Design System Storybook
 // Combines metadata from custom-elements.json, the PDS ontology, and Storybook stories
@@ -49,10 +49,10 @@ const OUTPUT_PATH = path.join(OUTPUT_DIR, 'pds-reference.json');
 const TYPE_METADATA_CACHE = new Map();
 
 const SPECIAL_COMPONENT_OVERRIDES = {
-  'pds-jsonform': {
+  'pds-form': {
     title: 'PDS JSON Schema Form',
     notes: [
-      'Typed interfaces for `JsonFormOptions`, `UISchema`, and related events live in `src/js/pds.d.ts`.',
+      'Typed interfaces for `formOptions`, `UISchema`, and related events live in `src/js/pds.d.ts`.',
       'The form accepts standard JSON Schema (Draft 7) documents via the `jsonSchema` property. `uiSchema` and `options` fine-tune layout, widgets, and behaviors.'
     ],
     properties: {
@@ -65,7 +65,7 @@ const SPECIAL_COMPONENT_OVERRIDES = {
         description: 'Optional UI overrides keyed by JSON Pointer. Controls layout, widgets, surfaces, dialogs, and per-field hints.'
       },
       options: {
-        type: 'JsonFormOptions',
+        type: 'formOptions',
         description: 'Toolkit-level options that adjust widget families, layouts, and validation behavior. Supports path-specific overrides.'
       },
       values: {
@@ -76,37 +76,37 @@ const SPECIAL_COMPONENT_OVERRIDES = {
     events: [
       {
         name: 'pw:submit',
-        detail: 'JsonFormSubmitDetail',
+        detail: 'formSubmitDetail',
         description: 'Emitted after submission. `detail` includes `{ json, formData, valid, issues }` for server hand-off or additional processing.'
       },
       {
         name: 'pw:value-change',
-        detail: 'JsonFormValueChangeDetail',
+        detail: 'formValueChangeDetail',
         description: 'Live value updates whenever a field changes. `detail.name` contains the JSON Pointer-compatible path.'
       },
       {
         name: 'pw:array-add',
-        detail: 'JsonFormArrayEventDetail',
+        detail: 'formArrayEventDetail',
         description: 'Triggered when an array item is appended. Carries the path and index metadata.'
       },
       {
         name: 'pw:array-remove',
-        detail: 'JsonFormArrayEventDetail',
+        detail: 'formArrayEventDetail',
         description: 'Triggered when an array item is removed.'
       },
       {
         name: 'pw:array-reorder',
-        detail: 'JsonFormArrayEventDetail',
+        detail: 'formArrayEventDetail',
         description: 'Triggered when array items are reordered (drag & drop scenarios).' 
       },
       {
         name: 'pw:dialog-open',
-        detail: 'JsonFormDialogEventDetail',
+        detail: 'formDialogEventDetail',
         description: 'Fires before a dialog-driven field opens (e.g. complex editors).' 
       },
       {
         name: 'pw:dialog-submit',
-        detail: 'JsonFormDialogEventDetail',
+        detail: 'formDialogEventDetail',
         description: 'Fires when a dialog-driven field is saved.'
       }
     ]

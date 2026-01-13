@@ -1,4 +1,4 @@
-import { LitElement, html, nothing, ifDefined, ref, keyed } from "#pds/lit";
+﻿import { LitElement, html, nothing, ifDefined, ref, keyed } from "#pds/lit";
 
 function getStep(value) {
   if (typeof value === "number") {
@@ -8,7 +8,7 @@ function getStep(value) {
   return "1"; // Default step for integers
 }
 
-// Default options for pds-jsonform
+// Default options for pds-form
 const DEFAULT_OPTIONS = {
   widgets: {
     booleans: "toggle", // 'toggle' | 'checkbox'
@@ -31,33 +31,33 @@ const DEFAULT_OPTIONS = {
 };
 
 /**
- * <pds-jsonform>
+ * <pds-form>
  *
  * Form Actions:
  * By default, the form includes Submit and Reset buttons inside the <form> element.
  *
  * Usage options:
  * 1. Default buttons:
- *    <pds-jsonform .jsonSchema=${schema}></pds-jsonform>
+ *    <pds-form .jsonSchema=${schema}></pds-form>
  *
  * 2. Customize labels:
- *    <pds-jsonform .jsonSchema=${schema} submit-label="Save" reset-label="Clear"></pds-jsonform>
+ *    <pds-form .jsonSchema=${schema} submit-label="Save" reset-label="Clear"></pds-form>
  *
  * 3. Hide reset button:
- *    <pds-jsonform .jsonSchema=${schema} hide-reset></pds-jsonform>
+ *    <pds-form .jsonSchema=${schema} hide-reset></pds-form>
  *
  * 4. Add extra buttons (slot):
- *    <pds-jsonform .jsonSchema=${schema}>
+ *    <pds-form .jsonSchema=${schema}>
  *      <button type="button" slot="actions" @click=${...}>Cancel</button>
- *    </pds-jsonform>
+ *    </pds-form>
  *
  * 5. Completely custom actions (hides default buttons):
- *    <pds-jsonform .jsonSchema=${schema} hide-actions>
+ *    <pds-form .jsonSchema=${schema} hide-actions>
  *      <div slot="actions" class="flex gap-md">
  *        <button type="submit" class="btn btn-primary">Custom Submit</button>
  *        <button type="button" class="btn">Custom Action</button>
  *      </div>
- *    </pds-jsonform>
+ *    </pds-form>
  */
 export class SchemaForm extends LitElement {
   static properties = {
@@ -943,14 +943,14 @@ export class SchemaForm extends LitElement {
       try {
         // Use PDS.ask to show dialog with form - it returns FormData when useForm: true
         const formData = await window.PDS.ask(
-          html`<pds-jsonform
+          html`<pds-form
             .jsonSchema=${dialogSchema}
             .values=${currentValue}
             .uiSchema=${this.uiSchema}
             .options=${this.options}
             hide-actions
             hide-legend
-          ></pds-jsonform>`,
+          ></pds-form>`,
           {
             title: dialogTitle,
             type: "custom",
@@ -2362,4 +2362,4 @@ export class SchemaForm extends LitElement {
   }
 }
 
-customElements.define("pds-jsonform", SchemaForm);
+customElements.define("pds-form", SchemaForm);

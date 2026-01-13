@@ -1,4 +1,4 @@
-# PDS Storybook - Quick Start Guide
+﻿# PDS Storybook - Quick Start Guide
 
 ## For PDS Developers
 
@@ -139,7 +139,7 @@ Then run `pds-storybook` to export with your config.
 - `pds-upload` - File upload
 - `pds-toaster` - Toast notifications
 - `pds-richtext` - Rich text editor (use `#showdown` import map, optional `format="markdown"`)
-- `pds-jsonform` - JSON Schema forms
+- `pds-form` - JSON Schema forms
 - `pds-splitpanel` - Resizable panes
 - `pds-scrollrow` - Horizontal scroll
 
