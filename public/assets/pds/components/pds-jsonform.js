@@ -91,6 +91,7 @@ export class SchemaForm extends LitElement {
   #slottedActions = [];
   #dependencies = new Map(); // targetPath → Set of sourcePaths that affect it
   #resetKey = 0; // Incremented on reset to force Lit to recreate DOM elements
+  #slottedContent = new Map(); // slot name → element for ui:before/ui:after slot references
 
   constructor() {
     super();
@@ -166,10 +167,18 @@ export class SchemaForm extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    // Capture slotted actions before first render (Light DOM doesn't support native slots)
+    // Capture slotted elements before first render (Light DOM doesn't support native slots)
     this.#slottedActions = Array.from(
       this.querySelectorAll('[slot="actions"]')
     );
+    // Capture all named slots for ui:before/ui:after references
+    this.#slottedContent = new Map();
+    this.querySelectorAll('[slot]').forEach((el) => {
+      const slotName = el.getAttribute('slot');
+      if (slotName && slotName !== 'actions') {
+        this.#slottedContent.set(slotName, el);
+      }
+    });
   }
 
   // ===== Lit lifecycle =====
@@ -779,15 +788,24 @@ export class SchemaForm extends LitElement {
     `;
 
     // Wrap in surface if specified
+    let result = fieldsetContent;
     if (surface) {
       const surfaceClass =
         surface === "card" || surface === "elevated" || surface === "dialog"
           ? `surface ${surface}`
           : "surface";
-      return html`<div class=${surfaceClass}>${fieldsetContent}</div>`;
+      result = html`<div class=${surfaceClass}>${fieldsetContent}</div>`;
     }
 
-    return fieldsetContent;
+    // Apply ui:before and ui:after for fieldsets
+    const renderContext = { path: node.path, schema: node.schema, ui, node, host: this };
+    const before = this.#renderCustomContent(ui?.["ui:before"], renderContext);
+    const after = this.#renderCustomContent(ui?.["ui:after"], renderContext);
+    
+    if (before || after) {
+      return html`${before}${result}${after}`;
+    }
+    return result;
   }
 
   #renderFieldsetTabs(node, legend, ui) {
@@ -1325,23 +1343,37 @@ export class SchemaForm extends LitElement {
       readOnly: isReadonly,
     };
 
+    // Build base render context (shared by ui:render, renderers, and ui:wrapper)
+    const baseContext = {
+      id,
+      path,
+      label,
+      value,
+      required: isRequired,
+      ui,
+      schema: node.schema,
+      get: (p) => this.#getByPath(this.#data, p ?? path),
+      set: (val, p) => this.#assignValue(p ?? path, val),
+      attrs,
+      host: this,
+    };
+
+    // Check for ui:render - completely custom inline renderer (same context as defineRenderer)
+    if (ui?.["ui:render"] && typeof ui["ui:render"] === "function") {
+      const customTpl = ui["ui:render"](baseContext);
+      const before = this.#renderCustomContent(ui?.["ui:before"], baseContext);
+      const after = this.#renderCustomContent(ui?.["ui:after"], baseContext);
+      queueMicrotask(() =>
+        this.#emit("pw:after-render-field", { path, schema: node.schema })
+      );
+      return html`${before}${customTpl}${after}`;
+    }
+
     // Default renderer lookup: returns ONLY the control markup
     const renderer =
       this.#renderers.get(node.widgetKey) || this.#renderers.get("*");
     let controlTpl = renderer
-      ? renderer({
-          id,
-          path,
-          label,
-          value,
-          required: isRequired,
-          ui,
-          schema: node.schema,
-          get: (p) => this.#getByPath(this.#data, p ?? path),
-          set: (val, p) => this.#assignValue(p ?? path, val),
-          attrs,
-          host: this,
-        })
+      ? renderer(baseContext)
       : nothing;
 
     // Post-creation tweak
@@ -1417,12 +1449,47 @@ export class SchemaForm extends LitElement {
       return html`<span data-label>${label}</span> ${controlTpl}`;
     };
 
-    return html`
+    // Build render context for custom content
+    const renderContext = {
+      id,
+      path,
+      label,
+      value,
+      required: isRequired,
+      ui,
+      schema: node.schema,
+      get: (p) => this.#getByPath(this.#data, p ?? path),
+      set: (val, p) => this.#assignValue(p ?? path, val),
+      attrs,
+      host: this,
+      // Additional context for ui:wrapper
+      control: controlTpl,
+      help: help ? html`<div data-help>${help}</div>` : nothing,
+    };
+
+    // Check for ui:wrapper - custom wrapper replaces the entire label structure
+    if (ui?.["ui:wrapper"] && typeof ui["ui:wrapper"] === "function") {
+      const wrapped = ui["ui:wrapper"](renderContext);
+      const before = this.#renderCustomContent(ui?.["ui:before"], renderContext);
+      const after = this.#renderCustomContent(ui?.["ui:after"], renderContext);
+      return html`${before}${wrapped}${after}`;
+    }
+
+    // Standard label wrapper with ui:before/ui:after
+    const before = this.#renderCustomContent(ui?.["ui:before"], renderContext);
+    const after = this.#renderCustomContent(ui?.["ui:after"], renderContext);
+
+    const labelTpl = html`
       <label for=${id} ?data-toggle=${isToggle} class=${ifDefined(labelClass)}>
         ${renderControlAndLabel(isToggle)}
         ${help ? html`<div data-help>${help}</div>` : nothing}
       </label>
     `;
+
+    if (before || after) {
+      return html`${before}${labelTpl}${after}`;
+    }
+    return labelTpl;
   }
 
   // ===== Default renderers: controls only (no spread arrays) =====
@@ -2188,6 +2255,34 @@ export class SchemaForm extends LitElement {
 
   #isGroupWidget(key) {
     return key === "radio" || key === "checkbox-group";
+  }
+
+  /**
+   * Render custom content from ui:before, ui:after values.
+   * Supports:
+   * - Function: (context) => html`...` - called with render context
+   * - String starting with "slot:": looks up slotted element by name
+   * - null/undefined: returns nothing
+   * @param {Function|string|undefined} content - The content definition
+   * @param {object} context - Render context with path, schema, value, etc.
+   * @returns {TemplateResult|Element|typeof nothing}
+   */
+  #renderCustomContent(content, context) {
+    if (!content) return nothing;
+    
+    // Function: call with context
+    if (typeof content === "function") {
+      return content(context);
+    }
+    
+    // String: slot reference (e.g., "slot:myHeader")
+    if (typeof content === "string" && content.startsWith("slot:")) {
+      const slotName = content.slice(5); // Remove "slot:" prefix
+      const slotEl = this.#slottedContent.get(slotName);
+      return slotEl ? slotEl : nothing;
+    }
+    
+    return nothing;
   }
 
   // ===== Event helpers =====

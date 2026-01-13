@@ -39,6 +39,17 @@ A powerful, extensible JSON Schema form generator for the Pure Design System (PD
   - [Layout Options](#layout-options)
   - [Field Customization](#field-customization)
   - [Advanced Features](#advanced-features)
+- [Conditional Logic (Interactions)](#conditional-logic-interactions)
+  - [Show/Hide Fields](#showhide-fields-uivisiblewhen)
+  - [Disable Fields](#disable-fields-uidisabledwhen)
+  - [Conditional Required](#conditional-required-uirequiredwhen)
+  - [Calculated Values](#calculated-values-uicalculate)
+  - [Condition Operators](#condition-operators)
+- [Custom Content Injection](#custom-content-injection)
+  - [Content Before/After Fields](#content-beforeafter-fields-uibefore-uiafter)
+  - [Slot References](#slot-references)
+  - [Custom Field Rendering](#custom-field-rendering-uirender)
+  - [Custom Field Wrapper](#custom-field-wrapper-uiwrapper)
 - [Options System](#options-system)
   - [Default Options](#default-options)
   - [Preset Integration](#preset-integration)
@@ -909,6 +920,218 @@ const uiSchema = {
   },
   "/shippingAddress/zip": {
     "ui:requiredWhen": { "/orderType": { "$ne": "pickup" } }
+  }
+};
+```
+
+---
+
+## Custom Content Injection
+
+Inject custom HTML content before/after fields, create fully custom field renderers, or customize how fields are wrapped—all through uiSchema.
+
+### Content Before/After Fields (`ui:before`, `ui:after`)
+
+Add custom content around any field or fieldset:
+
+```javascript
+const uiSchema = {
+  // Add a header section before the username field
+  "/username": {
+    "ui:before": (field) => html`
+      <div class="alert alert-info">
+        <strong>Account Details</strong>
+        <p>Choose a unique username.</p>
+      </div>
+    `
+  },
+  
+  // Show validation feedback after email
+  "/email": {
+    "ui:after": (field) => {
+      if (!field.value) return nothing;
+      const isValid = field.value.includes('@');
+      return html`<div class="text-sm text-${isValid ? 'success' : 'danger'}">
+        ${isValid ? '✓ Valid email' : '✗ Invalid email'}
+      </div>`;
+    }
+  },
+  
+  // Use a slot reference for HTML defined in markup
+  "/interests": {
+    "ui:before": "slot:interests-header"
+  }
+};
+```
+
+#### Value Types
+
+| Type | Description | Example |
+|------|-------------|---------|
+| Function | Called with field context | `(field) => html\`...\`` |
+| Slot reference | Renders slotted element | `"slot:myHeader"` |
+
+#### Field Context
+
+Functions receive a `field` object with the full render context:
+
+```javascript
+{
+  id,      // Unique DOM ID
+  path,    // JSON Pointer path (e.g., "/address/city")
+  label,   // Display label
+  value,   // Current field value
+  schema,  // JSON Schema for this field
+  ui,      // UI schema for this path
+  attrs,   // Native constraint attributes
+  get,     // Get value at path: field.get("/otherField")
+  set,     // Set value: field.set(newValue)
+  host     // Reference to pds-jsonform element
+}
+```
+
+### Slot References
+
+Define content in HTML and reference it in uiSchema:
+
+```html
+<pds-jsonform .jsonSchema=${schema} .uiSchema=${uiSchema}>
+  <div slot="welcome-header" class="alert alert-success">
+    <strong>Welcome!</strong> Fill out the form below.
+  </div>
+  
+  <p slot="terms-footer" class="text-sm text-muted">
+    By submitting, you agree to our <a href="#">Terms</a>.
+  </p>
+</pds-jsonform>
+```
+
+```javascript
+const uiSchema = {
+  "/firstName": { "ui:before": "slot:welcome-header" },
+  "/acceptTerms": { "ui:after": "slot:terms-footer" }
+};
+```
+
+### Custom Field Rendering (`ui:render`)
+
+Completely replace a field's rendering with a custom template:
+
+```javascript
+const uiSchema = {
+  // Custom star rating widget
+  "/rating": {
+    "ui:render": (field) => {
+      const stars = [1, 2, 3, 4, 5];
+      return html`
+        <fieldset data-path=${field.path}>
+          <legend>${field.label}</legend>
+          <div class="flex gap-xs">
+            ${stars.map(star => html`
+              <button 
+                type="button"
+                class="btn btn-sm ${star <= field.value ? 'btn-warning' : 'btn-outline'}"
+                @click=${() => field.set(star)}
+              >★</button>
+            `)}
+          </div>
+          <input type="hidden" name=${field.path} .value=${String(field.value || '')} />
+        </fieldset>
+      `;
+    }
+  },
+  
+  // Custom toggle card
+  "/subscribe": {
+    "ui:render": (field) => html`
+      <div 
+        class="card p-md cursor-pointer"
+        @click=${() => field.set(!field.value)}
+        role="checkbox"
+        aria-checked=${!!field.value}
+      >
+        <pds-icon icon=${field.value ? 'check-circle' : 'circle'}></pds-icon>
+        <span>${field.label}</span>
+      </div>
+    `
+  }
+};
+```
+
+`ui:render` receives the same context as `defineRenderer()` but is defined inline in the uiSchema.
+
+### Custom Field Wrapper (`ui:wrapper`)
+
+Customize how a field is wrapped (replaces the default `<label>` structure):
+
+```javascript
+const uiSchema = {
+  // Colored border accent
+  "/email": {
+    "ui:wrapper": (field) => html`
+      <div style="border-left: 3px solid var(--color-primary-500); padding-left: var(--spacing-sm);">
+        <label for=${field.id}>
+          <span data-label>${field.label}</span>
+          ${field.control}
+          ${field.help}
+        </label>
+      </div>
+    `
+  },
+  
+  // Card wrapper
+  "/message": {
+    "ui:widget": "textarea",
+    "ui:wrapper": (field) => html`
+      <div class="card surface p-md">
+        <label for=${field.id}>
+          <span class="font-semibold">${field.label}</span>
+          ${field.control}
+          ${field.help}
+        </label>
+      </div>
+    `
+  }
+};
+```
+
+#### Wrapper Context
+
+The wrapper function receives a `field` object with:
+
+| Property | Description |
+|----------|-------------|
+| `control` | The rendered input/widget template |
+| `label` | The label text (string) |
+| `help` | The rendered help text, or `nothing` |
+| `id` | DOM ID for the field |
+| ...context | All other render context properties |
+
+### Combining Features
+
+All custom content features can be combined:
+
+```javascript
+const uiSchema = {
+  "/rating": {
+    // Custom renderer with before/after content
+    "ui:render": (field) => html`...`,
+    "ui:before": (field) => html`<p class="text-muted">Rate your experience:</p>`,
+    "ui:after": (field) => field.value >= 4 
+      ? html`<p class="text-success">Thanks for the great rating!</p>` 
+      : nothing
+  },
+  
+  "/email": {
+    // Custom wrapper with after content
+    "ui:wrapper": (field) => html`
+      <div style="border-left: 3px solid var(--color-info-500); padding-left: var(--spacing-sm);">
+        <label for=${field.id}><span>${field.label}</span>${field.control}</label>
+      </div>
+    `,
+    "ui:after": (field) => field.value && !field.value.includes('@')
+      ? html`<div class="text-danger">Invalid email</div>`
+      : nothing
   }
 };
 ```

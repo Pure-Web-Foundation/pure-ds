@@ -1,4 +1,4 @@
-import { html } from 'lit';
+import { html, nothing } from 'lit';
 import { createComponentDocsPage } from '../reference/reference-docs.js';
 import showdown from 'showdown';
 
@@ -324,6 +324,92 @@ Declarative XForms-inspired conditions for dynamic form behavior.
       { "/country": { "$in": ["US", "CA", "UK"] } }
     ]
   }
+}
+\`\`\`
+
+---
+
+## Custom Content Injection
+
+Inject custom HTML content before/after fields, create fully custom renderers, or customize field wrappers.
+
+### Content Injection
+
+| Option | Type | Description |
+|--------|------|-------------|
+| \`ui:before\` | function \| string | Content rendered before the field |
+| \`ui:after\` | function \| string | Content rendered after the field |
+
+**Value Types:**
+- **Function**: \`(field) => html\`...\`\` - receives render context
+- **Slot reference**: \`"slot:mySlot"\` - renders slotted element by name
+
+### Custom Rendering
+
+| Option | Type | Description |
+|--------|------|-------------|
+| \`ui:render\` | function | Complete custom field renderer |
+| \`ui:wrapper\` | function | Custom wrapper around the control |
+
+### Render Context (\`field\` object)
+
+| Property | Description |
+|----------|-------------|
+| \`id\` | Unique DOM ID for the field |
+| \`path\` | JSON Pointer path (e.g., \`/address/city\`) |
+| \`label\` | Display label |
+| \`value\` | Current field value |
+| \`schema\` | JSON Schema for this field |
+| \`ui\` | UI schema for this path |
+| \`attrs\` | Native constraint attributes |
+| \`get\` | Get value at path: \`get("/otherField")\` |
+| \`set\` | Set value: \`set(newValue)\` |
+| \`host\` | Reference to pds-jsonform element |
+| \`control\` | (wrapper only) Rendered control template |
+| \`help\` | (wrapper only) Rendered help text |
+
+### Examples
+
+\`\`\`javascript
+// Add content before/after fields
+"/username": {
+  "ui:before": (field) => html\`<div class="alert">Section header</div>\`,
+  "ui:after": (field) => field.value?.length < 3 
+    ? html\`<small class="text-danger">Too short</small>\`
+    : nothing
+}
+
+// Custom star rating widget
+"/rating": {
+  "ui:render": (field) => html\`
+    <fieldset>
+      <legend>\${field.label}</legend>
+      <div class="flex gap-xs">
+        \${[1,2,3,4,5].map(n => html\`
+          <button type="button" @click=\${() => field.set(n)}>
+            \${n <= field.value ? '★' : '☆'}
+          </button>
+        \`)}
+      </div>
+    </fieldset>
+  \`
+}
+
+// Custom wrapper with colored border
+"/email": {
+  "ui:wrapper": (field) => html\`
+    <div style="border-left: 5px solid var(--color-primary-500); padding-left: var(--spacing-sm);">
+      <label for=\${field.id}>
+        <span data-label>\${field.label}</span>
+        \${field.control}
+      </label>
+    </div>
+  \`
+}
+
+// Use slotted content
+"/terms": {
+  "ui:before": "slot:terms-notice"
 }
 \`\`\`
 `;
@@ -3163,6 +3249,327 @@ Disabled fields remain visible but cannot be edited. Use this for:
         .uiSchema=${uiSchema}
         @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-jsonform>
+    `;
+  }
+};
+
+// ============================================
+// Custom Content Injection Stories
+// ============================================
+
+export const CustomContentBeforeAfter = {
+  parameters: {
+    docs: {
+      description: {
+        story: `Use \`ui:before\` and \`ui:after\` to inject custom content around fields or fieldsets.
+
+### Value Types
+- **Function**: \`(field) => html\\\`...\\\`\` - full access to render context
+- **Slot reference**: \`"slot:mySlot"\` - renders a slotted element by name
+
+### Field Context
+The function receives a \`field\` object with: \`{ path, schema, value, label, id, get, set, attrs, host }\``
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'User Registration',
+      properties: {
+        username: { type: 'string', title: 'Username', minLength: 3 },
+        email: { type: 'string', title: 'Email', format: 'email' },
+        password: { type: 'string', title: 'Password', minLength: 8 },
+        confirmPassword: { type: 'string', title: 'Confirm Password' },
+        acceptTerms: { type: 'boolean', title: 'I accept the terms' }
+      }
+    };
+
+    const uiSchema = {
+      // Add a header before the username field
+      '/username': {
+        'ui:before': (field) => html`
+          <div class="alert alert-info">
+             <span class="alert-icon">
+      <pds-icon icon="info" size="md">
+      </pds-icon>
+    </span>
+    <div>
+      <h4 class="alert-title">Account Info
+      </h4>
+      <p>Choose a unique username and secure password.
+      </p>
+    </div>
+          </div>
+        `
+      },
+      
+      // Add validation hint after email
+      '/email': {
+        'ui:after': (field) => field.value && !field.value.includes('@') 
+          ? html`<div class="text-sm text-danger">Please enter a valid email address</div>`
+          : nothing
+      },
+      
+      // Add password strength indicator after password
+      '/password': {
+        'ui:widget': 'password',
+        'ui:after': (field) => {
+          if (!field.value) return nothing;
+          const strength = field.value.length < 8 ? 'Weak' : field.value.length < 12 ? 'Medium' : 'Strong';
+          const color = strength === 'Weak' ? 'danger' : strength === 'Medium' ? 'warning' : 'success';
+          return html`<div class="text-sm text-${color}">Password strength: ${strength}</div>`;
+        }
+      },
+      
+      // Add legal notice before terms checkbox
+      '/acceptTerms': {
+        'ui:before': (field) => html`
+          <hr style="margin: var(--spacing-md) 0;">
+          <p class="text-sm text-muted">
+            By registering, you agree to our 
+            <a href="#terms">Terms of Service</a> and 
+            <a href="#privacy">Privacy Policy</a>.
+          </p>
+        `
+      }
+    };
+
+    return html`
+      <pds-jsonform
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const CustomContentRender = {
+  parameters: {
+    docs: {
+      description: {
+        story: `Use \`ui:render\` to completely replace a field's rendering with your own template.
+
+The render function receives a \`field\` object with: \`{ id, path, label, value, schema, ui, attrs, get, set, host }\`
+
+This is like using \`defineRenderer()\` but inline in the uiSchema.`
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Product Review',
+      properties: {
+        productName: { type: 'string', title: 'Product', default: 'Wireless Headphones' },
+        rating: { type: 'integer', title: 'Rating', minimum: 1, maximum: 5, default: 4 },
+        review: { type: 'string', title: 'Review' },
+        recommend: { type: 'boolean', title: 'Would recommend', default: true }
+      }
+    };
+
+    const uiSchema = {
+      // Custom star rating widget
+      '/rating': {
+        'ui:render': (field) => {
+          const stars = [1, 2, 3, 4, 5];
+          return html`
+            <fieldset data-path=${field.path}>
+              <legend>${field.label}</legend>
+              <div class="flex gap-xs" role="radiogroup" aria-label="${field.label}">
+                ${stars.map(star => html`
+                  <button 
+                    type="button"
+                    class="btn btn-sm ${star <= (field.value || 0) ? 'btn-primary' : 'btn-outline'}"
+                    @click=${() => field.set(star)}
+                    aria-label="${star} star${star > 1 ? 's' : ''}"
+                    aria-pressed=${star <= (field.value || 0)}
+                  >★</button>
+                `)}
+              </div>
+              <input type="hidden" name=${field.path} .value=${String(field.value || '')} />
+            </fieldset>
+          `;
+        }
+      },
+      
+      // Custom toggle card for recommendation
+      '/recommend': {
+        'ui:render': (field) => html`
+          <div 
+            class="card surface-elevated p-md cursor-pointer flex items-center gap-md"
+            @click=${() => field.set(!field.value)}
+            role="checkbox"
+            aria-checked=${!!field.value}
+            tabindex="0"
+            @keydown=${(e) => e.key === ' ' && (e.preventDefault(), field.set(!field.value))}
+          >
+            <span 
+              style="cursor: pointer; font-size: 3rem; color: var(--color-${field.value ? 'success' : 'neutral'}-500)"
+            >${field.value ? '👍🏼' : '👎🏼'}</span>
+            <div>
+              <strong>${field.label}</strong>
+              <p class="text-sm text-muted">${field.value ? 'Yes, I would recommend this!' : 'No, I would not recommend this'}</p>
+            </div>
+            <input type="hidden" name=${field.path} .value=${String(!!field.value)} />
+          </div>
+        `
+      },
+      
+      '/review': {
+        'ui:widget': 'textarea',
+        'ui:help': 'Share your experience with this product'
+      }
+    };
+
+    return html`
+      <div class="alert alert-info">
+        <p><strong>Custom rendered fields:</strong></p>
+        <ul>
+          <li><strong>Rating</strong> uses a custom star button widget</li>
+          <li><strong>Would recommend</strong> uses a custom toggle card</li>
+        </ul>
+      </div>
+      <pds-jsonform
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const CustomContentWrapper = {
+  parameters: {
+    docs: {
+      description: {
+        story: `Use \`ui:wrapper\` to customize how a field is wrapped (replacing the default \`<label>\` structure).
+
+A common use case is adding a **live character counter** to textarea fields.
+
+The wrapper function receives a \`field\` object with: \`{ control, label, help, id, value, schema, ...context }\``
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Author Profile',
+      properties: {
+        name: { type: 'string', title: 'Display Name', maxLength: 50 },
+        bio: { type: 'string', title: 'Bio', maxLength: 280 },
+        about: { type: 'string', title: 'About Me', maxLength: 1000 }
+      }
+    };
+
+    // Wrapper with live character counter
+    const charCountWrapper = (field) => {
+      const maxLength = field.schema.maxLength;
+      const currentLength = (field.value || '').length;
+      const remaining = maxLength - currentLength;
+      const isWarning = remaining <= 20 && remaining > 0;
+      const isOver = remaining < 0;
+      
+      return html`
+        <label for=${field.id}>
+          <div class="flex justify-between items-center">
+            <span data-label>${field.label}</span>
+            <span class="text-sm ${isOver ? 'text-danger' : isWarning ? 'text-warning' : 'text-muted'}">
+              ${currentLength}/${maxLength}
+            </span>
+          </div>
+          ${field.control}
+          ${field.help}
+        </label>
+      `;
+    };
+
+    const uiSchema = {
+      '/name': { 'ui:wrapper': charCountWrapper },
+      '/bio': { 
+        'ui:widget': 'textarea',
+        'ui:wrapper': charCountWrapper,
+        'ui:help': 'A short bio for your profile card'
+      },
+      '/about': { 
+        'ui:widget': 'textarea',
+        'ui:wrapper': charCountWrapper,
+        'ui:help': 'Tell readers more about yourself'
+      }
+    };
+
+    return html`
+      <div class="alert alert-info">
+        <p><strong>Live character counter wrapper:</strong></p>
+        <ul>
+          <li>Counter shows <strong class="text-muted">gray</strong> normally</li>
+          <li>Turns <strong class="text-warning">yellow</strong> when ≤20 characters remain</li>
+          <li>Turns <strong class="text-danger">red</strong> when over the limit</li>
+        </ul>
+        <p>Try typing in any field to see the counter update!</p>
+      </div>
+      <pds-jsonform
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-jsonform>
+    `;
+  }
+};
+
+export const CustomContentSlots = {
+  parameters: {
+    docs: {
+      description: {
+        story: `Use slot references (\`"slot:name"\`) in \`ui:before\` or \`ui:after\` to inject pre-defined HTML content.
+
+This is useful when you want to define content in the HTML rather than in JavaScript.`
+      }
+    }
+  },
+  render: () => {
+    const schema = {
+      type: 'object',
+      title: 'Newsletter Signup',
+      properties: {
+        email: { type: 'string', title: 'Email', format: 'email' },
+        frequency: { 
+          type: 'string', 
+          title: 'Email Frequency',
+          enum: ['daily', 'weekly', 'monthly'],
+          enumNames: ['Daily digest', 'Weekly roundup', 'Monthly newsletter'],
+          default: 'weekly'
+        },
+        interests: { type: 'string', title: 'Interests' }
+      }
+    };
+
+    const uiSchema = {
+      '/email': {
+        'ui:before': 'slot:email-header'
+      },
+      '/interests': {
+        'ui:after': 'slot:interests-footer'
+      }
+    };
+
+    return html`
+      <pds-jsonform
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      >
+        <!-- Slotted content referenced by ui:before/ui:after -->
+        <div slot="email-header" class="alert alert-success" style="margin-bottom: var(--spacing-sm);">
+          <strong>Join 50,000+ subscribers!</strong>
+        </div>
+        
+        <p slot="interests-footer" class="text-sm text-muted" style="margin-top: var(--spacing-sm);">
+          We'll personalize your newsletter based on your interests.
+          <a href="#privacy">Learn more about how we use your data</a>.
+        </p>
+      </pds-jsonform>
     `;
   }
 };
