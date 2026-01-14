@@ -1838,6 +1838,10 @@ fieldset {
         color: var(--color-primary-700);
       }
     }
+
+    input[type="checkbox"]{
+      border-radius: var(--radius-xs);
+    }
     
     input[type="radio"],
     input[type="checkbox"] {
@@ -1846,18 +1850,27 @@ fieldset {
       width: var(--spacing-5);
       height: var(--spacing-5);
       min-height: var(--spacing-5);
+      padding: var(--spacing-2);
       margin: 0;
       cursor: pointer;
       flex-shrink: 0;
       accent-color: var(--color-primary-600);
-      appearance: auto;
-      -webkit-appearance: auto;
-      -moz-appearance: auto;
-      
-      &:focus {
-        outline: 2px solid var(--color-primary-500);
-        outline-offset: 2px;
+
+      &:focus-visible {
+        outline: none;
+
+        box-shadow:
+          0 0 0 2px var(--color-primary-500),
+          0 0 0 4px color-mix(in srgb,
+            var(--color-primary-500) 40%,
+            transparent
+          );
       }
+
+      &:checked {
+        background-color: var(--color-primary-600);
+      }
+      
     }
   }
   
