@@ -2214,7 +2214,7 @@ fieldset[role="group"].buttons {
     padding: calc(var(--spacing-1) * ${
       buttonPaddingValue * 0.6
     }) calc(var(--spacing-4) * 0.85);
-    border: ${borderWidth}px solid var(--color-border);
+    border: 2px solid var(--color-border);
     border-radius: var(--radius-md);
     font-family: var(--font-family-body);
     font-size: var(--font-size-sm);
