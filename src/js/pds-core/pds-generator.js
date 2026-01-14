@@ -2324,6 +2324,25 @@ label[data-toggle] {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
 
+  /* Icons in toggle knob (opt-in via .with-icons class) */
+  &.with-icons .toggle-knob::before {
+    content: "✕";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--color-gray-600);
+    transition: opacity 200ms ease;
+  }
+
+  &.with-icons:has(input[type="checkbox"]:checked) .toggle-knob::before {
+    content: "✓";
+    color: var(--color-primary-600);
+  }
+
   /* Toggle switch when checked - using :has() selector */
   &:has(input[type="checkbox"]:checked) .toggle-switch {
     background-color: var(--color-primary-fill);

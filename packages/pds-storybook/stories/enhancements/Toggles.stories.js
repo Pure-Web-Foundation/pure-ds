@@ -134,3 +134,33 @@ export const InCard = () => html`
     </div>
   </article>
 `;
+
+export const WithIcons = () => html`
+  ${enhancementHeader("toggle")}
+  <div class="toggle-story-layout">
+    <div>
+      <h3>Toggles with Icons</h3>
+      <p class="toggle-story-muted">
+        Add the <code>.with-icons</code> class to show checkmark/cross icons in the toggle knob
+      </p>
+    </div>
+    <div class="stack-md">
+      <label data-toggle class="with-icons">
+        <span data-label>Enable notifications</span>
+        <input type="checkbox" checked />
+      </label>
+      <label data-toggle class="with-icons">
+        <span data-label>Dark mode</span>
+        <input type="checkbox" />
+      </label>
+      <label data-toggle class="with-icons">
+        <input type="checkbox" checked />
+        <span data-label>Auto-save changes</span>
+      </label>
+      <label data-toggle class="with-icons">
+        <input type="checkbox" />
+        <span data-label>Show tips</span>
+      </label>
+    </div>
+  </div>
+`;
