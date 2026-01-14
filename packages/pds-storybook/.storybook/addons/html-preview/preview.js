@@ -147,6 +147,57 @@ function serializeForDisplay(value) {
 }
 
 /**
+ * Generate realistic source code for pds-form elements
+ */
+function generatePdsFormMarkup(formElement) {
+  const attrs = [];
+  
+  // Check for properties
+  if (formElement.jsonSchema) {
+    attrs.push('.jsonSchema=${schema}');
+  }
+  if (formElement.uiSchema) {
+    attrs.push('.uiSchema=${uiSchema}');
+  }
+  if (formElement.values) {
+    attrs.push('.values=${values}');
+  }
+  if (formElement.options && Object.keys(formElement.options).length > 0) {
+    attrs.push('.options=${options}');
+  }
+  
+  // Check for common event listeners by looking at the element's event listeners
+  // Since we can't easily detect event listeners, we'll check common patterns
+  const hasSubmitHandler = formElement.getAttribute('data-has-submit') !== null || true; // Assume submit handler
+  if (hasSubmitHandler) {
+    attrs.push('@pw:submit=${(e) => handleSubmit(e.detail)}');
+  }
+  
+  // Check for boolean attributes
+  if (formElement.hasAttribute('data-required')) {
+    attrs.push('data-required');
+  }
+  if (formElement.hasAttribute('hide-actions')) {
+    attrs.push('hide-actions');
+  }
+  
+  const formattedAttrs = attrs.length > 0 
+    ? '\n  ' + attrs.join('\n  ') + '\n'
+    : '';
+  
+  // Check for slotted content
+  const slots = formElement.querySelectorAll('[slot]');
+  let slotContent = '';
+  if (slots.length > 0) {
+    slotContent = '\n  ' + Array.from(slots).map(slot => {
+      return `<div slot="${slot.getAttribute('slot')}">\n    <!-- slotted content -->\n  </div>`;
+    }).join('\n  ') + '\n';
+  }
+  
+  return `<pds-form${formattedAttrs}>${slotContent}</pds-form>`;
+}
+
+/**
  * Global decorator that extracts and sends HTML to the panel
  */
 export const withHTMLExtractor = (storyFn, context) => {
@@ -160,18 +211,44 @@ export const withHTMLExtractor = (storyFn, context) => {
     // Try to get HTML from the story container
     const container = document.querySelector('#storybook-root');
     if (container) {
-      if (story && story._$litType$) {
-        html = await litToHTML(story);
+      // Check if this story has pds-form elements
+      const pdsFormElements = Array.from(container.querySelectorAll('pds-form'));
+      
+      if (pdsFormElements.length > 0) {
+        // Generate realistic markup for pds-form stories
+        const alerts = Array.from(container.querySelectorAll('.alert'));
+        let markup = '';
+        
+        // Include any alert/info boxes before the form
+        if (alerts.length > 0) {
+          alerts.forEach(alert => {
+            markup += `<div class="alert ${alert.className.split(' ').filter(c => c !== 'alert').join(' ')}">\n`;
+            markup += `  ${alert.innerHTML.replace(/\n\s+/g, '\n  ')}\n`;
+            markup += `</div>\n\n`;
+          });
+        }
+        
+        // Add pds-form markup
+        pdsFormElements.forEach(form => {
+          markup += generatePdsFormMarkup(form);
+        });
+        
+        html = markup;
       } else {
-        html = formatHTML(extractHTML(container));
+        // No pds-form elements, use standard extraction
+        if (story && story._$litType$) {
+          html = await litToHTML(story);
+        } else {
+          html = formatHTML(extractHTML(container));
+        }
       }
 
-      const forms = Array.from(container.querySelectorAll('pds-form'))
+      const forms = pdsFormElements
         .map((form, index) => {
           const label =
             form.getAttribute?.('id') ||
             form.getAttribute?.('name') ||
-            (Array.from(container.querySelectorAll('pds-form')).length > 1 ? `Form ${index + 1}` : 'Form');
+            (pdsFormElements.length > 1 ? `Form ${index + 1}` : 'Form');
 
           const jsonSchema = serializeForDisplay(form.jsonSchema);
           const uiSchema = serializeForDisplay(form.uiSchema);

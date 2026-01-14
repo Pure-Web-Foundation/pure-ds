@@ -1020,6 +1020,151 @@ export const WithGridLayout = {
   },
 };
 
+export const WithGridLayoutAuto = {
+  name: "Grid Layout - Auto",
+  parameters: {
+    docs: {
+      description: {
+        story: `Auto-fit grid layout that automatically adjusts the number of columns based on available space and minimum column width.
+
+This is the **PDS way** to create responsive grids without media queries. Use \`columns: "auto"\` with \`autoSize\` to specify the minimum column width.
+
+### Usage Example
+
+\`\`\`html
+<pds-form
+  .jsonSchema=\${schema}
+  .uiSchema=\${uiSchema}
+  .options=\${options}
+  @pw:submit=\${(e) => toastFormData(e.detail)}
+></pds-form>
+
+<script type="module">
+import { html } from 'lit';
+
+const schema = {
+  type: "object",
+  properties: {
+    productInfo: {
+      type: "object",
+      title: "Product Information",
+      properties: {
+        name: { type: "string", title: "Product Name" },
+        sku: { type: "string", title: "SKU" },
+        price: { type: "number", title: "Price" },
+        // ... more fields
+      }
+    }
+  }
+};
+
+const uiSchema = {
+  productInfo: {
+    "ui:layout": "grid",
+    "ui:layoutOptions": {
+      columns: "auto",   // Auto-fit columns
+      autoSize: "md",    // Min width ~200px (grid-auto-md)
+      gap: "md"
+    }
+  }
+};
+
+const options = {
+  widgets: { booleans: "toggle" }
+};
+</script>
+\`\`\`
+
+### Available sizes:
+- \`"sm"\` → ~150px minimum width
+- \`"md"\` → ~200px minimum width
+- \`"lg"\` → ~250px minimum width
+- \`"xl"\` → ~300px minimum width
+
+The grid automatically creates as many columns as will fit, wrapping to new rows when needed. **No JavaScript required!**`,
+      },
+    },
+  },
+  render: () => {
+    const schema = {
+      type: "object",
+      properties: {
+        productInfo: {
+          type: "object",
+          title: "Product Information",
+          properties: {
+            name: {
+              type: "string",
+              title: "Product Name",
+              examples: ["Wireless Headphones"],
+            },
+            sku: { type: "string", title: "SKU", examples: ["WH-1000XM4"] },
+            price: { type: "number", title: "Price", examples: [299.99] },
+            quantity: { type: "integer", title: "Quantity", examples: [50] },
+            category: {
+              type: "string",
+              title: "Category",
+              enum: [
+                "Electronics",
+                "Clothing",
+                "Books",
+                "Home",
+                "Sports",
+                "Garden",
+              ],
+            },
+            brand: { type: "string", title: "Brand", examples: ["Sony"] },
+            weight: { type: "number", title: "Weight (kg)", examples: [0.25] },
+            dimensions: {
+              type: "string",
+              title: "Dimensions",
+              examples: ["20 x 18 x 8 cm"],
+            },
+            inStock: {
+              type: "boolean",
+              title: "In Stock",
+              default: true,
+            },
+            featured: {
+              type: "boolean",
+              title: "Featured Product",
+              default: false,
+            },
+          },
+        },
+      },
+    };
+
+    const uiSchema = {
+      productInfo: {
+        "ui:layout": "grid",
+        "ui:layoutOptions": {
+          columns: "auto",   // Auto-fit columns
+          autoSize: "md",    // Min column width (grid-auto-md)
+          gap: "md"
+        },
+      },
+    };
+
+    const options = {
+      widgets: { booleans: "toggle" },
+    };
+
+    return html`
+      <div class="alert alert-info">
+        <p><strong>💡 Try resizing your browser window!</strong></p>
+        <p>The grid automatically adjusts the number of columns based on available space. Fields maintain a minimum width of ~200px and wrap to new rows as needed.</p>
+      </div>
+      <pds-form
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        .options=${options}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-form>
+    `;
+  },
+};
+
 export const WithAccordionLayout = {
   name: "Accordion Layout",
   render: () => {
@@ -2698,6 +2843,136 @@ const uiSchema = {
   },
 };
 
+export const OneOfWithPresetValues = {
+  parameters: {
+    docs: {
+      description: {
+        story: `Demonstrates that \`oneOf\` and \`anyOf\` select fields correctly display preset values.
+
+This story showcases the fix for a bug where select dropdowns wouldn't show the selected value when using \`.values\` to preset form data.
+
+### Example Schema:
+\`\`\`javascript
+{
+  organizationType: {
+    oneOf: [
+      { const: "ngo", title: "Non-Governmental Organization" },
+      { const: "charity", title: "Charitable Organization" },
+      { const: "company", title: "Commercial Company" }
+    ]
+  }
+}
+\`\`\`
+
+### Preset Values:
+\`\`\`javascript
+<pds-form 
+  .values=$\{{ organizationType: "charity", category: "health" }}
+  ...
+>
+\`\`\`
+
+The dropdowns should correctly show "Charitable Organization" and "Health & Medical" as selected.`,
+      },
+      source: {
+        code: `<pds-form
+  data-required
+  .jsonSchema=\${schema}
+  .uiSchema=\${uiSchema}
+  .values=\${initialValues}
+  @pw:submit=\${(e) => toastFormData(e.detail)}
+></pds-form>`,
+      },
+    },
+  },
+  render: () => {
+    const schema = {
+      type: "object",
+      title: "Organization Registration",
+      properties: {
+        organizationName: {
+          type: "string",
+          title: "Organization Name",
+          examples: ["Red Cross International"],
+        },
+        organizationType: {
+          type: "string",
+          title: "Organization Type",
+          oneOf: [
+            { const: "ngo", title: "Non-Governmental Organization" },
+            { const: "charity", title: "Charitable Organization" },
+            { const: "company", title: "Commercial Company" },
+            { const: "government", title: "Government Agency" },
+            { const: "educational", title: "Educational Institution" },
+          ],
+        },
+        category: {
+          type: "string",
+          title: "Primary Category",
+          anyOf: [
+            { const: "health", title: "Health & Medical" },
+            { const: "education", title: "Education & Research" },
+            { const: "environment", title: "Environment & Conservation" },
+            { const: "social", title: "Social Services" },
+            { const: "arts", title: "Arts & Culture" },
+            { const: "technology", title: "Technology & Innovation" },
+          ],
+        },
+        registrationNumber: {
+          type: "string",
+          title: "Registration Number",
+          examples: ["123-456-789"],
+        },
+        country: {
+          type: "string",
+          title: "Country",
+          enum: ["NL", "BE", "DE", "FR", "GB"],
+        },
+      },
+      required: ["organizationName", "organizationType", "category"],
+    };
+
+    const uiSchema = {
+      "ui:layout": "grid",
+      "ui:layoutOptions": {
+        columns: "auto",   // Auto-fit columns
+        autoSize: "md",    // Min column width (grid-auto-md)
+        gap: "md"
+      }
+    };
+
+    // Preset values that should be correctly selected in the dropdowns
+    const initialValues = {
+      organizationName: "Global Health Foundation",
+      organizationType: "charity",
+      category: "health",
+      registrationNumber: "974983702",
+      country: "NL",
+    };
+
+    return html`
+      <div class="alert alert-info">
+        <p>
+          <strong>✓ This form has preset values:</strong> The dropdowns should
+          correctly show "Charitable Organization", "Health & Medical", and
+          "NL" as selected.
+        </p>
+        <p>
+          Try changing the values and submitting to see how oneOf/anyOf/enum
+          work together.
+        </p>
+      </div>
+      <pds-form
+        data-required
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        .values=${initialValues}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-form>
+    `;
+  },
+};
+
 export const ConditionalRequired = {
   parameters: {
     docs: {
@@ -2770,13 +3045,16 @@ export const ConditionalComplex = {
   parameters: {
     docs: {
       description: {
-        story: `A comprehensive example combining multiple conditional features: visibility, required states, and calculated values.
+        story: `A comprehensive example combining multiple conditional features with accordion layout to reduce visual complexity.
 
 ### Features demonstrated:
-- **Show/Hide**: Company name appears for business accounts; shipping address hidden for pickup
+- **Accordion Sections**: Related fields grouped into collapsible sections
+- **Show/Hide**: Business account section appears only for business accounts; shipping address hidden for pickup
 - **Conditional Required**: Company name required for business; phone required when preferred
 - **Disable**: Email disabled when phone is preferred
-- **Calculations**: Full name, subtotal, shipping cost, and total are all computed automatically`,
+- **Calculations**: Full name, subtotal, shipping cost, and total are all computed automatically
+
+The accordion layout prevents awkward field jumping between columns and makes the form easier to navigate.`,
       },
     },
   },
@@ -2786,143 +3064,191 @@ export const ConditionalComplex = {
       title: "Order Form",
       properties: {
         accountType: {
-          type: "string",
-          title: "Account Type",
-          oneOf: [
-            { const: "personal", title: "Personal" },
-            { const: "business", title: "Business" },
-          ],
-          default: "personal",
-        },
-        companyName: {
-          type: "string",
-          title: "Company Name",
-          examples: ["Acme Inc."],
-        },
-        preferPhone: {
-          type: "boolean",
-          title: "I prefer to be contacted by phone",
-          default: false,
-        },
-        email: {
-          type: "string",
-          format: "email",
-          title: "Email",
-          examples: ["you@example.com"],
-        },
-        phone: {
-          type: "string",
-          title: "Phone",
-          examples: ["555-123-4567"],
-        },
-        firstName: {
-          type: "string",
-          title: "First Name",
-          examples: ["John"],
-        },
-        lastName: {
-          type: "string",
-          title: "Last Name",
-          examples: ["Doe"],
-        },
-        fullName: {
-          type: "string",
-          title: "Full Name (calculated)",
-        },
-        deliveryType: {
-          type: "string",
-          title: "Delivery Type",
-          oneOf: [
-            { const: "standard", title: "Standard (5-7 days)" },
-            { const: "express", title: "Express (1-2 days)" },
-            { const: "pickup", title: "Pickup" },
-          ],
-          default: "standard",
-        },
-        quantity: {
-          type: "integer",
-          title: "Quantity",
-          minimum: 1,
-          default: 1,
-        },
-        unitPrice: {
-          type: "number",
-          title: "Unit Price",
-          default: 29.99,
-        },
-        subtotal: {
-          type: "number",
-          title: "Subtotal",
-        },
-        shippingCost: {
-          type: "number",
-          title: "Shipping Cost",
-        },
-        total: {
-          type: "number",
-          title: "Total",
-        },
-        shippingAddress: {
           type: "object",
-          title: "Shipping Address",
+          title: "Account Type",
           properties: {
-            street: {
+            type: {
               type: "string",
-              title: "Street",
-              examples: ["123 Main St"],
+              title: "Select Account Type",
+              oneOf: [
+                { const: "personal", title: "Personal" },
+                { const: "business", title: "Business" },
+              ],
+              default: "personal",
             },
-            city: { type: "string", title: "City", examples: ["New York"] },
-            zip: { type: "string", title: "ZIP Code", examples: ["10001"] },
+            companyName: {
+              type: "string",
+              title: "Company Name",
+              examples: ["Acme Inc."],
+            },
           },
         },
-      },
-      required: ["email", "firstName", "lastName", "deliveryType"],
-    };
-
-    const uiSchema = {
-      "ui:layout": "grid",
-      "ui:layoutOptions": { columns: 2, gap: "md" },
-
-      "/companyName": {
-        "ui:visibleWhen": { "/accountType": "business" },
-        "ui:requiredWhen": { "/accountType": "business" },
-      },
-      "/email": {
-        "ui:disabledWhen": { "/preferPhone": true },
-        "ui:icon": "envelope",
-      },
-      "/phone": {
-        "ui:requiredWhen": { "/preferPhone": true },
-        "ui:icon": "phone",
-      },
-      "/fullName": {
-        "ui:calculate": { $concat: ["/firstName", " ", "/lastName"] },
-      },
-      "/subtotal": {
-        "ui:calculate": { $multiply: ["/quantity", "/unitPrice"] },
-      },
-      "/shippingCost": {
-        "ui:calculate": {
-          $if: {
-            cond: { "/deliveryType": "express" },
-            then: 25,
-            else: {
-              $if: {
-                cond: { "/deliveryType": "pickup" },
-                then: 0,
-                else: 10,
+        contactPreferences: {
+          type: "object",
+          title: "Contact Information",
+          properties: {
+            preferPhone: {
+              type: "boolean",
+              title: "I prefer to be contacted by phone",
+              default: false,
+            },
+            email: {
+              type: "string",
+              format: "email",
+              title: "Email",
+              examples: ["you@example.com"],
+            },
+            phone: {
+              type: "string",
+              title: "Phone",
+              examples: ["555-123-4567"],
+            },
+          },
+        },
+        customerDetails: {
+          type: "object",
+          title: "Customer Details",
+          properties: {
+            firstName: {
+              type: "string",
+              title: "First Name",
+              examples: ["John"],
+            },
+            lastName: {
+              type: "string",
+              title: "Last Name",
+              examples: ["Doe"],
+            },
+            fullName: {
+              type: "string",
+              title: "Full Name (calculated)",
+            },
+          },
+        },
+        deliveryOptions: {
+          type: "object",
+          title: "Delivery & Shipping",
+          properties: {
+            deliveryType: {
+              type: "string",
+              title: "Delivery Type",
+              oneOf: [
+                { const: "standard", title: "Standard (5-7 days)" },
+                { const: "express", title: "Express (1-2 days)" },
+                { const: "pickup", title: "Pickup" },
+              ],
+              default: "standard",
+            },
+            shippingAddress: {
+              type: "object",
+              title: "Shipping Address",
+              properties: {
+                street: {
+                  type: "string",
+                  title: "Street",
+                  examples: ["123 Main St"],
+                },
+                city: { type: "string", title: "City", examples: ["New York"] },
+                zip: { type: "string", title: "ZIP Code", examples: ["10001"] },
               },
             },
           },
         },
+        orderCalculations: {
+          type: "object",
+          title: "Order Summary",
+          properties: {
+            quantity: {
+              type: "integer",
+              title: "Quantity",
+              minimum: 1,
+              default: 1,
+            },
+            unitPrice: {
+              type: "number",
+              title: "Unit Price",
+              default: 29.99,
+            },
+            subtotal: {
+              type: "number",
+              title: "Subtotal",
+            },
+            shippingCost: {
+              type: "number",
+              title: "Shipping Cost",
+            },
+            total: {
+              type: "number",
+              title: "Total",
+            },
+          },
+        },
       },
-      "/total": {
-        "ui:calculate": { $sum: ["/subtotal", "/shippingCost"] },
+      required: ["contactPreferences", "customerDetails", "deliveryOptions"],
+    };
+
+    const uiSchema = {
+      "ui:layout": "accordion",
+      "ui:layoutOptions": { openFirst: true },
+
+      "/accountType": {
+        "ui:layout": "stack",
+        "companyName": {
+          "ui:visibleWhen": { "/accountType/type": "business" },
+          "ui:requiredWhen": { "/accountType/type": "business" },
+        },
       },
-      "/shippingAddress": {
-        "ui:visibleWhen": { "/deliveryType": { $ne: "pickup" } },
+      "/contactPreferences": {
+        "ui:layout": "stack",
+        "email": {
+          "ui:disabledWhen": { "/contactPreferences/preferPhone": true },
+          "ui:icon": "envelope",
+        },
+        "phone": {
+          "ui:requiredWhen": { "/contactPreferences/preferPhone": true },
+          "ui:icon": "phone",
+        },
+      },
+      "/customerDetails": {
         "ui:layout": "flex",
-        "ui:layoutOptions": { gap: "sm", wrap: true },
+        "ui:layoutOptions": { gap: "md", wrap: true },
+        "firstName": {},
+        "lastName": {},
+        "fullName": {
+          "ui:calculate": { $concat: ["/customerDetails/firstName", " ", "/customerDetails/lastName"] },
+        },
+      },
+      "/deliveryOptions": {
+        "ui:layout": "stack",
+        "shippingAddress": {
+          "ui:visibleWhen": { "/deliveryOptions/deliveryType": { $ne: "pickup" } },
+          "ui:layout": "flex",
+          "ui:layoutOptions": { gap: "sm", wrap: true },
+        },
+      },
+      "/orderCalculations": {
+        "ui:layout": "stack",
+        "subtotal": {
+          "ui:calculate": { $multiply: ["/orderCalculations/quantity", "/orderCalculations/unitPrice"] },
+        },
+        "shippingCost": {
+          "ui:calculate": {
+            $if: {
+              cond: { "/deliveryOptions/deliveryType": "express" },
+              then: 25,
+              else: {
+                $if: {
+                  cond: { "/deliveryOptions/deliveryType": "pickup" },
+                  then: 0,
+                  else: 10,
+                },
+              },
+            },
+          },
+        },
+        "total": {
+          "ui:calculate": { $sum: ["/orderCalculations/subtotal", "/orderCalculations/shippingCost"] },
+        },
       },
     };
 
@@ -2931,28 +3257,19 @@ export const ConditionalComplex = {
         <p><strong>Try these interactions:</strong></p>
         <ul>
           <li>
-            Change <strong>Account Type</strong> to "Business" → Company Name
-            field appears and becomes required
+            Open <strong>Account Type</strong>, change to "Business" → Company Name field appears and becomes required
           </li>
           <li>
-            Toggle <strong>"Prefer phone contact"</strong> → Email is disabled,
-            Phone becomes required
+            Open <strong>Contact Information</strong>, toggle <strong>"Prefer phone contact"</strong> → Email is disabled, Phone becomes required
           </li>
           <li>
-            Type in <strong>First/Last Name</strong> → Full Name is calculated
-            automatically
+            Open <strong>Customer Details</strong>, type in <strong>First/Last Name</strong> → Full Name is calculated automatically
           </li>
           <li>
-            Change <strong>Quantity</strong> or <strong>Unit Price</strong> →
-            Subtotal and Total update
+            Open <strong>Delivery & Shipping</strong>, select <strong>"Pickup"</strong> → Shipping Address section is hidden
           </li>
           <li>
-            Select <strong>Delivery Type</strong> → Shipping cost changes
-            (Express: $25, Standard: $10, Pickup: $0)
-          </li>
-          <li>
-            Select <strong>"Pickup"</strong> → Shipping Address section is
-            hidden
+            Open <strong>Order Summary</strong>, change <strong>Quantity</strong> or <strong>Delivery Type</strong> → Costs update automatically
           </li>
         </ul>
       </div>
@@ -2960,7 +3277,10 @@ export const ConditionalComplex = {
         data-required
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
-        @pw:submit=${(e) => toastFormData(e.detail)}
+        @pw:submit=${(e) => {
+          console.log('✅ Form Data Structure:', e.detail);
+          toastFormData(e.detail);
+        }}
       ></pds-form>
     `;
   },

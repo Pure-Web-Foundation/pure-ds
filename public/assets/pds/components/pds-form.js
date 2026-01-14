@@ -1116,6 +1116,7 @@ export class SchemaForm extends LitElement {
       this.#deleteByPathPrefix(this.#data, path + "/");
       this.requestUpdate();
       this.#emit("pw:value-change", {
+        path,
         name: path,
         value: i,
         validity: { valid: true },
@@ -1865,7 +1866,6 @@ export class SchemaForm extends LitElement {
           <select
             id=${id}
             name=${path}
-            .value=${value ?? ""}
             ?disabled=${!!attrs.disabled}
             ?required=${!!attrs.required}
             ?data-dropdown=${useDropdown}
@@ -1874,7 +1874,7 @@ export class SchemaForm extends LitElement {
             <option value="" ?selected=${value == null}>—</option>
             ${enumValues.map(
               (v, i) =>
-                html`<option value=${String(v)}>
+                html`<option value=${String(v)} ?selected=${String(value) === String(v)}>
                   ${String(enumLabels[i])}
                 </option>`
             )}
@@ -2092,17 +2092,28 @@ export class SchemaForm extends LitElement {
     const withoutSlash = path.startsWith("/") ? path.substring(1) : path;
     if (this.uiSchema[withoutSlash]) return this.uiSchema[withoutSlash];
 
-    // Try nested navigation (e.g., userProfile/settings/preferences/theme)
+    // Try nested navigation (e.g., /accountType/companyName)
     // Skip array indices (numeric parts and wildcard *) when navigating UI schema
     const parts = path.replace(/^\//, "").split("/");
     let current = this.uiSchema;
-    for (const part of parts) {
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
       // Skip numeric array indices and wildcard in UI schema navigation
       if (/^\d+$/.test(part) || part === "*") continue;
 
+      // Try both with and without leading slash for each segment
       if (current && typeof current === "object" && part in current) {
         current = current[part];
+      } else if (current && typeof current === "object" && ("/" + part) in current) {
+        current = current["/" + part];
       } else {
+        // If this is the first segment, try looking up the full path from root
+        if (i === 0) {
+          const fullPath = "/" + parts.join("/");
+          if (this.uiSchema[fullPath]) {
+            return this.uiSchema[fullPath];
+          }
+        }
         return undefined;
       }
     }
@@ -2227,17 +2238,23 @@ export class SchemaForm extends LitElement {
     this.#setByPath(this.#data, path, val);
 
     // Apply calculated values for any dependent fields
-    this.#applyCalculatedValues(path);
+    // This will call requestUpdate() if there are dependents
+    const hadDependents = this.#applyCalculatedValues(path);
 
-    this.requestUpdate();
+    // Only request update here if there were no dependents
+    // (to avoid double render)
+    if (!hadDependents) {
+      this.requestUpdate();
+    }
+
     const validity = { valid: true };
-    this.#emit("pw:value-change", { name: path, value: val, validity });
+    this.#emit("pw:value-change", { path, name: path, value: val, validity });
   }
 
   #applyCalculatedValues(changedPath) {
     // Find fields that depend on the changed path
     const dependents = this.#dependencies.get(changedPath);
-    if (!dependents) return;
+    if (!dependents || dependents.size === 0) return false;
 
     for (const targetPath of dependents) {
       const ui = this.#uiFor(targetPath);
@@ -2255,6 +2272,11 @@ export class SchemaForm extends LitElement {
         }
       }
     }
+    
+    // Force re-render since there were dependents
+    // This ensures ui:visibleWhen, ui:requiredWhen, ui:disabledWhen get re-evaluated
+    this.requestUpdate();
+    return true; // Indicate that we triggered a re-render
   }
 
   #getByPath(obj, path) {
