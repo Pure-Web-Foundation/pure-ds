@@ -1924,6 +1924,12 @@ label {
 }
 
 input, textarea, select {
+  &:focus {
+    outline: none;
+  }
+}
+
+input, textarea, select {
   width: 100%;
   min-height: ${minInputHeight}px;
   padding: calc(var(--spacing-1) * ${inputPaddingValue}) var(--spacing-4);
@@ -1940,11 +1946,7 @@ input, textarea, select {
   -webkit-appearance: none;
   
   &:focus {
-    outline: none;
     border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
-      (focusRingOpacity || 0.3) * 100
-    )}%, transparent);
     background-color: var(--color-surface-base);
   }
   
@@ -2906,13 +2908,26 @@ tbody {
     cursor: pointer;
     padding: var(--spacing-3) var(--spacing-4);
     list-style: none;
-    outline: none;
     display: flex;
     align-items: center;
     gap: var(--spacing-2);
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
 
     &::-webkit-details-marker {
       display: none;
+    }
+
+    &:hover {
+      background-color: var(--color-surface-subtle);
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
     }
 
     /* Chevron indicator */
@@ -3645,6 +3660,13 @@ nav[data-dropdown] {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Required Legend Utility */
+:where(.required-legend) {
+  display: block;
+  margin: var(--spacing-3) 0;
+  color: var(--color-text-muted);
 }
 
 /* Max-width utilities */

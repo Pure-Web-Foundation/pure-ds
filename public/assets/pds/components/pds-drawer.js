@@ -304,7 +304,7 @@ class PdsDrawer extends HTMLElement {
           width: 100%; max-width: 100%;
           margin: 0;
           border-radius: var(--drawer-radius, var(--radius-lg));
-          overflow: clip; contain: layout paint style; will-change: transform;
+          overflow: visible; contain: layout style; will-change: transform;
           touch-action: none;
           outline: none;
         }

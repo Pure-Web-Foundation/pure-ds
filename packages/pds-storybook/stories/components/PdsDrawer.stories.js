@@ -190,9 +190,7 @@ export const AllPositions = () => {
     <pds-drawer id="drawer-right" position="right">
       <div slot="drawer-header" class="flex items-center justify-between">
         <h2>Filter & Sort</h2>
-        <button id="close-drawer-right" class="icon-only btn-outline btn-sm">
-          <pds-icon icon="x" label="Close"></pds-icon>
-        </button>
+        
       </div>
       <div slot="drawer-content" class="stack-md">
         <p>
@@ -320,7 +318,7 @@ export const AllPositions = () => {
     
     <pds-drawer id="drawer-bottom" position="bottom">
       <div slot="drawer-header" class="flex items-center gap-md">
-        <pds-icon icon="toolbox" size="lg"></pds-icon>
+        <pds-icon icon="gear" size="lg"></pds-icon>
         <h2>Quick Actions</h2>
       </div>
       <div slot="drawer-content" class="stack-md">

@@ -40,7 +40,9 @@ export const BasicRequired = () => html`
         <input type="tel" placeholder="+1 (555) 123-4567">
       </div>
     </label>
-    <button type="submit" class="btn-primary">Submit</button>
+    <nav>
+      <button type="submit" class="btn-primary">Submit</button>
+    </nav>
   </form>
 `;
 
