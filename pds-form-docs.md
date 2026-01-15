@@ -1202,7 +1202,7 @@ The options system provides global and per-path control over form behavior.
 ```javascript
 {
   widgets: {
-    booleans: "toggle",      // 'toggle' | 'checkbox' - default widget for boolean fields
+    booleans: "toggle",      // 'toggle' | 'toggle-with-icons' | 'checkbox' - default widget for boolean fields
     numbers: "input",        // 'input' | 'range' - default widget for number fields
     selects: "standard"      // 'standard' | 'dropdown' - default widget for enum fields
   },
@@ -1479,7 +1479,7 @@ const schema = {
 // Option 1: Global setting for all booleans
 const options = {
   widgets: {
-    booleans: "toggle"    // Use toggle switches instead of checkboxes
+    booleans: "toggle"    // 'toggle' (plain) | 'toggle-with-icons' (with checkmark/cross icons) | 'checkbox'
   }
 };
 

@@ -737,7 +737,6 @@ export const presets = {
       "Data-dense business intelligence app interface with organized hierarchy and professional polish",
     options: {
       liquidGlassEffects: false,
-      backgroundMesh: 2,
     },
     colors: {
       primary: "#0066cc", // corporate blue for primary actions
@@ -815,7 +814,7 @@ presets.default = {
   form: {
     options: {
       widgets: {
-        booleans: "toggle",      // 'toggle' | 'checkbox'
+        booleans: "toggle",      // 'toggle' | 'toggle-with-icons' | 'checkbox'
         numbers: "input",        // 'input' | 'range'
         selects: "standard",     // 'standard' | 'dropdown'
       },

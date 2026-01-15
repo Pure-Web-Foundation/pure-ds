@@ -434,7 +434,7 @@ Global form options that can be set via the `options` property:
 ```javascript
 const options = {
   widgets: {
-    booleans: "toggle",      // "toggle" or "checkbox"
+    booleans: "toggle",      // "toggle" | "toggle-with-icons" | "checkbox"
     numbers: "input",        // "input" or "range"
     selects: "standard"      // "standard" or "dropdown"
   },

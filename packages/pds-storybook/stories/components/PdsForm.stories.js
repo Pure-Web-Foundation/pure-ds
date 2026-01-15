@@ -479,11 +479,10 @@ const simpleSchema = {
       title: "Email Address",
       examples: ["john.doe@example.com"],
     },
-    age: {
-      type: "number",
-      title: "Age",
-      minimum: 18,
-      examples: [25],
+    dateOfBirth: {
+      type: "string",
+      format: "date",
+      title: "Date of Birth",
     },
     newsletter: {
       type: "boolean",
@@ -527,8 +526,10 @@ const complexSchema = {
       title: "Interests",
       items: {
         type: "string",
-        enum: ["Technology", "Sports", "Music", "Travel", "Reading"],
+        examples: ["Technology", "Sports", "Music", "Travel", "Reading"],
       },
+      default: ["Technology", "Sports", "Music", "Travel", "Reading"],
+      uniqueItems: true,
     },
   },
 };
@@ -545,23 +546,39 @@ export const SimpleForm = {
   },
 };
 
+const complexUiSchema = {
+  "address/country": {
+    "ui:class": "buttons"
+  },
+  preferences: {
+    "ui:class": "buttons"
+  }
+}
+
 export const ComplexForm = {
   render: () => {
     return html`
       <pds-form
         .jsonSchema=${complexSchema}
+        .uiSchema=${complexUiSchema}
         @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-form>
     `;
   },
 };
 
+const options = {
+      widgets: {
+        booleans: "toggle-with-icons", // Use toggle switches instead of checkboxes
+      },
+    };
+
 export const WithInitialData = {
   render: () => {
     const initialValues = {
-      name: "John Doe",
-      email: "john@example.com",
-      age: 25,
+      name: "Jane Doe",
+      email: "jane@example.com",
+      dateOfBirth: "1998-06-15",
       newsletter: true,
     };
 
@@ -569,6 +586,7 @@ export const WithInitialData = {
       <pds-form
         .jsonSchema=${simpleSchema}
         .values=${initialValues}
+        .options=${options}
         @pw:value-change=${(e) => console.log("🔄 Value changed:", e.detail)}
         @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-form>
@@ -623,7 +641,7 @@ export const WithTogglesSwitches = {
 
     const options = {
       widgets: {
-        booleans: "toggle", // Use toggle switches instead of checkboxes
+        booleans: "toggle-with-icons", // Use toggle switches instead of checkboxes
       },
     };
 
@@ -1070,7 +1088,7 @@ const uiSchema = {
 };
 
 const options = {
-  widgets: { booleans: "toggle" }
+  widgets: { booleans: "toggle-with-icons" }
 };
 </script>
 \`\`\`
@@ -1147,7 +1165,7 @@ The grid automatically creates as many columns as will fit, wrapping to new rows
     };
 
     const options = {
-      widgets: { booleans: "toggle" },
+      widgets: { booleans: "toggle-with-icons" },
     };
 
     return html`
@@ -2285,7 +2303,7 @@ export const ComprehensiveExample = {
 
     const options = {
       widgets: {
-        booleans: "toggle",
+        booleans: "toggle-with-icons",
       },
       enhancements: {
         rangeOutput: true,
@@ -2664,7 +2682,7 @@ export const RootThreeColumnGrid = {
     };
 
     const options = {
-      widgets: { booleans: "toggle" },
+      widgets: { booleans: "toggle-with-icons" },
     };
 
     return html`

@@ -11,7 +11,7 @@ function getStep(value) {
 // Default options for pds-form
 const DEFAULT_OPTIONS = {
   widgets: {
-    booleans: "toggle", // 'toggle' | 'checkbox'
+    booleans: "toggle", // 'toggle' | 'toggle-with-icons' | 'checkbox'
     numbers: "input", // 'input' | 'range'
     selects: "standard", // 'standard' | 'dropdown'
   },
@@ -669,10 +669,9 @@ export class SchemaForm extends LitElement {
       return useRange ? "input-range" : "input-number";
     }
     if (schema.type === "boolean") {
-      // Check if toggle should be used
-      const useToggle =
-        this.#getOption("widgets.booleans", "toggle") === "toggle";
-      return useToggle ? "toggle" : "checkbox";
+      // Return the actual boolean widget type
+      const booleanWidget = this.#getOption("widgets.booleans", "toggle");
+      return booleanWidget === "checkbox" ? "checkbox" : booleanWidget;
     }
     return "input-text";
   }
@@ -1489,14 +1488,20 @@ export class SchemaForm extends LitElement {
       this.#emit("pw:after-render-field", { path, schema: node.schema })
     );
 
-    // Add data-toggle for toggle switches
-    const isToggle = node.widgetKey === "toggle";
+    // Add data-toggle for toggle switches (both toggle and toggle-with-icons)
+    const isToggle = node.widgetKey === "toggle" || node.widgetKey === "toggle-with-icons";
+    const useIconToggle = node.widgetKey === "toggle-with-icons";
 
     // Add range-output class for range inputs if enabled
     const isRange = node.widgetKey === "input-range";
     const useRangeOutput =
       isRange && this.#getOption("enhancements.rangeOutput", true);
-    const labelClass = useRangeOutput ? "range-output" : undefined;
+    
+    // Build class list for label
+    const labelClasses = [];
+    if (useRangeOutput) labelClasses.push("range-output");
+    if (useIconToggle) labelClasses.push("with-icons");
+    const labelClass = labelClasses.length > 0 ? labelClasses.join(" ") : undefined;
 
     const renderControlAndLabel = (isToggle) => {
       if (isToggle) return html`${controlTpl} <span data-label>${label}</span>`;
@@ -1842,6 +1847,22 @@ export class SchemaForm extends LitElement {
     // Toggle switch (uses data-toggle attribute on label, rendered in #renderField)
     this.defineRenderer(
       "toggle",
+      ({ id, path, value, attrs, set }) => html`
+        <input
+          id=${id}
+          name=${path}
+          type="checkbox"
+          .checked=${!!value}
+          ?disabled=${!!attrs.disabled}
+          ?required=${!!attrs.required}
+          @change=${(e) => set(!!e.target.checked)}
+        />
+      `
+    );
+
+    // Toggle switch with icons (same as toggle, styling comes from .with-icons class on label)
+    this.defineRenderer(
+      "toggle-with-icons",
       ({ id, path, value, attrs, set }) => html`
         <input
           id=${id}
