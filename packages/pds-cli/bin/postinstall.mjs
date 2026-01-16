@@ -136,6 +136,87 @@ async function ensureExportScript(consumerRoot) {
 }
 
 /**
+ * Create default pds.config.js if it doesn't exist
+ * @param {string} consumerRoot - The root directory to create the config in
+ * @param {boolean} force - If true, overwrite existing config
+ */
+async function ensurePdsConfig(consumerRoot, force = false) {
+  try {
+    const configPath = path.join(consumerRoot, 'pds.config.js');
+    
+    // Check if config already exists
+    try {
+      await access(configPath);
+      if (!force) {
+        console.log('📝 pds.config.js already exists, skipping...');
+        return;
+      }
+      console.log('📝 Overwriting existing pds.config.js...');
+    } catch {
+      // File doesn't exist, create it
+    }
+    
+    const defaultConfig = `export const config = {
+  mode: "live",
+  preset: "default",
+
+  // Uncomment to override preset design tokens:
+  // design: {
+  //   colors: {
+  //     primary: '#007acc',
+  //     secondary: '#5c2d91',
+  //     accent: '#ec4899'
+  //   },
+  //   typography: {
+  //     fontFamilyHeadings: 'Inter, sans-serif',
+  //     fontFamilyBody: 'Inter, sans-serif',
+  //     baseFontSize: 16,
+  //     fontScale: 1.25
+  //   },
+  //   spatialRhythm: {
+  //     baseUnit: 8,
+  //     scaleRatio: 1.5
+  //   }
+  // },
+
+  // Uncomment to add custom progressive enhancers:
+  // enhancers: [
+  //   {
+  //     selector: '[data-tooltip]',
+  //     description: 'Adds tooltip on hover',
+  //     run: (element) => {
+  //       const text = element.dataset.tooltip;
+  //       element.addEventListener('mouseenter', () => {
+  //         // Show tooltip implementation
+  //       });
+  //     }
+  //   }
+  // ],
+
+  // Uncomment to customize lazy-loaded web components:
+  // autoDefine: {
+  //   baseURL: '/pds/components/',
+  //   predefine: ['pds-icon', 'pds-drawer', 'pds-toaster'],
+  //   
+  //   // Custom component paths
+  //   mapper: (tag) => {
+  //     if (tag.startsWith('my-')) {
+  //       return \`/components/\${tag}.js\`;
+  //     }
+  //     // Return nothing to use PDS default mapping
+  //   }
+  // }
+};
+`;
+    
+    await writeFile(configPath, defaultConfig, 'utf8');
+    console.log('📝 Created default pds.config.js');
+  } catch (e) {
+    console.warn('⚠️  Could not create pds.config.js:', e.message);
+  }
+}
+
+/**
  * Copy PDS Copilot instructions to consumer's .github folder
  */
 async function copyCopilotInstructions(consumerRoot) {
@@ -331,6 +412,9 @@ async function copyPdsAssets() {
     
   console.log('📦 Proceeding with asset copying...');
 
+    // Create default pds.config.js if it doesn't exist
+    await ensurePdsConfig(consumerRoot);
+
     // Copy Copilot instructions to consumer project
     await copyCopilotInstructions(consumerRoot);
 
@@ -436,4 +520,4 @@ if (process.argv[1].endsWith('postinstall.js')) {
   copyPdsAssets().catch(console.error);
 }
 
-export { copyPdsAssets, discoverWebRoot };
+export { copyPdsAssets, discoverWebRoot, ensurePdsConfig };

@@ -1,11 +1,217 @@
-﻿import { html, nothing } from "lit";
+import { html, nothing } from "lit";
 import { createComponentDocsPage } from "../reference/reference-docs.js";
 import showdown from "showdown";
 
-const markdownConverter = new showdown.Converter({ tables: true });
+const markdownConverter = new showdown.Converter({ 
+  tables: true,
+  ghCompatibleHeaderId: true,
+  customizedHeaderId: true
+});
+
+const optionsReferenceMarkdown = `
+# Options Reference {#options-reference}
+
+Complete reference for the **options** property of \`pds-form\`.
+
+The \`options\` object controls default widget types, layouts, and form behavior globally.
+
+---
+
+## Usage
+
+Pass an options object to the \`<pds-form>\` component via the \`.options\` property:
+
+\`\`\`javascript
+const options = {
+  widgets: {
+    booleans: "toggle-with-icons",  // 'toggle' | 'toggle-with-icons' | 'checkbox'
+    numbers: "input",                // 'input' | 'range'
+    selects: "standard",             // 'standard' | 'dropdown'
+  },
+  layouts: {
+    fieldsets: "default",            // 'default' | 'flex' | 'grid' | 'accordion' | 'tabs'
+    arrays: "default",               // 'default' | 'compact'
+  },
+  enhancements: {
+    icons: true,                     // Enable icon-enhanced inputs
+    datalists: true,                 // Enable datalist autocomplete
+    rangeOutput: true,               // Show live value for range sliders
+  },
+  validation: {
+    showErrors: true,                // Show validation errors inline
+    validateOnChange: false,         // Validate on every change vs on submit
+  },
+};
+\`\`\`
+
+\`\`\`html
+<pds-form
+  .jsonSchema=\${schema}
+  .uiSchema=\${uiSchema}
+  .options=\${options}
+></pds-form>
+\`\`\`
+
+---
+
+## widgets
+
+Control the default widget type for different field types.
+
+### widgets.booleans
+
+**Type:** \`"toggle" | "toggle-with-icons" | "checkbox"\`  
+**Default:** \`"toggle"\`
+
+Default widget for boolean fields.
+
+| Value | Description |
+|-------|-------------|
+| \`"checkbox"\` | Standard HTML checkbox |
+| \`"toggle"\` | Toggle switch (cleaner, more modern) |
+| \`"toggle-with-icons"\` | Toggle switch with checkmark (?) when on and cross (?) when off |
+
+**Example:**
+\`\`\`javascript
+options: {
+  widgets: {
+    booleans: "toggle-with-icons"  // All boolean fields use toggle switches with icons
+  }
+}
+\`\`\`
+
+### widgets.numbers
+
+**Type:** \`"input" | "range"\`  
+**Default:** \`"input"\`
+
+Default widget for number and integer fields.
+
+| Value | Description |
+|-------|-------------|
+| \`"input"\` | Standard number input with spinner controls |
+| \`"range"\` | Range slider (horizontal slider) |
+
+### widgets.selects
+
+**Type:** \`"standard" | "dropdown"\`  
+**Default:** \`"standard"\`
+
+Default widget for enum fields (fields with predefined values).
+
+| Value | Description |
+|-------|-------------|
+| \`"standard"\` | Native HTML \`<select>\` element |
+| \`"dropdown"\` | Enhanced dropdown menu with better styling |
+
+---
+
+## layouts
+
+Control default layout behavior for nested structures.
+
+### layouts.fieldsets
+
+**Type:** \`"default" | "flex" | "grid" | "accordion" | "tabs"\`  
+**Default:** \`"default"\`
+
+Default layout for object properties (fieldsets).
+
+| Value | Description |
+|-------|-------------|
+| \`"default"\` | Vertical stack of fields |
+| \`"flex"\` | Flexbox row layout |
+| \`"grid"\` | CSS Grid layout |
+| \`"accordion"\` | Collapsible \`<details>\` sections |
+| \`"tabs"\` | Tabbed interface using \`<pds-tabstrip>\` |
+
+### layouts.arrays
+
+**Type:** \`"default" | "compact"\`  
+**Default:** \`"default"\`
+
+Layout style for array items.
+
+| Value | Description |
+|-------|-------------|
+| \`"default"\` | Full layout with add/remove buttons |
+| \`"compact"\` | Condensed layout for simpler arrays |
+
+---
+
+## enhancements
+
+Enable or disable progressive enhancement features.
+
+### enhancements.icons
+
+**Type:** \`boolean\`  
+**Default:** \`true\`
+
+Enable icon-enhanced inputs via \`ui:icon\` in uiSchema.
+
+When \`true\`, fields can display icons using:
+\`\`\`javascript
+uiSchema: {
+  '/email': { 'ui:icon': 'envelope', 'ui:iconPosition': 'start' }
+}
+\`\`\`
+
+### enhancements.datalists
+
+**Type:** \`boolean\`  
+**Default:** \`true\`
+
+Enable autocomplete suggestions via \`ui:datalist\` in uiSchema.
+
+When \`true\`, fields can show autocomplete dropdown using:
+\`\`\`javascript
+uiSchema: {
+  '/country': { 'ui:datalist': ['USA', 'UK', 'Canada', 'Australia'] }
+}
+\`\`\`
+
+### enhancements.rangeOutput
+
+**Type:** \`boolean\`  
+**Default:** \`true\`
+
+Show live value display for range slider inputs.
+
+When \`true\`, range sliders display their current value next to the slider.
+
+---
+
+## validation
+
+Control validation behavior and error display.
+
+### validation.showErrors
+
+**Type:** \`boolean\`  
+**Default:** \`true\`
+
+Display validation error messages inline below fields.
+
+When \`false\`, validation still occurs but error messages are not displayed in the UI.
+
+### validation.validateOnChange
+
+**Type:** \`boolean\`  
+**Default:** \`false\`
+
+Validate fields as the user types (on every change event).
+
+| Value | Behavior |
+|-------|----------|
+| \`false\` | Validate only on form submit (better UX for most cases) |
+| \`true\` | Validate on every keystroke (immediate feedback) |
+
+---
+`;
 
 const uiSchemaReferenceMarkdown = `
-# uiSchema Reference
+# uiSchema Reference {#uischema-reference}
 
 Complete reference for all **uiSchema** configuration options in \`pds-form\`.
 
@@ -387,7 +593,7 @@ Inject custom HTML content before/after fields, create fully custom renderers, o
       <div class="flex gap-xs">
         \${[1,2,3,4,5].map(n => html\`
           <button type="button" @click=\${() => field.set(n)}>
-            \${n <= field.value ? '★' : '☆'}
+            \${n <= field.value ? '?' : '?'}
           </button>
         \`)}
       </div>
@@ -416,16 +622,16 @@ Inject custom HTML content before/after fields, create fully custom renderers, o
 
 const docsParameters = {
   description: {
-    component: `**⭐ Recommended for modern applications** - Automatically generate complete forms from [JSON Schema](https://json-schema.org/) definitions.
+    component: `**✨ Recommended for modern applications** - Automatically generate complete forms from [JSON Schema](https://json-schema.org/) definitions.
 
 ### Key Features
-- 🎯 **Zero boilerplate** - Define form structure in JSON, get a working form with validation
-- ✅ **Built-in validation** - Automatic validation based on schema rules (required, min/max, patterns, etc.)
+- 📝 **Zero boilerplate** - Define form structure in JSON, get a working form with validation
+- ✓ **Built-in validation** - Automatic validation based on schema rules (required, min/max, patterns, etc.)
 - 🔄 **Data binding** - Two-way data binding with form state management
 - 🎨 **PDS styled** - Uses all PDS design tokens automatically
 - 📱 **Responsive** - Mobile-friendly layouts out of the box
-- 🧩 **Conditional logic** - Show/hide/disable fields, computed values
-- 🌐 **Nested objects** - Support for complex nested data structures
+- 🔀 **Conditional logic** - Show/hide/disable fields, computed values
+- 🗂️ **Nested objects** - Support for complex nested data structures
 - 🔧 **Extensible** - Custom field types and validators
 
 ### Why Generate Forms from JSON Schema?
@@ -442,7 +648,9 @@ See the examples below to get started, or check the [primitive forms](/story/pri
   },
   page: createComponentDocsPage("pds-form", {
     hideStories: true,
-    additionalContent: markdownConverter.makeHtml(uiSchemaReferenceMarkdown),
+    additionalContent: 
+      markdownConverter.makeHtml(optionsReferenceMarkdown) +
+      markdownConverter.makeHtml(uiSchemaReferenceMarkdown),
   }),
   toc: true,
 };
@@ -587,7 +795,7 @@ export const WithInitialData = {
         .jsonSchema=${simpleSchema}
         .values=${initialValues}
         .options=${options}
-        @pw:value-change=${(e) => console.log("🔄 Value changed:", e.detail)}
+        @pw:value-change=${(e) => console.log("?? Value changed:", e.detail)}
         @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-form>
     `;
@@ -711,7 +919,7 @@ export const WithRangeSliders = {
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
         .options=${options}
-        @pw:value-change=${(e) => console.log("🎚️ Value changed:", e.detail)}
+        @pw:value-change=${(e) => console.log("??? Value changed:", e.detail)}
         @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-form>
     `;
@@ -738,7 +946,7 @@ export const WithIcons = {
         password: {
           type: "string",
           title: "Password",
-          examples: ["••••••••"],
+          examples: ["��������"],
         },
         website: {
           type: "string",
@@ -1047,7 +1255,7 @@ export const WithGridLayoutAuto = {
 
 This is the **PDS way** to create responsive grids without media queries. Use \`columns: "auto"\` with \`autoSize\` to specify the minimum column width.
 
-### Usage Example
+## Usage Example
 
 \`\`\`html
 <pds-form
@@ -1094,10 +1302,10 @@ const options = {
 \`\`\`
 
 ### Available sizes:
-- \`"sm"\` → ~150px minimum width
-- \`"md"\` → ~200px minimum width
-- \`"lg"\` → ~250px minimum width
-- \`"xl"\` → ~300px minimum width
+- \`"sm"\` ? ~150px minimum width
+- \`"md"\` ? ~200px minimum width
+- \`"lg"\` ? ~250px minimum width
+- \`"xl"\` ? ~300px minimum width
 
 The grid automatically creates as many columns as will fit, wrapping to new rows when needed. **No JavaScript required!**`,
       },
@@ -1170,7 +1378,7 @@ The grid automatically creates as many columns as will fit, wrapping to new rows
 
     return html`
       <div class="alert alert-info">
-        <p><strong>💡 Try resizing your browser window!</strong></p>
+        <p><strong>?? Try resizing your browser window!</strong></p>
         <p>The grid automatically adjusts the number of columns based on available space. Fields maintain a minimum width of ~200px and wrap to new rows as needed.</p>
       </div>
       <pds-form
@@ -1336,7 +1544,7 @@ export const WithTabsLayout = {
                 password: {
                   type: "string",
                   title: "New Password",
-                  examples: ["••••••••"],
+                  examples: ["��������"],
                 },
               },
             },
@@ -1749,7 +1957,7 @@ export const WithDialogForms = {
         .uiSchema=${uiSchema}
         .values=${initialValues}
         @pw:submit=${(e) => toastFormData(e.detail)}
-        @pw:dialog-submit=${(e) => console.log("📝 Dialog saved:", e.detail)}
+        @pw:dialog-submit=${(e) => console.log("?? Dialog saved:", e.detail)}
       ></pds-form>
     `;
   },
@@ -1767,7 +1975,7 @@ This is perfect for scenarios where users can choose one option from predefined 
 ### Key Features:
 - **Single selection** - Only one option can be selected at a time (radio buttons)
 - **Add custom options** - Users can type new options in the input field
-- **Remove options** - Click the × button to remove options
+- **Remove options** - Click the ✕ button to remove options
 - **Pre-populated** - Start with default options from the schema
 
 This pattern is ideal for fields like "Priority", "Status", "Category", or any single-choice field where users might need custom values.`,
@@ -1828,7 +2036,7 @@ This pattern is ideal for fields like "Priority", "Status", "Category", or any s
       <pds-form
         .jsonSchema=${schema}
         .values=${initialValues}
-        @pw:value-change=${(e) => console.log("🔄 Value changed:", e.detail)}
+        @pw:value-change=${(e) => console.log("?? Value changed:", e.detail)}
         @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-form>
     `;
@@ -2098,24 +2306,24 @@ export const WithArrayFields = {
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
         .values=${initialValues}
-        @pw:array-add=${(e) => console.log("➕ Item added to:", e.detail.path)}
+        @pw:array-add=${(e) => console.log("? Item added to:", e.detail.path)}
         @pw:array-remove=${(e) =>
           console.log(
-            "➖ Item removed from:",
+            "? Item removed from:",
             e.detail.path,
             "at index:",
             e.detail.index
           )}
         @pw:array-reorder=${(e) =>
           console.log(
-            "🔄 Item moved from",
+            "?? Item moved from",
             e.detail.from,
             "to",
             e.detail.to,
             "in:",
             e.detail.path
           )}
-        @pw:value-change=${(e) => console.log("🔄 Value changed:", e.detail)}
+        @pw:value-change=${(e) => console.log("?? Value changed:", e.detail)}
         @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-form>
     `;
@@ -2315,7 +2523,7 @@ export const ComprehensiveExample = {
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
         .options=${options}
-        @pw:value-change=${(e) => console.log("🔄 Changed:", e.detail)}
+        @pw:value-change=${(e) => console.log("?? Changed:", e.detail)}
         @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-form>
     `;
@@ -2366,14 +2574,14 @@ When \`hide-actions\` is set, the default Submit and Reset buttons are hidden, a
     const handleSaveDraft = (e) => {
       const form = e.target.closest("pds-form");
       const data = form.serialize();
-      console.log("💾 Saving draft:", data.json);
+      console.log("?? Saving draft:", data.json);
     };
 
     return html`
       <pds-form
         .jsonSchema=${schema}
         hide-actions
-        @pw:value-change=${(e) => console.log("🔄 Field changed:", e.detail)}
+        @pw:value-change=${(e) => console.log("?? Field changed:", e.detail)}
         @pw:submit=${(e) => toastFormData(e.detail)}
       >
         <div slot="actions" class="flex gap-sm items-center">
@@ -2409,7 +2617,7 @@ export const RootGridLayout = {
       description: {
         story: `Apply a grid layout to the entire form using root-level \`ui:layout\` and \`ui:layoutOptions\`.
         
-This allows you to control the form layout **without modifying your JSON Schema** — keeping data structure separate from presentation.
+This allows you to control the form layout **without modifying your JSON Schema** � keeping data structure separate from presentation.
 
 \`\`\`javascript
 const uiSchema = {
@@ -2762,10 +2970,10 @@ Both \`oneOf\` and \`anyOf\` work identically for this purpose. Each option shou
           type: "string",
           title: "Priority Level",
           oneOf: [
-            { const: "p1", title: "🔴 Critical" },
-            { const: "p2", title: "🟠 High" },
-            { const: "p3", title: "🟡 Medium" },
-            { const: "p4", title: "🟢 Low" },
+            { const: "p1", title: "?? Critical" },
+            { const: "p2", title: "?? High" },
+            { const: "p3", title: "?? Medium" },
+            { const: "p4", title: "?? Low" },
           ],
           default: "p3",
         },
@@ -2971,7 +3179,7 @@ The dropdowns should correctly show "Charitable Organization" and "Health & Medi
     return html`
       <div class="alert alert-info">
         <p>
-          <strong>✓ This form has preset values:</strong> The dropdowns should
+          <strong>? This form has preset values:</strong> The dropdowns should
           correctly show "Charitable Organization", "Health & Medical", and
           "NL" as selected.
         </p>
@@ -3275,19 +3483,19 @@ The accordion layout prevents awkward field jumping between columns and makes th
         <p><strong>Try these interactions:</strong></p>
         <ul>
           <li>
-            Open <strong>Account Type</strong>, change to "Business" → Company Name field appears and becomes required
+            Open <strong>Account Type</strong>, change to "Business" ? Company Name field appears and becomes required
           </li>
           <li>
-            Open <strong>Contact Information</strong>, toggle <strong>"Prefer phone contact"</strong> → Email is disabled, Phone becomes required
+            Open <strong>Contact Information</strong>, toggle <strong>"Prefer phone contact"</strong> ? Email is disabled, Phone becomes required
           </li>
           <li>
-            Open <strong>Customer Details</strong>, type in <strong>First/Last Name</strong> → Full Name is calculated automatically
+            Open <strong>Customer Details</strong>, type in <strong>First/Last Name</strong> ? Full Name is calculated automatically
           </li>
           <li>
-            Open <strong>Delivery & Shipping</strong>, select <strong>"Pickup"</strong> → Shipping Address section is hidden
+            Open <strong>Delivery & Shipping</strong>, select <strong>"Pickup"</strong> ? Shipping Address section is hidden
           </li>
           <li>
-            Open <strong>Order Summary</strong>, change <strong>Quantity</strong> or <strong>Delivery Type</strong> → Costs update automatically
+            Open <strong>Order Summary</strong>, change <strong>Quantity</strong> or <strong>Delivery Type</strong> ? Costs update automatically
           </li>
         </ul>
       </div>
@@ -3296,7 +3504,7 @@ The accordion layout prevents awkward field jumping between columns and makes th
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
         @pw:submit=${(e) => {
-          console.log('✅ Form Data Structure:', e.detail);
+          console.log('? Form Data Structure:', e.detail);
           toastFormData(e.detail);
         }}
       ></pds-form>
@@ -3311,12 +3519,12 @@ export const CalculatedValues = {
         story: `Use \`ui:calculate\` to compute values from other fields. Calculated fields are **read-only by default**.
 
 ### Available Operators
-- \`$concat\`: Join strings → \`{ "$concat": ["/first", " ", "/last"] }\`
-- \`$sum\`: Add numbers → \`{ "$sum": ["/a", "/b", "/c"] }\`
-- \`$subtract\`: Subtract → \`{ "$subtract": ["/total", "/discount"] }\`
-- \`$multiply\`: Multiply → \`{ "$multiply": ["/qty", "/price"] }\`
-- \`$divide\`: Divide → \`{ "$divide": ["/total", "/count"] }\`
-- \`$coalesce\`: First non-empty → \`{ "$coalesce": ["/nickname", "/firstName"] }\``,
+- \`$concat\`: Join strings ? \`{ "$concat": ["/first", " ", "/last"] }\`
+- \`$sum\`: Add numbers ? \`{ "$sum": ["/a", "/b", "/c"] }\`
+- \`$subtract\`: Subtract ? \`{ "$subtract": ["/total", "/discount"] }\`
+- \`$multiply\`: Multiply ? \`{ "$multiply": ["/qty", "/price"] }\`
+- \`$divide\`: Divide ? \`{ "$divide": ["/total", "/count"] }\`
+- \`$coalesce\`: First non-empty ? \`{ "$coalesce": ["/nickname", "/firstName"] }\``,
       },
     },
   },
@@ -3366,12 +3574,12 @@ export const CalculatedValues = {
         "ui:calculate": { $coalesce: ["/nickname", "/firstName"] },
       },
 
-      // Multiply: quantity × price
+      // Multiply: quantity � price
       "/subtotal": {
         "ui:calculate": { $multiply: ["/quantity", "/unitPrice"] },
       },
 
-      // Divide + multiply for tax: (subtotal × taxRate) / 100
+      // Divide + multiply for tax: (subtotal � taxRate) / 100
       "/taxAmount": {
         "ui:calculate": {
           $divide: [{ $multiply: ["/subtotal", "/taxRate"] }, 100],
@@ -3399,11 +3607,11 @@ export const CalculatedValues = {
             Name (using <code>$coalesce</code>)
           </li>
           <li>
-            <strong>Subtotal</strong> = Quantity × Unit Price (using
+            <strong>Subtotal</strong> = Quantity � Unit Price (using
             <code>$multiply</code>)
           </li>
           <li>
-            <strong>Tax Amount</strong> = Subtotal × Tax Rate ÷ 100 (using
+            <strong>Tax Amount</strong> = Subtotal � Tax Rate � 100 (using
             <code>$divide</code>)
           </li>
           <li>
@@ -3463,7 +3671,7 @@ The field starts with a computed value but the user can modify it. This is usefu
       "/suggestedPrice": {
         "ui:calculate": { $multiply: ["/baseCost", 1.5] },
         "ui:calculateOverride": true,
-        "ui:help": "💡 Calculated as 1.5× base cost, but you can adjust it",
+        "ui:help": "?? Calculated as 1.5� base cost, but you can adjust it",
       },
 
       // Final price: read-only calculation
@@ -3471,7 +3679,7 @@ The field starts with a computed value but the user can modify it. This is usefu
         "ui:calculate": {
           $coalesce: ["/suggestedPrice", { $multiply: ["/baseCost", 1.5] }],
         },
-        "ui:help": "🔒 Read-only: uses your suggested price",
+        "ui:help": "?? Read-only: uses your suggested price",
       },
 
       // Profit: final - base
@@ -3485,7 +3693,7 @@ The field starts with a computed value but the user can modify it. This is usefu
         <p><strong>Compare editable vs read-only calculations:</strong></p>
         <ul>
           <li>
-            <strong>Suggested Price</strong> starts at 1.5× base cost but
+            <strong>Suggested Price</strong> starts at 1.5� base cost but
             <em>you can edit it</em>
           </li>
           <li>
@@ -3687,13 +3895,13 @@ This is useful for:
           type: "string",
           title: "Personal Email Notice",
           default:
-            "⚠️ Personal email detected. Consider using a work email for business accounts.",
+            "?? Personal email detected. Consider using a work email for business accounts.",
         },
         workEmailConfirmation: {
           type: "string",
           title: "Work Email Confirmed",
           default:
-            "✅ Work email detected. You qualify for enterprise features.",
+            "? Work email detected. You qualify for enterprise features.",
         },
         websiteUrl: {
           type: "string",
@@ -3703,12 +3911,12 @@ This is useful for:
         secureUrlBadge: {
           type: "string",
           title: "Security Status",
-          default: "🔒 Secure connection (HTTPS)",
+          default: "?? Secure connection (HTTPS)",
         },
         insecureUrlWarning: {
           type: "string",
           title: "Security Warning",
-          default: "⚠️ Insecure connection. Consider using HTTPS.",
+          default: "?? Insecure connection. Consider using HTTPS.",
         },
       },
     };
@@ -3759,16 +3967,16 @@ This is useful for:
         </p>
         <ul>
           <li>
-            Type a <strong>personal email</strong> (gmail, yahoo, etc.) →
+            Type a <strong>personal email</strong> (gmail, yahoo, etc.) ?
             Warning appears
           </li>
           <li>
-            Type a <strong>work email</strong> (company.com) → Confirmation
+            Type a <strong>work email</strong> (company.com) ? Confirmation
             appears
           </li>
-          <li>Enter an <strong>https://</strong> URL → Secure badge shown</li>
+          <li>Enter an <strong>https://</strong> URL ? Secure badge shown</li>
           <li>
-            Enter an <strong>http://</strong> URL → Insecure warning shown
+            Enter an <strong>http://</strong> URL ? Insecure warning shown
           </li>
         </ul>
       </div>
@@ -3853,32 +4061,32 @@ export const ConditionalWithLogicalOperators = {
         basicFeatures: {
           type: "string",
           title: "Basic Features",
-          default: "✅ You have access to basic features",
+          default: "? You have access to basic features",
         },
         premiumFeatures: {
           type: "string",
           title: "Premium Features",
-          default: "⭐ Premium features unlocked!",
+          default: "? Premium features unlocked!",
         },
         moderatorTools: {
           type: "string",
           title: "Moderator Tools",
-          default: "🛡️ Moderator tools available",
+          default: "??? Moderator tools available",
         },
         adminPanel: {
           type: "string",
           title: "Admin Panel",
-          default: "👑 Full admin access granted",
+          default: "?? Full admin access granted",
         },
         ageRestrictedContent: {
           type: "string",
           title: "Age-Restricted Content",
-          default: "🔞 Adult content unlocked",
+          default: "?? Adult content unlocked",
         },
         suspendedNotice: {
           type: "string",
           title: "Account Suspended",
-          default: "🚫 Your account is suspended. Contact support.",
+          default: "?? Your account is suspended. Contact support.",
         },
       },
     };
@@ -4009,17 +4217,17 @@ export const ConditionalWithComparison = {
         lowStockWarning: {
           type: "string",
           title: "Low Stock",
-          default: "⚠️ Low quantity - ships within 24h",
+          default: "?? Low quantity - ships within 24h",
         },
         bulkOrderNotice: {
           type: "string",
           title: "Bulk Order",
-          default: "📦 Bulk order! Contact sales for discount.",
+          default: "?? Bulk order! Contact sales for discount.",
         },
         outOfStockError: {
           type: "string",
           title: "Out of Stock",
-          default: "❌ Quantity too high - only 100 in stock",
+          default: "? Quantity too high - only 100 in stock",
         },
 
         country: {
@@ -4040,22 +4248,22 @@ export const ConditionalWithComparison = {
         domesticShipping: {
           type: "string",
           title: "Domestic Shipping",
-          default: "🚚 Free domestic shipping (US/CA)",
+          default: "?? Free domestic shipping (US/CA)",
         },
         euShipping: {
           type: "string",
           title: "EU Shipping",
-          default: "🇪🇺 EU shipping available - 5-7 days",
+          default: "???? EU shipping available - 5-7 days",
         },
         internationalShipping: {
           type: "string",
           title: "International",
-          default: "✈️ International shipping - 10-14 days",
+          default: "?? International shipping - 10-14 days",
         },
         restrictedCountry: {
           type: "string",
           title: "Restricted",
-          default: "🚫 Sorry, we cannot ship to this location",
+          default: "?? Sorry, we cannot ship to this location",
         },
 
         couponCode: {
@@ -4066,7 +4274,7 @@ export const ConditionalWithComparison = {
         couponApplied: {
           type: "string",
           title: "Coupon Status",
-          default: "🎟️ Coupon code detected! Will be validated at checkout.",
+          default: "??? Coupon code detected! Will be validated at checkout.",
         },
       },
     };
@@ -4126,23 +4334,23 @@ export const ConditionalWithComparison = {
         <p><strong>Comparison operators in action:</strong></p>
         <ul>
           <li>
-            Set <strong>Quantity</strong> to 1-3 → Low stock warning
+            Set <strong>Quantity</strong> to 1-3 ? Low stock warning
             (<code>$lte</code>)
           </li>
           <li>
-            Set <strong>Quantity</strong> to 50+ → Bulk order notice
+            Set <strong>Quantity</strong> to 50+ ? Bulk order notice
             (<code>$gte</code>)
           </li>
           <li>
-            Set <strong>Quantity</strong> over 100 → Out of stock error
+            Set <strong>Quantity</strong> over 100 ? Out of stock error
             (<code>$gt</code>)
           </li>
           <li>
-            Select <strong>Country</strong> → Different shipping messages
+            Select <strong>Country</strong> ? Different shipping messages
             (<code>$in</code>)
           </li>
           <li>
-            Enter a <strong>Coupon Code</strong> → Confirmation appears
+            Enter a <strong>Coupon Code</strong> ? Confirmation appears
             (<code>$exists</code>)
           </li>
         </ul>
@@ -4232,7 +4440,7 @@ Disabled fields remain visible but cannot be edited. Use this for:
 
         orderLocked: {
           type: "boolean",
-          title: "🔒 Lock order (prevent changes)",
+          title: "?? Lock order (prevent changes)",
           default: false,
         },
         notes: {
@@ -4284,13 +4492,13 @@ Disabled fields remain visible but cannot be edited. Use this for:
         <p><strong>Fields become disabled based on conditions:</strong></p>
         <ul>
           <li>
-            Check <strong>"Same as shipping"</strong> → Billing address disabled
+            Check <strong>"Same as shipping"</strong> ? Billing address disabled
           </li>
           <li>
-            Change <strong>Payment Method</strong> → Only relevant fields stay
+            Change <strong>Payment Method</strong> ? Only relevant fields stay
             enabled
           </li>
-          <li>Check <strong>"Lock order"</strong> → Notes field disabled</li>
+          <li>Check <strong>"Lock order"</strong> ? Notes field disabled</li>
         </ul>
         <p>Disabled fields show their value but prevent editing.</p>
       </div>
@@ -4465,7 +4673,7 @@ This is like using \`defineRenderer()\` but inline in the uiSchema.`,
                       aria-label="${star} star${star > 1 ? "s" : ""}"
                       aria-pressed=${star <= (field.value || 0)}
                     >
-                      ★
+                      ?
                     </button>
                   `
                 )}
@@ -4496,7 +4704,7 @@ This is like using \`defineRenderer()\` but inline in the uiSchema.`,
               style="cursor: pointer; font-size: 3rem; color: var(--color-${field.value
                 ? "success"
                 : "neutral"}-500)"
-              >${field.value ? "👍🏼" : "👎🏼"}</span
+              >${field.value ? "????" : "????"}</span
             >
             <div>
               <strong>${field.label}</strong>
@@ -4611,7 +4819,7 @@ The wrapper function receives a \`field\` object with: \`{ control, label, help,
             Counter shows <strong class="text-muted">gray</strong> normally
           </li>
           <li>
-            Turns <strong class="text-warning">yellow</strong> when ≤20
+            Turns <strong class="text-warning">yellow</strong> when =20
             characters remain
           </li>
           <li>

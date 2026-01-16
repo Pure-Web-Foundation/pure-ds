@@ -67,6 +67,49 @@ prompt("name?");    // → await PDS.ask("name?", { type: "prompt" })
 
 // ❌ NEVER: Manual dropdown/modal/tab implementations
 // → Use <nav data-dropdown>, PDS.ask(), <pds-tabstrip>
+
+// ❌ NEVER: Access lazy-loaded component APIs before they're defined
+const form = document.querySelector('pds-form');
+form.getFormData(); // May fail - component not loaded yet
+```
+
+---
+
+## ⚡ Lit Components & Import Maps
+
+**Components that require Lit:** `pds-form`
+
+This component uses `import { ... } from "#pds/lit"` and **requires** an import map:
+
+```html
+<!-- REQUIRED in HTML <head> for Lit components -->
+<script type="importmap">
+{
+  "imports": {
+    "#pds/lit": "/assets/js/lit.js"
+  }
+}
+</script>
+```
+
+**When generating code with lazy-loaded components, ALWAYS wait for definition:**
+
+```javascript
+// ✅ CORRECT: Wait for component to load
+await customElements.whenDefined('pds-form');
+const form = document.querySelector('pds-form');
+form.getFormData(); // Safe
+
+// ✅ CORRECT: Alternative pattern
+const FormClass = await customElements.get('pds-form');
+if (FormClass) {
+  const form = document.createElement('pds-form');
+  // ...
+}
+
+// ❌ WRONG: Direct access without waiting
+const form = document.querySelector('pds-form');
+form.getFormData(); // May throw error
 ```
 
 ---
@@ -166,3 +209,5 @@ Before generating code:
 6. ✅ **Apply enhancements via data-* attributes** — See `pds-enhancer-metadata.js`
 7. ✅ **Components as last resort** — Only when native HTML can't achieve it
 8. ✅ **Prefer primitives** — `.card`, `.badge`, `.alert` over custom components
+9. ✅ **Wait for lazy components** — Use `await customElements.whenDefined()` before accessing APIs
+10. ✅ **Include import map** — When using `pds-form` or `pds-drawer`, ensure `#pds/lit` is mapped

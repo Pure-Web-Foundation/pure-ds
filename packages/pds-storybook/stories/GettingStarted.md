@@ -10,12 +10,26 @@ From zero to hero with PDS.
 npm install @pure-ds/core
 ```
 
-Create `pds.config.js`: 
+**What happens during install:**
+
+PDS automatically sets up your project:
+- ✅ Creates `pds.config.js` with commented examples (if it doesn't exist)
+- ✅ Exports static assets to your web root (components, icons, styles)
+- ✅ Copies AI/Copilot instructions to `.github/copilot-instructions.md`
+- ✅ Adds helper scripts to your `package.json` (`pds:export`, `pds:build-icons`)
+
+The generated `pds.config.js` includes:
 
 ```javascript
+// pds.config.js (auto-generated)
 export const config = {
   mode: "live",
-  preset: "default"
+  preset: "default",
+
+  // Uncomment and customize as needed:
+  // design: { colors: { primary: '#007acc' } },
+  // enhancers: [ /* custom enhancements */ ],
+  // autoDefine: { predefine: ['pds-icon'] }
 }
 ```
 
@@ -23,9 +37,19 @@ Then initialize in your app:
 
 ```javascript
 import { PDS } from '@pure-ds/core';
-import { config } from "../../pds.config.js"; // change to match location (project root)
+import { config } from "./pds.config.js"; // project root
 
 await PDS.start(config); // That's it! Start writing semantic HTML.
+```
+
+**Manual config generation:**
+
+```bash
+# Create or regenerate config with examples
+npx pds-init-config
+
+# Force overwrite existing config
+npx pds-init-config --force
 ```
 
 ### Option B: CDN (Zero Install)

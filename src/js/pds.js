@@ -961,10 +961,27 @@ async function __setupAutoDefinerAndEnhancers(options) {
       enhancers: mergedEnhancers,
       onError: (tag, err) => {
         if (typeof tag === "string" && tag.startsWith("pds-")) {
-          // No config available in this context, using console
-          console.warn(
-            `⚠️ PDS component <${tag}> not found. Assets may not be installed.`
-          );
+          // Check if this is a Lit-dependent component with missing #pds/lit import map
+          const litDependentComponents = ['pds-form', 'pds-drawer'];
+          const isLitComponent = litDependentComponents.includes(tag);
+          const isMissingLitError = err?.message?.includes('#pds/lit') || 
+                                     err?.message?.includes('Failed to resolve module specifier');
+          
+          if (isLitComponent && isMissingLitError) {
+            console.error(
+              `❌ PDS component <${tag}> requires Lit but #pds/lit is not in import map.\n` +
+              `Add this to your HTML <head>:\n` +
+              `<script type="importmap">\n` +
+              `  { "imports": { "#pds/lit": "./path/to/lit.js" } }\n` +
+              `</script>\n` +
+              `See: https://github.com/pure-ds/core#lit-components`
+            );
+          } else {
+            // Generic component not found warning
+            console.warn(
+              `⚠️ PDS component <${tag}> not found. Assets may not be installed.`
+            );
+          }
         } else {
           console.error(`❌ Auto-define error for <${tag}>:`, err);
         }

@@ -246,10 +246,18 @@ Auto-defined when used. Lazy-loaded via dynamic imports. Styled by your tokens. 
 npm install @pure-ds/core
 ```
 
-Assets (components, icons) are auto-copied to your project during install. To manually sync:
+**Post-install automation:**
+
+During installation, PDS automatically:
+- Creates a default `pds.config.js` (if one doesn't exist)
+- Copies Copilot/AI instructions to `.github/copilot-instructions.md`
+- Adds `pds:export` and `pds:build-icons` scripts to your `package.json`
+- Runs `pds:export` to generate static assets
+
+To manually re-sync assets:
 
 ```bash
-node node_modules/@pure-ds/core/packages/pds-cli/bin/postinstall.js
+npm run pds:export
 ```
 
 ### Lit Import Convention
@@ -1560,6 +1568,27 @@ await PDS.start({ design: myPreset });
 | `npm run pds:css-data` | Generate CSS IntelliSense (tokens, classes, attributes) |
 | `npm run pds:build-icons` | Build custom icon sprite |
 | `npm run sync-assets` | Sync assets between locations |
+| `npx pds-init-config` | Create default `pds.config.js` with helpful examples |
+
+### Initialize Configuration
+
+Create a starter `pds.config.js` file with commented examples:
+
+```bash
+# Create config in current directory
+npx pds-init-config
+
+# Force overwrite existing config
+npx pds-init-config --force
+```
+
+This generates a `pds.config.js` with:
+- Basic `mode` and `preset` settings
+- Commented examples for design token overrides
+- Template for custom progressive enhancers
+- Template for lazy-loaded component configuration
+
+**Note:** During `npm install`, PDS automatically creates this file if it doesn't exist.
 
 ### Export Static Assets
 
@@ -1859,9 +1888,60 @@ export default {
 ### Components Not Loading
 
 1. Verify components directory exists
-2. Check import map for `#pds/lit`
+2. Check import map for `#pds/lit` (required for Lit components - see below)
 3. Manually sync: `node node_modules/pure-ds/packages/pds-cli/bin/postinstall.js`
 4. Check browser console for errors
+
+### Lit Components Not Working
+
+**Symptoms:** `<pds-form>` or other Lit-based components fail to load with module resolution errors.
+
+**Components requiring Lit:**
+- `<pds-form>` - JSON Schema forms
+- `<pds-drawer>` - Drawer/sidebar panels
+
+**Solution:** Add import map to your HTML `<head>`:
+
+```html
+<script type="importmap">
+{
+  "imports": {
+    "#pds/lit": "/assets/js/lit.js"
+  }
+}
+</script>
+```
+
+Or in bundlers (Vite, Webpack, etc.):
+
+```javascript
+// vite.config.js
+export default {
+  resolve: {
+    alias: { '#pds/lit': 'lit' }
+  }
+};
+
+// webpack.config.js
+module.exports = {
+  resolve: {
+    alias: { '#pds/lit': 'lit' }
+  }
+};
+```
+
+**Note:** Wait for components to load before accessing their APIs:
+
+```javascript
+// ❌ Don't do this
+const form = document.querySelector('pds-form');
+form.getFormData(); // May fail if component not loaded yet
+
+// ✅ Do this instead
+await customElements.whenDefined('pds-form');
+const form = document.querySelector('pds-form');
+form.getFormData(); // Safe
+```
 
 ### Flash of Unstyled Content
 

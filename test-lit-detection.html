@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Lit Detection</title>
+  
+  <!-- ⚠️ Intentionally OMITTING import map to test error detection -->
+  <!-- 
+  <script type="importmap">
+    {
+      "imports": {
+        "#pds/lit": "/assets/js/lit.js"
+      }
+    }
+  </script>
+  -->
+  
+  <script type="module">
+    import { PDS } from './public/assets/js/pds.js';
+    
+    await PDS.start({
+      design: {
+        colors: { primary: '#007acc' }
+      }
+    });
+    
+    console.log('✅ PDS started');
+    
+    // Try to use pds-form without the import map
+    // This should trigger the improved error message
+    const form = document.createElement('pds-form');
+    document.body.appendChild(form);
+  </script>
+</head>
+<body>
+  <h1>Test Lit Component Error Detection</h1>
+  <p>Open the console to see improved error messages when #pds/lit is missing.</p>
+  
+  <!-- This will fail to load and show improved error -->
+  <pds-form></pds-form>
+</body>
+</html>
