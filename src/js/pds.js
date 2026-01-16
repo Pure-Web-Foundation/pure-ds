@@ -56,6 +56,7 @@ import { findComponentForElement } from "./pds-core/pds-ontology.js";
 import { presets, defaultLog } from "./pds-core/pds-config.js";
 import { enums } from "./pds-core/pds-enums.js";
 import { ask } from "./common/ask.js";
+import { toast } from "./common/toast.js";
 import { PDSQuery } from "./pds-core/pds-query.js";
 import * as common from "./common/common.js";
 import { defaultPDSEnhancers } from "./pds-core/pds-enhancers.js";
@@ -87,6 +88,7 @@ PDS.isLiveMode = () => registry.isLive;
 PDS.enums = enums;
 
 PDS.ask = ask;
+PDS.toast = toast;
 
 // Expose common utilities (deepMerge, isObject, etc.)
 PDS.common = common;

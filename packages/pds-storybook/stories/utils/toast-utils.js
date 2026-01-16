@@ -123,17 +123,8 @@ export async function toastFormData(data) {
   const truncated = truncateData(obj);
   const formatted = JSON.stringify(truncated, null, 2);
 
-  // Ensure pds-toaster exists and show the toast
-  let toaster = document.querySelector('pds-toaster');
-  if (!toaster) {
-    toaster = document.createElement('pds-toaster');
-    document.body.appendChild(toaster);
-  }
-  
-  // Wait for the custom element to be defined before calling methods
-  await customElements.whenDefined('pds-toaster');
-  
-  toaster.toast(formatted, {
+  // Use PDS.toast() to display the formatted data
+  await PDS.toast(formatted, {
     type: 'success',
     duration: 5000
   });

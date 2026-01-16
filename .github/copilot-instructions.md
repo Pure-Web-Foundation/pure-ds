@@ -41,6 +41,210 @@ PDS follows the [Pure Web Manifesto](https://pureweb.dev/manifesto): "The browse
 - `public/assets/pds/vscode-custom-data.json`
 - `src/js/pds-core/pds-ontology.js`
 
+**Path resolution helper:** When looking up SSoT files:
+1. First check if `node_modules/@pure-ds/core/` exists (consuming project)
+2. Otherwise use workspace root paths (pure-ds development)
+3. Prefer reading actual files over guessing - the data is authoritative
+
+---
+
+## 📋 pds-form Best Practices
+
+**When generating pds-form code, ALWAYS follow these patterns:**
+
+### 1. Event Handling - Use `pw:submit`, NOT `submit`
+
+```javascript
+// ✅ CORRECT: Listen to pw:submit custom event
+form.addEventListener('pw:submit', async (e) => {
+  const { json, formData, valid, issues } = e.detail;
+  if (valid) {
+    // Handle submission with json or formData
+  }
+});
+
+// ❌ WRONG: Native submit event
+form.addEventListener('submit', (e) => { /* Won't work */ });
+```
+
+### 2. Submit Button Progress - Add `btn-working` automatically
+
+**When user requests a form with async submission, ALWAYS:**
+- Add `btn-working` class to submit button during processing
+- Remove it when done (PDS automatically shows spinner icon)
+- Use a realistic 2-3 second delay for demos
+
+```javascript
+// ✅ CORRECT: Auto-add progress state
+form.addEventListener('pw:submit', async (e) => {
+  const submitBtn = form.querySelector('button[type="submit"]');
+  submitBtn?.classList.add('btn-working');
+  
+  try {
+    await simulateSubmit(e.detail.json); // 2-3 second promise
+    await PDS.toast('Submitted successfully!', { type: 'success' });
+  } finally {
+    submitBtn?.classList.remove('btn-working');
+  }
+});
+
+async function simulateSubmit(data) {
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  console.log('Submitted:', data);
+}
+```
+
+### 3. Progressive Enhancement - Add `data-required` to form wrapper
+
+```html
+<!-- ✅ CORRECT: Wrap pds-form in form[data-required] -->
+<form data-required>
+  <pds-form id="myForm" hide-actions></pds-form>
+  <div class="form-actions">
+    <button type="submit" class="btn-primary">Submit</button>
+  </div>
+</form>
+
+<!-- ❌ WRONG: No data-required enhancement -->
+<pds-form id="myForm"></pds-form>
+```
+
+### 4. JSON Schema - Use `examples` for placeholders
+
+```javascript
+// ✅ CORRECT: Use examples array for placeholders
+const schema = {
+  type: "object",
+  properties: {
+    name: {
+      type: "string",
+      title: "Full Name",
+      examples: ["John Doe"]  // First example becomes placeholder
+    },
+    email: {
+      type: "string",
+      format: "email",
+      title: "Email",
+      examples: ["user@example.com"]
+    },
+    age: {
+      type: "integer",
+      title: "Age",
+      examples: [25]  // Works for numbers too
+    }
+  }
+};
+
+// ❌ WRONG: No placeholders or using wrong property
+```
+
+### 5. UI Schema - Infer smart icons automatically
+
+**Common field → icon mappings (use these by default):**
+
+```javascript
+const smartIcons = {
+  email: 'envelope',
+  phone: 'phone',
+  name: 'user',
+  password: 'lock',
+  search: 'search',
+  message: 'message',
+  comment: 'comment',
+  address: 'map-marker',
+  website: 'link',
+  date: 'calendar',
+  time: 'clock',
+  subject: 'tag',
+  priority: 'flag',
+  category: 'folder',
+  file: 'file',
+  image: 'image'
+};
+
+const uiSchema = {
+  email: {
+    'ui:widget': 'email',
+    'ui:placeholder': 'user@example.com',
+    'ui:icon': 'envelope',  // Auto-infer
+    'ui:autocomplete': 'email'
+  },
+  phone: {
+    'ui:widget': 'tel',
+    'ui:icon': 'phone',
+    'ui:autocomplete': 'tel'
+  },
+  message: {
+    'ui:widget': 'textarea',
+    'ui:rows': 4,
+    'ui:icon': 'message'
+  }
+};
+```
+
+### 6. Complete Working Example
+
+```javascript
+// Schema with examples for placeholders
+const contactSchema = {
+  type: "object",
+  required: ["name", "email", "message"],
+  properties: {
+    name: {
+      type: "string",
+      title: "Name",
+      minLength: 2,
+      examples: ["John Doe"]
+    },
+    email: {
+      type: "string",
+      format: "email",
+      title: "Email",
+      examples: ["user@example.com"]
+    },
+    message: {
+      type: "string",
+      title: "Message",
+      minLength: 10,
+      examples: ["Your message here..."]
+    }
+  }
+};
+
+// UI schema with smart icons
+const uiSchema = {
+  name: { 'ui:icon': 'user' },
+  email: { 'ui:icon': 'envelope' },
+  message: { 
+    'ui:widget': 'textarea',
+    'ui:rows': 4,
+    'ui:icon': 'message'
+  }
+};
+
+// Setup with pw:submit and btn-working
+const form = document.getElementById('contactForm');
+form.jsonSchema = contactSchema;
+form.uiSchema = uiSchema;
+
+form.addEventListener('pw:submit', async (e) => {
+  const submitBtn = form.querySelector('button[type="submit"]');
+  submitBtn?.classList.add('btn-working');
+  
+  try {
+    // Simulate 2s async operation
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    console.log('Submitted:', e.detail.json);
+    await PDS.toast('Message sent!', { type: 'success' });
+    form.reset();
+  } catch (error) {
+    await PDS.toast('Failed to send', { type: 'error' });
+  } finally {
+    submitBtn?.classList.remove('btn-working');
+  }
+});
+```
+
 ---
 
 ## 🚫 Critical Anti-Patterns (NEVER DO THIS)
@@ -61,7 +265,7 @@ PDS follows the [Pure Web Manifesto](https://pureweb.dev/manifesto): "The browse
 
 ```javascript
 // ❌ NEVER: Browser dialogs - Use PDS.ask() and PDS.toast()
-alert("message");   // → PDS.toast("message", { type: "info" })
+alert("message");   // → await PDS.toast("message", { type: "info" })
 confirm("sure?");   // → await PDS.ask("sure?", { type: "confirm" })
 prompt("name?");    // → await PDS.ask("name?", { type: "prompt" })
 
@@ -71,6 +275,23 @@ prompt("name?");    // → await PDS.ask("name?", { type: "prompt" })
 // ❌ NEVER: Access lazy-loaded component APIs before they're defined
 const form = document.querySelector('pds-form');
 form.getFormData(); // May fail - component not loaded yet
+
+// ❌ NEVER: Use native 'submit' event with pds-form
+form.addEventListener('submit', (e) => { }); // → Use 'pw:submit'
+
+// ❌ NEVER: Forget btn-working class for async operations
+button.onclick = async () => {
+  await fetch('/api'); // No loading indicator!
+};
+// → Add button.classList.add('btn-working') before, remove after
+
+// ❌ NEVER: Hardcode placeholders instead of using schema examples
+const schema = { 
+  properties: { 
+    email: { type: "string" } // Missing examples!
+  }
+};
+// → Add examples: ["user@example.com"]
 ```
 
 ---
@@ -173,7 +394,7 @@ const confirmed = await PDS.ask("Delete this item?", {
   buttons: { ok: { name: "Delete", variant: "danger" } }
 });
 
-PDS.toast("Saved successfully!", { type: "success" });
+await PDS.toast("Saved successfully!", { type: "success" });
 
 // Theme management
 PDS.theme = 'dark';  // 'light' | 'dark' | 'system'
@@ -181,6 +402,20 @@ PDS.theme = 'dark';  // 'light' | 'dark' | 'system'
 // Query the design system
 const results = await PDS.query("border gradient classes");
 ```
+
+---
+
+## 📚 Additional Resources
+
+**For comprehensive pds-form documentation:**
+- Read [pds-form-docs.md](../pds-form-docs.md) for complete API reference
+- See [packages/pds-storybook/stories/components/PdsForm.stories.js](../packages/pds-storybook/stories/components/PdsForm.stories.js) for real examples
+- Check [custom-elements.json](../custom-elements.json) for component API details
+
+**For toast notifications:**
+- Use `PDS.toast()` method (see [src/js/common/toast.js](../src/js/common/toast.js) for implementation)
+- Automatically ensures pds-toaster exists and is loaded before displaying
+- See pds-toaster component API in [custom-elements.json](../custom-elements.json)
 
 ---
 
@@ -211,3 +446,11 @@ Before generating code:
 8. ✅ **Prefer primitives** — `.card`, `.badge`, `.alert` over custom components
 9. ✅ **Wait for lazy components** — Use `await customElements.whenDefined()` before accessing APIs
 10. ✅ **Include import map** — When using `pds-form` or `pds-drawer`, ensure `#pds/lit` is mapped
+
+**For pds-form specifically:**
+
+11. ✅ **Use `pw:submit` event** — NOT native `submit` event
+12. ✅ **Add `btn-working` class** — For async submit operations, add during processing
+13. ✅ **Use `examples` in JSON schema** — First example becomes placeholder
+14. ✅ **Add smart icons** — Infer icons based on field names (email→envelope, phone→phone)
+15. ✅ **Wrap in `form[data-required]`** — For asterisk enhancement on required fields

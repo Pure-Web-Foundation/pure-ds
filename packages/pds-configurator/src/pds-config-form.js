@@ -9,20 +9,6 @@ import { AutoComplete } from "pure-web/ac";
 import { figmafyTokens } from "./figma-export.js";
 const STORAGE_KEY = "pure-ds-config";
 
-
-
-async function toast(message, options = {}) {
-  let toaster = document.querySelector("#global-toaster");
-  if (!toaster) {
-    toaster = document.createElement("pds-toaster");
-    toaster.id = "global-toaster";
-    document.body.appendChild(toaster);
-    await customElements.whenDefined("pds-toaster");
-  }
-
-  return toaster.toast(message, options);
-}
-
 customElements.define(
   "pds-config-form",
   class extends LitElement {
@@ -325,7 +311,7 @@ customElements.define(
               .slice(0, 3)
               .map((i) => `• ${i.message}`)
               .join("\n");
-            this._validationToastId = toast(
+            this._validationToastId = await PDS.toast(
               `Design has accessibility issues. Fix before applying.\n${summary}`,
               { type: "error", persistent: true }
             );
@@ -408,11 +394,11 @@ customElements.define(
       }
     }
 
-    toggleInspectorMode() {
+    async toggleInspectorMode() {
       this.inspectorMode = !this.inspectorMode;
       this.dispatchInspectorModeChange();
 
-      toast(
+      await PDS.toast(
         this.inspectorMode
           ? "Code Inspector active - click any element in the showcase to view its code"
           : "Code Inspector deactivated",
@@ -485,7 +471,7 @@ customElements.define(
       return filtered;
     }
 
-    handleFormChange = (event) => {
+    handleFormChange = async (event) => {
       // Get values from the pds-form's serialize method or from event detail
       let values;
       let changedField = null;
@@ -564,7 +550,7 @@ customElements.define(
             .slice(0, 3)
             .map((i) => `• ${i.message}`)
             .join("\n");
-          this._validationToastId = toast(
+          this._validationToastId = await PDS.toast(
             `Design has accessibility issues. Fix before saving.\n${summary}`,
             { type: "error" }
           );
@@ -635,7 +621,7 @@ customElements.define(
         this.saveConfig();
         this.applyStyles(true);
 
-        toast("Configuration reset to defaults", {
+        await PDS.toast("Configuration reset to defaults", {
           type: "info",
           duration: 2000,
         });
@@ -658,7 +644,7 @@ customElements.define(
               .slice(0, 3)
               .map((i) => `• ${i.message}`)
               .join("\n");
-            this._validationToastId = toast(
+            this._validationToastId = await PDS.toast(
               `Preset "${preset.name}" has accessibility issues — not applied.\n${summary}`,
               { type: "error", persistent: true }
             );
@@ -685,14 +671,14 @@ customElements.define(
         this.saveConfig();
         this.applyStyles(true);
 
-        toast(`"${preset.name}" preset loaded successfully!`, {
+        await PDS.toast(`"${preset.name}" preset loaded successfully!`, {
           type: "success",
           duration: 3000,
         });
       }
     };
 
-    handleThemeChange(e) {
+    async handleThemeChange(e) {
       try {
         const value = e.target.value;
         // Update centralized theme via PDS (this persists + applies + sets up listeners)
@@ -701,7 +687,7 @@ customElements.define(
         // Apply immediately and emit styles using the user config (keep config separate)
         this.applyStyles(true);
 
-        toast(`Theme set to ${value}`, { type: "info", duration: 1200 });
+        await PDS.toast(`Theme set to ${value}`, { type: "info", duration: 1200 });
       } catch (ex) {
         console.warn("Failed to change theme:", ex);
       }
@@ -750,9 +736,9 @@ export const pdsConfig = ${JSON.stringify(this.config, null, 2)};
       if (!this.schema) {
         if (!this._loadingToastShown) {
           this._loadingToastShown = true;
-          setTimeout(() => {
+          setTimeout(async () => {
             try {
-              toast("Loading schema...", { duration: 1000 });
+              await PDS.toast("Loading schema...", { duration: 1000 });
             } catch {}
           }, 250);
         }

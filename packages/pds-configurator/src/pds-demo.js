@@ -3,11 +3,6 @@ import { PDS } from "../../../src/js/pds.js";
 
 import { AutoComplete } from "pure-web/ac";
 
-const toast = (message, options) => {
-  const toaster = document.getElementById("global-toaster");
-  toaster.toast(message, options);
-};
-
 customElements.define(
   "pds-demo",
   class extends LitElement {
@@ -3414,12 +3409,12 @@ customElements.define(
       } catch (err) {
         console.error("Error fetching README:", err);
         const toaster = document.getElementById("global-toaster");
-        toaster.toast("Error loading docs. See console.", { type: "danger" });
+        await PDS.toast("Error loading docs. See console.", { type: "error" });
       }
     }
 
     handleTabChange(event) {
-      toast(`Switched to tab: ${event.detail.newTab}`, { type: "info" });
+      await PDS.toast(`Switched to tab: ${event.detail.newTab}`, { type: "info" });
     }
 
     openDrawer() {
@@ -3502,42 +3497,42 @@ customElements.define(
     }
 
     // Toast handler methods
-    showSuccessToast() {
-      toast("Your changes have been saved successfully!", {
+    async showSuccessToast() {
+      await PDS.toast("Your changes have been saved successfully!", {
         type: "success",
       });
     }
 
-    showInfoToast() {
-      toast("This is an informational message with helpful context.", {
-        type: "info",
+    async showInfoToast() {
+      await PDS.toast("This is an informational message with helpful context.", {
+        type: "information",
       });
     }
 
-    showWarningToast() {
-      toast("Warning: This action cannot be undone!", {
+    async showWarningToast() {
+      await PDS.toast("Warning: This action cannot be undone!", {
         type: "warning",
       });
     }
 
-    showErrorToast() {
-      toast("Error: Something went wrong. Please try again.", {
+    async showErrorToast() {
+      await PDS.toast("Error: Something went wrong. Please try again.", {
         type: "error",
       });
     }
 
-    showLongToast() {
-      toast(
+    async showLongToast() {
+      await PDS.toast(
         "This is a longer toast notification message that demonstrates how the duration is automatically calculated based on the message length. The toast will stay visible longer to give you enough time to read the entire message.",
-        { type: "info" }
+        { type: "information" }
       );
     }
 
-    showPersistentToast() {
-      toast(
+    async showPersistentToast() {
+      await PDS.toast(
         "This is a persistent toast that won't auto-dismiss. Click the × to close it.",
         {
-          type: "info",
+          type: "information",
           persistent: true,
         }
       );
