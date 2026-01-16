@@ -109,10 +109,12 @@ async function simulateSubmit(data) {
 <pds-form id="myForm"></pds-form>
 ```
 
-### 4. JSON Schema - Use `examples` for placeholders
+### 4. Placeholders - ALWAYS include examples
+
+**Placeholders improve UX significantly. ALWAYS add examples to schema properties:**
 
 ```javascript
-// ✅ CORRECT: Use examples array for placeholders
+// ✅ CORRECT: Every field has an example (becomes placeholder)
 const schema = {
   type: "object",
   properties: {
@@ -124,65 +126,209 @@ const schema = {
     email: {
       type: "string",
       format: "email",
-      title: "Email",
-      examples: ["user@example.com"]
+      title: "Email Address",
+      examples: ["john@example.com"]  // Shows expected format
+    },
+    phone: {
+      type: "string",
+      title: "Phone Number",
+      examples: ["+1 (555) 123-4567"]  // Pattern example
     },
     age: {
       type: "integer",
       title: "Age",
       examples: [25]  // Works for numbers too
+    },
+    bio: {
+      type: "string",
+      title: "About You",
+      examples: ["Tell us about yourself..."]  // Long text hint
     }
   }
 };
 
-// ❌ WRONG: No placeholders or using wrong property
-```
-
-### 5. UI Schema - Infer smart icons automatically
-
-**Common field → icon mappings (use these by default):**
-
-```javascript
-const smartIcons = {
-  email: 'envelope',
-  phone: 'phone',
-  name: 'user',
-  password: 'lock',
-  search: 'search',
-  message: 'message',
-  comment: 'comment',
-  address: 'map-marker',
-  website: 'link',
-  date: 'calendar',
-  time: 'clock',
-  subject: 'tag',
-  priority: 'flag',
-  category: 'folder',
-  file: 'file',
-  image: 'image'
-};
-
-const uiSchema = {
-  email: {
-    'ui:widget': 'email',
-    'ui:placeholder': 'user@example.com',
-    'ui:icon': 'envelope',  // Auto-infer
-    'ui:autocomplete': 'email'
-  },
-  phone: {
-    'ui:widget': 'tel',
-    'ui:icon': 'phone',
-    'ui:autocomplete': 'tel'
-  },
-  message: {
-    'ui:widget': 'textarea',
-    'ui:rows': 4,
-    'ui:icon': 'message'
+// ❌ WRONG: Missing examples - fields will have no placeholders
+const badSchema = {
+  type: "object",
+  properties: {
+    email: { type: "string", format: "email" }  // No placeholder!
   }
 };
 ```
 
-### 6. Complete Working Example
+**Rule: When generating a form, infer appropriate placeholders based on field name/type if not specified.**
+
+### 5. Smart Icons - Auto-infer from field names
+
+**When generating forms, automatically add icons for common field types. Match field names (or semantic meaning) to these icons:**
+
+```javascript
+// Icon inference map - use these patterns by default
+const iconInference = {
+  // Contact & Identity
+  'email': 'envelope',
+  'phone': 'phone',
+  'mobile': 'phone',
+  'name': 'user',
+  'username': 'user',
+  'firstname': 'user',
+  'lastname': 'user',
+  'password': 'lock',
+  
+  // Location
+  'address': 'map-pin',
+  'street': 'map-pin',
+  'city': 'building',
+  'location': 'map-marker',
+  'country': 'globe',
+  
+  // Communication
+  'message': 'message',
+  'comment': 'comment',
+  'feedback': 'comment',
+  
+  // Web & Links
+  'website': 'link',
+  'url': 'link',
+  'link': 'link',
+  
+  // Time & Dates
+  'date': 'calendar',
+  'birthday': 'calendar',
+  'time': 'clock',
+  
+  // Categorization
+  'subject': 'tag',
+  'tag': 'tag',
+  'category': 'folder',
+  'priority': 'flag',
+  
+  // Files
+  'file': 'file',
+  'upload': 'upload',
+  'image': 'image',
+  'photo': 'image',
+  
+  // Search
+  'search': 'search',
+  'query': 'search'
+};
+
+// ✅ CORRECT: Auto-generate uiSchema with icons
+const uiSchema = {
+  "/email": { 'ui:icon': 'envelope', 'ui:autocomplete': 'email' },
+  "/phone": { 'ui:icon': 'phone', 'ui:autocomplete': 'tel' },
+  "/name": { 'ui:icon': 'user', 'ui:autocomplete': 'name' },
+  "/password": { 'ui:icon': 'lock', 'ui:widget': 'password' },
+  "/website": { 'ui:icon': 'link' },
+  "/message": { 'ui:widget': 'textarea', 'ui:icon': 'message' }
+};
+```
+
+**Rule: When generating a contact/signup/profile form, infer and add appropriate icons automatically.**
+
+### 6. Submit Handler Pattern - ALWAYS provide working async handler
+
+**When generating a pds-form, ALWAYS include a complete, iteration-ready submit handler with:**
+- `pw:submit` event (NOT native submit)
+- `btn-working` class for loading state
+- `PDS.toast()` for user feedback
+- Error handling
+- Realistic async simulation
+
+```javascript
+// ✅ CORRECT: Complete submit handler pattern
+form.addEventListener('pw:submit', async (e) => {
+  const submitBtn = form.querySelector('button[type="submit"]');
+  submitBtn?.classList.add('btn-working');
+  
+  try {
+    // Simulate async operation (replace with real API call)
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Log the data for debugging
+    console.log('Submitted data:', e.detail.json);
+    
+    // Show success toast
+    await PDS.toast('Form submitted successfully!', { type: 'success' });
+    
+    // Optionally reset form
+    form.reset();
+  } catch (error) {
+    // Show error toast
+    await PDS.toast('Submission failed: ' + error.message, { type: 'error' });
+  } finally {
+    // Always remove loading state
+    submitBtn?.classList.remove('btn-working');
+  }
+});
+
+// ❌ WRONG: Native submit event
+form.addEventListener('submit', (e) => { /* Won't work */ });
+
+// ❌ WRONG: No loading state
+form.addEventListener('pw:submit', async (e) => {
+  await fetch('/api'); // No visual feedback!
+});
+
+// ❌ WRONG: Browser dialogs
+form.addEventListener('pw:submit', async (e) => {
+  alert('Submitted!'); // Use PDS.toast() instead
+});
+```
+
+**PDS.toast() is available globally via window.PDS:**
+
+```javascript
+// All toast types
+await PDS.toast('Success message', { type: 'success' });
+await PDS.toast('Error occurred', { type: 'error' });
+await PDS.toast('Warning message', { type: 'warning' });
+await PDS.toast('Info message', { type: 'information' });
+
+// Custom duration (auto-calculated by default based on message length)
+await PDS.toast('Quick message', { type: 'info', duration: 3000 });
+
+// Persistent (requires manual close)
+await PDS.toast('Important notice', { type: 'warning', persistent: true });
+```
+
+### 7. Conditional "Other" Fields - Auto-generate ui:visibleWhen
+
+**When a schema has an "Other" enum option, ALWAYS auto-generate a conditional text field:**
+
+```javascript
+const schema = {
+  type: "object",
+  properties: {
+    reason: {
+      type: "string",
+      title: "How did you hear about us?",
+      oneOf: [
+        { const: "search", title: "Search Engine" },
+        { const: "social", title: "Social Media" },
+        { const: "friend", title: "Friend Referral" },
+        { const: "other", title: "Other... (please specify)" },  // ← "Other" option
+      ],
+    },
+    otherReason: {  // ← Conditional field for "Other"
+      type: "string",
+      title: "Please specify",
+      examples: ["Tell us more..."],
+    },
+  },
+};
+
+const uiSchema = {
+  // ✅ ALWAYS add these when "other" enum exists
+  "/otherReason": {
+    "ui:visibleWhen": { "/reason": "other" },
+    "ui:requiredWhen": { "/reason": "other" },
+  },
+};
+```
+
+### 8. Complete Working Example
 
 ```javascript
 // Schema with examples for placeholders
@@ -213,9 +359,9 @@ const contactSchema = {
 
 // UI schema with smart icons
 const uiSchema = {
-  name: { 'ui:icon': 'user' },
-  email: { 'ui:icon': 'envelope' },
-  message: { 
+  "/name": { 'ui:icon': 'user' },
+  "/email": { 'ui:icon': 'envelope' },
+  "/message": { 
     'ui:widget': 'textarea',
     'ui:rows': 4,
     'ui:icon': 'message'

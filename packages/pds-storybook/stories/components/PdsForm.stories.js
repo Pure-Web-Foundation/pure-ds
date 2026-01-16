@@ -691,13 +691,31 @@ const simpleSchema = {
       type: "string",
       format: "date",
       title: "Date of Birth",
+      examples: ["1990-01-15"],
     },
     newsletter: {
       type: "boolean",
       title: "Subscribe to newsletter",
+      default: false,
     },
   },
   required: ["name", "email"],
+};
+
+// UI Schema with icons for better UX
+const simpleUiSchema = {
+  "/name": {
+    "ui:icon": "user",
+    "ui:iconPosition": "start",
+  },
+  "/email": {
+    "ui:icon": "envelope",
+    "ui:iconPosition": "start",
+  },
+  "/dateOfBirth": {
+    "ui:icon": "calendar",
+    "ui:iconPosition": "start",
+  },
 };
 
 const complexSchema = {
@@ -744,17 +762,52 @@ const complexSchema = {
 
 export const SimpleForm = {
   render: () => {
+    const handleSubmit = async (e) => {
+      // Add btn-working class to show loading state
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      submitBtn?.classList.add('btn-working');
+      
+      try {
+        // Simulate async submission (2 second delay)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        await toastFormData(e.detail);
+      } finally {
+        submitBtn?.classList.remove('btn-working');
+      }
+    };
+
     return html`
       <pds-form
         data-required
         .jsonSchema=${simpleSchema}
-        @pw:submit=${(e) => toastFormData(e.detail)}
+        .uiSchema=${simpleUiSchema}
+        @pw:submit=${handleSubmit}
       ></pds-form>
     `;
   },
 };
 
 const complexUiSchema = {
+  "/personalInfo/firstName": {
+    "ui:icon": "user",
+    "ui:iconPosition": "start",
+  },
+  "/personalInfo/lastName": {
+    "ui:icon": "user",
+    "ui:iconPosition": "start",
+  },
+  "/personalInfo/dateOfBirth": {
+    "ui:icon": "calendar",
+    "ui:iconPosition": "start",
+  },
+  "/address/street": {
+    "ui:icon": "map-pin",
+    "ui:iconPosition": "start",
+  },
+  "/address/city": {
+    "ui:icon": "building",
+    "ui:iconPosition": "start",
+  },
   "address/country": {
     "ui:class": "buttons"
   },
@@ -765,11 +818,23 @@ const complexUiSchema = {
 
 export const ComplexForm = {
   render: () => {
+    const handleSubmit = async (e) => {
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      submitBtn?.classList.add('btn-working');
+      
+      try {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        await toastFormData(e.detail);
+      } finally {
+        submitBtn?.classList.remove('btn-working');
+      }
+    };
+
     return html`
       <pds-form
         .jsonSchema=${complexSchema}
         .uiSchema=${complexUiSchema}
-        @pw:submit=${(e) => toastFormData(e.detail)}
+        @pw:submit=${handleSubmit}
       ></pds-form>
     `;
   },
@@ -790,13 +855,26 @@ export const WithInitialData = {
       newsletter: true,
     };
 
+    const handleSubmit = async (e) => {
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      submitBtn?.classList.add('btn-working');
+      
+      try {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        await toastFormData(e.detail);
+      } finally {
+        submitBtn?.classList.remove('btn-working');
+      }
+    };
+
     return html`
       <pds-form
         .jsonSchema=${simpleSchema}
+        .uiSchema=${simpleUiSchema}
         .values=${initialValues}
         .options=${options}
         @pw:value-change=${(e) => console.log("?? Value changed:", e.detail)}
-        @pw:submit=${(e) => toastFormData(e.detail)}
+        @pw:submit=${handleSubmit}
       ></pds-form>
     `;
   },
