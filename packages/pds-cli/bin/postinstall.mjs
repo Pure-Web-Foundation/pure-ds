@@ -516,7 +516,7 @@ async function copyPdsAssets() {
 }
 
 // Only run when called directly (not when imported)
-if (process.argv[1].endsWith('postinstall.js')) {
+if (process.argv[1] && (process.argv[1].endsWith('postinstall.mjs') || process.argv[1].endsWith('postinstall.js'))) {
   copyPdsAssets().catch(console.error);
 }
 
