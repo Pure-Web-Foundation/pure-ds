@@ -3413,7 +3413,7 @@ customElements.define(
       }
     }
 
-    handleTabChange(event) {
+    async handleTabChange(event) {
       await PDS.toast(`Switched to tab: ${event.detail.newTab}`, { type: "info" });
     }
 

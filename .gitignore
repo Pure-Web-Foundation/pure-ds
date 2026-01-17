@@ -25,3 +25,7 @@ packages/pds-storybook/storybook-static
 packages/pds-storybook/dist
 packages/pds-storybook/public/assets/
 .npmrc
+
+# Generated LLM instruction files (source is pds.llm.md)
+/.github/copilot-instructions.md
+/.cursorrules

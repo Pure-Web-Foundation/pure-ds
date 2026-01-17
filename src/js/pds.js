@@ -1033,7 +1033,7 @@ async function __setupAutoDefinerAndEnhancers(options) {
   }
   // Rely on AutoDefiner to run enhancers across light and shadow DOMs
 
-  return { autoDefiner };
+  return { autoDefiner, mergedEnhancers };
 }
 
 async function live(config) {
@@ -1226,6 +1226,7 @@ async function live(config) {
 
     // 5) Set up AutoDefiner + run enhancers (defaults merged with user)
     let autoDefiner = null;
+    let mergedEnhancers = [];
     try {
       const res = await __setupAutoDefinerAndEnhancers({
         autoDefineBaseURL: derivedAutoDefineBaseURL,
@@ -1240,6 +1241,7 @@ async function live(config) {
         autoDefinePreferModule: !(cfgAuto && cfgAuto.baseURL),
       });
       autoDefiner = res.autoDefiner;
+      mergedEnhancers = res.mergedEnhancers || [];
     } catch (error) {
       generatorConfig?.log?.("error", "❌ Failed to initialize AutoDefiner/Enhancers:", error);
     }
@@ -1256,6 +1258,7 @@ async function live(config) {
       design: structuredClone(normalized.generatorConfig.design),
       preset: normalized.generatorConfig.preset,
       theme: resolvedTheme,
+      enhancers: mergedEnhancers,
     });
 
     // Emit event to notify that PDS is ready (unified)
@@ -1394,6 +1397,7 @@ async function staticInit(config) {
 
     // 5) AutoDefiner + Enhancers
     let autoDefiner = null;
+    let mergedEnhancers = [];
     try {
       const res = await __setupAutoDefinerAndEnhancers({
         autoDefineBaseURL,
@@ -1404,6 +1408,7 @@ async function staticInit(config) {
         autoDefinePreferModule: !(cfgAuto && cfgAuto.baseURL),
       });
       autoDefiner = res.autoDefiner;
+      mergedEnhancers = res.mergedEnhancers || [];
     } catch (error) {
       // No config available in static mode, using console
       console.error(
@@ -1421,6 +1426,7 @@ async function staticInit(config) {
       design: structuredClone(normalized.generatorConfig.design),
       preset: normalized.generatorConfig.preset,
       theme: resolvedTheme,
+      enhancers: mergedEnhancers,
     });
 
     // 6) Emit ready event (unified)

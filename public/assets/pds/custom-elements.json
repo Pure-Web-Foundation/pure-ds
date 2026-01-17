@@ -1,4 +1,4 @@
-﻿{
+{
   "schemaVersion": "1.0.0",
   "readme": "",
   "modules": [
@@ -508,169 +508,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "public/assets/pds/components/pds-icon.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "SVG Icon Web Component",
-          "name": "SvgIcon",
-          "members": [
-            {
-              "kind": "field",
-              "name": "spritePromises",
-              "static": true,
-              "default": "new Map()"
-            },
-            {
-              "kind": "field",
-              "name": "inlineSprites",
-              "static": true,
-              "default": "new Map()"
-            },
-            {
-              "kind": "field",
-              "name": "externalIconCache",
-              "static": true,
-              "default": "new Map()"
-            },
-            {
-              "kind": "field",
-              "name": "externalIconPromises",
-              "static": true,
-              "default": "new Map()"
-            },
-            {
-              "kind": "field",
-              "name": "instances",
-              "static": true,
-              "default": "new Set()"
-            },
-            {
-              "kind": "method",
-              "name": "spriteAvailable",
-              "description": "Check if sprite sheet is available",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "boolean"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "fetchExternalIcon",
-              "static": true,
-              "parameters": [
-                {
-                  "name": "iconName",
-                  "description": "The icon name (without .svg extension)",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ],
-              "description": "Fetch an external SVG icon and cache it",
-              "return": {
-                "type": {
-                  "text": "Promise<boolean>"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "ensureInlineSprite",
-              "static": true,
-              "parameters": [
-                {
-                  "name": "spriteURL"
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "notifyInstances",
-              "static": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "icon",
-              "type": {
-                "text": "string"
-              },
-              "description": "Icon name from the sprite sheet"
-            },
-            {
-              "name": "size",
-              "type": {
-                "text": "string|number"
-              },
-              "description": "Icon size in pixels or named size (xs, sm, md, lg, xl, 2xl)"
-            },
-            {
-              "name": "color",
-              "type": {
-                "text": "string"
-              },
-              "description": "Icon color (CSS color value, default: currentColor)"
-            },
-            {
-              "name": "label",
-              "type": {
-                "text": "string"
-              },
-              "description": "Accessible label for the icon (adds role=\"img\")"
-            },
-            {
-              "name": "rotate",
-              "type": {
-                "text": "number"
-              },
-              "description": "Rotation angle in degrees"
-            },
-            {
-              "type": {
-                "text": "string"
-              },
-              "description": "Override sprite sheet path",
-              "name": "sprite"
-            },
-            {
-              "type": {
-                "text": "boolean"
-              },
-              "description": "Force fallback icon rendering",
-              "name": "no-sprite"
-            }
-          ],
-          "superclass": {
-            "name": "HTMLElement"
-          },
-          "tagName": "pds-icon",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "SvgIcon",
-          "declaration": {
-            "name": "SvgIcon",
-            "module": "public/assets/pds/components/pds-icon.js"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "pds-icon",
-          "declaration": {
-            "name": "SvgIcon",
-            "module": "public/assets/pds/components/pds-icon.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "public/assets/pds/components/pds-form.js",
       "declarations": [
         {
@@ -710,6 +547,10 @@
             {
               "kind": "method",
               "name": "submit"
+            },
+            {
+              "kind": "method",
+              "name": "reset"
             },
             {
               "kind": "field",
@@ -974,6 +815,169 @@
           "declaration": {
             "name": "SchemaForm",
             "module": "public/assets/pds/components/pds-form.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-icon.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "SVG Icon Web Component",
+          "name": "SvgIcon",
+          "members": [
+            {
+              "kind": "field",
+              "name": "spritePromises",
+              "static": true,
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "inlineSprites",
+              "static": true,
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "externalIconCache",
+              "static": true,
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "externalIconPromises",
+              "static": true,
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "instances",
+              "static": true,
+              "default": "new Set()"
+            },
+            {
+              "kind": "method",
+              "name": "spriteAvailable",
+              "description": "Check if sprite sheet is available",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "fetchExternalIcon",
+              "static": true,
+              "parameters": [
+                {
+                  "name": "iconName",
+                  "description": "The icon name (without .svg extension)",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Fetch an external SVG icon and cache it",
+              "return": {
+                "type": {
+                  "text": "Promise<boolean>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureInlineSprite",
+              "static": true,
+              "parameters": [
+                {
+                  "name": "spriteURL"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "notifyInstances",
+              "static": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "icon",
+              "type": {
+                "text": "string"
+              },
+              "description": "Icon name from the sprite sheet"
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "string|number"
+              },
+              "description": "Icon size in pixels or named size (xs, sm, md, lg, xl, 2xl)"
+            },
+            {
+              "name": "color",
+              "type": {
+                "text": "string"
+              },
+              "description": "Icon color (CSS color value, default: currentColor)"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Accessible label for the icon (adds role=\"img\")"
+            },
+            {
+              "name": "rotate",
+              "type": {
+                "text": "number"
+              },
+              "description": "Rotation angle in degrees"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Override sprite sheet path",
+              "name": "sprite"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Force fallback icon rendering",
+              "name": "no-sprite"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-icon",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SvgIcon",
+          "declaration": {
+            "name": "SvgIcon",
+            "module": "public/assets/pds/components/pds-icon.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-icon",
+          "declaration": {
+            "name": "SvgIcon",
+            "module": "public/assets/pds/components/pds-icon.js"
           }
         }
       ]

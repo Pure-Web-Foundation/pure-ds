@@ -97,7 +97,7 @@ async function main() {
   console.log('   • custom-elements.json         (Web Component APIs)');
   console.log('   • public/assets/pds/pds.css-data.json  (CSS tokens)');
   console.log('   • src/js/pds-core/pds-ontology.js      (Primitives & utilities)');
-  console.log('   • src/js/pds-core/pds-enhancer-metadata.js (Enhancements)');
+  console.log('   • src/js/pds-core/pds-enhancers.js (Enhancements - metadata + runtime)');
 }
 
 main().catch(err => {

@@ -130,6 +130,13 @@ button, a {
   white-space: nowrap;
 }
 
+/* Required Legend Utility */
+:where(.required-legend) {
+  display: block;
+  margin: var(--spacing-3) 0;
+  color: var(--color-text-muted);
+}
+
 /* Max-width utilities */
 .max-w-sm { max-width: 400px; } .max-w-md { max-width: 600px; } .max-w-lg { max-width: 800px; } .max-w-xl { max-width: 1200px; }
 
@@ -830,6 +837,13 @@ button, a {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Required Legend Utility */
+:where(.required-legend) {
+  display: block;
+  margin: var(--spacing-3) 0;
+  color: var(--color-text-muted);
 }
 
 /* Max-width utilities */

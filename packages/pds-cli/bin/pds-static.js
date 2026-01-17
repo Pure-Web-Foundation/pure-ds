@@ -21,7 +21,7 @@ import { existsSync } from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 
-import { discoverWebRoot } from './postinstall.js';
+import { discoverWebRoot } from './postinstall.mjs';
 import { runPdsBuildIcons } from './pds-build-icons.js';
 import { generateManifest } from './generate-manifest.js';
 import { generateCSSData } from './generate-css-data.js';
@@ -499,7 +499,31 @@ async function main(options = {}) {
   // 8) Update .vscode/settings.json with IntelliSense paths
   await updateVSCodeSettings(targetDir);
 
-  // 9) Write runtime config helper for auto-discovery
+  // 9) Copy LLM instruction files from pds.llm.md source of truth
+  try {
+    const llmSourcePath = path.join(repoRoot, 'pds.llm.md');
+    if (existsSync(llmSourcePath)) {
+      const llmContent = await readFile(llmSourcePath, 'utf-8');
+      
+      // Copy to .github/copilot-instructions.md
+      const copilotDir = path.join(repoRoot, '.github');
+      await mkdir(copilotDir, { recursive: true });
+      const copilotPath = path.join(copilotDir, 'copilot-instructions.md');
+      await writeFile(copilotPath, llmContent, 'utf-8');
+      log(`✅ Copied LLM instructions → ${path.relative(process.cwd(), copilotPath)}`, 'green');
+      
+      // Copy to .cursorrules
+      const cursorPath = path.join(repoRoot, '.cursorrules');
+      await writeFile(cursorPath, llmContent, 'utf-8');
+      log(`✅ Copied LLM instructions → ${path.relative(process.cwd(), cursorPath)}`, 'green');
+    } else {
+      log(`⚠️  pds.llm.md not found, skipping LLM instruction file generation`, 'yellow');
+    }
+  } catch (e) {
+    log(`⚠️  Failed to copy LLM instruction files: ${e?.message || e}`, 'yellow');
+  }
+
+  // 10) Write runtime config helper for auto-discovery
   try {
     const runtimeConfig = {
       exportedAt: new Date().toISOString(),
@@ -529,6 +553,7 @@ async function main(options = {}) {
   log('• styles → styles/pds-*.css (+ .css.js modules)');
   log('• intellisense → custom-elements.json, vscode-custom-data.json');
   log('• intellisense → pds.css-data.json, pds-css-complete.json');
+  log('• llm-instructions → .github/copilot-instructions.md, .cursorrules');
   log('────────────────────────────────────────────\n');
 
   } catch (err) {

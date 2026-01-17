@@ -238,9 +238,6 @@ primitives.replaceSync(`@layer primitives {
 
   :where(fieldset) {
     border: none;
-    padding: var(--spacing-4);
-    margin: 0 0 var(--spacing-4) 0;
-    background-color: var(--color-surface-subtle);
   }
 
   :where(legend) {
@@ -592,9 +589,6 @@ export const primitivesCSS = `@layer primitives {
 
   :where(fieldset) {
     border: none;
-    padding: var(--spacing-4);
-    margin: 0 0 var(--spacing-4) 0;
-    background-color: var(--color-surface-subtle);
   }
 
   :where(legend) {

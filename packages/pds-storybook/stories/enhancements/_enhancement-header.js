@@ -1,15 +1,15 @@
 import { html } from 'lit';
-import { enhancerMetadata } from '@pds-src/js/pds-core/pds-enhancer-metadata.js';
+import { defaultPDSEnhancerMetadata } from '@pds-src/js/pds-core/pds-enhancers.js';
 
-// Build a lookup map from the enhancerMetadata array
+// Build a lookup map from the defaultPDSEnhancerMetadata array
 const enhancementMap = {
-  accordion: enhancerMetadata.find(e => e.selector === '.accordion'),
-  dropdown: enhancerMetadata.find(e => e.selector === 'nav[data-dropdown]'),
-  toggle: enhancerMetadata.find(e => e.selector === 'label[data-toggle]'),
-  range: enhancerMetadata.find(e => e.selector === 'input[type="range"]'),
-  required: enhancerMetadata.find(e => e.selector === 'form[data-required]'),
-  openGroup: enhancerMetadata.find(e => e.selector === 'fieldset[role=group][data-open]'),
-  buttonWorking: enhancerMetadata.find(e => e.selector === "button, a[class*='btn-']")
+  accordion: defaultPDSEnhancerMetadata.find(e => e.selector === '.accordion'),
+  dropdown: defaultPDSEnhancerMetadata.find(e => e.selector === 'nav[data-dropdown]'),
+  toggle: defaultPDSEnhancerMetadata.find(e => e.selector === 'label[data-toggle]'),
+  range: defaultPDSEnhancerMetadata.find(e => e.selector === 'input[type="range"]'),
+  required: defaultPDSEnhancerMetadata.find(e => e.selector === 'form[data-required]'),
+  openGroup: defaultPDSEnhancerMetadata.find(e => e.selector === 'fieldset[role=group][data-open]'),
+  buttonWorking: defaultPDSEnhancerMetadata.find(e => e.selector === "button, a[class*='btn-']")
 };
 
 /**

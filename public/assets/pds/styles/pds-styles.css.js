@@ -938,9 +938,6 @@ html[data-theme="dark"] {
 
   :where(fieldset) {
     border: none;
-    padding: var(--spacing-4);
-    margin: 0 0 var(--spacing-4) 0;
-    background-color: var(--color-surface-subtle);
   }
 
   :where(legend) {
@@ -1061,12 +1058,13 @@ html[data-theme="dark"] {
 
 :where(blockquote) {
   margin: 0 0 var(--spacing-4) 0;
-  padding: var(--spacing-4) var(--spacing-6);
+  padding: var(--spacing-6) var(--spacing-8);
   border-left: 4px solid var(--color-primary-500);
-  background-color: var(--color-surface-subtle);
-  border-radius: var(--radius-md);
-  font-style: italic;
-  color: var(--color-text-secondary);
+  background-color: var(--color-surface-elevated);
+  border-radius: var(--radius-none);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-primary);
   
   :where(p):last-child {
     margin-bottom: 0;
@@ -1074,14 +1072,10 @@ html[data-theme="dark"] {
   
   :where(cite) {
     display: block;
-    margin-top: var(--spacing-2);
-    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-4);
+    font-size: var(--font-size-base);
     font-style: normal;
-    color: var(--color-text-tertiary);
-    
-    &::before {
-      content: "— ";
-    }
+    color: var(--color-primary-500);
   }
 }
 
@@ -1260,10 +1254,8 @@ form {
 }
 
 fieldset {
-  margin: 0;
-  padding: var(--spacing-5);
+  margin: 0;  
   width: 100%;
-  background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
   
   /* Unified styling for radio groups and checkbox groups */
   &[role="radiogroup"],
@@ -1290,6 +1282,10 @@ fieldset {
         color: var(--color-primary-700);
       }
     }
+
+    input[type="checkbox"]{
+      border-radius: var(--radius-xs);
+    }
     
     input[type="radio"],
     input[type="checkbox"] {
@@ -1298,18 +1294,27 @@ fieldset {
       width: var(--spacing-5);
       height: var(--spacing-5);
       min-height: var(--spacing-5);
+      padding: var(--spacing-2);
       margin: 0;
       cursor: pointer;
       flex-shrink: 0;
       accent-color: var(--color-primary-600);
-      appearance: auto;
-      -webkit-appearance: auto;
-      -moz-appearance: auto;
-      
-      &:focus {
-        outline: 2px solid var(--color-primary-500);
-        outline-offset: 2px;
+
+      &:focus-visible {
+        outline: none;
+
+        box-shadow:
+          0 0 0 2px var(--color-primary-500),
+          0 0 0 4px color-mix(in srgb,
+            var(--color-primary-500) 40%,
+            transparent
+          );
       }
+
+      &:checked {
+        background-color: var(--color-primary-600);
+      }
+      
     }
   }
   
@@ -1363,6 +1368,12 @@ label {
 }
 
 input, textarea, select {
+  &:focus {
+    outline: none;
+  }
+}
+
+input, textarea, select {
   width: 100%;
   min-height: 40px;
   padding: calc(var(--spacing-1) * 0.75) var(--spacing-4);
@@ -1379,9 +1390,7 @@ input, textarea, select {
   -webkit-appearance: none;
   
   &:focus {
-    outline: none;
     border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
     background-color: var(--color-surface-base);
   }
   
@@ -1643,7 +1652,7 @@ fieldset[role="group"].buttons {
     justify-content: center;
     min-height: calc(44px * 0.75);
     padding: calc(var(--spacing-1) * 0.6) calc(var(--spacing-4) * 0.85);
-    border: 1px solid var(--color-border);
+    border: 2px solid var(--color-border);
     border-radius: var(--radius-md);
     font-family: var(--font-family-body);
     font-size: var(--font-size-sm);
@@ -1749,6 +1758,25 @@ label[data-toggle] {
     border-radius: 50%;
     transition: left 200ms ease;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Icons in toggle knob (opt-in via .with-icons class) */
+  &.with-icons .toggle-knob::before {
+    content: "✕";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--color-gray-600);
+    transition: opacity 200ms ease;
+  }
+
+  &.with-icons:has(input[type="checkbox"]:checked) .toggle-knob::before {
+    content: "✓";
+    color: var(--color-primary-600);
   }
 
   /* Toggle switch when checked - using :has() selector */
@@ -2281,15 +2309,24 @@ dialog[open]::backdrop {
   }
 }
 
+/* Dialog - constrain max height to 90vh, support custom maxHeight via CSS variable */
+dialog {
+  max-height: var(--dialog-max-height, 90vh);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevent dialog itself from scrolling - let .dialog-body handle it */
+}
+
 /* Form structure - use flexbox instead of contents */
 dialog form {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
+  min-height: 0; /* Allow flex child to shrink */
   margin: 0;
 }
 
-/* Dialog fields - to open pds-jsonform subforms */
+/* Dialog fields - to open pds-form subforms */
 .dialog-field {
     margin-top: var(--spacing-3);
 }
@@ -2344,7 +2381,8 @@ dialog {
   article,
   form > article,
   .dialog-body {
-    flex: 1;
+    flex: 1 1 auto;
+    min-height: 0; /* Critical: allow flex child to shrink and scroll */
     padding: var(--spacing-3) var(--spacing-6);
     overflow-y: auto;
     overflow-x: hidden;
@@ -2370,9 +2408,17 @@ dialog.dialog-lg { max-width: min(800px, calc(100vw - var(--spacing-8))); }
 dialog.dialog-xl { max-width: min(1200px, calc(100vw - var(--spacing-8))); }
 dialog.dialog-full { max-width: calc(100vw - var(--spacing-8)); max-height: calc(100vh - var(--spacing-8)); }
 
-/* Mobile responsiveness */
+/* Mobile responsiveness - maximize on mobile */
 @media (max-width: 639px) {
-  dialog { max-width: 100vw; max-height: 100vh; border-radius: 0; top: 50%; transform: translateY(-50%); margin: 0; }
+  dialog { 
+    max-width: 100vw; 
+    max-height: 100vh; 
+    --dialog-max-height: 100vh; /* Override custom maxHeight on mobile */
+    border-radius: 0; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    margin: 0; 
+  }
   dialog header, dialog form > header, dialog article, dialog form > article, dialog footer, dialog form > footer { padding: var(--spacing-4); }
 }
 
@@ -2425,13 +2471,26 @@ dialog.dialog-full { max-width: calc(100vw - var(--spacing-8)); max-height: calc
     cursor: pointer;
     padding: var(--spacing-3) var(--spacing-4);
     list-style: none;
-    outline: none;
     display: flex;
     align-items: center;
     gap: var(--spacing-2);
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
 
     &::-webkit-details-marker {
       display: none;
+    }
+
+    &:hover {
+      background-color: var(--color-surface-subtle);
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
     }
 
     /* Chevron indicator */
@@ -2988,6 +3047,13 @@ button, a {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Required Legend Utility */
+:where(.required-legend) {
+  display: block;
+  margin: var(--spacing-3) 0;
+  color: var(--color-text-muted);
 }
 
 /* Max-width utilities */
@@ -4500,9 +4566,6 @@ html[data-theme="dark"] {
 
   :where(fieldset) {
     border: none;
-    padding: var(--spacing-4);
-    margin: 0 0 var(--spacing-4) 0;
-    background-color: var(--color-surface-subtle);
   }
 
   :where(legend) {
@@ -4623,12 +4686,13 @@ html[data-theme="dark"] {
 
 :where(blockquote) {
   margin: 0 0 var(--spacing-4) 0;
-  padding: var(--spacing-4) var(--spacing-6);
+  padding: var(--spacing-6) var(--spacing-8);
   border-left: 4px solid var(--color-primary-500);
-  background-color: var(--color-surface-subtle);
-  border-radius: var(--radius-md);
-  font-style: italic;
-  color: var(--color-text-secondary);
+  background-color: var(--color-surface-elevated);
+  border-radius: var(--radius-none);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-primary);
   
   :where(p):last-child {
     margin-bottom: 0;
@@ -4636,14 +4700,10 @@ html[data-theme="dark"] {
   
   :where(cite) {
     display: block;
-    margin-top: var(--spacing-2);
-    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-4);
+    font-size: var(--font-size-base);
     font-style: normal;
-    color: var(--color-text-tertiary);
-    
-    &::before {
-      content: "— ";
-    }
+    color: var(--color-primary-500);
   }
 }
 
@@ -4822,10 +4882,8 @@ form {
 }
 
 fieldset {
-  margin: 0;
-  padding: var(--spacing-5);
+  margin: 0;  
   width: 100%;
-  background-color: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
   
   /* Unified styling for radio groups and checkbox groups */
   &[role="radiogroup"],
@@ -4852,6 +4910,10 @@ fieldset {
         color: var(--color-primary-700);
       }
     }
+
+    input[type="checkbox"]{
+      border-radius: var(--radius-xs);
+    }
     
     input[type="radio"],
     input[type="checkbox"] {
@@ -4860,18 +4922,27 @@ fieldset {
       width: var(--spacing-5);
       height: var(--spacing-5);
       min-height: var(--spacing-5);
+      padding: var(--spacing-2);
       margin: 0;
       cursor: pointer;
       flex-shrink: 0;
       accent-color: var(--color-primary-600);
-      appearance: auto;
-      -webkit-appearance: auto;
-      -moz-appearance: auto;
-      
-      &:focus {
-        outline: 2px solid var(--color-primary-500);
-        outline-offset: 2px;
+
+      &:focus-visible {
+        outline: none;
+
+        box-shadow:
+          0 0 0 2px var(--color-primary-500),
+          0 0 0 4px color-mix(in srgb,
+            var(--color-primary-500) 40%,
+            transparent
+          );
       }
+
+      &:checked {
+        background-color: var(--color-primary-600);
+      }
+      
     }
   }
   
@@ -4925,6 +4996,12 @@ label {
 }
 
 input, textarea, select {
+  &:focus {
+    outline: none;
+  }
+}
+
+input, textarea, select {
   width: 100%;
   min-height: 40px;
   padding: calc(var(--spacing-1) * 0.75) var(--spacing-4);
@@ -4941,9 +5018,7 @@ input, textarea, select {
   -webkit-appearance: none;
   
   &:focus {
-    outline: none;
     border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
     background-color: var(--color-surface-base);
   }
   
@@ -5205,7 +5280,7 @@ fieldset[role="group"].buttons {
     justify-content: center;
     min-height: calc(44px * 0.75);
     padding: calc(var(--spacing-1) * 0.6) calc(var(--spacing-4) * 0.85);
-    border: 1px solid var(--color-border);
+    border: 2px solid var(--color-border);
     border-radius: var(--radius-md);
     font-family: var(--font-family-body);
     font-size: var(--font-size-sm);
@@ -5311,6 +5386,25 @@ label[data-toggle] {
     border-radius: 50%;
     transition: left 200ms ease;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Icons in toggle knob (opt-in via .with-icons class) */
+  &.with-icons .toggle-knob::before {
+    content: "✕";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--color-gray-600);
+    transition: opacity 200ms ease;
+  }
+
+  &.with-icons:has(input[type="checkbox"]:checked) .toggle-knob::before {
+    content: "✓";
+    color: var(--color-primary-600);
   }
 
   /* Toggle switch when checked - using :has() selector */
@@ -5843,15 +5937,24 @@ dialog[open]::backdrop {
   }
 }
 
+/* Dialog - constrain max height to 90vh, support custom maxHeight via CSS variable */
+dialog {
+  max-height: var(--dialog-max-height, 90vh);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevent dialog itself from scrolling - let .dialog-body handle it */
+}
+
 /* Form structure - use flexbox instead of contents */
 dialog form {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
+  min-height: 0; /* Allow flex child to shrink */
   margin: 0;
 }
 
-/* Dialog fields - to open pds-jsonform subforms */
+/* Dialog fields - to open pds-form subforms */
 .dialog-field {
     margin-top: var(--spacing-3);
 }
@@ -5906,7 +6009,8 @@ dialog {
   article,
   form > article,
   .dialog-body {
-    flex: 1;
+    flex: 1 1 auto;
+    min-height: 0; /* Critical: allow flex child to shrink and scroll */
     padding: var(--spacing-3) var(--spacing-6);
     overflow-y: auto;
     overflow-x: hidden;
@@ -5932,9 +6036,17 @@ dialog.dialog-lg { max-width: min(800px, calc(100vw - var(--spacing-8))); }
 dialog.dialog-xl { max-width: min(1200px, calc(100vw - var(--spacing-8))); }
 dialog.dialog-full { max-width: calc(100vw - var(--spacing-8)); max-height: calc(100vh - var(--spacing-8)); }
 
-/* Mobile responsiveness */
+/* Mobile responsiveness - maximize on mobile */
 @media (max-width: 639px) {
-  dialog { max-width: 100vw; max-height: 100vh; border-radius: 0; top: 50%; transform: translateY(-50%); margin: 0; }
+  dialog { 
+    max-width: 100vw; 
+    max-height: 100vh; 
+    --dialog-max-height: 100vh; /* Override custom maxHeight on mobile */
+    border-radius: 0; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    margin: 0; 
+  }
   dialog header, dialog form > header, dialog article, dialog form > article, dialog footer, dialog form > footer { padding: var(--spacing-4); }
 }
 
@@ -5987,13 +6099,26 @@ dialog.dialog-full { max-width: calc(100vw - var(--spacing-8)); max-height: calc
     cursor: pointer;
     padding: var(--spacing-3) var(--spacing-4);
     list-style: none;
-    outline: none;
     display: flex;
     align-items: center;
     gap: var(--spacing-2);
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
 
     &::-webkit-details-marker {
       display: none;
+    }
+
+    &:hover {
+      background-color: var(--color-surface-subtle);
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
     }
 
     /* Chevron indicator */
@@ -6550,6 +6675,13 @@ button, a {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Required Legend Utility */
+:where(.required-legend) {
+  display: block;
+  margin: var(--spacing-3) 0;
+  color: var(--color-text-muted);
 }
 
 /* Max-width utilities */

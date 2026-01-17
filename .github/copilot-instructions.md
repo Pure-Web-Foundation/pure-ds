@@ -1,4 +1,4 @@
-# PDS (Pure Design System) - Copilot Instructions
+# PDS (Pure Design System) - AI Generation Instructions
 
 > **CRITICAL**: This workspace uses **Pure Design System (PDS)**. All code generation MUST follow PDS and vanilla Web Platform patterns. Never use 3rd party framework patterns, non-PDS utility classes, inline styles, or hardcoded CSS values.
 
@@ -31,7 +31,7 @@ PDS follows the [Pure Web Manifesto](https://pureweb.dev/manifesto): "The browse
 | **Web Components** | `custom-elements.json` | Complete component APIs, attributes, methods, events, slots |
 | **HTML Tags** | `public/assets/pds/vscode-custom-data.json` | Component HTML structure, attribute values |
 | **Primitives & Utilities** | `src/js/pds-core/pds-ontology.js` | `.card`, `.badge`, `.btn-*`, `.flex`, `.gap-*`, `.surface-*` |
-| **Enhancements** | `src/js/pds-core/pds-enhancer-metadata.js` | Selectors + `demoHtml` examples for each enhancement |
+| **Enhancements** | `src/js/pds-core/pds-enhancers.js` | Enhancement metadata (`defaultPDSEnhancerMetadata`) + runtime (`defaultPDSEnhancers`) |
 | **Generator Logic** | `src/js/pds-core/pds-generator.js` | How CSS is generated, token naming conventions |
 | **Config** | `pds.config.js` | What's enabled in this workspace |
 
@@ -94,138 +94,44 @@ async function simulateSubmit(data) {
 }
 ```
 
-### 3. Progressive Enhancement - Add `data-required` to form wrapper
+### 3. Adding `data-required` to pds-form generated form: simply add the attribute to the pds-form tag
 
 ```html
-<!-- ✅ CORRECT: Wrap pds-form in form[data-required] -->
-<form data-required>
-  <pds-form id="myForm" hide-actions></pds-form>
-  <div class="form-actions">
-    <button type="submit" class="btn-primary">Submit</button>
-  </div>
-</form>
-
-<!-- ❌ WRONG: No data-required enhancement -->
-<pds-form id="myForm"></pds-form>
+<pds-form data-required id="myForm" hide-actions></pds-form>
 ```
 
 ### 4. Placeholders - ALWAYS include examples
 
-**Placeholders improve UX significantly. ALWAYS add examples to schema properties:**
-
-```javascript
-// ✅ CORRECT: Every field has an example (becomes placeholder)
-const schema = {
-  type: "object",
-  properties: {
-    name: {
-      type: "string",
-      title: "Full Name",
-      examples: ["John Doe"]  // First example becomes placeholder
-    },
-    email: {
-      type: "string",
-      format: "email",
-      title: "Email Address",
-      examples: ["john@example.com"]  // Shows expected format
-    },
-    phone: {
-      type: "string",
-      title: "Phone Number",
-      examples: ["+1 (555) 123-4567"]  // Pattern example
-    },
-    age: {
-      type: "integer",
-      title: "Age",
-      examples: [25]  // Works for numbers too
-    },
-    bio: {
-      type: "string",
-      title: "About You",
-      examples: ["Tell us about yourself..."]  // Long text hint
-    }
-  }
-};
-
-// ❌ WRONG: Missing examples - fields will have no placeholders
-const badSchema = {
-  type: "object",
-  properties: {
-    email: { type: "string", format: "email" }  // No placeholder!
-  }
-};
-```
+**Placeholders improve UX significantly. Try to add 'examples' array to schema properties:**
 
 **Rule: When generating a form, infer appropriate placeholders based on field name/type if not specified.**
 
-### 5. Smart Icons - Auto-infer from field names
+### 5. Smart Icons - Infer from field semantics
 
-**When generating forms, automatically add icons for common field types. Match field names (or semantic meaning) to these icons:**
+**When generating forms, automatically add appropriate icons based on field names and semantics.**
+
+**Sources of truth for available icons:**
+- Check `pds.config.js` for project-specific icon configuration
+- Consult icon sprite at `public/assets/img/icons/pds-icons.svg` for available icons
+- See `public/assets/pds/vscode-custom-data.json` for icon attribute values
+
+**Use semantic reasoning to match field names to appropriate icons:**
 
 ```javascript
-// Icon inference map - use these patterns by default
-const iconInference = {
-  // Contact & Identity
-  'email': 'envelope',
-  'phone': 'phone',
-  'mobile': 'phone',
-  'name': 'user',
-  'username': 'user',
-  'firstname': 'user',
-  'lastname': 'user',
-  'password': 'lock',
-  
-  // Location
-  'address': 'map-pin',
-  'street': 'map-pin',
-  'city': 'building',
-  'location': 'map-marker',
-  'country': 'globe',
-  
-  // Communication
-  'message': 'message',
-  'comment': 'comment',
-  'feedback': 'comment',
-  
-  // Web & Links
-  'website': 'link',
-  'url': 'link',
-  'link': 'link',
-  
-  // Time & Dates
-  'date': 'calendar',
-  'birthday': 'calendar',
-  'time': 'clock',
-  
-  // Categorization
-  'subject': 'tag',
-  'tag': 'tag',
-  'category': 'folder',
-  'priority': 'flag',
-  
-  // Files
-  'file': 'file',
-  'upload': 'upload',
-  'image': 'image',
-  'photo': 'image',
-  
-  // Search
-  'search': 'search',
-  'query': 'search'
-};
-
-// ✅ CORRECT: Auto-generate uiSchema with icons
+// ✅ CORRECT: Infer icons based on field semantics
 const uiSchema = {
   "/email": { 'ui:icon': 'envelope', 'ui:autocomplete': 'email' },
   "/phone": { 'ui:icon': 'phone', 'ui:autocomplete': 'tel' },
   "/name": { 'ui:icon': 'user', 'ui:autocomplete': 'name' },
   "/password": { 'ui:icon': 'lock', 'ui:widget': 'password' },
   "/website": { 'ui:icon': 'link' },
+  "/address": { 'ui:icon': 'map-pin' },
+  "/date": { 'ui:icon': 'calendar' },
   "/message": { 'ui:widget': 'textarea', 'ui:icon': 'message' }
 };
 ```
 
-**Rule: When generating a contact/signup/profile form, infer and add appropriate icons automatically.**
+**Rule: When generating forms, analyze field names/types and select semantically appropriate icons from the available icon set.**
 
 ### 6. Submit Handler Pattern - ALWAYS provide working async handler
 
@@ -509,7 +415,7 @@ form.getFormData(); // May throw error
 <pds-icon icon="heart" size="sm"></pds-icon>
 <pds-icon icon="check" size="lg" color="var(--color-success-500)"></pds-icon>
 
-<!-- Enhancements: data attributes (see pds-enhancer-metadata.js) -->
+<!-- Enhancements: data attributes (see pds-enhancers.js → defaultPDSEnhancerMetadata) -->
 <nav data-dropdown>
   <button>Menu</button>
   <menu><li><a href="#">Item</a></li></menu>
@@ -526,10 +432,12 @@ form.getFormData(); // May throw error
 
 <!-- Tabs: web component -->
 <pds-tabstrip>
-  <button slot="tab">Tab 1</button>
-  <div slot="panel">Content 1</div>
-  <button slot="tab">Tab 2</button>
-  <div slot="panel">Content 2</div>
+  <pds-tabpanel label="Tab 1">
+    <p>Content for Tab 1</p>
+  </pds-tabpanel>
+  <pds-tabpanel label="Tab 2">
+    <p>Content for Tab 2</p>
+  </pds-tabpanel>
 </pds-tabstrip>
 ```
 
@@ -573,7 +481,7 @@ const results = await PDS.query("border gradient classes");
 | "What components are available?" | Read `custom-elements.json` |
 | "What utility classes exist?" | Read `pds-ontology.js` → `layoutPatterns`, `utilities` |
 | "What primitives exist?" | Read `pds-ontology.js` → `primitives` |
-| "How do I enhance HTML?" | Read `pds-enhancer-metadata.js` → `demoHtml` |
+| "How do I enhance HTML?" | Read `pds-enhancers.js` → `defaultPDSEnhancerMetadata` → `demoHtml` |
 | "How are tokens named?" | Read `pds-generator.js` or `pds.css-data.json` |
 
 ---
@@ -587,7 +495,7 @@ Before generating code:
 3. ✅ **No hardcoded values** — Colors, spacing, radii all have tokens
 4. ✅ **No alert/confirm/prompt** — Use `PDS.ask()` and `PDS.toast()`
 5. ✅ **Use semantic HTML** — `<button>`, `<nav>`, `<article>`, `<label>`, `<details>`
-6. ✅ **Apply enhancements via data-* attributes** — See `pds-enhancer-metadata.js`
+6. ✅ **Apply enhancements via data-* attributes** — See `pds-enhancers.js` → `defaultPDSEnhancerMetadata`
 7. ✅ **Components as last resort** — Only when native HTML can't achieve it
 8. ✅ **Prefer primitives** — `.card`, `.badge`, `.alert` over custom components
 9. ✅ **Wait for lazy components** — Use `await customElements.whenDefined()` before accessing APIs
