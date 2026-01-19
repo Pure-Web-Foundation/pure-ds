@@ -64,6 +64,39 @@ import {
   stripFunctions,
 } from "./pds-core/pds-start-helpers.js";
 
+const __slugifyPreset = (str = "") =>
+  String(str)
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+const __defaultLog = function (level = "log", message, ...data) {
+  const debug = this?.debug || this?.design?.debug || false;
+  if (debug || level === "error" || level === "warn") {
+    const method = console[level] || console.log;
+    if (data.length > 0) {
+      method(message, ...data);
+    } else {
+      method(message);
+    }
+  }
+};
+
+async function __loadRuntimeConfig(assetRootURL, config = {}) {
+  if (config?.runtimeConfig === false) return null;
+  if (typeof fetch !== "function") return null;
+  const runtimeUrl =
+    config?.runtimeConfigURL || `${assetRootURL}pds-runtime-config.json`;
+  try {
+    const res = await fetch(runtimeUrl, { cache: "no-store" });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    return null;
+  }
+}
+
 /** Singleton runtime registry. Use `registry.setLiveMode()` to enable live mode or `registry.setStaticMode()` for static assets */
 PDS.registry = registry;
 
@@ -377,8 +410,52 @@ async function staticInit(config) {
     });
 
     // Normalize first-arg to allow { preset, design, enhancers }
-    const { presets, defaultLog } = await import("./pds-core/pds-config.js");
-    const normalized = normalizeInitConfig(config, {}, { presets, defaultLog });
+    const runtimeConfig = await __loadRuntimeConfig(assetRootURL, config);
+    const runtimeDesign =
+      runtimeConfig?.config?.design || runtimeConfig?.design || null;
+    const runtimePresetLabel =
+      runtimeConfig?.config?.preset || runtimeConfig?.preset || "default";
+    const runtimePresetId =
+      runtimeConfig?.presetId || __slugifyPreset(runtimePresetLabel) || "default";
+    const runtimePresets = runtimeDesign
+      ? {
+          [String(runtimePresetId).toLowerCase()]: runtimeDesign,
+          ...(String(runtimePresetId).toLowerCase() !== "default"
+            ? { default: runtimeDesign }
+            : {}),
+        }
+      : null;
+
+    const inlineDesign =
+      config?.design && typeof config.design === "object"
+        ? stripFunctions(config.design)
+        : null;
+    const inlinePresetId = __slugifyPreset(config?.preset || "default") || "default";
+    const inlinePresets = inlineDesign
+      ? {
+          [String(inlinePresetId).toLowerCase()]: inlineDesign,
+          ...(String(inlinePresetId).toLowerCase() !== "default"
+            ? { default: inlineDesign }
+            : {}),
+        }
+      : null;
+
+    const presets = runtimePresets || config?.presets || inlinePresets || {};
+    if (!Object.keys(presets || {}).length) {
+      throw new Error(
+        "PDS static mode requires preset data. Run pds:export or provide config.presets/config.design."
+      );
+    }
+    const normalizedInput = runtimeConfig?.config
+      ? {
+          ...runtimeConfig.config,
+          ...config,
+          preset: config?.preset || runtimePresetId,
+          design: inlineDesign || runtimeDesign || runtimeConfig?.config?.design,
+        }
+      : config;
+
+    const normalized = normalizeInitConfig(normalizedInput, {}, { presets, defaultLog: __defaultLog });
     const userEnhancers = normalized.enhancers;
 
     // 2) Derive static asset URLs from the normalized public root
@@ -389,7 +466,8 @@ async function staticInit(config) {
       utilities: `${assetRootURL}styles/pds-utilities.css.js`,
       styles: `${assetRootURL}styles/pds-styles.css.js`,
     };
-    staticPaths = { ...baseStaticPaths, ...staticPaths };
+    const runtimePaths = runtimeConfig?.paths || {};
+    staticPaths = { ...baseStaticPaths, ...runtimePaths, ...staticPaths };
 
     // 3) Static mode registry
     PDS.registry.setStaticMode(staticPaths);

@@ -1,6 +1,328 @@
 {
-  "exportedAt": "2026-01-19T11:32:31.852Z",
+  "exportedAt": "2026-01-19T12:21:51.019Z",
   "staticRoot": "/assets/pds/",
+  "presetId": "default",
+  "preset": "Default",
+  "config": {
+    "preset": "Default",
+    "design": {
+      "id": "default",
+      "name": "Default",
+      "tags": [
+        "app",
+        "featured"
+      ],
+      "description": "Fresh and modern design system with balanced aesthetics and usability",
+      "options": {
+        "liquidGlassEffects": true,
+        "backgroundMesh": 4
+      },
+      "form": {
+        "options": {
+          "widgets": {
+            "booleans": "toggle",
+            "numbers": "input",
+            "selects": "standard"
+          },
+          "layouts": {
+            "fieldsets": "default",
+            "arrays": "default"
+          },
+          "enhancements": {
+            "icons": true,
+            "datalists": true,
+            "rangeOutput": true
+          },
+          "validation": {
+            "showErrors": true,
+            "validateOnChange": false
+          }
+        }
+      },
+      "colors": {
+        "primary": "#0e7490",
+        "secondary": "#a99b95",
+        "accent": "#e54271",
+        "background": "#e7e6de",
+        "darkMode": {
+          "background": "#16171a",
+          "secondary": "#8b9199",
+          "primary": "#06b6d4"
+        },
+        "success": null,
+        "warning": "#B38600",
+        "danger": null,
+        "info": null,
+        "gradientStops": 3,
+        "elevationOpacity": 0.05
+      },
+      "typography": {
+        "baseFontSize": 16,
+        "fontScale": 1.2,
+        "fontFamilyHeadings": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+        "fontFamilyBody": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+        "fontFamilyMono": "ui-monospace, \"Cascadia Code\", \"Source Code Pro\", Menlo, Consolas, monospace",
+        "fontWeightLight": 300,
+        "fontWeightNormal": 400,
+        "fontWeightMedium": 500,
+        "fontWeightSemibold": 600,
+        "fontWeightBold": 700,
+        "lineHeightTight": 1.25,
+        "lineHeightNormal": 1.5,
+        "lineHeightRelaxed": 1.75,
+        "letterSpacingTight": -0.025,
+        "letterSpacingNormal": 0,
+        "letterSpacingWide": 0.025
+      },
+      "spatialRhythm": {
+        "baseUnit": 4,
+        "scaleRatio": 1.25,
+        "maxSpacingSteps": 32,
+        "containerMaxWidth": 1200,
+        "containerPadding": 1,
+        "inputPadding": 0.75,
+        "buttonPadding": 1,
+        "sectionSpacing": 2
+      },
+      "layers": {
+        "shadowDepth": "medium",
+        "blurLight": 4,
+        "blurMedium": 8,
+        "blurHeavy": 16,
+        "zIndexBase": 0,
+        "zIndexDropdown": 1000,
+        "zIndexSticky": 1020,
+        "zIndexFixed": 1030,
+        "zIndexModal": 1040,
+        "zIndexPopover": 1050,
+        "zIndexTooltip": 1060,
+        "zIndexNotification": 1070
+      },
+      "shape": {
+        "radiusSize": 16,
+        "borderWidth": 2,
+        "customRadius": null
+      },
+      "behavior": {
+        "transitionSpeed": 250,
+        "animationEasing": "ease-out",
+        "customTransitionSpeed": null,
+        "customEasing": null,
+        "focusRingWidth": 3,
+        "focusRingOpacity": 0.3,
+        "hoverOpacity": 0.8
+      },
+      "layout": {
+        "gridColumns": 12,
+        "gridGutter": 1,
+        "breakpoints": {
+          "sm": 640,
+          "md": 768,
+          "lg": 1024,
+          "xl": 1280
+        },
+        "densityCompact": 0.8,
+        "densityNormal": 1,
+        "densityComfortable": 1.2,
+        "buttonMinHeight": 44,
+        "inputMinHeight": 40,
+        "utilities": {
+          "grid": true,
+          "flex": true,
+          "spacing": true,
+          "container": true
+        },
+        "gridSystem": {
+          "columns": [
+            1,
+            2,
+            3,
+            4,
+            6
+          ],
+          "autoFitBreakpoints": {
+            "sm": "150px",
+            "md": "250px",
+            "lg": "350px",
+            "xl": "450px"
+          },
+          "enableGapUtilities": true
+        },
+        "containerMaxWidth": "1400px",
+        "containerPadding": "var(--spacing-6)"
+      },
+      "advanced": {
+        "linkStyle": "inline",
+        "colorDerivation": "hsl"
+      },
+      "a11y": {
+        "minTouchTarget": 44,
+        "prefersReducedMotion": true,
+        "focusStyle": "ring"
+      },
+      "icons": {
+        "set": "phosphor",
+        "weight": "regular",
+        "defaultSize": 24,
+        "externalPath": "/assets/img/icons/",
+        "sizes": {
+          "xs": 16,
+          "sm": 20,
+          "md": 24,
+          "lg": 32,
+          "xl": 48,
+          "2xl": 64
+        },
+        "include": {
+          "navigation": [
+            "arrow-left",
+            "arrow-right",
+            "arrow-up",
+            "arrow-down",
+            "arrow-counter-clockwise",
+            "caret-left",
+            "caret-right",
+            "caret-down",
+            "caret-up",
+            "x",
+            "list",
+            "list-dashes",
+            "dots-three-vertical",
+            "dots-three",
+            "house",
+            "gear",
+            "magnifying-glass",
+            "funnel",
+            "tabs",
+            "sidebar"
+          ],
+          "actions": [
+            "plus",
+            "minus",
+            "check",
+            "trash",
+            "pencil",
+            "floppy-disk",
+            "copy",
+            "download",
+            "upload",
+            "share",
+            "link",
+            "eye",
+            "eye-slash",
+            "heart",
+            "star",
+            "bookmark",
+            "note-pencil",
+            "cursor-click",
+            "clipboard",
+            "magic-wand",
+            "sparkle"
+          ],
+          "communication": [
+            "envelope",
+            "bell",
+            "bell-ringing",
+            "bell-simple",
+            "chat-circle",
+            "phone",
+            "paper-plane-tilt",
+            "user",
+            "users",
+            "user-gear",
+            "at"
+          ],
+          "content": [
+            "image",
+            "file",
+            "file-text",
+            "file-css",
+            "file-js",
+            "folder",
+            "folder-open",
+            "book-open",
+            "camera",
+            "video-camera",
+            "play",
+            "pause",
+            "microphone",
+            "brackets-curly",
+            "code",
+            "folder-simple",
+            "grid-four",
+            "briefcase",
+            "chart-line",
+            "chart-bar",
+            "database",
+            "map-pin"
+          ],
+          "status": [
+            "info",
+            "warning",
+            "check-circle",
+            "x-circle",
+            "question",
+            "shield",
+            "shield-check",
+            "shield-warning",
+            "lock",
+            "lock-open",
+            "fingerprint",
+            "circle-notch"
+          ],
+          "time": [
+            "calendar",
+            "clock",
+            "timer",
+            "hourglass"
+          ],
+          "commerce": [
+            "shopping-cart",
+            "credit-card",
+            "currency-dollar",
+            "tag",
+            "receipt",
+            "storefront"
+          ],
+          "formatting": [
+            "text-align-left",
+            "text-align-center",
+            "text-align-right",
+            "text-b",
+            "text-italic",
+            "text-underline",
+            "list-bullets",
+            "list-numbers",
+            "text-aa"
+          ],
+          "system": [
+            "cloud",
+            "cloud-arrow-up",
+            "cloud-arrow-down",
+            "desktop",
+            "device-mobile",
+            "globe",
+            "wifi-high",
+            "battery-charging",
+            "sun",
+            "moon",
+            "moon-stars",
+            "palette",
+            "rocket",
+            "feather",
+            "square",
+            "circle",
+            "squares-four",
+            "lightning",
+            "wrench"
+          ]
+        },
+        "spritePath": "public/assets/pds/icons/pds-icons.svg"
+      },
+      "gap": 4,
+      "debug": false
+    }
+  },
   "paths": {
     "tokens": "/assets/pds/styles/pds-tokens.css.js",
     "primitives": "/assets/pds/styles/pds-primitives.css.js",

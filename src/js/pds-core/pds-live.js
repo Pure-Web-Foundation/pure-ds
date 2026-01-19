@@ -6,6 +6,7 @@ import { Generator } from "./pds-generator.js";
 import { applyStyles, adoptLayers, adoptPrimitives } from "./pds-runtime.js";
 import { presets, defaultLog } from "./pds-config.js";
 import { defaultPDSEnhancers } from "./pds-enhancers.js";
+import { defaultPDSEnhancerMetadata } from "./pds-enhancers-meta.js";
 import { resolvePublicAssetURL } from "./pds-paths.js";
 import { loadTypographyFonts } from "../common/font-loader.js";
 import {
@@ -44,6 +45,7 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
   PDS.enums = enums;
   PDS.common = commonModule || {};
   PDS.presets = presets;
+  PDS.enhancerMetadata = defaultPDSEnhancerMetadata;
   PDS.applyStyles = function(generator) {
     return applyStyles(generator || Generator.instance);
   };

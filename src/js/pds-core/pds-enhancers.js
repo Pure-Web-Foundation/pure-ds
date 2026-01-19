@@ -4,110 +4,21 @@
  * This file defines all progressive enhancements for the Pure Design System.
  * Each enhancer has:
  * - selector: CSS selector to target elements
- * - description: Human-readable explanation
- * - demoHtml: Example usage markup
  * - run: Enhancement function (added at the end)
  */
 
 // ============================================================================
-// ENHANCEMENT METADATA DEFINITIONS
+// ENHANCEMENT RUNTIME DEFINITIONS
 // ============================================================================
 
 const enhancerDefinitions = [
-  {
-    selector: ".accordion",
-    description:
-      "Ensures only one <details> element can be open at a time within the accordion.",
-    demoHtml: `
-      <div class="accordion">
-        <details>
-          <summary>Section 1</summary>
-          <p>Content for section 1</p>
-        </details>
-        <details>
-          <summary>Section 2</summary>
-          <p>Content for section 2</p>
-        </details>
-        <details>
-          <summary>Section 3</summary>
-          <p>Content for section 3</p>
-        </details>
-      </div>
-    `.trim(),
-  },
-  {
-    selector: "nav[data-dropdown]",
-    description:
-      "Enhances a nav element with data-dropdown to function as a dropdown menu.",
-    demoHtml: `
-      <nav data-dropdown>
-        <button class="btn-primary">Menu</button>
-        <menu>
-          <li><a href="#">Item 1</a></li>
-          <li><a href="#">Item 2</a></li>
-        </menu>
-      </nav>
-    `.trim(),
-  },
-  {
-    selector: "label[data-toggle]",
-    description: "Creates a toggle switch element from a checkbox.",
-    demoHtml: `
-      <label data-toggle>
-        <input type="checkbox">
-        <span data-label>Enable notifications</span>
-      </label>
-    `.trim(),
-  },
-  {
-    selector: 'input[type="range"]',
-    description: "Enhances range inputs with an attached <output>.",
-    demoHtml: `
-      <label class="range-output">
-        <span data-label>Volume</span>
-        <input type="range" min="0" max="100" value="40">
-      </label>
-    `.trim(),
-  },
-  {
-    selector: "form[data-required]",
-    description:
-      "Enhances required form fields using an asterisk in the label.",
-    demoHtml: `
-      <form data-required action="#" method="post">
-      <label>
-        <span>Field Label</span>
-        <input type="text" required>
-      </label>
-        <nav class="form-actions">
-          <button type="submit" class="btn-primary">Submit</button>
-        </nav>
-      </form>
-    `.trim(),
-  },
-  {
-    selector: "fieldset[role=group][data-open]",
-    description:
-      "Enhances a checkbox/radio group to be open (have a way to add and remove items).",
-    demoHtml: `
-      <fieldset role="group" data-open>
-        <label>
-          <span data-label>Test</span>
-          <input value="lala" name="test1" type="radio" />
-        </label>
-      </fieldset>
-    `.trim(),
-  },
-  {
-    selector: "button, a[class*='btn-']",
-    description:
-      "Automatically manages spinner icon for buttons with .btn-working class",
-    demoHtml: `
-      <button class="btn-primary btn-working">
-        <span>Saving</span>
-      </button>
-    `.trim(),
-  },
+  { selector: ".accordion" },
+  { selector: "nav[data-dropdown]" },
+  { selector: "label[data-toggle]" },
+  { selector: 'input[type="range"]' },
+  { selector: "form[data-required]" },
+  { selector: "fieldset[role=group][data-open]" },
+  { selector: "button, a[class*='btn-']" },
 ];
 
 // ============================================================================
@@ -507,12 +418,4 @@ export const defaultPDSEnhancers = enhancerDefinitions.map((meta) => ({
   run: enhancerRunners.get(meta.selector) || (() => {}),
 }));
 
-/**
- * Metadata-only export for build tools and documentation.
- * This is semantically identical to enhancerDefinitions but exported
- * for tooling that wants to explicitly access metadata without run functions.
- * 
- * Build tools can safely import defaultPDSEnhancers too - Node.js won't
- * execute browser-only DOM code in the run functions.
- */
-export const defaultPDSEnhancerMetadata = enhancerDefinitions;
+// Metadata lives in pds-enhancers-meta.js (live-mode only).

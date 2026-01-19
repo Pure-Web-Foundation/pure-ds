@@ -541,9 +541,21 @@ async function main(options = {}) {
 
   // 10) Write runtime config helper for auto-discovery
   try {
+    const runtimePresetLabel =
+      (generatorOptions && generatorOptions.preset) ||
+      (config && config.preset) ||
+      'default';
+    const runtimePresetId = slugify(runtimePresetLabel || 'default') || 'default';
+    const runtimeDesign = clone(stripFunctions(generatorOptions?.design || {}));
     const runtimeConfig = {
       exportedAt: new Date().toISOString(),
       staticRoot: assetUrlRoot,
+      presetId: runtimePresetId,
+      preset: runtimePresetLabel,
+      config: {
+        preset: runtimePresetLabel,
+        design: runtimeDesign,
+      },
       paths: {
         tokens: `${assetUrlRoot}styles/pds-tokens.css.js`,
         primitives: `${assetUrlRoot}styles/pds-primitives.css.js`,
