@@ -88,7 +88,7 @@ Reentrant CLI for integrating PDS into consumer Storybook instances.
 
 #### Features:
 - ✅ **Environment Detection** - Validates Vite + `@storybook/web-components-vite`
-- ✅ **Asset Export** - Runs `pds:export` using consumer's `pds.config.js`
+- ✅ **Asset Build** - Runs `pds:build` using consumer's `pds.config.js`
 - ✅ **Story Copying** - Copies all story templates
 - ✅ **Auto-Patching** - Updates `.storybook/preview.js` with PDS initialization
 - ✅ **Reentrant** - `--update` flag for incremental updates
@@ -105,7 +105,7 @@ pds-storybook --update
 #### What It Does:
 1. Checks for `.storybook/main.js` with `@storybook/web-components-vite`
 2. Validates `vite.config.js` exists
-3. Runs `pds-static.js` to export assets to `public/assets/pds/`
+3. Runs `pds-static.js` to build assets to `public/assets/pds/`
 4. Copies stories to `.storybook/pds-stories/`
 5. Patches or creates `.storybook/preview.js` with static mode initialization
 6. Reports completion with next steps
@@ -297,7 +297,7 @@ All todos completed:
 ### To Test CLI:
 1. Create a test Vite + Web Components Storybook project
 2. Run `pds-storybook` from project root
-3. Verify assets exported to `public/assets/pds/`
+3. Verify assets built to `public/assets/pds/`
 4. Verify stories copied to `.storybook/pds-stories/`
 5. Run Storybook and check PDS stories appear
 
@@ -313,7 +313,7 @@ All todos completed:
 ✅ **Auto-Generation** - Stories generated from ontology/demo
 ✅ **Best Practices** - Organized by design system standards
 ✅ **CLI Detection** - Validates Vite + Web Components specifically
-✅ **Static Export** - CLI runs pds:export from consumer's config
+✅ **Static Build** - CLI runs pds:build from consumer's config
 ✅ **Reentrant** - --update flag supports incremental updates
 ✅ **Complete Coverage** - All 9 components + foundations + patterns + enhancements
 
@@ -321,7 +321,7 @@ All todos completed:
 
 **Most Innovative**: Custom Storybook addon that embeds the actual PDS configurator UI within Storybook, allowing live design system reconfiguration across all stories simultaneously.
 
-**Most Useful**: Reentrant CLI that detects environment, exports assets, copies stories, and patches configuration - all with a single command.
+**Most Useful**: Reentrant CLI that detects environment, builds assets, copies stories, and patches configuration - all with a single command.
 
 **Best UX**: Bottom drawer configurator that doesn't interfere with Storybook's navigation while providing full configuration capabilities.
 

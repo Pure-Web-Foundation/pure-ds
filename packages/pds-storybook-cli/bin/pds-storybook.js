@@ -77,10 +77,10 @@ function detectEnvironment() {
 }
 
 /**
- * Export static PDS assets using pds:export
+ * Build static PDS assets using pds:build
  */
-async function exportPdsAssets(update = false) {
-  const spinner = ora('Exporting PDS static assets...').start();
+async function buildPdsAssets(update = false) {
+  const spinner = ora('Building PDS static assets...').start();
 
   try {
     // Find pure-ds package
@@ -91,7 +91,7 @@ async function exportPdsAssets(update = false) {
       process.exit(1);
     }
 
-    // Run pds-static export
+    // Run pds-static build
     const staticScriptPath = join(pdsPkgPath, 'packages', 'pds-cli', 'bin', 'pds-static.js');
     
     if (!existsSync(staticScriptPath)) {
@@ -104,7 +104,7 @@ async function exportPdsAssets(update = false) {
       stdio: 'pipe'
     });
 
-    spinner.succeed(chalk.green('PDS assets exported successfully'));
+    spinner.succeed(chalk.green('PDS assets built successfully'));
     
     // Verify output
     const pdsOutputDir = join(CWD, 'public', 'assets', 'pds');
@@ -115,7 +115,7 @@ async function exportPdsAssets(update = false) {
     }
     
   } catch (error) {
-    spinner.fail(chalk.red('Failed to export PDS assets'));
+    spinner.fail(chalk.red('Failed to build PDS assets'));
     console.error(chalk.red(error.message));
     process.exit(1);
   }
@@ -364,7 +364,7 @@ async function init(options) {
   const { mainConfigPath } = detectEnvironment();
 
   console.log('');
-  await exportPdsAssets(options.update);
+  await buildPdsAssets(options.update);
   
   console.log('');
   copyStoryTemplates(options.update);

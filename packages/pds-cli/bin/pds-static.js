@@ -601,7 +601,7 @@ if (process.argv[1]) {
   const scriptPath = fileURLToPath(import.meta.url);
   const argPath = process.argv[1];
   // Check if this is the main module being executed
-  if (argPath === scriptPath || argPath.endsWith('pds-static.js') || argPath.endsWith('pds-export')) {
+  if (argPath === scriptPath || argPath.endsWith('pds-static.js') || argPath.endsWith('pds-build')) {
     main();
   }
 }

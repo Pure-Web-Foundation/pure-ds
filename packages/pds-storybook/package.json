@@ -33,7 +33,7 @@
     "build-storybook": "npm run build-reference && storybook build --output-dir storybook-static --quiet",
     "storybook:dev": "npm run storybook",
     "storybook:build": "npm run build-storybook",
-    "pds:export": "pds-export",
+    "pds:build": "pds-build",
     "pds:build-icons": "pds-build-icons"
   },
   "peerDependencies": {

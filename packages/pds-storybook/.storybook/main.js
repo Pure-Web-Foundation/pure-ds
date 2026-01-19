@@ -49,16 +49,22 @@ const config = {
     builder: '@storybook/builder-vite'
   },
   viteFinal: async (config) => {
-    // Add the cache directory to Vite's fs.allow list
+    // Add cache directories to Vite's fs.allow list
     const cacheDir = resolve(process.cwd(), 'node_modules', '.cache', 'pds-storybook');
+    const storybookCacheDir = resolve(process.cwd(), 'node_modules', '.cache', 'storybook');
+    const repoRoot = resolve(currentDirname, '../../..');
+    const repoStorybookCacheDir = resolve(repoRoot, 'node_modules', '.cache', 'storybook');
     
     config.server = config.server || {};
     config.server.fs = config.server.fs || {};
     config.server.fs.allow = [
       ...(config.server.fs.allow || []),
       cacheDir,
+      storybookCacheDir,
+      repoStorybookCacheDir,
       // Also allow the package root and process.cwd() for good measure
       resolve(currentDirname, '..'),
+      repoRoot,
       process.cwd()
     ];
     

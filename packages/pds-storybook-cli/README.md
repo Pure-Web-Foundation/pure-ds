@@ -5,7 +5,7 @@ Command-line tool to integrate Pure Design System into existing **Vite + Web Com
 ## Features
 
 - 🔍 **Environment Detection** - Validates Vite + `@storybook/web-components` setup
-- 📦 **Asset Export** - Runs `pds:export` to generate static CSS and components
+- 📦 **Asset Build** - Runs `pds:build` to generate static CSS and components
 - 📚 **Story Templates** - Copies comprehensive PDS story library
 - ⚙️ **Auto-Configuration** - Patches Storybook to initialize PDS in static mode
 - 🔄 **Reentrant** - `--update` flag for incremental updates

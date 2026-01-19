@@ -20,14 +20,14 @@ Pure Design System provides comprehensive IntelliSense support for both HTML and
 
 ## 📦 Generation
 
-IntelliSense data is automatically generated when you export PDS assets:
+IntelliSense data is automatically generated when you build PDS assets:
 
 ```bash
 # Generate all IntelliSense data (recommended)
 npm run pds:dx
 
-# Or as part of full export
-npm run pds:export
+# Or as part of full build
+npm run pds:build
 
 # Or generate individually
 npm run pds:manifest    # HTML IntelliSense only

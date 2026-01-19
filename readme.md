@@ -251,13 +251,13 @@ npm install @pure-ds/core
 During installation, PDS automatically:
 - Creates a default `pds.config.js` (if one doesn't exist)
 - Copies Copilot/AI instructions to `.github/copilot-instructions.md`
-- Adds `pds:export` and `pds:build-icons` scripts to your `package.json`
-- Runs `pds:export` to generate static assets
+- Adds `pds:build` and `pds:build-icons` scripts to your `package.json`
+- Runs `pds:build` to generate static assets
 
 To manually re-sync assets:
 
 ```bash
-npm run pds:export
+npm run pds:build
 ```
 
 ### Lit Import Convention
@@ -328,10 +328,10 @@ await PDS.start({
 
 Pre-generate assets for production:
 
-**1. Export static files:**
+**1. Build static files:**
 
 ```bash
-npm run pds:export
+npm run pds:build
 ```
 
 This creates:
@@ -1562,13 +1562,13 @@ await PDS.start({ design: myPreset });
 
 ---
 
-## CLI & Export
+## CLI & Build
 
 ### Available Scripts
 
 | Script | Description |
 |--------|-------------|
-| `npm run pds:export` | Full export: styles, components, icons, and IntelliSense data |
+| `npm run pds:build` | Full build: styles, components, icons, and IntelliSense data |
 | `npm run pds:dx` | Generate all IntelliSense data (HTML + CSS) |
 | `npm run pds:manifest` | Generate HTML IntelliSense (Custom Elements Manifest) |
 | `npm run pds:css-data` | Generate CSS IntelliSense (tokens, classes, attributes) |
@@ -1596,10 +1596,10 @@ This generates a `pds.config.js` with:
 
 **Note:** During `npm install`, PDS automatically creates this file if it doesn't exist.
 
-### Export Static Assets
+### Build Static Assets
 
 ```bash
-npm run pds:export
+npm run pds:build
 ```
 
 **Output:**
@@ -1707,14 +1707,14 @@ Reload VS Code: **Ctrl+Shift+P** → **Developer: Reload Window**
 
 ### Generation
 
-IntelliSense data is automatically generated with export:
+IntelliSense data is automatically generated with build:
 
 ```bash
 # Generate all IntelliSense data (HTML + CSS)
 npm run pds:dx
 
-# Or as part of full export
-npm run pds:export
+# Or as part of full build
+npm run pds:build
 
 # Or generate individually
 npm run pds:manifest    # HTML IntelliSense only

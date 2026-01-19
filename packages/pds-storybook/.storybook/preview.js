@@ -53,6 +53,19 @@ function isDocsPage() {
   }
 }
 
+let liveGenerator = null;
+const setLiveGenerator = (generator) => {
+  if (generator && typeof generator === 'object') {
+    liveGenerator = generator;
+  }
+};
+
+PDS.addEventListener('pds:ready', (event) => {
+  if (event?.detail?.generator) {
+    setLiveGenerator(event.detail.generator);
+  }
+});
+
 // Wrap top-level await in IIFE for production build compatibility
 (async () => {
   PDS.initializing = true;
@@ -85,7 +98,8 @@ function isDocsPage() {
     }
   }
 
-  await PDS.start(pdsOptions);
+  const initResult = await PDS.start(pdsOptions);
+  setLiveGenerator(initResult?.generator);
   PDS.initializing = false;
 
   console.log('✨ PDS initialized in live mode for Storybook');
@@ -125,7 +139,7 @@ const withPDS = (story, context) => {
   console.log('📋 Current adoptedStyleSheets:', currentSheets.length, 'PDS sheets:', pdsSheets.length);
   
   // ALWAYS reapply PDS styles before each story render
-  const designer = Generator.instance;
+  const designer = liveGenerator || Generator.instance;
   if (designer) {
     applyStyles(designer);
     
@@ -283,7 +297,8 @@ const withGlobalsHandler = (story, context) => {
           if (PDS.theme) generatorOptions.theme = PDS.theme;
           
           const newDesigner = new Generator(generatorOptions);
-          await applyStyles(Generator.instance);
+          setLiveGenerator(newDesigner);
+          await applyStyles(newDesigner);
           
           console.log(`✅ Preset applied via decorator: ${globals.preset}`);
         }
@@ -1490,7 +1505,8 @@ if (typeof window !== 'undefined') {
             console.log('✅ Generator created');
             
             console.log('🎨 Applying styles to document...');
-            await applyStyles(Generator.instance);
+            setLiveGenerator(newDesigner);
+            await applyStyles(newDesigner);
             console.log('✅ Styles applied to document');
             
             // Update global reference

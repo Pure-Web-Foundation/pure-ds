@@ -443,7 +443,7 @@ async function staticInit(config) {
     const presets = runtimePresets || config?.presets || inlinePresets || {};
     if (!Object.keys(presets || {}).length) {
       throw new Error(
-        "PDS static mode requires preset data. Run pds:export or provide config.presets/config.design."
+        "PDS static mode requires preset data. Run pds:build or provide config.presets/config.design."
       );
     }
     const normalizedInput = runtimeConfig?.config

@@ -218,9 +218,9 @@ export const Overview = () => {
       <div class="code-build-icons"></div>
       <p class="text-muted story-desc">Reads <code>design.icons.include</code> from config and generates the sprite at <code>spritePath</code>.</p>
       
-      <h4><code>pds:export</code></h4>
-      <p>Export PDS assets (including icons) to your project's static folder:</p>
-      <div class="code-export"></div>
+      <h4><code>pds:build</code></h4>
+      <p>Build PDS assets (including icons) to your project's static folder:</p>
+      <div class="code-build"></div>
       <p class="text-muted story-desc">Copies the sprite to <code>[config.static.root]/icons/pds-icons.svg</code> for production use.</p>
     </section>
 
@@ -354,8 +354,8 @@ npm run pds:build-icons
 # Or via npx
 npx pds build-icons`;
 
-  const exportCode = `# Export all PDS assets including icons
-npm run pds:export
+  const buildCode = `# Build all PDS assets including icons
+npm run pds:build
 
 # Icons are copied to: [static.root]/icons/pds-icons.svg`;
 
@@ -373,8 +373,8 @@ npm run pds:export
   highlight(buildIconsCode, 'bash', theme).then(h => {
     container.querySelector('.code-build-icons').innerHTML = h;
   });
-  highlight(exportCode, 'bash', theme).then(h => {
-    container.querySelector('.code-export').innerHTML = h;
+  highlight(buildCode, 'bash', theme).then(h => {
+    container.querySelector('.code-build').innerHTML = h;
   });
 
   // Attach navigation handlers to story links

@@ -14,9 +14,9 @@ npm install @pure-ds/core
 
 PDS automatically sets up your project:
 - ✅ Creates `pds.config.js` with commented examples (if it doesn't exist)
-- ✅ Exports static assets to your web root (components, icons, styles)
+- ✅ Builds static assets to your web root (components, icons, styles)
 - ✅ Copies AI/Copilot instructions to `.github/copilot-instructions.md`
-- ✅ Adds helper scripts to your `package.json` (`pds:export`, `pds:build-icons`)
+- ✅ Adds helper scripts to your `package.json` (`pds:build`, `pds:build-icons`)
 
 The generated `pds.config.js` includes:
 

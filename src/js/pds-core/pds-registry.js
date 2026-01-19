@@ -51,7 +51,7 @@ class PDSRegistry {
         // No access to config in static mode, fall back to console
         console.error(`[PDS Registry] Failed to load static ${layer}:`, error);
         console.error(`[PDS Registry] Looking for: ${this._staticPaths[layer]}`);
-        console.error(`[PDS Registry] Make sure you've run 'npm run pds:export' and configured PDS.start() with the correct static.root path`);
+        console.error(`[PDS Registry] Make sure you've run 'npm run pds:build' and configured PDS.start() with the correct static.root path`);
         // Return empty stylesheet as fallback
         const fallback = new CSSStyleSheet();
         fallback.replaceSync("/* Failed to load " + layer + " */");

@@ -1,5 +1,5 @@
 import { html } from 'lit';
-import { defaultPDSEnhancerMetadata } from '@pds-src/js/pds-core/pds-enhancers.js';
+import { defaultPDSEnhancerMetadata } from '@pds-src/js/pds-core/pds-enhancers-meta.js';
 
 // Build a lookup map from the defaultPDSEnhancerMetadata array
 const enhancementMap = {

@@ -199,7 +199,7 @@ async function syncAssets(options = {}) {
   }
   await syncDirectory(autoDefineSource, autoDefineTarget, 'components/');
   
-  // Note: icons are not synced in this flow; use pds:export if needed
+  // Note: icons are not synced in this flow; use pds:build if needed
   
   // Update tracking file
   if (!dryRun) {

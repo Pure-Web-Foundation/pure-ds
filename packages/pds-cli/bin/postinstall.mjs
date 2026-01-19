@@ -110,9 +110,9 @@ async function findConsumerRoot() {
 }
 
 /**
- * Ensure consumer package.json contains a handy export script
+ * Ensure consumer package.json contains a handy build script
  */
-async function ensureExportScript(consumerRoot) {
+async function ensureBuildScript(consumerRoot) {
   try {
     const consumerPkgPath = path.join(consumerRoot, 'package.json');
     const consumerPkgRaw = await readFile(consumerPkgPath, 'utf8');
@@ -120,8 +120,8 @@ async function ensureExportScript(consumerRoot) {
 
     consumerPkg.scripts = consumerPkg.scripts || {};
 
-  const desiredScriptName = 'pds:export';
-  const desiredScriptCmd = 'pds-export';
+  const desiredScriptName = 'pds:build';
+  const desiredScriptCmd = 'pds-build';
 
     if (!consumerPkg.scripts[desiredScriptName]) {
       consumerPkg.scripts[desiredScriptName] = desiredScriptCmd;
@@ -131,7 +131,7 @@ async function ensureExportScript(consumerRoot) {
       console.log(`🔧 Script "${desiredScriptName}" already present in consumer package.json`);
     }
   } catch (e) {
-    console.warn('⚠️  Could not ensure pds:export script in consumer package.json:', e.message);
+    console.warn('⚠️  Could not ensure pds:build script in consumer package.json:', e.message);
   }
 }
 
@@ -418,8 +418,8 @@ async function copyPdsAssets() {
     // Copy Copilot instructions to consumer project
     await copyCopilotInstructions(consumerRoot);
 
-    // Proactively add export & build-icons scripts to consumer package.json (still helpful)
-    await ensureExportScript(consumerRoot);
+    // Proactively add build & build-icons scripts to consumer package.json (still helpful)
+    await ensureBuildScript(consumerRoot);
     try {
       const consumerPkgPath = path.join(consumerRoot, 'package.json');
       const pkgRaw = await readFile(consumerPkgPath, 'utf8');
@@ -437,21 +437,21 @@ async function copyPdsAssets() {
     }
 
     // NEW BEHAVIOR: We no longer copy web components automatically to /auto-define/.
-    // Reason: static export (pds:export) is now the single source of truth for placing
+    // Reason: static build (pds:build) is now the single source of truth for placing
     // components under [static.root]/components/ (see pds.config.js). This reduces
     // side-effects during npm install and avoids stale/legacy /auto-define/ layout.
     console.log('🚫 Skipping legacy auto-copy of components to ./public/auto-define/.');
     
-    // Auto-run pds:export by default (can be disabled with PDS_SKIP_EXPORT)
+    // Auto-run pds:build by default (can be disabled with PDS_SKIP_EXPORT)
     if (
       process.env.PDS_SKIP_EXPORT === '1' ||
       process.env.PDS_SKIP_EXPORT === 'true' ||
       process.env.npm_config_pds_skip_export === 'true'
     ) {
-      console.log('⏭️  Skipping pds:export (PDS_SKIP_EXPORT set)');
-      console.log('📦 To generate static assets run:   npm run pds:export');
+      console.log('⏭️  Skipping pds:build (PDS_SKIP_EXPORT set)');
+      console.log('📦 To generate static assets run:   npm run pds:build');
     } else {
-      console.log('🚀 Running pds:export automatically...');
+      console.log('🚀 Running pds:build automatically...');
       const staticModuleUrl = pathToFileURL(path.join(__dirname, 'pds-static.js')).href;
       const previousEnv = {
         PDS_POSTINSTALL: process.env.PDS_POSTINSTALL,
@@ -467,8 +467,8 @@ async function copyPdsAssets() {
         const { runPdsStatic } = await import(staticModuleUrl);
         await runPdsStatic({ cwd: consumerRoot });
       } catch (e) {
-        console.error('❌ Auto-export failed:', e?.message || e);
-        console.log('💡 You can run it manually: npm run pds:export');
+        console.error('❌ Auto-build failed:', e?.message || e);
+        console.log('💡 You can run it manually: npm run pds:build');
       } finally {
         if (previousEnv.PDS_POSTINSTALL === undefined) {
           delete process.env.PDS_POSTINSTALL;
@@ -510,7 +510,7 @@ async function copyPdsAssets() {
     }
   } catch (error) {
     console.error('❌ PDS postinstall failed (non-fatal):', error.message);
-    console.log('💡 Static export still available via: npm run pds:export');
+    console.log('💡 Static build still available via: npm run pds:build');
     process.exitCode = 1;
   }
 }
