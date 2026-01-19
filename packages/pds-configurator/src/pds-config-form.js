@@ -1,8 +1,9 @@
 ﻿import { LitElement, html, nothing } from "../../../src/js/lit.js";
 //import { config } from "../config";
-import { Generator } from "../../../src/js/pds-core/pds-generator.js";
+import { Generator, validateDesign } from "../../../src/js/pds-core/pds-generator.js";
+import { applyStyles } from "../../../src/js/pds-core/pds-runtime.js";
 import { presets } from "../../../src/js/pds-core/pds-config.js";
-import { PDS, validateDesign } from "../../../src/js/pds.js";
+import { PDS } from "../../../src/js/pds.js";
 import { deepMerge } from "../../../src/js/common/common.js";
 import { loadTypographyFonts } from "../../../src/js/common/font-loader.js";
 import { AutoComplete } from "pure-web/ac";
@@ -24,7 +25,7 @@ customElements.define(
       mode: { type: String },
       inspectorMode: { type: Boolean, state: true },
       formValues: { type: Object, state: true }, // Filtered values for the form
-      validationIssues: { type: Array, state: true }, // Accessibility/design issues from PDS.validateDesign
+      validationIssues: { type: Array, state: true }, // Accessibility/design issues from validateDesign
       formKey: { type: Number, state: true }, // Force form re-render
       showInspector: { type: Boolean, attribute: "show-inspector" }, // Show/hide Code Inspector button
       showPresetSelector: { type: Boolean, attribute: "show-preset-selector" }, // Show/hide Preset selector
@@ -339,7 +340,7 @@ customElements.define(
       if (storedTheme) generatorOptions.theme = storedTheme;
 
       this.generator = new Generator(generatorOptions);
-      Generator.applyStyles();
+      applyStyles(this.generator);
 
       // Let PDS ensure document html[data-theme] reflects persisted preference
       try {
@@ -541,7 +542,7 @@ customElements.define(
 
       // Validate candidate config before persisting/applying
       const candidate = deepMerge(structuredClone(this.config), nestedValues);
-      const validation = PDS.validateDesign(candidate);
+      const validation = validateDesign(candidate);
       if (!validation.ok) {
         this.validationIssues = validation.issues;
         // Show persistent toaster once
@@ -636,7 +637,7 @@ customElements.define(
       if (result) {
         // Build from preset only (no default baseline); store as preset + overrides {}
         const presetConfig = JSON.parse(JSON.stringify(preset));
-        const validationResult = PDS.validateDesign(presetConfig);
+        const validationResult = validateDesign(presetConfig);
         if (!validationResult.ok) {
           this.validationIssues = validationResult.issues;
           if (!this._validationToastId) {

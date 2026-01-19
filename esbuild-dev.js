@@ -2,7 +2,7 @@ import esbuild from "esbuild";
 import rebuildNotifyPlugin from "./lib/esbuild-plugin-rebuild-notify.js";
 
 const config = {
-  entryPoints: ["src/js/lit.js", "src/js/app.js", "src/js/pds.js"],
+  entryPoints: ["src/js/lit.js", "src/js/app.js", "src/js/pds.js", "src/js/pds-manager.js"],
   plugins: [rebuildNotifyPlugin()],
   platform: "browser", 
   target: "es2022", 

@@ -421,6 +421,22 @@ async function main(options = {}) {
     await copyDirectory(componentsSource, componentsDir);
   }
 
+  // 4b) Copy live manager bundle into target/core for dynamic import fallback
+  try {
+    const managerSource = path.join(repoRoot, 'public/assets/js/pds-manager.js');
+    if (!existsSync(managerSource)) {
+      log('⚠️  pds-manager.js not found in package assets; skipping copy', 'yellow');
+    } else {
+      const coreDir = path.join(targetDir, 'core');
+      await mkdir(coreDir, { recursive: true });
+      const managerTarget = path.join(coreDir, 'pds-manager.js');
+      await copyFile(managerSource, managerTarget);
+      log(`✅ Copied live manager → ${path.relative(process.cwd(), managerTarget)}`, 'green');
+    }
+  } catch (e) {
+    log(`⚠️  Failed to copy pds-manager.js: ${e?.message || e}`, 'yellow');
+  }
+
   // 5) Generate CSS layers into target/styles
   log('🧬 Generating styles...', 'bold');
   const { Generator } = await loadGenerator();

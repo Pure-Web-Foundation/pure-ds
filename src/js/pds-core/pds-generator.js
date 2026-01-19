@@ -1,4 +1,4 @@
-﻿import { registry as pdsRegistry } from "./pds-registry.js";
+﻿import { presets } from "./pds-config.js";
 
 /**
  * Generator - A JS-config-first design system
@@ -4987,216 +4987,286 @@ export const ${name}CSS = \`${escapedCSS}\`;
 `;
   }
 
-  /**
-   * Static method to apply styles to document
-   * Creates a link element with BLOB URL
-   * @param {Generator} [generator] - Optional Generator instance (defaults to singleton)
-   */
-  static applyStyles(generator) {
-    // Use provided generator or singleton instance
-    const target = generator || Generator.instance;
+}
 
-    // Validate parameter
-    if (!target || typeof target !== "object") {
-      console.error("[Generator] applyStyles requires a generator object or active singleton");
-      return;
+
+/**
+ * Validate a design configuration for accessibility sanity checks.
+ * Currently validates color contrast for primary buttons and base surface text
+ * in both light and dark themes.
+ *
+ * @param {object} designConfig - A full or partial PDS config object
+ * @param {object} [options]
+ * @param {number} [options.minContrast=4.5] - Minimum contrast ratio for normal text
+ * @returns {{ ok: boolean, issues: Array<{path:string, message:string, ratio:number, min:number, context?:string}> }}
+ */
+export function validateDesign(designConfig = {}, options = {}) {
+  const MIN = Number(options.minContrast || 4.5);
+
+  // Local helpers (keep public; no dependency on private Generator methods)
+  const hexToRgb = (hex) => {
+    const h = String(hex || "").replace("#", "");
+    const full =
+      h.length === 3
+        ? h
+            .split("")
+            .map((c) => c + c)
+            .join("")
+        : h;
+    const num = parseInt(full || "0", 16);
+    return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+  };
+  const luminance = (hex) => {
+    const { r, g, b } = hexToRgb(hex);
+    const srgb = [r / 255, g / 255, b / 255].map((v) =>
+      v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
+    );
+    return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
+  };
+  const contrast = (a, b) => {
+    if (!a || !b) return 0;
+    const L1 = luminance(a);
+    const L2 = luminance(b);
+    const lighter = Math.max(L1, L2);
+    const darker = Math.min(L1, L2);
+    return (lighter + 0.05) / (darker + 0.05);
+  };
+
+  const issues = [];
+  try {
+    // Build tokens from the candidate config
+    const gen = new Generator({ design: structuredClone(designConfig) });
+    const c = gen.tokens.colors;
+
+    // Light theme checks - use computed interactive tokens
+    const light = {
+      surfaceBg: c.surface?.base,
+      surfaceText: c.gray?.[900] || "#000000",
+      primaryFill: c.interactive?.light?.fill || c.primary?.[600],
+      primaryText: c.interactive?.light?.text || c.primary?.[600],
+    };
+
+    // Primary button (light): check button fill with white text
+    const lightBtnRatio = contrast(light.primaryFill, "#ffffff");
+    if (lightBtnRatio < MIN) {
+      issues.push({
+        path: "/colors/primary",
+        message: `Primary button contrast too low in light theme (${lightBtnRatio.toFixed(
+          2
+        )} < ${MIN}). Choose a darker primary.`,
+        ratio: lightBtnRatio,
+        min: MIN,
+        context: "light/btn-primary",
+      });
     }
 
-    // Preferred: apply layered CSS so tokens + primitives + components + utilities
-    // are available in light DOM (ensures primitives like :where(button):active apply)
-    const cssText = target.layeredCSS || target.css || "";
-    if (!cssText) {
-      target.options?.log?.(
-        "warn",
-        "[Generator] No CSS available on designer to apply"
-      );
-      return;
+    // Surface text (light): text vs surface base
+    const lightTextRatio = contrast(light.surfaceBg, light.surfaceText);
+    if (lightTextRatio < MIN) {
+      issues.push({
+        path: "/colors/background",
+        message: `Base text contrast on surface (light) is too low (${lightTextRatio.toFixed(
+          2
+        )} < ${MIN}). Adjust background or secondary (gray).`,
+        ratio: lightTextRatio,
+        min: MIN,
+        context: "light/surface-text",
+      });
     }
 
-    // Install/update runtime styles atomically to avoid flicker caused by
-    // creating/removing <link> or swapping blob URLs.
-    Generator.installRuntimeStyles(cssText);
-    // if (designer && designer.#blobURLs && designer.options?.debug) {
-    //   designer.options?.log?.(
-    //     "debug",
-    //     "[Generator] Applied live styles via in-place stylesheet"
-    //   );
-    // }
+    // Primary text for outline/link: check link text on surface
+    const lightOutlineRatio = contrast(light.primaryText, light.surfaceBg);
+    if (lightOutlineRatio < MIN) {
+      issues.push({
+        path: "/colors/primary",
+        message: `Primary text on surface is too low for outline/link styles (light) (${lightOutlineRatio.toFixed(
+          2
+        )} < ${MIN}). Choose a darker primary or lighter surface.`,
+        ratio: lightOutlineRatio,
+        min: MIN,
+        context: "light/outline",
+      });
+    }
+
+    // Dark theme checks - use computed interactive tokens
+    const d = c.dark;
+    if (d) {
+      const dark = {
+        surfaceBg: d.surface?.base || c.surface?.inverse,
+        primaryFill: c.interactive?.dark?.fill || d.primary?.[600],
+        primaryText: c.interactive?.dark?.text || d.primary?.[600],
+      };
+
+      // Primary button (dark): check button fill with white text
+      const darkBtnRatio = contrast(dark.primaryFill, "#ffffff");
+      if (darkBtnRatio < MIN) {
+        issues.push({
+          path: "/colors/darkMode/primary",
+          message: `Primary button contrast too low in dark theme (${darkBtnRatio.toFixed(
+            2
+          )} < ${MIN}). Override darkMode.primary or pick a brighter hue.`,
+          ratio: darkBtnRatio,
+          min: MIN,
+          context: "dark/btn-primary",
+        });
+      }
+
+      // Outline/link style in dark: check link text on dark surface
+      const darkOutlineRatio = contrast(dark.primaryText, dark.surfaceBg);
+      if (darkOutlineRatio < MIN) {
+        issues.push({
+          path: "/colors/darkMode/primary",
+          message: `Primary text on surface is too low for outline/link styles (dark) (${darkOutlineRatio.toFixed(
+            2
+          )} < ${MIN}). Override darkMode.primary/background.`,
+          ratio: darkOutlineRatio,
+          min: MIN,
+          context: "dark/outline",
+        });
+      }
+    }
+  } catch (err) {
+    issues.push({
+      path: "/",
+      message: `Validation failed: ${String(err?.message || err)}`,
+      ratio: 0,
+      min: 0,
+    });
   }
 
-  /**
-   * Install runtime styles for PDS using constructable stylesheets when
-   * available, otherwise update a single <style id="pds-runtime-stylesheet">.
-   * This approach reduces flicker and avoids link/blob swapping.
-   */
-  static installRuntimeStyles(cssText) {
-    //console.log(cssText);
-    try {
-      if (typeof document === "undefined") return; // server-side guard
+  return { ok: issues.length === 0, issues };
+}
 
-      // Preferred: constructable stylesheet (fast, atomic)
-      if (
-        typeof CSSStyleSheet !== "undefined" &&
-        "adoptedStyleSheets" in Document.prototype
-      ) {
-        const sheet = new CSSStyleSheet();
-        // replaceSync is synchronous and atomic for the stylesheet
-        sheet.replaceSync(cssText);
+/**
+ * Validate multiple design configurations at once.
+ * Useful for build-time enforcement of preset compliance.
+ *
+ * @param {Array<object>} designs - Array of design configs; items may include an optional `name` property.
+ * @param {object} [options] - Options forwarded to validateDesign (e.g., { minContrast })
+ * @returns {{ ok: boolean, results: Array<{ name?: string, ok: boolean, issues: Array<{path:string, message:string, ratio:number, min:number, context?:string}> }> }}
+ */
+export function validateDesigns(designs = [], options = {}) {
+  const results = [];
 
-        // Tag it so we can keep existing non-PDS sheets
-        sheet._pds = true;
+  const list = Array.isArray(designs)
+    ? designs
+    : designs && typeof designs === "object"
+    ? Object.values(designs)
+    : [];
 
-        const others = (document.adoptedStyleSheets || []).filter(
-          (s) => s._pds !== true
+  for (const item of list) {
+    let name;
+    let configToValidate = null;
+
+    // Accept a few shapes:
+    // - string => treat as preset id/name
+    // - { preset, design?, name? } => resolve preset then merge overrides
+    // - full config object (legacy) => validate directly
+    if (typeof item === "string") {
+      const id = String(item).toLowerCase();
+      const found =
+        presets?.[id] ||
+        Object.values(presets || {}).find(
+          (p) =>
+            __slugify(p.name) === id ||
+            String(p.name || "").toLowerCase() === id
         );
-        document.adoptedStyleSheets = [...others, sheet];
-
-        // Keep a reference
-        Generator.__pdsRuntimeSheet = sheet;
-        return;
+      if (!found) {
+        results.push({
+          name: item,
+          ok: false,
+          issues: [
+            {
+              path: "/",
+              message: `Preset not found: ${item}`,
+              ratio: 0,
+              min: 0,
+            },
+          ],
+        });
+        continue;
       }
-
-      // Fallback: single <style> element in the document head
-      const styleId = "pds-runtime-stylesheet";
-      let el = document.getElementById(styleId);
-      if (!el) {
-        el = document.createElement("style");
-        el.id = styleId;
-        el.type = "text/css";
-        const head = document.head || document.getElementsByTagName("head")[0];
-        if (head) head.appendChild(el);
-        else document.documentElement.appendChild(el);
-      }
-
-      // Update the stylesheet content in place
-      el.textContent = cssText;
-    } catch (err) {
-      // No access to config here in static method, fall back to console
-      console.warn("Generator.installRuntimeStyles failed:", err);
-    }
-  }
-}
-
-// ============================================================================
-// PDS ADOPTER - Helper for web components
-// ============================================================================
-
-/**
- * Adopt primitives stylesheet into a shadow root
- * This is the primary method components should use
- *
- * @param {ShadowRoot} shadowRoot - The shadow root to adopt into
- * @param {CSSStyleSheet[]} additionalSheets - Additional component-specific stylesheets
- * @returns {Promise<void>}
- *
- * @example
- * // In your web component:
- * import { PDS } from 'pure-ds';
- *
- * async connectedCallback() {
- *   this.attachShadow({ mode: 'open' });
- *
- *   const componentStyles = new CSSStyleSheet();
- *   componentStyles.replaceSync(`...your styles...`);
- *
- *   await PDS.adoptPrimitives(this.shadowRoot, [componentStyles]);
- * }
- */
-export async function adoptPrimitives(shadowRoot, additionalSheets = []) {
-  try {
-    // Get primitives stylesheet (live or static)
-    const primitives = await PDS.registry.getStylesheet("primitives");
-
-    // Adopt primitives + additional sheets
-    shadowRoot.adoptedStyleSheets = [primitives, ...additionalSheets];
-
-    if (PDS.registry.isLive) {
-      const componentName =
-        shadowRoot.host?.tagName?.toLowerCase() || "unknown";
-    }
-  } catch (error) {
-    const componentName = shadowRoot.host?.tagName?.toLowerCase() || "unknown";
-    // No access to config in this context, fall back to console
-    console.error(
-      `[PDS Adopter] <${componentName}> failed to adopt primitives:`,
-      error
-    );
-    // Continue with just additional sheets as fallback
-    shadowRoot.adoptedStyleSheets = additionalSheets;
-  }
-}
-
-/**
- * Adopt multiple layers into a shadow root
- * For complex components that need more than just primitives
- *
- * @param {ShadowRoot} shadowRoot - The shadow root to adopt into
- * @param {string[]} layers - Array of layer names to adopt (e.g., ['tokens', 'primitives', 'components'])
- * @param {CSSStyleSheet[]} additionalSheets - Additional component-specific stylesheets
- * @returns {Promise<void>}
- */
-export async function adoptLayers(
-  shadowRoot,
-  layers = ["primitives"],
-  additionalSheets = []
-) {
-  try {
-    // Get all requested stylesheets
-    const stylesheets = await Promise.all(
-      layers.map(async (layer) => {
-        // In live mode, get stylesheets directly from the Generator singleton
-        if (Generator.instance) {
-          switch (layer) {
-            case "tokens":
-              return Generator.instance.tokensStylesheet;
-            case "primitives":
-              return Generator.instance.primitivesStylesheet;
-            case "components":
-              return Generator.instance.componentsStylesheet;
-            case "utilities":
-              return Generator.instance.utilitiesStylesheet;
-            default:
-              // Fall through to registry for unknown layers or static fallback
-              break;
-          }
+      name = found.name || id;
+      configToValidate = structuredClone(found);
+    } else if (item && typeof item === "object") {
+      name = item.name || item.preset || undefined;
+      if ("preset" in item || "design" in item) {
+        const effectivePreset = String(item.preset || "default").toLowerCase();
+        const found =
+          presets?.[effectivePreset] ||
+          Object.values(presets || {}).find(
+            (p) =>
+              __slugify(p.name) === effectivePreset ||
+              String(p.name || "").toLowerCase() === effectivePreset
+          );
+        if (!found) {
+          results.push({
+            name,
+            ok: false,
+            issues: [
+              {
+                path: "/",
+                message: `Preset not found: ${item.preset}`,
+                ratio: 0,
+                min: 0,
+              },
+            ],
+          });
+          continue;
         }
-        return pdsRegistry.getStylesheet(layer);
-      })
-    );
-
-    // Filter out any null results
-    const validStylesheets = stylesheets.filter((sheet) => sheet !== null);
-
-    // Adopt all layers + additional sheets
-    shadowRoot.adoptedStyleSheets = [...validStylesheets, ...additionalSheets];
-
-    if (PDS.registry.isLive) {
-      const componentName =
-        shadowRoot.host?.tagName?.toLowerCase() || "unknown";
+        let base = structuredClone(found);
+        if (item.design && typeof item.design === "object") {
+          base = __deepMerge(base, structuredClone(item.design));
+        }
+        configToValidate = base;
+      } else {
+        // Assume a full config object
+        configToValidate = item;
+      }
     }
-  } catch (error) {
-    const componentName = shadowRoot.host?.tagName?.toLowerCase() || "unknown";
-    // No access to config in this context, fall back to console
-    console.error(
-      `[PDS Adopter] <${componentName}> failed to adopt layers:`,
-      error
-    );
-    // Continue with just additional sheets as fallback
-    shadowRoot.adoptedStyleSheets = additionalSheets;
+
+    if (!configToValidate) {
+      results.push({
+        name,
+        ok: false,
+        issues: [
+          { path: "/", message: "Invalid design entry", ratio: 0, min: 0 },
+        ],
+      });
+      continue;
+    }
+
+    const { ok, issues } = validateDesign(configToValidate, options);
+    results.push({ name, ok, issues });
   }
+
+  return { ok: results.every((r) => r.ok), results };
 }
 
-/**
- * Create a component-specific stylesheet from CSS string
- * Helper to create constructable stylesheets
- *
- * @param {string} css - CSS string
- * @returns {CSSStyleSheet}
- */
-export function createStylesheet(css) {
-  const sheet = new CSSStyleSheet();
-  sheet.replaceSync(css);
-  return sheet;
+// Internal: deep merge utility (arrays replace; objects merge)
+function __deepMerge(target = {}, source = {}) {
+  if (!source || typeof source !== "object") return target;
+  const out = Array.isArray(target) ? [...target] : { ...target };
+  for (const [key, value] of Object.entries(source)) {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      out[key] = __deepMerge(
+        out[key] && typeof out[key] === "object" ? out[key] : {},
+        value
+      );
+    } else {
+      out[key] = value;
+    }
+  }
+  return out;
+}
+
+// Internal: create a slug for matching names like "Paper & Ink" -> "paper-and-ink"
+function __slugify(str = "") {
+  return String(str)
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 

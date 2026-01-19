@@ -4,6 +4,8 @@ import React from 'react';
 import { Title, Subtitle, Description as DocsDescription, Controls } from '@storybook/blocks';
 import { PDS } from '@pds-src/js/pds.js';
 import { presets } from '@pds-src/js/pds-core/pds-config.js';
+import { Generator } from '@pds-src/js/pds-core/pds-generator.js';
+import { applyStyles } from '@pds-src/js/pds-core/pds-runtime.js';
 import { config as userConfig } from '@user/pds-config';
 import './addons/pds-configurator/preview.js';
 import { withHTMLExtractor } from './addons/html-preview/preview.js';
@@ -123,9 +125,9 @@ const withPDS = (story, context) => {
   console.log('📋 Current adoptedStyleSheets:', currentSheets.length, 'PDS sheets:', pdsSheets.length);
   
   // ALWAYS reapply PDS styles before each story render
-  const designer = PDS.Generator.instance;
+  const designer = Generator.instance;
   if (designer) {
-    PDS.Generator.applyStyles();
+    applyStyles(designer);
     
     // Check again after applying
     const afterSheets = document.adoptedStyleSheets || [];
@@ -280,8 +282,8 @@ const withGlobalsHandler = (story, context) => {
           
           if (PDS.theme) generatorOptions.theme = PDS.theme;
           
-          const newDesigner = new PDS.Generator(generatorOptions);
-          await PDS.Generator.applyStyles();
+          const newDesigner = new Generator(generatorOptions);
+          await applyStyles(Generator.instance);
           
           console.log(`✅ Preset applied via decorator: ${globals.preset}`);
         }
@@ -1484,11 +1486,11 @@ if (typeof window !== 'undefined') {
             }
             
             console.log('🏗️ Creating new Generator...');
-            const newDesigner = new PDS.Generator(generatorOptions);
+            const newDesigner = new Generator(generatorOptions);
             console.log('✅ Generator created');
             
             console.log('🎨 Applying styles to document...');
-            await PDS.Generator.applyStyles();
+            await applyStyles(Generator.instance);
             console.log('✅ Styles applied to document');
             
             // Update global reference

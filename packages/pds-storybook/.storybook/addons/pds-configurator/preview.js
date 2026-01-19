@@ -4,6 +4,7 @@
  */
 
 import { addons } from '@storybook/preview-api';
+import { applyStyles } from '@pds-src/js/pds-core/pds-runtime.js';
 import { EVENTS } from './constants.js';
 
 let drawerElement = null;
@@ -85,7 +86,7 @@ async function loadConfigForm() {
           // The event detail contains both config and designer from pds-config-form
           if (e.detail.designer) {
             // Apply the styles from the designer that was already created by pds-config-form
-            await PDS.Generator.applyStyles();
+            await applyStyles(e.detail.designer);
           }
           
           // Notify manager

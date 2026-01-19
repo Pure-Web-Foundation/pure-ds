@@ -429,8 +429,6 @@ The `autoDefine` system can load your custom components alongside PDS components
 ```javascript
 export const config = {
   autoDefine: {
-    baseURL: '/assets/pds/components/',
-    
     // Eagerly load these at startup
     predefine: ['pds-icon', 'my-header'],
     
@@ -534,7 +532,9 @@ PDS.toast("Hello from the console!", { type: "info" });
 await PDS.ask("Are you sure?", { type: "confirm" });
 
 // Validate design accessibility
-PDS.validateDesign({
+import { validateDesign } from '/assets/js/pds-core/pds-generator.js';
+
+validateDesign({
   colors: { primary: '#007acc', background: '#ffffff' }
 }, { minContrast: 4.5 });
 

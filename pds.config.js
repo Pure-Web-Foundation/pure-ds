@@ -1,5 +1,5 @@
 export const config = {
-  mode: "live",
+  mode: "static",
   preset: "default",
 
   autoDefine: {

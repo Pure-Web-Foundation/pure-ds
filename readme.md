@@ -1137,7 +1137,9 @@ Validates all presets during build and reports issues:
 ### Manual Validation
 
 ```javascript
-const result = PDS.validateDesign({
+import { validateDesign } from '@pure-ds/core/pds-core/pds-generator.js';
+
+const result = validateDesign({
   colors: {
     primary: '#007acc',
     background: '#ffffff'
@@ -1163,7 +1165,9 @@ if (!result.ok) {
 ### Batch Validation
 
 ```javascript
-const results = PDS.validateDesigns([
+import { validateDesigns } from '@pure-ds/core/pds-core/pds-generator.js';
+
+const results = validateDesigns([
   { name: 'Light', config: {...} },
   { name: 'Dark', config: {...} }
 ], {
@@ -1416,12 +1420,14 @@ const results = await PDS.query(question: string);
 // Returns array of results with text, value, icon, category, etc.
 ```
 
-### PDS.validateDesign(config, options)
+### validateDesign(config, options)
 
 Validate design for accessibility.
 
 ```typescript
-const result = PDS.validateDesign(config, { minContrast: 4.5 });
+import { validateDesign } from '@pure-ds/core/pds-core/pds-generator.js';
+
+const result = validateDesign(config, { minContrast: 4.5 });
 // Returns: { ok: boolean, issues: Array }
 ```
 
@@ -1448,11 +1454,11 @@ Change theme programmatically.
 ### PDS Properties
 
 ```typescript
-PDS.Generator              // Generator class
 PDS.registry               // Runtime registry
-PDS.ontology               // Design system metadata
-PDS.presets                // Built-in presets
-PDS.enums                  // Enumeration values
+PDS.getGenerator()          // Live-only Generator accessor
+PDS.ontology               // Design system metadata (live-only)
+PDS.presets                // Built-in presets (live-only)
+PDS.enums                  // Enumeration values (live-only)
 PDS.currentConfig          // Current configuration (read-only)
 PDS.compiled               // Compiled state (live mode only)
 PDS.theme                  // Current theme (getter/setter)

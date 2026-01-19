@@ -10,11 +10,16 @@ const validatePresetsPlugin = {
   setup(build) {
     build.onStart(async () => {
       const presetsPath = path.resolve('src/js/pds-core/pds-config.js');
-      const pdsPath = path.resolve('src/js/pds.js');
+      const generatorPath = path.resolve('src/js/pds-core/pds-generator.js');
       const { presets } = await import(pathToFileURL(presetsPath).href);
-      const { PDS } = await import(pathToFileURL(pdsPath).href);
+      const { validateDesign } = await import(pathToFileURL(generatorPath).href);
 
-      const { ok, results } = PDS.validateDesigns(presets, { minContrast: 4.5 });
+      const presetList = Object.values(presets || {});
+      const results = presetList.map((preset) => ({
+        name: preset?.name,
+        ...validateDesign(preset, { minContrast: 4.5 }),
+      }));
+      const ok = results.every((r) => r.ok);
       if (!ok) {
         console.error('\n❌ Preset validation failed for the following presets:');
         for (const r of results) {
@@ -38,7 +43,7 @@ const outdir = path.join(process.cwd(), 'dist');
 async function run() {
   try {
     await esbuild.build({
-      entryPoints: ['src/js/lit.js', 'src/js/app.js', 'src/js/pds.js'],
+      entryPoints: ['src/js/lit.js', 'src/js/app.js', 'src/js/pds.js', 'src/js/pds-manager.js'],
       bundle: true,
       platform: 'browser',
       target: 'es2022',
