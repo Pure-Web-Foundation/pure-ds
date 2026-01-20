@@ -20,6 +20,7 @@ const PDS = window.PDS;
  * @csspart content - The drawer content section
  */
 class PdsDrawer extends HTMLElement {
+  static #idCounter = 0;
   #isDragging = false;
   #startX = 0;
   #startY = 0;
@@ -35,6 +36,9 @@ class PdsDrawer extends HTMLElement {
   #currentFraction = 0; // 0=open, 1=closed
   #resizeObs = null;
   #openAnimationController = null;
+  #lastFocused = null;
+  #focusTrapActive = false;
+  #titleId = `pds-drawer-title-${PdsDrawer.#idCounter++}`;
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -73,7 +77,6 @@ class PdsDrawer extends HTMLElement {
     this._open = bool;
     this.toggleAttribute("open", this._open);
     if (this._open) {
-      queueMicrotask(() => this.#aside?.focus());
       document.body.classList.add("drawer-open");
     }
     else {
@@ -81,6 +84,7 @@ class PdsDrawer extends HTMLElement {
     }
     this.dispatchEvent(new Event("toggle"));
     this.#syncAria();
+    this.#syncFocusTrap();
   }
 
   /**
@@ -188,6 +192,7 @@ class PdsDrawer extends HTMLElement {
           this.#animateTo(1);
         }
         this.#syncAria();
+        this.#syncFocusTrap();
         break;
       case "position":
         this._position = value || "bottom";
@@ -403,6 +408,10 @@ class PdsDrawer extends HTMLElement {
     window.removeEventListener("pointermove", this.#onPointerMove);
     window.removeEventListener("pointerup", this.#onPointerUp);
     window.removeEventListener("keydown", this.#onKeyDown);
+    if (this.#focusTrapActive) {
+      document.removeEventListener("focusin", this.#onFocusIn, true);
+      this.#focusTrapActive = false;
+    }
     if (window.visualViewport)
       window.visualViewport.removeEventListener("resize", this.#recalc);
     window.removeEventListener("resize", this.#recalc);
@@ -567,7 +576,23 @@ class PdsDrawer extends HTMLElement {
   #onBackdropClick = () => this.closeDrawer();
 
   #onKeyDown = (e) => {
-    if (this.open && e.key === "Escape") this.closeDrawer();
+    if (!this.open) return;
+    if (e.key === "Escape") {
+      this.closeDrawer();
+      return;
+    }
+    if (e.key === "Tab") {
+      this.#trapTabFocus(e);
+    }
+  };
+
+  #onFocusIn = (e) => {
+    if (!this.open) return;
+    const target = e.target;
+    const inShadow = this.shadowRoot?.contains(target);
+    const inLight = this.contains(target);
+    if (inShadow || inLight) return;
+    this.#focusInitial();
   };
 
   #onPointerDown = (e) => {
@@ -837,6 +862,7 @@ class PdsDrawer extends HTMLElement {
       this._open = isOpen;
       this.toggleAttribute("open", isOpen);
       this.#syncAria();
+      this.#syncFocusTrap();
     }
   }
 
@@ -848,11 +874,125 @@ class PdsDrawer extends HTMLElement {
       if (this._open) {
         aside.setAttribute('role', 'dialog');
         aside.setAttribute('aria-modal', 'true');
+        const headerSlot = this.shadowRoot?.querySelector('slot[name="drawer-header"]');
+        const assigned = headerSlot?.assignedElements?.({ flatten: true }) || [];
+        if (assigned.length > 0) {
+          const labelEl = assigned[0];
+          if (!labelEl.id) labelEl.id = this.#titleId;
+          aside.setAttribute('aria-labelledby', labelEl.id);
+          aside.removeAttribute('aria-label');
+        } else if (!aside.hasAttribute('aria-label')) {
+          aside.setAttribute('aria-label', 'Drawer');
+          aside.removeAttribute('aria-labelledby');
+        }
       } else {
         aside.removeAttribute('role');
         aside.removeAttribute('aria-modal');
+        aside.removeAttribute('aria-labelledby');
+        aside.removeAttribute('aria-label');
       }
     }
+  }
+
+  #syncFocusTrap() {
+    if (!this.isConnected) return;
+    if (this._open) {
+      if (!this.#lastFocused) {
+        this.#lastFocused = this.#getDocumentActiveElement();
+      }
+      if (!this.#focusTrapActive) {
+        document.addEventListener("focusin", this.#onFocusIn, true);
+        this.#focusTrapActive = true;
+      }
+      queueMicrotask(() => this.#focusInitial());
+    } else {
+      if (this.#focusTrapActive) {
+        document.removeEventListener("focusin", this.#onFocusIn, true);
+        this.#focusTrapActive = false;
+      }
+      const toRestore = this.#lastFocused;
+      this.#lastFocused = null;
+      if (toRestore && document.contains(toRestore)) {
+        queueMicrotask(() => toRestore.focus?.({ preventScroll: true }));
+      }
+    }
+  }
+
+  #getDocumentActiveElement() {
+    const active = document.activeElement;
+    if (active === this && this.shadowRoot?.activeElement) {
+      return this.shadowRoot.activeElement;
+    }
+    return active;
+  }
+
+  #focusInitial() {
+    const focusables = this.#getFocusableElements();
+    if (focusables.length > 0) {
+      focusables[0].focus({ preventScroll: true });
+      return;
+    }
+    this.#aside?.focus({ preventScroll: true });
+  }
+
+  #trapTabFocus(e) {
+    const focusables = this.#getFocusableElements();
+    if (focusables.length === 0) {
+      e.preventDefault();
+      this.#aside?.focus({ preventScroll: true });
+      return;
+    }
+
+    const active = this.#getDocumentActiveElement();
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const inDrawer = (active && (this.contains(active) || this.shadowRoot?.contains(active))) || false;
+
+    if (!inDrawer) {
+      e.preventDefault();
+      first.focus({ preventScroll: true });
+      return;
+    }
+
+    if (e.shiftKey) {
+      if (active === first || !focusables.includes(active)) {
+        e.preventDefault();
+        last.focus({ preventScroll: true });
+      }
+    } else {
+      if (active === last) {
+        e.preventDefault();
+        first.focus({ preventScroll: true });
+      }
+    }
+  }
+
+  #getFocusableElements() {
+    const selector = [
+      'a[href]',
+      'area[href]',
+      'button:not([disabled])',
+      'input:not([disabled]):not([type="hidden"])',
+      'select:not([disabled])',
+      'textarea:not([disabled])',
+      'details > summary:first-of-type',
+      '[tabindex]:not([tabindex="-1"])'
+    ].join(',');
+
+    const shadowEls = this.shadowRoot
+      ? Array.from(this.shadowRoot.querySelectorAll(selector))
+      : [];
+    const lightEls = Array.from(this.querySelectorAll(selector));
+    const all = shadowEls.concat(lightEls);
+
+    return all.filter((el) => {
+      if (!el) return false;
+      if (el.hasAttribute('disabled')) return false;
+      if (el.getAttribute('aria-hidden') === 'true') return false;
+      if (el.closest('[inert]')) return false;
+      const rects = el.getClientRects();
+      return rects.length > 0;
+    });
   }
 }
 customElements.define("pds-drawer", PdsDrawer);
