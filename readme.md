@@ -1,6 +1,6 @@
 ﻿# Pure Design System (PDS)
 
-> ⚠️ **Beta Software** - APIs are stabilizing but may still change. Pin versions in production: `"@pure-ds/core": "~0.3.0"`
+> ⚠️ **Beta Software** - APIs are stabilizing but may still change. Pin versions in production: `"@pure-ds/core": "~0.5.6"`
 
 [![CI](https://github.com/mvneerven/pure-ds/actions/workflows/ci.yml/badge.svg)](https://github.com/mvneerven/pure-ds/actions/workflows/ci.yml)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](#license)
@@ -49,7 +49,7 @@ await PDS.start(config);
 
 ## The PDS Philosophy
 
-### Semantic Classes First
+### HTML and Semantic Classes First
 PDS generates **high-level primitives** that style semantic HTML:
 
 ```html
@@ -58,7 +58,12 @@ PDS generates **high-level primitives** that style semantic HTML:
 <div class="alert alert-success">Done!</div>
 ```
 
-### Layout Utilities—Sparingly
+HTML is a great starting point. There's no need to have components for stuff that HTML can do on its own, or with the help of a pinch of CSS and/or a dash of JavaScript. The [Pure Web Manifesto](https://pureweb.dev/manifesto) is a great set of principles.
+
+Also, PDS is not a component library. Yes, there are a couple of (optional, lazy-loaded, components), but they are only for more complex widgets, like a TabStrip, a Drag & Drop uploader, a Rich Text Editor, etc.
+
+
+### Layout Utilities
 A **small set** of layout utilities for composition:
 
 ```html
@@ -83,11 +88,11 @@ The **only** valid `style=""` in PDS sets CSS custom properties:
 
 ## Why PDS Exists
 
-| The Old Way | The PDS Way |
+| Other Libs | The PDS Way |
 |-------------|-------------|
 | `class="flex items-center gap-4 p-6 bg-white rounded-lg shadow-md"` | `class="card"` |
 | `style="color: #007acc;"` | Uses `--color-primary-500` token |
-| Import a Button component | `<button class="btn-primary">` |
+| Import a `<Button>` component | `<button class="btn-primary">` |
 | 47 utility classes per element | Semantic class + maybe one layout utility |
 
 **The result:** Readable HTML. Inspectable CSS. Sites that work without JS. Code that lasts decades.
@@ -99,9 +104,9 @@ PDS follows the [Pure Web Manifesto](https://pureweb.dev/manifesto)—sustainabl
 ## Key Features
 
 - 🎨 **Configuration-Driven** — Single source of truth generates everything
-- 🚀 **Live or Static** — Runtime generation or pre-built bundles
+- 🚀 **Live or Static** — Runtime generation or pre-built CSS
 - 🎯 **Framework Agnostic** — Vanilla, Lit, React, Vue, Svelte, Next.js
-- 🌐 **Web Standards** — EventTarget API, Constructable Stylesheets, Shadow DOM
+- 🌐 **Web Standards** — `HTMLElement` API, Constructable Stylesheets, Shadow DOM, etc.
 - 🧩 **Progressive Enhancement** — Semantic HTML first, enhance where needed
 - ♿ **Accessibility Built-in** — WCAG AA validation, contrast checking
 - 📦 **Zero Build Required** — Works directly in browsers
@@ -132,9 +137,9 @@ PDS follows the [Pure Web Manifesto](https://pureweb.dev/manifesto)—sustainabl
 
 ---
 
-## The Three Layers
+## The Four Layers
 
-PDS is built on **three fully optional layers**, each powered by your config:
+PDS is built on **three fully optional layers**, each powered by your config, and a great DX layer on top:
 
 ### 1. Styles — Deterministic Global CSS
 
@@ -174,7 +179,16 @@ A growing set of PDS components:
 
 Auto-defined when used. Lazy-loaded via dynamic imports. Styled by your tokens. Zero dependencies.
 
+
+### 4: DX - Built-in Storybook & LLM Support
+
+Install `@pure-ds/storybook` and get a cloned PDS Storybook instance right where you code, inside your project. Then add some `.stories.js` and see them immediately pop up.
+
+Install `@pure-ds/core` and get instant PDS AI Coding Instrucions at your fingertips (GitHub Copilot & Cursor support built in)
+
 ### How It Works
+
+It all starts with your `pds.confog.js` file in the root of the project (auto-generated when installing)
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -239,160 +253,9 @@ Auto-defined when used. Lazy-loaded via dynamic imports. Styled by your tokens. 
 ---
 
 ## Getting Started
+See the full step-by-step guide in [getting-started.md](getting-started.md).
 
-### Installation
-
-```bash
-npm install @pure-ds/core
-```
-
-**Post-install automation:**
-
-During installation, PDS automatically:
-- Creates a default `pds.config.js` (if one doesn't exist)
-- Copies Copilot/AI instructions to `.github/copilot-instructions.md`
-- Adds `pds:build` and `pds:build-icons` scripts to your `package.json`
-- Runs `pds:build` to generate static assets
-
-To manually re-sync assets:
-
-```bash
-npm run pds:build
-```
-
-### Lit Import Convention
-
-PDS uses a virtual import for Lit so you control the resolution:
-
-```javascript
-import { html, css, LitElement } from '#pds/lit';
-```
-
-**In browsers (no bundler)** - Use import maps:
-
-```html
-<script type="importmap">
-{
-  "imports": {
-    "#pds/lit": "/assets/js/lit.js"
-  }
-}
-</script>
-```
-
-**In bundlers** - Alias to the real `lit` package:
-
-```javascript
-// vite.config.js
-export default {
-  resolve: {
-    alias: { '#pds/lit': 'lit' }
-  }
-}
-```
-
-### Quick Start: Live Mode
-
-Generate styles at runtime with instant updates:
-
-```javascript
-import { PDS } from '@pure-ds/core';
-
-await PDS.start({
-  mode: 'live',
-  preset: 'default', // or: ocean-breeze, midnight-steel, etc.
-  
-  // Override preset values
-  design: {
-    colors: { 
-      primary: '#007acc',
-      secondary: '#5c2d91'
-    },
-    typography: {
-      fontFamilyHeadings: 'Inter, sans-serif',
-      fontFamilyBody: 'Inter, sans-serif'
-    }
-  },
-  
-  // Component auto-loading
-  autoDefine: {
-    predefine: ['pds-icon'] // Eagerly load these
-  }
-});
-
-// Use components - they'll lazy-load automatically
-// <pds-drawer id="menu"></pds-drawer>
-```
-
-### Quick Start: Static Mode
-
-Pre-generate assets for production:
-
-**1. Build static files:**
-
-```bash
-npm run pds:build
-```
-
-This creates:
-- `pds/styles/pds-*.css` and `pds-*.css.js` (Constructable Stylesheets)
-- `pds/components/*.js` (Web Components)
-- `pds/icons/pds-icons.svg` (Icon sprite)
-- `pds/custom-elements.json` (Custom Elements Manifest for IDE integration)
-
-**2. Initialize in static mode:**
-
-```javascript
-import { PDS } from '@pure-ds/core';
-
-await PDS.start({
-  mode: 'static',
-  preset: 'default',
-  
-  staticPaths: {
-    tokens: '/pds/styles/pds-tokens.css.js',
-    primitives: '/pds/styles/pds-primitives.css.js',
-    components: '/pds/styles/pds-components.css.js',
-    utilities: '/pds/styles/pds-utilities.css.js',
-    styles: '/pds/styles/pds-styles.css.js'
-  },
-});
-```
-
-### Minimal Example
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>PDS App</title>
-  <script type="importmap">
-  {
-    "imports": {
-      "#pds/lit": "/assets/js/lit.js"
-    }
-  }
-  </script>
-</head>
-<body>
-  <button class="btn-primary">
-    <pds-icon icon="heart"></pds-icon>
-    Click me
-  </button>
-  
-  <script type="module">
-    import { PDS } from '/assets/js/pds.js';
-    
-    await PDS.start({
-      design: {
-        colors: { primary: '#007acc' }
-      }
-    });
-  </script>
-</body>
-</html>
-```
+This covers the project starter, existing-project setup, CDN usage, Storybook, and core conventions.
 
 ---
 
@@ -2003,7 +1866,7 @@ npm run dev
 - 🌐 **Homepage:** https://puredesignsystem.z6.web.core.windows.net/
 - 📦 **NPM:** https://www.npmjs.com/package/pure-ds
 - 🐙 **GitHub:** https://github.com/mvneerven/pure-ds
-- 📖 **Docs:** [GETTING-STARTED.md](./GETTING-STARTED.md) | [PDS-QUERY-SYSTEM.md](./PDS-QUERY-SYSTEM.md)
+- 📖 **Docs:** [getting-started.md](./getting-started.md) | [PDS-QUERY-SYSTEM.md](./PDS-QUERY-SYSTEM.md)
 - 💬 **Discussions:** https://github.com/mvneerven/pure-ds/discussions
 - 🐛 **Issues:** https://github.com/mvneerven/pure-ds/issues
 

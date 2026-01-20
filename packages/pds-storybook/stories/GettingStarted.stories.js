@@ -1,7 +1,7 @@
 import { html } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { renderMarkdown } from './utils/markdown.js';
-import markdownContent from './GettingStarted.md?raw';
+import markdownContent from '../../../getting-started.md?raw';
 
 export default {
   title: 'About PDS/Getting Started',

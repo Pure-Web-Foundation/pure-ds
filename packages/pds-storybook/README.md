@@ -234,7 +234,7 @@ packages/pds-storybook/
 ├── scripts/
 │   └── generate-stories.js          # Story generator
 ├── stories/
-│   ├── GettingStarted.mdx           # Welcome page
+│   ├── getting-started.md           # Welcome page (imported from project root)
 │   ├── foundations/                 # Token stories
 │   ├── primitives/                  # Primitive stories
 │   ├── components/                  # Component stories

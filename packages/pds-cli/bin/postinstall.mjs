@@ -10,6 +10,7 @@ import { readFileSync } from 'fs';
 import { createHash } from 'crypto';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
+import { buildStarterPdsConfig } from './templates/starter-templates.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '../../../');
@@ -156,58 +157,7 @@ async function ensurePdsConfig(consumerRoot, force = false) {
       // File doesn't exist, create it
     }
     
-    const defaultConfig = `export const config = {
-  mode: "live",
-  preset: "default",
-
-  // Uncomment to override preset design tokens:
-  // design: {
-  //   colors: {
-  //     primary: '#007acc',
-  //     secondary: '#5c2d91',
-  //     accent: '#ec4899'
-  //   },
-  //   typography: {
-  //     fontFamilyHeadings: 'Inter, sans-serif',
-  //     fontFamilyBody: 'Inter, sans-serif',
-  //     baseFontSize: 16,
-  //     fontScale: 1.25
-  //   },
-  //   spatialRhythm: {
-  //     baseUnit: 8,
-  //     scaleRatio: 1.5
-  //   }
-  // },
-
-  // Uncomment to add custom progressive enhancers:
-  // enhancers: [
-  //   {
-  //     selector: '[data-tooltip]',
-  //     description: 'Adds tooltip on hover',
-  //     run: (element) => {
-  //       const text = element.dataset.tooltip;
-  //       element.addEventListener('mouseenter', () => {
-  //         // Show tooltip implementation
-  //       });
-  //     }
-  //   }
-  // ],
-
-  // Uncomment to customize lazy-loaded web components:
-  // autoDefine: {
-  //   baseURL: '/pds/components/',
-  //   predefine: ['pds-icon', 'pds-drawer', 'pds-toaster'],
-  //   
-  //   // Custom component paths
-  //   mapper: (tag) => {
-  //     if (tag.startsWith('my-')) {
-  //       return \`/components/\${tag}.js\`;
-  //     }
-  //     // Return nothing to use PDS default mapping
-  //   }
-  // }
-};
-`;
+    const defaultConfig = buildStarterPdsConfig();
     
     await writeFile(configPath, defaultConfig, 'utf8');
     console.log('📝 Created default pds.config.js');
@@ -431,6 +381,14 @@ async function copyPdsAssets() {
         pkgJson.scripts[buildIconsName] = buildIconsCmd;
         await writeFile(consumerPkgPath, JSON.stringify(pkgJson, null, 2) + '\n');
         console.log(`🧩 Added "${buildIconsName}" script to consumer package.json`);
+      }
+
+      const bootstrapName = 'pds:bootstrap';
+      const bootstrapCmd = 'pds-bootstrap';
+      if (!pkgJson.scripts[bootstrapName]) {
+        pkgJson.scripts[bootstrapName] = bootstrapCmd;
+        await writeFile(consumerPkgPath, JSON.stringify(pkgJson, null, 2) + '\n');
+        console.log(`🧩 Added "${bootstrapName}" script to consumer package.json`);
       }
     } catch (e) {
       console.warn('⚠️  Could not ensure pds:build-icons script in consumer package.json:', e?.message || e);

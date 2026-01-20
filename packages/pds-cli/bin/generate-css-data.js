@@ -395,14 +395,19 @@ function extractDataAttributes(ontology) {
 
   if (ontology.enhancements) {
     for (const enhancement of ontology.enhancements) {
+      const selector = typeof enhancement === 'string'
+        ? enhancement
+        : enhancement?.selector || enhancement?.demoHtml || '';
+      if (typeof selector !== 'string') continue;
+
       // Extract data attributes from selectors like "[data-dropdown]"
-      const matches = enhancement.match(/\[data-([^\]]+)\]/g);
+      const matches = selector.match(/\[data-([^\]]+)\]/g);
       if (matches) {
         for (const match of matches) {
           const attrName = match.slice(1, -1); // Remove [ and ]
           attributes.push({
             name: attrName,
-            description: `Enhancement: ${enhancement}`,
+            description: `Enhancement: ${selector}`,
             category: 'Data Enhancements'
           });
         }

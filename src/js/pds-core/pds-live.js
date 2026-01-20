@@ -13,6 +13,7 @@ import {
   ensureAbsoluteAssetURL,
   ensureTrailingSlash,
   attachFoucListener,
+  createSetTheme,
   normalizeInitConfig,
   resolveRuntimeAssetRoot,
   resolveThemeAndApply,
@@ -92,59 +93,25 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
   }
 
   // Live-only setTheme helper
-  PDS.setTheme = async function(theme, options = {}) {
-    const { storageKey = "pure-ds-theme", persist = true } = options;
-
-    if (!["light", "dark", "system"].includes(theme)) {
-      throw new Error(
-        `Invalid theme "${theme}". Must be "light", "dark", or "system".`
-      );
-    }
-
-    if (typeof window === "undefined") {
-      return theme === "system" ? "light" : theme;
-    }
-
-    let resolvedTheme = theme;
-
-    if (theme === "system") {
-      const prefersDark =
-        window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches;
-      resolvedTheme = prefersDark ? "dark" : "light";
-    }
-
-    document.documentElement.setAttribute("data-theme", resolvedTheme);
-
-    if (persist) {
-      localStorage.setItem(storageKey, theme);
-    }
-
-    if (PDS.registry.isLive && Generator.instance) {
-      try {
-        const currentGenerator = Generator.instance;
-        if (currentGenerator && currentGenerator.configure) {
-          const newConfig = { ...currentGenerator.config, theme: resolvedTheme };
-          currentGenerator.configure(newConfig);
-          await applyStyles(Generator.instance);
+  PDS.setTheme = createSetTheme({
+    PDS,
+    defaultStorageKey: "pure-ds-theme",
+    setupSystemListenerIfNeeded,
+    onApply: async ({ resolvedTheme }) => {
+      if (PDS.registry.isLive && Generator.instance) {
+        try {
+          const currentGenerator = Generator.instance;
+          if (currentGenerator && currentGenerator.configure) {
+            const newConfig = { ...currentGenerator.config, theme: resolvedTheme };
+            currentGenerator.configure(newConfig);
+            await applyStyles(Generator.instance);
+          }
+        } catch (error) {
+          console.warn("Failed to update styles for new theme:", error);
         }
-      } catch (error) {
-        console.warn("Failed to update styles for new theme:", error);
       }
-    }
-
-    PDS.dispatchEvent(
-      new CustomEvent("pds:theme:changed", {
-        detail: {
-          theme: resolvedTheme,
-          requested: theme,
-          source: "programmatic",
-        },
-      })
-    );
-
-    return resolvedTheme;
-  };
+    },
+  });
 
   // Live-only preload helper
   PDS.preloadCritical = function(config, options = {}) {

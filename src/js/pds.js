@@ -57,6 +57,7 @@ import {
   ensureAbsoluteAssetURL,
   ensureTrailingSlash,
   attachFoucListener,
+  createSetTheme,
   normalizeInitConfig,
   resolveRuntimeAssetRoot,
   resolveThemeAndApply,
@@ -408,6 +409,13 @@ async function staticInit(config) {
       applyResolvedTheme: __applyResolvedTheme,
       setupSystemListenerIfNeeded: __setupSystemListenerIfNeeded,
     });
+
+    // 1b) Static-mode setTheme helper (live mode overrides this later)
+      PDS.setTheme = createSetTheme({
+        PDS,
+        defaultStorageKey: themeStorageKey,
+        setupSystemListenerIfNeeded: __setupSystemListenerIfNeeded,
+      });
 
     // Normalize first-arg to allow { preset, design, enhancers }
     const runtimeConfig = await __loadRuntimeConfig(assetRootURL, config);

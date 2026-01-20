@@ -1,0 +1,24 @@
+{
+  "name": "@pure-ds/create-app",
+  "version": "0.5.20",
+  "description": "Create a new Pure Design System app",
+  "type": "module",
+  "bin": {
+    "create-app": "bin/create-app.js",
+    "create-pds-app": "bin/create-app.js"
+  },
+  "files": [
+    "bin"
+  ],
+  "keywords": [
+    "pure-ds",
+    "design-system",
+    "create-app",
+    "starter"
+  ],
+  "author": "Pure Design System",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  }
+}

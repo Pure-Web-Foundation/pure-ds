@@ -272,6 +272,66 @@ export function resolveThemeAndApply({ manageTheme, themeStorageKey, applyResolv
   return { resolvedTheme, storedTheme };
 }
 
+// Internal: create a reusable setTheme helper for live/static modes
+export function createSetTheme({
+  PDS,
+  defaultStorageKey = "pure-ds-theme",
+  setupSystemListenerIfNeeded,
+  onApply,
+} = {}) {
+  return async function setTheme(theme, options = {}) {
+    const { storageKey = defaultStorageKey, persist = true } = options;
+
+    if (!["light", "dark", "system"].includes(theme)) {
+      throw new Error(
+        `Invalid theme "${theme}". Must be "light", "dark", or "system".`
+      );
+    }
+
+    if (typeof window === "undefined") {
+      return theme === "system" ? "light" : theme;
+    }
+
+    let resolvedTheme = theme;
+    if (theme === "system") {
+      const prefersDark =
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+      resolvedTheme = prefersDark ? "dark" : "light";
+    }
+
+    document.documentElement.setAttribute("data-theme", resolvedTheme);
+
+    if (persist) {
+      try {
+        localStorage.setItem(storageKey, theme);
+      } catch (e) {}
+    }
+
+    try {
+      setupSystemListenerIfNeeded?.(theme);
+    } catch (e) {}
+
+    if (typeof onApply === "function") {
+      await onApply({ theme, resolvedTheme });
+    }
+
+    try {
+      PDS?.dispatchEvent(
+        new CustomEvent("pds:theme:changed", {
+          detail: {
+            theme: resolvedTheme,
+            requested: theme,
+            source: "programmatic",
+          },
+        })
+      );
+    } catch (e) {}
+
+    return resolvedTheme;
+  };
+}
+
 export function resolveRuntimeAssetRoot(config, { resolvePublicAssetURL }) {
   const hasCustomRoot = Boolean(config?.public?.root || config?.static?.root);
   let candidate = resolvePublicAssetURL(config);

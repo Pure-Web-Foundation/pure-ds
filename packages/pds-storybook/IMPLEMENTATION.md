@@ -23,7 +23,7 @@ A comprehensive Storybook showcase demonstrating all PDS features.
 #### Story Structure:
 ```
 stories/
-├── GettingStarted.mdx
+├── getting-started.md
 ├── foundations/           # Design tokens
 │   ├── Colors.stories.js
 │   ├── Typography.stories.js

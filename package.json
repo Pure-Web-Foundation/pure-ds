@@ -1,7 +1,7 @@
 {
   "name": "@pure-ds/core",
   "shortname": "pds",
-  "version": "0.5.6",
+  "version": "0.5.20",
   "description": "Pure Design System - Why develop a Design System when you can generate one?",
   "repository": {
     "type": "git",
@@ -30,7 +30,8 @@
     "pds-sync-assets": "packages/pds-cli/bin/sync-assets.js",
     "pds-build-icons": "packages/pds-cli/bin/pds-build-icons.js",
     "pds-setup-copilot": "packages/pds-cli/bin/pds-setup-copilot.js",
-    "pds-init-config": "packages/pds-cli/bin/pds-init-config.js"
+    "pds-init-config": "packages/pds-cli/bin/pds-init-config.js",
+    "pds-bootstrap": "packages/pds-cli/bin/pds-bootstrap.js"
   },
   "exports": {
     ".": {
@@ -78,6 +79,7 @@
     "prepds:build": "npm run types",
     "pds:build": "node packages/pds-cli/bin/pds-static.js",
     "pds:build-icons": "node packages/pds-cli/bin/pds-build-icons.js",
+    "pds:bootstrap": "node packages/pds-cli/bin/pds-bootstrap.js",
     "pds:manifest": "node packages/pds-cli/bin/generate-manifest.js",
     "pds:css-data": "node packages/pds-cli/bin/generate-css-data.js",
     "pds:dx": "node packages/pds-cli/bin/pds-dx.js",
