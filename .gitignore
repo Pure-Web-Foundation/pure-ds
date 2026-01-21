@@ -25,6 +25,7 @@ packages/pds-storybook/node_modules
 packages/pds-storybook/storybook-static
 packages/pds-storybook/dist
 packages/pds-storybook/public/assets/
+packages/pds-storybook/stories/getting-started.md
 .npmrc
 
 # Generated LLM instruction files (source is pds.llm.md)

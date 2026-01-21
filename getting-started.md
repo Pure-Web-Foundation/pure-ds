@@ -7,9 +7,9 @@ The fastest path is the project starter. It creates a working app, boots PDS, an
 ## 1) Create a new PDS app (recommended)
 
 ```bash
-npm init @pure-ds/app my-app
+npm init @pure-ds/app
 # or
-npx @pure-ds/create-app my-app
+npx @pure-ds/create-app
 ```
 
 What this does:

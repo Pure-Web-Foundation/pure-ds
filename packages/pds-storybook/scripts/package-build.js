@@ -43,6 +43,12 @@ cpSync(pdsConfiguratorSrc, destPdsConfigurator, { recursive: true });
 console.log('Copying custom-elements.json...');
 cpSync(join(monorepoRoot, 'custom-elements.json'), join(packageRoot, 'custom-elements.json'));
 
+// Copy getting-started.md from root to stories (SSoT in root)
+console.log('Copying getting-started.md...');
+const gettingStartedSrc = join(monorepoRoot, 'getting-started.md');
+const gettingStartedDest = join(packageRoot, 'stories/getting-started.md');
+cpSync(gettingStartedSrc, gettingStartedDest);
+
 // 3. Run Generation Scripts
 // console.log('Generating stories...');
 // execSync('node scripts/generate-stories.js', { cwd: packageRoot, stdio: 'inherit' });

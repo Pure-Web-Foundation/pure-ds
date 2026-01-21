@@ -98,6 +98,10 @@ PDS.addEventListener('pds:ready', (event) => {
     }
   }
 
+  // CRITICAL: Storybook requires live mode for dynamic CSS generation and configurator
+  // Always override mode to 'live' regardless of user config to prevent style injection failures
+  pdsOptions.mode = 'live';
+
   const initResult = await PDS.start(pdsOptions);
   setLiveGenerator(initResult?.generator);
   PDS.initializing = false;

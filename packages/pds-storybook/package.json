@@ -1,6 +1,6 @@
 {
   "name": "@pure-ds/storybook",
-  "version": "0.5.26",
+  "version": "0.5.28",
   "description": "Storybook showcase for Pure Design System with live configuration",
   "type": "module",
   "private": false,
@@ -25,19 +25,20 @@
   "scripts": {
     "generate-stories": "node scripts/generate-stories.js",
     "build-reference": "node --no-warnings=ExperimentalWarning scripts/build-pds-reference.mjs",
+    "copy-getting-started": "node scripts/copy-getting-started.js",
     "package-build": "node scripts/package-build.js",
     "package-clean": "node -e \"const fs=require('fs'); fs.rmSync('src',{recursive:true,force:true}); fs.rmSync('public/assets',{recursive:true,force:true}); console.log('Cleaned package artifacts')\"",
     "prepack": "npm run package-build",
     "postpack": "npm run package-clean",
-    "storybook": "npm run build-reference && storybook dev -p 6006",
-    "build-storybook": "npm run build-reference && storybook build --output-dir storybook-static --quiet",
+    "storybook": "npm run copy-getting-started && npm run build-reference && storybook dev -p 6006",
+    "build-storybook": "npm run copy-getting-started && npm run build-reference && storybook build --output-dir storybook-static --quiet",
     "storybook:dev": "npm run storybook",
     "storybook:build": "npm run build-storybook",
     "pds:build": "pds-build",
     "pds:build-icons": "pds-build-icons"
   },
   "peerDependencies": {
-    "@pure-ds/core": "^0.5.26"
+    "@pure-ds/core": "^0.5.28"
   },
   "dependencies": {
     "@custom-elements-manifest/analyzer": "^0.11.0",
