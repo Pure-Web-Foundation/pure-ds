@@ -3,7 +3,11 @@
 import { Generator, validateDesign } from "../../../src/js/pds-core/pds-generator.js";
 import { applyStyles } from "../../../src/js/pds-core/pds-runtime.js";
 import { presets } from "../../../src/js/pds-core/pds-config.js";
-import { PDS } from "../../../src/js/pds.js";
+import {
+  PDS,
+  applyResolvedTheme,
+  setupSystemListenerIfNeeded,
+} from "../../../src/js/pds.js";
 import { deepMerge } from "../../../src/js/common/common.js";
 import { loadTypographyFonts } from "../../../src/js/common/font-loader.js";
 import { AutoComplete } from "pure-web/ac";
@@ -63,8 +67,8 @@ customElements.define(
 
       // Let PDS manage the theme: apply the resolved theme and enable system listener
       try {
-        PDS._applyResolvedTheme(PDS.theme);
-        PDS._setupSystemListenerIfNeeded(PDS.theme);
+          applyResolvedTheme(PDS.theme);
+          setupSystemListenerIfNeeded(PDS.theme);
       } catch (ex) {
         /* ignore if document not available or other errors */
       }
@@ -344,8 +348,8 @@ customElements.define(
 
       // Let PDS ensure document html[data-theme] reflects persisted preference
       try {
-        PDS._applyResolvedTheme(PDS.theme);
-        PDS._setupSystemListenerIfNeeded(PDS.theme);
+          applyResolvedTheme(PDS.theme);
+          setupSystemListenerIfNeeded(PDS.theme);
       } catch (ex) {
         /* ignore in non-browser environments */
       }

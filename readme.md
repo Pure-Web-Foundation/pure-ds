@@ -1141,9 +1141,6 @@ const theme = PDS.theme; // 'light' | 'dark' | 'system' | null
 PDS.theme = 'dark';
 PDS.theme = 'system'; // Follows OS preference
 PDS.theme = null;     // Remove preference
-
-// Or use method
-await PDS.setTheme('dark');
 ```
 
 Theme is stored in localStorage and updates `html[data-theme]` automatically.
@@ -1309,10 +1306,6 @@ Adopt primitives layer (convenience method).
 ### PDS.createStylesheet(css)
 
 Create constructable stylesheet from CSS string.
-
-### PDS.setTheme(theme)
-
-Change theme programmatically.
 
 ### PDS Properties
 
@@ -1826,7 +1819,7 @@ await PDS.start({
 Enable theme management:
 ```javascript
 await PDS.start({ manageTheme: true });
-await PDS.setTheme('dark');
+PDS.theme = 'dark';
 ```
 
 ### Fonts Not Loading

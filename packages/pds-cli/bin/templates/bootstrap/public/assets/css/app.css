@@ -1,0 +1,59 @@
+html:not(.pds-ready) {
+  opacity: 0;
+}
+
+main {
+  margin: auto;
+}
+
+h1 {
+  background: linear-gradient(var(--gradient-angle, 135deg),
+    var(--color-primary-400),
+    var(--color-accent-400)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.container {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100dvh;
+  padding: 0;
+}
+
+header, footer {
+  padding: var(--spacing-4);
+}
+
+footer {
+  text-align: center;
+}
+
+.auto-gen {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+#settings-btn {
+  position: fixed;
+  top: var(--spacing-4);
+  right: var(--spacing-4);
+}
+
+.hero {
+  padding: var(--spacing-8);
+  zoom: 1.15;
+  text-align: center;
+  border: var(--border-width-medium) solid transparent;
+  background: linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(var(--gradient-angle, 135deg), var(--color-primary-400), var(--color-accent-400)) border-box;
+  max-width: var(--max-w-lg);
+  border-radius: var(--radius-lg);
+  border-width: 3px;
+}
+
+.hero > div {
+  margin: var(--spacing-10) 0;
+}

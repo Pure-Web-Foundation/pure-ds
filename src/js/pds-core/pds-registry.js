@@ -29,8 +29,6 @@ class PDSRegistry {
   setStaticMode(paths = {}) {
     this._mode = "static";
     this._staticPaths = { ...this._staticPaths, ...paths };
-    // Note: No access to config in static mode, using console
-    console.log("[PDS Registry] Switched to STATIC mode", this._staticPaths);
   }
 
   /**

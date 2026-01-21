@@ -13,7 +13,6 @@ import {
   ensureAbsoluteAssetURL,
   ensureTrailingSlash,
   attachFoucListener,
-  createSetTheme,
   normalizeInitConfig,
   resolveRuntimeAssetRoot,
   resolveThemeAndApply,
@@ -74,10 +73,6 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
     return await queryEngine.search(question);
   };
 
-  // Expose internal theme helpers for configurator usage
-  PDS._applyResolvedTheme = applyResolvedTheme;
-  PDS._setupSystemListenerIfNeeded = setupSystemListenerIfNeeded;
-
   // Live-only compiled getter
   if (!Object.getOwnPropertyDescriptor(PDS, "compiled")) {
     Object.defineProperty(PDS, "compiled", {
@@ -91,27 +86,6 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
       configurable: false,
     });
   }
-
-  // Live-only setTheme helper
-  PDS.setTheme = createSetTheme({
-    PDS,
-    defaultStorageKey: "pure-ds-theme",
-    setupSystemListenerIfNeeded,
-    onApply: async ({ resolvedTheme }) => {
-      if (PDS.registry.isLive && Generator.instance) {
-        try {
-          const currentGenerator = Generator.instance;
-          if (currentGenerator && currentGenerator.configure) {
-            const newConfig = { ...currentGenerator.config, theme: resolvedTheme };
-            currentGenerator.configure(newConfig);
-            await applyStyles(Generator.instance);
-          }
-        } catch (error) {
-          console.warn("Failed to update styles for new theme:", error);
-        }
-      }
-    },
-  });
 
   // Live-only preload helper
   PDS.preloadCritical = function(config, options = {}) {

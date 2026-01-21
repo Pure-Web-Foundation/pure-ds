@@ -42,6 +42,7 @@ const PDS = new PDSBase();
 // State properties
 PDS.initializing = false;
 PDS.currentPreset = null;
+PDS.debug = false;
 
 import {
   adoptLayers,
@@ -57,7 +58,6 @@ import {
   ensureAbsoluteAssetURL,
   ensureTrailingSlash,
   attachFoucListener,
-  createSetTheme,
   normalizeInitConfig,
   resolveRuntimeAssetRoot,
   resolveThemeAndApply,
@@ -73,14 +73,21 @@ const __slugifyPreset = (str = "") =>
     .replace(/^-+|-+$/g, "");
 
 const __defaultLog = function (level = "log", message, ...data) {
-  const debug = this?.debug || this?.design?.debug || false;
-  if (debug || level === "error" || level === "warn") {
-    const method = console[level] || console.log;
-    if (data.length > 0) {
-      method(message, ...data);
-    } else {
-      method(message);
-    }
+  const isStaticMode = Boolean(PDS.registry && !PDS.registry.isLive);
+  const debug =
+    (this?.debug || this?.design?.debug || PDS.debug || false) === true;
+
+  if (isStaticMode) {
+    if (!PDS.debug) return;
+  } else if (!debug && level !== "error" && level !== "warn") {
+    return;
+  }
+
+  const method = console[level] || console.log;
+  if (data.length > 0) {
+    method(message, ...data);
+  } else {
+    method(message);
   }
 };
 
@@ -109,7 +116,6 @@ PDS.adoptPrimitives = adoptPrimitives;
 
 /** Create a constructable CSSStyleSheet from a CSS string */
 PDS.createStylesheet = createStylesheet;
-
 
 /** Return true when running inside a live/designer-backed environment */
 PDS.isLiveMode = () => registry.isLive;
@@ -146,15 +152,6 @@ function __emitPDSReady(detail) {
   }
 }
 
-/** Current configuration (set after PDS.start() completes) - read-only, frozen after initialization */
-Object.defineProperty(PDS, "currentConfig", {
-  value: null,
-  writable: true,
-  enumerable: true,
-  configurable: false,
-});
-
-// Always expose PDS on the window in browser contexts so consumers can access it in both live and static modes
 if (typeof window !== "undefined") {
   // @ts-ignore
   window.PDS = PDS;
@@ -273,10 +270,6 @@ Object.defineProperty(PDS, "theme", {
   },
 });
 
-// Internal theme helpers (used by configurator/live tooling)
-PDS._applyResolvedTheme = __applyResolvedTheme;
-PDS._setupSystemListenerIfNeeded = __setupSystemListenerIfNeeded;
-
 // ----------------------------------------------------------------------------
 // Default Enhancers — first-class citizens alongside AutoDefiner
 // ----------------------------------------------------------------------------
@@ -286,8 +279,6 @@ PDS._setupSystemListenerIfNeeded = __setupSystemListenerIfNeeded;
  * or add to these via the `enhancers` option of PDS.start({ mode }).
  */
 PDS.defaultEnhancers = defaultPDSEnhancers;
-
-
 
 /**
  * Initialize PDS in live mode with the given configuration (new unified shape).
@@ -352,7 +343,6 @@ async function start(config) {
 /** Primary unified entry point */
 PDS.start = start;
 
-
 /**
  * Initialize PDS in static mode with the same unified configuration shape as live mode.
  *
@@ -410,13 +400,6 @@ async function staticInit(config) {
       setupSystemListenerIfNeeded: __setupSystemListenerIfNeeded,
     });
 
-    // 1b) Static-mode setTheme helper (live mode overrides this later)
-      PDS.setTheme = createSetTheme({
-        PDS,
-        defaultStorageKey: themeStorageKey,
-        setupSystemListenerIfNeeded: __setupSystemListenerIfNeeded,
-      });
-
     // Normalize first-arg to allow { preset, design, enhancers }
     const runtimeConfig = await __loadRuntimeConfig(assetRootURL, config);
     const runtimeDesign =
@@ -463,7 +446,10 @@ async function staticInit(config) {
         }
       : config;
 
-    const normalized = normalizeInitConfig(normalizedInput, {}, { presets, defaultLog: __defaultLog });
+    const normalized = normalizeInitConfig(normalizedInput, {}, {
+      presets,
+      defaultLog: __defaultLog,
+    });
     const userEnhancers = normalized.enhancers;
 
     // 2) Derive static asset URLs from the normalized public root
@@ -494,8 +480,7 @@ async function staticInit(config) {
           document.adoptedStyleSheets = [...others, stylesSheet];
         }
       } catch (e) {
-        // No config available in static mode, using console
-        console.warn("Failed to apply static styles:", e);
+        __defaultLog.call(PDS, "warn", "Failed to apply static styles:", e);
       }
     }
 
@@ -514,8 +499,9 @@ async function staticInit(config) {
       autoDefiner = res.autoDefiner;
       mergedEnhancers = res.mergedEnhancers || [];
     } catch (error) {
-      // No config available in static mode, using console
-      console.error(
+      __defaultLog.call(
+        PDS,
+        "error",
         "❌ Failed to initialize AutoDefiner/Enhancers (static):",
         error
       );
@@ -553,8 +539,9 @@ async function staticInit(config) {
 
 // Note: PDS.static is not exported. Use PDS.start({ mode: 'static', ... }).
 
-
 // Note: PDS object is not frozen to allow runtime properties like currentConfig
 // to be set during initialization. The config object itself is frozen for immutability.
 
+export const applyResolvedTheme = __applyResolvedTheme;
+export const setupSystemListenerIfNeeded = __setupSystemListenerIfNeeded;
 export { PDS };
