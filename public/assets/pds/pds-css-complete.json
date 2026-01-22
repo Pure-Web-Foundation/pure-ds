@@ -1280,6 +1280,34 @@
       "category": "Layout Tokens"
     },
     {
+      "name": "--layout-maxWidthSm",
+      "description": "Layout maxWidth sm",
+      "syntax": "<length>",
+      "value": "400px",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--layout-maxWidthMd",
+      "description": "Layout maxWidth md",
+      "syntax": "<length>",
+      "value": "600px",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--layout-maxWidthLg",
+      "description": "Layout maxWidth lg",
+      "syntax": "<length>",
+      "value": "800px",
+      "category": "Layout Tokens"
+    },
+    {
+      "name": "--layout-maxWidthXl",
+      "description": "Layout maxWidth xl",
+      "syntax": "<length>",
+      "value": "1200px",
+      "category": "Layout Tokens"
+    },
+    {
       "name": "--layout-minHeight",
       "description": "Layout minHeight",
       "syntax": "<length>",

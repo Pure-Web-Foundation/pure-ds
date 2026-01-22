@@ -268,6 +268,10 @@
 
             /* Layout */
   --layout-max-width: 1200px;
+  --layout-max-width-sm: 400px;
+  --layout-max-width-md: 600px;
+  --layout-max-width-lg: 800px;
+  --layout-max-width-xl: 1200px;
   --layout-min-height: 100vh;
   --layout-container-padding: var(--spacing-6)px;
   --layout-page-margin: 120px;

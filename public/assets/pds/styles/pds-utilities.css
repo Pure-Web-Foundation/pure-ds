@@ -134,7 +134,7 @@ button, a {
 }
 
 /* Max-width utilities */
-.max-w-sm { max-width: 400px; } .max-w-md { max-width: 600px; } .max-w-lg { max-width: 800px; } .max-w-xl { max-width: 1200px; }
+.max-w-sm { max-width: var(--layout-max-width-sm, 400px); } .max-w-md { max-width: var(--layout-max-width-md, 600px); } .max-w-lg { max-width: var(--layout-max-width-lg, 800px); } .max-w-xl { max-width: var(--layout-max-width-xl, var(--layout-max-width, 1200px)); }
 
 /* Stack utilities - vertical rhythm for stacked elements */
 [class^="stack-"], [class*=" stack-"] {

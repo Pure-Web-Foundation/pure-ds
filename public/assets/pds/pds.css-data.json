@@ -1630,6 +1630,50 @@
       ]
     },
     {
+      "name": "--layout-maxWidthSm",
+      "description": "Layout maxWidth sm",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,400px"
+        }
+      ]
+    },
+    {
+      "name": "--layout-maxWidthMd",
+      "description": "Layout maxWidth md",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,600px"
+        }
+      ]
+    },
+    {
+      "name": "--layout-maxWidthLg",
+      "description": "Layout maxWidth lg",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,800px"
+        }
+      ]
+    },
+    {
+      "name": "--layout-maxWidthXl",
+      "description": "Layout maxWidth xl",
+      "syntax": "<length>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,1200px"
+        }
+      ]
+    },
+    {
       "name": "--layout-minHeight",
       "description": "Layout minHeight",
       "syntax": "<length>",

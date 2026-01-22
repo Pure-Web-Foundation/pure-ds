@@ -11,6 +11,11 @@ const layoutSystemStyles = html`
     .story-fixed-width { width: 100px; }
     .story-min-width { min-width: 120px; }
     .story-margin-top { margin-block-start: var(--spacing-2); }
+    .story-max-width-box {
+      border: 1px dashed var(--color-border);
+      background-color: var(--color-surface-overlay);
+      margin-inline: auto;
+    }
   </style>
 `;
 
@@ -409,25 +414,65 @@ Gap.storyName = "Gap";
 
 export const MaxWidth = () => html`
   ${layoutSystemStyles}
-  <header class="card">
+  <header class="card stack-sm">
     <h2>Max-Width Utilities</h2>
-    <p class="text-muted">Constrain content width for readability.</p>
+    <p class="text-muted">
+      Each utility maps to a <code>--layout-max-width-*</code> token that is paired with the
+      matching breakpoint token (for example <code>--breakpoint-sm</code>). Updating
+      <code>layout.maxWidths</code> or <code>layout.breakpoints</code> in config keeps the
+      clamp width and responsive snap point aligned.
+    </p>
   </header>
 
   <div class="stack-lg">
     ${[
-      { cls: "max-w-sm", px: "400px", use: "Login forms, modals" },
-      { cls: "max-w-md", px: "600px", use: "Cards, forms, dialogs" },
-      { cls: "max-w-lg", px: "800px", use: "Articles, documentation" },
-      { cls: "max-w-xl", px: "1200px", use: "Dashboards, complex layouts" },
+      {
+        cls: "max-w-sm",
+        token: "--layout-max-width-sm",
+        breakpoint: "--breakpoint-sm",
+        use: "Dialogs, login panels, onboarding cards",
+      },
+      {
+        cls: "max-w-md",
+        token: "--layout-max-width-md",
+        breakpoint: "--breakpoint-md",
+        use: "Marketing cards, multi-step forms",
+      },
+      {
+        cls: "max-w-lg",
+        token: "--layout-max-width-lg",
+        breakpoint: "--breakpoint-lg",
+        use: "Articles, documentation, knowledge base",
+      },
+      {
+        cls: "max-w-xl",
+        token: "--layout-max-width-xl",
+        breakpoint: "--breakpoint-xl",
+        use: "Dashboards, complex data layouts",
+      },
     ].map(
-      ({ cls, px, use }) => html`
-        <div>
-          <code>.${cls}</code> <span class="text-muted">(${px}) — ${use}</span>
-          <div class="${cls} surface-subtle story-demo-area story-margin-top">
-            Content constrained to ${px}
+      ({ cls, token, breakpoint, use }) => html`
+        <article class="card surface-subtle stack-sm">
+          <div class="flex items-center justify-between gap-sm flex-wrap">
+            <div>
+              <code>.${cls}</code>
+              <p class="text-muted text-sm">${use}</p>
+            </div>
+            <p class="text-sm text-muted">
+              <code>${token}</code>
+              <span aria-hidden="true">↔</span>
+              <code>${breakpoint}</code>
+            </p>
           </div>
-        </div>
+
+          <div class="${cls} story-demo-area story-max-width-box">
+            <p>
+              This block grows fluidly until it hits ${token}, which is sized just
+              under ${breakpoint}. Changing either value in config keeps editorial widths
+              and responsive breakpoints in lockstep.
+            </p>
+          </div>
+        </article>
       `
     )}
   </div>

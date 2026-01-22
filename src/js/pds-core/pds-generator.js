@@ -756,15 +756,21 @@ export class Generator {
       },
     } = layoutConfig;
 
+    const resolvedMaxWidths = this.#resolveLayoutMaxWidths(layoutConfig);
+
     return {
-      maxWidth: `${maxWidth}px`,
+      maxWidth: this.#formatLength(maxWidth, "1200px"),
+      maxWidthSm: resolvedMaxWidths.sm,
+      maxWidthMd: resolvedMaxWidths.md,
+      maxWidthLg: resolvedMaxWidths.lg,
+      maxWidthXl: resolvedMaxWidths.xl,
       minHeight: "100vh",
-      containerPadding: `${containerPadding}px`,
+      containerPadding: this.#formatLength(containerPadding, "16px"),
       breakpoints: {
-        sm: `${breakpoints.sm}px`,
-        md: `${breakpoints.md}px`,
-        lg: `${breakpoints.lg}px`,
-        xl: `${breakpoints.xl}px`,
+        sm: this.#formatLength(breakpoints.sm, "640px"),
+        md: this.#formatLength(breakpoints.md, "768px"),
+        lg: this.#formatLength(breakpoints.lg, "1024px"),
+        xl: this.#formatLength(breakpoints.xl, "1280px"),
       },
       // Semantic spacing tokens for large layouts
       // Use these instead of numbered spacing beyond --spacing-12
@@ -774,6 +780,80 @@ export class Generator {
       heroSpacing: "240px", // For hero/banner areas
       footerSpacing: "160px", // Before footer sections
     };
+  }
+
+  #resolveLayoutMaxWidths(layoutConfig = {}) {
+    const defaultBreakpoints = {
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+    };
+
+    const {
+      maxWidths = {},
+      maxWidth = 1200,
+      containerPadding = 16,
+      breakpoints = defaultBreakpoints,
+    } = layoutConfig || {};
+
+    const paddingValue = this.#toNumber(containerPadding, 16);
+    const baseMaxWidth = this.#toNumber(maxWidth, defaultBreakpoints.xl);
+
+    const resolvedBreakpoints = {
+      sm: this.#toNumber(breakpoints.sm, defaultBreakpoints.sm),
+      md: this.#toNumber(breakpoints.md, defaultBreakpoints.md),
+      lg: this.#toNumber(breakpoints.lg, defaultBreakpoints.lg),
+      xl: this.#toNumber(breakpoints.xl, defaultBreakpoints.xl),
+    };
+
+    const deriveWidth = (bp) => {
+      if (!bp) {
+        return baseMaxWidth;
+      }
+      return Math.max(320, bp - paddingValue * 2);
+    };
+
+    const fallbackWidths = {
+      sm: Math.min(baseMaxWidth, deriveWidth(resolvedBreakpoints.sm)),
+      md: Math.min(baseMaxWidth, deriveWidth(resolvedBreakpoints.md)),
+      lg: Math.min(baseMaxWidth, deriveWidth(resolvedBreakpoints.lg)),
+      xl: Math.max(320, baseMaxWidth),
+    };
+
+    return {
+      sm: this.#formatLength(maxWidths.sm, `${fallbackWidths.sm}px`),
+      md: this.#formatLength(maxWidths.md, `${fallbackWidths.md}px`),
+      lg: this.#formatLength(maxWidths.lg, `${fallbackWidths.lg}px`),
+      xl: this.#formatLength(maxWidths.xl, `${fallbackWidths.xl}px`),
+    };
+  }
+
+  #formatLength(value, fallback) {
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return `${value}px`;
+    }
+
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value;
+    }
+
+    return fallback;
+  }
+
+  #toNumber(value, fallback) {
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return value;
+    }
+
+    if (typeof value === "string") {
+      const parsed = parseFloat(value);
+      if (Number.isFinite(parsed)) {
+        return parsed;
+      }
+    }
+
+    return fallback;
   }
 
   #generateTransitionTokens(behaviorConfig) {
@@ -2868,85 +2948,80 @@ tbody {
   #generateAccordionStyles() {
     return /*css*/ `/* Accordion (details/summary) */
 
-.accordion {
-  --_acc-radius: var(--radius-md);
-  --_acc-border: 1px solid var(--color-border);
-  --_acc-bg: var(--color-surface-base);
+:where(.accordion details) {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-base);
+  margin: 0 0 var(--spacing-3) 0;
+  overflow: hidden;
 
-  details {
-    border: var(--_acc-border);
-    border-radius: var(--_acc-radius);
-    background: var(--_acc-bg);
-    margin: 0 0 var(--spacing-3) 0;
-
-    &[open] {
-      & > summary::after {
-        transform: rotate(45deg);
-      }
-
-      &::details-content {
-        block-size: auto;
-      }
+  &[open] {
+    & > summary::after {
+      transform: rotate(45deg);
     }
 
-    /* Modern approach: animate block-size with ::details-content */
     &::details-content {
-      block-size: 0;
-      overflow: hidden;
-      transition: block-size var(--transition-normal) ease, content-visibility var(--transition-normal);
-      transition-behavior: allow-discrete;
-    }
-
-    /* Content padding (works for both approaches) */
-    & > :not(summary) > * {
-      padding-inline: var(--spacing-4);
-      padding-block: var(--spacing-3);
+      block-size: auto;
     }
   }
 
-  summary {
-    cursor: pointer;
-    padding: var(--spacing-3) var(--spacing-4);
-    list-style: none;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    border-radius: var(--radius-sm);
-    transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
+  /* Modern approach: animate block-size with ::details-content */
+  &::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition: block-size var(--transition-normal) ease, content-visibility var(--transition-normal);
+    transition-behavior: allow-discrete;
+  }
 
-    &::-webkit-details-marker {
-      display: none;
-    }
+  /* Content padding (works for both approaches) */
+  & > :not(summary) > * {
+    padding-inline: var(--spacing-4);
+    padding-block: var(--spacing-3);
+  }
+}
 
-    &:hover {
-      background-color: var(--color-surface-subtle);
-    }
+:where(.accordion summary) {
+  cursor: pointer;
+  padding: var(--spacing-3) var(--spacing-4);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  border-radius: inherit;
+  transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
 
-    &:focus {
-      outline: none;
-    }
+  &::-webkit-details-marker {
+    display: none;
+  }
 
-    &:focus-visible {
-      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
-    }
+  &:hover {
+    background-color: var(--color-surface-subtle);
+  }
 
-    /* Chevron indicator */
-    &::after {
-      content: "";
-      margin-inline-start: auto;
-      inline-size: 0.7em;
-      block-size: 0.7em;
-      border-inline-end: 2px solid currentColor;
-      border-block-end: 2px solid currentColor;
-      transform: rotate(-45deg);
-      transition: transform var(--transition-normal);
-    }
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+  }
+
+  /* Chevron indicator */
+  &::after {
+    content: "";
+    margin-inline-start: auto;
+    inline-size: 0.7em;
+    block-size: 0.7em;
+    border-inline-end: 2px solid currentColor;
+    border-block-end: 2px solid currentColor;
+    transform: rotate(-45deg);
+    transition: transform var(--transition-normal);
   }
 }
 
 /* Fallback: grid trick for browsers without ::details-content support */
 @supports not selector(::details-content) {
-  .accordion details {
+  :where(.accordion details) {
     & > :not(summary) {
       display: grid;
       grid-template-rows: 0fr;
@@ -3591,6 +3666,8 @@ nav[data-dropdown] {
       xl: "450px",
     };
 
+    const layoutMaxWidths = this.#resolveLayoutMaxWidths(layout);
+
     const sections = [
       /*css*/ `
 /* ============================================================================
@@ -3670,7 +3747,7 @@ nav[data-dropdown] {
 }
 
 /* Max-width utilities */
-.max-w-sm { max-width: 400px; } .max-w-md { max-width: 600px; } .max-w-lg { max-width: 800px; } .max-w-xl { max-width: 1200px; }
+.max-w-sm { max-width: var(--layout-max-width-sm, ${layoutMaxWidths.sm}); } .max-w-md { max-width: var(--layout-max-width-md, ${layoutMaxWidths.md}); } .max-w-lg { max-width: var(--layout-max-width-lg, ${layoutMaxWidths.lg}); } .max-w-xl { max-width: var(--layout-max-width-xl, ${layoutMaxWidths.xl}); }
 
 /* Stack utilities - vertical rhythm for stacked elements */
 [class^="stack-"], [class*=" stack-"] {
