@@ -703,7 +703,7 @@ PDS generates CSS in structured layers for predictable specificity and modularit
 - Forms (`input`, `select`, `textarea`, `fieldset`)
 - Surfaces (`.card`, `.surface`)
 - Badges (`.badge`, `.badge-success`)
-- Alerts (`.alert`, `.alert-warning`)
+- Callouts (`.callout`, `.callout-warning`)
 - Typography (headings, paragraphs, lists)
 - Tables (responsive, striped)
 
@@ -1635,7 +1635,7 @@ pds.css-data.json                # Points to CSS custom data
 - Surfaces: `--surface-bg`, `--surface-text`, `--surface-border`
 
 **50+ CSS Classes:**
-- Primitives: `.badge`, `.card`, `.surface`, `.alert`
+- Primitives: `.badge`, `.card`, `.surface`, `.callout`
 - Layout: `.flex`, `.grid`, `.grid-cols-{1-6}`, `.container`
 - Utilities: `.gap-{0-12}`, `.items-*`, `.justify-*`
 - Effects: `.border-gradient`, `.border-glow`

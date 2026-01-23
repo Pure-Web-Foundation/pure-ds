@@ -1,4 +1,4 @@
-﻿# pds-form Documentation
+# pds-form Documentation
 
 A powerful, extensible JSON Schema form generator for the Pure Design System (PDS). Automatically generates accessible, styled forms from JSON Schema with extensive customization through UI schemas and options.
 
@@ -8,21 +8,21 @@ A powerful, extensible JSON Schema form generator for the Pure Design System (PD
 
 ### Key Features
 
-- 🎯 **Zero Boilerplate** - Define form structure once in JSON Schema
-- ✅ **Built-in Validation** - Automatic validation based on schema (required, min/max, patterns, formats)
-- 🔄 **Two-Way Data Binding** - Reactive form state management
-- 🎨 **PDS Styled** - Uses all PDS design tokens automatically
-- 📱 **Responsive Layouts** - Flex, Grid, Accordion, Tabs out of the box
-- 🔧 **Extensible** - Custom widgets, validators, and renderers
-- 🌐 **Nested Objects** - Support for complex nested data structures
-- 🎭 **Dialog Forms** - Edit complex nested objects in modal dialogs
-- 📝 **Rich Components** - File upload (pds-upload), Rich text (pds-richtext)
-- 🎚️ **Range Sliders** - With live value output display
-- 🔘 **Toggle Switches** - Modern toggle UI for boolean fields
-- 🔍 **Datalist Autocomplete** - Native browser autocomplete for text inputs
-- 🎨 **Icon-Enhanced Inputs** - Add icons to inputs for better UX
-- 🃏 **Surface Wrapping** - Wrap sections in cards, elevated surfaces, etc.
-- ♿ **Accessible** - Proper ARIA attributes and semantic HTML
+- ?? **Zero Boilerplate** - Define form structure once in JSON Schema
+- ? **Built-in Validation** - Automatic validation based on schema (required, min/max, patterns, formats)
+- ?? **Two-Way Data Binding** - Reactive form state management
+- ?? **PDS Styled** - Uses all PDS design tokens automatically
+- ?? **Responsive Layouts** - Flex, Grid, Accordion, Tabs out of the box
+- ?? **Extensible** - Custom widgets, validators, and renderers
+- ?? **Nested Objects** - Support for complex nested data structures
+- ?? **Dialog Forms** - Edit complex nested objects in modal dialogs
+- ?? **Rich Components** - File upload (pds-upload), Rich text (pds-richtext)
+- ??? **Range Sliders** - With live value output display
+- ?? **Toggle Switches** - Modern toggle UI for boolean fields
+- ?? **Datalist Autocomplete** - Native browser autocomplete for text inputs
+- ?? **Icon-Enhanced Inputs** - Add icons to inputs for better UX
+- ?? **Surface Wrapping** - Wrap sections in cards, elevated surfaces, etc.
+- ? **Accessible** - Proper ARIA attributes and semantic HTML
 
 ## Table of Contents
 
@@ -232,7 +232,7 @@ For selection fields where you want different display labels than the stored val
 
 This generates a select/radio field that displays "English" but stores "en" when selected. Works with:
 - Select dropdowns (>5 options)
-- Radio buttons (≤5 options)  
+- Radio buttons (=5 options)  
 - Checkbox groups (when used with array type)
 
 You can also use `anyOf` instead of `oneOf` - both work identically for this purpose:
@@ -242,10 +242,10 @@ You can also use `anyOf` instead of `oneOf` - both work identically for this pur
   type: "string",
   title: "Priority",
   anyOf: [
-    { const: "p1", title: "🔴 Critical" },
-    { const: "p2", title: "🟠 High" },
-    { const: "p3", title: "🟡 Medium" },
-    { const: "p4", title: "🟢 Low" }
+    { const: "p1", title: "?? Critical" },
+    { const: "p2", title: "?? High" },
+    { const: "p3", title: "?? Medium" },
+    { const: "p4", title: "?? Low" }
   ]
 }
 ```
@@ -727,7 +727,7 @@ const uiSchema = {
 };
 ```
 
-> ℹ️ The rich text widget prefers a `#showdown` import map binding. Add something like `"#showdown": "https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.mjs"` in an import map to avoid loading from the fallback CDN.
+> ?? The rich text widget prefers a `#showdown` import map binding. Add something like `"#showdown": "https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.mjs"` in an import map to avoid loading from the fallback CDN.
 
 To have the submitted value stay as Markdown, set `format` to `"markdown"`:
 ```json
@@ -743,7 +743,7 @@ To have the submitted value stay as Markdown, set `format` to `"markdown"`:
 
 ## Conditional Logic (Interactions)
 
-`pds-form` supports XForms-inspired declarative interactions for showing/hiding fields, enabling/disabling inputs, conditional requirements, and computed values—all defined in the uiSchema.
+`pds-form` supports XForms-inspired declarative interactions for showing/hiding fields, enabling/disabling inputs, conditional requirements, and computed values�all defined in the uiSchema.
 
 ### Show/Hide Fields (`ui:visibleWhen`)
 
@@ -810,7 +810,7 @@ const uiSchema = {
     "ui:calculate": { "$concat": ["/firstName", " ", "/lastName"] }
   },
   
-  // Total price = quantity × unit price
+  // Total price = quantity � unit price
   "/totalPrice": {
     "ui:calculate": { "$multiply": ["/quantity", "/unitPrice"] }
   },
@@ -983,7 +983,7 @@ const uiSchema = {
 
 ## Custom Content Injection
 
-Inject custom HTML content before/after fields, create fully custom field renderers, or customize how fields are wrapped—all through uiSchema.
+Inject custom HTML content before/after fields, create fully custom field renderers, or customize how fields are wrapped�all through uiSchema.
 
 ### Content Before/After Fields (`ui:before`, `ui:after`)
 
@@ -994,7 +994,7 @@ const uiSchema = {
   // Add a header section before the username field
   "/username": {
     "ui:before": (field) => html`
-      <div class="alert alert-info">
+      <div class="alert callout-info">
         <strong>Account Details</strong>
         <p>Choose a unique username.</p>
       </div>
@@ -1007,7 +1007,7 @@ const uiSchema = {
       if (!field.value) return nothing;
       const isValid = field.value.includes('@');
       return html`<div class="text-sm text-${isValid ? 'success' : 'danger'}">
-        ${isValid ? '✓ Valid email' : '✗ Invalid email'}
+        ${isValid ? '? Valid email' : '? Invalid email'}
       </div>`;
     }
   },
@@ -1051,7 +1051,7 @@ Define content in HTML and reference it in uiSchema:
 
 ```html
 <pds-form .jsonSchema=${schema} .uiSchema=${uiSchema}>
-  <div slot="welcome-header" class="alert alert-success">
+  <div slot="welcome-header" class="alert callout-success">
     <strong>Welcome!</strong> Fill out the form below.
   </div>
   
@@ -1087,7 +1087,7 @@ const uiSchema = {
                 type="button"
                 class="btn btn-sm ${star <= field.value ? 'btn-warning' : 'btn-outline'}"
                 @click=${() => field.set(star)}
-              >★</button>
+              >?</button>
             `)}
           </div>
           <input type="hidden" name=${field.path} .value=${String(field.value || '')} />
@@ -1230,7 +1230,7 @@ The options system provides global and per-path control over form behavior.
 
 ### Preset Integration
 
-Options merge in this order: **Default Options** → **Preset Options** → **Instance Options**
+Options merge in this order: **Default Options** ? **Preset Options** ? **Instance Options**
 
 ```javascript
 // In PDS config (affects all forms)
@@ -2510,18 +2510,18 @@ html`
 ```
 
 **This example demonstrates:**
-- ✅ Accordion layout for top-level sections
-- ✅ Grid layout for personal info (2 columns)
-- ✅ Icon-enhanced inputs (email, phone, website)
-- ✅ Toggle switches for boolean preferences
-- ✅ Range sliders with live output display
-- ✅ Dialog form for profile editing
-- ✅ File upload with pds-upload
-- ✅ Rich text editor with pds-richtext
-- ✅ Surface wrapping (elevated, sunken)
-- ✅ Radio buttons styled as button group
-- ✅ Required field validation
-- ✅ Format validation (email, uri)
+- ? Accordion layout for top-level sections
+- ? Grid layout for personal info (2 columns)
+- ? Icon-enhanced inputs (email, phone, website)
+- ? Toggle switches for boolean preferences
+- ? Range sliders with live output display
+- ? Dialog form for profile editing
+- ? File upload with pds-upload
+- ? Rich text editor with pds-richtext
+- ? Surface wrapping (elevated, sunken)
+- ? Radio buttons styled as button group
+- ? Required field validation
+- ? Format validation (email, uri)
 
 ---
 
@@ -2541,7 +2541,7 @@ html`
 
 7. **Custom renderers** - For complete control, define custom renderers for specific widget types
 
-8. **Options hierarchy** - Remember: Default → Preset → Instance → uiSchema (most specific wins)
+8. **Options hierarchy** - Remember: Default ? Preset ? Instance ? uiSchema (most specific wins)
 
 9. **Path-based customization** - Use path-specific options for complex forms with varying needs
 
@@ -2573,3 +2573,4 @@ Part of the Pure Design System (PDS)
 ---
 
 For more examples and live demos, see the [PDS Storybook](../../packages/pds-storybook).
+

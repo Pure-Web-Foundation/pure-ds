@@ -110,7 +110,7 @@ PDS produces:
 | Layer | What You Get |
 |-------|--------------|
 | **Tokens** | `--color-primary-500`, `--spacing-4`, `--radius-md` |
-| **Primitives** | `.card`, `.btn-primary`, `.badge`, `.alert` |
+| **Primitives** | `.card`, `.btn-primary`, `.badge`, `.callout` |
 | **Layout** | `.flex`, `.grid`, `.stack-md`, `.gap-lg`, `.container` |
 | **Utilities** | `.text-muted`, `.surface-elevated`, `.border-subtle` |
 

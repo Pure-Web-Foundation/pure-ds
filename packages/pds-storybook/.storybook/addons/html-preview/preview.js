@@ -216,13 +216,13 @@ export const withHTMLExtractor = (storyFn, context) => {
       
       if (pdsFormElements.length > 0) {
         // Generate realistic markup for pds-form stories
-        const alerts = Array.from(container.querySelectorAll('.alert'));
+        const alerts = Array.from(container.querySelectorAll('.callout'));
         let markup = '';
         
         // Include any alert/info boxes before the form
         if (alerts.length > 0) {
           alerts.forEach(alert => {
-            markup += `<div class="alert ${alert.className.split(' ').filter(c => c !== 'alert').join(' ')}">\n`;
+            markup += `<div class="callout ${alert.className.split(' ').filter(c => c !== 'callout').join(' ')}">\n`;
             markup += `  ${alert.innerHTML.replace(/\n\s+/g, '\n  ')}\n`;
             markup += `</div>\n\n`;
           });

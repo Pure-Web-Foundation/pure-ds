@@ -1398,12 +1398,12 @@ export class Generator {
 
   // Generate dark mode component adjustments (for components layer)
   #generateDarkModeComponentRules() {
-    const rules = /*css*/ `/* Alert dark mode adjustments */
+    const rules = /*css*/ `/* Callout dark mode adjustments */
 html[data-theme="dark"] {
-  .alert-success { background-color: var(--color-success-50); border-color: var(--color-success-500); color: var(--color-success-900); }
-  .alert-info { background-color: var(--color-info-50); border-color: var(--color-info-500); color: var(--color-info-900); }
-  .alert-warning { background-color: var(--color-warning-50); border-color: var(--color-warning-500); color: var(--color-warning-900); }
-  .alert-danger, .alert-error { background-color: var(--color-danger-50); border-color: var(--color-danger-500); color: var(--color-danger-900); }
+  .callout-success { background-color: var(--color-success-50); border-color: var(--color-success-500); color: var(--color-success-900); }
+  .callout-info { background-color: var(--color-info-50); border-color: var(--color-info-500); color: var(--color-info-900); }
+  .callout-warning { background-color: var(--color-warning-50); border-color: var(--color-warning-500); color: var(--color-warning-900); }
+  .callout-danger, .callout-error { background-color: var(--color-danger-50); border-color: var(--color-danger-500); color: var(--color-danger-900); }
   img, video { opacity: 0.8; transition: opacity var(--transition-normal); }
   img:hover, video:hover { opacity: 1; }
 }`;
@@ -2855,11 +2855,10 @@ tbody {
 `;
   }
 
-  #generateAlertStyles() {
-    return /*css*/ `/* Alert/Notification Styles */
+  #generateCalloutStyles() {
+    return /*css*/ `/* Callout/Notification Styles */
 
-/* Alias: .semantic-message shares alert base styles */
-.alert, .semantic-message {
+.callout {
   padding: var(--spacing-4);
   border-radius: var(--radius-md);
   margin: 0 0 var(--spacing-4) 0;
@@ -2875,40 +2874,35 @@ tbody {
   }
 }
 /* Variants: success/info/warning/danger mapped to tokens */
-.alert-success, .semantic-message.success {
+.callout-success {
   background-color: var(--color-success-50);
   border-color: var(--color-success-600);
   color: var(--color-success-900);
 }
-.alert-info, .semantic-message.info {
+.callout-info {
   background-color: var(--color-info-50);
   border-color: var(--color-info-600);
   color: var(--color-info-900);
 }
-.alert-warning, .semantic-message.warning {
+.callout-warning {
   background-color: var(--color-warning-50);
   border-color: var(--color-warning-600);
   color: var(--color-warning-900);
 }
-.alert-danger,
-.alert-error,
-.semantic-message.danger {
+.callout-danger,
+.callout-error {
   background-color: var(--color-danger-50);
   border-color: var(--color-danger-600);
   color: var(--color-danger-900);
 }
 
-/* Semantic-message content defaults */
-.semantic-message strong { display: block; }
-.semantic-message p { margin: 0; font-size: var(--font-size-sm); }
-
-.alert-title {
+.callout-title {
   font-weight: var(--font-weight-semibold);
   margin: 0 0 var(--spacing-2) 0;
   font-size: var(--font-size-base);
 }
 
-.alert-icon {
+.callout-icon {
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -2919,12 +2913,12 @@ tbody {
   }
 }
 
-.alert-dismissible {
+.callout-dismissible {
   padding-right: var(--spacing-12);
   position: relative;
 }
 
-.alert-close {
+.callout-close {
   position: absolute;
   top: var(--spacing-3);
   right: var(--spacing-3);
@@ -4482,7 +4476,7 @@ ${this.#generateSemanticHTMLStyles()}
 
 ${this.#generateFormStyles()}
 
-${this.#generateAlertStyles()}
+${this.#generateCalloutStyles()}
 
 ${this.#generateBadgeStyles()}
 

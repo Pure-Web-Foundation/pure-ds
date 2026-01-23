@@ -43,7 +43,7 @@ export class PDSQuery {
       modal: ['modal', 'dialog', 'popup', 'overlay'],
       drawer: ['drawer', 'sidebar', 'panel'],
       tab: ['tab', 'tabstrip'],
-      toast: ['toast', 'notification', 'alert', 'message'],
+      toast: ['toast', 'notification', 'callout', 'message', 'alert'],
     };
 
     // Question patterns

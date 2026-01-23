@@ -701,7 +701,7 @@ export class SchemaForm extends LitElement {
   render() {
     const tree = this.#compiled;
     if (!tree)
-      return html`<div class="alert alert-error">
+      return html`<div class="callout callout-error">
         <p>Failed to generate form schema.</p>
         <pre>${JSON.stringify(this.#data, null, 2)}</pre>
       </div>`;

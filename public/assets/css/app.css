@@ -499,8 +499,6 @@ pds-demo {
   color: var(--color-text-muted);
 }
 
-/* Semantic messages are now provided by PDS (.alert and .semantic-message aliases) */
-
 /* Gray Scale Grid */
 .gray-scale-grid {
   display: grid;

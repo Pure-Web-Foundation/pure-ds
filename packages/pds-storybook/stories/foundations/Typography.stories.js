@@ -366,22 +366,22 @@ export const UIComponents = {
 
       <h2>Notifications & Messages</h2>
       <div class="stack-md">
-        <div class="alert alert-success">
+        <div class="alert callout-success">
           <b>Success</b>
           <span>Your profile has been updated successfully.</span>
         </div>
 
-        <div class="alert alert-warning">
+        <div class="alert callout-warning">
           <b>Warning</b>
           <span>Your subscription will expire in 3 days. Renew now to continue access.</span>
         </div>
 
-        <div class="alert alert-danger">
+        <div class="alert callout-danger">
           <b>Error</b>
           <span>Unable to connect to the server. Please check your connection and try again.</span>
         </div>
 
-        <div class="alert alert-info">
+        <div class="alert callout-info">
           <b>Information</b>
           <span>New features available! Check out our latest updates in the changelog.</span>
         </div>
@@ -590,4 +590,5 @@ pds build --watch</code></pre>
     </div>
   `,
 };
+
 

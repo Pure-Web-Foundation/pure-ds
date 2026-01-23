@@ -464,7 +464,7 @@ button.btn-xs {
       `
       );
 
-      // Adopt primitives (buttons), components (.alert classes), and toaster-specific styles
+      // Adopt primitives (buttons), components (.callout classes), and toaster-specific styles
       await PDS.adoptLayers(
         this.shadowRoot,
         ["primitives", "components"],

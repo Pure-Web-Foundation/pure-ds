@@ -1,4 +1,4 @@
-﻿import { LitElement, html, nothing, render, unsafeHTML } from "../../../src/js/lit.js";
+import { LitElement, html, nothing, render, unsafeHTML } from "../../../src/js/lit.js";
 import { PDS } from "../../../src/js/pds.js";
 
 import { AutoComplete } from "pure-web/ac";
@@ -1049,7 +1049,7 @@ customElements.define(
     }
 
     scrollToRelevantSection(fieldPath) {
-      console.log("🎯 Scrolling to section for field:", fieldPath);
+      console.log("?? Scrolling to section for field:", fieldPath);
 
       // Remove leading slash if present (pds-form sends "/behavior.transitionSpeed")
       const normalizedPath = fieldPath.startsWith("/")
@@ -1087,7 +1087,7 @@ customElements.define(
 
         // Components
         "components/forms": "forms",
-        "components/alerts": "alerts",
+        "components/alerts": "callouts",
         "components/badges": "badges",
         "components/tables": "tables",
         "components/toasts": "toasts",
@@ -1103,7 +1103,7 @@ customElements.define(
       for (const [pattern, id] of Object.entries(sectionMap)) {
         if (normalizedPath.startsWith(pattern)) {
           sectionId = id;
-          console.log(`  ✓ Matched pattern "${pattern}" → section "${id}"`);
+          console.log(`  ? Matched pattern "${pattern}" ? section "${id}"`);
           break;
         }
       }
@@ -1113,7 +1113,7 @@ customElements.define(
         const section = this.querySelector(`[data-section="${sectionId}"]`);
         console.log(
           `  Searching for section: [data-section="${sectionId}"]`,
-          section ? "✓ Found" : "✗ Not found"
+          section ? "? Found" : "? Not found"
         );
 
         if (section) {
@@ -1126,14 +1126,14 @@ customElements.define(
             section.style.backgroundColor = "";
           }, 1500);
 
-          console.log("  ✓ Scrolled and highlighted section");
+          console.log("  ? Scrolled and highlighted section");
         } else {
           console.warn(
-            `  ✗ Section [data-section="${sectionId}"] not found in DOM`
+            `  ? Section [data-section="${sectionId}"] not found in DOM`
           );
         }
       } else {
-        console.warn(`  ✗ No section mapping found for field: ${fieldPath}`);
+        console.warn(`  ? No section mapping found for field: ${fieldPath}`);
       }
     }
 
@@ -1831,19 +1831,19 @@ customElements.define(
             </form>
           </section>
 
-          <section class="showcase-section" data-section="alerts">
+          <section class="showcase-section" data-section="callouts">
             <h2>
               <pds-icon
                 icon="bell-ringing"
                 size="lg"
                 class="icon-primary"
               ></pds-icon>
-              Alerts & Feedback
+              Callouts & Feedback
             </h2>
 
             <div class="grid grid-cols-1">
-              <div class="alert alert-success">
-                <div class="alert-icon">
+              <div class="alert callout-success">
+                <div class="callout-icon">
                   <pds-icon
                     icon="check-circle"
                     class="icon-success"
@@ -1851,23 +1851,23 @@ customElements.define(
                   ></pds-icon>
                 </div>
                 <div>
-                  <div class="alert-title">Success!</div>
+                  <div class="callout-title">Success!</div>
                   <p>Your operation completed successfully.</p>
                 </div>
               </div>
 
-              <div class="alert alert-info">
-                <div class="alert-icon">
+              <div class="alert callout-info">
+                <div class="callout-icon">
                   <pds-icon icon="info" class="icon-info" size="lg"></pds-icon>
                 </div>
                 <div>
-                  <div class="alert-title">Information</div>
+                  <div class="callout-title">Information</div>
                   <p>This is an informational message.</p>
                 </div>
               </div>
 
-              <div class="alert alert-warning">
-                <div class="alert-icon">
+              <div class="alert callout-warning">
+                <div class="callout-icon">
                   <pds-icon
                     icon="warning"
                     class="icon-warning"
@@ -1875,13 +1875,13 @@ customElements.define(
                   ></pds-icon>
                 </div>
                 <div>
-                  <div class="alert-title">Warning</div>
+                  <div class="callout-title">Warning</div>
                   <p>Please review this warning.</p>
                 </div>
               </div>
 
-              <div class="alert alert-danger">
-                <div class="alert-icon">
+              <div class="alert callout-danger">
+                <div class="callout-icon">
                   <pds-icon
                     icon="x-circle"
                     class="icon-danger"
@@ -1889,7 +1889,7 @@ customElements.define(
                   ></pds-icon>
                 </div>
                 <div>
-                  <div class="alert-title">Error</div>
+                  <div class="callout-title">Error</div>
                   <p>An error occurred.</p>
                 </div>
               </div>
@@ -2254,21 +2254,21 @@ customElements.define(
               <details>
                 <summary id="q1">How billing works</summary>
                 <div role="region" aria-labelledby="q1">
-                  <p>We charge monthly on the 1st…</p>
+                  <p>We charge monthly on the 1st�</p>
                 </div>
               </details>
 
               <details>
                 <summary id="q2">Refund policy</summary>
                 <div role="region" aria-labelledby="q2">
-                  <p>You can request a refund within 14 days…</p>
+                  <p>You can request a refund within 14 days�</p>
                 </div>
               </details>
 
               <details>
                 <summary id="q3">Invoices</summary>
                 <div role="region" aria-labelledby="q3">
-                  <p>Download invoices from Settings → Billing…</p>
+                  <p>Download invoices from Settings ? Billing�</p>
                 </div>
               </details>
             </section>
@@ -2725,7 +2725,7 @@ customElements.define(
             <h3>Semantic Surfaces with Auto-Contrast</h3>
             <div class="grid grid-cols-3">
               <div
-                class="demo-inversion-box alert alert-success surface-center"
+                class="demo-inversion-box alert callout-success surface-center"
               >
                 <pds-icon icon="check-circle" size="xl"></pds-icon>
                 <h5 style="margin-top: var(--spacing-2);">Success</h5>
@@ -2733,14 +2733,14 @@ customElements.define(
               </div>
 
               <div
-                class="demo-inversion-box alert alert-warning surface-center"
+                class="demo-inversion-box alert callout-warning surface-center"
               >
                 <pds-icon icon="warning" size="xl"></pds-icon>
                 <h5 style="margin-top: var(--spacing-2);">Warning</h5>
                 <p>Perfect contrast maintained</p>
               </div>
 
-              <div class="demo-inversion-box alert alert-danger surface-center">
+              <div class="demo-inversion-box alert callout-danger surface-center">
                 <pds-icon icon="heart" size="xl"></pds-icon>
                 <h5 style="margin-top: var(--spacing-2);">Danger</h5>
                 <p>Automatic adjustment</p>
@@ -3530,7 +3530,7 @@ customElements.define(
 
     async showPersistentToast() {
       await PDS.toast(
-        "This is a persistent toast that won't auto-dismiss. Click the × to close it.",
+        "This is a persistent toast that won't auto-dismiss. Click the � to close it.",
         {
           type: "information",
           persistent: true,
@@ -3623,3 +3623,4 @@ customElements.define(
     }
   }
 );
+

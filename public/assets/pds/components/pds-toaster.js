@@ -97,20 +97,20 @@ export class AppToaster extends HTMLElement {
           transition: width linear;
         }
 
-        aside.toast.alert-info .toast-progress { 
+        aside.toast.callout-info .toast-progress { 
           background: var(--color-info-600);
         }
 
-        aside.toast.alert-success .toast-progress { 
+        aside.toast.callout-success .toast-progress { 
           background: var(--color-success-600);
         }
 
-        aside.toast.alert-warning .toast-progress { 
+        aside.toast.callout-warning .toast-progress { 
           background: var(--color-warning-600);
         }
 
-        aside.toast.alert-danger .toast-progress,
-        aside.toast.alert-error .toast-progress { 
+        aside.toast.callout-danger .toast-progress,
+        aside.toast.callout-error .toast-progress { 
           background: var(--color-danger-600);
         }
 
@@ -145,7 +145,7 @@ export class AppToaster extends HTMLElement {
       }
     `);
 
-    // Adopt primitives (buttons), components (.alert classes), and toaster-specific styles
+    // Adopt primitives (buttons), components (.callout classes), and toaster-specific styles
     await PDS.adoptLayers(
       this.shadowRoot,
       ["primitives", "components"],
@@ -255,14 +255,14 @@ export class AppToaster extends HTMLElement {
     toast.setAttribute("aria-live", "polite");
 
     const icon = document.createElement("pds-icon");
-    icon.className = "alert-icon";
+    icon.className = "callout-icon";
     icon.setAttribute("icon", this.#getToastIcon(type));
     icon.setAttribute("size", "lg");
 
     const content = document.createElement("div");
 
     const title = document.createElement("div");
-    title.className = "alert-title";
+    title.className = "callout-title";
     title.textContent = this.#getToastTitle(type);
 
     const text = document.createElement("p");
@@ -277,7 +277,7 @@ export class AppToaster extends HTMLElement {
 
     if (closable) {
       const closeBtn = document.createElement("button");
-      closeBtn.className = "alert-close";
+      closeBtn.className = "callout-close";
       closeBtn.setAttribute("aria-label", "Close");
       closeBtn.textContent = "×";
       closeBtn.onclick = () => this.dismissToast(id);
@@ -386,12 +386,12 @@ export class AppToaster extends HTMLElement {
    */
   #getAlertClass(type) {
     const classMap = {
-      information: "alert-info",
-      success: "alert-success",
-      warning: "alert-warning",
-      error: "alert-danger",
+      information: "callout-info",
+      success: "callout-success",
+      warning: "callout-warning",
+      error: "callout-danger",
     };
-    return classMap[type] || "alert-info";
+    return classMap[type] || "callout-info";
   }
 
   /**

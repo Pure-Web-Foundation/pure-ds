@@ -73,11 +73,11 @@ export const ontology = {
       category: "theming"
     },
     { 
-      id: "alert", 
-      name: "Alert", 
-      description: "Contextual feedback messages",
-      selectors: [".alert", ".alert-info", ".alert-success", ".alert-warning", ".alert-danger", ".alert-error", ".alert-dismissible", ".semantic-message"],
-      tags: ["feedback", "message", "notification", "status"],
+      id: "callout", 
+      name: "Callout", 
+      description: "Contextual information and notification messages",
+      selectors: [".callout", ".callout-info", ".callout-success", ".callout-warning", ".callout-danger", ".callout-error", ".callout-dismissible"],
+      tags: ["feedback", "message", "notification", "status", "information"],
       category: "feedback"
     },
     { 
@@ -475,7 +475,7 @@ export const ontology = {
   categories: {
     feedback: {
       description: "User feedback and status indicators",
-      primitives: ["alert", "badge"],
+      primitives: ["callout", "badge"],
       components: ["pds-toaster"]
     },
     form: {
@@ -577,18 +577,19 @@ export const ontology = {
     tab: ["tabs", "pds-tabstrip", "panel"],
     link: ["navigation", "anchor", "href", "routing"],
     
-    // Feedback & Notifications (alert also relates to modal/dialog for "user prompts")
-    alert: ["notification", "feedback", "message", "status", "toast", "modal", "dialog", "pds-ask", "confirm", "warning", "error", "info", "success", "danger"],
-    notification: ["alert", "toast", "pds-toaster", "feedback", "message", "popup"],
-    toast: ["pds-toaster", "notification", "alert", "feedback", "popup", "snackbar"],
-    feedback: ["alert", "notification", "toast", "status", "badge", "validation", "error", "success"],
-    message: ["alert", "notification", "feedback", "dialog", "toast"],
-    status: ["badge", "alert", "indicator", "feedback", "state"],
-    error: ["alert", "danger", "validation", "feedback", "warning"],
-    success: ["alert", "feedback", "badge", "status", "check"],
-    warning: ["alert", "caution", "feedback", "status"],
-    info: ["alert", "information", "feedback", "status"],
-    danger: ["alert", "error", "feedback", "destructive", "delete"],
+    // Feedback & Notifications (callout is the primary term, alert is kept as alias for backwards compatibility)
+    callout: ["notification", "feedback", "message", "status", "toast", "information", "alert", "warning", "error", "info", "success", "danger"],
+    alert: ["callout", "notification", "feedback", "message", "status", "toast", "modal", "dialog", "pds-ask", "confirm", "warning", "error", "info", "success", "danger"],
+    notification: ["callout", "toast", "pds-toaster", "feedback", "message", "popup", "alert"],
+    toast: ["pds-toaster", "notification", "callout", "feedback", "popup", "snackbar", "alert"],
+    feedback: ["callout", "notification", "toast", "status", "badge", "validation", "error", "success", "alert"],
+    message: ["callout", "notification", "feedback", "dialog", "toast", "alert"],
+    status: ["badge", "callout", "indicator", "feedback", "state", "alert"],
+    error: ["callout", "danger", "validation", "feedback", "warning", "alert"],
+    success: ["callout", "feedback", "badge", "status", "check", "alert"],
+    warning: ["callout", "caution", "feedback", "status", "alert"],
+    info: ["callout", "information", "feedback", "status", "alert"],
+    danger: ["callout", "error", "feedback", "destructive", "delete", "alert"],
     badge: ["status", "pill", "tag", "chip", "indicator", "label"],
     pill: ["badge", "tag", "chip"],
     tag: ["badge", "pill", "chip", "label"],

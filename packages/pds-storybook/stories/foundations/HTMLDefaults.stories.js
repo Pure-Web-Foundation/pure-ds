@@ -390,7 +390,7 @@ export const DetailsAndSummary = {
         
         <div class="code-details"></div>
         
-        <div class="alert alert-info">
+        <div class="alert callout-info">
           <strong>Note:</strong> For grouped accordion behavior (animated, and where only one item opens at a time), 
           see the <a data-story-link="primitives-accordion--basic-accordion">Accordion primitive</a>.
         </div>
@@ -467,3 +467,4 @@ export const RelatedDocumentation = () => {
 };
 
 RelatedDocumentation.storyName = 'Related Documentation';
+

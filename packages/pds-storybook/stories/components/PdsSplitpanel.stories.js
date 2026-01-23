@@ -63,10 +63,10 @@ const splitpanelStoryStyles = html`
       padding: var(--spacing-2);
       border-radius: var(--radius-sm);
     }
-    .story-alert-list {
+    .story-callout-list {
       margin-top: var(--spacing-2);
     }
-    .story-alert-margin {
+    .story-callout-margin {
       margin-bottom: var(--spacing-4);
     }
   </style>
@@ -284,12 +284,12 @@ export const StyledToggle = () => html`
     }
   </style>
 
-  <div class="alert alert-info story-alert-margin">
-    <div class="alert-icon">
+  <div class="alert callout-info story-callout-margin">
+    <div class="callout-icon">
       <pds-icon icon="info" class="icon-info" size="lg"></pds-icon>
     </div>
     <div>
-      <div class="alert-title">Styled Toggle</div>
+      <div class="callout-title">Styled Toggle</div>
       <p>The custom styled toggle button below is only visible when the viewport width is less than the breakpoint (default 1024px). Resize your browser to see it.</p>
     </div>
   </div>
@@ -357,14 +357,14 @@ export const StyledSplitter = () => html`
   </style>
 
   <div class="stack-lg">
-    <div class="alert alert-info">
-      <div class="alert-icon">
+    <div class="alert callout-info">
+      <div class="callout-icon">
         <pds-icon icon="info" class="icon-info" size="lg"></pds-icon>
       </div>
       <div>
-        <div class="alert-title">Styling the Splitter with ::part()</div>
+        <div class="callout-title">Styling the Splitter with ::part()</div>
         <p>The splitter bar can be fully customized using the <code>::part(splitter)</code> CSS selector. This allows you to style:</p>
-        <ul class="stack-xs story-alert-list">
+        <ul class="stack-xs story-callout-list">
           <li><code>background-color</code> or <code>background</code> (for gradients)</li>
           <li><code>width</code> (horizontal) or <code>height</code> (vertical)</li>
           <li><code>:hover</code> state styling</li>
@@ -424,3 +424,4 @@ export const StyledSplitter = () => html`
 `;
 
 StyledSplitter.storyName = 'Styled Splitter';
+

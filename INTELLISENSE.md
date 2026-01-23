@@ -225,7 +225,7 @@ Progressive enhancement attributes with example code:
 ### CSS Classes (50+ utilities)
 
 **Primitives**:
-- `.badge`, `.card`, `.surface`, `.alert`, `.dialog`, `.table`, `.button`
+- `.badge`, `.card`, `.surface`, `.callout`, `.dialog`, `.table`, `.button`
 
 **Layout**:
 - `.flex`, `.grid`, `.grid-cols-{1-6}`, `.grid-auto-{sm|md|lg|xl}`, `.container`

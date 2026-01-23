@@ -137,12 +137,12 @@ export const LayoutIntroduction = () => {
     </article>
 
 
-     <div class="alert alert-info">
-        <span class="alert-icon">
+     <div class="alert callout-info">
+        <span class="callout-icon">
           <pds-icon icon="info" size="md"></pds-icon>
         </span>
         <div>
-          <h4 class="alert-title">The verdict</h4>
+          <h4 class="callout-title">The verdict</h4>
           <p>Both approaches render identical output—but only one is maintainable.</p>
           <p>
             Don't even start thinking of dark and light modes, responsiveness, or
@@ -177,7 +177,7 @@ export const LayoutIntroduction = () => {
           <tr>
             <td><strong>2. Primitives</strong></td>
             <td>Single-class components with full styling</td>
-            <td><code>.card</code>, <code>.alert</code>, <code>.badge</code></td>
+            <td><code>.card</code>, <code>.callout</code>, <code>.badge</code></td>
             <td>Common UI patterns</td>
           </tr>
           <tr>
@@ -381,3 +381,4 @@ export const LayoutIntroduction = () => {
 };
 
 LayoutIntroduction.storyName = "Introduction";
+

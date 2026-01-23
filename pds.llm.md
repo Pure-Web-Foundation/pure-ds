@@ -499,7 +499,7 @@ Before generating code:
 5. ✅ **Use semantic HTML** — `<button>`, `<nav>`, `<article>`, `<label>`, `<details>`
 6. ✅ **Apply enhancements via data-* attributes** — See `pds-enhancers.js` → `defaultPDSEnhancerMetadata`
 7. ✅ **Components as last resort** — Only when native HTML can't achieve it
-8. ✅ **Prefer primitives** — `.card`, `.badge`, `.alert` over custom components
+8. ✅ **Prefer primitives** — `.card`, `.badge`, `.callout` over custom components
 9. ✅ **Wait for lazy components** — Use `await customElements.whenDefined()` before accessing APIs
 10. ✅ **Include import map** — When using `pds-form` or `pds-drawer`, ensure `#pds/lit` is mapped
 
