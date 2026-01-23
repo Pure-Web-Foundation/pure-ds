@@ -1,5 +1,5 @@
 import { addons } from '@storybook/preview-api';
-import { SELECT_STORY } from '@storybook/core-events';
+import { SELECT_STORY, UPDATE_GLOBALS } from '@storybook/core-events';
 import React from 'react';
 import { Title, Subtitle, Description as DocsDescription, Controls } from '@storybook/blocks';
 import { PDS } from '@pds-src/js/pds.js';
@@ -121,6 +121,61 @@ PDS.addEventListener('pds:ready', (event) => {
  */
 // Track current view mode globally for other code to check
 let currentViewMode = 'story';
+let toolbarTheme = null;
+
+const setToolbarThemeValue = (value) => {
+  if (!value) return;
+  toolbarTheme = value;
+};
+
+const emitThemeGlobals = (value) => {
+  if (!value || value === toolbarTheme) return;
+
+  const channel = addons?.getChannel?.();
+  if (!channel) return;
+
+  toolbarTheme = value;
+  channel.emit(UPDATE_GLOBALS, {
+    globals: { theme: value }
+  });
+};
+
+const initThemeSync = (() => {
+  let initialized = false;
+  return () => {
+    if (initialized || typeof window === 'undefined') return;
+    initialized = true;
+
+    PDS.addEventListener('pds:theme:changed', (event) => {
+      emitThemeGlobals(event?.detail?.theme ?? PDS.theme);
+    });
+
+    const watchDomTheme = () => {
+      const targets = [document.body, document.documentElement].filter(Boolean);
+      if (!targets.length) return;
+
+      const syncFromDom = () => {
+        const nextTheme = document.body?.getAttribute('data-theme')
+          || document.documentElement?.getAttribute('data-theme');
+        emitThemeGlobals(nextTheme);
+      };
+
+      const observer = new MutationObserver(syncFromDom);
+      targets.forEach((target) => {
+        observer.observe(target, { attributes: true, attributeFilter: ['data-theme'] });
+      });
+      syncFromDom();
+    };
+
+    if (!document.body && document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', watchDomTheme, { once: true });
+    } else {
+      watchDomTheme();
+    }
+  };
+})();
+
+initThemeSync();
 
 const withPDS = (story, context) => {
   currentViewMode = context.viewMode;
@@ -317,6 +372,9 @@ const withGlobalsHandler = (story, context) => {
     console.log('🌙 Decorator detected theme change:', globals.theme);
     document.body.setAttribute('data-theme', globals.theme);
     PDS.theme = globals.theme;
+  }
+  if (globals?.theme) {
+    setToolbarThemeValue(globals.theme);
   }
   
   return story();
@@ -1452,6 +1510,7 @@ if (typeof window !== 'undefined') {
         PDS.theme = globals.theme;
         
         console.log('✅ Theme applied:', globals.theme);
+        setToolbarThemeValue(globals.theme);
       }
       
       if (globals?.preset) {

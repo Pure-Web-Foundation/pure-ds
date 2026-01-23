@@ -21,7 +21,6 @@ What you get (key files):
 - `pds.config.js` — your design system config
 - `src/js/app.js` — bootstraps PDS and mounts the app
 - `public/assets/my/my-home.js` — your first web component
-- `public/assets/my/my-theme.js` — simple dark/light mode switcher
 - `public/index.html` — app shell
 
 **Next edits:**

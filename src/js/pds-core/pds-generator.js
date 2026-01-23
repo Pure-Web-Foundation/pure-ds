@@ -4255,7 +4255,7 @@ nav[data-dropdown] {
 
   /* Link primitives */
   :where(a) {
-    color: var(--color-primary-600);
+    color: var(--color-primary-text, var(--color-primary-600));
     text-decoration: underline;
     text-underline-offset: 0.2em;
     transition: opacity var(--transition-fast);

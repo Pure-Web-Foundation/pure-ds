@@ -1806,6 +1806,49 @@
     },
     {
       "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-theme.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsTheme",
+          "members": [
+            {
+              "kind": "field",
+              "name": "label",
+              "description": "Gets the legend/aria-label text to display.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-theme",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-theme",
+          "declaration": {
+            "name": "PdsTheme",
+            "module": "public/assets/pds/components/pds-theme.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "public/assets/pds/components/pds-toaster.js",
       "declarations": [
         {
