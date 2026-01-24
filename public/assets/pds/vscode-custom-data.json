@@ -66,6 +66,29 @@
       ]
     },
     {
+      "name": "pds-fab",
+      "description": "Floating Action Button (FAB) with expandable satellite actions",
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Controls whether the FAB is expanded",
+          "valueSet": "v"
+        },
+        {
+          "name": "radius",
+          "description": "Distance in pixels from the main FAB to satellites (default: 100)"
+        },
+        {
+          "name": "spread",
+          "description": "Arc angle in degrees for satellite distribution (default: 90)"
+        },
+        {
+          "name": "start-angle",
+          "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up, default: 180)"
+        }
+      ]
+    },
+    {
       "name": "pds-form",
       "description": "<pds-form>\n\nForm Actions:\nBy default, the form includes Submit and Reset buttons inside the <form> element.\n\nUsage options:\n1. Default buttons:\n   <pds-form .jsonSchema=${schema}></pds-form>\n\n2. Customize labels:\n   <pds-form .jsonSchema=${schema} submit-label=\"Save\" reset-label=\"Clear\"></pds-form>\n\n3. Hide reset button:\n   <pds-form .jsonSchema=${schema} hide-reset></pds-form>\n\n4. Add extra buttons (slot):\n   <pds-form .jsonSchema=${schema}>\n     <button type=\"button\" slot=\"actions\"",
       "attributes": [

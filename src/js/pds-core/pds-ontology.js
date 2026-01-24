@@ -199,6 +199,14 @@ export const ontology = {
       category: "overlay"
     },
     { 
+      id: "pds-fab", 
+      name: "FAB", 
+      description: "Floating Action Button with expandable satellite actions",
+      selectors: ["pds-fab"],
+      tags: ["button", "action", "floating", "interactive"],
+      category: "action"
+    },
+    { 
       id: "pds-upload", 
       name: "Upload", 
       description: "File upload component with drag-and-drop",
@@ -510,6 +518,11 @@ export const ontology = {
     theming: {
       description: "Colors, surfaces, and visual theming",
       primitives: ["surface"]
+    },
+    action: {
+      description: "Interactive actions and buttons",
+      primitives: ["button"],
+      components: ["pds-fab"]
     }
   },
 
@@ -544,8 +557,10 @@ export const ontology = {
     form: ["input", "field", "label", "button", "fieldset", "pds-form", "pds-upload", "pds-richtext", "pds-calendar", "required", "validation", "submit"],
     input: ["form", "field", "text", "label", "required", "validation"],
     field: ["form", "input", "label", "required"],
-    button: ["btn", "interactive", "action", "submit", "form", "btn-primary", "btn-secondary", "btn-working"],
-    btn: ["button", "interactive", "action"],
+    button: ["btn", "interactive", "action", "submit", "form", "btn-primary", "btn-secondary", "btn-working", "pds-fab", "floating"],
+    btn: ["button", "interactive", "action", "pds-fab"],
+    fab: ["pds-fab", "floating", "button", "action", "menu"],
+    floating: ["fab", "pds-fab", "button", "action"],
     toggle: ["switch", "checkbox", "boolean", "form", "interactive"],
     switch: ["toggle", "checkbox", "boolean"],
     slider: ["range", "input", "form"],
