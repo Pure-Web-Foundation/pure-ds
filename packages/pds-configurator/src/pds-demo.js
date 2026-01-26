@@ -507,7 +507,7 @@ customElements.define(
         "badge",
         "pill",
         "chip",
-        "alert",
+        "callout",
         "toast",
         "notification",
         "message",
@@ -1526,52 +1526,7 @@ customElements.define(
               ${this.renderColorCard("Info", "info")}
             </div>
 
-            <h3>Semantic Color Usage</h3>
-            <div class="semantic-usage">
-              <div class="semantic-message success">
-                <pds-icon
-                  icon="check-circle"
-                  class="icon-success"
-                  size="lg"
-                ></pds-icon>
-                <div>
-                  <strong>Success</strong>
-                  <p>Operations completed successfully</p>
-                </div>
-              </div>
-
-              <div class="semantic-message warning">
-                <pds-icon
-                  icon="warning"
-                  class="icon-warning"
-                  size="lg"
-                ></pds-icon>
-                <div>
-                  <strong>Warning</strong>
-                  <p>Please review carefully</p>
-                </div>
-              </div>
-
-              <div class="semantic-message danger">
-                <pds-icon
-                  icon="x-circle"
-                  class="icon-danger"
-                  size="lg"
-                ></pds-icon>
-                <div>
-                  <strong>Danger</strong>
-                  <p>Critical error occurred</p>
-                </div>
-              </div>
-
-              <div class="semantic-message info">
-                <pds-icon icon="info" class="icon-info" size="lg"></pds-icon>
-                <div>
-                  <strong>Info</strong>
-                  <p>Helpful information</p>
-                </div>
-              </div>
-            </div>
+            
 
             <h3>Gray Scale (from Secondary)</h3>
             <div class="gray-scale-grid">
@@ -1842,7 +1797,7 @@ customElements.define(
             </h2>
 
             <div class="grid grid-cols-1">
-              <div class="alert callout-success">
+              <div class="callout callout-success">
                 <div class="callout-icon">
                   <pds-icon
                     icon="check-circle"
@@ -1856,7 +1811,7 @@ customElements.define(
                 </div>
               </div>
 
-              <div class="alert callout-info">
+              <div class="callout callout-info">
                 <div class="callout-icon">
                   <pds-icon icon="info" class="icon-info" size="lg"></pds-icon>
                 </div>
@@ -1866,7 +1821,7 @@ customElements.define(
                 </div>
               </div>
 
-              <div class="alert callout-warning">
+              <div class="callout callout-warning">
                 <div class="callout-icon">
                   <pds-icon
                     icon="warning"
@@ -1880,7 +1835,7 @@ customElements.define(
                 </div>
               </div>
 
-              <div class="alert callout-danger">
+              <div class="callout callout-danger">
                 <div class="callout-icon">
                   <pds-icon
                     icon="x-circle"
@@ -2254,21 +2209,21 @@ customElements.define(
               <details>
                 <summary id="q1">How billing works</summary>
                 <div role="region" aria-labelledby="q1">
-                  <p>We charge monthly on the 1st…</p>
+                  <p>We charge monthly on the 1stï¿½</p>
                 </div>
               </details>
 
               <details>
                 <summary id="q2">Refund policy</summary>
                 <div role="region" aria-labelledby="q2">
-                  <p>You can request a refund within 14 days…</p>
+                  <p>You can request a refund within 14 daysï¿½</p>
                 </div>
               </details>
 
               <details>
                 <summary id="q3">Invoices</summary>
                 <div role="region" aria-labelledby="q3">
-                  <p>Download invoices from Settings ? Billing…</p>
+                  <p>Download invoices from Settings ? Billingï¿½</p>
                 </div>
               </details>
             </section>
@@ -2725,7 +2680,7 @@ customElements.define(
             <h3>Semantic Surfaces with Auto-Contrast</h3>
             <div class="grid grid-cols-3">
               <div
-                class="demo-inversion-box alert callout-success surface-center"
+                class="demo-inversion-box callout callout-success surface-center"
               >
                 <pds-icon icon="check-circle" size="xl"></pds-icon>
                 <h5 style="margin-top: var(--spacing-2);">Success</h5>
@@ -2733,14 +2688,14 @@ customElements.define(
               </div>
 
               <div
-                class="demo-inversion-box alert callout-warning surface-center"
+                class="demo-inversion-box callout callout-warning surface-center"
               >
                 <pds-icon icon="warning" size="xl"></pds-icon>
                 <h5 style="margin-top: var(--spacing-2);">Warning</h5>
                 <p>Perfect contrast maintained</p>
               </div>
 
-              <div class="demo-inversion-box alert callout-danger surface-center">
+              <div class="demo-inversion-box callout callout-danger surface-center">
                 <pds-icon icon="heart" size="xl"></pds-icon>
                 <h5 style="margin-top: var(--spacing-2);">Danger</h5>
                 <p>Automatic adjustment</p>
@@ -3530,7 +3485,7 @@ customElements.define(
 
     async showPersistentToast() {
       await PDS.toast(
-        "This is a persistent toast that won't auto-dismiss. Click the × to close it.",
+        "This is a persistent toast that won't auto-dismiss. Click the ï¿½ to close it.",
         {
           type: "information",
           persistent: true,

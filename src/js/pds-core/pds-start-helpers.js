@@ -355,12 +355,8 @@ export async function setupAutoDefinerAndEnhancers(options, { baseEnhancers = []
 
           if (isLitComponent && isMissingLitError) {
             console.error(
-              `❌ PDS component <${tag}> requires Lit but #pds/lit is not in import map.\n` +
-              `Add this to your HTML <head>:\n` +
-              `<script type="importmap">\n` +
-              `  { "imports": { "#pds/lit": "./path/to/lit.js" } }\n` +
-              `</script>\n` +
-              `See: https://github.com/pure-ds/core#lit-components`
+              `❌ PDS component <${tag}> requires Lit but #pds/lit is not in import map.
+              See: https://github.com/Pure-Web-Foundation/pure-ds/blob/main/readme.md#lit-components-not-working`
             );
           } else {
             console.warn(
