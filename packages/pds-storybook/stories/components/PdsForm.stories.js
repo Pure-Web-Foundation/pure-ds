@@ -1455,7 +1455,7 @@ The grid automatically creates as many columns as will fit, wrapping to new rows
     };
 
     return html`
-      <div class="alert callout-info">
+      <div class="callout callout-info">
         <p><strong>?? Try resizing your browser window!</strong></p>
         <p>The grid automatically adjusts the number of columns based on available space. Fields maintain a minimum width of ~200px and wrap to new rows as needed.</p>
       </div>
@@ -3255,7 +3255,7 @@ The dropdowns should correctly show "Charitable Organization" and "Health & Medi
     };
 
     return html`
-      <div class="alert callout-info">
+      <div class="callout callout-info">
         <p>
           <strong>? This form has preset values:</strong> The dropdowns should
           correctly show "Charitable Organization", "Health & Medical", and
@@ -3557,7 +3557,7 @@ The accordion layout prevents awkward field jumping between columns and makes th
     };
 
     return html`
-      <div class="alert callout-info">
+      <div class="callout callout-info">
         <p><strong>Try these interactions:</strong></p>
         <ul>
           <li>
@@ -3673,7 +3673,7 @@ export const CalculatedValues = {
     };
 
     return html`
-      <div class="alert callout-info">
+      <div class="callout callout-info">
         <p><strong>All calculated fields update automatically:</strong></p>
         <ul>
           <li>
@@ -3767,7 +3767,7 @@ The field starts with a computed value but the user can modify it. This is usefu
     };
 
     return html`
-      <div class="alert callout-info">
+      <div class="callout callout-info">
         <p><strong>Compare editable vs read-only calculations:</strong></p>
         <ul>
           <li>
@@ -3896,7 +3896,7 @@ You can nest \`$if\` expressions for multiple conditions.`,
     };
 
     return html`
-      <div class="alert callout-info">
+      <div class="callout callout-info">
         <p><strong>Pricing varies by membership level:</strong></p>
         <table style="width: 100%; text-align: left;">
           <thead>
@@ -4039,7 +4039,7 @@ This is useful for:
     };
 
     return html`
-      <div class="alert callout-info">
+      <div class="callout callout-info">
         <p>
           <strong>Pattern matching with <code>$regex</code>:</strong>
         </p>
@@ -4240,7 +4240,7 @@ export const ConditionalWithLogicalOperators = {
     };
 
     return html`
-      <div class="alert callout-info">
+      <div class="callout callout-info">
         <p><strong>Combine conditions with logical operators:</strong></p>
         <ul>
           <li><strong>$and</strong>: All conditions must be true</li>
@@ -4408,7 +4408,7 @@ export const ConditionalWithComparison = {
     };
 
     return html`
-      <div class="alert callout-info">
+      <div class="callout callout-info">
         <p><strong>Comparison operators in action:</strong></p>
         <ul>
           <li>
@@ -4566,7 +4566,7 @@ Disabled fields remain visible but cannot be edited. Use this for:
     };
 
     return html`
-      <div class="alert callout-info">
+      <div class="callout callout-info">
         <p><strong>Fields become disabled based on conditions:</strong></p>
         <ul>
           <li>
@@ -4625,7 +4625,7 @@ The function receives a \`field\` object with: \`{ path, schema, value, label, i
       // Add a header before the username field
       "/username": {
         "ui:before": (field) => html`
-          <div class="alert callout-info">
+          <div class="callout callout-info">
             <span class="callout-icon">
               <pds-icon icon="info" size="md"> </pds-icon>
             </span>
@@ -4808,7 +4808,7 @@ This is like using \`defineRenderer()\` but inline in the uiSchema.`,
     };
 
     return html`
-      <div class="alert callout-info">
+      <div class="callout callout-info">
         <p><strong>Custom rendered fields:</strong></p>
         <ul>
           <li><strong>Rating</strong> uses a custom star button widget</li>
@@ -4890,7 +4890,7 @@ The wrapper function receives a \`field\` object with: \`{ control, label, help,
     };
 
     return html`
-      <div class="alert callout-info">
+      <div class="callout callout-info">
         <p><strong>Live character counter wrapper:</strong></p>
         <ul>
           <li>
@@ -4960,7 +4960,7 @@ This is useful when you want to define content in the HTML rather than in JavaSc
         <!-- Slotted content referenced by ui:before/ui:after -->
         <div
           slot="email-header"
-          class="alert callout-success"
+          class="callout callout-success"
           style="margin-bottom: var(--spacing-sm);"
         >
           <strong>Join 50,000+ subscribers!</strong>

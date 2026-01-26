@@ -9,6 +9,7 @@ const enhancementMap = {
   range: defaultPDSEnhancerMetadata.find(e => e.selector === 'input[type="range"]'),
   required: defaultPDSEnhancerMetadata.find(e => e.selector === 'form[data-required]'),
   openGroup: defaultPDSEnhancerMetadata.find(e => e.selector === 'fieldset[role=group][data-open]'),
+  clip: defaultPDSEnhancerMetadata.find(e => e.selector === '[data-clip]'),
   buttonWorking: defaultPDSEnhancerMetadata.find(e => e.selector === "button, a[class*='btn-']")
 };
 

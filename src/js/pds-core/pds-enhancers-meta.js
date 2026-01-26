@@ -92,6 +92,18 @@ export const defaultPDSEnhancerMetadata = [
     `.trim(),
   },
   {
+    selector: "[data-clip]",
+    description:
+      "Enables click/keyboard toggling for line-clamped content blocks.",
+    demoHtml: `
+      <div data-clip="2" data-clip-more="more...">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse.</p>
+      </div>
+    `.trim(),
+  },
+  {
     selector: "button, a[class*='btn-']",
     description:
       "Automatically manages spinner icon for buttons with .btn-working class",

@@ -366,22 +366,22 @@ export const UIComponents = {
 
       <h2>Notifications & Messages</h2>
       <div class="stack-md">
-        <div class="alert callout-success">
+        <div class="callout callout-success">
           <b>Success</b>
           <span>Your profile has been updated successfully.</span>
         </div>
 
-        <div class="alert callout-warning">
+        <div class="callout callout-warning">
           <b>Warning</b>
           <span>Your subscription will expire in 3 days. Renew now to continue access.</span>
         </div>
 
-        <div class="alert callout-danger">
+        <div class="callout callout-danger">
           <b>Error</b>
           <span>Unable to connect to the server. Please check your connection and try again.</span>
         </div>
 
-        <div class="alert callout-info">
+        <div class="callout callout-info">
           <b>Information</b>
           <span>New features available! Check out our latest updates in the changelog.</span>
         </div>

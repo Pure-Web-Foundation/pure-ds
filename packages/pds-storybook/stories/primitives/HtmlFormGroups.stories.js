@@ -332,7 +332,7 @@ export const CustomLayout = () => html`
 ${styles}
   <div class="card stack-md">
     <h3>Custom Layout with Flex Utilities</h3>
-    <div class="alert callout-info">
+    <div class="callout callout-info">
       Override default column layout using standard CSS flex properties
     </div>
 

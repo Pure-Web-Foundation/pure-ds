@@ -284,7 +284,7 @@ export const StyledToggle = () => html`
     }
   </style>
 
-  <div class="alert callout-info story-callout-margin">
+  <div class="callout callout-info story-callout-margin">
     <div class="callout-icon">
       <pds-icon icon="info" class="icon-info" size="lg"></pds-icon>
     </div>
@@ -357,7 +357,7 @@ export const StyledSplitter = () => html`
   </style>
 
   <div class="stack-lg">
-    <div class="alert callout-info">
+    <div class="callout callout-info">
       <div class="callout-icon">
         <pds-icon icon="info" class="icon-info" size="lg"></pds-icon>
       </div>

@@ -743,7 +743,7 @@ To have the submitted value stay as Markdown, set `format` to `"markdown"`:
 
 ## Conditional Logic (Interactions)
 
-`pds-form` supports XForms-inspired declarative interactions for showing/hiding fields, enabling/disabling inputs, conditional requirements, and computed values—all defined in the uiSchema.
+`pds-form` supports XForms-inspired declarative interactions for showing/hiding fields, enabling/disabling inputs, conditional requirements, and computed valuesï¿½all defined in the uiSchema.
 
 ### Show/Hide Fields (`ui:visibleWhen`)
 
@@ -810,7 +810,7 @@ const uiSchema = {
     "ui:calculate": { "$concat": ["/firstName", " ", "/lastName"] }
   },
   
-  // Total price = quantity × unit price
+  // Total price = quantity ï¿½ unit price
   "/totalPrice": {
     "ui:calculate": { "$multiply": ["/quantity", "/unitPrice"] }
   },
@@ -983,7 +983,7 @@ const uiSchema = {
 
 ## Custom Content Injection
 
-Inject custom HTML content before/after fields, create fully custom field renderers, or customize how fields are wrapped—all through uiSchema.
+Inject custom HTML content before/after fields, create fully custom field renderers, or customize how fields are wrappedï¿½all through uiSchema.
 
 ### Content Before/After Fields (`ui:before`, `ui:after`)
 
@@ -994,7 +994,7 @@ const uiSchema = {
   // Add a header section before the username field
   "/username": {
     "ui:before": (field) => html`
-      <div class="alert callout-info">
+      <div class="callout callout-info">
         <strong>Account Details</strong>
         <p>Choose a unique username.</p>
       </div>
@@ -1051,7 +1051,7 @@ Define content in HTML and reference it in uiSchema:
 
 ```html
 <pds-form .jsonSchema=${schema} .uiSchema=${uiSchema}>
-  <div slot="welcome-header" class="alert callout-success">
+  <div slot="welcome-header" class="callout callout-success">
     <strong>Welcome!</strong> Fill out the form below.
   </div>
   

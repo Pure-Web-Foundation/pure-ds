@@ -352,10 +352,10 @@ function generatePrimitiveStories() {
   // Alerts
   const alertsHTML = `
     <div style="display: flex; flex-direction: column; gap: 1rem;">
-      <div class="alert alert-info">This is an info alert.</div>
-      <div class="alert alert-success">This is a success alert.</div>
-      <div class="alert alert-warning">This is a warning alert.</div>
-      <div class="alert alert-danger">This is a danger alert.</div>
+      <div class="callout callout-info">This is an info alert.</div>
+      <div class="callout callout-success">This is a success alert.</div>
+      <div class="callout callout-warning">This is a warning alert.</div>
+      <div class="callout callout-danger">This is a danger alert.</div>
     </div>
   `;
   

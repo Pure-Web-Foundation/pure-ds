@@ -982,14 +982,7 @@ presets.default = {
     weight: "regular",
     defaultSize: 24,
     externalPath: "/assets/img/icons/", // Path for on-demand external SVG icons
-    sizes: {
-      xs: 16,
-      sm: 20,
-      md: 24,
-      lg: 32,
-      xl: 48,
-      "2xl": 64,
-    },
+    sizes: enums.IconSizes,
     include: {
       navigation: [
         "arrow-left",

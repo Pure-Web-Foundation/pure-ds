@@ -132,18 +132,18 @@ export class SvgIcon extends HTMLElement {
     const spriteOverride = this.getAttribute('sprite');
     const rotate = this.getAttribute('rotate') || '0';
     
-    // Parse size - can be number (px) or named size (xs, sm, md, lg, xl, 2xl)
-    const namedSizes = {
-      'xs': '16',
-      'sm': '20',
-      'md': '24',
-      'lg': '32',
-      'xl': '48',
-      '2xl': '64',
-    };
-    const size = namedSizes[sizeAttr] || sizeAttr;
+    // Parse size - can be number (px) or named size (xs, sm, md, lg, xl, 2xl, 3xl)
+    const pdsEnums = typeof window !== 'undefined' ? window.PDS?.enums : null;
+    const pdsIconSizes = pdsEnums?.IconSizes || {};
+    const numericSize = Number(sizeAttr);
+    const hasNumericSize = Number.isFinite(numericSize) && sizeAttr !== '';
+    const size =
+      (sizeAttr && Object.prototype.hasOwnProperty.call(pdsIconSizes, sizeAttr))
+        ? pdsIconSizes[sizeAttr]
+        : (hasNumericSize ? sizeAttr : '24');
     
     // Compute sprite href: prefer relative to this module (../pds-icons.svg), allow override via `sprite` attr
+
     let spriteHref;
     try {
       const url = new URL('../icons/pds-icons.svg', import.meta.url);

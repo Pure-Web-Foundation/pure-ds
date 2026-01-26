@@ -137,7 +137,7 @@ export const LayoutIntroduction = () => {
     </article>
 
 
-     <div class="alert callout-info">
+     <div class="callout callout-info">
         <span class="callout-icon">
           <pds-icon icon="info" size="md"></pds-icon>
         </span>

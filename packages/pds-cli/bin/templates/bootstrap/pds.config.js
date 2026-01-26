@@ -1,4 +1,4 @@
-const defaultEnhancers = Array.isArray(globalThis.PDS?.defaultEnhancers)
+const standardPDSEnhancers = Array.isArray(globalThis.PDS?.defaultEnhancers)
   ? globalThis.PDS.defaultEnhancers
   : [];
 
@@ -17,7 +17,7 @@ export const config = {
     },
 
     enhancers: [
-      ...defaultEnhancers,
+      ...standardPDSEnhancers,
       {
         selector: ".hero",
         description: "Make PDS border-gradient rotate slowly",

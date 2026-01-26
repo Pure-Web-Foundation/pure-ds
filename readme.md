@@ -55,7 +55,7 @@ PDS generates **high-level primitives** that style semantic HTML:
 ```html
 <article class="card">...</article>
 <button class="btn-primary">Save</button>
-<div class="alert alert-success">Done!</div>
+<div class="callout callout-success">Done!</div>
 ```
 
 HTML is a great starting point. There's no need to have components for stuff that HTML can do on its own, or with the help of a pinch of CSS and/or a dash of JavaScript. The [Pure Web Manifesto](https://pureweb.dev/manifesto) is a great set of principles.

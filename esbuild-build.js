@@ -43,7 +43,7 @@ const outdir = path.join(process.cwd(), 'dist');
 async function run() {
   try {
     await esbuild.build({
-      entryPoints: ['src/js/lit.js', 'src/js/app.js', 'src/js/pds.js', 'src/js/pds-manager.js', 'src/js/pds-configurator.js'],
+      entryPoints: ['src/js/lit.js', 'src/js/app.js', 'src/js/pds.js', 'src/js/pds-manager.js'],
       bundle: true,
       platform: 'browser',
       target: 'es2022',
@@ -54,6 +54,18 @@ async function run() {
       external: ['*.woff', '*.eot', '*.ttf', '*.svg'],
       plugins: [validatePresetsPlugin],
     });
+
+    // Copy pds-manager bundle to public/assets/pds/core for static runtime loading
+    try {
+      const coreDir = path.join(process.cwd(), 'public', 'assets', 'pds', 'core');
+      await mkdir(coreDir, { recursive: true });
+      const managerSrc = path.join(process.cwd(), 'public', 'assets', 'js', 'pds-manager.js');
+      const managerDest = path.join(coreDir, 'pds-manager.js');
+      await copyFile(managerSrc, managerDest);
+      console.log('Copied pds-manager.js to', managerDest);
+    } catch (err) {
+      console.warn('Failed to copy pds-manager.js to public/assets/pds/core:', err.message);
+    }
 
     // Ensure dist/types exists and copy declaration files
     const typesDir = path.join(outdir, 'types');

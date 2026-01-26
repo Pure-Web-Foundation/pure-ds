@@ -20,7 +20,6 @@ Thumbs.db
 build-meta.json
 yarn.lock
 public/readme.md
-/public/assets/pds/core/pds-manager.js
 packages/pds-storybook/node_modules
 packages/pds-storybook/storybook-static
 packages/pds-storybook/dist

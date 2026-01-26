@@ -249,7 +249,7 @@ export class AppToaster extends HTMLElement {
    */
   createToastElement(id, message, type, closable, duration, persistent) {
     const toast = document.createElement("aside");
-    toast.className = `toast alert ${this.#getAlertClass(type)}`;
+    toast.className = `toast callout ${this.#getAlertClass(type)}`;
     toast.setAttribute("data-toast-id", id);
     toast.setAttribute("role", "status");
     toast.setAttribute("aria-live", "polite");

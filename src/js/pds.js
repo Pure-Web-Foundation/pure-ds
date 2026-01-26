@@ -50,6 +50,7 @@ import {
   createStylesheet,
 } from "./pds-core/pds-runtime.js";
 import { registry } from "./pds-core/pds-registry.js";
+import { enums } from "./pds-core/pds-enums.js";
 import { ask } from "./common/ask.js";
 import { toast } from "./common/toast.js";
 import { defaultPDSEnhancers } from "./pds-core/pds-enhancers.js";
@@ -107,6 +108,9 @@ async function __loadRuntimeConfig(assetRootURL, config = {}) {
 
 /** Singleton runtime registry. Use `registry.setLiveMode()` to enable live mode or `registry.setStaticMode()` for static assets */
 PDS.registry = registry;
+
+/** Expose enums in static and live modes */
+PDS.enums = enums;
 
 /** Adopt a set of layered stylesheets into a ShadowRoot */
 PDS.adoptLayers = adoptLayers;
@@ -324,6 +328,7 @@ PDS.defaultEnhancers = defaultPDSEnhancers;
 async function start(config) {
   const mode = (config && config.mode) || "live";
   const { mode: _omit, ...rest } = config || {};
+  
   if (mode === "static") return staticInit(rest);
   const assetRootURL = resolveRuntimeAssetRoot(rest, { resolvePublicAssetURL });
   const managerUrl =
@@ -451,6 +456,7 @@ async function staticInit(config) {
       defaultLog: __defaultLog,
     });
     const userEnhancers = normalized.enhancers;
+    
 
     // 2) Derive static asset URLs from the normalized public root
     const baseStaticPaths = {

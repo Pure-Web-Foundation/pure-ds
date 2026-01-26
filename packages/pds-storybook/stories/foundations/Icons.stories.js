@@ -443,6 +443,10 @@ export const IconSizes = () => html`
         <pds-icon icon="heart" size="2xl"></pds-icon>
         <small class="text-muted">2xl (64px)</small>
       </div>
+      <div class="stack-sm text-center items-center">
+        <pds-icon icon="heart" size="3xl"></pds-icon>
+        <small class="text-muted">3xl (${PDS.enums.IconSizes["3xl"]}px)</small>
+      </div>
     </div>
   </section>
 `;

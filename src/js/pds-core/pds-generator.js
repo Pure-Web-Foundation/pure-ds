@@ -58,7 +58,7 @@ export class Generator {
       if (this.options.debug) {
         this.options.log?.(
           "debug",
-          "[Generator] Skipping browser features (CSSStyleSheet not available)"
+          "[Generator] Skipping browser features (CSSStyleSheet not available)",
         );
       }
     }
@@ -103,11 +103,11 @@ export class Generator {
 
       // Semantic colors - use provided or derive from primary/accent
       success: this.#generateColorScale(
-        success || this.#deriveSuccessColor(primary)
+        success || this.#deriveSuccessColor(primary),
       ),
       warning: this.#generateColorScale(warning || accent),
       danger: this.#generateColorScale(
-        danger || this.#deriveDangerColor(primary)
+        danger || this.#deriveDangerColor(primary),
       ),
       info: this.#generateColorScale(info || primary),
 
@@ -120,7 +120,7 @@ export class Generator {
 
     // Add adaptive fieldset colors to surface
     colors.surface.fieldset = this.#generateFieldsetAdaptiveColors(
-      colors.surface
+      colors.surface,
     );
 
     // Generate smart surface tokens with context-aware text, icons, shadows, and borders
@@ -130,13 +130,13 @@ export class Generator {
     colors.dark = this.#generateDarkModeColors(
       colors,
       background,
-      darkMode // Pass the darkMode object directly
+      darkMode, // Pass the darkMode object directly
     );
 
     // Generate smart tokens for dark mode surfaces too
     if (colors.dark && colors.dark.surface) {
       colors.dark.surfaceSmart = this.#generateSmartSurfaceTokens(
-        colors.dark.surface
+        colors.dark.surface,
       );
     }
 
@@ -152,7 +152,7 @@ export class Generator {
         text: this.#pickReadablePrimaryOnSurface(
           colors.dark.primary,
           colors.dark.surface.base,
-          4.5
+          4.5,
         ), // For links/outlines on dark backgrounds
       },
     };
@@ -166,12 +166,12 @@ export class Generator {
       50: this.#hslToHex(
         hsl.h,
         Math.max(hsl.s - 10, 10),
-        Math.min(hsl.l + 45, 95)
+        Math.min(hsl.l + 45, 95),
       ),
       100: this.#hslToHex(
         hsl.h,
         Math.max(hsl.s - 5, 15),
-        Math.min(hsl.l + 35, 90)
+        Math.min(hsl.l + 35, 90),
       ),
       200: this.#hslToHex(hsl.h, hsl.s, Math.min(hsl.l + 25, 85)),
       300: this.#hslToHex(hsl.h, hsl.s, Math.min(hsl.l + 15, 75)),
@@ -226,13 +226,13 @@ export class Generator {
       elevated: this.#hslToHex(
         hsl.h,
         Math.max(hsl.s, 3),
-        Math.max(hsl.l - 4, 5)
+        Math.max(hsl.l - 4, 5),
       ), // Slightly darker for elevated surfaces
       sunken: this.#hslToHex(hsl.h, Math.max(hsl.s, 4), Math.max(hsl.l - 6, 8)), // For input fields, subtle depth
       overlay: this.#hslToHex(
         hsl.h,
         Math.max(hsl.s, 2),
-        Math.min(hsl.l + 2, 98)
+        Math.min(hsl.l + 2, 98),
       ), // Slightly lighter for overlays
       inverse: this.#generateSmartDarkBackground(backgroundBase), // Smart dark background
       hover: `color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%);`,
@@ -279,7 +279,7 @@ export class Generator {
   #generateDarkModeColors(
     lightColors,
     backgroundBase = "#ffffff",
-    overrides = {}
+    overrides = {},
   ) {
     // Use custom dark background if provided, otherwise auto-generate
     const darkBackgroundBase = overrides.background
@@ -338,7 +338,7 @@ export class Generator {
   #luminance(hex) {
     const { r, g, b } = this.#hexToRgb(hex);
     const srgb = [r / 255, g / 255, b / 255].map((v) =>
-      v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
+      v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4),
     );
     return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
   }
@@ -408,7 +408,7 @@ export class Generator {
   #pickReadablePrimaryOnSurface(
     primaryScale = {},
     surfaceBg = "#000000",
-    target = 4.5
+    target = 4.5,
   ) {
     const order = ["600", "700", "800", "500", "400", "900", "300", "200"]; // preference for UI semantics
     let best = { shade: null, color: null, ratio: 0 };
@@ -520,7 +520,7 @@ export class Generator {
       const sourceColor = colorScale[config.source];
       dimmedScale[key] = this.#dimColorForDarkMode(
         sourceColor,
-        config.dimFactor
+        config.dimFactor,
       );
     });
 
@@ -555,7 +555,7 @@ export class Generator {
       : 4;
     const validMaxSpacingSteps = Math.min(
       Number.isFinite(Number(maxSpacingSteps)) ? Number(maxSpacingSteps) : 12,
-      12
+      12,
     );
 
     const spacing = { 0: "0" };
@@ -680,13 +680,13 @@ export class Generator {
         lg: `${Math.round(validBaseFontSize * validFontScale)}px`, // 16 × 1.25 = 20px
         xl: `${Math.round(validBaseFontSize * Math.pow(validFontScale, 2))}px`, // 16 × 1.25² = 25px
         "2xl": `${Math.round(
-          validBaseFontSize * Math.pow(validFontScale, 3)
+          validBaseFontSize * Math.pow(validFontScale, 3),
         )}px`, // 16 × 1.25³ = 31px
         "3xl": `${Math.round(
-          validBaseFontSize * Math.pow(validFontScale, 4)
+          validBaseFontSize * Math.pow(validFontScale, 4),
         )}px`, // 16 × 1.25⁴ = 39px
         "4xl": `${Math.round(
-          validBaseFontSize * Math.pow(validFontScale, 5)
+          validBaseFontSize * Math.pow(validFontScale, 5),
         )}px`, // 16 × 1.25⁵ = 49px
       },
       fontWeight: {
@@ -923,7 +923,7 @@ export class Generator {
       weight,
       defaultSize: `${defaultSize}px`,
       sizes: Object.fromEntries(
-        Object.entries(sizes).map(([key, value]) => [key, `${value}px`])
+        Object.entries(sizes).map(([key, value]) => [key, `${value}px`]),
       ),
       spritePath,
       externalPath,
@@ -963,14 +963,14 @@ export class Generator {
         chunks.push(`  --surface-${surfaceKey}-bg: ${tokens.bg};\n`);
         chunks.push(`  --surface-${surfaceKey}-text: ${tokens.text};\n`);
         chunks.push(
-          `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`
+          `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`,
         );
         chunks.push(
-          `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`
+          `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`,
         );
         chunks.push(`  --surface-${surfaceKey}-icon: ${tokens.icon};\n`);
         chunks.push(
-          `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`
+          `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`,
         );
         chunks.push(`  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`);
         chunks.push(`  --surface-${surfaceKey}-border: ${tokens.border};\n`);
@@ -992,31 +992,31 @@ export class Generator {
     // Interactive color tokens - separate shades for different purposes (light mode)
     if (colors.interactive && colors.interactive.light) {
       chunks.push(
-        `  /* Interactive Colors - optimized for specific use cases */\n`
+        `  /* Interactive Colors - optimized for specific use cases */\n`,
       );
       chunks.push(
-        `  --color-primary-fill: ${colors.interactive.light.fill}; /* For button backgrounds with white text */\n`
+        `  --color-primary-fill: ${colors.interactive.light.fill}; /* For button backgrounds with white text */\n`,
       );
       chunks.push(
-        `  --color-primary-text: ${colors.interactive.light.text}; /* For links and outline buttons on light surfaces */\n`
+        `  --color-primary-text: ${colors.interactive.light.text}; /* For links and outline buttons on light surfaces */\n`,
       );
     }
 
     // Translucent surface tokens
     chunks.push(`  /* Translucent Surface Tokens */\n`);
     chunks.push(
-      `  --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);\n`
+      `  --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);\n`,
     );
     chunks.push(
-      `  --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);\n`
+      `  --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);\n`,
     );
     chunks.push(
-      `  --color-surface-translucent-75: color-mix(in oklab, var(--color-surface-subtle) 75%, transparent 25%);\n`
+      `  --color-surface-translucent-75: color-mix(in oklab, var(--color-surface-subtle) 75%, transparent 25%);\n`,
     );
 
     // Backdrop tokens (light mode)
     chunks.push(
-      `   /* Backdrop tokens - used for modal dialogs, drawers, overlays */\n\n    --backdrop-bg: linear-gradient(\n        135deg,\n        rgba(255, 255, 255, 0.2),\n        rgba(255, 255, 255, 0.1)\n      );\n    --backdrop-blur: 10px;\n    --backdrop-saturate: 150%;\n    --backdrop-brightness: 0.9;\n    --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));\n    --backdrop-opacity: 1;\n    \n    /* Legacy alias for backwards compatibility */\n    --backdrop-background: var(--backdrop-bg);\n    `
+      `   /* Backdrop tokens - used for modal dialogs, drawers, overlays */\n\n    --backdrop-bg: linear-gradient(\n        135deg,\n        rgba(255, 255, 255, 0.2),\n        rgba(255, 255, 255, 0.1)\n      );\n    --backdrop-blur: 10px;\n    --backdrop-saturate: 150%;\n    --backdrop-brightness: 0.9;\n    --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));\n    --backdrop-opacity: 1;\n    \n    /* Legacy alias for backwards compatibility */\n    --backdrop-background: var(--backdrop-bg);\n    `,
     );
 
     // Mesh gradients
@@ -1192,24 +1192,30 @@ export class Generator {
     // Smart surface tokens
     const smartLines = [];
     if (colors.dark.surfaceSmart) {
-      smartLines.push(`  /* Smart Surface Tokens (dark mode, context-aware) */\n`);
+      smartLines.push(
+        `  /* Smart Surface Tokens (dark mode, context-aware) */\n`,
+      );
       Object.entries(colors.dark.surfaceSmart).forEach(
         ([surfaceKey, tokens]) => {
           smartLines.push(`  --surface-${surfaceKey}-bg: ${tokens.bg};\n`);
           smartLines.push(`  --surface-${surfaceKey}-text: ${tokens.text};\n`);
           smartLines.push(
-            `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`
+            `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`,
           );
           smartLines.push(
-            `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`
+            `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`,
           );
           smartLines.push(`  --surface-${surfaceKey}-icon: ${tokens.icon};\n`);
           smartLines.push(
-            `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`
+            `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`,
           );
-          smartLines.push(`  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`);
-          smartLines.push(`  --surface-${surfaceKey}-border: ${tokens.border};\n`);
-        }
+          smartLines.push(
+            `  --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`,
+          );
+          smartLines.push(
+            `  --surface-${surfaceKey}-border: ${tokens.border};\n`,
+          );
+        },
       );
       smartLines.push(`\n`);
     }
@@ -1221,13 +1227,9 @@ export class Generator {
     const mesh = this.#generateMeshGradientsDark(colors);
 
     // Return ONLY variables, no component rules
-    const body = [
-      ...varLines,
-      ...smartLines,
-      semantic,
-      backdrop,
-      mesh,
-    ].join("");
+    const body = [...varLines, ...smartLines, semantic, backdrop, mesh].join(
+      "",
+    );
 
     // Dark mode selector only - .surface-inverse is handled separately in utilities
     // to avoid inheriting the full dark palette (which would override --color-surface-inverse)
@@ -1260,25 +1262,33 @@ export class Generator {
     const smartLines = [];
     if (colors.dark.surfaceSmart) {
       smartLines.push(
-        `    /* Smart Surface Tokens (dark mode, context-aware) */\n`
+        `    /* Smart Surface Tokens (dark mode, context-aware) */\n`,
       );
       Object.entries(colors.dark.surfaceSmart).forEach(
         ([surfaceKey, tokens]) => {
           smartLines.push(`    --surface-${surfaceKey}-bg: ${tokens.bg};\n`);
-          smartLines.push(`    --surface-${surfaceKey}-text: ${tokens.text};\n`);
           smartLines.push(
-            `    --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`
+            `    --surface-${surfaceKey}-text: ${tokens.text};\n`,
           );
           smartLines.push(
-            `    --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`
+            `    --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};\n`,
           );
-          smartLines.push(`    --surface-${surfaceKey}-icon: ${tokens.icon};\n`);
           smartLines.push(
-            `    --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`
+            `    --surface-${surfaceKey}-text-muted: ${tokens.textMuted};\n`,
           );
-          smartLines.push(`    --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`);
-          smartLines.push(`    --surface-${surfaceKey}-border: ${tokens.border};\n`);
-        }
+          smartLines.push(
+            `    --surface-${surfaceKey}-icon: ${tokens.icon};\n`,
+          );
+          smartLines.push(
+            `    --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};\n`,
+          );
+          smartLines.push(
+            `    --surface-${surfaceKey}-shadow: ${tokens.shadow};\n`,
+          );
+          smartLines.push(
+            `    --surface-${surfaceKey}-border: ${tokens.border};\n`,
+          );
+        },
       );
       smartLines.push(`\n`);
     }
@@ -1287,13 +1297,13 @@ export class Generator {
     const interactiveLines = [];
     if (colors.interactive && colors.interactive.dark) {
       interactiveLines.push(
-        `    /* Interactive Colors - optimized for specific use cases (dark mode) */\n`
+        `    /* Interactive Colors - optimized for specific use cases (dark mode) */\n`,
       );
       interactiveLines.push(
-        `    --color-primary-fill: ${colors.interactive.dark.fill}; /* For button backgrounds with white text */\n`
+        `    --color-primary-fill: ${colors.interactive.dark.fill}; /* For button backgrounds with white text */\n`,
       );
       interactiveLines.push(
-        `    --color-primary-text: ${colors.interactive.dark.text}; /* For links and outline buttons on dark surfaces */\n`
+        `    --color-primary-text: ${colors.interactive.dark.text}; /* For links and outline buttons on dark surfaces */\n`,
       );
     }
 
@@ -1313,13 +1323,9 @@ export class Generator {
 
     const mesh = this.#generateMeshGradientsDarkVariablesOnly(colors);
 
-    const content = [
-      ...varLines,
-      ...smartLines,
-      semantic,
-      backdrop,
-      mesh,
-    ].join("");
+    const content = [...varLines, ...smartLines, semantic, backdrop, mesh].join(
+      "",
+    );
 
     return `\n       html[data-theme="dark"] {\n${content}       }\n`;
   }
@@ -1332,7 +1338,7 @@ export class Generator {
     const secondary = dark.secondary?.[400] || "#a78bfa";
     const accent = dark.accent?.[400] || "#fbbf24";
 
-    return /*css*/`    /* Mesh Gradient Variables (Dark Mode) */
+    return /*css*/ `    /* Mesh Gradient Variables (Dark Mode) */
     --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 20%, transparent) 0px, transparent 50%),
       radial-gradient(at 97% 21%, color-mix(in oklab, ${secondary} 16%, transparent) 0px, transparent 50%),
       radial-gradient(at 52% 99%, color-mix(in oklab, ${accent} 13%, transparent) 0px, transparent 50%),
@@ -1367,7 +1373,7 @@ export class Generator {
     const secondary = dark.secondary?.[400] || "#a78bfa";
     const accent = dark.accent?.[400] || "#fbbf24";
 
-    return /*css*/`
+    return /*css*/ `
   /* Mesh Gradient Backgrounds (Dark Mode) */
   --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 20%, transparent) 0px, transparent 50%),
     radial-gradient(at 97% 21%, color-mix(in oklab, ${secondary} 16%, transparent) 0px, transparent 50%),
@@ -1422,7 +1428,7 @@ html[data-theme="dark"] {
           "debug",
           "backgroundMesh check:",
 
-          meshOption
+          meshOption,
         );
       }
 
@@ -1435,7 +1441,7 @@ html[data-theme="dark"] {
         this.options.log?.(
           "error",
           "Error in generateBodyBackgroundMeshRule:",
-          e
+          e,
         );
       }
       return "";
@@ -2043,8 +2049,8 @@ input, textarea, select {
     
     &:focus {
       box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-danger-500) ${Math.round(
-      (focusRingOpacity || 0.3) * 100
-    )}%, transparent);
+        (focusRingOpacity || 0.3) * 100,
+      )}%, transparent);
     }
   }
 }
@@ -2229,8 +2235,8 @@ label:has(input[type="checkbox"]:focus):not(fieldset label):not(label[data-toggl
 input[type="checkbox"]:focus + label:not(fieldset label):not(label[data-toggle]) {
   outline: none;
   box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
-      (focusRingOpacity || 0.3) * 100
-    )}%, transparent);
+    (focusRingOpacity || 0.3) * 100,
+  )}%, transparent);
 }
 
 label:has(input[type="checkbox"]:disabled):not(fieldset label):not(label[data-toggle]),
@@ -2341,7 +2347,7 @@ fieldset[role="group"].buttons {
   label:has(input[type="checkbox"]:focus) {
     outline: none;
     box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
-      (focusRingOpacity || 0.3) * 100
+      (focusRingOpacity || 0.3) * 100,
     )}%, transparent);
   }
   
@@ -2519,7 +2525,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   &:focus {
     outline: none;
     box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
-      (focusRingOpacity || 0.3) * 100
+      (focusRingOpacity || 0.3) * 100,
     )}%, transparent);
   }
   
@@ -2551,7 +2557,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   
   &:focus {
     box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
-      (focusRingOpacity || 0.3) * 100
+      (focusRingOpacity || 0.3) * 100,
     )}%, transparent);
   }
   
@@ -2683,6 +2689,68 @@ a.btn-working {
     color: var(--color-text-muted);
   }
 }
+
+/* clip lines */
+
+[data-clip] {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-line-clamp: attr(data-clip number, 3);
+  line-clamp: attr(data-clip number, 3);
+  position: relative;
+  padding-inline-end: var(--spacing-6);
+  --clip-more-bg: var(--color-surface-base);
+  max-height: var(--clip-max-height-closed, calc(var(--spacing-12) * 3));
+  transition: max-height var(--transition-fast), padding-inline-end var(--transition-fast);
+  overflow: hidden;
+
+  /* optional visual “more” hint*/
+  &:not([data-clip-open="true"])[data-clip-more]::after{
+    content: attr(data-clip-more);
+  }
+
+  &:not([data-clip-open="true"]):not([data-clip-more])::after{
+    content: "more...";
+  }
+
+  /* optional visual “less” hint*/
+  &[data-clip-open="true"][data-clip-less]::after{
+    content: attr(data-clip-less);
+  }
+
+  &[data-clip-open="true"]:not([data-clip-less])::after{
+    content: "less...";
+  }
+
+  &::after{
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-1) var(--spacing-3);
+    padding-inline-start: var(--spacing-2);
+    cursor: pointer;
+    opacity: .7;
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+  }
+
+  &[data-clip-open="true"] {
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+    max-height: var(--clip-max-height-open, calc(var(--spacing-12) * 20));
+    padding-inline-end: var(--spacing-6);
+  }
+
+  &[data-clip-open="true"]::after{
+    opacity: .9;
+    transform: translateY(calc(var(--spacing-1) * -1));
+  }
+
+}
+
+
 
 /* Form utility classes */
 .range-container {
@@ -2891,6 +2959,7 @@ tbody {
   gap: var(--spacing-3);
   font-size: var(--font-size-sm);
   line-height: var(--font-line-height-relaxed);
+  background-color: red;
   
   & > *:last-child {
     margin-bottom: 0;
@@ -3464,6 +3533,8 @@ pds-icon {
 .icon-lg, pds-icon[size="lg"] { width: var(--icon-size-lg); height: var(--icon-size-lg); }
 .icon-xl, pds-icon[size="xl"] { width: var(--icon-size-xl); height: var(--icon-size-xl); }
 .icon-2xl, pds-icon[size="2xl"] { width: var(--icon-size-2xl); height: var(--icon-size-2xl); }
+.icon-32xl, pds-icon[size="3xl"] { width: var(--icon-size-3xl); height: var(--icon-size-3xl); }
+
 
 /* Icon color utilities */
 .icon-primary, pds-icon.primary { color: var(--color-primary-600); }
@@ -3713,7 +3784,7 @@ nav[data-dropdown] {
     // Generate fixed column grids
     for (const col of columns) {
       sections.push(
-        `.grid-cols-${col} { grid-template-columns: repeat(${col}, 1fr); }\n`
+        `.grid-cols-${col} { grid-template-columns: repeat(${col}, 1fr); }\n`,
       );
     }
 
@@ -3721,22 +3792,19 @@ nav[data-dropdown] {
     // Generate auto-fit responsive grids
     for (const [name, minWidth] of Object.entries(autoFitBreakpoints)) {
       sections.push(
-        `.grid-auto-${name} { grid-template-columns: repeat(auto-fit, minmax(${minWidth}, 1fr)); }\n`
+        `.grid-auto-${name} { grid-template-columns: repeat(auto-fit, minmax(${minWidth}, 1fr)); }\n`,
       );
     }
 
     // Generate gap utilities
 
-    sections.push(
-      /*css*/ `
+    sections.push(/*css*/ `
 /* Gap utilities */
 .gap-0 { gap: 0; } .gap-xs { gap: var(--spacing-1); } .gap-sm { gap: var(--spacing-2); } .gap-md { gap: var(--spacing-4); } .gap-lg { gap: var(--spacing-6); } .gap-xl { gap: var(--spacing-8); }
 
-`
-    );
+`);
 
-    sections.push(
-      /*css*/ `
+    sections.push(/*css*/ `
 /* Flexbox System */
 .flex { display: flex; }
 .flex-wrap { flex-wrap: wrap; }
@@ -3813,8 +3881,7 @@ nav[data-dropdown] {
 .backdrop-light { --backdrop-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2)); --backdrop-brightness: 1.1; }
 .backdrop-dark { --backdrop-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)); --backdrop-brightness: 0.6; }
 .backdrop-blur-sm { --backdrop-blur: 5px; } .backdrop-blur-md { --backdrop-blur: 10px; } .backdrop-blur-lg { --backdrop-blur: 20px; }
-`
-    );
+`);
 
     return sections.join("");
   }
@@ -4120,7 +4187,7 @@ nav[data-dropdown] {
     // PDS CSS loaded. Unlayered declarations outrank layered ones in the
     // cascade; this small non-layered override ensures correct theming.
     sections.push(
-      `\n/* Non-layered dark variables fallback (ensures attribute wins) */\n`
+      `\n/* Non-layered dark variables fallback (ensures attribute wins) */\n`,
     );
     sections.push(this.#generateDarkVariablesOnly(colors));
 
@@ -4987,8 +5054,8 @@ ${this.#generateMediaQueries()}
           if (!validLayers.includes(layer)) {
             throw new Error(
               `Invalid layer: ${layer}. Must be one of ${validLayers.join(
-                ", "
-              )}`
+                ", ",
+              )}`,
             );
           }
           return this.#layers?.[layer] || "";
@@ -5046,19 +5113,19 @@ ${this.#generateMediaQueries()}
     return {
       "pds-tokens.css.js": this.#generateCSSModule(
         "tokens",
-        this.#layers.tokens
+        this.#layers.tokens,
       ),
       "pds-primitives.css.js": this.#generateCSSModule(
         "primitives",
-        this.#layers.primitives
+        this.#layers.primitives,
       ),
       "pds-components.css.js": this.#generateCSSModule(
         "components",
-        this.#layers.components
+        this.#layers.components,
       ),
       "pds-utilities.css.js": this.#generateCSSModule(
         "utilities",
-        this.#layers.utilities
+        this.#layers.utilities,
       ),
       "pds-styles.css.js": this.#generateCSSModule("styles", this.layeredCSS),
     };
@@ -5080,9 +5147,7 @@ ${name}.replaceSync(\`${escapedCSS}\`);
 export const ${name}CSS = \`${escapedCSS}\`;
 `;
   }
-
 }
-
 
 /**
  * Validate a design configuration for accessibility sanity checks.
@@ -5113,7 +5178,7 @@ export function validateDesign(designConfig = {}, options = {}) {
   const luminance = (hex) => {
     const { r, g, b } = hexToRgb(hex);
     const srgb = [r / 255, g / 255, b / 255].map((v) =>
-      v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
+      v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4),
     );
     return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
   };
@@ -5146,7 +5211,7 @@ export function validateDesign(designConfig = {}, options = {}) {
       issues.push({
         path: "/colors/primary",
         message: `Primary button contrast too low in light theme (${lightBtnRatio.toFixed(
-          2
+          2,
         )} < ${MIN}). Choose a darker primary.`,
         ratio: lightBtnRatio,
         min: MIN,
@@ -5160,7 +5225,7 @@ export function validateDesign(designConfig = {}, options = {}) {
       issues.push({
         path: "/colors/background",
         message: `Base text contrast on surface (light) is too low (${lightTextRatio.toFixed(
-          2
+          2,
         )} < ${MIN}). Adjust background or secondary (gray).`,
         ratio: lightTextRatio,
         min: MIN,
@@ -5174,7 +5239,7 @@ export function validateDesign(designConfig = {}, options = {}) {
       issues.push({
         path: "/colors/primary",
         message: `Primary text on surface is too low for outline/link styles (light) (${lightOutlineRatio.toFixed(
-          2
+          2,
         )} < ${MIN}). Choose a darker primary or lighter surface.`,
         ratio: lightOutlineRatio,
         min: MIN,
@@ -5197,7 +5262,7 @@ export function validateDesign(designConfig = {}, options = {}) {
         issues.push({
           path: "/colors/darkMode/primary",
           message: `Primary button contrast too low in dark theme (${darkBtnRatio.toFixed(
-            2
+            2,
           )} < ${MIN}). Override darkMode.primary or pick a brighter hue.`,
           ratio: darkBtnRatio,
           min: MIN,
@@ -5211,7 +5276,7 @@ export function validateDesign(designConfig = {}, options = {}) {
         issues.push({
           path: "/colors/darkMode/primary",
           message: `Primary text on surface is too low for outline/link styles (dark) (${darkOutlineRatio.toFixed(
-            2
+            2,
           )} < ${MIN}). Override darkMode.primary/background.`,
           ratio: darkOutlineRatio,
           min: MIN,
@@ -5245,8 +5310,8 @@ export function validateDesigns(designs = [], options = {}) {
   const list = Array.isArray(designs)
     ? designs
     : designs && typeof designs === "object"
-    ? Object.values(designs)
-    : [];
+      ? Object.values(designs)
+      : [];
 
   for (const item of list) {
     let name;
@@ -5263,7 +5328,7 @@ export function validateDesigns(designs = [], options = {}) {
         Object.values(presets || {}).find(
           (p) =>
             __slugify(p.name) === id ||
-            String(p.name || "").toLowerCase() === id
+            String(p.name || "").toLowerCase() === id,
         );
       if (!found) {
         results.push({
@@ -5291,7 +5356,7 @@ export function validateDesigns(designs = [], options = {}) {
           Object.values(presets || {}).find(
             (p) =>
               __slugify(p.name) === effectivePreset ||
-              String(p.name || "").toLowerCase() === effectivePreset
+              String(p.name || "").toLowerCase() === effectivePreset,
           );
         if (!found) {
           results.push({
@@ -5345,7 +5410,7 @@ function __deepMerge(target = {}, source = {}) {
     if (value && typeof value === "object" && !Array.isArray(value)) {
       out[key] = __deepMerge(
         out[key] && typeof out[key] === "object" ? out[key] : {},
-        value
+        value,
       );
     } else {
       out[key] = value;
@@ -5362,7 +5427,6 @@ function __slugify(str = "") {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
-
 
 import { enums } from "./pds-enums.js";
 import { ontology } from "./pds-ontology.js";

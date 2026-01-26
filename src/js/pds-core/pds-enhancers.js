@@ -18,6 +18,7 @@ const enhancerDefinitions = [
   { selector: 'input[type="range"]' },
   { selector: "form[data-required]" },
   { selector: "fieldset[role=group][data-open]" },
+  { selector: "[data-clip]" },
   { selector: "button, a[class*='btn-']" },
 ];
 
@@ -344,6 +345,43 @@ function enhanceOpenGroup(elem) {
   });
 }
 
+function enhanceClip(elem) {
+  if (elem.dataset.enhancedClip) return;
+  elem.dataset.enhancedClip = "true";
+
+  if (!elem.hasAttribute("tabindex")) {
+    elem.setAttribute("tabindex", "0");
+  }
+  if (!elem.hasAttribute("role")) {
+    elem.setAttribute("role", "button");
+  }
+
+  const syncAria = () => {
+    const isOpen = elem.getAttribute("data-clip-open") === "true";
+    elem.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  };
+
+  const toggleOpen = () => {
+    const isOpen = elem.getAttribute("data-clip-open") === "true";
+    elem.setAttribute("data-clip-open", isOpen ? "false" : "true");
+    syncAria();
+  };
+
+  elem.addEventListener("click", (event) => {
+    if (event.defaultPrevented) return;
+    toggleOpen();
+  });
+
+  elem.addEventListener("keydown", (event) => {
+    if (event.key === " " || event.key === "Enter") {
+      event.preventDefault();
+      toggleOpen();
+    }
+  });
+
+  syncAria();
+}
+
 function enhanceButtonWorking(elem) {
   if (elem.dataset.enhancedBtnWorking) return;
   elem.dataset.enhancedBtnWorking = "true";
@@ -404,6 +442,7 @@ const enhancerRunners = new Map([
   ['input[type="range"]', enhanceRange],
   ["form[data-required]", enhanceRequired],
   ["fieldset[role=group][data-open]", enhanceOpenGroup],
+  ["[data-clip]", enhanceClip],
   ["button, a[class*='btn-']", enhanceButtonWorking],
 ]);
 

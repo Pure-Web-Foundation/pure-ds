@@ -1,5 +1,6 @@
 import { PDS } from "./pds";
 import { config } from "../../pds.config.js"
+import "../../packages/pds-configurator/src/pds-configurator.js";
 
 // Initialize PDS once at app startup using the new unified shape
 await PDS.start(config);

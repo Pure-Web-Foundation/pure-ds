@@ -141,7 +141,7 @@ export const ZIndexScale = {
         </div>
       </div>
       
-      <aside class="alert callout-info">
+      <aside class="callout callout-info">
         <h3><pds-icon icon="info"></pds-icon> Best Practices</h3>
         <ul>
           <li>Always use these tokens instead of hard-coded z-index values</li>
@@ -211,7 +211,7 @@ export const VisualDemo = {
         
       </div>
       
-      <aside class="alert callout-neutral">
+      <aside class="callout callout-neutral">
         <p>
           <strong>Note:</strong> In this demo, elements are positioned to overlap. 
           Notice how higher z-index values appear above lower ones, with notifications at the top.
@@ -297,7 +297,7 @@ export const UsageExamples = {
         
       </div>
       
-      <aside class="alert callout-warning">
+      <aside class="callout callout-warning">
         <h3><pds-icon icon="warning"></pds-icon> Important Guidelines</h3>
         <ul>
           <li><strong>Never use magic numbers:</strong> Always reference these tokens instead of hardcoded values</li>

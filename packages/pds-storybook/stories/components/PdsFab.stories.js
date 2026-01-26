@@ -97,7 +97,7 @@ export const NoSatellites = {
     });
 
     return html`
-      <div class="alert callout-info" style="margin-bottom: 200px;">
+      <div class="callout callout-info" style="margin-bottom: 200px;">
         <p>
           <strong>No satellites</strong> - Acts as a simple floating action
           button.
@@ -131,7 +131,7 @@ export const ThreeSatellites = {
     });
 
     return html`
-      <div class="alert callout-info" style="margin-bottom: 200px;">
+      <div class="callout callout-info" style="margin-bottom: 200px;">
         <p>
           <strong>3 satellites</strong> - Optimal for mobile content creation
           workflows.
@@ -167,7 +167,7 @@ export const FiveSatellites = {
     });
 
     return html`
-      <div class="alert callout-info" style="margin-bottom: 200px;">
+      <div class="callout callout-info" style="margin-bottom: 200px;">
         <p>
           <strong>5 satellites</strong> - Maximum recommended for mobile UX.
         </p>
@@ -203,7 +203,7 @@ export const MaxSatellites = {
     });
 
     return html`
-      <div class="alert callout-warning" style="margin-bottom: 200px;">
+      <div class="callout callout-warning" style="margin-bottom: 200px;">
         <p>
           <strong>6 satellites (maximum)</strong> - Consider alternative
           navigation for more actions.
@@ -236,7 +236,7 @@ export const CustomStyling = {
     });
 
     return html`
-      <div class="alert callout-info" style="margin-bottom: 200px;">
+      <div class="callout callout-info" style="margin-bottom: 200px;">
         <p>
           <strong>Custom styling</strong> - Use CSS custom properties to theme
           the FAB.
@@ -278,7 +278,7 @@ export const WithCustomRadius = {
     });
 
     return html`
-      <div class="alert callout-info" style="margin-bottom: 200px;">
+      <div class="callout callout-info" style="margin-bottom: 200px;">
         <p>
           <strong>Custom radius</strong> - Override the auto-calculated radius.
         </p>
@@ -310,7 +310,7 @@ export const WithoutIcons = {
     });
 
     return html`
-      <div class="alert callout-info" style="margin-bottom: 200px;">
+      <div class="callout callout-info" style="margin-bottom: 200px;">
         <p>
           <strong>Text fallback</strong> - Satellites without icons show first
           letter.
@@ -406,7 +406,7 @@ export const Playground = {
     });
 
     return html`
-      <div class="alert callout-info" style="margin-bottom: 200px;">
+      <div class="callout callout-info" style="margin-bottom: 200px;">
         <p>
           <strong>Interactive playground</strong> - Use the controls below to
           adjust FAB properties.
@@ -531,7 +531,7 @@ export const ProgrammaticControl = {
     });
 
     return html`
-      <div class="alert callout-info" style="margin-bottom: 200px;">
+      <div class="callout callout-info" style="margin-bottom: 200px;">
         <p>
           <strong>Programmatic control</strong> - Control the FAB via JavaScript
           API.

@@ -312,6 +312,7 @@ export async function startLive(PDS, config, { emitReady, applyResolvedTheme, se
     // 5) Set up AutoDefiner + run enhancers (defaults merged with user)
     let autoDefiner = null;
     let mergedEnhancers = [];
+    
     try {
       const res = await setupAutoDefinerAndEnhancers({
         autoDefineBaseURL: derivedAutoDefineBaseURL,
@@ -327,6 +328,7 @@ export async function startLive(PDS, config, { emitReady, applyResolvedTheme, se
       }, { baseEnhancers: defaultPDSEnhancers });
       autoDefiner = res.autoDefiner;
       mergedEnhancers = res.mergedEnhancers || [];
+      
     } catch (error) {
       generatorConfig?.log?.("error", "❌ Failed to initialize AutoDefiner/Enhancers:", error);
     }
