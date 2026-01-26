@@ -1851,6 +1851,31 @@ customElements.define(
             </div>
           </section>
 
+
+          <!-- Empty States -->
+          <h2>Empty States</h2>
+
+          <section>
+
+            <section class="empty-state">
+              <header>
+                <h2>Feature X isn’t set up yet</h2>
+                <small class="text-muted">
+                  To use Feature X, connect your data source and choose your defaults.
+                </small>
+              </header>
+
+              <pds-icon icon="magic-wand" size="3xl"></pds-icon>
+
+              <nav>
+                <a class="btn btn-primary" href="/settings/feature-x">Set up Feature X</a>
+                <a class="btn btn-outline" href="/docs/feature-x">Learn more</a>
+              </nav>
+            </section>
+
+
+          </section>
+
           <!-- Badges Section -->
 
           <section class="showcase-section alt-bg">

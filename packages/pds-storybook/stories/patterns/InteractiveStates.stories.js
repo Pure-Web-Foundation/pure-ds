@@ -2,75 +2,55 @@ import { html } from "lit";
 
 const interactiveSkeletonStoryStyles = html`
   <style>
-    .story-interactive-skeleton-card {
-      display: grid;
-      gap: var(--spacing-3);
-    }
+    
+    .story-product-card {
+      article {
+        > .skeleton {
+          aspect-ratio: 4 / 3;
+          border-radius: var(--radius-md);
+          margin-bottom: var(--spacing-3);
+        }
 
-    .story-interactive-skeleton-block {
-      display: block;
-    }
+        [data-media]{
+          aspect-ratio: 4 / 3;
 
-    .story-interactive-skeleton-height-24 {
-      height: 1.5rem;
-    }
+        }
+        > .stack-sm {
+          > .skeleton {
+            block-size: var(--spacing-4);
+          }
 
-    .story-interactive-skeleton-height-20 {
-      height: 1.25rem;
-    }
+          > .skeleton:first-child {
+            block-size: var(--spacing-5);
+            max-inline-size: calc(var(--spacing-12) * 4);
+          }
 
-    .story-interactive-skeleton-height-16 {
-      height: 1rem;
-    }
+          > .skeleton:nth-child(3) {
+            max-inline-size: calc(var(--spacing-12) * 5);
+          }
+        }
 
-    .story-interactive-skeleton-height-14 {
-      height: 0.875rem;
-    }
+        span {
+          display: inline-block;
+          width: 7rem;
+          height: 2.4rem;
+        }
 
-    .story-interactive-skeleton-width-60 {
-      width: 60%;
-    }
+        > .flex {
+          margin-top: var(--spacing-3);
 
-    .story-interactive-skeleton-width-80 {
-      width: 80%;
-    }
+          > div.skeleton:first-child {
+            block-size: var(--spacing-6);
+            max-inline-size: calc(var(--spacing-12) * 2.5);
+          }
 
-    .story-interactive-skeleton-width-70 {
-      width: 70%;
-    }
-
-    .story-interactive-skeleton-width-50 {
-      width: 50%;
-    }
-
-    .story-interactive-skeleton-width-40 {
-      width: 40%;
-    }
-
-    .story-interactive-skeleton-width-85 {
-      width: 85%;
-    }
-
-    .story-interactive-skeleton-margin-lg {
-      margin-bottom: var(--spacing-3);
-    }
-
-    .story-interactive-skeleton-margin-md {
-      margin-bottom: var(--spacing-2);
-    }
-
-    .story-interactive-skeleton-avatar {
-      width: 2.5rem;
-      height: 2.5rem;
-      border-radius: 50%;
-    }
-
-    .story-interactive-skeleton-list-item {
-      padding: var(--spacing-3);
-    }
-
-    .story-interactive-skeleton-details {
-      flex: 1;
+          > div.skeleton:last-child {
+            block-size: var(--spacing-8);
+            min-inline-size: calc(var(--spacing-12) * 2.5);
+            border-radius: var(--radius-full);
+          }
+        }
+      }
     }
   </style>
 `;
@@ -510,43 +490,35 @@ export const SkeletonLoading = () => html`
     </p>
 
     <h3>Card Skeleton</h3>
-    <div class="max-w-xl">
-      <div class="card interactive-skeleton-card">
-        <div
-          class="skeleton interactive-skeleton-block interactive-skeleton-height-24 interactive-skeleton-width-60 interactive-skeleton-margin-lg"
-        ></div>
-        <div
-          class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-margin-md"
-        ></div>
-        <div
-          class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-margin-md"
-        ></div>
-        <div
-          class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-width-80"
-        ></div>
+
+    <div class="card story-product-card">
+      <h3>Product Card Empty State</h3>
+      <div class="max-w-md">
+        <article class="card stack-sm">
+          <div class="skeleton" data-media></div>
+          <div class="stack-sm">
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="skeleton"></span>
+            <span class="skeleton"></span>
+          </div>
+        </article>
       </div>
     </div>
   </div>
 
   <div class="card">
     <h3>List Skeleton</h3>
-    <div class="max-w-md">
+    <div class="max-w-md stack-sm">
       ${Array.from(
-        { length: 4 },
+        { length: 6 },
         () => html`
           <div
-            class="flex gap-sm align-center border-bottom interactive-skeleton-list-item"
-          >
-            <div class="skeleton interactive-skeleton-avatar"></div>
-            <div class="story-interactive-skeleton-details">
-              <div
-                class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-width-70 interactive-skeleton-margin-md"
-              ></div>
-              <div
-                class="skeleton interactive-skeleton-block interactive-skeleton-height-14 interactive-skeleton-width-50"
-              ></div>
-            </div>
-          </div>
+            class="skeleton"
+          ></div>
         `
       )}
     </div>
@@ -554,27 +526,42 @@ export const SkeletonLoading = () => html`
 
   <div class="card">
     <h3>Text Skeleton</h3>
-    <div class="max-w-lg">
-      <div
-        class="skeleton interactive-skeleton-block interactive-skeleton-height-20 interactive-skeleton-width-40 interactive-skeleton-margin-lg"
-      ></div>
-      <div
-        class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-margin-md"
-      ></div>
-      <div
-        class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-margin-md"
-      ></div>
-      <div
-        class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-margin-md"
-      ></div>
-      <div
-        class="skeleton interactive-skeleton-block interactive-skeleton-height-16 interactive-skeleton-width-85"
-      ></div>
+    <div class="max-w-md stack-md">
+      <div class="skeleton interactive-skeleton-height-48"></div>
+      <div class="skeleton interactive-skeleton-height-16"></div>
+      <div class="skeleton interactive-skeleton-height-16"></div>
     </div>
   </div>
 `;
 
 SkeletonLoading.storyName = "Skeleton Loading";
+
+export const EmptyState = () => html`
+  <div class="card">
+    <h2>Empty State</h2>
+    <section class="empty-state">
+      <header>
+        <h2>Feature X isn’t set up yet</h2>
+        <small class="text-muted">
+          To use Feature X, connect your data source and choose your defaults.
+        </small>
+      </header>
+
+      <pds-icon icon="magic-wand" size="3xl"></pds-icon>
+
+      <nav>
+        <a class="btn btn-primary" href="#" onclick="event.preventDefault();">
+          Set up Feature X
+        </a>
+        <a class="btn btn-outline" href="#" onclick="event.preventDefault();">
+          Learn more
+        </a>
+      </nav>
+    </section>
+  </div>
+`;
+
+EmptyState.storyName = "Empty State";
 
 export const DisabledStates = () => html`
   <div class="card">

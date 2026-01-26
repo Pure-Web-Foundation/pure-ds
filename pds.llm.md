@@ -443,6 +443,12 @@ form.getFormData(); // May throw error
 </pds-tabstrip>
 ```
 
+### Empty State Pattern
+
+- Use the `.empty-state` primitive for empty or onboarding states.
+- Structure: heading + supporting text, an icon, then primary/secondary actions.
+- Keep actions as buttons or links with PDS button classes, and include a meaningful icon when available.
+
 ```javascript
 // Dialogs & Toasts: PDS API
 const confirmed = await PDS.ask("Delete this item?", { 

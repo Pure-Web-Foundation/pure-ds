@@ -2661,6 +2661,29 @@ a.btn-working {
   100% { background-position: -200% 0; }
 }
 
+/* Empty State */
+.empty-state {
+  margin: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-4);
+  color: var(--color-text-secondary);
+  padding: var(--spacing-6) var(--spacing-4);
+  background-color: var(--color-surface-subtle);
+  max-width: var(--layout-max-width-md);
+  border-radius: var(--radius-md);
+  nav {
+    margin-top: var(--spacing-4);
+    display: flex;
+    gap: var(--spacing-3);
+  }
+  pds-icon {    
+    color: var(--color-text-muted);
+  }
+}
+
 /* Form utility classes */
 .range-container {
   display: flex;

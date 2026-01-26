@@ -80,6 +80,14 @@ export const ontology = {
       tags: ["feedback", "message", "notification", "status", "information"],
       category: "feedback"
     },
+    {
+      id: "empty-state",
+      name: "Empty State",
+      description: "Empty state layout for missing data or onboarding",
+      selectors: [".empty-state"],
+      tags: ["empty", "no-data", "zero", "placeholder", "onboarding", "state"],
+      category: "feedback"
+    },
     { 
       id: "dialog", 
       name: "Dialog", 
@@ -483,7 +491,7 @@ export const ontology = {
   categories: {
     feedback: {
       description: "User feedback and status indicators",
-      primitives: ["callout", "badge"],
+      primitives: ["callout", "badge", "empty-state"],
       components: ["pds-toaster"]
     },
     form: {
@@ -552,6 +560,9 @@ export const ontology = {
     overflow: ["truncate", "scroll", "hidden", "text"],
     paragraph: ["text", "typography", "content", "body"],
     content: ["text", "typography", "body", "article"],
+    empty: ["empty-state", "placeholder", "zero", "no-data", "onboarding", "callout", "card", "icon", "button"],
+    "empty state": ["empty-state", "empty", "no-data", "zero", "onboarding"],
+    "no data": ["empty-state", "empty", "zero", "placeholder"],
     
     // Forms & Inputs
     form: ["input", "field", "label", "button", "fieldset", "pds-form", "pds-upload", "pds-richtext", "pds-calendar", "required", "validation", "submit"],
