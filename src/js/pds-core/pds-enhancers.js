@@ -46,7 +46,8 @@ function enhanceAccordion(elem) {
 function enhanceDropdown(elem) {
   if (elem.dataset.enhancedDropdown) return;
   elem.dataset.enhancedDropdown = "true";
-  const menu = elem.querySelector("menu");
+  const menu = elem.lastElementChild
+  
   if (!menu) return;
 
   const trigger =
@@ -61,7 +62,10 @@ function enhanceDropdown(elem) {
     menu.id = `dropdown-${Math.random().toString(36).slice(2, 9)}`;
   }
 
-  menu.setAttribute("role", menu.getAttribute("role") || "menu");
+  const isMenu = menu.tagName?.toLowerCase() === "menu";
+  if (isMenu && !menu.hasAttribute("role")) {
+    menu.setAttribute("role", "menu");
+  }
   if (!menu.hasAttribute("aria-hidden")) {
     menu.setAttribute("aria-hidden", "true");
   }

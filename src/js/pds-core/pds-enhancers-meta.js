@@ -31,14 +31,17 @@ export const defaultPDSEnhancerMetadata = [
   {
     selector: "nav[data-dropdown]",
     description:
-      "Enhances a nav element with data-dropdown to function as a dropdown menu.",
+      "Enhances a nav element with data-dropdown to toggle its last child as a dropdown panel (menu, card, form, etc.).",
     demoHtml: `
       <nav data-dropdown>
         <button class="btn-primary">Menu</button>
-        <menu>
-          <li><a href="#">Item 1</a></li>
-          <li><a href="#">Item 2</a></li>
-        </menu>
+        <div class="card surface-overlay stack-sm">
+          <strong>Quick actions</strong>
+          <div class="flex gap-sm">
+            <button class="btn-primary btn-sm">Ship now</button>
+            <button class="btn-outline btn-sm">Schedule</button>
+          </div>
+        </div>
       </nav>
     `.trim(),
   },

@@ -356,7 +356,7 @@ Lightweight JavaScript behaviors applied to semantic HTML. These are **not Web C
 
 #### Built-in Enhancers
 
-**Dropdown Menus** - `<nav data-dropdown>`
+**Dropdown Panels** - `<nav data-dropdown>`
 
 ```html
 <nav data-dropdown>
@@ -369,6 +369,22 @@ Lightweight JavaScript behaviors applied to semantic HTML. These are **not Web C
 </nav>
 ```
 
+```html
+<nav data-dropdown>
+  <button class="btn-outline">Settings</button>
+  <section class="card surface-overlay stack-sm">
+    <label data-toggle>
+      <input type="checkbox" checked>
+      <span data-label>Profile visibility</span>
+    </label>
+    <label data-toggle>
+      <input type="checkbox">
+      <span data-label>Show online status</span>
+    </label>
+  </section>
+</nav>
+```
+
 Features:
 - Click to toggle visibility
 - Auto-positioning (up/down based on space)
@@ -376,6 +392,7 @@ Features:
 - Keyboard support (Escape to close)
 - Click-outside to close
 - Scrollable when content exceeds viewport
+- Panel can be any last child element (menu, card, form, etc.)
 
 **Toggle Switches** - `<label data-toggle>`
 

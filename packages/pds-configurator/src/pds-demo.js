@@ -1,4 +1,10 @@
-import { LitElement, html, nothing, render, unsafeHTML } from "../../../src/js/lit.js";
+import {
+  LitElement,
+  html,
+  nothing,
+  render,
+  unsafeHTML,
+} from "../../../src/js/lit.js";
 import { PDS } from "../../../src/js/pds.js";
 
 import { AutoComplete } from "pure-web/ac";
@@ -126,7 +132,7 @@ customElements.define(
         return conv ? conv.makeHtml(md) : `<pre>${this.escapeHTML(md)}</pre>`;
       } catch (err) {
         return `<p>Failed to load ${file} from ${base}: ${String(
-          err.message || err
+          err.message || err,
         )}</p>`;
       }
     }
@@ -156,7 +162,7 @@ customElements.define(
       PDS.dispatchEvent(
         new CustomEvent("pds:inspector:deactivate", {
           detail: {},
-        })
+        }),
       );
     }
 
@@ -269,7 +275,7 @@ customElements.define(
 
       // Check if clicked element is inside a fieldset with role
       const fieldsetParent = element.closest(
-        'fieldset[role="group"], fieldset[role="radiogroup"]'
+        'fieldset[role="group"], fieldset[role="radiogroup"]',
       );
       if (fieldsetParent) {
         const role = fieldsetParent.getAttribute("role");
@@ -551,7 +557,7 @@ customElements.define(
       ];
 
       return Array.from(element.classList).some((cls) =>
-        pdsClassPrefixes.some((prefix) => cls.startsWith(prefix))
+        pdsClassPrefixes.some((prefix) => cls.startsWith(prefix)),
       );
     }
 
@@ -842,7 +848,7 @@ customElements.define(
                           >${JSON.stringify(prop.value)}</code
                         >
                       </div>
-                    `
+                    `,
                   )}
                 </div>
               </div>
@@ -869,7 +875,7 @@ customElements.define(
         ${litPropsTemplate}
         <div class="code-block-wrapper">
           <pre class="code-block"><code class="language-html">${unsafeHTML(
-            highlightedCode
+            highlightedCode,
           )}</code></pre>
         </div>
       `;
@@ -952,9 +958,10 @@ customElements.define(
 
       try {
         // Detect theme from document
-        const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        const isDark =
+          document.documentElement.getAttribute("data-theme") === "dark";
         const theme = isDark ? "github-dark" : "github-light";
-        
+
         const html = highlighter.codeToHtml(code, { lang, theme });
         // Extract content - Shiki wraps in pre>code
         const match = html.match(/<code[^>]*>([\s\S]*)<\/code>/);
@@ -1113,7 +1120,7 @@ customElements.define(
         const section = this.querySelector(`[data-section="${sectionId}"]`);
         console.log(
           `  Searching for section: [data-section="${sectionId}"]`,
-          section ? "? Found" : "? Not found"
+          section ? "? Found" : "? Not found",
         );
 
         if (section) {
@@ -1129,7 +1136,7 @@ customElements.define(
           console.log("  ? Scrolled and highlighted section");
         } else {
           console.warn(
-            `  ? Section [data-section="${sectionId}"] not found in DOM`
+            `  ? Section [data-section="${sectionId}"] not found in DOM`,
           );
         }
       } else {
@@ -1205,7 +1212,7 @@ customElements.define(
                           type: "success",
                           duration: 2000,
                         },
-                      })
+                      }),
                     );
                   });
                 }
@@ -1231,7 +1238,7 @@ customElements.define(
 
               if (sectionId) {
                 const el = document.querySelector(
-                  `[data-section="${sectionId}"]`
+                  `[data-section="${sectionId}"]`,
                 );
                 if (el) {
                   el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1284,7 +1291,7 @@ customElements.define(
                       .includes(key?.toLowerCase?.() || "") ||
                     s.id?.toLowerCase().includes(key?.toLowerCase?.() || "") ||
                     s.title?.toLowerCase().includes(query) ||
-                    s.id?.toLowerCase().includes(query)
+                    s.id?.toLowerCase().includes(query),
                 );
               }
 
@@ -1341,7 +1348,7 @@ customElements.define(
                   (id.includes(q) ? 20 : 0);
                 // selectors
                 const selMatch = (p.selectors || []).some((s) =>
-                  String(s).toLowerCase().includes(q)
+                  String(s).toLowerCase().includes(q),
                 );
                 const total = score + (selMatch ? 10 : 0);
                 candidates.push({
@@ -1360,7 +1367,7 @@ customElements.define(
                   (name.toLowerCase().includes(q) ? 40 : 0) +
                   (id.includes(q) ? 25 : 0);
                 const selMatch = (c.selectors || []).some((s) =>
-                  String(s).toLowerCase().includes(q)
+                  String(s).toLowerCase().includes(q),
                 );
                 const total = score + (selMatch ? 10 : 0);
                 candidates.push({
@@ -1374,7 +1381,7 @@ customElements.define(
               // tokens (flatten groups)
               if (PDS.ontology.tokens) {
                 for (const [group, items] of Object.entries(
-                  PDS.ontology.tokens
+                  PDS.ontology.tokens,
                 )) {
                   if (Array.isArray(items)) {
                     for (const t of items) {
@@ -1392,7 +1399,7 @@ customElements.define(
                 const name = String(enh);
                 const key = `enh-${name.replace(
                   /[^a-z0-9]+/gi,
-                  "-"
+                  "-",
                 )}`.toLowerCase();
                 const score = name.toLowerCase().includes(q) ? 25 : 0;
                 candidates.push({ type: "enhancement", key, name, score });
@@ -1403,7 +1410,7 @@ customElements.define(
                 const name = String(util);
                 const key = `util-${name.replace(
                   /[^a-z0-9]+/gi,
-                  "-"
+                  "-",
                 )}`.toLowerCase();
                 const score = name.toLowerCase().includes(q) ? 20 : 0;
                 candidates.push({ type: "utility", key, name, score });
@@ -1439,10 +1446,10 @@ customElements.define(
                     c.type === "component"
                       ? "brackets-curly"
                       : c.type === "primitive"
-                      ? "tag"
-                      : c.type === "token"
-                      ? "palette"
-                      : "folder-simple",
+                        ? "tag"
+                        : c.type === "token"
+                          ? "palette"
+                          : "folder-simple",
                 }));
 
               return results;
@@ -1453,8 +1460,6 @@ customElements.define(
     }
 
     render() {
-      
-
       const components = this.config?.components || {};
       // Determine current theme from DOM so section copy can adapt
       const theme =
@@ -1517,7 +1522,6 @@ customElements.define(
               Color System
             </h2>
 
-
             <div class="color-grid">
               ${this.renderColorCard("Primary", "primary")}
               ${this.renderColorCard("Secondary", "secondary")}
@@ -1527,8 +1531,6 @@ customElements.define(
               ${this.renderColorCard("Danger", "danger")}
               ${this.renderColorCard("Info", "info")}
             </div>
-
-            
 
             <h3>Gray Scale (from Secondary)</h3>
             <div class="gray-scale-grid">
@@ -1542,7 +1544,7 @@ customElements.define(
                     ></div>
                     <div class="gray-scale-label">${shade}</div>
                   </div>
-                `
+                `,
               )}
             </div>
           </section>
@@ -1853,43 +1855,57 @@ customElements.define(
             </div>
           </section>
 
-
           <!-- Empty States -->
           <h2>Empty States</h2>
 
           <section>
-
             <section class="empty-state">
               <header>
                 <h2>Feature X isn’t set up yet</h2>
                 <small class="text-muted">
-                  To use Feature X, connect your data source and choose your defaults.
+                  To use Feature X, connect your data source and choose your
+                  defaults.
                 </small>
               </header>
 
               <pds-icon icon="magic-wand" size="3xl"></pds-icon>
 
               <nav>
-                <a class="btn btn-primary" href="/settings/feature-x">Set up Feature X</a>
+                <a class="btn btn-primary" href="/settings/feature-x"
+                  >Set up Feature X</a
+                >
                 <a class="btn btn-outline" href="/docs/feature-x">Learn more</a>
               </nav>
             </section>
-
-
           </section>
 
           <h2>Clip Lines</h2>
 
           <section>
-
-            <div class="max-w-md" data-clip="2" >
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-              <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-              <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-              <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-              <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+            <div class="max-w-md" data-clip="2">
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </p>
+              <p>
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                laboris nisi ut aliquip ex ea commodo consequat.
+              </p>
+              <p>
+                Duis aute irure dolor in reprehenderit in voluptate velit esse
+                cillum dolore eu fugiat nulla pariatur.
+              </p>
+              <p>
+                Excepteur sint occaecat cupidatat non proident, sunt in culpa
+                qui officia deserunt mollit anim id est laborum.
+              </p>
+              <p>
+                Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+                accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
+                quae ab illo inventore veritatis et quasi architecto beatae
+                vitae dicta sunt explicabo.
+              </p>
             </div>
-
           </section>
 
           <!-- Badges Section -->
@@ -2003,12 +2019,13 @@ customElements.define(
               ${new Array(20)
                 .fill(0)
                 .map(
-                  (_, i) => html`<img
-                    loading="lazy"
-                    class="scroll-row-image"
-                    src="https://picsum.photos/200/200?random=${i + 1}"
-                    alt="Gallery image ${i + 1}"
-                  />`
+                  (_, i) =>
+                    html`<img
+                      loading="lazy"
+                      class="scroll-row-image"
+                      src="https://picsum.photos/200/200?random=${i + 1}"
+                      alt="Gallery image ${i + 1}"
+                    />`,
                 )}
             </pds-scrollrow>
 
@@ -2736,7 +2753,9 @@ customElements.define(
                 <p>Perfect contrast maintained</p>
               </div>
 
-              <div class="demo-inversion-box callout callout-danger surface-center">
+              <div
+                class="demo-inversion-box callout callout-danger surface-center"
+              >
                 <pds-icon icon="heart" size="xl"></pds-icon>
                 <h5 style="margin-top: var(--spacing-2);">Danger</h5>
                 <p>Automatic adjustment</p>
@@ -3244,7 +3263,10 @@ customElements.define(
             </p>
 
             <div style="margin-top: var(--spacing-6);">
-              <pds-tabstrip @tabchange="${this.handleTabChange}" label="Example Tabs">
+              <pds-tabstrip
+                @tabchange="${this.handleTabChange}"
+                label="Example Tabs"
+              >
                 <pds-tabpanel id="overview" label="Overview">
                   <h3>Overview</h3>
                   <p>
@@ -3306,10 +3328,9 @@ customElements.define(
           </section>
 
           <h3>Calendar</h3>
-          <section class="card surface" >
+          <section class="card surface">
             <pds-calendar></pds-calendar>
           </section>
-          
 
           <!-- Drawer Section -->
           <section class="showcase-section">
@@ -3410,7 +3431,9 @@ customElements.define(
     }
 
     async handleTabChange(event) {
-      await PDS.toast(`Switched to tab: ${event.detail.newTab}`, { type: "info" });
+      await PDS.toast(`Switched to tab: ${event.detail.newTab}`, {
+        type: "info",
+      });
     }
 
     openDrawer() {
@@ -3434,7 +3457,7 @@ customElements.define(
           header: html`<h3>Example Drawer</h3>`,
           minHeight: "300px",
           position: "bottom",
-        }
+        },
       );
     }
 
@@ -3500,9 +3523,12 @@ customElements.define(
     }
 
     async showInfoToast() {
-      await PDS.toast("This is an informational message with helpful context.", {
-        type: "information",
-      });
+      await PDS.toast(
+        "This is an informational message with helpful context.",
+        {
+          type: "information",
+        },
+      );
     }
 
     async showWarningToast() {
@@ -3520,7 +3546,7 @@ customElements.define(
     async showLongToast() {
       await PDS.toast(
         "This is a longer toast notification message that demonstrates how the duration is automatically calculated based on the message length. The toast will stay visible longer to give you enough time to read the entire message.",
-        { type: "information" }
+        { type: "information" },
       );
     }
 
@@ -3530,7 +3556,7 @@ customElements.define(
         {
           type: "information",
           persistent: true,
-        }
+        },
       );
     }
 
@@ -3571,7 +3597,7 @@ customElements.define(
                     style="background-color: var(--color-${color}-${shade});"
                     title="${color}-${shade}"
                   ></div>
-                `
+                `,
               )}
             </div>
             <p class="color-card-footer">9-step scale from 50 to 800</p>
@@ -3617,6 +3643,5 @@ customElements.define(
         </div>
       `;
     }
-  }
+  },
 );
-

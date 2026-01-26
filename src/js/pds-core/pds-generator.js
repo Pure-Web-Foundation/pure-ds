@@ -2729,7 +2729,7 @@ a.btn-working {
     inset-inline-end: 0;
     display: inline-flex;
     align-items: center;
-    padding: var(--spacing-1) var(--spacing-3);
+    padding: var
     padding-inline-start: var(--spacing-2);
     cursor: pointer;
     opacity: .7;
@@ -3597,9 +3597,8 @@ nav[data-dropdown] {
   display: inline-block;
   padding: 0;
 
-  menu {
+  & > :last-child {
     position: absolute;
-    list-style: none;
     padding: var(--spacing-2);
     margin: 0;
     background: var(--color-surface-overlay);
@@ -3612,8 +3611,11 @@ nav[data-dropdown] {
     right: auto;
     margin-top: var(--spacing-2);
     --dropdown-transition-duration: var(--transition-fast, 160ms);
-    min-width: max(100%, var(--dropdown-min-width, 12rem));
+    min-width: var(--dropdown-min-width, 12rem);
     width: max-content;
+    inline-size: max-content;
+    max-width: none;
+    max-inline-size: none;
     opacity: 0;
     scale: 0.95;
     visibility: hidden;
@@ -3631,8 +3633,8 @@ nav[data-dropdown] {
     transition-behavior: allow-discrete;
   }
 
-  menu[aria-hidden="false"] {
-    display: block;
+  & > :last-child[aria-hidden="false"] {
+    display: inline-block;
     opacity: 1;
     scale: 1;
     visibility: visible;
@@ -3644,7 +3646,11 @@ nav[data-dropdown] {
       display 0s linear 0s;
   }
 
-  li {
+  menu {
+    list-style: none;
+  }
+
+  menu li {
     padding: var(--spacing-1) 0;
 
     & + li {
@@ -3670,7 +3676,7 @@ nav[data-dropdown] {
     }
   }
 
-  a {
+  menu a {
     display: flex;
     color: var(--color-text-primary);
     text-decoration: none;
@@ -3687,7 +3693,7 @@ nav[data-dropdown] {
   &[data-align="end"],
   &[data-dropdown-align="right"],
   &[data-dropdown-align="end"] {
-    menu {
+    & > :last-child {
       left: auto;
       right: 0;
     }
@@ -3695,7 +3701,7 @@ nav[data-dropdown] {
 
   &[data-mode="up"],
   &[data-dropdown-direction="up"] {
-    menu {
+    & > :last-child {
       top: auto;
       bottom: 100%;
       margin-top: 0;
@@ -3706,7 +3712,7 @@ nav[data-dropdown] {
 
   &[data-mode="down"],
   &[data-dropdown-direction="down"] {
-    menu {
+    & > :last-child {
       top: 100%;
       bottom: auto;
       margin-top: var(--spacing-2);
@@ -3715,20 +3721,20 @@ nav[data-dropdown] {
     }
   }
 
-  &[data-mode="auto"] menu {
+  &[data-mode="auto"] > :last-child {
     top: 100%;
     bottom: auto;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    menu {
+    & > :last-child {
       transition-duration: 0.01s !important;
     }
   }
 }
 
 @starting-style {
-  nav[data-dropdown] menu[aria-hidden="false"] {
+  nav[data-dropdown] > :last-child[aria-hidden="false"] {
     opacity: 0;
     scale: 0.95;
   }

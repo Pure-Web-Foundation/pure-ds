@@ -122,10 +122,7 @@ export const BackgroundImageLiquidGlass = () => html`
   ${enhancementHeader('dropdown')}
   <section class="story-glass-demo story-glass-demo-travel">
     <div class="stack-md gap-md text-center max-w-sm">
-      <div class="card liquid-glass stack-md">
-        <h3>Plan Your Escape</h3>
-        <p>Frosted dropdown blends with the hero photo while keeping content readable.</p>
-      </div>
+      
       <nav data-dropdown data-mode="down">
         <button class="btn-primary">Featured Cities</button>
         <menu class="liquid-glass">
@@ -137,4 +134,77 @@ export const BackgroundImageLiquidGlass = () => html`
       </nav>
     </div>
   </section>
+`;
+
+export const CardPanel = () => html`
+  ${enhancementHeader('dropdown', {
+    description: 'Use any last-child element as the dropdown panel (card, section, form, etc.).'
+  })}
+  <nav data-dropdown>
+    <button class="btn-secondary">Project Actions</button>
+    <section class="card surface-overlay stack-sm">
+      <header class="stack-xs">
+        <strong>Release checklist</strong>
+        <small class="text-muted">Keep the essentials visible.</small>
+      </header>
+      <div class="flex gap-sm">
+        <button class="btn-primary btn-sm">Ship now</button>
+        <button class="btn-outline btn-sm">Schedule</button>
+      </div>
+      <hr data-label="Optional" />
+      <footer class="flex gap-sm">
+        <a href="#" class="badge">View notes</a>
+        <a href="#" class="badge">Duplicate</a>
+      </footer>
+    </section>
+  </nav>
+`;
+
+export const FormPanel = () => html`
+  ${enhancementHeader('dropdown', {
+    description: 'Dropdowns can host richer content like forms and toggles.'
+  })}
+  <nav data-dropdown>
+    <button class="btn-outline">Notification Settings</button>
+    <div class="card surface-overlay grid grid-auto gap-sm">
+      <label data-toggle>
+        <input type="checkbox" checked />
+        <span data-label>Email alerts</span>
+      </label>
+      <label data-toggle>
+        <input type="checkbox" />
+        <span data-label>Slack updates</span>
+      </label>
+      <label data-toggle>
+        <input type="checkbox" checked />
+        <span data-label>Weekly summary</span>
+      </label>
+      <div class="flex gap-sm">
+        <button class="btn-primary btn-sm">Save</button>
+        <button class="btn-secondary btn-sm">Reset</button>
+      </div>
+    </div>
+  </nav>
+`;
+
+export const ProfilePanel = () => html`
+  ${enhancementHeader('dropdown', {
+    description: 'Panels can be semantic HTML containers while keeping menu styles for real menus.'
+  })}
+  <nav data-dropdown>
+    <button class="btn-primary">Account</button>
+    <article class="card surface-overlay stack-sm">
+      <div class="flex gap-sm items-center">
+        <pds-icon icon="user" size="lg"></pds-icon>
+        <div class="stack-xs">
+          <strong>Alex Morgan</strong>
+          <small class="text-muted">alex@pure.dev</small>
+        </div>
+      </div>
+      <div class="stack-xs">
+        <a class="btn btn-outline btn-sm" href="#profile">View profile</a>
+        <a class="btn btn-secondary btn-sm" href="#billing">Billing</a>
+      </div>
+    </article>
+  </nav>
 `;
