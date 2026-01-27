@@ -508,6 +508,185 @@
     },
     {
       "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-fab.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Floating Action Button (FAB) with expandable satellite actions",
+          "name": "PdsFab",
+          "cssProperties": [
+            {
+              "description": "Size of the main FAB button (default: 64px)",
+              "name": "--fab-size"
+            },
+            {
+              "description": "Background color of the main FAB (default: var(--color-primary-600))",
+              "name": "--fab-bg"
+            },
+            {
+              "description": "Foreground color of the main FAB (default: white)",
+              "name": "--fab-fg"
+            },
+            {
+              "description": "Size of satellite buttons (default: 48px)",
+              "name": "--sat-size"
+            },
+            {
+              "description": "Background color of satellites (default: var(--color-surface-elevated))",
+              "name": "--sat-bg"
+            },
+            {
+              "description": "Foreground color of satellites (default: var(--color-text-primary))",
+              "name": "--sat-fg"
+            },
+            {
+              "description": "Distance of satellites from main FAB (default: 100px)",
+              "name": "--radius"
+            },
+            {
+              "description": "Animation duration (default: 420ms)",
+              "name": "--transition-duration"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "The main FAB button",
+              "name": "fab"
+            },
+            {
+              "description": "Individual satellite buttons",
+              "name": "satellite"
+            },
+            {
+              "description": "Satellite button labels",
+              "name": "label"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Main FAB button content (typically an icon or avatar)",
+              "name": ""
+            },
+            {
+              "description": "Override individual satellite button content",
+              "name": "satellite-{key}"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "description": "Controls whether the FAB is expanded",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "radius",
+              "description": "Distance in pixels from the main FAB to satellites",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "attribute": "radius"
+            },
+            {
+              "kind": "field",
+              "name": "spread",
+              "description": "Arc angle in degrees for satellite distribution",
+              "type": {
+                "text": "number"
+              },
+              "default": "90",
+              "attribute": "spread"
+            },
+            {
+              "kind": "field",
+              "name": "startAngle",
+              "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up). Auto-detected based on FAB corner position if not specified: bottom-right=180°, bottom-left=315°, top-right=225°, top-left=45°",
+              "type": {
+                "text": "number"
+              },
+              "default": "180",
+              "attribute": "start-angle"
+            },
+            {
+              "kind": "field",
+              "name": "satellites",
+              "description": "Array of satellite button configurations",
+              "type": {
+                "text": "Array<{key: string, icon?: string, label?: string, action?: string}>"
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when a satellite button is clicked",
+              "name": "satellite-click",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Controls whether the FAB is expanded",
+              "fieldName": "open"
+            },
+            {
+              "name": "radius",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "description": "Distance in pixels from the main FAB to satellites",
+              "fieldName": "radius"
+            },
+            {
+              "name": "spread",
+              "type": {
+                "text": "number"
+              },
+              "default": "90",
+              "description": "Arc angle in degrees for satellite distribution",
+              "fieldName": "spread"
+            },
+            {
+              "name": "start-angle",
+              "type": {
+                "text": "number"
+              },
+              "default": "180",
+              "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up). Auto-detected based on FAB corner position if not specified: bottom-right=180°, bottom-left=315°, top-right=225°, top-left=45°",
+              "fieldName": "startAngle"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-fab",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-fab",
+          "declaration": {
+            "name": "PdsFab",
+            "module": "public/assets/pds/components/pds-fab.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "public/assets/pds/components/pds-form.js",
       "declarations": [
         {
