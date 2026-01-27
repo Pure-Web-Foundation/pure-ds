@@ -53,6 +53,7 @@ import { registry } from "./pds-core/pds-registry.js";
 import { enums } from "./pds-core/pds-enums.js";
 import { ask } from "./common/ask.js";
 import { toast } from "./common/toast.js";
+import * as common from "./common/common.js";
 import { defaultPDSEnhancers } from "./pds-core/pds-enhancers.js";
 import { resolvePublicAssetURL } from "./pds-core/pds-paths.js";
 import {
@@ -125,6 +126,7 @@ PDS.createStylesheet = createStylesheet;
 PDS.isLiveMode = () => registry.isLive;
 PDS.ask = ask;
 PDS.toast = toast;
+PDS.common = common;
 
 function __emitPDSReady(detail) {
   const hasCustomEvent = typeof CustomEvent === "function";

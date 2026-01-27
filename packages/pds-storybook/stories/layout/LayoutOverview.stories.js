@@ -6,41 +6,67 @@ preloadShiki();
 
 const layoutOverviewStyles = html`
   <style>
-    .story-compare-grid { margin-block: var(--spacing-6); }
-    .story-code-block { font-size: var(--font-size-sm); overflow-x: auto; }
-    .story-note { margin-block-start: var(--spacing-3); }
-    .story-list { margin-block: var(--spacing-4); }
-    .story-checkmark { font-size: var(--font-size-xl); }
+    .story-compare-grid {
+      margin-block: var(--spacing-6);
+    }
+    .story-code-block {
+      font-size: var(--font-size-sm);
+      max-width: 600px;
+      overflow: auto;
+    }
+    .story-note {
+      margin-block-start: var(--spacing-3);
+    }
+    .story-list {
+      margin-block: var(--spacing-4);
+    }
+    .story-checkmark {
+      font-size: var(--font-size-xl);
+    }
   </style>
 `;
 
 // Code samples for comparison
-const tailwindCode = `<article class="max-w-md rounded-lg bg-white p-4 shadow-md">
-  <header class="space-y-1">
-    <h3 class="text-lg font-semibold">
+const tailwindCode = /*html*/ `<section class="rounded-lg bg-white p-6 shadow-md grid gap-3">
+  <header>
+    <h3 class="text-xl font-semibold leading-tight">
       A Nice Box With a Title
     </h3>
-    <small class="text-sm text-slate-500">
+    <p class="text-sm text-slate-500">
       The subtitle of the item
-    </small>
+    </p>
   </header>
-  <p class="mt-3 text-base">
+
+  <p class="text-sm leading-relaxed text-slate-700">
     The body of the item with some descriptive text.
   </p>
-</article>
-`;
 
-const pdsCode = `<article class="card surface-overlay">
+  <footer class="flex justify-center gap-6 pt-2">
+    <button class="inline-flex items-center justify-center rounded-full bg-pink-600 px-8 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-pink-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2 transition">
+      Primary
+    </button>
+
+    <button class="inline-flex items-center justify-center rounded-full border border-pink-600 bg-white px-8 py-2.5 text-sm font-medium text-pink-600 hover:bg-pink-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2 transition">
+      Secondary
+    </button>
+  </footer>
+</section>`;
+
+const pdsCode = /*html*/ `<section class="card surface-overlay">
   <header>
     <h3>A Nice Box With a Title</h3>
-    <small class="text-muted">
+    <small>
       The subtitle of the item
     </small>
   </header>
   <p>
     The body of the item with some descriptive text.
   </p>
-</article>`;
+  <footer>
+    <button class="btn-primary">Primary</button>
+    <button class="btn-outline">Secondary</button>
+  </footer>
+</section>`;
 
 export default {
   title: "Foundations/Layout",
@@ -57,7 +83,7 @@ export default {
 export const LayoutIntroduction = () => {
   const container = document.createElement("div");
   container.classList.add("stack-lg");
-  
+
   container.innerHTML = `
     <style>
       .story-render-result {
@@ -100,18 +126,10 @@ export const LayoutIntroduction = () => {
       </header>
 
       <div class="story-render-result">
-        <article class="card surface-overlay">
-          <header>
-            <h3>A Nice Box With a Title</h3>
-            <small class="text-muted">The subtitle of the item</small>
-          </header>
-          <p>
-            The body of the item with some descriptive text.
-          </p>
-        </article>
+        ${pdsCode}
       </div>   
 
-      <div class="grid grid-cols-2 gap-lg surface-translucent-50 story-compare-grid">
+      <div class="grid grid-auto-lg gap-lg surface-translucent-50 story-compare-grid">
         <div class="card surface-subtle">
           <header>
             <h3>❌ Tailwind Approach</h3>
@@ -119,7 +137,7 @@ export const LayoutIntroduction = () => {
           </header>
           <div class="story-code-block code-tailwind"></div>
           <p class="text-muted story-note">
-            13 utility classes, no semantic meaning, hard to maintain.
+            53 utility classes
           </p>
         </div>
 
@@ -130,27 +148,31 @@ export const LayoutIntroduction = () => {
           </header>
           <div class="story-code-block code-pds"></div>
           <p class="text-muted story-note">
-            Semantic HTML + 4 primitive classes. Self-documenting.
+            4 primitive classes.
           </p>
         </div>
       </div>
     </article>
 
 
-     <div class="callout callout-info">
-        <span class="callout-icon">
-          <pds-icon icon="info" size="md"></pds-icon>
-        </span>
+     <blockquote class="stack-md">
+        <header class="flex flex-row items-start gap-md">
+          <pds-icon icon="info" size="xl"></pds-icon>
+          <h2>The verdict</h2>
+        </header>
         <div>
-          <h4 class="callout-title">The verdict</h4>
           <p>Both approaches render identical output—but only one is maintainable.</p>
           <p>
-            Don't even start thinking of dark and light modes, responsiveness, or
-            accessibility. With atomic utilities, every one of those concerns must be
-            manually addressed with more classes and more complexity.
+           Tailwind optimizes for local convenience.
+          </p>
+          <p>
+            PDS optimizes for system integrity.
+          </p>
+          <p>
+            And at scale, that difference compounds fast.
           </p>
         </div>
-      </div>
+      </blockquote>
 
     <article class="card">
       <h2>The PDS Layout Hierarchy</h2>
@@ -368,11 +390,11 @@ export const LayoutIntroduction = () => {
   `;
 
   const theme = getCurrentTheme();
-  
+
   highlight(tailwindCode, "html", theme).then((h) => {
     container.querySelector(".code-tailwind").innerHTML = h;
   });
-  
+
   highlight(pdsCode, "html", theme).then((h) => {
     container.querySelector(".code-pds").innerHTML = h;
   });
@@ -381,4 +403,3 @@ export const LayoutIntroduction = () => {
 };
 
 LayoutIntroduction.storyName = "Introduction";
-

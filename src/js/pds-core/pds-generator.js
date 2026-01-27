@@ -4567,7 +4567,7 @@ nav[data-dropdown] {
   }
 
   #generateComponentsLayer() {
-    return `@layer components {\n
+    return /*css*/`@layer components {\n
 ${this.#generateSemanticHTMLStyles()}
 
 ${this.#generateFormStyles()}
@@ -4592,6 +4592,21 @@ ${this.#generateTableStyles()}
   background: var(--color-surface-base);
   border-radius: var(--radius-md);
   padding: var(--spacing-4);
+}
+
+:where(.card:has(> header):has(> footer)) {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--spacing-4);
+}
+
+:where(.card > footer) {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+:where(.card > header > :last-child:not(:first-child)) {
+  color: var(--color-text-muted);
 }
 
 .card-elevated {

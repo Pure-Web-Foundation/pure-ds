@@ -41,13 +41,3 @@ export const BorderGlow = () => html`
   </div>
 `;
 
-export const Combined = () => html`
-  <article class="card border-gradient stack-md">
-    <h2>Premium Feature Card</h2>
-    <p>Combining card primitive with gradient border effect.</p>
-    <div class="flex gap-xs">
-      <button class="btn-primary">Get Started</button>
-      <button class="btn-outline">Learn More</button>
-    </div>
-  </article>
-`;

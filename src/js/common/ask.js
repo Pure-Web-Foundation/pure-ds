@@ -1,5 +1,5 @@
-import { render, html } from "lit";
 import { config } from "../../../pds.config.js"
+import { fragmentFromTemplateLike } from "./common.js";
 
 /**
  * Get the current page title for dialogs
@@ -11,8 +11,39 @@ function getPageTitle() {
 }
 
 /**
+ * Append message content using vanilla DOM APIs
+ * @param {HTMLElement} container
+ * @param {unknown} message
+ */
+function appendMessageContent(container, message) {
+  if (message == null) return;
+
+  if (
+    typeof message === "object" &&
+    Array.isArray(message.strings) &&
+    Array.isArray(message.values)
+  ) {
+    container.appendChild(fragmentFromTemplateLike(message));
+    return;
+  }
+
+  if (message instanceof Node) {
+    container.appendChild(message);
+    return;
+  }
+
+  if (Array.isArray(message)) {
+    message.forEach((item) => appendMessageContent(container, item));
+    return;
+  }
+
+  const text = typeof message === "string" ? message : String(message);
+  container.appendChild(document.createTextNode(text));
+}
+
+/**
  * Create a PDS-compliant dialog with proper semantic structure
- * @param {string|TemplateResult} message - Message content (string or Lit template)
+ * @param {string|Node|Array} message - Message content (string or DOM nodes)
  * @param {Object} options - Dialog options
  * @returns {Promise} Resolves with result when dialog closes
  */
@@ -68,13 +99,7 @@ export async function ask(message, options = {}) {
     if (options.useForm) {
       // Create a temporary container to render the message content
       const tempContainer = document.createElement("div");
-      if (typeof message === "object" && message._$litType$) {
-        render(message, tempContainer);
-      } else if (typeof message === "string") {
-        tempContainer.textContent = message;
-      } else {
-        render(message, tempContainer);
-      }
+      appendMessageContent(tempContainer, message);
       
       // Find the form in the rendered content
       const form = tempContainer.querySelector("form");
@@ -132,13 +157,7 @@ export async function ask(message, options = {}) {
 
       // Render message content
       const article = dialog.querySelector("#msg-container");
-      if (typeof message === "object" && message._$litType$) {
-        render(message, article);
-      } else if (typeof message === "string") {
-        article.textContent = message;
-      } else {
-        render(message, article);
-      }
+      appendMessageContent(article, message);
     }
 
     // Handle cancel button clicks
@@ -199,7 +218,7 @@ export async function ask(message, options = {}) {
 
 /**
  * Show an alert dialog
- * @param {string|TemplateResult} message - Alert message
+ * @param {string|Node|Array} message - Alert message
  * @param {Object} options - Optional dialog options
  * @returns {Promise}
  */
@@ -217,7 +236,7 @@ export async function alert(message, options = {}) {
 
 /**
  * Show a confirmation dialog
- * @param {string|TemplateResult} message - Confirmation message
+ * @param {string|Node|Array} message - Confirmation message
  * @param {Object} options - Optional dialog options
  * @returns {Promise<boolean>}
  */
