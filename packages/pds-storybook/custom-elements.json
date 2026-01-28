@@ -2473,5 +2473,94 @@
         }
       ]
     }
+    ,
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-omnibox.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Omnibox search input with PDS styling and form-associated behavior.",
+          "name": "PdsOmnibox",
+          "members": [
+            {
+              "kind": "field",
+              "name": "settings",
+              "description": "AutoComplete settings object provided by the consumer.",
+              "type": {
+                "text": "object"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name for submitted data"
+            },
+            {
+              "name": "placeholder",
+              "type": {
+                "text": "string"
+              },
+              "description": "Placeholder text for the search input"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Current input value"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disable the input"
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Mark the input as required"
+            },
+            {
+              "name": "autocomplete",
+              "type": {
+                "text": "string"
+              },
+              "description": "Native autocomplete attribute (default: off)"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-omnibox",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "PdsOmnibox",
+          "declaration": {
+            "name": "PdsOmnibox",
+            "module": "public/assets/pds/components/pds-omnibox.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-omnibox",
+          "declaration": {
+            "name": "PdsOmnibox",
+            "module": "public/assets/pds/components/pds-omnibox.js"
+          }
+        }
+      ]
+    }
   ]
 }

@@ -127,6 +127,21 @@ PDS.isLiveMode = () => registry.isLive;
 PDS.ask = ask;
 PDS.toast = toast;
 PDS.common = common;
+PDS.AutoComplete = null;
+PDS.loadAutoComplete = async () => {
+  if (PDS.AutoComplete) return PDS.AutoComplete;
+  try {
+    const mod = await import("pure-web/ac");
+    const AutoComplete = mod?.AutoComplete || mod?.default || mod;
+    if (AutoComplete) {
+      PDS.AutoComplete = AutoComplete;
+      return AutoComplete;
+    }
+  } catch (error) {
+    __defaultLog("warn", "PDS.loadAutoComplete failed", error);
+  }
+  return null;
+};
 
 function __emitPDSReady(detail) {
   const hasCustomEvent = typeof CustomEvent === "function";
