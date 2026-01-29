@@ -415,8 +415,6 @@ export class PdsFab extends HTMLElement {
 
         .sat pds-icon,
         .sat ::slotted(pds-icon) {
-          width: 60%;
-          height: 60%;
           pointer-events: none;
         }
 
