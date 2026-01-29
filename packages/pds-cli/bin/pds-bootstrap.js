@@ -107,18 +107,36 @@ async function copyTemplateDirectory(sourceDir, targetDir, options) {
 async function copyBootstrapTemplate({ version, generatedAt, isModule }) {
   await copyTemplateDirectory(templateRoot, projectRoot, { version, generatedAt });
 
-  const esbuildTemplate = isModule ? 'esbuild-dev.mjs' : 'esbuild-dev.cjs';
-  const esbuildSource = path.join(templateRoot, esbuildTemplate);
-  const esbuildTarget = path.join(projectRoot, 'esbuild-dev.js');
-  await copyFileIfMissing(esbuildSource, esbuildTarget);
+  const esbuildCjsSource = path.join(templateRoot, 'esbuild-dev.cjs');
+  const esbuildCjsTarget = path.join(projectRoot, 'esbuild-dev.cjs');
+  await copyFileIfMissing(esbuildCjsSource, esbuildCjsTarget);
+
+  const esbuildMjsSource = path.join(templateRoot, 'esbuild-dev.mjs');
+  const esbuildMjsTarget = path.join(projectRoot, 'esbuild-dev.mjs');
+  await copyFileIfMissing(esbuildMjsSource, esbuildMjsTarget);
+
+  const esbuildJsTarget = path.join(projectRoot, 'esbuild-dev.js');
+  const esbuildJsSource = isModule ? esbuildMjsSource : esbuildCjsSource;
+  await copyFileIfMissing(esbuildJsSource, esbuildJsTarget);
 }
 
 async function ensurePackageScripts(pkg, pkgPath) {
   pkg.scripts = pkg.scripts || {};
   let changed = false;
 
-  if (!pkg.scripts.dev) {
-    pkg.scripts.dev = 'node esbuild-dev.js';
+  const devScript = pkg.scripts.dev;
+  const devScriptMatch = typeof devScript === 'string'
+    ? devScript.match(/esbuild-dev\.(mjs|cjs|js)/)
+    : null;
+  const devScriptFile = devScriptMatch?.[0];
+  const devScriptMissing = devScriptFile
+    ? !existsSync(path.join(projectRoot, devScriptFile))
+    : false;
+
+  if (!devScript || devScriptMissing) {
+    const candidates = ['esbuild-dev.js', 'esbuild-dev.mjs', 'esbuild-dev.cjs'];
+    const available = candidates.find((file) => existsSync(path.join(projectRoot, file)));
+    pkg.scripts.dev = `node ${available || 'esbuild-dev.cjs'}`;
     changed = true;
   }
 
@@ -264,13 +282,14 @@ async function main() {
   const { pkgPath, pkg } = await readPackageJson();
   const isModule = pkg.type === 'module';
 
-  await ensurePackageScripts(pkg, pkgPath);
   await ensureEsbuildDependency(pkg, pkgPath);
 
   const version = await getPdsCoreVersion();
   const generatedAt = new Date().toLocaleString();
 
   await copyBootstrapTemplate({ version, generatedAt, isModule });
+
+  await ensurePackageScripts(pkg, pkgPath);
 
   await ensurePdsAssets();
 

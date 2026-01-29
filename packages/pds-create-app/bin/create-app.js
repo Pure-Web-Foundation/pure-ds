@@ -45,7 +45,6 @@ async function writePackageJson(targetDir) {
   const pkg = {
     name: getProjectName(targetDir),
     private: true,
-    type: 'module',
     scripts: {
       dev: 'node esbuild-dev.js',
       'pds:bootstrap': 'pds-bootstrap'
