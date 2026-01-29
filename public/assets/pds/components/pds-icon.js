@@ -10,6 +10,7 @@
  * @attr {string} sprite - Override sprite sheet path
  * @attr {number} rotate - Rotation angle in degrees
  * @attr {boolean} no-sprite - Force fallback icon rendering
+ * @attr {boolean} morph - Morph the icon when the icon name changes
  * 
  * @example
  * <pds-icon icon="house"></pds-icon>
@@ -19,7 +20,7 @@
  */
 
 export class SvgIcon extends HTMLElement {
-  static observedAttributes = ['icon', 'size', 'color', 'label', 'rotate'];
+  static observedAttributes = ['icon', 'size', 'color', 'label', 'rotate', 'morph'];
   
   // Inline fallback icons for critical UI elements (when sprite fails to load)
   static #fallbackIcons = {
@@ -107,6 +108,16 @@ export class SvgIcon extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    this._currentIcon = null;
+    this._pendingIcon = null;
+    this._morphing = false;
+    this._morphTimer = null;
+    this._templateReady = false;
+    this._stackEl = null;
+    this._svgOldEl = null;
+    this._svgNewEl = null;
+    this._iconOldGroupEl = null;
+    this._iconNewGroupEl = null;
   }
   
   connectedCallback() {
@@ -116,16 +127,33 @@ export class SvgIcon extends HTMLElement {
 
   disconnectedCallback() {
     SvgIcon.instances.delete(this);
+    this.#clearMorphTimers();
   }
   
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue !== newValue) {
+      if (name === 'icon') {
+        if (this.hasAttribute('morph')) {
+          this.#startMorph(newValue, oldValue);
+          return;
+        }
+        this._currentIcon = newValue;
+        this._pendingIcon = null;
+        this._morphing = false;
+        this.#clearMorphTimers();
+        this.render();
+        return;
+      }
+      if (name === 'morph') {
+        this.#clearMorphTimers();
+      }
       this.render();
     }
   }
   
   render() {
-    const icon = this.getAttribute('icon') || 'missing';
+    const attrIcon = this.getAttribute('icon') || 'missing';
+    const icon = this._morphing ? (this._currentIcon || attrIcon) : attrIcon;
     const sizeAttr = this.getAttribute('size') || '24';
     const color = this.getAttribute('color') || 'currentColor';
     const label = this.getAttribute('label');
@@ -235,52 +263,299 @@ export class SvgIcon extends HTMLElement {
     const transform = rotate !== '0' ? `rotate(${rotate} 128 128)` : '';
     const defaultViewBox = '0 0 256 256';
     
-    // Determine viewBox: external icons may have different viewBox (often 24x24)
-    let viewBox = defaultViewBox;
-    let preserveAspectRatioAttr = '';
+    const resolveIconData = (iconName) => {
+      let effectiveHrefLocal = spriteHref ? `${spriteHref}#${iconName}` : `#${iconName}`;
+      let inlineSymbolContentLocal = null;
+      let inlineSymbolViewBoxLocal = null;
+      let inlineSymbolPreserveAspectRatioLocal = null;
+      let useExternalIconLocal = false;
+      let externalIconDataLocal = null;
+      let useFallbackLocal = this.hasAttribute('no-sprite') || !this.spriteAvailable();
+      let spriteIconNotFoundLocal = false;
+      let spriteStillLoadingLocal = false;
+
+      if (!useFallbackLocal && typeof window !== 'undefined' && spriteHref) {
+        try {
+          const spriteURL = new URL(spriteHref, window.location.href);
+          const spriteKey = spriteURL.href;
+          const inlineSpriteData = SvgIcon.inlineSprites.get(spriteKey);
+
+          if (inlineSpriteData && inlineSpriteData.loaded) {
+            const symbolData = inlineSpriteData.symbols.get(iconName);
+            if (symbolData) {
+              inlineSymbolContentLocal = symbolData.content;
+              inlineSymbolViewBoxLocal = symbolData.viewBox;
+              inlineSymbolPreserveAspectRatioLocal = symbolData.preserveAspectRatio;
+            } else {
+              spriteIconNotFoundLocal = true;
+            }
+          } else if (inlineSpriteData && inlineSpriteData.error) {
+            spriteIconNotFoundLocal = true;
+          } else {
+            SvgIcon.ensureInlineSprite(spriteKey);
+            spriteStillLoadingLocal = true;
+            useFallbackLocal = true;
+          }
+        } catch (e) {
+          // Ignore URL errors and fall back to default behaviour
+        }
+      }
+
+      const hasFallbackLocal = SvgIcon.#fallbackIcons.hasOwnProperty(iconName);
+      if (spriteIconNotFoundLocal && !hasFallbackLocal && !spriteStillLoadingLocal) {
+        const cached = SvgIcon.externalIconCache.get(iconName);
+        if (cached) {
+          if (cached.loaded && cached.content) {
+            useExternalIconLocal = true;
+            externalIconDataLocal = cached;
+          } else if (cached.error) {
+            useFallbackLocal = true;
+          }
+        } else {
+          SvgIcon.fetchExternalIcon(iconName);
+          useFallbackLocal = true;
+        }
+      }
+
+      if (spriteIconNotFoundLocal && !useExternalIconLocal) {
+        useFallbackLocal = true;
+      }
+
+      let viewBoxLocal = defaultViewBox;
+      let preserveAspectRatioLocal = '';
+
+      if (useExternalIconLocal && externalIconDataLocal) {
+        viewBoxLocal = externalIconDataLocal.viewBox || '0 0 24 24';
+        if (externalIconDataLocal.preserveAspectRatio) {
+          preserveAspectRatioLocal = externalIconDataLocal.preserveAspectRatio;
+        }
+      } else if (inlineSymbolViewBoxLocal) {
+        viewBoxLocal = inlineSymbolViewBoxLocal;
+        if (inlineSymbolPreserveAspectRatioLocal) {
+          preserveAspectRatioLocal = inlineSymbolPreserveAspectRatioLocal;
+        }
+      }
+
+      const hasInlineSymbolLocal = inlineSymbolContentLocal !== null;
+
+      let symbolMarkupLocal;
+      if (useExternalIconLocal && externalIconDataLocal?.content) {
+        symbolMarkupLocal = externalIconDataLocal.content;
+      } else if (useFallbackLocal) {
+        symbolMarkupLocal = this.#getFallbackIcon(iconName);
+      } else if (hasInlineSymbolLocal) {
+        symbolMarkupLocal = inlineSymbolContentLocal;
+      } else {
+        symbolMarkupLocal = `<use href="${effectiveHrefLocal}"></use>`;
+      }
+
+      return {
+        symbolMarkup: symbolMarkupLocal,
+        viewBox: viewBoxLocal,
+        preserveAspectRatio: preserveAspectRatioLocal,
+      };
+    };
+
+    const currentData = resolveIconData(icon);
+    const nextIcon = this._morphing ? (this._pendingIcon || attrIcon) : attrIcon;
+    const nextData = resolveIconData(nextIcon);
     
-    if (useExternalIcon && externalIconData) {
-      viewBox = externalIconData.viewBox || '0 0 24 24';
-      if (externalIconData.preserveAspectRatio) {
-        preserveAspectRatioAttr = ` preserveAspectRatio="${externalIconData.preserveAspectRatio}"`;
-      }
-    } else if (inlineSymbolViewBox) {
-      viewBox = inlineSymbolViewBox;
-      if (inlineSymbolPreserveAspectRatio) {
-        preserveAspectRatioAttr = ` preserveAspectRatio="${inlineSymbolPreserveAspectRatio}"`;
-      }
+    const morphClass = this._morphing ? 'morphing' : '';
+
+    this.#ensureTemplate();
+
+    if (!this._stackEl || !this._svgOldEl || !this._svgNewEl || !this._iconOldGroupEl || !this._iconNewGroupEl) {
+      return;
     }
 
-    const hasInlineSymbol = inlineSymbolContent !== null;
-    
-    // Determine symbol markup based on priority: external > inline sprite > use href > fallback
-    let symbolMarkup;
-    if (useExternalIcon && externalIconData?.content) {
-      symbolMarkup = externalIconData.content;
-    } else if (useFallback) {
-      symbolMarkup = this.#getFallbackIcon(icon);
-    } else if (hasInlineSymbol) {
-      symbolMarkup = inlineSymbolContent;
+    this._stackEl.setAttribute('class', `icon-stack${morphClass ? ` ${morphClass}` : ''}`);
+    this._stackEl.style.width = `${size}px`;
+    this._stackEl.style.height = `${size}px`;
+
+    this._svgOldEl.setAttribute('width', size);
+    this._svgOldEl.setAttribute('height', size);
+    this._svgOldEl.setAttribute('fill', color);
+    this._svgOldEl.setAttribute('viewBox', currentData.viewBox);
+    if (currentData.preserveAspectRatio) {
+      this._svgOldEl.setAttribute('preserveAspectRatio', currentData.preserveAspectRatio);
     } else {
-      symbolMarkup = `<use href="${effectiveHref}"></use>`;
+      this._svgOldEl.removeAttribute('preserveAspectRatio');
     }
-    
+
+    this._svgNewEl.setAttribute('width', size);
+    this._svgNewEl.setAttribute('height', size);
+    this._svgNewEl.setAttribute('fill', color);
+    this._svgNewEl.setAttribute('viewBox', nextData.viewBox);
+    if (nextData.preserveAspectRatio) {
+      this._svgNewEl.setAttribute('preserveAspectRatio', nextData.preserveAspectRatio);
+    } else {
+      this._svgNewEl.removeAttribute('preserveAspectRatio');
+    }
+
+    if (label) {
+      this._svgNewEl.setAttribute('role', 'img');
+      this._svgNewEl.setAttribute('aria-label', label);
+      this._svgNewEl.setAttribute('aria-hidden', 'false');
+    } else {
+      this._svgNewEl.setAttribute('aria-hidden', 'true');
+      this._svgNewEl.removeAttribute('role');
+      this._svgNewEl.removeAttribute('aria-label');
+    }
+
+    this._svgOldEl.setAttribute('aria-hidden', 'true');
+
+    this._iconOldGroupEl.setAttribute('transform', transform);
+    this._iconOldGroupEl.innerHTML = currentData.symbolMarkup;
+    this._iconNewGroupEl.setAttribute('transform', transform);
+    this._iconNewGroupEl.innerHTML = nextData.symbolMarkup;
+  }
+
+  #ensureTemplate() {
+    if (this._templateReady) {
+      return;
+    }
+
     this.shadowRoot.innerHTML = `
-      <svg
-        width="${size}"
-        height="${size}"
-        fill="${color}"
-        aria-hidden="${!label}"
-        ${label ? `role="img" aria-label="${label}"` : ''}
-        style="display: inline-block; vertical-align: middle; flex-shrink: 0;"
-        viewBox="${viewBox}"
-        ${preserveAspectRatioAttr}
-      >
-        <g transform="${transform}">
-          ${symbolMarkup}
-        </g>
-      </svg>
+      <style>
+        :host {
+          --pds-icon-morph-duration: 300ms;
+          --pds-icon-morph-half-duration: calc(var(--pds-icon-morph-duration) / 2);
+          --pds-icon-morph-rotate: 12deg;
+          --pds-icon-morph-blur: 10px;
+        }
+
+        .icon-stack {
+          display: inline-block;
+          position: relative;
+          line-height: 0;
+        }
+
+        .icon-stack svg.pds-icon {
+          position: absolute;
+          inset: 0;
+          display: block;
+          width: 100%;
+          height: 100%;
+          will-change: transform, opacity, filter;
+          transform-origin: 50% 50%;
+        }
+
+        .icon-stack .layer-old {
+          opacity: 0;
+        }
+
+        .icon-stack .layer-new {
+          opacity: 1;
+        }
+
+        .icon-stack.morphing .layer-old {
+          opacity: 1;
+          animation: pds-icon-morph-out var(--pds-icon-morph-duration) ease-in-out;
+        }
+
+        .icon-stack.morphing .layer-new {
+          opacity: 0;
+          animation: pds-icon-morph-in var(--pds-icon-morph-duration) ease-in-out;
+        }
+
+        @keyframes pds-icon-morph-out {
+          0% { opacity: 1; filter: blur(0); transform: rotate(0deg); }
+          100% { opacity: 0; filter: blur(var(--pds-icon-morph-blur)); transform: rotate(var(--pds-icon-morph-rotate)); }
+        }
+
+        @keyframes pds-icon-morph-in {
+          0% { opacity: 0; filter: blur(var(--pds-icon-morph-blur)); transform: rotate(calc(var(--pds-icon-morph-rotate) * -1)); }
+          100% { opacity: 1; filter: blur(0); transform: rotate(0deg); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .icon-stack.morphing .layer-old,
+          .icon-stack.morphing .layer-new {
+            animation: none;
+          }
+        }
+      </style>
+      <span class="icon-stack">
+        <svg class="pds-icon layer-old" aria-hidden="true">
+          <g id="icon-group-old"></g>
+        </svg>
+        <svg class="pds-icon layer-new" aria-hidden="true">
+          <g id="icon-group-new"></g>
+        </svg>
+      </span>
     `;
+
+    this._stackEl = this.shadowRoot.querySelector('.icon-stack');
+    this._svgOldEl = this.shadowRoot.querySelector('svg.layer-old');
+    this._svgNewEl = this.shadowRoot.querySelector('svg.layer-new');
+    this._iconOldGroupEl = this.shadowRoot.querySelector('#icon-group-old');
+    this._iconNewGroupEl = this.shadowRoot.querySelector('#icon-group-new');
+    this._templateReady = true;
+  }
+
+  #clearMorphTimers() {
+    if (this._morphTimer) {
+      clearTimeout(this._morphTimer);
+      this._morphTimer = null;
+    }
+  }
+
+  #startMorph(newIcon, oldIcon) {
+    if (!oldIcon) {
+      this._currentIcon = newIcon;
+      this._pendingIcon = null;
+      this._morphing = false;
+      this.render();
+      return;
+    }
+
+    this.#clearMorphTimers();
+
+    this._currentIcon = oldIcon;
+    this._pendingIcon = newIcon;
+    this._morphing = false;
+    this.render();
+
+    requestAnimationFrame(() => {
+      if (!this.isConnected) {
+        return;
+      }
+
+      this._morphing = true;
+      this.render();
+
+      const totalDuration = this.#getMorphDurationMs();
+      const halfDuration = totalDuration / 2;
+
+      this._morphTimer = setTimeout(() => {
+        this._currentIcon = this._pendingIcon || newIcon;
+        this._pendingIcon = null;
+        this.render();
+        this._morphTimer = setTimeout(() => {
+          this._morphing = false;
+          this.render();
+        }, halfDuration);
+      }, halfDuration);
+    });
+  }
+
+  #getMorphDurationMs() {
+    try {
+      const value = getComputedStyle(this).getPropertyValue('--pds-icon-morph-duration').trim();
+      if (value) {
+        if (value.endsWith('ms')) {
+          const ms = Number.parseFloat(value);
+          return Number.isFinite(ms) ? ms : 200;
+        }
+        if (value.endsWith('s')) {
+          const seconds = Number.parseFloat(value);
+          return Number.isFinite(seconds) ? seconds * 1000 : 200;
+        }
+      }
+    } catch (error) {
+      // ignore and fall back
+    }
+    return 200;
   }
   
   #getFallbackIcon(name) {

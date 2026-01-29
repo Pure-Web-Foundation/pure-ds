@@ -169,7 +169,7 @@ export class PdsOmnibox extends HTMLElement {
 	#renderStructure() {
 		this.#root.innerHTML = `
 			<div class="ac-container input-icon">
-				<pds-icon icon="${DEFAULT_ICON}"></pds-icon>
+				<pds-icon morph icon="${DEFAULT_ICON}"></pds-icon>
 				<input class="ac-input" type="search" placeholder="${DEFAULT_PLACEHOLDER}" autocomplete="off" />
 			</div>
 		`;
@@ -593,8 +593,8 @@ export class PdsOmnibox extends HTMLElement {
 
 		const categories = this.settings.categories;
 		const firstResult = results[0];
-		const categoryConfig = categories[firstResult?.category];
-		const useIconForInput = categoryConfig?.useIconForInput;
+		const categoryConfig = categories[firstResult?.category] || {};
+		const useIconForInput = categoryConfig?.useIconForInput ?? this.settings?.useIconForInput;
 
 		if (typeof useIconForInput === "string") {
 			this.#icon?.setAttribute("icon", useIconForInput);
