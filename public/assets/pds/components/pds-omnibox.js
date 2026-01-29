@@ -15,19 +15,27 @@
  */
 const LAYERS = ["tokens", "primitives", "components", "utilities"];
 const DEFAULT_PLACEHOLDER = "Search...";
+const DEFAULT_ICON = "magnifying-glass";
 
 export class PdsOmnibox extends HTMLElement {
 	static formAssociated = true;
 
 	static get observedAttributes() {
-		return ["name", "placeholder", "value", "disabled", "required", "autocomplete"];
+		return ["name", "placeholder", "value", "disabled", "required", "autocomplete", "icon"];
 	}
 
 	#root;
 	#internals;
 	#input;
+	#icon;
 	#settings;
 	#defaultValue = "";
+	#autoCompleteResizeHandler;
+	#autoCompleteScrollHandler;
+	#autoCompleteViewportHandler;
+	#lengthProbe;
+	#suggestionsUpdatedHandler;
+	#suggestionsObserver;
 
 	constructor() {
 		super();
@@ -41,6 +49,21 @@ export class PdsOmnibox extends HTMLElement {
 		this.#defaultValue = this.getAttribute("value") || "";
 		this.#syncAttributes();
 		this.#updateFormValue(this.#input.value || "");
+		if (!this.#suggestionsUpdatedHandler) {
+			this.#suggestionsUpdatedHandler = (event) => {
+				this.#handleSuggestionsUpdated(event);
+			};
+			this.addEventListener("suggestions-updated", this.#suggestionsUpdatedHandler);
+		}
+	}
+
+	disconnectedCallback() {
+		this.#teardownAutoCompleteSizing();
+		this.#teardownSuggestionsObserver();
+		if (this.#suggestionsUpdatedHandler) {
+			this.removeEventListener("suggestions-updated", this.#suggestionsUpdatedHandler);
+			this.#suggestionsUpdatedHandler = null;
+		}
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
@@ -54,7 +77,6 @@ export class PdsOmnibox extends HTMLElement {
 
 	set settings(value) {
 		this.#settings = value;
-    console.log('settings set', this.#settings);
 	}
 
 	get name() {
@@ -112,6 +134,15 @@ export class PdsOmnibox extends HTMLElement {
 		else this.setAttribute("autocomplete", value);
 	}
 
+	get icon() {
+		return this.getAttribute("icon") || DEFAULT_ICON;
+	}
+
+	set icon(value) {
+		if (value == null || value === "") this.removeAttribute("icon");
+		else this.setAttribute("icon", value);
+	}
+
 	formAssociatedCallback() {}
 
 	formDisabledCallback(disabled) {
@@ -138,14 +169,20 @@ export class PdsOmnibox extends HTMLElement {
 	#renderStructure() {
 		this.#root.innerHTML = `
 			<div class="ac-container input-icon">
-				<pds-icon icon="magnifying-glass"></pds-icon>
+				<pds-icon icon="${DEFAULT_ICON}"></pds-icon>
 				<input class="ac-input" type="search" placeholder="${DEFAULT_PLACEHOLDER}" autocomplete="off" />
 			</div>
 		`;
 
+		this.#lengthProbe = document.createElement("div");
+		this.#lengthProbe.style.cssText = "position:absolute; visibility:hidden; width:0; height:0; pointer-events:none;";
+		this.#root.appendChild(this.#lengthProbe);
+
 		this.#input = this.#root.querySelector("input");
+		this.#icon = this.#root.querySelector("pds-icon");
 		this.#input.addEventListener("input", () => {
 			this.#updateFormValue(this.#input.value);
+			this.#updateSuggestionMaxHeight();
 			this.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
 		});
 		this.#input.addEventListener("change", () => {
@@ -153,6 +190,15 @@ export class PdsOmnibox extends HTMLElement {
 		});
 		this.#input.addEventListener("focus", (e) => {
 			this.#handleAutoComplete(e);
+		});
+		this.#input.addEventListener("show-results", (event) => {
+			this.dispatchEvent(
+				new CustomEvent("suggestions-updated", {
+					detail: { results: event?.detail?.results ?? [] },
+					bubbles: true,
+					composed: true,
+				})
+			);
 		});
 	}
 
@@ -171,7 +217,9 @@ export class PdsOmnibox extends HTMLElement {
 					--ac-margin: var(--spacing-0);
 					--icon-size: var(--spacing-6);
 					--ac-itm-height-default: 5rem;
-          --ac-max-height-default: 300px;
+					--ac-max-height-default: 300px;
+					--ac-viewport-gap: var(--spacing-4);
+					--ac-suggest-offset: var(--spacing-1);
 				}
 
 				.ac-container {
@@ -184,10 +232,14 @@ export class PdsOmnibox extends HTMLElement {
 
 					.ac-suggestion {
 						background-color: var(--color-surface-base);
-						max-height: var(--ac-max-height, var(--ac-max-height-default));
+						max-height: min(
+							var(--ac-max-height, var(--ac-max-height-default)),
+							calc(100dvh - var(--ac-viewport-gap))
+						);
 						position: absolute;
 						z-index: var(--z-dropdown);
 						left: 0;
+						top: calc(100% + var(--ac-suggest-offset));
 						padding: var(--ac-margin);
 						border-radius: 0 0 var(--ac-rad) var(--ac-rad);
 						box-shadow: var(--ac-box-shadow);
@@ -310,6 +362,11 @@ export class PdsOmnibox extends HTMLElement {
 							border-top-right-radius: 0;
 						}
 
+						.ac-suggestion {
+							top: auto;
+							bottom: calc(100% + var(--ac-suggest-offset));
+						}
+
 						.ac-itm:last-child {
 							border-bottom-left-radius: 0;
 							border-bottom-right-radius: 0;
@@ -359,6 +416,7 @@ export class PdsOmnibox extends HTMLElement {
 
 		this.#input.placeholder = this.placeholder;
 		this.#input.autocomplete = this.autocomplete;
+		if (this.#icon) this.#icon.setAttribute("icon", this.icon);
 
 		if (this.hasAttribute("value")) {
 			const v = this.getAttribute("value") || "";
@@ -416,12 +474,148 @@ export class PdsOmnibox extends HTMLElement {
       // }
 			//AutoComplete.connect(ev, settings, this.#root);
 
-      this.#input._autoComplete = new AutoComplete(this.#input.parentNode, this.#input, settings);
-      setTimeout(() => {
-          this.#input._autoComplete.focusHandler(e);
-        }, 100);
+			this.#input._autoComplete = new AutoComplete(this.#input.parentNode, this.#input, settings);
+			this.#wrapAutoCompleteResultsHandler(this.#input._autoComplete);
+			setTimeout(() => {
+				this.#input._autoComplete.focusHandler(e);
+				this.#setupAutoCompleteSizing();
+				this.#updateSuggestionMaxHeight();
+				this.#setupSuggestionsObserver();
+			}, 100);
 
 		}
+	}
+
+	#wrapAutoCompleteResultsHandler(autoComplete) {
+		if (!autoComplete || autoComplete.__pdsSuggestionsWrapped) return;
+		autoComplete.__pdsSuggestionsWrapped = true;
+		const originalResultsHandler = autoComplete.resultsHandler?.bind(autoComplete);
+		if (!originalResultsHandler) return;
+
+		autoComplete.resultsHandler = (results, options) => {
+			this.dispatchEvent(
+				new CustomEvent("suggestions-updated", {
+					detail: { results },
+					bubbles: true,
+					composed: true,
+				})
+			);
+			return originalResultsHandler(results, options);
+		};
+	}
+
+	#setupAutoCompleteSizing() {
+		if (this.#autoCompleteResizeHandler) return;
+		this.#autoCompleteResizeHandler = () => this.#updateSuggestionMaxHeight();
+		this.#autoCompleteScrollHandler = () => this.#updateSuggestionMaxHeight();
+		this.#autoCompleteViewportHandler = () => this.#updateSuggestionMaxHeight();
+
+		window.addEventListener("resize", this.#autoCompleteResizeHandler);
+		window.addEventListener("scroll", this.#autoCompleteScrollHandler, true);
+		if (window.visualViewport) {
+			window.visualViewport.addEventListener("resize", this.#autoCompleteViewportHandler);
+			window.visualViewport.addEventListener("scroll", this.#autoCompleteViewportHandler);
+		}
+	}
+
+	#setupSuggestionsObserver() {
+		if (this.#suggestionsObserver) return;
+		const container = this.#input?.parentElement;
+		const root = container?.shadowRoot ?? container;
+		const suggestion = root?.querySelector?.(".ac-suggestion");
+		if (!suggestion) return;
+		this.#suggestionsObserver = new MutationObserver(() => {
+			if (!suggestion.classList.contains("ac-active")) {
+				this.#resetIconToDefault();
+			}
+		});
+		this.#suggestionsObserver.observe(suggestion, {
+			attributes: true,
+			attributeFilter: ["class"],
+		});
+	}
+
+	#teardownSuggestionsObserver() {
+		if (!this.#suggestionsObserver) return;
+		this.#suggestionsObserver.disconnect();
+		this.#suggestionsObserver = null;
+	}
+
+	#teardownAutoCompleteSizing() {
+		if (!this.#autoCompleteResizeHandler) return;
+		window.removeEventListener("resize", this.#autoCompleteResizeHandler);
+		window.removeEventListener("scroll", this.#autoCompleteScrollHandler, true);
+		if (window.visualViewport) {
+			window.visualViewport.removeEventListener("resize", this.#autoCompleteViewportHandler);
+			window.visualViewport.removeEventListener("scroll", this.#autoCompleteViewportHandler);
+		}
+		this.#autoCompleteResizeHandler = null;
+		this.#autoCompleteScrollHandler = null;
+		this.#autoCompleteViewportHandler = null;
+	}
+
+	#updateSuggestionMaxHeight() {
+		if (!this.#input) return;
+		const container = this.#input.parentElement;
+		if (!container) return;
+
+		const rect = container.getBoundingClientRect();
+		const viewportHeight = window.visualViewport?.height || window.innerHeight;
+		const gap = this.#readSpacingToken(container, "--ac-viewport-gap") || 0;
+		const direction = container.getAttribute("data-direction") || "down";
+
+		const available = direction === "up"
+			? rect.top - gap
+			: viewportHeight - rect.bottom - gap;
+
+		const maxHeight = Math.max(0, Math.floor(available));
+		container.style.setProperty("--ac-max-height", `${maxHeight}px`);
+	}
+
+	#readSpacingToken(element, tokenName) {
+		const value = getComputedStyle(element).getPropertyValue(tokenName).trim();
+		if (!value) return 0;
+		if (!this.#lengthProbe) return 0;
+		this.#lengthProbe.style.height = value;
+		const resolved = getComputedStyle(this.#lengthProbe).height;
+		const parsed = Number.parseFloat(resolved);
+		return Number.isFinite(parsed) ? parsed : 0;
+	}
+
+	#handleSuggestionsUpdated(event) {
+		
+		const results = event?.detail?.results;
+		if (!Array.isArray(results) || !this.settings?.categories) return;
+		if (!results.length) {
+			this.#icon?.setAttribute("icon", this.icon);
+			return;
+		}
+
+		const categories = this.settings.categories;
+		const firstResult = results[0];
+		const categoryConfig = categories[firstResult?.category];
+		const useIconForInput = categoryConfig?.useIconForInput;
+
+		if (typeof useIconForInput === "string") {
+			this.#icon?.setAttribute("icon", useIconForInput);
+			return;
+		}
+
+		if (useIconForInput === true) {
+			const icon =
+				firstResult?.icon ||
+				firstResult?.element?.querySelector?.("pds-icon, svg-icon")?.getAttribute?.("icon");
+			if (icon) {
+				this.#icon?.setAttribute("icon", icon);
+				return;
+			}
+		}
+
+		this.#resetIconToDefault();
+	}
+
+	#resetIconToDefault() {
+		this.#icon?.setAttribute("icon", this.icon);
 	}
 }
 

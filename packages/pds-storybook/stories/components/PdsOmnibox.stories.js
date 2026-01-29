@@ -6,10 +6,63 @@ const docsParameters = {
   },
 };
 
+const settingsReferenceHtml = `
+  <h2 id="settings-reference">Settings Reference</h2>
+  <p>
+    <code>pds-omnibox</code> relies on a <code>settings</code> object to configure
+    autocomplete categories, item rendering, and behaviors.
+  </p>
+  <h3 id="settings-structure">Settings Structure</h3>
+  <pre><code class="language-js">const settings = {
+  hideCategory: false,
+  iconHandler: (item) =&gt; item.icon
+    ? '&lt;pds-icon icon=&quot;${"${item.icon}"}&quot; size=&quot;sm&quot;&gt;&lt;/pds-icon&gt;'
+    : null,
+  categories: {
+    Suggestions: {
+      useIconForInput: true,
+      sortIndex: 1,
+      trigger: (options) =&gt; true,
+      getItems: async (options) =&gt; [
+        { id: "home", text: "Home", icon: "house" }
+      ],
+      action: (item) =&gt; console.log(item)
+    }
+  }
+};
+</code></pre>
+  <h3 id="settings-options">Settings Options</h3>
+  <ul>
+    <li><code>hideCategory</code>: Hides the category label column in results.</li>
+    <li><code>iconHandler</code>: Returns HTML for a custom icon or image per item.</li>
+    <li><code>categories</code>: Map of category names to configuration objects.</li>
+  </ul>
+  <h3 id="category-options">Category Options</h3>
+  <ul>
+    <li><code>useIconForInput</code>: When true, uses the first result icon in the input.</li>
+    <li><code>sortIndex</code>: Determines category order (higher shows first).</li>
+    <li><code>trigger(options)</code>: Returns true when this category should run.</li>
+    <li><code>getItems(options)</code>: Returns result items for the category.</li>
+    <li><code>action(item)</code>: Called when a result is selected.</li>
+  </ul>
+  <h3 id="item-shape">Result Item Shape</h3>
+  <pre><code class="language-js">{
+  id: "unique-id",
+  text: "Display label",
+  description: "Optional subtext",
+  icon: "pds-icon-name",
+  image: "https://...",
+  element: HTMLElement // optional custom element
+}
+</code></pre>
+`;
+
 if (typeof window !== "undefined") {
   import("../reference/reference-docs.js")
     .then(({ createComponentDocsPage }) => {
-      docsParameters.page = createComponentDocsPage("pds-omnibox");
+      docsParameters.page = createComponentDocsPage("pds-omnibox", {
+        additionalContent: settingsReferenceHtml,
+      });
     })
     .catch((error) => {
       console.warn(
@@ -163,6 +216,7 @@ const combinedSettingsSource = `const settings = {
         : null,
   categories: {
     Featured: {
+      useIconForInput: true,
       sortIndex: 5,
       trigger: (options) => (options.search || "").length === 0,
       getItems: async () => {
@@ -242,6 +296,7 @@ const combinedSettings = {
         : null,
   categories: {
     Featured: {
+      useIconForInput: "list",
       sortIndex: 5,
       trigger: (options) => (options.search || "").length === 0,
       getItems: async () => {
