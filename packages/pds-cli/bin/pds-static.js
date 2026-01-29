@@ -155,9 +155,19 @@ async function resolveGeneratorOptions(rawConfig = {}) {
     }
 
     let mergedDesign = clone(matchedPreset);
-    if (config.design && typeof config.design === 'object') {
-      const overrides = clone(stripFunctions(config.design));
-      mergedDesign = deepMerge(mergedDesign, overrides);
+    const designOverrides =
+      config.design && typeof config.design === 'object'
+        ? clone(stripFunctions(config.design))
+        : null;
+    const iconOverrides =
+      config.icons && typeof config.icons === 'object'
+        ? clone(stripFunctions(config.icons))
+        : null;
+    if (designOverrides || iconOverrides) {
+      const mergedOverrides = iconOverrides
+        ? deepMerge(designOverrides || {}, { icons: iconOverrides })
+        : designOverrides;
+      mergedDesign = deepMerge(mergedDesign, mergedOverrides || {});
     }
 
     const {

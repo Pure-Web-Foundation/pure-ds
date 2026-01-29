@@ -2229,6 +2229,19 @@ customElements.define(
             </div>
           </section>
 
+          <h3>External Icons</h3>
+
+          <section class="showcase-section flex justify-center items-center" >
+            
+            <pds-icon icon="solid-anatomy-brain-1" ></pds-icon>
+            <div>
+              <code>solid-anatomy-brain-1.svg</code> is in ${window.PDS?.compiled?.tokens?.icons?.externalPath}
+            </div>
+
+            
+              
+          </section>
+
           <!-- Layout & Cards Section -->
           <section class="showcase-section alt-bg">
             <h2>

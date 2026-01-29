@@ -415,7 +415,7 @@ pds-demo {
 
 /* Showcase Sections */
 .showcase-section {
-  padding: var(--spacing-8) var(--spacing-6);
+  padding: var(--spacing-4) var(--spacing-3);
   margin-bottom: var(--spacing-6);
 
   border-radius: var(--radius-lg);

@@ -155,6 +155,12 @@ export function normalizeInitConfig(inputConfig = {}, options = {}, { presets, d
   // New API: { preset?: string, design?: object }
   const presetId = inputConfig && inputConfig.preset;
   const designOverrides = inputConfig && inputConfig.design;
+  const iconOverrides =
+    inputConfig &&
+    inputConfig.icons &&
+    typeof inputConfig.icons === "object"
+      ? inputConfig.icons
+      : null;
 
   const hasNewShape =
     "preset" in (inputConfig || {}) ||
@@ -184,10 +190,24 @@ export function normalizeInitConfig(inputConfig = {}, options = {}, { presets, d
 
     // Merge preset with design overrides
     let mergedDesign = structuredClone(found);
-    if (designOverrides && typeof designOverrides === "object") {
+    if (
+      (designOverrides && typeof designOverrides === "object") ||
+      iconOverrides
+    ) {
       // Strip functions before cloning to avoid DataCloneError
-      const cloneableDesign = stripFunctions(designOverrides);
-      mergedDesign = __deepMerge(mergedDesign, structuredClone(cloneableDesign));
+      const cloneableDesign = designOverrides
+        ? stripFunctions(designOverrides)
+        : {};
+      const cloneableIcons = iconOverrides
+        ? stripFunctions(iconOverrides)
+        : null;
+      const mergedOverrides = cloneableIcons
+        ? __deepMerge(cloneableDesign, { icons: cloneableIcons })
+        : cloneableDesign;
+      mergedDesign = __deepMerge(
+        mergedDesign,
+        structuredClone(mergedOverrides)
+      );
     }
 
     // Build structured config with design nested
