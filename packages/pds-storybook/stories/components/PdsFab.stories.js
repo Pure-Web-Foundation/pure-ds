@@ -25,6 +25,16 @@ const docsParameters = {
   },
 };
 
+const threeSatellitesSource = `const satellites = [
+  { key: "camera", icon: "camera", label: "Take Photo" },
+  { key: "image", icon: "image", label: "Choose Image" },
+  { key: "file", icon: "file", label: "Upload File" },
+];
+
+<pds-fab .satellites=${"${satellites}"}>
+  <pds-icon icon="plus" size="lg"></pds-icon>
+</pds-fab>`;
+
 const whenFabReady = (selector, callback) => {
   customElements.whenDefined("pds-fab").then(() => {
     const waitForFab = () => {
@@ -109,7 +119,7 @@ export const NoSatellites = {
       </div>
 
       <pds-fab id="fab-no-sats">
-        <pds-icon icon="plus" size="lg"></pds-icon>
+        <pds-icon icon="plus" morph size="lg"></pds-icon>
       </pds-fab>
     `;
   },
@@ -117,12 +127,14 @@ export const NoSatellites = {
 
 export const ThreeSatellites = {
   render: () => {
+    const satellites = [
+      { key: "camera", icon: "camera", label: "Take Photo" },
+      { key: "image", icon: "image", label: "Choose Image" },
+      { key: "file", icon: "file", label: "Upload File" },
+    ];
+
     whenFabReady("#fab-three", (fab) => {
-      fab.satellites = [
-        { key: "camera", icon: "camera", label: "Take Photo" },
-        { key: "image", icon: "image", label: "Choose Image" },
-        { key: "file", icon: "file", label: "Upload File" },
-      ];
+      fab.satellites = satellites;
 
       fab.addEventListener("satellite-click", (e) => {
         console.log("Satellite clicked:", e.detail);
@@ -142,10 +154,18 @@ export const ThreeSatellites = {
         </p>
       </div>
 
-      <pds-fab id="fab-three">
+      <pds-fab id="fab-three" .satellites=${satellites}>
         <pds-icon icon="plus" size="lg"></pds-icon>
       </pds-fab>
     `;
+  },
+  parameters: {
+    docs: {
+      source: {
+        type: "code",
+        code: threeSatellitesSource,
+      },
+    },
   },
 };
 
@@ -215,7 +235,7 @@ export const MaxSatellites = {
       </div>
 
       <pds-fab id="fab-max">
-        <pds-icon icon="list" size="lg"></pds-icon>
+        <pds-icon icon="list" morph size="lg"></pds-icon>
       </pds-fab>
     `;
   },
@@ -256,7 +276,7 @@ export const CustomStyling = {
       </style>
 
       <pds-fab id="fab-custom">
-        <pds-icon icon="heart" size="xl"></pds-icon>
+        <pds-icon icon="heart" morph size="xl"></pds-icon>
       </pds-fab>
     `;
   },
@@ -456,7 +476,7 @@ export const Playground = {
         spread="${args.spread}"
         start-angle="${args.startAngle}"
       >
-        <pds-icon icon="gear" size="lg"></pds-icon>
+        <pds-icon icon="gear" morph size="lg"></pds-icon>
       </pds-fab>
     `;
   },
@@ -581,7 +601,7 @@ fab.addEventListener('satellite-click', (e) => {
       </div>
 
       <pds-fab id="fab-programmatic">
-        <pds-icon icon="sparkle" size="lg"></pds-icon>
+        <pds-icon icon="sparkle" morph size="lg"></pds-icon>
       </pds-fab>
     `;
   },

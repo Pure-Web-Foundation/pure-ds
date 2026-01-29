@@ -288,7 +288,6 @@ const combinedSettingsSource = `const settings = {
 
 const combinedSettings = {
   hideCategory: false,
-  useIconForInput: true,
   iconHandler: (item) =>
     item.image
       ? `<img src="${item.image}" alt="" loading="lazy" />`
@@ -326,35 +325,27 @@ const combinedSettings = {
     },
     Actions: {
       sortIndex: 4,
-      
-      trigger: () => true,
-      useIconForInput: "lightning",
-      getItems: async (options) => {
-        const search = (options.search || "").toLowerCase();
-        const items = [
-          {
-            id: "new-post",
-            text: "Create post",
-            icon: "plus",
-            description: "Quick action",
-          },
-          {
-            id: "new-event",
-            text: "Create event",
-            icon: "calendar",
-            description: "Quick action",
-          },
-          {
-            id: "new-message",
-            text: "Send message",
-            icon: "envelope",
-            description: "Quick action",
-          },
-        ];
-
-        if (search.length === 0) return items;
-        return items.filter((item) => item.text.toLowerCase().includes(search));
-      },
+      trigger: (options) => (options.search || "").length === 0,
+      getItems: async () => [
+        {
+          id: "new-post",
+          text: "Create post",
+          icon: "plus",
+          description: "Quick action",
+        },
+        {
+          id: "new-event",
+          text: "Create event",
+          icon: "calendar",
+          description: "Quick action",
+        },
+        {
+          id: "new-message",
+          text: "Send message",
+          icon: "envelope",
+          description: "Quick action",
+        },
+      ],
       action: (options) => {
         if (window?.PDS?.toast) {
           window.PDS.toast(`Action: ${options.text}`, {
@@ -399,7 +390,6 @@ const combinedSettings = {
     },
     People: {
       sortIndex: 2,
-      useIconForInput: "user",
       trigger: (options) => (options.search || "").startsWith("@"),
       getItems: async (options) => {
         const q = (options.search || "").replace(/^@/, "").toLowerCase();

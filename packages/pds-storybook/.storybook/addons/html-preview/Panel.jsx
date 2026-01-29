@@ -109,11 +109,12 @@ const CheckIcon = () => (
 );
 
 export const Panel = ({ active }) => {
-  const [source, setSource] = useState({ markup: '', forms: [], omniboxes: [] });
+  const [source, setSource] = useState({ markup: '', forms: [], omniboxes: [], fabs: [] });
   const [copied, setCopied] = useState(false);
   const [highlightedMarkup, setHighlightedMarkup] = useState('');
   const [highlightedforms, setHighlightedforms] = useState([]);
   const [highlightedOmniboxes, setHighlightedOmniboxes] = useState([]);
+  const [highlightedFabs, setHighlightedFabs] = useState([]);
   const shikiRef = useRef(null);
   
   // Get Storybook theme to detect light/dark mode
@@ -232,10 +233,44 @@ export const Panel = ({ active }) => {
     processOmniboxes();
   }, [source.omniboxes, shikiTheme]);
 
+  // Highlight fab satellites when source or theme changes
+  useEffect(() => {
+    if (!source.fabs || source.fabs.length === 0) {
+      setHighlightedFabs([]);
+      return;
+    }
+
+    const highlightCode = async (code) => {
+      if (!code) return '';
+      const highlighter = shikiRef.current || await loadShiki();
+      if (highlighter) {
+        try {
+          return highlighter.codeToHtml(code, { lang: 'javascript', theme: shikiTheme });
+        } catch (err) {
+          return `<pre><code>${escapeHtml(code)}</code></pre>`;
+        }
+      }
+      return `<pre><code>${escapeHtml(code)}</code></pre>`;
+    };
+
+    const processFabs = async () => {
+      const highlighted = await Promise.all(
+        source.fabs.map(async (fab, index) => ({
+          id: fab.id ?? index,
+          label: fab.label,
+          satellites: await highlightCode(fab.satellites)
+        }))
+      );
+      setHighlightedFabs(highlighted);
+    };
+
+    processFabs();
+  }, [source.fabs, shikiTheme]);
+
   useChannel({
     [EVENTS.UPDATE_HTML]: (payload) => {
       if (typeof payload === 'string') {
-        setSource({ markup: payload || '', forms: [], omniboxes: [] });
+        setSource({ markup: payload || '', forms: [], omniboxes: [], fabs: [] });
         return;
       }
 
@@ -243,18 +278,19 @@ export const Panel = ({ active }) => {
         setSource({
           markup: payload.markup || '',
           forms: Array.isArray(payload.forms) ? payload.forms : [],
-          omniboxes: Array.isArray(payload.omniboxes) ? payload.omniboxes : []
+          omniboxes: Array.isArray(payload.omniboxes) ? payload.omniboxes : [],
+          fabs: Array.isArray(payload.fabs) ? payload.fabs : []
         });
         return;
       }
 
-      setSource({ markup: '', forms: [], omniboxes: [] });
+      setSource({ markup: '', forms: [], omniboxes: [], fabs: [] });
     }
   });
 
   // Request HTML update when panel becomes active
   React.useEffect(() => {
-    if (active && !source.markup && source.forms.length === 0 && source.omniboxes.length === 0) {
+    if (active && !source.markup && source.forms.length === 0 && source.omniboxes.length === 0 && source.fabs.length === 0) {
       // Trigger a re-extraction by emitting a request event
       // The decorator will pick this up on the next render cycle
       const container = document.querySelector('#storybook-root');
@@ -266,7 +302,7 @@ export const Panel = ({ active }) => {
         }, 100);
       }
     }
-  }, [active, source.markup, source.forms.length, source.omniboxes.length]);
+  }, [active, source.markup, source.forms.length, source.omniboxes.length, source.fabs.length]);
 
   const copyToClipboard = useCallback(async () => {
     try {
@@ -282,8 +318,9 @@ export const Panel = ({ active }) => {
   const hasMarkup = Boolean(source.markup);
   const hasforms = source.forms.length > 0;
   const hasOmniboxes = source.omniboxes.length > 0;
+  const hasFabs = source.fabs.length > 0;
 
-  if (!hasMarkup && !hasforms && !hasOmniboxes) {
+  if (!hasMarkup && !hasforms && !hasOmniboxes && !hasFabs) {
     return (
       <Container>
         <EmptyState>
@@ -300,6 +337,31 @@ export const Panel = ({ active }) => {
         <SectionWrapper>
           <SectionHeading>Markup</SectionHeading>
           <CodeBlock dangerouslySetInnerHTML={{ __html: highlightedMarkup }} />
+        </SectionWrapper>
+      )}
+
+      {hasFabs && (
+        <SectionWrapper>
+          <SectionHeading>satellites</SectionHeading>
+          {source.fabs.map((sourceFab, index) => {
+            const key = sourceFab.id ?? index;
+            const highlightedFab = highlightedFabs[index];
+            const label = source.fabs.length > 1 ? (sourceFab.label || `Fab ${index + 1}`) : null;
+
+            return (
+              <div key={key}>
+                {label && <Subheading>{label}</Subheading>}
+                {sourceFab.satellites && (
+                  <CodeBlock
+                    $compact
+                    dangerouslySetInnerHTML={{
+                      __html: highlightedFab?.satellites || `<pre><code>${escapeHtml(sourceFab.satellites)}</code></pre>`
+                    }}
+                  />
+                )}
+              </div>
+            );
+          })}
         </SectionWrapper>
       )}
 
@@ -374,6 +436,7 @@ export const Panel = ({ active }) => {
           </SectionWrapper>
         );
       })}
+
 
       {hasMarkup && (
         <CopyButton

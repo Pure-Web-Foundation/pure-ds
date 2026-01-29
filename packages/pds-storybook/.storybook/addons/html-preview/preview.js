@@ -231,6 +231,31 @@ function generatePdsOmniboxMarkup(omniboxElement) {
 }
 
 /**
+ * Generate realistic source code for pds-fab elements
+ */
+function generatePdsFabMarkup(fabElement) {
+  const attrs = [];
+
+  const stringAttrs = ['id', 'radius', 'spread', 'start-angle'];
+  stringAttrs.forEach((attr) => {
+    const value = fabElement.getAttribute(attr);
+    if (value !== null && value !== undefined && value !== '') {
+      attrs.push(`${attr}="${value}"`);
+    }
+  });
+
+  if (fabElement.satellites) {
+    attrs.push('.satellites=${satellites}');
+  }
+
+  const formattedAttrs = attrs.length > 0
+    ? '\n  ' + attrs.join('\n  ') + '\n'
+    : '';
+
+  return `<pds-fab${formattedAttrs}>\n  <pds-icon icon="plus" size="lg"></pds-icon>\n</pds-fab>`;
+}
+
+/**
  * Global decorator that extracts and sends HTML to the panel
  */
 export const withHTMLExtractor = (storyFn, context) => {
@@ -247,7 +272,11 @@ export const withHTMLExtractor = (storyFn, context) => {
       // Check if this story has pds-form or pds-omnibox elements
       const pdsFormElements = Array.from(container.querySelectorAll('pds-form'));
       const pdsOmniboxElements = Array.from(container.querySelectorAll('pds-omnibox'));
-      const hasSpecialElements = pdsFormElements.length > 0 || pdsOmniboxElements.length > 0;
+      const pdsFabElements = Array.from(container.querySelectorAll('pds-fab'));
+      const hasSpecialElements =
+        pdsFormElements.length > 0 ||
+        pdsOmniboxElements.length > 0 ||
+        pdsFabElements.length > 0;
 
       if (hasSpecialElements) {
         // Generate realistic markup for pds-form / pds-omnibox stories
@@ -271,6 +300,11 @@ export const withHTMLExtractor = (storyFn, context) => {
         // Add pds-omnibox markup
         pdsOmniboxElements.forEach(omnibox => {
           markup += generatePdsOmniboxMarkup(omnibox);
+        });
+
+        // Add pds-fab markup
+        pdsFabElements.forEach(fab => {
+          markup += generatePdsFabMarkup(fab);
         });
 
         html = markup;
@@ -326,10 +360,32 @@ export const withHTMLExtractor = (storyFn, context) => {
         })
         .filter((entry) => entry.settings);
 
+      const fabs = pdsFabElements
+        .map((fab, index) => {
+          const label =
+            fab.getAttribute?.('id') ||
+            (pdsFabElements.length > 1 ? `Fab ${index + 1}` : 'Fab');
+
+          const satellitesSource =
+            fab.getAttribute?.('data-satellites-source') ||
+            fab.dataset?.satellitesSource ||
+            null;
+
+          const satellites = satellitesSource || serializeForDisplay(fab.satellites);
+
+          return {
+            id: index,
+            label,
+            satellites
+          };
+        })
+        .filter((entry) => entry.satellites);
+
       channel.emit(EVENTS.UPDATE_HTML, {
         markup: html || '',
         forms,
-        omniboxes
+        omniboxes,
+        fabs
       });
     }
   };
