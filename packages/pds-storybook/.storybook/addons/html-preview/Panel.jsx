@@ -109,10 +109,11 @@ const CheckIcon = () => (
 );
 
 export const Panel = ({ active }) => {
-  const [source, setSource] = useState({ markup: '', forms: [] });
+  const [source, setSource] = useState({ markup: '', forms: [], omniboxes: [] });
   const [copied, setCopied] = useState(false);
   const [highlightedMarkup, setHighlightedMarkup] = useState('');
   const [highlightedforms, setHighlightedforms] = useState([]);
+  const [highlightedOmniboxes, setHighlightedOmniboxes] = useState([]);
   const shikiRef = useRef(null);
   
   // Get Storybook theme to detect light/dark mode
@@ -197,28 +198,63 @@ export const Panel = ({ active }) => {
     processforms();
   }, [source.forms, shikiTheme]);
 
+  // Highlight omnibox settings when source or theme changes
+  useEffect(() => {
+    if (!source.omniboxes || source.omniboxes.length === 0) {
+      setHighlightedOmniboxes([]);
+      return;
+    }
+
+    const highlightCode = async (code) => {
+      if (!code) return '';
+      const highlighter = shikiRef.current || await loadShiki();
+      if (highlighter) {
+        try {
+          return highlighter.codeToHtml(code, { lang: 'javascript', theme: shikiTheme });
+        } catch (err) {
+          return `<pre><code>${escapeHtml(code)}</code></pre>`;
+        }
+      }
+      return `<pre><code>${escapeHtml(code)}</code></pre>`;
+    };
+
+    const processOmniboxes = async () => {
+      const highlighted = await Promise.all(
+        source.omniboxes.map(async (omnibox, index) => ({
+          id: omnibox.id ?? index,
+          label: omnibox.label,
+          settings: await highlightCode(omnibox.settings)
+        }))
+      );
+      setHighlightedOmniboxes(highlighted);
+    };
+
+    processOmniboxes();
+  }, [source.omniboxes, shikiTheme]);
+
   useChannel({
     [EVENTS.UPDATE_HTML]: (payload) => {
       if (typeof payload === 'string') {
-        setSource({ markup: payload || '', forms: [] });
+        setSource({ markup: payload || '', forms: [], omniboxes: [] });
         return;
       }
 
       if (payload && typeof payload === 'object') {
         setSource({
           markup: payload.markup || '',
-          forms: Array.isArray(payload.forms) ? payload.forms : []
+          forms: Array.isArray(payload.forms) ? payload.forms : [],
+          omniboxes: Array.isArray(payload.omniboxes) ? payload.omniboxes : []
         });
         return;
       }
 
-      setSource({ markup: '', forms: [] });
+      setSource({ markup: '', forms: [], omniboxes: [] });
     }
   });
 
   // Request HTML update when panel becomes active
   React.useEffect(() => {
-    if (active && !source.markup && source.forms.length === 0) {
+    if (active && !source.markup && source.forms.length === 0 && source.omniboxes.length === 0) {
       // Trigger a re-extraction by emitting a request event
       // The decorator will pick this up on the next render cycle
       const container = document.querySelector('#storybook-root');
@@ -230,7 +266,7 @@ export const Panel = ({ active }) => {
         }, 100);
       }
     }
-  }, [active, source.markup, source.forms.length]);
+  }, [active, source.markup, source.forms.length, source.omniboxes.length]);
 
   const copyToClipboard = useCallback(async () => {
     try {
@@ -245,8 +281,9 @@ export const Panel = ({ active }) => {
 
   const hasMarkup = Boolean(source.markup);
   const hasforms = source.forms.length > 0;
+  const hasOmniboxes = source.omniboxes.length > 0;
 
-  if (!hasMarkup && !hasforms) {
+  if (!hasMarkup && !hasforms && !hasOmniboxes) {
     return (
       <Container>
         <EmptyState>
@@ -307,6 +344,30 @@ export const Panel = ({ active }) => {
                   dangerouslySetInnerHTML={{ 
                     __html: highlightedForm?.options || `<pre><code>${escapeHtml(sourceForm.options)}</code></pre>` 
                   }} 
+                />
+              </>
+            )}
+          </SectionWrapper>
+        );
+      })}
+
+      {hasOmniboxes && source.omniboxes.map((sourceOmnibox, index) => {
+        const key = sourceOmnibox.id ?? index;
+        const highlightedOmnibox = highlightedOmniboxes[index];
+        const heading = source.omniboxes.length > 1 ? (sourceOmnibox.label || `Omnibox ${index + 1}`) : 'pds-omnibox';
+
+        return (
+          <SectionWrapper key={key}>
+            <SectionHeading>{heading}</SectionHeading>
+
+            {sourceOmnibox.settings && (
+              <>
+                <Subheading>settings</Subheading>
+                <CodeBlock
+                  $compact
+                  dangerouslySetInnerHTML={{
+                    __html: highlightedOmnibox?.settings || `<pre><code>${escapeHtml(sourceOmnibox.settings)}</code></pre>`
+                  }}
                 />
               </>
             )}

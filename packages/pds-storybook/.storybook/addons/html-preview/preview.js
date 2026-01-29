@@ -198,6 +198,39 @@ function generatePdsFormMarkup(formElement) {
 }
 
 /**
+ * Generate realistic source code for pds-omnibox elements
+ */
+function generatePdsOmniboxMarkup(omniboxElement) {
+  const attrs = [];
+
+  const stringAttrs = ['name', 'placeholder', 'value', 'autocomplete'];
+  stringAttrs.forEach((attr) => {
+    const value = omniboxElement.getAttribute(attr);
+    if (value !== null && value !== undefined && value !== '') {
+      attrs.push(`${attr}="${value}"`);
+    }
+  });
+
+  if (omniboxElement.hasAttribute('required')) {
+    attrs.push('required');
+  }
+
+  if (omniboxElement.hasAttribute('disabled')) {
+    attrs.push('disabled');
+  }
+
+  if (omniboxElement.settings) {
+    attrs.push('.settings=${settings}');
+  }
+
+  const formattedAttrs = attrs.length > 0
+    ? '\n  ' + attrs.join('\n  ') + '\n'
+    : '';
+
+  return `<pds-omnibox${formattedAttrs}></pds-omnibox>`;
+}
+
+/**
  * Global decorator that extracts and sends HTML to the panel
  */
 export const withHTMLExtractor = (storyFn, context) => {
@@ -211,14 +244,16 @@ export const withHTMLExtractor = (storyFn, context) => {
     // Try to get HTML from the story container
     const container = document.querySelector('#storybook-root');
     if (container) {
-      // Check if this story has pds-form elements
+      // Check if this story has pds-form or pds-omnibox elements
       const pdsFormElements = Array.from(container.querySelectorAll('pds-form'));
-      
-      if (pdsFormElements.length > 0) {
-        // Generate realistic markup for pds-form stories
+      const pdsOmniboxElements = Array.from(container.querySelectorAll('pds-omnibox'));
+      const hasSpecialElements = pdsFormElements.length > 0 || pdsOmniboxElements.length > 0;
+
+      if (hasSpecialElements) {
+        // Generate realistic markup for pds-form / pds-omnibox stories
         const alerts = Array.from(container.querySelectorAll('.callout'));
         let markup = '';
-        
+
         // Include any alert/info boxes before the form
         if (alerts.length > 0) {
           alerts.forEach(alert => {
@@ -227,12 +262,17 @@ export const withHTMLExtractor = (storyFn, context) => {
             markup += `</div>\n\n`;
           });
         }
-        
+
         // Add pds-form markup
         pdsFormElements.forEach(form => {
           markup += generatePdsFormMarkup(form);
         });
-        
+
+        // Add pds-omnibox markup
+        pdsOmniboxElements.forEach(omnibox => {
+          markup += generatePdsOmniboxMarkup(omnibox);
+        });
+
         html = markup;
       } else {
         // No pds-form elements, use standard extraction
@@ -264,9 +304,32 @@ export const withHTMLExtractor = (storyFn, context) => {
         })
         .filter((entry) => entry.jsonSchema || entry.uiSchema || entry.options);
 
+      const omniboxes = pdsOmniboxElements
+        .map((omnibox, index) => {
+          const label =
+            omnibox.getAttribute?.('id') ||
+            omnibox.getAttribute?.('name') ||
+            (pdsOmniboxElements.length > 1 ? `Omnibox ${index + 1}` : 'Omnibox');
+
+          const settingsSource =
+            omnibox.getAttribute?.('data-settings-source') ||
+            omnibox.dataset?.settingsSource ||
+            null;
+
+          const settings = settingsSource || serializeForDisplay(omnibox.settings);
+
+          return {
+            id: index,
+            label,
+            settings
+          };
+        })
+        .filter((entry) => entry.settings);
+
       channel.emit(EVENTS.UPDATE_HTML, {
         markup: html || '',
-        forms
+        forms,
+        omniboxes
       });
     }
   };
