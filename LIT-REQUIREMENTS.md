@@ -28,7 +28,7 @@ Enhanced the `onError` handler in auto-define configuration to:
 ❌ PDS component <pds-form> requires Lit but #pds/lit is not in import map.
 Add this to your HTML <head>:
 <script type="importmap">
-  { "imports": { "#pds/lit": "./path/to/lit.js" } }
+  { "imports": { "#pds/lit": "./path/to/pds/external/lit.js" } }
 </script>
 See: https://github.com/pure-ds/core#lit-components
 ```
@@ -61,7 +61,7 @@ Added comprehensive guidance for AI code generation:
   <script type="importmap">
   {
     "imports": {
-      "#pds/lit": "/assets/js/lit.js"
+      "#pds/lit": "/assets/pds/external/lit.js"
     }
   }
   </script>
@@ -101,6 +101,15 @@ module.exports = {
   }
 };
 ```
+
+### What `#pds/lit` includes
+The PDS bundle re-exports official Lit APIs and adds PDS-specific helpers:
+- `lazyProps` (defers object prop setting until the element is defined)
+- `msg()` (PDS localization helper)
+- `loadLocale()` (loads translation strings)
+
+### Prefer your own Lit bundle?
+If you don’t want the convenience bundle, create a local module (e.g., `pds-lit.js`) that re-exports Lit and defines `lazyProps`. Then map `#pds/lit` to it in your bundler or import map. Reference implementation is in [src/js/lit.js](src/js/lit.js).
 
 ## Testing
 Created `test-lit-detection.html` to verify the improved error messages when import map is missing.

@@ -14,8 +14,13 @@ const copyManagerToCorePlugin = {
         const managerSrc = path.join(process.cwd(), "public", "assets", "js", "pds-manager.js");
         const managerDest = path.join(coreDir, "pds-manager.js");
         await copyFile(managerSrc, managerDest);
+        const externalDir = path.join(process.cwd(), "public", "assets", "pds", "external");
+        await mkdir(externalDir, { recursive: true });
+        const litSrc = path.join(process.cwd(), "public", "assets", "js", "lit.js");
+        const litDest = path.join(externalDir, "lit.js");
+        await copyFile(litSrc, litDest);
       } catch (err) {
-        console.warn("[pds] Failed to copy pds-manager.js to public/assets/pds/core:", err.message);
+        console.warn("[pds] Failed to copy PDS runtime assets to public/assets/pds:", err.message);
       }
     });
   },

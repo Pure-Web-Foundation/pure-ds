@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html } from "#pds/lit";
 import { toastFormData } from "../utils/toast-utils.js";
 
 const styles = html`

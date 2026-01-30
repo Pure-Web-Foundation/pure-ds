@@ -447,6 +447,22 @@ async function main(options = {}) {
     log(`⚠️  Failed to copy pds-manager.js: ${e?.message || e}`, 'yellow');
   }
 
+  // 4c) Copy Lit bundle into target/external for #pds/lit import map
+  try {
+    const litSource = path.join(repoRoot, 'public/assets/js/lit.js');
+    if (!existsSync(litSource)) {
+      log('⚠️  lit.js not found in package assets; skipping copy', 'yellow');
+    } else {
+      const externalDir = path.join(targetDir, 'external');
+      await mkdir(externalDir, { recursive: true });
+      const litTarget = path.join(externalDir, 'lit.js');
+      await copyFile(litSource, litTarget);
+      log(`✅ Copied Lit bundle → ${path.relative(process.cwd(), litTarget)}`, 'green');
+    }
+  } catch (e) {
+    log(`⚠️  Failed to copy lit.js: ${e?.message || e}`, 'yellow');
+  }
+
   // 5) Generate CSS layers into target/styles
   log('🧬 Generating styles...', 'bold');
   const { Generator } = await loadGenerator();
@@ -588,6 +604,7 @@ async function main(options = {}) {
   log('✅ PDS static assets ready', 'green');
   log(`📍 Location: ${path.relative(process.cwd(), targetDir)}`);
   log('• components → components/*.js');
+  log('• external → external/lit.js');
   log('• styles → styles/pds-*.css (+ .css.js modules)');
   log('• intellisense → custom-elements.json, vscode-custom-data.json');
   log('• intellisense → pds.css-data.json, pds-css-complete.json');

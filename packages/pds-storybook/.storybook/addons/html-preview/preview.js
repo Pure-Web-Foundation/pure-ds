@@ -33,7 +33,8 @@ function formatHTML(html) {
     }
   });
   
-  return formatted.trim();
+  const cleaned = formatted.trim();
+  return cleaned.replace(/\s([\w:-]+)=""/g, ' $1');
 }
 
 /**
@@ -45,10 +46,20 @@ function extractHTML(element) {
   const clone = element.cloneNode(true);
   
   // Clean up Storybook-specific attributes
+  const runtimeDataAttrs = new Set([
+    'data-original-icon',
+    'data-icon',
+    'data-uid',
+    'data-rendered',
+    'data-runtime',
+    'data-pds-runtime'
+  ]);
+
   const cleanElement = (el) => {
     if (el.removeAttribute) {
       el.removeAttribute('data-story-id');
       el.removeAttribute('data-view-mode');
+      runtimeDataAttrs.forEach((attr) => el.removeAttribute(attr));
     }
     if (el.children) {
       Array.from(el.children).forEach(cleanElement);
@@ -244,15 +255,23 @@ function generatePdsFabMarkup(fabElement) {
     }
   });
 
-  if (fabElement.satellites) {
-    attrs.push('.satellites=${satellites}');
+  if (Array.isArray(fabElement.satellites) && fabElement.satellites.length > 0) {
+    const satellitesSource =
+      fabElement.getAttribute?.('data-satellites-source') ||
+      fabElement.dataset?.satellitesSource ||
+      null;
+    attrs.push(satellitesSource || '.satellites=${satellites}');
   }
 
   const formattedAttrs = attrs.length > 0
     ? '\n  ' + attrs.join('\n  ') + '\n'
     : '';
 
-  return `<pds-fab${formattedAttrs}>\n  <pds-icon icon="plus" size="lg"></pds-icon>\n</pds-fab>`;
+  const icon = fabElement.querySelector?.('pds-icon');
+  const iconMarkup = icon?.outerHTML || '<pds-icon icon="plus" size="lg"></pds-icon>';
+  const normalizedIcon = iconMarkup.replace(/\s([\w:-]+)=""/g, ' $1');
+
+  return `<pds-fab${formattedAttrs}>\n  ${normalizedIcon}\n</pds-fab>`;
 }
 
 /**

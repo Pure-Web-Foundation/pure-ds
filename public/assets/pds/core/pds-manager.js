@@ -1,3977 +1,50 @@
-var __defProp = Object.defineProperty;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __esm = (fn, res) => function __init() {
-  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
-};
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
-
-// src/js/pds-core/pds-enums.js
-var pds_enums_exports = {};
-__export(pds_enums_exports, {
-  enums: () => enums
-});
-var enums;
-var init_pds_enums = __esm({
-  "src/js/pds-core/pds-enums.js"() {
-    enums = {
-      FontWeights: {
-        light: 300,
-        normal: 400,
-        medium: 500,
-        semibold: 600,
-        bold: 700
-      },
-      LineHeights: {
-        tight: 1.25,
-        normal: 1.5,
-        relaxed: 1.75
-      },
-      BorderWidths: {
-        hairline: 0.5,
-        thin: 1,
-        medium: 2,
-        thick: 3
-      },
-      RadiusSizes: {
-        none: 0,
-        small: 4,
-        medium: 8,
-        large: 16,
-        xlarge: 24,
-        xxlarge: 32
-      },
-      ShadowDepths: {
-        none: "none",
-        light: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-        medium: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-        deep: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-        extreme: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
-      },
-      TransitionSpeeds: {
-        fast: 150,
-        normal: 250,
-        slow: 350
-      },
-      AnimationEasings: {
-        linear: "linear",
-        ease: "ease",
-        "ease-in": "ease-in",
-        "ease-out": "ease-out",
-        "ease-in-out": "ease-in-out",
-        bounce: "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
-      },
-      TouchTargetSizes: {
-        compact: 36,
-        standard: 44,
-        // iOS/Android accessibility standard
-        comfortable: 48,
-        spacious: 56
-      },
-      LinkStyles: {
-        inline: "inline",
-        // Normal inline text links
-        block: "block",
-        // Block-level links
-        button: "button"
-        // Button-like links (flex with touch target)
-      },
-      FocusStyles: {
-        ring: "ring",
-        // Box-shadow ring (default)
-        outline: "outline",
-        // Browser outline
-        border: "border",
-        // Border change
-        glow: "glow"
-        // Subtle glow effect
-      },
-      TabSizes: {
-        compact: 2,
-        standard: 4,
-        wide: 8
-      },
-      SelectIcons: {
-        chevron: "chevron",
-        // Standard chevron down
-        arrow: "arrow",
-        // Simple arrow
-        caret: "caret",
-        // Triangle caret
-        none: "none"
-        // No icon
-      },
-      IconSizes: {
-        xs: 16,
-        sm: 20,
-        md: 24,
-        lg: 32,
-        xl: 48,
-        "2xl": 64,
-        "3xl": 96
-      }
-    };
-  }
-});
-
-// src/js/pds-core/pds-ontology.js
-var pds_ontology_exports = {};
-__export(pds_ontology_exports, {
-  default: () => pds_ontology_default,
-  findComponentForElement: () => findComponentForElement,
-  getAllSelectors: () => getAllSelectors,
-  getAllTags: () => getAllTags,
-  getByCategory: () => getByCategory,
-  ontology: () => ontology,
-  searchOntology: () => searchOntology
-});
-function tryMatches(el, selector) {
-  if (!el || !selector)
-    return false;
-  try {
-    return el.matches(selector);
-  } catch (e) {
-    return false;
-  }
-}
-function safeClosest(el, selector) {
-  if (!el || !selector || !el.closest)
-    return null;
-  try {
-    return el.closest(selector);
-  } catch (e) {
-    return null;
-  }
-}
-function findComponentForElement(startEl, { maxDepth = 5 } = {}) {
-  if (!startEl)
-    return null;
-  if (startEl.closest && startEl.closest(".showcase-toc"))
-    return null;
-  let current = startEl;
-  let depth = 0;
-  while (current && depth < maxDepth) {
-    depth++;
-    if (current.tagName === "DS-SHOWCASE")
-      return null;
-    if (current.classList && current.classList.contains("showcase-section")) {
-      current = current.parentElement;
-      continue;
-    }
-    for (const enh of PDS.ontology.enhancements) {
-      const sel = enh.selector || enh;
-      if (tryMatches(current, sel)) {
-        return { element: current, componentType: "enhanced-component", displayName: enh.description || sel, id: enh.id };
-      }
-    }
-    if (current.tagName === "FIELDSET") {
-      const role = current.getAttribute("role");
-      if (role === "group" || role === "radiogroup") {
-        return { element: current, componentType: "form-group", displayName: role === "radiogroup" ? "radio group" : "form group" };
-      }
-    }
-    if (current.tagName === "LABEL") {
-      if (current.querySelector && current.querySelector("input,select,textarea")) {
-        return { element: current, componentType: "form-control", displayName: "label with input" };
-      }
-    }
-    const labelAncestor = current.closest ? current.closest("label") : null;
-    if (labelAncestor && labelAncestor.querySelector && labelAncestor.querySelector("input,select,textarea")) {
-      return { element: labelAncestor, componentType: "form-control", displayName: "label with input" };
-    }
-    for (const prim of PDS.ontology.primitives) {
-      for (const sel of prim.selectors || []) {
-        const s = String(sel || "").trim();
-        if (s.includes("*")) {
-          if (s.startsWith(".")) {
-            const prefix = s.slice(1).replace(/\*/g, "");
-            if (current.classList && Array.from(current.classList).some((c) => c.startsWith(prefix))) {
-              return { element: current, componentType: "pds-primitive", displayName: prim.name || prim.id, id: prim.id, tags: prim.tags };
-            }
-            let ancestor2 = current.parentElement;
-            let levels = 0;
-            while (ancestor2 && levels < maxDepth) {
-              if (ancestor2.classList && Array.from(ancestor2.classList).some((c) => c.startsWith(prefix)) && ancestor2.tagName !== "DS-SHOWCASE") {
-                return { element: ancestor2, componentType: "pds-primitive", displayName: prim.name || prim.id, id: prim.id, tags: prim.tags };
-              }
-              ancestor2 = ancestor2.parentElement;
-              levels++;
-            }
-            continue;
-          }
-          continue;
-        }
-        if (tryMatches(current, s)) {
-          return { element: current, componentType: "pds-primitive", displayName: prim.name || prim.id, id: prim.id, tags: prim.tags };
-        }
-        const ancestor = safeClosest(current, s);
-        if (ancestor && ancestor.tagName !== "DS-SHOWCASE") {
-          return { element: ancestor, componentType: "pds-primitive", displayName: prim.name || prim.id, id: prim.id, tags: prim.tags };
-        }
-      }
-      if (current.classList) {
-        const clsList = Array.from(current.classList);
-        for (const s of prim.selectors || []) {
-          if (typeof s === "string" && s.includes("*") && s.startsWith(".")) {
-            const prefix = s.slice(1).replace(/\*/g, "");
-            if (clsList.some((c) => c.startsWith(prefix))) {
-              return { element: current, componentType: "pds-primitive", displayName: prim.name || prim.id, id: prim.id, tags: prim.tags };
-            }
-          }
-        }
-      }
-    }
-    for (const layout of PDS.ontology.layoutPatterns || []) {
-      for (const sel of layout.selectors || []) {
-        const s = String(sel || "").trim();
-        if (s.includes("*")) {
-          if (s.startsWith(".")) {
-            const prefix = s.slice(1).replace(/\*/g, "");
-            if (current.classList && Array.from(current.classList).some((c) => c.startsWith(prefix))) {
-              return { element: current, componentType: "layout-pattern", displayName: layout.name || layout.id, id: layout.id, tags: layout.tags };
-            }
-          }
-          continue;
-        }
-        if (tryMatches(current, s)) {
-          return { element: current, componentType: "layout-pattern", displayName: layout.name || layout.id, id: layout.id, tags: layout.tags };
-        }
-        const ancestor = safeClosest(current, s);
-        if (ancestor && ancestor.tagName !== "DS-SHOWCASE") {
-          return { element: ancestor, componentType: "layout-pattern", displayName: layout.name || layout.id, id: layout.id, tags: layout.tags };
-        }
-      }
-    }
-    if (current.tagName && current.tagName.includes("-")) {
-      const tagName = current.tagName.toLowerCase();
-      const comp = PDS.ontology.components.find((c) => c.selectors.includes(tagName));
-      return {
-        element: current,
-        componentType: "web-component",
-        displayName: comp?.name || tagName,
-        id: comp?.id || tagName,
-        tags: comp?.tags
-      };
-    }
-    if (current.tagName === "BUTTON") {
-      const hasIcon = current.querySelector && current.querySelector("pds-icon");
-      return { element: current, componentType: "button", displayName: hasIcon ? "button with icon" : "button", id: "button" };
-    }
-    if (tryMatches(current, "pds-icon") || current.closest && current.closest("pds-icon")) {
-      const el = tryMatches(current, "pds-icon") ? current : current.closest("pds-icon");
-      return { element: el, componentType: "icon", displayName: `pds-icon (${el.getAttribute && el.getAttribute("icon") || "unknown"})`, id: "pds-icon" };
-    }
-    if (tryMatches(current, "nav[data-dropdown]") || current.closest && current.closest("nav[data-dropdown]")) {
-      const el = tryMatches(current, "nav[data-dropdown]") ? current : current.closest("nav[data-dropdown]");
-      return { element: el, componentType: "navigation", displayName: "dropdown menu", id: "dropdown" };
-    }
-    current = current.parentElement;
-  }
-  return null;
-}
-function getAllSelectors() {
-  const s = [];
-  for (const p of PDS.ontology.primitives)
-    s.push(...p.selectors || []);
-  for (const c of PDS.ontology.components)
-    s.push(...c.selectors || []);
-  for (const l of PDS.ontology.layoutPatterns || [])
-    s.push(...l.selectors || []);
-  return Array.from(new Set(s));
-}
-function searchOntology(query, options = {}) {
-  const q = query.toLowerCase();
-  const results = [];
-  const searchIn = (items, type) => {
-    for (const item of items) {
-      const matches = item.id?.toLowerCase().includes(q) || item.name?.toLowerCase().includes(q) || item.description?.toLowerCase().includes(q) || item.tags?.some((t) => t.toLowerCase().includes(q)) || item.category?.toLowerCase().includes(q) || item.selectors?.some((s) => s.toLowerCase().includes(q));
-      if (matches) {
-        results.push({ ...item, type });
-      }
-    }
-  };
-  if (!options.type || options.type === "primitive") {
-    searchIn(ontology.primitives, "primitive");
-  }
-  if (!options.type || options.type === "component") {
-    searchIn(ontology.components, "component");
-  }
-  if (!options.type || options.type === "layout") {
-    searchIn(ontology.layoutPatterns, "layout");
-  }
-  if (!options.type || options.type === "enhancement") {
-    searchIn(ontology.enhancements, "enhancement");
-  }
-  return results;
-}
-function getByCategory(category) {
-  const cat = category.toLowerCase();
-  return {
-    primitives: ontology.primitives.filter((p) => p.category === cat),
-    components: ontology.components.filter((c) => c.category === cat),
-    layouts: ontology.layoutPatterns.filter((l) => l.category === cat)
-  };
-}
-function getAllTags() {
-  const tags = /* @__PURE__ */ new Set();
-  ontology.primitives.forEach((p) => p.tags?.forEach((t) => tags.add(t)));
-  ontology.components.forEach((c) => c.tags?.forEach((t) => tags.add(t)));
-  ontology.layoutPatterns.forEach((l) => l.tags?.forEach((t) => tags.add(t)));
-  ontology.enhancements.forEach((e) => e.tags?.forEach((t) => tags.add(t)));
-  return Array.from(tags).sort();
-}
-var ontology, pds_ontology_default;
-var init_pds_ontology = __esm({
-  "src/js/pds-core/pds-ontology.js"() {
-    ontology = {
-      meta: {
-        name: "Pure Design System Ontology",
-        version: "1.0.0",
-        description: "Complete metadata registry for PDS primitives, components, utilities, and tokens"
-      },
-      // ═══════════════════════════════════════════════════════════════════════════
-      // DESIGN TOKENS
-      // ═══════════════════════════════════════════════════════════════════════════
-      tokens: {
-        colors: {
-          semantic: ["primary", "secondary", "accent", "success", "warning", "danger", "info"],
-          neutral: ["gray"],
-          shades: [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950],
-          surface: ["base", "subtle", "elevated", "sunken", "overlay", "inverse", "translucent"],
-          text: ["default", "muted", "subtle", "inverse", "primary", "success", "warning", "danger", "info"]
-        },
-        spacing: {
-          scale: ["1", "2", "3", "4", "5", "6", "8", "10", "12", "16", "20", "24"],
-          semantic: ["xs", "sm", "md", "lg", "xl"]
-        },
-        typography: {
-          families: ["heading", "body", "mono"],
-          sizes: ["xs", "sm", "base", "lg", "xl", "2xl", "3xl", "4xl", "5xl"],
-          weights: ["light", "normal", "medium", "semibold", "bold"]
-        },
-        radius: {
-          scale: ["none", "sm", "base", "md", "lg", "xl", "2xl", "full"]
-        },
-        shadows: {
-          scale: ["none", "sm", "base", "md", "lg", "xl", "inner"]
-        },
-        themes: ["light", "dark"],
-        breakpoints: {
-          sm: 640,
-          md: 768,
-          lg: 1024,
-          xl: 1280
-        }
-      },
-      // ═══════════════════════════════════════════════════════════════════════════
-      // PRIMITIVES (Single-class styled components)
-      // ═══════════════════════════════════════════════════════════════════════════
-      primitives: [
-        {
-          id: "badge",
-          name: "Badge / Pill",
-          description: "Inline status indicators and labels",
-          selectors: [".badge", ".badge-primary", ".badge-secondary", ".badge-success", ".badge-info", ".badge-warning", ".badge-danger", ".badge-outline", ".badge-sm", ".badge-lg", ".pill", ".tag", ".chip"],
-          tags: ["status", "label", "indicator", "inline"],
-          category: "feedback"
-        },
-        {
-          id: "card",
-          name: "Card",
-          description: "Content container with padding, border-radius, and optional shadow",
-          selectors: [".card", ".card-basic", ".card-elevated", ".card-outlined", ".card-interactive"],
-          tags: ["container", "content", "grouping"],
-          category: "container"
-        },
-        {
-          id: "surface",
-          name: "Surface",
-          description: "Smart surface classes with automatic text/background color handling",
-          selectors: [".surface-base", ".surface-subtle", ".surface-elevated", ".surface-sunken", ".surface-overlay", ".surface-inverse", ".surface-translucent", ".surface-translucent-25", ".surface-translucent-50", ".surface-translucent-75", ".surface-primary", ".surface-secondary", ".surface-success", ".surface-warning", ".surface-danger", ".surface-info"],
-          tags: ["background", "theming", "color", "container"],
-          category: "theming"
-        },
-        {
-          id: "callout",
-          name: "Callout",
-          description: "Contextual information and notification messages",
-          selectors: [".callout", ".callout-info", ".callout-success", ".callout-warning", ".callout-danger", ".callout-error", ".callout-dismissible"],
-          tags: ["feedback", "message", "notification", "status", "information"],
-          category: "feedback"
-        },
-        {
-          id: "empty-state",
-          name: "Empty State",
-          description: "Empty state layout for missing data or onboarding",
-          selectors: [".empty-state"],
-          tags: ["empty", "no-data", "zero", "placeholder", "onboarding", "state"],
-          category: "feedback"
-        },
-        {
-          id: "dialog",
-          name: "Dialog",
-          description: "Modal dialog element",
-          selectors: ["dialog", ".dialog"],
-          tags: ["modal", "overlay", "popup", "modal"],
-          category: "overlay"
-        },
-        {
-          id: "divider",
-          name: "Divider",
-          description: "Horizontal rule with optional label",
-          selectors: ["hr", "hr[data-content]"],
-          tags: ["separator", "line", "content-divider"],
-          category: "layout"
-        },
-        {
-          id: "table",
-          name: "Table",
-          description: "Data tables with responsive and styling variants",
-          selectors: ["table", ".table-responsive", ".table-striped", ".table-bordered", ".table-compact", ".data-table"],
-          tags: ["data", "grid", "tabular", "responsive"],
-          category: "data"
-        },
-        {
-          id: "button",
-          name: "Button",
-          description: "Interactive button element with variants",
-          selectors: ["button", ".btn-primary", ".btn-secondary", ".btn-outline", ".btn-sm", ".btn-xs", ".btn-lg", ".btn-working", ".icon-only"],
-          tags: ["interactive", "action", "cta", "form"],
-          category: "action"
-        },
-        {
-          id: "fieldset",
-          name: "Fieldset Group",
-          description: "Form field grouping for radio/checkbox groups",
-          selectors: ["fieldset[role='group']", "fieldset[role='radiogroup']", "fieldset.buttons"],
-          tags: ["form", "grouping", "radio", "checkbox"],
-          category: "form"
-        },
-        {
-          id: "label-field",
-          name: "Label+Input",
-          description: "Semantic label wrapping form input",
-          selectors: ["label", "label:has(input)", "label:has(select)", "label:has(textarea)"],
-          tags: ["form", "input", "accessibility"],
-          category: "form"
-        },
-        {
-          id: "accordion",
-          name: "Accordion",
-          description: "Collapsible content sections",
-          selectors: [".accordion", ".accordion-item", "details", "details > summary"],
-          tags: ["expandable", "collapsible", "disclosure"],
-          category: "disclosure"
-        },
-        {
-          id: "icon",
-          name: "Icon",
-          description: "SVG icon element with size and color variants",
-          selectors: ["pds-icon", ".icon-xs", ".icon-sm", ".icon-md", ".icon-lg", ".icon-xl", ".icon-primary", ".icon-secondary", ".icon-accent", ".icon-success", ".icon-warning", ".icon-danger", ".icon-info", ".icon-muted", ".icon-subtle", ".icon-text", ".icon-text-start", ".icon-text-end"],
-          tags: ["graphic", "symbol", "visual"],
-          category: "media"
-        },
-        {
-          id: "figure",
-          name: "Figure/Media",
-          description: "Figure element for images with captions",
-          selectors: ["figure", "figure.media", "figcaption"],
-          tags: ["image", "media", "caption"],
-          category: "media"
-        },
-        {
-          id: "gallery",
-          name: "Gallery",
-          description: "Image gallery grid",
-          selectors: [".gallery", ".gallery-grid", ".img-gallery"],
-          tags: ["images", "grid", "collection"],
-          category: "media"
-        },
-        {
-          id: "form",
-          name: "Form Container",
-          description: "Form styling and layout",
-          selectors: ["form", ".form-container", ".form-actions", ".field-description"],
-          tags: ["form", "input", "submission"],
-          category: "form"
-        },
-        {
-          id: "navigation",
-          name: "Navigation",
-          description: "Navigation elements and menus",
-          selectors: ["nav", "nav[data-dropdown]", "menu", "nav menu li"],
-          tags: ["menu", "links", "routing"],
-          category: "navigation"
-        }
-      ],
-      // ═══════════════════════════════════════════════════════════════════════════
-      // WEB COMPONENTS
-      // ═══════════════════════════════════════════════════════════════════════════
-      components: [
-        {
-          id: "pds-tabstrip",
-          name: "Tab Strip",
-          description: "Tabbed interface component",
-          selectors: ["pds-tabstrip"],
-          tags: ["tabs", "navigation", "panels"],
-          category: "navigation"
-        },
-        {
-          id: "pds-drawer",
-          name: "Drawer",
-          description: "Slide-out panel overlay",
-          selectors: ["pds-drawer"],
-          tags: ["panel", "overlay", "sidebar"],
-          category: "overlay"
-        },
-        {
-          id: "pds-fab",
-          name: "FAB",
-          description: "Floating Action Button with expandable satellite actions",
-          selectors: ["pds-fab"],
-          tags: ["button", "action", "floating", "interactive"],
-          category: "action"
-        },
-        {
-          id: "pds-upload",
-          name: "Upload",
-          description: "File upload component with drag-and-drop",
-          selectors: ["pds-upload"],
-          tags: ["file", "upload", "drag-drop", "form"],
-          category: "form"
-        },
-        {
-          id: "pds-icon",
-          name: "Icon",
-          description: "SVG icon web component",
-          selectors: ["pds-icon"],
-          tags: ["icon", "graphic", "svg"],
-          category: "media"
-        },
-        {
-          id: "pds-toaster",
-          name: "Toaster",
-          description: "Toast notification container",
-          selectors: ["pds-toaster"],
-          tags: ["notification", "toast", "feedback"],
-          category: "feedback"
-        },
-        {
-          id: "pds-form",
-          name: "JSON Form",
-          description: "Auto-generated form from JSON Schema",
-          selectors: ["pds-form"],
-          tags: ["form", "schema", "auto-generate"],
-          category: "form"
-        },
-        {
-          id: "pds-splitpanel",
-          name: "Split Panel",
-          description: "Resizable split pane layout",
-          selectors: ["pds-splitpanel"],
-          tags: ["layout", "resize", "panels"],
-          category: "layout"
-        },
-        {
-          id: "pds-scrollrow",
-          name: "Scroll Row",
-          description: "Horizontal scrolling row with snap points",
-          selectors: ["pds-scrollrow"],
-          tags: ["scroll", "horizontal", "carousel"],
-          category: "layout"
-        },
-        {
-          id: "pds-richtext",
-          name: "Rich Text",
-          description: "Rich text editor component",
-          selectors: ["pds-richtext"],
-          tags: ["editor", "wysiwyg", "text"],
-          category: "form"
-        },
-        {
-          id: "pds-calendar",
-          name: "Calendar",
-          description: "Date picker calendar component",
-          selectors: ["pds-calendar"],
-          tags: ["date", "picker", "calendar"],
-          category: "form"
-        }
-      ],
-      // ═══════════════════════════════════════════════════════════════════════════
-      // LAYOUT PATTERNS
-      // ═══════════════════════════════════════════════════════════════════════════
-      layoutPatterns: [
-        {
-          id: "container",
-          name: "Container",
-          description: "Centered max-width wrapper with padding",
-          selectors: [".container"],
-          tags: ["wrapper", "centered", "max-width", "page"],
-          category: "structure"
-        },
-        {
-          id: "grid",
-          name: "Grid",
-          description: "CSS Grid layout container",
-          selectors: [".grid"],
-          tags: ["layout", "columns", "css-grid"],
-          category: "layout"
-        },
-        {
-          id: "grid-cols",
-          name: "Grid Columns",
-          description: "Fixed column count grids",
-          selectors: [".grid-cols-1", ".grid-cols-2", ".grid-cols-3", ".grid-cols-4", ".grid-cols-6"],
-          tags: ["columns", "fixed", "grid"],
-          category: "layout"
-        },
-        {
-          id: "grid-auto",
-          name: "Auto-fit Grid",
-          description: "Responsive auto-fit grid with minimum widths",
-          selectors: [".grid-auto-sm", ".grid-auto-md", ".grid-auto-lg", ".grid-auto-xl"],
-          tags: ["responsive", "auto-fit", "fluid"],
-          category: "layout"
-        },
-        {
-          id: "flex",
-          name: "Flex Container",
-          description: "Flexbox layout with direction and wrap modifiers",
-          selectors: [".flex", ".flex-wrap", ".flex-col", ".flex-row"],
-          tags: ["flexbox", "layout", "alignment"],
-          category: "layout"
-        },
-        {
-          id: "grow",
-          name: "Flex Grow",
-          description: "Fill remaining flex space",
-          selectors: [".grow"],
-          tags: ["flex", "expand", "fill"],
-          category: "layout"
-        },
-        {
-          id: "stack",
-          name: "Stack",
-          description: "Vertical flex layout with predefined gaps",
-          selectors: [".stack-sm", ".stack-md", ".stack-lg", ".stack-xl"],
-          tags: ["vertical", "spacing", "column"],
-          category: "layout"
-        },
-        {
-          id: "gap",
-          name: "Gap",
-          description: "Spacing between flex/grid children",
-          selectors: [".gap-0", ".gap-xs", ".gap-sm", ".gap-md", ".gap-lg", ".gap-xl"],
-          tags: ["spacing", "margin", "gutters"],
-          category: "spacing"
-        },
-        {
-          id: "items",
-          name: "Items Alignment",
-          description: "Cross-axis alignment for flex/grid",
-          selectors: [".items-start", ".items-center", ".items-end", ".items-stretch", ".items-baseline"],
-          tags: ["alignment", "vertical", "cross-axis"],
-          category: "alignment"
-        },
-        {
-          id: "justify",
-          name: "Justify Content",
-          description: "Main-axis alignment for flex/grid",
-          selectors: [".justify-start", ".justify-center", ".justify-end", ".justify-between", ".justify-around", ".justify-evenly"],
-          tags: ["alignment", "horizontal", "main-axis"],
-          category: "alignment"
-        },
-        {
-          id: "max-width",
-          name: "Max-Width",
-          description: "Content width constraints",
-          selectors: [".max-w-sm", ".max-w-md", ".max-w-lg", ".max-w-xl"],
-          tags: ["width", "constraint", "readable"],
-          category: "sizing"
-        },
-        {
-          id: "section",
-          name: "Section Spacing",
-          description: "Vertical padding for content sections",
-          selectors: [".section", ".section-lg"],
-          tags: ["spacing", "vertical", "padding"],
-          category: "spacing"
-        },
-        {
-          id: "mobile-stack",
-          name: "Mobile Stack",
-          description: "Stack on mobile, row on desktop",
-          selectors: [".mobile-stack"],
-          tags: ["responsive", "mobile", "breakpoint"],
-          category: "responsive"
-        }
-      ],
-      // ═══════════════════════════════════════════════════════════════════════════
-      // UTILITIES (Low-level single-purpose classes)
-      // ═══════════════════════════════════════════════════════════════════════════
-      utilities: {
-        text: {
-          alignment: [".text-left", ".text-center", ".text-right"],
-          color: [".text-muted"],
-          overflow: [".truncate"]
-        },
-        backdrop: {
-          base: [".backdrop"],
-          variants: [".backdrop-light", ".backdrop-dark"],
-          blur: [".backdrop-blur-sm", ".backdrop-blur-md", ".backdrop-blur-lg"]
-        },
-        shadow: {
-          scale: [".shadow-sm", ".shadow-base", ".shadow-md", ".shadow-lg", ".shadow-xl", ".shadow-inner", ".shadow-none"]
-        },
-        border: {
-          gradient: [".border-gradient", ".border-gradient-primary", ".border-gradient-accent", ".border-gradient-secondary", ".border-gradient-soft", ".border-gradient-medium", ".border-gradient-strong"],
-          glow: [".border-glow", ".border-glow-sm", ".border-glow-lg", ".border-glow-primary", ".border-glow-accent", ".border-glow-success", ".border-glow-warning", ".border-glow-danger"],
-          combined: [".border-gradient-glow"]
-        },
-        media: {
-          image: [".img-gallery", ".img-rounded-sm", ".img-rounded-md", ".img-rounded-lg", ".img-rounded-xl", ".img-rounded-full", ".img-inline"],
-          video: [".video-responsive"],
-          figure: [".figure-responsive"]
-        },
-        effects: {
-          glass: [".liquid-glass"]
-        }
-      },
-      // ═══════════════════════════════════════════════════════════════════════════
-      // RESPONSIVE UTILITIES (Breakpoint-prefixed)
-      // ═══════════════════════════════════════════════════════════════════════════
-      responsive: {
-        prefixes: ["sm", "md", "lg"],
-        utilities: {
-          grid: [":grid-cols-2", ":grid-cols-3", ":grid-cols-4"],
-          flex: [":flex-row"],
-          text: [":text-sm", ":text-lg", ":text-xl"],
-          spacing: [":p-6", ":p-8", ":p-12", ":gap-6", ":gap-8", ":gap-12"],
-          width: [":w-1/2", ":w-1/3", ":w-1/4"],
-          display: [":hidden", ":block"]
-        }
-      },
-      // ═══════════════════════════════════════════════════════════════════════════
-      // ENHANCEMENTS (Progressive enhancement selectors)
-      // ═══════════════════════════════════════════════════════════════════════════
-      enhancements: [
-        {
-          id: "dropdown",
-          selector: "nav[data-dropdown]",
-          description: "Dropdown menu from nav element",
-          tags: ["menu", "interactive", "navigation"]
-        },
-        {
-          id: "toggle",
-          selector: "label[data-toggle]",
-          description: "Toggle switch from checkbox",
-          tags: ["switch", "boolean", "form"]
-        },
-        {
-          id: "range",
-          selector: 'input[type="range"]',
-          description: "Enhanced range slider with output",
-          tags: ["slider", "input", "form"]
-        },
-        {
-          id: "required",
-          selector: "form [required]",
-          description: "Required field asterisk indicator",
-          tags: ["validation", "form", "accessibility"]
-        },
-        {
-          id: "open-group",
-          selector: "fieldset[role=group][data-open]",
-          description: "Editable checkbox/radio group",
-          tags: ["form", "dynamic", "editable"]
-        },
-        {
-          id: "working-button",
-          selector: "button.btn-working, a.btn-working",
-          description: "Button with loading spinner",
-          tags: ["loading", "async", "feedback"]
-        },
-        {
-          id: "labeled-divider",
-          selector: "hr[data-content]",
-          description: "Horizontal rule with centered label",
-          tags: ["divider", "separator", "text"]
-        }
-      ],
-      // ═══════════════════════════════════════════════════════════════════════════
-      // SEMANTIC CATEGORIES (For correlation and search)
-      // ═══════════════════════════════════════════════════════════════════════════
-      categories: {
-        feedback: {
-          description: "User feedback and status indicators",
-          primitives: ["callout", "badge", "empty-state"],
-          components: ["pds-toaster"]
-        },
-        form: {
-          description: "Form inputs and controls",
-          primitives: ["button", "fieldset", "label-field", "form"],
-          components: ["pds-upload", "pds-form", "pds-richtext", "pds-calendar"]
-        },
-        layout: {
-          description: "Page structure and content arrangement",
-          patterns: ["container", "grid", "flex", "stack", "section"],
-          components: ["pds-splitpanel", "pds-scrollrow"]
-        },
-        navigation: {
-          description: "Navigation and routing",
-          primitives: ["navigation"],
-          components: ["pds-tabstrip", "pds-drawer"]
-        },
-        media: {
-          description: "Images, icons, and visual content",
-          primitives: ["icon", "figure", "gallery"],
-          components: ["pds-icon"]
-        },
-        overlay: {
-          description: "Modal and overlay content",
-          primitives: ["dialog"],
-          components: ["pds-drawer"]
-        },
-        data: {
-          description: "Data display and tables",
-          primitives: ["table"]
-        },
-        theming: {
-          description: "Colors, surfaces, and visual theming",
-          primitives: ["surface"]
-        },
-        action: {
-          description: "Interactive actions and buttons",
-          primitives: ["button"],
-          components: ["pds-fab"]
-        }
-      },
-      // ═══════════════════════════════════════════════════════════════════════════
-      // STYLE METADATA
-      // ═══════════════════════════════════════════════════════════════════════════
-      styles: {
-        typography: ["headings", "body", "code", "links"],
-        icons: { source: "svg", sets: ["core", "brand"] },
-        interactive: ["focus", "hover", "active", "disabled"],
-        states: ["success", "warning", "danger", "info", "muted"]
-      },
-      // ═══════════════════════════════════════════════════════════════════════════
-      // SEARCH RELATIONS (Cross-concept mappings for intelligent search)
-      // Used by PDS.query() and Storybook ontology search to expand user queries
-      // ═══════════════════════════════════════════════════════════════════════════
-      searchRelations: {
-        // Typography & Text
-        text: ["typography", "truncate", "text-muted", "text-primary", "text-left", "text-center", "text-right", "pds-richtext", "heading", "font", "label", "paragraph", "content", "ellipsis", "overflow", "input"],
-        font: ["typography", "text", "heading", "font-size", "font-weight", "font-family"],
-        type: ["typography", "text", "font"],
-        typography: ["text", "font", "heading", "truncate", "text-muted"],
-        heading: ["typography", "text", "font-size", "h1", "h2", "h3"],
-        truncate: ["text", "overflow", "ellipsis", "clamp", "nowrap", "typography"],
-        ellipsis: ["truncate", "text", "overflow", "clamp"],
-        overflow: ["truncate", "scroll", "hidden", "text"],
-        paragraph: ["text", "typography", "content", "body"],
-        content: ["text", "typography", "body", "article"],
-        empty: ["empty-state", "placeholder", "zero", "no-data", "onboarding", "callout", "card", "icon", "button"],
-        "empty state": ["empty-state", "empty", "no-data", "zero", "onboarding"],
-        "no data": ["empty-state", "empty", "zero", "placeholder"],
-        // Forms & Inputs
-        form: ["input", "field", "label", "button", "fieldset", "pds-form", "pds-upload", "pds-richtext", "pds-calendar", "required", "validation", "submit"],
-        input: ["form", "field", "text", "label", "required", "validation"],
-        field: ["form", "input", "label", "required"],
-        button: ["btn", "interactive", "action", "submit", "form", "btn-primary", "btn-secondary", "btn-working", "pds-fab", "floating"],
-        btn: ["button", "interactive", "action", "pds-fab"],
-        fab: ["pds-fab", "floating", "button", "action", "menu"],
-        floating: ["fab", "pds-fab", "button", "action"],
-        toggle: ["switch", "checkbox", "boolean", "form", "interactive"],
-        switch: ["toggle", "checkbox", "boolean"],
-        slider: ["range", "input", "form"],
-        range: ["slider", "input", "form"],
-        checkbox: ["toggle", "form", "fieldset", "boolean"],
-        radio: ["fieldset", "form", "group"],
-        select: ["dropdown", "form", "input", "menu"],
-        upload: ["file", "pds-upload", "form", "drag-drop"],
-        file: ["upload", "pds-upload", "form"],
-        // Modals & Overlays
-        modal: ["dialog", "pds-ask", "overlay", "popup", "backdrop", "pds-drawer", "alert", "confirm", "prompt", "lightbox"],
-        dialog: ["modal", "pds-ask", "overlay", "popup", "backdrop", "alert", "confirm", "prompt"],
-        popup: ["modal", "dialog", "dropdown", "popover", "overlay", "tooltip"],
-        popover: ["popup", "tooltip", "overlay"],
-        overlay: ["modal", "dialog", "backdrop", "drawer", "popup"],
-        drawer: ["pds-drawer", "sidebar", "panel", "overlay", "modal"],
-        backdrop: ["overlay", "modal", "dialog", "blur"],
-        confirm: ["pds-ask", "dialog", "modal"],
-        prompt: ["pds-ask", "dialog", "modal", "input"],
-        ask: ["pds-ask", "dialog", "confirm", "prompt", "modal"],
-        // Navigation & Menus
-        dropdown: ["menu", "nav-dropdown", "select", "popover"],
-        menu: ["dropdown", "navigation", "nav", "list"],
-        nav: ["navigation", "menu", "dropdown", "tabs", "links"],
-        navigation: ["nav", "menu", "tabs", "pds-tabstrip", "links", "routing"],
-        tabs: ["pds-tabstrip", "navigation", "panels"],
-        tab: ["tabs", "pds-tabstrip", "panel"],
-        link: ["navigation", "anchor", "href", "routing"],
-        // Feedback & Notifications (callout is the primary term, alert is kept as alias for backwards compatibility)
-        callout: ["notification", "feedback", "message", "status", "toast", "information", "alert", "warning", "error", "info", "success", "danger"],
-        alert: ["callout", "notification", "feedback", "message", "status", "toast", "modal", "dialog", "pds-ask", "confirm", "warning", "error", "info", "success", "danger"],
-        notification: ["callout", "toast", "pds-toaster", "feedback", "message", "popup", "alert"],
-        toast: ["pds-toaster", "notification", "callout", "feedback", "popup", "snackbar", "alert"],
-        feedback: ["callout", "notification", "toast", "status", "badge", "validation", "error", "success", "alert"],
-        message: ["callout", "notification", "feedback", "dialog", "toast", "alert"],
-        status: ["badge", "callout", "indicator", "feedback", "state", "alert"],
-        error: ["callout", "danger", "validation", "feedback", "warning", "alert"],
-        success: ["callout", "feedback", "badge", "status", "check", "alert"],
-        warning: ["callout", "caution", "feedback", "status", "alert"],
-        info: ["callout", "information", "feedback", "status", "alert"],
-        danger: ["callout", "error", "feedback", "destructive", "delete", "alert"],
-        badge: ["status", "pill", "tag", "chip", "indicator", "label"],
-        pill: ["badge", "tag", "chip"],
-        tag: ["badge", "pill", "chip", "label"],
-        chip: ["badge", "pill", "tag"],
-        // Layout & Structure
-        layout: ["grid", "flex", "stack", "container", "gap", "spacing", "pds-splitpanel", "section"],
-        grid: ["layout", "columns", "css-grid", "table", "gallery"],
-        flex: ["layout", "flexbox", "alignment", "row", "column"],
-        stack: ["layout", "vertical", "spacing", "column", "gap"],
-        container: ["wrapper", "layout", "max-width", "centered"],
-        gap: ["spacing", "margin", "padding", "layout"],
-        spacing: ["gap", "margin", "padding", "section"],
-        section: ["spacing", "layout", "container", "page"],
-        split: ["pds-splitpanel", "resizable", "panels", "layout"],
-        panel: ["pds-splitpanel", "drawer", "sidebar", "section"],
-        // Cards & Surfaces
-        card: ["surface", "container", "elevated", "content"],
-        surface: ["card", "background", "elevated", "theming", "color"],
-        box: ["card", "container", "surface"],
-        elevated: ["surface", "shadow", "card"],
-        // Colors & Theming
-        color: ["palette", "theme", "surface", "primary", "secondary", "accent"],
-        colours: ["color", "palette", "theme"],
-        palette: ["color", "theme", "tokens"],
-        theme: ["color", "palette", "dark", "light", "surface"],
-        primary: ["color", "button", "badge", "surface"],
-        secondary: ["color", "button", "badge", "surface"],
-        accent: ["color", "highlight", "surface"],
-        // Borders & Effects
-        border: ["border-gradient", "border-glow", "outline", "radius"],
-        effect: ["border-gradient", "border-glow", "shadow", "glass", "animation"],
-        gradient: ["border-gradient", "color", "background"],
-        glow: ["border-glow", "effect", "shadow"],
-        shadow: ["elevated", "effect", "depth", "card"],
-        radius: ["rounded", "border", "corner"],
-        rounded: ["radius", "border", "corner"],
-        glass: ["liquid-glass", "backdrop", "blur", "effect"],
-        // Media & Icons
-        icon: ["pds-icon", "graphic", "symbol", "svg", "phosphor"],
-        image: ["img", "figure", "gallery", "media", "picture"],
-        img: ["image", "figure", "gallery", "media"],
-        figure: ["image", "media", "caption"],
-        gallery: ["images", "grid", "collection", "media"],
-        media: ["image", "icon", "figure", "gallery", "video"],
-        // Tables & Data
-        table: ["data", "grid", "tabular", "rows", "columns"],
-        data: ["table", "json", "form", "display"],
-        // Editors & Rich Content
-        editor: ["pds-richtext", "wysiwyg", "text", "content"],
-        wysiwyg: ["editor", "pds-richtext", "richtext"],
-        richtext: ["pds-richtext", "editor", "wysiwyg", "text"],
-        // Calendar & Dates
-        calendar: ["pds-calendar", "date", "picker", "datepicker"],
-        date: ["calendar", "pds-calendar", "picker", "input"],
-        datepicker: ["calendar", "date", "pds-calendar"],
-        // Scroll & Carousel
-        scroll: ["pds-scrollrow", "carousel", "horizontal", "overflow"],
-        carousel: ["scroll", "pds-scrollrow", "slider", "gallery"],
-        // Accordion & Disclosure
-        accordion: ["details", "collapsible", "expandable", "disclosure"],
-        collapsible: ["accordion", "details", "expandable"],
-        expandable: ["accordion", "collapsible", "disclosure"],
-        details: ["accordion", "summary", "disclosure"],
-        // Divider & Separator
-        divider: ["hr", "separator", "line", "rule"],
-        separator: ["divider", "hr", "line"],
-        hr: ["divider", "separator", "horizontal-rule"],
-        // Interactive States
-        interactive: ["hover", "focus", "active", "disabled", "button", "link"],
-        hover: ["interactive", "effect", "state"],
-        focus: ["interactive", "accessibility", "state", "outline"],
-        disabled: ["interactive", "state", "muted"],
-        loading: ["btn-working", "spinner", "async", "progress"],
-        spinner: ["loading", "btn-working", "progress"],
-        // Accessibility
-        accessibility: ["a11y", "aria", "focus", "label", "required"],
-        a11y: ["accessibility", "aria", "semantic"],
-        aria: ["accessibility", "a11y", "role"],
-        required: ["form", "validation", "asterisk", "input"],
-        validation: ["form", "required", "error", "feedback"],
-        // Documentation & Getting Started
-        start: ["getting-started", "intro", "overview", "whatispds"],
-        intro: ["getting-started", "overview", "start", "docs"],
-        getting: ["getting-started", "start", "intro"],
-        overview: ["intro", "start", "summary", "layout-overview"],
-        docs: ["documentation", "reference", "guide"],
-        // Category keywords (for searching by category name - ONE-WAY only, not bidirectional)
-        // These should NOT list individual items - that causes pollution when reversed
-        primitive: ["primitives"],
-        component: ["components"],
-        enhancement: ["enhancements"],
-        foundation: ["foundations", "color", "icon", "typography", "spacing", "tokens"],
-        utility: ["utilities", "text", "backdrop", "shadow", "border", "helper"],
-        pattern: ["patterns", "layout", "responsive", "mobile-stack"]
-      }
-    };
-    pds_ontology_default = ontology;
-  }
-});
-
-// node_modules/pure-web/src/js/auto-definer.js
-var auto_definer_exports = {};
-__export(auto_definer_exports, {
-  AutoDefiner: () => AutoDefiner
-});
-async function defineWebComponents(...args) {
-  let opts = {};
-  if (args.length && typeof args[args.length - 1] === "object") {
-    opts = args.pop() || {};
-  }
-  const tags = args;
-  const {
-    baseURL,
-    mapper = (tag) => `${tag}.js`,
-    onError = (tag, err) => console.error(`[defineWebComponents] ${tag}:`, err)
-  } = opts;
-  const base = baseURL ? new URL(
-    baseURL,
-    typeof location !== "undefined" ? location.href : import.meta.url
-  ) : new URL("./", import.meta.url);
-  const toPascal = (tag) => tag.toLowerCase().replace(/(^|-)([a-z])/g, (_, __, c) => c.toUpperCase());
-  const loadOne = async (tag) => {
-    try {
-      if (customElements.get(tag))
-        return { tag, status: "already-defined" };
-      const spec = mapper(tag);
-      const href = spec instanceof URL ? spec.href : new URL(spec, base).href;
-      const mod = await import(href);
-      const Named = mod?.default ?? mod?.[toPascal(tag)];
-      if (!Named) {
-        if (customElements.get(tag))
-          return { tag, status: "self-defined" };
-        throw new Error(
-          `No export found for ${tag}. Expected default export or named export "${toPascal(
-            tag
-          )}".`
-        );
-      }
-      if (!customElements.get(tag)) {
-        customElements.define(tag, Named);
-        return { tag, status: "defined" };
-      }
-      return { tag, status: "race-already-defined" };
-    } catch (err) {
-      onError(tag, err);
-      throw err;
-    }
-  };
-  return Promise.all(tags.map(loadOne));
-}
-var AutoDefiner;
-var init_auto_definer = __esm({
-  "node_modules/pure-web/src/js/auto-definer.js"() {
-    AutoDefiner = class {
-      constructor(options = {}) {
-        const {
-          baseURL,
-          mapper,
-          onError,
-          predicate = () => true,
-          attributeModule = "data-module",
-          root = document,
-          scanExisting = true,
-          debounceMs = 16,
-          observeShadows = true,
-          enhancers = [],
-          // [{String selector, Function run(elem)}]
-          patchAttachShadow = true
-        } = options;
-        const pending = /* @__PURE__ */ new Set();
-        const inFlight = /* @__PURE__ */ new Set();
-        const knownMissing = /* @__PURE__ */ new Set();
-        const perTagModulePath = /* @__PURE__ */ new Map();
-        const shadowObservers = /* @__PURE__ */ new WeakMap();
-        const enhancerApplied = /* @__PURE__ */ new WeakMap();
-        let timer = 0;
-        let stopped = false;
-        let restoreAttachShadow = null;
-        const applyEnhancers = (element) => {
-          if (!element || !enhancers.length)
-            return;
-          let appliedEnhancers = enhancerApplied.get(element);
-          if (!appliedEnhancers) {
-            appliedEnhancers = /* @__PURE__ */ new Set();
-            enhancerApplied.set(element, appliedEnhancers);
-          }
-          for (const enhancer of enhancers) {
-            if (!enhancer.selector || !enhancer.run)
-              continue;
-            if (appliedEnhancers.has(enhancer.selector))
-              continue;
-            try {
-              if (element.matches && element.matches(enhancer.selector)) {
-                enhancer.run(element);
-                appliedEnhancers.add(enhancer.selector);
-              }
-            } catch (err) {
-              console.warn(
-                `[AutoDefiner] Error applying enhancer for selector "${enhancer.selector}":`,
-                err
-              );
-            }
-          }
-        };
-        const queueTag = (tag, el) => {
-          if (stopped)
-            return;
-          if (!tag || !tag.includes("-"))
-            return;
-          if (customElements.get(tag))
-            return;
-          if (inFlight.has(tag))
-            return;
-          if (knownMissing.has(tag))
-            return;
-          if (el && el.getAttribute) {
-            const override = el.getAttribute(attributeModule);
-            if (override && !perTagModulePath.has(tag)) {
-              perTagModulePath.set(tag, override);
-            }
-          }
-          pending.add(tag);
-          schedule();
-        };
-        const schedule = () => {
-          if (timer)
-            return;
-          timer = setTimeout(flush, debounceMs);
-        };
-        const crawlTree = (rootNode) => {
-          if (!rootNode)
-            return;
-          if (rootNode.nodeType === 1) {
-            const el = (
-              /** @type {Element} */
-              rootNode
-            );
-            const tag = el.tagName?.toLowerCase();
-            if (tag && tag.includes("-") && !customElements.get(tag) && predicate(tag, el)) {
-              queueTag(tag, el);
-            }
-            applyEnhancers(el);
-            if (observeShadows && el.shadowRoot) {
-              observeShadowRoot(el.shadowRoot);
-            }
-          }
-          if (rootNode.querySelectorAll) {
-            rootNode.querySelectorAll("*").forEach((e) => {
-              const t = e.tagName?.toLowerCase();
-              if (t && t.includes("-") && !customElements.get(t) && predicate(t, e)) {
-                queueTag(t, e);
-              }
-              applyEnhancers(e);
-              if (observeShadows && e.shadowRoot) {
-                observeShadowRoot(e.shadowRoot);
-              }
-            });
-          }
-        };
-        const observeShadowRoot = (sr) => {
-          if (!sr || shadowObservers.has(sr))
-            return;
-          crawlTree(sr);
-          const mo = new MutationObserver((mutations) => {
-            for (const m of mutations) {
-              m.addedNodes?.forEach((n) => {
-                crawlTree(n);
-              });
-              if (m.type === "attributes" && m.target) {
-                crawlTree(m.target);
-              }
-            }
-          });
-          mo.observe(sr, {
-            childList: true,
-            subtree: true,
-            attributes: true,
-            attributeFilter: [
-              attributeModule,
-              ...enhancers.map((e) => e.selector).filter((s) => s.startsWith("data-"))
-            ]
-          });
-          shadowObservers.set(sr, mo);
-        };
-        async function flush() {
-          clearTimeout(timer);
-          timer = 0;
-          if (!pending.size)
-            return;
-          const tags = Array.from(pending);
-          pending.clear();
-          tags.forEach((t) => inFlight.add(t));
-          try {
-            const effectiveMapper = (tag) => perTagModulePath.get(tag) ?? (mapper ? mapper(tag) : `${tag}.js`);
-            await defineWebComponents(...tags, {
-              baseURL,
-              mapper: effectiveMapper,
-              onError: (tag, err) => {
-                knownMissing.add(tag);
-                onError?.(tag, err);
-              }
-            });
-          } catch {
-          } finally {
-            tags.forEach((t) => inFlight.delete(t));
-          }
-        }
-        const mountNode = root === document ? document.documentElement : root;
-        const obs = new MutationObserver((mutations) => {
-          for (const m of mutations) {
-            m.addedNodes?.forEach((n) => {
-              crawlTree(n);
-            });
-            if (m.type === "attributes" && m.target) {
-              crawlTree(m.target);
-            }
-          }
-        });
-        obs.observe(mountNode, {
-          childList: true,
-          subtree: true,
-          attributes: true,
-          attributeFilter: [
-            attributeModule,
-            ...enhancers.map((e) => e.selector).filter((s) => s.startsWith("data-"))
-          ]
-        });
-        if (observeShadows && patchAttachShadow && Element.prototype.attachShadow) {
-          const orig = Element.prototype.attachShadow;
-          Element.prototype.attachShadow = function patchedAttachShadow(init) {
-            const sr = orig.call(this, init);
-            if (init && init.mode === "open") {
-              observeShadowRoot(sr);
-              const tag = this.tagName?.toLowerCase();
-              if (tag && tag.includes("-") && !customElements.get(tag)) {
-                queueTag(tag, this);
-              }
-            }
-            return sr;
-          };
-          restoreAttachShadow = () => Element.prototype.attachShadow = orig;
-        }
-        if (scanExisting) {
-          crawlTree(mountNode);
-        }
-        return {
-          stop() {
-            stopped = true;
-            obs.disconnect();
-            if (restoreAttachShadow)
-              restoreAttachShadow();
-            if (timer) {
-              clearTimeout(timer);
-              timer = 0;
-            }
-            shadowObservers.forEach((mo) => mo.disconnect());
-          },
-          flush
-        };
-      }
-      /**
-       * Dynamically load and (idempotently) define a set of web components by tag name.
-       */
-      static async define(...args) {
-        let opts = {};
-        if (args.length && typeof args[args.length - 1] === "object") {
-          opts = args.pop() || {};
-        }
-        const tags = args;
-        const {
-          baseURL,
-          mapper = (tag) => `${tag}.js`,
-          onError = (tag, err) => console.error(`[defineWebComponents] ${tag}:`, err)
-        } = opts;
-        const base = baseURL ? new URL(
-          baseURL,
-          typeof location !== "undefined" ? location.href : import.meta.url
-        ) : new URL("./", import.meta.url);
-        const toPascal = (tag) => tag.toLowerCase().replace(/(^|-)([a-z])/g, (_, __, c) => c.toUpperCase());
-        const loadOne = async (tag) => {
-          try {
-            if (customElements.get(tag))
-              return { tag, status: "already-defined" };
-            const spec = mapper(tag);
-            const href = spec instanceof URL ? spec.href : new URL(spec, base).href;
-            const mod = await import(href);
-            const Named = mod?.default ?? mod?.[toPascal(tag)];
-            if (!Named) {
-              if (customElements.get(tag))
-                return { tag, status: "self-defined" };
-              throw new Error(
-                `No export found for ${tag}. Expected default export or named export "${toPascal(
-                  tag
-                )}".`
-              );
-            }
-            if (!customElements.get(tag)) {
-              customElements.define(tag, Named);
-              return { tag, status: "defined" };
-            }
-            return { tag, status: "race-already-defined" };
-          } catch (err) {
-            onError(tag, err);
-            throw err;
-          }
-        };
-        return Promise.all(tags.map(loadOne));
-      }
-    };
-  }
-});
-
-// src/js/pds-core/pds-query.js
-var pds_query_exports = {};
-__export(pds_query_exports, {
-  PDSQuery: () => PDSQuery
-});
-var PDSQuery;
-var init_pds_query = __esm({
-  "src/js/pds-core/pds-query.js"() {
-    PDSQuery = class {
-      constructor(pds) {
-        this.pds = pds;
-        this.intents = {
-          color: ["color", "colours", "shade", "tint", "hue", "foreground", "background", "text", "fill", "bg", "fg"],
-          spacing: ["spacing", "space", "gap", "padding", "margin", "distance", "rhythm"],
-          typography: ["font", "text", "type", "typography", "heading", "body", "size", "weight", "family"],
-          border: ["border", "outline", "stroke", "edge", "frame"],
-          radius: ["radius", "rounded", "corner", "curve", "round"],
-          shadow: ["shadow", "elevation", "depth", "glow", "drop-shadow"],
-          component: ["component", "element", "widget"],
-          utility: ["utility", "class", "helper", "css"],
-          layout: ["layout", "container", "grid", "flex", "group", "arrange", "organize"],
-          pattern: ["pattern", "example", "template", "structure"],
-          interaction: ["hover", "focus", "active", "disabled", "pressed", "selected", "checked"]
-        };
-        this.entities = {
-          button: ["button", "btn", "cta"],
-          input: ["input", "field", "textbox", "text-field", "form-control"],
-          card: ["card", "panel"],
-          badge: ["badge", "pill", "tag", "chip"],
-          surface: ["surface", "background", "layer", "container"],
-          icon: ["icon", "svg", "glyph", "symbol"],
-          link: ["link", "anchor", "hyperlink"],
-          nav: ["nav", "navigation", "menu"],
-          modal: ["modal", "dialog", "popup", "overlay"],
-          drawer: ["drawer", "sidebar", "panel"],
-          tab: ["tab", "tabstrip"],
-          toast: ["toast", "notification", "callout", "message", "alert"]
-        };
-        this.questionWords = ["what", "which", "how", "where", "when", "show", "find", "get", "give", "tell"];
-      }
-      /**
-       * Main search entry point
-       * @param {string} query - Natural language question
-       * @returns {Promise<Array>} Array of results with text, value, icon, category, score
-       */
-      async search(query) {
-        if (!query || query.length < 2)
-          return [];
-        const normalized = query.toLowerCase().trim();
-        const tokens = this.tokenize(normalized);
-        const context = this.analyzeQuery(tokens, normalized);
-        const results = [];
-        if (context.intents.has("color")) {
-          results.push(...this.queryColors(context, normalized));
-        }
-        if (context.intents.has("utility") || context.intents.has("border") || context.intents.has("layout") || normalized.includes("class")) {
-          results.push(...this.queryUtilities(context, normalized));
-        }
-        if (context.intents.has("component") || context.entities.size > 0) {
-          results.push(...this.queryComponents(context, normalized));
-        }
-        if (context.intents.has("layout") || context.intents.has("pattern")) {
-          results.push(...this.queryPatterns(context, normalized));
-        }
-        if (context.intents.has("typography")) {
-          results.push(...this.queryTypography(context, normalized));
-        }
-        if (context.intents.has("spacing")) {
-          results.push(...this.querySpacing(context, normalized));
-        }
-        const seen = /* @__PURE__ */ new Map();
-        for (const result of results) {
-          const key = result.value;
-          if (!seen.has(key) || seen.get(key).score < result.score) {
-            seen.set(key, result);
-          }
-        }
-        return Array.from(seen.values()).sort((a, b) => b.score - a.score).slice(0, 10);
-      }
-      /**
-       * Tokenize and normalize query string
-       */
-      tokenize(text) {
-        return text.toLowerCase().replace(/[?!.]/g, "").split(/\s+/).filter((t) => t.length > 0);
-      }
-      /**
-       * Analyze query to extract intents and entities
-       */
-      analyzeQuery(tokens, fullText) {
-        const context = {
-          intents: /* @__PURE__ */ new Set(),
-          entities: /* @__PURE__ */ new Set(),
-          modifiers: /* @__PURE__ */ new Set(),
-          isQuestion: false,
-          tokens,
-          fullText
-        };
-        context.isQuestion = this.questionWords.some((qw) => tokens.includes(qw));
-        for (const [intent, keywords] of Object.entries(this.intents)) {
-          if (keywords.some((kw) => tokens.includes(kw) || fullText.includes(kw))) {
-            context.intents.add(intent);
-          }
-        }
-        for (const [entity, keywords] of Object.entries(this.entities)) {
-          if (keywords.some((kw) => tokens.includes(kw) || fullText.includes(kw))) {
-            context.entities.add(entity);
-          }
-        }
-        if (tokens.includes("hover") || fullText.includes("hover"))
-          context.modifiers.add("hover");
-        if (tokens.includes("focus") || fullText.includes("focus"))
-          context.modifiers.add("focus");
-        if (tokens.includes("active") || fullText.includes("active"))
-          context.modifiers.add("active");
-        if (tokens.includes("disabled") || fullText.includes("disabled"))
-          context.modifiers.add("disabled");
-        return context;
-      }
-      /**
-       * Query color tokens and surfaces
-       */
-      queryColors(context, query) {
-        const results = [];
-        const compiled = this.pds.compiled;
-        if (!compiled?.tokens?.colors)
-          return results;
-        const colors = compiled.tokens.colors;
-        const entities = Array.from(context.entities);
-        const modifiers = Array.from(context.modifiers);
-        if (modifiers.includes("focus") && context.intents.has("border") && entities.includes("input")) {
-          results.push({
-            text: "Focus border color: var(--color-primary-500)",
-            value: "--color-primary-500",
-            icon: "palette",
-            category: "Color Token",
-            score: 100,
-            cssVar: "var(--color-primary-500)",
-            description: "Primary color used for focus states on form inputs"
-          });
-        }
-        if ((query.includes("foreground") || query.includes("text")) && (query.includes("surface") || context.entities.has("surface"))) {
-          results.push({
-            text: "Text on surface: var(--surface-text)",
-            value: "--surface-text",
-            icon: "palette",
-            category: "Surface Token",
-            score: 95,
-            cssVar: "var(--surface-text)",
-            description: "Default text color for current surface"
-          });
-          results.push({
-            text: "Secondary text: var(--surface-text-secondary)",
-            value: "--surface-text-secondary",
-            icon: "palette",
-            category: "Surface Token",
-            score: 90,
-            cssVar: "var(--surface-text-secondary)",
-            description: "Secondary/muted text on surface"
-          });
-        }
-        if (query.includes("primary") || query.includes("accent") || query.includes("secondary")) {
-          const scale = query.includes("primary") ? "primary" : query.includes("accent") ? "accent" : "secondary";
-          for (const shade of [500, 600, 700]) {
-            const varName = `--color-${scale}-${shade}`;
-            results.push({
-              text: `${scale.charAt(0).toUpperCase() + scale.slice(1)} ${shade}: var(${varName})`,
-              value: varName,
-              icon: "palette",
-              category: "Color Scale",
-              score: 80 - (shade - 500) / 100,
-              cssVar: `var(${varName})`,
-              description: `${scale} color scale shade ${shade}`
-            });
-          }
-        }
-        if (entities.includes("button") && context.intents.has("color")) {
-          const modifier = modifiers[0];
-          if (modifier) {
-            results.push({
-              text: `Button ${modifier} fill: var(--${modifier === "hover" ? "primary" : "primary"}-fill-${modifier})`,
-              value: `--primary-fill-${modifier}`,
-              icon: "palette",
-              category: "Interactive Token",
-              score: 92,
-              description: `Button background color in ${modifier} state`
-            });
-          } else {
-            results.push({
-              text: "Button fill: var(--primary-fill)",
-              value: "--primary-fill",
-              icon: "palette",
-              category: "Interactive Token",
-              score: 88,
-              description: "Default button background color"
-            });
-          }
-        }
-        return results;
-      }
-      /**
-       * Query utility classes
-       */
-      queryUtilities(context, query) {
-        const results = [];
-        const ontology2 = this.pds.ontology;
-        if (!ontology2?.utilities)
-          return results;
-        const utilitiesObj = ontology2.utilities;
-        const utilities = [];
-        for (const category of Object.values(utilitiesObj)) {
-          if (typeof category === "object") {
-            for (const value of Object.values(category)) {
-              if (Array.isArray(value)) {
-                utilities.push(...value);
-              }
-            }
-          }
-        }
-        if (context.intents.has("border")) {
-          const borderUtils = utilities.filter(
-            (u) => u.includes("border") || u.includes("outline")
-          );
-          borderUtils.forEach((util) => {
-            let score = 80;
-            if (query.includes("gradient") && util.includes("gradient"))
-              score = 95;
-            if (query.includes("glow") && util.includes("glow"))
-              score = 95;
-            results.push({
-              text: `${util} - Border utility class`,
-              value: util,
-              icon: "code",
-              category: "Utility Class",
-              score,
-              code: `<div class="${util}">...</div>`,
-              description: this.describeUtility(util)
-            });
-          });
-        }
-        if (context.intents.has("layout")) {
-          const layoutUtils = utilities.filter(
-            (u) => u.includes("flex") || u.includes("grid") || u.includes("items-") || u.includes("justify-") || u.includes("gap-")
-          );
-          layoutUtils.forEach((util) => {
-            results.push({
-              text: `${util} - Layout utility`,
-              value: util,
-              icon: "layout",
-              category: "Utility Class",
-              score: 85,
-              code: `<div class="${util}">...</div>`,
-              description: this.describeUtility(util)
-            });
-          });
-        }
-        if (query.includes("group") && context.entities.has("button")) {
-          results.push({
-            text: ".btn-group - Group buttons together",
-            value: ".btn-group",
-            icon: "code",
-            category: "Utility Class",
-            score: 90,
-            code: `<div class="btn-group">
+var Re=Object.defineProperty;var N=(n,t)=>()=>(n&&(t=n(n=0)),t);var P=(n,t)=>{for(var e in t)Re(n,e,{get:t[e],enumerable:!0})};var ie={};P(ie,{enums:()=>u});var u,_=N(()=>{u={FontWeights:{light:300,normal:400,medium:500,semibold:600,bold:700},LineHeights:{tight:1.25,normal:1.5,relaxed:1.75},BorderWidths:{hairline:.5,thin:1,medium:2,thick:3},RadiusSizes:{none:0,small:4,medium:8,large:16,xlarge:24,xxlarge:32},ShadowDepths:{none:"none",light:"0 1px 2px 0 rgba(0, 0, 0, 0.05)",medium:"0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",deep:"0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",extreme:"0 25px 50px -12px rgba(0, 0, 0, 0.25)"},TransitionSpeeds:{fast:150,normal:250,slow:350},AnimationEasings:{linear:"linear",ease:"ease","ease-in":"ease-in","ease-out":"ease-out","ease-in-out":"ease-in-out",bounce:"cubic-bezier(0.68, -0.55, 0.265, 1.55)"},TouchTargetSizes:{compact:36,standard:44,comfortable:48,spacious:56},LinkStyles:{inline:"inline",block:"block",button:"button"},FocusStyles:{ring:"ring",outline:"outline",border:"border",glow:"glow"},TabSizes:{compact:2,standard:4,wide:8},SelectIcons:{chevron:"chevron",arrow:"arrow",caret:"caret",none:"none"},IconSizes:{xs:16,sm:20,md:24,lg:32,xl:48,"2xl":64,"3xl":96}}});var le={};P(le,{default:()=>Ne,findComponentForElement:()=>Ae,getAllSelectors:()=>We,getAllTags:()=>De,getByCategory:()=>je,ontology:()=>z,searchOntology:()=>Be});function A(n,t){if(!n||!t)return!1;try{return n.matches(t)}catch{return!1}}function ce(n,t){if(!n||!t||!n.closest)return null;try{return n.closest(t)}catch{return null}}function Ae(n,{maxDepth:t=5}={}){if(!n||n.closest&&n.closest(".showcase-toc"))return null;let e=n,r=0;for(;e&&r<t;){if(r++,e.tagName==="DS-SHOWCASE")return null;if(e.classList&&e.classList.contains("showcase-section")){e=e.parentElement;continue}for(let o of PDS.ontology.enhancements){let i=o.selector||o;if(A(e,i))return{element:e,componentType:"enhanced-component",displayName:o.description||i,id:o.id}}if(e.tagName==="FIELDSET"){let o=e.getAttribute("role");if(o==="group"||o==="radiogroup")return{element:e,componentType:"form-group",displayName:o==="radiogroup"?"radio group":"form group"}}if(e.tagName==="LABEL"&&e.querySelector&&e.querySelector("input,select,textarea"))return{element:e,componentType:"form-control",displayName:"label with input"};let a=e.closest?e.closest("label"):null;if(a&&a.querySelector&&a.querySelector("input,select,textarea"))return{element:a,componentType:"form-control",displayName:"label with input"};for(let o of PDS.ontology.primitives){for(let i of o.selectors||[]){let l=String(i||"").trim();if(l.includes("*")){if(l.startsWith(".")){let p=l.slice(1).replace(/\*/g,"");if(e.classList&&Array.from(e.classList).some(g=>g.startsWith(p)))return{element:e,componentType:"pds-primitive",displayName:o.name||o.id,id:o.id,tags:o.tags};let c=e.parentElement,d=0;for(;c&&d<t;){if(c.classList&&Array.from(c.classList).some(g=>g.startsWith(p))&&c.tagName!=="DS-SHOWCASE")return{element:c,componentType:"pds-primitive",displayName:o.name||o.id,id:o.id,tags:o.tags};c=c.parentElement,d++}continue}continue}if(A(e,l))return{element:e,componentType:"pds-primitive",displayName:o.name||o.id,id:o.id,tags:o.tags};let s=ce(e,l);if(s&&s.tagName!=="DS-SHOWCASE")return{element:s,componentType:"pds-primitive",displayName:o.name||o.id,id:o.id,tags:o.tags}}if(e.classList){let i=Array.from(e.classList);for(let l of o.selectors||[])if(typeof l=="string"&&l.includes("*")&&l.startsWith(".")){let s=l.slice(1).replace(/\*/g,"");if(i.some(p=>p.startsWith(s)))return{element:e,componentType:"pds-primitive",displayName:o.name||o.id,id:o.id,tags:o.tags}}}}for(let o of PDS.ontology.layoutPatterns||[])for(let i of o.selectors||[]){let l=String(i||"").trim();if(l.includes("*")){if(l.startsWith(".")){let p=l.slice(1).replace(/\*/g,"");if(e.classList&&Array.from(e.classList).some(c=>c.startsWith(p)))return{element:e,componentType:"layout-pattern",displayName:o.name||o.id,id:o.id,tags:o.tags}}continue}if(A(e,l))return{element:e,componentType:"layout-pattern",displayName:o.name||o.id,id:o.id,tags:o.tags};let s=ce(e,l);if(s&&s.tagName!=="DS-SHOWCASE")return{element:s,componentType:"layout-pattern",displayName:o.name||o.id,id:o.id,tags:o.tags}}if(e.tagName&&e.tagName.includes("-")){let o=e.tagName.toLowerCase(),i=PDS.ontology.components.find(l=>l.selectors.includes(o));return{element:e,componentType:"web-component",displayName:i?.name||o,id:i?.id||o,tags:i?.tags}}if(e.tagName==="BUTTON"){let o=e.querySelector&&e.querySelector("pds-icon");return{element:e,componentType:"button",displayName:o?"button with icon":"button",id:"button"}}if(A(e,"pds-icon")||e.closest&&e.closest("pds-icon")){let o=A(e,"pds-icon")?e:e.closest("pds-icon");return{element:o,componentType:"icon",displayName:`pds-icon (${o.getAttribute&&o.getAttribute("icon")||"unknown"})`,id:"pds-icon"}}if(A(e,"nav[data-dropdown]")||e.closest&&e.closest("nav[data-dropdown]"))return{element:A(e,"nav[data-dropdown]")?e:e.closest("nav[data-dropdown]"),componentType:"navigation",displayName:"dropdown menu",id:"dropdown"};e=e.parentElement}return null}function We(){let n=[];for(let t of PDS.ontology.primitives)n.push(...t.selectors||[]);for(let t of PDS.ontology.components)n.push(...t.selectors||[]);for(let t of PDS.ontology.layoutPatterns||[])n.push(...t.selectors||[]);return Array.from(new Set(n))}function Be(n,t={}){let e=n.toLowerCase(),r=[],a=(o,i)=>{for(let l of o)(l.id?.toLowerCase().includes(e)||l.name?.toLowerCase().includes(e)||l.description?.toLowerCase().includes(e)||l.tags?.some(p=>p.toLowerCase().includes(e))||l.category?.toLowerCase().includes(e)||l.selectors?.some(p=>p.toLowerCase().includes(e)))&&r.push({...l,type:i})};return(!t.type||t.type==="primitive")&&a(z.primitives,"primitive"),(!t.type||t.type==="component")&&a(z.components,"component"),(!t.type||t.type==="layout")&&a(z.layoutPatterns,"layout"),(!t.type||t.type==="enhancement")&&a(z.enhancements,"enhancement"),r}function je(n){let t=n.toLowerCase();return{primitives:z.primitives.filter(e=>e.category===t),components:z.components.filter(e=>e.category===t),layouts:z.layoutPatterns.filter(e=>e.category===t)}}function De(){let n=new Set;return z.primitives.forEach(t=>t.tags?.forEach(e=>n.add(e))),z.components.forEach(t=>t.tags?.forEach(e=>n.add(e))),z.layoutPatterns.forEach(t=>t.tags?.forEach(e=>n.add(e))),z.enhancements.forEach(t=>t.tags?.forEach(e=>n.add(e))),Array.from(n).sort()}var z,Ne,Z=N(()=>{z={meta:{name:"Pure Design System Ontology",version:"1.0.0",description:"Complete metadata registry for PDS primitives, components, utilities, and tokens"},tokens:{colors:{semantic:["primary","secondary","accent","success","warning","danger","info"],neutral:["gray"],shades:[50,100,200,300,400,500,600,700,800,900,950],surface:["base","subtle","elevated","sunken","overlay","inverse","translucent"],text:["default","muted","subtle","inverse","primary","success","warning","danger","info"]},spacing:{scale:["1","2","3","4","5","6","8","10","12","16","20","24"],semantic:["xs","sm","md","lg","xl"]},typography:{families:["heading","body","mono"],sizes:["xs","sm","base","lg","xl","2xl","3xl","4xl","5xl"],weights:["light","normal","medium","semibold","bold"]},radius:{scale:["none","sm","base","md","lg","xl","2xl","full"]},shadows:{scale:["none","sm","base","md","lg","xl","inner"]},themes:["light","dark"],breakpoints:{sm:640,md:768,lg:1024,xl:1280}},primitives:[{id:"badge",name:"Badge / Pill",description:"Inline status indicators and labels",selectors:[".badge",".badge-primary",".badge-secondary",".badge-success",".badge-info",".badge-warning",".badge-danger",".badge-outline",".badge-sm",".badge-lg",".pill",".tag",".chip"],tags:["status","label","indicator","inline"],category:"feedback"},{id:"card",name:"Card",description:"Content container with padding, border-radius, and optional shadow",selectors:[".card",".card-basic",".card-elevated",".card-outlined",".card-interactive"],tags:["container","content","grouping"],category:"container"},{id:"surface",name:"Surface",description:"Smart surface classes with automatic text/background color handling",selectors:[".surface-base",".surface-subtle",".surface-elevated",".surface-sunken",".surface-overlay",".surface-inverse",".surface-translucent",".surface-translucent-25",".surface-translucent-50",".surface-translucent-75",".surface-primary",".surface-secondary",".surface-success",".surface-warning",".surface-danger",".surface-info"],tags:["background","theming","color","container"],category:"theming"},{id:"callout",name:"Callout",description:"Contextual information and notification messages",selectors:[".callout",".callout-info",".callout-success",".callout-warning",".callout-danger",".callout-error",".callout-dismissible"],tags:["feedback","message","notification","status","information"],category:"feedback"},{id:"empty-state",name:"Empty State",description:"Empty state layout for missing data or onboarding",selectors:[".empty-state"],tags:["empty","no-data","zero","placeholder","onboarding","state"],category:"feedback"},{id:"dialog",name:"Dialog",description:"Modal dialog element",selectors:["dialog",".dialog"],tags:["modal","overlay","popup","modal"],category:"overlay"},{id:"divider",name:"Divider",description:"Horizontal rule with optional label",selectors:["hr","hr[data-content]"],tags:["separator","line","content-divider"],category:"layout"},{id:"table",name:"Table",description:"Data tables with responsive and styling variants",selectors:["table",".table-responsive",".table-striped",".table-bordered",".table-compact",".data-table"],tags:["data","grid","tabular","responsive"],category:"data"},{id:"button",name:"Button",description:"Interactive button element with variants",selectors:["button",".btn-primary",".btn-secondary",".btn-outline",".btn-sm",".btn-xs",".btn-lg",".btn-working",".icon-only"],tags:["interactive","action","cta","form"],category:"action"},{id:"fieldset",name:"Fieldset Group",description:"Form field grouping for radio/checkbox groups",selectors:["fieldset[role='group']","fieldset[role='radiogroup']","fieldset.buttons"],tags:["form","grouping","radio","checkbox"],category:"form"},{id:"label-field",name:"Label+Input",description:"Semantic label wrapping form input",selectors:["label","label:has(input)","label:has(select)","label:has(textarea)"],tags:["form","input","accessibility"],category:"form"},{id:"accordion",name:"Accordion",description:"Collapsible content sections",selectors:[".accordion",".accordion-item","details","details > summary"],tags:["expandable","collapsible","disclosure"],category:"disclosure"},{id:"icon",name:"Icon",description:"SVG icon element with size and color variants",selectors:["pds-icon",".icon-xs",".icon-sm",".icon-md",".icon-lg",".icon-xl",".icon-primary",".icon-secondary",".icon-accent",".icon-success",".icon-warning",".icon-danger",".icon-info",".icon-muted",".icon-subtle",".icon-text",".icon-text-start",".icon-text-end"],tags:["graphic","symbol","visual"],category:"media"},{id:"figure",name:"Figure/Media",description:"Figure element for images with captions",selectors:["figure","figure.media","figcaption"],tags:["image","media","caption"],category:"media"},{id:"gallery",name:"Gallery",description:"Image gallery grid",selectors:[".gallery",".gallery-grid",".img-gallery"],tags:["images","grid","collection"],category:"media"},{id:"form",name:"Form Container",description:"Form styling and layout",selectors:["form",".form-container",".form-actions",".field-description"],tags:["form","input","submission"],category:"form"},{id:"navigation",name:"Navigation",description:"Navigation elements and menus",selectors:["nav","nav[data-dropdown]","menu","nav menu li"],tags:["menu","links","routing"],category:"navigation"}],components:[{id:"pds-tabstrip",name:"Tab Strip",description:"Tabbed interface component",selectors:["pds-tabstrip"],tags:["tabs","navigation","panels"],category:"navigation"},{id:"pds-drawer",name:"Drawer",description:"Slide-out panel overlay",selectors:["pds-drawer"],tags:["panel","overlay","sidebar"],category:"overlay"},{id:"pds-fab",name:"FAB",description:"Floating Action Button with expandable satellite actions",selectors:["pds-fab"],tags:["button","action","floating","interactive"],category:"action"},{id:"pds-upload",name:"Upload",description:"File upload component with drag-and-drop",selectors:["pds-upload"],tags:["file","upload","drag-drop","form"],category:"form"},{id:"pds-icon",name:"Icon",description:"SVG icon web component",selectors:["pds-icon"],tags:["icon","graphic","svg"],category:"media"},{id:"pds-toaster",name:"Toaster",description:"Toast notification container",selectors:["pds-toaster"],tags:["notification","toast","feedback"],category:"feedback"},{id:"pds-form",name:"JSON Form",description:"Auto-generated form from JSON Schema",selectors:["pds-form"],tags:["form","schema","auto-generate"],category:"form"},{id:"pds-splitpanel",name:"Split Panel",description:"Resizable split pane layout",selectors:["pds-splitpanel"],tags:["layout","resize","panels"],category:"layout"},{id:"pds-scrollrow",name:"Scroll Row",description:"Horizontal scrolling row with snap points",selectors:["pds-scrollrow"],tags:["scroll","horizontal","carousel"],category:"layout"},{id:"pds-richtext",name:"Rich Text",description:"Rich text editor component",selectors:["pds-richtext"],tags:["editor","wysiwyg","text"],category:"form"},{id:"pds-calendar",name:"Calendar",description:"Date picker calendar component",selectors:["pds-calendar"],tags:["date","picker","calendar"],category:"form"}],layoutPatterns:[{id:"container",name:"Container",description:"Centered max-width wrapper with padding",selectors:[".container"],tags:["wrapper","centered","max-width","page"],category:"structure"},{id:"grid",name:"Grid",description:"CSS Grid layout container",selectors:[".grid"],tags:["layout","columns","css-grid"],category:"layout"},{id:"grid-cols",name:"Grid Columns",description:"Fixed column count grids",selectors:[".grid-cols-1",".grid-cols-2",".grid-cols-3",".grid-cols-4",".grid-cols-6"],tags:["columns","fixed","grid"],category:"layout"},{id:"grid-auto",name:"Auto-fit Grid",description:"Responsive auto-fit grid with minimum widths",selectors:[".grid-auto-sm",".grid-auto-md",".grid-auto-lg",".grid-auto-xl"],tags:["responsive","auto-fit","fluid"],category:"layout"},{id:"flex",name:"Flex Container",description:"Flexbox layout with direction and wrap modifiers",selectors:[".flex",".flex-wrap",".flex-col",".flex-row"],tags:["flexbox","layout","alignment"],category:"layout"},{id:"grow",name:"Flex Grow",description:"Fill remaining flex space",selectors:[".grow"],tags:["flex","expand","fill"],category:"layout"},{id:"stack",name:"Stack",description:"Vertical flex layout with predefined gaps",selectors:[".stack-sm",".stack-md",".stack-lg",".stack-xl"],tags:["vertical","spacing","column"],category:"layout"},{id:"gap",name:"Gap",description:"Spacing between flex/grid children",selectors:[".gap-0",".gap-xs",".gap-sm",".gap-md",".gap-lg",".gap-xl"],tags:["spacing","margin","gutters"],category:"spacing"},{id:"items",name:"Items Alignment",description:"Cross-axis alignment for flex/grid",selectors:[".items-start",".items-center",".items-end",".items-stretch",".items-baseline"],tags:["alignment","vertical","cross-axis"],category:"alignment"},{id:"justify",name:"Justify Content",description:"Main-axis alignment for flex/grid",selectors:[".justify-start",".justify-center",".justify-end",".justify-between",".justify-around",".justify-evenly"],tags:["alignment","horizontal","main-axis"],category:"alignment"},{id:"max-width",name:"Max-Width",description:"Content width constraints",selectors:[".max-w-sm",".max-w-md",".max-w-lg",".max-w-xl"],tags:["width","constraint","readable"],category:"sizing"},{id:"section",name:"Section Spacing",description:"Vertical padding for content sections",selectors:[".section",".section-lg"],tags:["spacing","vertical","padding"],category:"spacing"},{id:"mobile-stack",name:"Mobile Stack",description:"Stack on mobile, row on desktop",selectors:[".mobile-stack"],tags:["responsive","mobile","breakpoint"],category:"responsive"}],utilities:{text:{alignment:[".text-left",".text-center",".text-right"],color:[".text-muted"],overflow:[".truncate"]},backdrop:{base:[".backdrop"],variants:[".backdrop-light",".backdrop-dark"],blur:[".backdrop-blur-sm",".backdrop-blur-md",".backdrop-blur-lg"]},shadow:{scale:[".shadow-sm",".shadow-base",".shadow-md",".shadow-lg",".shadow-xl",".shadow-inner",".shadow-none"]},border:{gradient:[".border-gradient",".border-gradient-primary",".border-gradient-accent",".border-gradient-secondary",".border-gradient-soft",".border-gradient-medium",".border-gradient-strong"],glow:[".border-glow",".border-glow-sm",".border-glow-lg",".border-glow-primary",".border-glow-accent",".border-glow-success",".border-glow-warning",".border-glow-danger"],combined:[".border-gradient-glow"]},media:{image:[".img-gallery",".img-rounded-sm",".img-rounded-md",".img-rounded-lg",".img-rounded-xl",".img-rounded-full",".img-inline"],video:[".video-responsive"],figure:[".figure-responsive"]},effects:{glass:[".liquid-glass"]}},responsive:{prefixes:["sm","md","lg"],utilities:{grid:[":grid-cols-2",":grid-cols-3",":grid-cols-4"],flex:[":flex-row"],text:[":text-sm",":text-lg",":text-xl"],spacing:[":p-6",":p-8",":p-12",":gap-6",":gap-8",":gap-12"],width:[":w-1/2",":w-1/3",":w-1/4"],display:[":hidden",":block"]}},enhancements:[{id:"dropdown",selector:"nav[data-dropdown]",description:"Dropdown menu from nav element",tags:["menu","interactive","navigation"]},{id:"toggle",selector:"label[data-toggle]",description:"Toggle switch from checkbox",tags:["switch","boolean","form"]},{id:"range",selector:'input[type="range"]',description:"Enhanced range slider with output",tags:["slider","input","form"]},{id:"required",selector:"form [required]",description:"Required field asterisk indicator",tags:["validation","form","accessibility"]},{id:"open-group",selector:"fieldset[role=group][data-open]",description:"Editable checkbox/radio group",tags:["form","dynamic","editable"]},{id:"working-button",selector:"button.btn-working, a.btn-working",description:"Button with loading spinner",tags:["loading","async","feedback"]},{id:"labeled-divider",selector:"hr[data-content]",description:"Horizontal rule with centered label",tags:["divider","separator","text"]}],categories:{feedback:{description:"User feedback and status indicators",primitives:["callout","badge","empty-state"],components:["pds-toaster"]},form:{description:"Form inputs and controls",primitives:["button","fieldset","label-field","form"],components:["pds-upload","pds-form","pds-richtext","pds-calendar"]},layout:{description:"Page structure and content arrangement",patterns:["container","grid","flex","stack","section"],components:["pds-splitpanel","pds-scrollrow"]},navigation:{description:"Navigation and routing",primitives:["navigation"],components:["pds-tabstrip","pds-drawer"]},media:{description:"Images, icons, and visual content",primitives:["icon","figure","gallery"],components:["pds-icon"]},overlay:{description:"Modal and overlay content",primitives:["dialog"],components:["pds-drawer"]},data:{description:"Data display and tables",primitives:["table"]},theming:{description:"Colors, surfaces, and visual theming",primitives:["surface"]},action:{description:"Interactive actions and buttons",primitives:["button"],components:["pds-fab"]}},styles:{typography:["headings","body","code","links"],icons:{source:"svg",sets:["core","brand"]},interactive:["focus","hover","active","disabled"],states:["success","warning","danger","info","muted"]},searchRelations:{text:["typography","truncate","text-muted","text-primary","text-left","text-center","text-right","pds-richtext","heading","font","label","paragraph","content","ellipsis","overflow","input"],font:["typography","text","heading","font-size","font-weight","font-family"],type:["typography","text","font"],typography:["text","font","heading","truncate","text-muted"],heading:["typography","text","font-size","h1","h2","h3"],truncate:["text","overflow","ellipsis","clamp","nowrap","typography"],ellipsis:["truncate","text","overflow","clamp"],overflow:["truncate","scroll","hidden","text"],paragraph:["text","typography","content","body"],content:["text","typography","body","article"],empty:["empty-state","placeholder","zero","no-data","onboarding","callout","card","icon","button"],"empty state":["empty-state","empty","no-data","zero","onboarding"],"no data":["empty-state","empty","zero","placeholder"],form:["input","field","label","button","fieldset","pds-form","pds-upload","pds-richtext","pds-calendar","required","validation","submit"],input:["form","field","text","label","required","validation"],field:["form","input","label","required"],button:["btn","interactive","action","submit","form","btn-primary","btn-secondary","btn-working","pds-fab","floating"],btn:["button","interactive","action","pds-fab"],fab:["pds-fab","floating","button","action","menu"],floating:["fab","pds-fab","button","action"],toggle:["switch","checkbox","boolean","form","interactive"],switch:["toggle","checkbox","boolean"],slider:["range","input","form"],range:["slider","input","form"],checkbox:["toggle","form","fieldset","boolean"],radio:["fieldset","form","group"],select:["dropdown","form","input","menu"],upload:["file","pds-upload","form","drag-drop"],file:["upload","pds-upload","form"],modal:["dialog","pds-ask","overlay","popup","backdrop","pds-drawer","alert","confirm","prompt","lightbox"],dialog:["modal","pds-ask","overlay","popup","backdrop","alert","confirm","prompt"],popup:["modal","dialog","dropdown","popover","overlay","tooltip"],popover:["popup","tooltip","overlay"],overlay:["modal","dialog","backdrop","drawer","popup"],drawer:["pds-drawer","sidebar","panel","overlay","modal"],backdrop:["overlay","modal","dialog","blur"],confirm:["pds-ask","dialog","modal"],prompt:["pds-ask","dialog","modal","input"],ask:["pds-ask","dialog","confirm","prompt","modal"],dropdown:["menu","nav-dropdown","select","popover"],menu:["dropdown","navigation","nav","list"],nav:["navigation","menu","dropdown","tabs","links"],navigation:["nav","menu","tabs","pds-tabstrip","links","routing"],tabs:["pds-tabstrip","navigation","panels"],tab:["tabs","pds-tabstrip","panel"],link:["navigation","anchor","href","routing"],callout:["notification","feedback","message","status","toast","information","alert","warning","error","info","success","danger"],alert:["callout","notification","feedback","message","status","toast","modal","dialog","pds-ask","confirm","warning","error","info","success","danger"],notification:["callout","toast","pds-toaster","feedback","message","popup","alert"],toast:["pds-toaster","notification","callout","feedback","popup","snackbar","alert"],feedback:["callout","notification","toast","status","badge","validation","error","success","alert"],message:["callout","notification","feedback","dialog","toast","alert"],status:["badge","callout","indicator","feedback","state","alert"],error:["callout","danger","validation","feedback","warning","alert"],success:["callout","feedback","badge","status","check","alert"],warning:["callout","caution","feedback","status","alert"],info:["callout","information","feedback","status","alert"],danger:["callout","error","feedback","destructive","delete","alert"],badge:["status","pill","tag","chip","indicator","label"],pill:["badge","tag","chip"],tag:["badge","pill","chip","label"],chip:["badge","pill","tag"],layout:["grid","flex","stack","container","gap","spacing","pds-splitpanel","section"],grid:["layout","columns","css-grid","table","gallery"],flex:["layout","flexbox","alignment","row","column"],stack:["layout","vertical","spacing","column","gap"],container:["wrapper","layout","max-width","centered"],gap:["spacing","margin","padding","layout"],spacing:["gap","margin","padding","section"],section:["spacing","layout","container","page"],split:["pds-splitpanel","resizable","panels","layout"],panel:["pds-splitpanel","drawer","sidebar","section"],card:["surface","container","elevated","content"],surface:["card","background","elevated","theming","color"],box:["card","container","surface"],elevated:["surface","shadow","card"],color:["palette","theme","surface","primary","secondary","accent"],colours:["color","palette","theme"],palette:["color","theme","tokens"],theme:["color","palette","dark","light","surface"],primary:["color","button","badge","surface"],secondary:["color","button","badge","surface"],accent:["color","highlight","surface"],border:["border-gradient","border-glow","outline","radius"],effect:["border-gradient","border-glow","shadow","glass","animation"],gradient:["border-gradient","color","background"],glow:["border-glow","effect","shadow"],shadow:["elevated","effect","depth","card"],radius:["rounded","border","corner"],rounded:["radius","border","corner"],glass:["liquid-glass","backdrop","blur","effect"],icon:["pds-icon","graphic","symbol","svg","phosphor"],image:["img","figure","gallery","media","picture"],img:["image","figure","gallery","media"],figure:["image","media","caption"],gallery:["images","grid","collection","media"],media:["image","icon","figure","gallery","video"],table:["data","grid","tabular","rows","columns"],data:["table","json","form","display"],editor:["pds-richtext","wysiwyg","text","content"],wysiwyg:["editor","pds-richtext","richtext"],richtext:["pds-richtext","editor","wysiwyg","text"],calendar:["pds-calendar","date","picker","datepicker"],date:["calendar","pds-calendar","picker","input"],datepicker:["calendar","date","pds-calendar"],scroll:["pds-scrollrow","carousel","horizontal","overflow"],carousel:["scroll","pds-scrollrow","slider","gallery"],accordion:["details","collapsible","expandable","disclosure"],collapsible:["accordion","details","expandable"],expandable:["accordion","collapsible","disclosure"],details:["accordion","summary","disclosure"],divider:["hr","separator","line","rule"],separator:["divider","hr","line"],hr:["divider","separator","horizontal-rule"],interactive:["hover","focus","active","disabled","button","link"],hover:["interactive","effect","state"],focus:["interactive","accessibility","state","outline"],disabled:["interactive","state","muted"],loading:["btn-working","spinner","async","progress"],spinner:["loading","btn-working","progress"],accessibility:["a11y","aria","focus","label","required"],a11y:["accessibility","aria","semantic"],aria:["accessibility","a11y","role"],required:["form","validation","asterisk","input"],validation:["form","required","error","feedback"],start:["getting-started","intro","overview","whatispds"],intro:["getting-started","overview","start","docs"],getting:["getting-started","start","intro"],overview:["intro","start","summary","layout-overview"],docs:["documentation","reference","guide"],primitive:["primitives"],component:["components"],enhancement:["enhancements"],foundation:["foundations","color","icon","typography","spacing","tokens"],utility:["utilities","text","backdrop","shadow","border","helper"],pattern:["patterns","layout","responsive","mobile-stack"]}};Ne=z});var ve={};P(ve,{AutoDefiner:()=>ee});async function at(...n){let t={};n.length&&typeof n[n.length-1]=="object"&&(t=n.pop()||{});let e=n,{baseURL:r,mapper:a=p=>`${p}.js`,onError:o=(p,c)=>console.error(`[defineWebComponents] ${p}:`,c)}=t,i=r?new URL(r,typeof location<"u"?location.href:import.meta.url):new URL("./",import.meta.url),l=p=>p.toLowerCase().replace(/(^|-)([a-z])/g,(c,d,g)=>g.toUpperCase()),s=async p=>{try{if(customElements.get(p))return{tag:p,status:"already-defined"};let c=a(p),g=await import(c instanceof URL?c.href:new URL(c,i).href),h=g?.default??g?.[l(p)];if(!h){if(customElements.get(p))return{tag:p,status:"self-defined"};throw new Error(`No export found for ${p}. Expected default export or named export "${l(p)}".`)}return customElements.get(p)?{tag:p,status:"race-already-defined"}:(customElements.define(p,h),{tag:p,status:"defined"})}catch(c){throw o(p,c),c}};return Promise.all(e.map(s))}var ee,xe=N(()=>{ee=class{constructor(t={}){let{baseURL:e,mapper:r,onError:a,predicate:o=()=>!0,attributeModule:i="data-module",root:l=document,scanExisting:s=!0,debounceMs:p=16,observeShadows:c=!0,enhancers:d=[],patchAttachShadow:g=!0}=t,h=new Set,y=new Set,x=new Set,m=new Map,w=new WeakMap,M=new WeakMap,k=0,T=!1,L=null,W=f=>{if(!f||!d.length)return;let v=M.get(f);v||(v=new Set,M.set(f,v));for(let b of d)if(!(!b.selector||!b.run)&&!v.has(b.selector))try{f.matches&&f.matches(b.selector)&&(b.run(f),v.add(b.selector))}catch(C){console.warn(`[AutoDefiner] Error applying enhancer for selector "${b.selector}":`,C)}},B=(f,v)=>{if(!T&&!(!f||!f.includes("-"))&&!customElements.get(f)&&!y.has(f)&&!x.has(f)){if(v&&v.getAttribute){let b=v.getAttribute(i);b&&!m.has(f)&&m.set(f,b)}h.add(f),$()}},$=()=>{k||(k=setTimeout(R,p))},S=f=>{if(f){if(f.nodeType===1){let v=f,b=v.tagName?.toLowerCase();b&&b.includes("-")&&!customElements.get(b)&&o(b,v)&&B(b,v),W(v),c&&v.shadowRoot&&F(v.shadowRoot)}f.querySelectorAll&&f.querySelectorAll("*").forEach(v=>{let b=v.tagName?.toLowerCase();b&&b.includes("-")&&!customElements.get(b)&&o(b,v)&&B(b,v),W(v),c&&v.shadowRoot&&F(v.shadowRoot)})}},F=f=>{if(!f||w.has(f))return;S(f);let v=new MutationObserver(b=>{for(let C of b)C.addedNodes?.forEach(j=>{S(j)}),C.type==="attributes"&&C.target&&S(C.target)});v.observe(f,{childList:!0,subtree:!0,attributes:!0,attributeFilter:[i,...d.map(b=>b.selector).filter(b=>b.startsWith("data-"))]}),w.set(f,v)};async function R(){if(clearTimeout(k),k=0,!h.size)return;let f=Array.from(h);h.clear(),f.forEach(v=>y.add(v));try{let v=b=>m.get(b)??(r?r(b):`${b}.js`);await at(...f,{baseURL:e,mapper:v,onError:(b,C)=>{x.add(b),a?.(b,C)}})}catch{}finally{f.forEach(v=>y.delete(v))}}let q=l===document?document.documentElement:l,G=new MutationObserver(f=>{for(let v of f)v.addedNodes?.forEach(b=>{S(b)}),v.type==="attributes"&&v.target&&S(v.target)});if(G.observe(q,{childList:!0,subtree:!0,attributes:!0,attributeFilter:[i,...d.map(f=>f.selector).filter(f=>f.startsWith("data-"))]}),c&&g&&Element.prototype.attachShadow){let f=Element.prototype.attachShadow;Element.prototype.attachShadow=function(b){let C=f.call(this,b);if(b&&b.mode==="open"){F(C);let j=this.tagName?.toLowerCase();j&&j.includes("-")&&!customElements.get(j)&&B(j,this)}return C},L=()=>Element.prototype.attachShadow=f}return s&&S(q),{stop(){T=!0,G.disconnect(),L&&L(),k&&(clearTimeout(k),k=0),w.forEach(f=>f.disconnect())},flush:R}}static async define(...t){let e={};t.length&&typeof t[t.length-1]=="object"&&(e=t.pop()||{});let r=t,{baseURL:a,mapper:o=c=>`${c}.js`,onError:i=(c,d)=>console.error(`[defineWebComponents] ${c}:`,d)}=e,l=a?new URL(a,typeof location<"u"?location.href:import.meta.url):new URL("./",import.meta.url),s=c=>c.toLowerCase().replace(/(^|-)([a-z])/g,(d,g,h)=>h.toUpperCase()),p=async c=>{try{if(customElements.get(c))return{tag:c,status:"already-defined"};let d=o(c),h=await import(d instanceof URL?d.href:new URL(d,l).href),y=h?.default??h?.[s(c)];if(!y){if(customElements.get(c))return{tag:c,status:"self-defined"};throw new Error(`No export found for ${c}. Expected default export or named export "${s(c)}".`)}return customElements.get(c)?{tag:c,status:"race-already-defined"}:(customElements.define(c,y),{tag:c,status:"defined"})}catch(d){throw i(c,d),d}};return Promise.all(r.map(p))}}});var oe={};P(oe,{PDSQuery:()=>ae});var ae,ne=N(()=>{ae=class{constructor(t){this.pds=t,this.intents={color:["color","colours","shade","tint","hue","foreground","background","text","fill","bg","fg"],spacing:["spacing","space","gap","padding","margin","distance","rhythm"],typography:["font","text","type","typography","heading","body","size","weight","family"],border:["border","outline","stroke","edge","frame"],radius:["radius","rounded","corner","curve","round"],shadow:["shadow","elevation","depth","glow","drop-shadow"],component:["component","element","widget"],utility:["utility","class","helper","css"],layout:["layout","container","grid","flex","group","arrange","organize"],pattern:["pattern","example","template","structure"],interaction:["hover","focus","active","disabled","pressed","selected","checked"]},this.entities={button:["button","btn","cta"],input:["input","field","textbox","text-field","form-control"],card:["card","panel"],badge:["badge","pill","tag","chip"],surface:["surface","background","layer","container"],icon:["icon","svg","glyph","symbol"],link:["link","anchor","hyperlink"],nav:["nav","navigation","menu"],modal:["modal","dialog","popup","overlay"],drawer:["drawer","sidebar","panel"],tab:["tab","tabstrip"],toast:["toast","notification","callout","message","alert"]},this.questionWords=["what","which","how","where","when","show","find","get","give","tell"]}async search(t){if(!t||t.length<2)return[];let e=t.toLowerCase().trim(),r=this.tokenize(e),a=this.analyzeQuery(r,e),o=[];a.intents.has("color")&&o.push(...this.queryColors(a,e)),(a.intents.has("utility")||a.intents.has("border")||a.intents.has("layout")||e.includes("class"))&&o.push(...this.queryUtilities(a,e)),(a.intents.has("component")||a.entities.size>0)&&o.push(...this.queryComponents(a,e)),(a.intents.has("layout")||a.intents.has("pattern"))&&o.push(...this.queryPatterns(a,e)),a.intents.has("typography")&&o.push(...this.queryTypography(a,e)),a.intents.has("spacing")&&o.push(...this.querySpacing(a,e));let i=new Map;for(let l of o){let s=l.value;(!i.has(s)||i.get(s).score<l.score)&&i.set(s,l)}return Array.from(i.values()).sort((l,s)=>s.score-l.score).slice(0,10)}tokenize(t){return t.toLowerCase().replace(/[?!.]/g,"").split(/\s+/).filter(e=>e.length>0)}analyzeQuery(t,e){let r={intents:new Set,entities:new Set,modifiers:new Set,isQuestion:!1,tokens:t,fullText:e};r.isQuestion=this.questionWords.some(a=>t.includes(a));for(let[a,o]of Object.entries(this.intents))o.some(i=>t.includes(i)||e.includes(i))&&r.intents.add(a);for(let[a,o]of Object.entries(this.entities))o.some(i=>t.includes(i)||e.includes(i))&&r.entities.add(a);return(t.includes("hover")||e.includes("hover"))&&r.modifiers.add("hover"),(t.includes("focus")||e.includes("focus"))&&r.modifiers.add("focus"),(t.includes("active")||e.includes("active"))&&r.modifiers.add("active"),(t.includes("disabled")||e.includes("disabled"))&&r.modifiers.add("disabled"),r}queryColors(t,e){let r=[],a=this.pds.compiled;if(!a?.tokens?.colors)return r;let o=a.tokens.colors,i=Array.from(t.entities),l=Array.from(t.modifiers);if(l.includes("focus")&&t.intents.has("border")&&i.includes("input")&&r.push({text:"Focus border color: var(--color-primary-500)",value:"--color-primary-500",icon:"palette",category:"Color Token",score:100,cssVar:"var(--color-primary-500)",description:"Primary color used for focus states on form inputs"}),(e.includes("foreground")||e.includes("text"))&&(e.includes("surface")||t.entities.has("surface"))&&(r.push({text:"Text on surface: var(--surface-text)",value:"--surface-text",icon:"palette",category:"Surface Token",score:95,cssVar:"var(--surface-text)",description:"Default text color for current surface"}),r.push({text:"Secondary text: var(--surface-text-secondary)",value:"--surface-text-secondary",icon:"palette",category:"Surface Token",score:90,cssVar:"var(--surface-text-secondary)",description:"Secondary/muted text on surface"})),e.includes("primary")||e.includes("accent")||e.includes("secondary")){let s=e.includes("primary")?"primary":e.includes("accent")?"accent":"secondary";for(let p of[500,600,700]){let c=`--color-${s}-${p}`;r.push({text:`${s.charAt(0).toUpperCase()+s.slice(1)} ${p}: var(${c})`,value:c,icon:"palette",category:"Color Scale",score:80-(p-500)/100,cssVar:`var(${c})`,description:`${s} color scale shade ${p}`})}}if(i.includes("button")&&t.intents.has("color")){let s=l[0];s?r.push({text:`Button ${s} fill: var(--primary-fill-${s})`,value:`--primary-fill-${s}`,icon:"palette",category:"Interactive Token",score:92,description:`Button background color in ${s} state`}):r.push({text:"Button fill: var(--primary-fill)",value:"--primary-fill",icon:"palette",category:"Interactive Token",score:88,description:"Default button background color"})}return r}queryUtilities(t,e){let r=[],a=this.pds.ontology;if(!a?.utilities)return r;let o=a.utilities,i=[];for(let l of Object.values(o))if(typeof l=="object")for(let s of Object.values(l))Array.isArray(s)&&i.push(...s);return t.intents.has("border")&&i.filter(s=>s.includes("border")||s.includes("outline")).forEach(s=>{let p=80;e.includes("gradient")&&s.includes("gradient")&&(p=95),e.includes("glow")&&s.includes("glow")&&(p=95),r.push({text:`${s} - Border utility class`,value:s,icon:"code",category:"Utility Class",score:p,code:`<div class="${s}">...</div>`,description:this.describeUtility(s)})}),t.intents.has("layout")&&i.filter(s=>s.includes("flex")||s.includes("grid")||s.includes("items-")||s.includes("justify-")||s.includes("gap-")).forEach(s=>{r.push({text:`${s} - Layout utility`,value:s,icon:"layout",category:"Utility Class",score:85,code:`<div class="${s}">...</div>`,description:this.describeUtility(s)})}),e.includes("group")&&t.entities.has("button")&&r.push({text:".btn-group - Group buttons together",value:".btn-group",icon:"code",category:"Utility Class",score:90,code:`<div class="btn-group">
   <button class="btn-primary">One</button>
   <button class="btn-primary">Two</button>
-</div>`,
-            description: "Container for grouped buttons with connected styling"
-          });
-        }
-        return results;
-      }
-      /**
-       * Query components
-       */
-      queryComponents(context, query) {
-        const results = [];
-        const ontology2 = this.pds.ontology;
-        if (!ontology2?.components && !ontology2?.primitives)
-          return results;
-        if (ontology2.components) {
-          ontology2.components.forEach((comp) => {
-            const matchScore = this.scoreMatch(query, comp.name + " " + comp.id);
-            if (matchScore > 50) {
-              results.push({
-                text: `<${comp.id}> - ${comp.name}`,
-                value: comp.id,
-                icon: "brackets-curly",
-                category: "Web Component",
-                score: matchScore,
-                code: `<${comp.id}></${comp.id}>`,
-                description: comp.description || `${comp.name} web component`
-              });
-            }
-          });
-        }
-        if (ontology2.primitives) {
-          ontology2.primitives.forEach((prim) => {
-            const matchScore = this.scoreMatch(query, prim.name + " " + prim.id);
-            if (matchScore > 50) {
-              const selector = prim.selectors?.[0] || prim.id;
-              results.push({
-                text: `${selector} - ${prim.name}`,
-                value: prim.id,
-                icon: "tag",
-                category: "Primitive",
-                score: matchScore - 5,
-                code: this.generatePrimitiveExample(prim),
-                description: prim.description || `${prim.name} primitive element`
-              });
-            }
-          });
-        }
-        if (query.includes("icon") && (query.includes("only") || query.includes("button"))) {
-          results.push({
-            text: 'Icon-only button: <button class="btn-icon">',
-            value: "btn-icon",
-            icon: "star",
-            category: "Pattern",
-            score: 95,
-            code: `<button class="btn-icon btn-primary">
+</div>`,description:"Container for grouped buttons with connected styling"}),r}queryComponents(t,e){let r=[],a=this.pds.ontology;return!a?.components&&!a?.primitives||(a.components&&a.components.forEach(o=>{let i=this.scoreMatch(e,o.name+" "+o.id);i>50&&r.push({text:`<${o.id}> - ${o.name}`,value:o.id,icon:"brackets-curly",category:"Web Component",score:i,code:`<${o.id}></${o.id}>`,description:o.description||`${o.name} web component`})}),a.primitives&&a.primitives.forEach(o=>{let i=this.scoreMatch(e,o.name+" "+o.id);if(i>50){let l=o.selectors?.[0]||o.id;r.push({text:`${l} - ${o.name}`,value:o.id,icon:"tag",category:"Primitive",score:i-5,code:this.generatePrimitiveExample(o),description:o.description||`${o.name} primitive element`})}}),e.includes("icon")&&(e.includes("only")||e.includes("button"))&&r.push({text:'Icon-only button: <button class="btn-icon">',value:"btn-icon",icon:"star",category:"Pattern",score:95,code:`<button class="btn-icon btn-primary">
   <pds-icon icon="heart"></pds-icon>
-</button>`,
-            description: "Button with only an icon, no text label"
-          });
-        }
-        return results;
-      }
-      /**
-       * Query layout patterns
-       */
-      queryPatterns(context, query) {
-        const results = [];
-        const ontology2 = this.pds.ontology;
-        if (!ontology2?.layoutPatterns)
-          return results;
-        ontology2.layoutPatterns.forEach((pattern) => {
-          const matchScore = this.scoreMatch(query, pattern.name + " " + pattern.id + " " + (pattern.description || ""));
-          if (matchScore > 50) {
-            const selector = pattern.selectors?.[0] || `.${pattern.id}`;
-            results.push({
-              text: `${pattern.name} - ${pattern.description || "Layout pattern"}`,
-              value: pattern.id,
-              icon: "layout",
-              category: "Layout Pattern",
-              score: matchScore,
-              code: `<div class="${selector.replace(".", "")}">
+</button>`,description:"Button with only an icon, no text label"})),r}queryPatterns(t,e){let r=[],a=this.pds.ontology;return a?.layoutPatterns&&(a.layoutPatterns.forEach(o=>{let i=this.scoreMatch(e,o.name+" "+o.id+" "+(o.description||""));if(i>50){let l=o.selectors?.[0]||`.${o.id}`;r.push({text:`${o.name} - ${o.description||"Layout pattern"}`,value:o.id,icon:"layout",category:"Layout Pattern",score:i,code:`<div class="${l.replace(".","")}">
   <!-- content -->
-</div>`,
-              description: pattern.description || pattern.name
-            });
-          }
-        });
-        if (query.includes("container") || query.includes("group")) {
-          results.push({
-            text: "Card - Container for grouping content",
-            value: "card",
-            icon: "layout",
-            category: "Primitive",
-            score: 88,
-            code: `<article class="card">
+</div>`,description:o.description||o.name})}}),(e.includes("container")||e.includes("group"))&&(r.push({text:"Card - Container for grouping content",value:"card",icon:"layout",category:"Primitive",score:88,code:`<article class="card">
   <header>
     <h3>Title</h3>
   </header>
   <p>Content...</p>
-</article>`,
-            description: "Card container with optional header, body, and footer"
-          });
-          results.push({
-            text: "Section - Semantic container for grouping",
-            value: "section",
-            icon: "layout",
-            category: "Pattern",
-            score: 85,
-            code: `<section>
+</article>`,description:"Card container with optional header, body, and footer"}),r.push({text:"Section - Semantic container for grouping",value:"section",icon:"layout",category:"Pattern",score:85,code:`<section>
   <h2>Section Title</h2>
   <!-- content -->
-</section>`,
-            description: "Semantic section element for content grouping"
-          });
-        }
-        return results;
-      }
-      /**
-       * Query typography tokens
-       */
-      queryTypography(context, query) {
-        const results = [];
-        const compiled = this.pds.compiled;
-        if (!compiled?.tokens?.typography)
-          return results;
-        const typo = compiled.tokens.typography;
-        if (query.includes("heading") || query.includes("title")) {
-          results.push({
-            text: "Heading font: var(--font-family-heading)",
-            value: "--font-family-heading",
-            icon: "text-aa",
-            category: "Typography Token",
-            score: 85,
-            cssVar: "var(--font-family-heading)",
-            description: "Font family for headings"
-          });
-        }
-        if (query.includes("body") || query.includes("text")) {
-          results.push({
-            text: "Body font: var(--font-family-body)",
-            value: "--font-family-body",
-            icon: "text-aa",
-            category: "Typography Token",
-            score: 85,
-            cssVar: "var(--font-family-body)",
-            description: "Font family for body text"
-          });
-        }
-        return results;
-      }
-      /**
-       * Query spacing tokens
-       */
-      querySpacing(context, query) {
-        const results = [];
-        const compiled = this.pds.compiled;
-        if (!compiled?.tokens?.spacing)
-          return results;
-        const spacing = compiled.tokens.spacing;
-        for (const [key, value] of Object.entries(spacing)) {
-          if (["2", "4", "6", "8"].includes(key)) {
-            results.push({
-              text: `Spacing ${key}: var(--spacing-${key})`,
-              value: `--spacing-${key}`,
-              icon: "ruler",
-              category: "Spacing Token",
-              score: 75,
-              cssVar: `var(--spacing-${key})`,
-              description: `Spacing value: ${value}`
-            });
-          }
-        }
-        return results;
-      }
-      /**
-       * Calculate match score between query and target text
-       */
-      scoreMatch(query, target) {
-        const queryLower = query.toLowerCase();
-        const targetLower = target.toLowerCase();
-        let score = 0;
-        if (queryLower === targetLower)
-          return 100;
-        if (targetLower.includes(queryLower))
-          score += 80;
-        const queryWords = this.tokenize(queryLower);
-        const targetWords = this.tokenize(targetLower);
-        const overlap = queryWords.filter((w) => targetWords.includes(w)).length;
-        score += overlap / queryWords.length * 40;
-        if (targetLower.startsWith(queryLower))
-          score += 20;
-        return Math.min(100, score);
-      }
-      /**
-       * Generate example code for a primitive
-       */
-      generatePrimitiveExample(primitive) {
-        const selector = primitive.selectors?.[0] || primitive.id;
-        if (selector.includes("button") || primitive.id === "button") {
-          return '<button class="btn-primary">Click me</button>';
-        }
-        if (selector.includes("card") || primitive.id === "card") {
-          return '<article class="card">\n  <h3>Title</h3>\n  <p>Content</p>\n</article>';
-        }
-        if (selector.includes("badge") || primitive.id === "badge") {
-          return '<span class="badge">New</span>';
-        }
-        return `<${selector}>Content</${selector}>`;
-      }
-      /**
-       * Describe utility class purpose
-       */
-      describeUtility(utilClass) {
-        if (utilClass.includes("border-gradient"))
-          return "Apply animated gradient border effect";
-        if (utilClass.includes("border-glow"))
-          return "Apply glowing border effect";
-        if (utilClass.includes("flex"))
-          return "Flexbox container utility";
-        if (utilClass.includes("grid"))
-          return "Grid container utility";
-        if (utilClass.includes("gap-"))
-          return "Set gap between flex/grid children";
-        if (utilClass.includes("items-"))
-          return "Align items in flex container";
-        if (utilClass.includes("justify-"))
-          return "Justify content in flex container";
-        if (utilClass === ".btn-group")
-          return "Group buttons with connected styling";
-        return "Utility class for styling";
-      }
-    };
-  }
-});
-
-// src/js/common/common.js
-var common_exports = {};
-__export(common_exports, {
-  deepMerge: () => deepMerge,
-  fragmentFromTemplateLike: () => fragmentFromTemplateLike,
-  isObject: () => isObject
-});
-function isObject(item) {
-  return item && typeof item === "object" && !Array.isArray(item);
-}
-function deepMerge(target, source) {
-  const output = { ...target };
-  if (isObject(target) && isObject(source)) {
-    Object.keys(source).forEach((key) => {
-      if (isObject(source[key])) {
-        if (!(key in target))
-          Object.assign(output, { [key]: source[key] });
-        else
-          output[key] = deepMerge(target[key], source[key]);
-      } else {
-        Object.assign(output, { [key]: source[key] });
-      }
-    });
-  }
-  return output;
-}
-function fragmentFromTemplateLike(templateLike) {
-  const strings = Array.isArray(templateLike?.strings) ? templateLike.strings : [];
-  const values = Array.isArray(templateLike?.values) ? templateLike.values : [];
-  const consumedValues = /* @__PURE__ */ new Set();
-  const htmlParts = [];
-  const propBindingPattern = /(\s)(\.[\w-]+)=\s*$/;
-  for (let i = 0; i < strings.length; i += 1) {
-    let chunk = strings[i] ?? "";
-    const match = chunk.match(propBindingPattern);
-    if (match && i < values.length) {
-      const propToken = match[2];
-      const propName = propToken.slice(1);
-      const marker = `pds-val-${i}`;
-      chunk = chunk.replace(
-        propBindingPattern,
-        `$1data-pds-prop="${propName}:${marker}"`
-      );
-      consumedValues.add(i);
-    }
-    htmlParts.push(chunk);
-    if (i < values.length && !consumedValues.has(i)) {
-      htmlParts.push(`<!--pds-val-${i}-->`);
-    }
-  }
-  const tpl = document.createElement("template");
-  tpl.innerHTML = htmlParts.join("");
-  const replaceValueAtMarker = (markerNode, value) => {
-    const parent = markerNode.parentNode;
-    if (!parent)
-      return;
-    if (value == null) {
-      parent.removeChild(markerNode);
-      return;
-    }
-    const insertValue = (val) => {
-      if (val == null)
-        return;
-      if (val instanceof Node) {
-        parent.insertBefore(val, markerNode);
-        return;
-      }
-      if (Array.isArray(val)) {
-        val.forEach((item) => insertValue(item));
-        return;
-      }
-      parent.insertBefore(document.createTextNode(String(val)), markerNode);
-    };
-    insertValue(value);
-    parent.removeChild(markerNode);
-  };
-  const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_COMMENT);
-  const markers = [];
-  while (walker.nextNode()) {
-    const node = walker.currentNode;
-    if (node?.nodeValue?.startsWith("pds-val-")) {
-      markers.push(node);
-    }
-  }
-  markers.forEach((node) => {
-    const index = Number(node.nodeValue.replace("pds-val-", ""));
-    replaceValueAtMarker(node, values[index]);
-  });
-  const elements = tpl.content.querySelectorAll("*");
-  elements.forEach((el) => {
-    const propAttr = el.getAttribute("data-pds-prop");
-    if (!propAttr)
-      return;
-    const [propName, markerValue] = propAttr.split(":");
-    const index = Number(String(markerValue).replace("pds-val-", ""));
-    if (propName && Number.isInteger(index)) {
-      el[propName] = values[index];
-    }
-    el.removeAttribute("data-pds-prop");
-  });
-  return tpl.content;
-}
-var init_common = __esm({
-  "src/js/common/common.js"() {
-  }
-});
-
-// src/js/pds-core/pds-config.js
-init_pds_enums();
-var presets = {
-  "ocean-breeze": {
-    id: "ocean-breeze",
-    name: "Ocean Breeze",
-    tags: ["playful"],
-    description: "Fresh and calming ocean-inspired palette with professional undertones",
-    options: {
-      liquidGlassEffects: true,
-      backgroundMesh: 3
-    },
-    colors: {
-      primary: "#0891b2",
-      secondary: "#64748b",
-      accent: "#06b6d4",
-      background: "#f0f9ff",
-      darkMode: {
-        background: "#0c1821",
-        secondary: "#94a3b8",
-        primary: "#0891b2"
-        // cyan-600 as base - generates darker 600 shade
-      }
-    },
-    typography: {
-      baseFontSize: 17,
-      fontScale: 1.5,
-      // More dramatic scale for breathing room
-      fontFamilyHeadings: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
-      fontFamilyBody: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
-    },
-    spatialRhythm: {
-      baseUnit: 6,
-      // More spacious
-      scaleRatio: 1.2
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.xxlarge
-      // Soft, flowing
-    }
-  },
-  "midnight-steel": {
-    id: "midnight-steel",
-    name: "Midnight Steel",
-    description: "Bold industrial aesthetic with sharp contrasts and urban edge",
-    colors: {
-      primary: "#3b82f6",
-      secondary: "#52525b",
-      accent: "#f59e0b",
-      background: "#fafaf9",
-      darkMode: {
-        background: "#18181b",
-        secondary: "#71717a",
-        primary: "#3b82f6"
-        // blue-500 - optimized mid-tone
-      }
-    },
-    typography: {
-      baseFontSize: 16,
-      fontScale: 1.333,
-      fontFamilyHeadings: "'IBM Plex Sans', system-ui, -apple-system, sans-serif",
-      fontFamilyBody: "'Inter', system-ui, -apple-system, sans-serif",
-      fontWeightSemibold: 600
-    },
-    spatialRhythm: {
-      baseUnit: 4,
-      scaleRatio: 1.25
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.small,
-      // Crisp corporate edges
-      borderWidth: enums.BorderWidths.thin
-    }
-  },
-  "neural-glow": {
-    id: "neural-glow",
-    name: "Neural Glow",
-    description: "AI-inspired with vibrant purple-blue gradients and futuristic vibes",
-    colors: {
-      primary: "#8b5cf6",
-      secondary: "#6366f1",
-      accent: "#ec4899",
-      background: "#faf5ff",
-      darkMode: {
-        background: "#0f0a1a",
-        secondary: "#818cf8",
-        primary: "#8b5cf6"
-        // violet-500 - optimized mid-tone
-      }
-    },
-    typography: {
-      baseFontSize: 16,
-      fontScale: 1.618,
-      // Golden ratio for futuristic feel
-      fontFamilyHeadings: "'Space Grotesk', system-ui, sans-serif",
-      fontFamilyBody: "'Space Grotesk', system-ui, sans-serif"
-    },
-    spatialRhythm: {
-      baseUnit: 4,
-      scaleRatio: 1.5
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.xlarge,
-      // Smooth, modern
-      borderWidth: enums.BorderWidths.medium
-    },
-    behavior: {
-      transitionSpeed: enums.TransitionSpeeds.fast
-    }
-  },
-  "paper-and-ink": {
-    id: "paper-and-ink",
-    name: "Paper & Ink",
-    tags: ["app", "featured"],
-    description: "Ultra-minimal design with focus on typography and whitespace",
-    colors: {
-      primary: "#171717",
-      secondary: "#737373",
-      accent: "#525252",
-      background: "#ffffff",
-      darkMode: {
-        background: "#0a0a0a",
-        secondary: "#a3a3a3",
-        primary: "#737373"
-        // gray-500 - optimized mid-tone
-      }
-    },
-    typography: {
-      baseFontSize: 18,
-      // Readable, print-like
-      fontScale: 1.333,
-      // Perfect fourth
-      fontFamilyHeadings: "'Helvetica Neue', 'Arial', sans-serif",
-      fontFamilyBody: "'Georgia', 'Times New Roman', serif",
-      fontWeightNormal: 400,
-      fontWeightBold: 700
-    },
-    spatialRhythm: {
-      baseUnit: 4,
-      // Tight, compact
-      scaleRatio: 1.2
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.none,
-      // Sharp editorial
-      borderWidth: enums.BorderWidths.thin
-    }
-  },
-  "sunset-paradise": {
-    id: "sunset-paradise",
-    name: "Sunset Paradise",
-    description: "Warm tropical colors evoking golden hour by the beach",
-    options: {
-      liquidGlassEffects: true,
-      backgroundMesh: 2
-    },
-    colors: {
-      primary: "#ea580c",
-      // Darker orange for better light mode contrast
-      secondary: "#d4a373",
-      accent: "#fb923c",
-      background: "#fffbeb",
-      darkMode: {
-        background: "#1a0f0a",
-        secondary: "#c9a482",
-        // Ensure sufficient contrast for primary-filled components with white text in dark mode
-        primary: "#f97316"
-        // orange-500 - optimized mid-tone
-      }
-    },
-    typography: {
-      baseFontSize: 16,
-      fontScale: 1.5,
-      fontFamilyHeadings: "'Quicksand', 'Comfortaa', sans-serif",
-      fontFamilyBody: "'Quicksand', 'Comfortaa', sans-serif"
-    },
-    spatialRhythm: {
-      baseUnit: 6,
-      // Relaxed, vacation vibes
-      scaleRatio: 1.5
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.xxlarge,
-      // Playful, rounded
-      borderWidth: enums.BorderWidths.medium
-    }
-  },
-  "retro-wave": {
-    id: "retro-wave",
-    name: "Retro Wave",
-    description: "Nostalgic 80s-inspired palette with neon undertones",
-    colors: {
-      primary: "#c026d3",
-      // Darker fuchsia for better light mode contrast
-      secondary: "#a78bfa",
-      accent: "#22d3ee",
-      background: "#fef3ff",
-      darkMode: {
-        background: "#1a0a1f",
-        secondary: "#c4b5fd",
-        // Deepen primary for dark mode to meet AA contrast with white text
-        primary: "#d946ef"
-        // fuchsia-500 - optimized mid-tone
-      }
-    },
-    typography: {
-      baseFontSize: 15,
-      fontScale: 1.5,
-      fontFamilyHeadings: "'Orbitron', 'Impact', monospace",
-      fontFamilyBody: "'Courier New', 'Courier', monospace",
-      fontWeightBold: 700
-    },
-    spatialRhythm: {
-      baseUnit: 4,
-      scaleRatio: 1.25
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.none,
-      // Sharp geometric 80s
-      borderWidth: enums.BorderWidths.thick
-      // Bold borders
-    },
-    behavior: {
-      transitionSpeed: enums.TransitionSpeeds.instant
-      // Snappy retro feel
-    }
-  },
-  "forest-canopy": {
-    id: "forest-canopy",
-    name: "Forest Canopy",
-    description: "Natural earth tones with organic, calming green hues",
-    colors: {
-      primary: "#059669",
-      secondary: "#78716c",
-      accent: "#84cc16",
-      background: "#f0fdf4",
-      darkMode: {
-        background: "#0a1410",
-        secondary: "#a8a29e",
-        primary: "#10b981"
-        // emerald-500 - optimized mid-tone
-      }
-    },
-    typography: {
-      baseFontSize: 16,
-      fontScale: 1.414,
-      // Square root of 2, organic growth
-      fontFamilyHeadings: "'Merriweather Sans', 'Arial', sans-serif",
-      fontFamilyBody: "'Merriweather', 'Georgia', serif"
-    },
-    spatialRhythm: {
-      baseUnit: 6,
-      scaleRatio: 1.3
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.medium,
-      // Natural, organic curves
-      borderWidth: enums.BorderWidths.thin
-    }
-  },
-  "ruby-elegance": {
-    id: "ruby-elegance",
-    name: "Ruby Elegance",
-    description: "Sophisticated palette with rich ruby reds and warm accents",
-    colors: {
-      primary: "#dc2626",
-      secondary: "#9ca3af",
-      accent: "#be123c",
-      background: "#fef2f2",
-      darkMode: {
-        background: "#1b0808",
-        secondary: "#d1d5db",
-        primary: "#ef4444"
-        // red-500 - optimized mid-tone
-      }
-    },
-    typography: {
-      baseFontSize: 17,
-      fontScale: 1.5,
-      fontFamilyHeadings: "'Playfair Display', 'Georgia', serif",
-      fontFamilyBody: "'Crimson Text', 'Garamond', serif",
-      fontWeightNormal: 400,
-      fontWeightSemibold: 600
-    },
-    spatialRhythm: {
-      baseUnit: 4,
-      scaleRatio: 1.333
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.small,
-      // Subtle elegance
-      borderWidth: enums.BorderWidths.thin
-    }
-  },
-  "desert-dawn": {
-    id: "desert-dawn",
-    name: "Desert Dawn",
-    description: "Sun-baked neutrals with grounded terracotta and cool oasis accents",
-    colors: {
-      primary: "#b45309",
-      // terracotta
-      secondary: "#a8a29e",
-      // warm gray
-      accent: "#0ea5a8",
-      // oasis teal
-      background: "#fcf6ef",
-      darkMode: {
-        background: "#12100e",
-        secondary: "#d1d5db",
-        // Deepen primary in dark to keep white text AA-compliant
-        primary: "#f59e0b"
-        // amber-500 - optimized mid-tone
-      }
-    },
-    typography: {
-      baseFontSize: 16,
-      fontScale: 1.414,
-      fontFamilyHeadings: "'Source Sans Pro', system-ui, -apple-system, sans-serif",
-      fontFamilyBody: "'Source Serif Pro', Georgia, serif"
-    },
-    spatialRhythm: {
-      baseUnit: 6,
-      scaleRatio: 1.3
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.medium,
-      borderWidth: enums.BorderWidths.medium
-    }
-  },
-  "contrast-pro": {
-    id: "contrast-pro",
-    name: "Contrast Pro",
-    description: "Accessibility-first, high-contrast UI with assertive clarity",
-    colors: {
-      primary: "#1f2937",
-      // slate-800
-      secondary: "#111827",
-      // gray-900
-      accent: "#eab308",
-      // amber-500
-      background: "#ffffff",
-      darkMode: {
-        background: "#0b0f14",
-        secondary: "#9ca3af",
-        // Use a lighter primary in dark mode to ensure outline/link text
-        // has strong contrast against the very-dark surface. The generator
-        // will still pick appropriate darker fill shades for buttons so
-        // white-on-fill contrast is preserved.
-        primary: "#9ca3af"
-        // gray-400 - optimized mid-tone
-      }
-    },
-    typography: {
-      baseFontSize: 17,
-      fontScale: 1.2,
-      fontFamilyHeadings: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
-      fontFamilyBody: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
-      fontWeightBold: 700
-    },
-    spatialRhythm: {
-      baseUnit: 3,
-      // compact, data-dense
-      scaleRatio: 1.2
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.small,
-      borderWidth: enums.BorderWidths.thick
-    },
-    behavior: {
-      transitionSpeed: enums.TransitionSpeeds.fast,
-      focusRingWidth: 4
-    }
-  },
-  "pastel-play": {
-    id: "pastel-play",
-    name: "Pastel Play",
-    description: "Playful pastels with soft surfaces and friendly rounded shapes",
-    colors: {
-      primary: "#db2777",
-      // raspberry
-      secondary: "#a78bfa",
-      // lavender
-      accent: "#34d399",
-      // mint
-      background: "#fff7fa",
-      darkMode: {
-        background: "#1a1016",
-        secondary: "#c4b5fd",
-        primary: "#ec4899"
-        // pink-500 - optimized mid-tone
-      }
-    },
-    typography: {
-      baseFontSize: 16,
-      fontScale: 1.333,
-      fontFamilyHeadings: "'Nunito', system-ui, -apple-system, sans-serif",
-      fontFamilyBody: "'Nunito', system-ui, -apple-system, sans-serif",
-      lineHeightRelaxed: enums.LineHeights.relaxed
-    },
-    spatialRhythm: {
-      baseUnit: 6,
-      // comfy
-      scaleRatio: 1.4
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.xxlarge,
-      borderWidth: enums.BorderWidths.thin
-    },
-    behavior: {
-      transitionSpeed: enums.TransitionSpeeds.slow,
-      animationEasing: enums.AnimationEasings["ease-out"]
-    }
-  },
-  "brutalist-tech": {
-    id: "brutalist-tech",
-    name: "Brutalist Tech",
-    description: "Stark grayscale with engineered accents and unapologetically bold structure",
-    colors: {
-      primary: "#111111",
-      secondary: "#4b5563",
-      accent: "#06b6d4",
-      // cyan signal
-      background: "#f8fafc",
-      darkMode: {
-        background: "#0b0b0b",
-        secondary: "#9ca3af",
-        // Set a chromatic primary in dark mode to ensure both:
-        // - outline/link contrast on dark surface, and
-        // - sufficient button fill contrast against white text.
-        // Cyan signal aligns with preset accent and produces high-contrast dark fills.
-        primary: "#06b6d4"
-        // cyan-500 - optimized mid-tone
-      }
-    },
-    typography: {
-      baseFontSize: 15,
-      fontScale: 1.25,
-      fontFamilyHeadings: "'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace",
-      fontFamilyBody: "'Inter', system-ui, -apple-system, sans-serif",
-      letterSpacingTight: -0.02
-    },
-    spatialRhythm: {
-      baseUnit: 4,
-      scaleRatio: 1.25
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.none,
-      borderWidth: enums.BorderWidths.thick
-    },
-    behavior: {
-      transitionSpeed: enums.TransitionSpeeds.instant
-    }
-  },
-  "zen-garden": {
-    id: "zen-garden",
-    name: "Zen Garden",
-    description: "Soft botanicals with contemplative spacing and balanced motion",
-    colors: {
-      primary: "#3f6212",
-      // deep olive
-      secondary: "#6b7280",
-      // neutral leaf shadow
-      accent: "#7c3aed",
-      // iris bloom
-      background: "#f7fbef",
-      darkMode: {
-        background: "#0d130a",
-        secondary: "#a3a3a3",
-        primary: "#84cc16"
-        // lime-500 - optimized mid-tone
-      }
-    },
-    typography: {
-      baseFontSize: 17,
-      fontScale: 1.414,
-      fontFamilyHeadings: "'Merriweather', Georgia, serif",
-      fontFamilyBody: "'Noto Sans', system-ui, -apple-system, sans-serif"
-    },
-    spatialRhythm: {
-      baseUnit: 6,
-      // airy
-      scaleRatio: 1.35
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.large,
-      borderWidth: enums.BorderWidths.medium
-    },
-    behavior: {
-      transitionSpeed: enums.TransitionSpeeds.normal,
-      animationEasing: enums.AnimationEasings.ease
-    }
-  },
-  "fitness-pro": {
-    id: "fitness-pro",
-    name: "Fitness Pro",
-    tags: ["app", "featured"],
-    description: "Health and fitness tracking aesthetic with data-driven dark surfaces and vibrant accent rings",
-    options: {
-      liquidGlassEffects: true,
-      backgroundMesh: 2
-    },
-    colors: {
-      primary: "#e91e63",
-      // vibrant pink-magenta for data highlights
-      secondary: "#78909c",
-      // cool gray for secondary data
-      accent: "#ab47bc",
-      // purple accent for premium features
-      background: "#fafafa",
-      darkMode: {
-        background: "#1a1d21",
-        // deep charcoal like WHOOP
-        secondary: "#78909c",
-        primary: "#0a4ca4"
-      }
-    },
-    typography: {
-      baseFontSize: 15,
-      fontScale: 1.25,
-      fontFamilyHeadings: "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
-      fontFamilyBody: "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
-      fontWeightNormal: 400,
-      fontWeightMedium: 500,
-      fontWeightSemibold: 600,
-      fontWeightBold: 700,
-      lineHeightNormal: enums.LineHeights.tight
-    },
-    spatialRhythm: {
-      baseUnit: 4,
-      scaleRatio: 1.25,
-      containerPadding: 1.25,
-      sectionSpacing: 2.5
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.large,
-      // smooth cards and buttons
-      borderWidth: enums.BorderWidths.thin
-    },
-    layers: {
-      shadowDepth: "medium",
-      blurMedium: 12
-    },
-    behavior: {
-      transitionSpeed: enums.TransitionSpeeds.fast,
-      animationEasing: enums.AnimationEasings["ease-out"],
-      focusRingWidth: 2
-    }
-  },
-  "travel-market": {
-    id: "travel-market",
-    name: "Travel Market",
-    description: "Hospitality marketplace design with clean cards, subtle shadows, and trust-building neutrals",
-    options: {
-      liquidGlassEffects: true,
-      backgroundMesh: 3
-    },
-    colors: {
-      primary: "#d93251",
-      // Darker coral red for better contrast (was #ff385c)
-      secondary: "#717171",
-      // neutral gray for text
-      accent: "#144990",
-      // teal for experiences/verified
-      background: "#ffffff",
-      darkMode: {
-        background: "#222222",
-        secondary: "#b0b0b0",
-        primary: "#ff5a7a"
-        // Lighter for dark mode
-      }
-    },
-    typography: {
-      baseFontSize: 16,
-      fontScale: 1.2,
-      fontFamilyHeadings: "'Circular', system-ui, -apple-system, 'Segoe UI', sans-serif",
-      fontFamilyBody: "'Circular', system-ui, -apple-system, 'Segoe UI', sans-serif",
-      fontWeightNormal: 400,
-      fontWeightMedium: 500,
-      fontWeightSemibold: 600,
-      fontWeightBold: 700,
-      lineHeightRelaxed: enums.LineHeights.relaxed
-    },
-    spatialRhythm: {
-      baseUnit: 4,
-      scaleRatio: 1.25,
-      containerMaxWidth: 1440,
-      containerPadding: 1.5,
-      sectionSpacing: 3
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.medium,
-      borderWidth: enums.BorderWidths.thin
-    },
-    layers: {
-      shadowDepth: "light",
-      blurLight: 8
-    },
-    behavior: {
-      transitionSpeed: enums.TransitionSpeeds.normal,
-      animationEasing: enums.AnimationEasings["ease-in-out"],
-      hoverOpacity: 0.9
-    }
-  },
-  "mobility-app": {
-    id: "mobility-app",
-    name: "Mobility App",
-    tags: ["app", "featured"],
-    description: "On-demand service platform with bold typography, map-ready colors, and action-driven UI",
-    options: {
-      liquidGlassEffects: true,
-      backgroundMesh: 0
-    },
-    colors: {
-      primary: "#000000",
-      // Uber-inspired black for trust and sophistication
-      secondary: "#545454",
-      // mid-gray for secondary elements
-      accent: "#06c167",
-      // green for success/confirmation
-      background: "#f6f6f6",
-      darkMode: {
-        background: "#0f0f0f",
-        secondary: "#8a8a8a",
-        primary: "#06c167"
-        // Use bright green for dark mode buttons (was white)
-      }
-    },
-    typography: {
-      baseFontSize: 16,
-      fontScale: 1.3,
-      fontFamilyHeadings: "'UberMove', system-ui, -apple-system, 'Segoe UI', sans-serif",
-      fontFamilyBody: "'UberMove', system-ui, -apple-system, 'Segoe UI', sans-serif",
-      fontWeightNormal: 400,
-      fontWeightMedium: 500,
-      fontWeightSemibold: 600,
-      fontWeightBold: 700
-    },
-    spatialRhythm: {
-      baseUnit: 4,
-      scaleRatio: 1.25,
-      buttonPadding: 1.25,
-      inputPadding: 1
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.small,
-      // subtle, professional
-      borderWidth: enums.BorderWidths.medium
-    },
-    behavior: {
-      transitionSpeed: enums.TransitionSpeeds.fast,
-      animationEasing: enums.AnimationEasings["ease-out"],
-      focusRingWidth: 3
-    },
-    a11y: {
-      minTouchTarget: enums.TouchTargetSizes.comfortable,
-      focusStyle: enums.FocusStyles.ring
-    }
-  },
-  "fintech-secure": {
-    id: "fintech-secure",
-    name: "Fintech Secure",
-    description: "Financial services app UI with trust-building blues, precise spacing, and security-first design",
-    options: {
-      liquidGlassEffects: false,
-      backgroundMesh: 0
-    },
-    colors: {
-      primary: "#0a2540",
-      // deep navy for trust and security
-      secondary: "#425466",
-      // slate for secondary content
-      accent: "#00d4ff",
-      // bright cyan for CTAs
-      background: "#f7fafc",
-      darkMode: {
-        background: "#0a1929",
-        secondary: "#8796a5",
-        primary: "#00d4ff"
-      }
-    },
-    typography: {
-      baseFontSize: 16,
-      fontScale: 1.25,
-      fontFamilyHeadings: "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
-      fontFamilyBody: "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
-      fontFamilyMono: "'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace",
-      fontWeightNormal: 400,
-      fontWeightMedium: 500,
-      fontWeightSemibold: 600,
-      fontWeightBold: 700
-    },
-    spatialRhythm: {
-      baseUnit: 4,
-      scaleRatio: 1.25,
-      containerMaxWidth: 1280,
-      sectionSpacing: 2.5
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.medium,
-      borderWidth: enums.BorderWidths.thin
-    },
-    layers: {
-      shadowDepth: "light",
-      blurLight: 6
-    },
-    behavior: {
-      transitionSpeed: enums.TransitionSpeeds.fast,
-      animationEasing: enums.AnimationEasings["ease-in-out"],
-      focusRingWidth: 3,
-      focusRingOpacity: 0.4
-    },
-    a11y: {
-      minTouchTarget: enums.TouchTargetSizes.standard,
-      focusStyle: enums.FocusStyles.ring
-    }
-  },
-  "social-feed": {
-    id: "social-feed",
-    name: "Social Feed",
-    tags: ["app", "featured"],
-    description: "Content-first social platform with minimal chrome, bold actions, and vibrant media presentation",
-    options: {
-      liquidGlassEffects: true,
-      backgroundMesh: 4
-    },
-    colors: {
-      primary: "#1877f2",
-      // social blue for links and primary actions
-      secondary: "#65676b",
-      // neutral gray for secondary text
-      accent: "#fe2c55",
-      // vibrant pink-red for likes/hearts
-      background: "#ffffff",
-      darkMode: {
-        background: "#18191a",
-        secondary: "#b0b3b8",
-        primary: "#2d88ff"
-      }
-    },
-    typography: {
-      baseFontSize: 15,
-      fontScale: 1.2,
-      fontFamilyHeadings: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
-      fontFamilyBody: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
-      fontWeightNormal: 400,
-      fontWeightMedium: 500,
-      fontWeightSemibold: 600,
-      fontWeightBold: 700,
-      lineHeightNormal: enums.LineHeights.relaxed
-    },
-    spatialRhythm: {
-      baseUnit: 4,
-      scaleRatio: 1.25,
-      containerMaxWidth: 680,
-      sectionSpacing: 1.5
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.medium,
-      borderWidth: enums.BorderWidths.thin
-    },
-    behavior: {
-      transitionSpeed: enums.TransitionSpeeds.fast,
-      animationEasing: enums.AnimationEasings["ease-out"],
-      hoverOpacity: 0.85
-    }
-  },
-  "enterprise-dash": {
-    id: "enterprise-dash",
-    tags: ["app", "featured"],
-    name: "Enterprise Dashboard",
-    description: "Data-dense business intelligence app interface with organized hierarchy and professional polish",
-    options: {
-      liquidGlassEffects: false
-    },
-    colors: {
-      primary: "#0066cc",
-      // corporate blue for primary actions
-      secondary: "#5f6368",
-      // neutral gray for text and chrome
-      accent: "#1a73e8",
-      // bright blue for highlights
-      background: "#ffffff",
-      success: "#34a853",
-      warning: "#fbbc04",
-      danger: "#ea4335",
-      darkMode: {
-        background: "#202124",
-        secondary: "#9aa0a6",
-        primary: "#8ab4f8"
-      }
-    },
-    typography: {
-      baseFontSize: 14,
-      fontScale: 1.2,
-      fontFamilyHeadings: "'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif",
-      fontFamilyBody: "'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif",
-      fontFamilyMono: "'Roboto Mono', ui-monospace, Consolas, monospace",
-      fontWeightNormal: 400,
-      fontWeightMedium: 500,
-      fontWeightSemibold: 600,
-      fontWeightBold: 700,
-      lineHeightNormal: enums.LineHeights.tight
-    },
-    spatialRhythm: {
-      baseUnit: 4,
-      scaleRatio: 1.2,
-      containerMaxWidth: 1600,
-      containerPadding: 1.5,
-      sectionSpacing: 2
-    },
-    shape: {
-      radiusSize: enums.RadiusSizes.small,
-      borderWidth: enums.BorderWidths.thin
-    },
-    layers: {
-      shadowDepth: "light",
-      blurLight: 4
-    },
-    behavior: {
-      transitionSpeed: enums.TransitionSpeeds.fast,
-      animationEasing: enums.AnimationEasings["ease-in-out"],
-      focusRingWidth: 2
-    },
-    layout: {
-      densityCompact: 0.85,
-      gridColumns: 12
-    }
-  }
-};
-presets.default = {
-  id: "default",
-  name: "Default",
-  tags: ["app", "featured"],
-  description: "Fresh and modern design system with balanced aesthetics and usability",
-  options: {
-    liquidGlassEffects: true,
-    backgroundMesh: 4
-  },
-  form: {
-    options: {
-      widgets: {
-        booleans: "toggle",
-        // 'toggle' | 'toggle-with-icons' | 'checkbox'
-        numbers: "input",
-        // 'input' | 'range'
-        selects: "standard"
-        // 'standard' | 'dropdown'
-      },
-      layouts: {
-        fieldsets: "default",
-        // 'default' | 'flex' | 'grid' | 'accordion' | 'tabs' | 'card'
-        arrays: "default"
-        // 'default' | 'compact'
-      },
-      enhancements: {
-        icons: true,
-        // Enable icon-enhanced inputs
-        datalists: true,
-        // Enable datalist autocomplete
-        rangeOutput: true
-        // Use .range-output for ranges
-      },
-      validation: {
-        showErrors: true,
-        // Show validation errors inline
-        validateOnChange: false
-        // Validate on every change vs on submit
-      }
-    }
-  },
-  colors: {
-    // Palette - base colors that generate entire color palettes
-    primary: "#0e7490",
-    // Darker cyan for better contrast
-    secondary: "#a99b95",
-    // REQUIRED: Secondary/neutral color for gray scale generation
-    accent: "#e54271",
-    // Accent color (pink red)
-    background: "#e7e6de",
-    // Base background color for light mode
-    // Dark mode overrides - specify custom dark theme colors
-    darkMode: {
-      background: "#16171a",
-      // Custom dark mode background (cool blue-gray)
-      secondary: "#8b9199",
-      // Optional: custom dark grays (uses light secondary if omitted)
-      primary: "#06b6d4"
-      // cyan-500 - optimized mid-tone
-      // accent: null,       // Optional: override accent color for dark mode
-    },
-    // Semantic colors (auto-generated from primary if not specified)
-    success: null,
-    // Auto-generated green from primary if null
-    warning: "#B38600",
-    // Warning color (defaults to accent if null)
-    danger: null,
-    // Auto-generated red from primary if null
-    info: null,
-    // Defaults to primary color if null
-    // Advanced color options
-    gradientStops: 3,
-    elevationOpacity: 0.05
-  },
-  typography: {
-    // Essential typography settings (exposed in simple form)
-    baseFontSize: 16,
-    fontScale: 1.2,
-    // Multiplier for heading size generation (1.2 = minor third)
-    fontFamilyHeadings: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
-    fontFamilyBody: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
-    fontFamilyMono: 'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace',
-    // Advanced typography options (exposed in advanced form)
-    fontWeightLight: enums.FontWeights.light,
-    fontWeightNormal: enums.FontWeights.normal,
-    fontWeightMedium: enums.FontWeights.medium,
-    fontWeightSemibold: enums.FontWeights.semibold,
-    fontWeightBold: enums.FontWeights.bold,
-    lineHeightTight: enums.LineHeights.tight,
-    lineHeightNormal: enums.LineHeights.normal,
-    lineHeightRelaxed: enums.LineHeights.relaxed,
-    letterSpacingTight: -0.025,
-    letterSpacingNormal: 0,
-    letterSpacingWide: 0.025
-  },
-  spatialRhythm: {
-    // Essential spacing setting (exposed in simple form)
-    baseUnit: 4,
-    // Base spacing unit in pixels (typically 16 = 1rem)
-    // Advanced spacing options
-    scaleRatio: 1.25,
-    maxSpacingSteps: 32,
-    containerMaxWidth: 1200,
-    containerPadding: 1,
-    inputPadding: 0.75,
-    buttonPadding: 1,
-    sectionSpacing: 2
-  },
-  layers: {
-    shadowDepth: "medium",
-    blurLight: 4,
-    blurMedium: 8,
-    blurHeavy: 16,
-    zIndexBase: 0,
-    zIndexDropdown: 1e3,
-    zIndexSticky: 1020,
-    zIndexFixed: 1030,
-    zIndexModal: 1040,
-    zIndexPopover: 1050,
-    zIndexTooltip: 1060,
-    zIndexNotification: 1070
-  },
-  shape: {
-    radiusSize: enums.RadiusSizes.large,
-    borderWidth: enums.BorderWidths.medium,
-    customRadius: null
-  },
-  behavior: {
-    transitionSpeed: enums.TransitionSpeeds.normal,
-    animationEasing: enums.AnimationEasings["ease-out"],
-    customTransitionSpeed: null,
-    customEasing: null,
-    focusRingWidth: 3,
-    focusRingOpacity: 0.3,
-    hoverOpacity: 0.8
-  },
-  layout: {
-    gridColumns: 12,
-    gridGutter: 1,
-    breakpoints: {
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280
-    },
-    densityCompact: 0.8,
-    densityNormal: 1,
-    densityComfortable: 1.2,
-    buttonMinHeight: enums.TouchTargetSizes.standard,
-    inputMinHeight: 40,
-    // Layout utility system
-    utilities: {
-      grid: true,
-      flex: true,
-      spacing: true,
-      container: true
-    },
-    gridSystem: {
-      columns: [1, 2, 3, 4, 6],
-      autoFitBreakpoints: {
-        sm: "150px",
-        md: "250px",
-        lg: "350px",
-        xl: "450px"
-      },
-      enableGapUtilities: true
-    },
-    containerMaxWidth: "1400px",
-    containerPadding: "var(--spacing-6)"
-  },
-  advanced: {
-    linkStyle: enums.LinkStyles.inline,
-    colorDerivation: "hsl"
-  },
-  a11y: {
-    minTouchTarget: enums.TouchTargetSizes.standard,
-    prefersReducedMotion: true,
-    focusStyle: enums.FocusStyles.ring
-  },
-  icons: {
-    set: "phosphor",
-    // https://phosphoricons.com/
-    weight: "regular",
-    defaultSize: 24,
-    externalPath: "/assets/img/icons/",
-    // Path for on-demand external SVG icons
-    sizes: enums.IconSizes,
-    include: {
-      navigation: [
-        "arrow-left",
-        "arrow-right",
-        "arrow-up",
-        "arrow-down",
-        "arrow-counter-clockwise",
-        "caret-left",
-        "caret-right",
-        "caret-down",
-        "caret-up",
-        "x",
-        "list",
-        "list-dashes",
-        "dots-three-vertical",
-        "dots-three",
-        "house",
-        "gear",
-        "magnifying-glass",
-        "funnel",
-        "tabs",
-        "sidebar"
-      ],
-      actions: [
-        "plus",
-        "minus",
-        "check",
-        "trash",
-        "pencil",
-        "floppy-disk",
-        "copy",
-        "download",
-        "upload",
-        "share",
-        "link",
-        "eye",
-        "eye-slash",
-        "heart",
-        "star",
-        "bookmark",
-        "note-pencil",
-        "cursor-click",
-        "clipboard",
-        "magic-wand",
-        "sparkle"
-      ],
-      communication: [
-        "envelope",
-        "bell",
-        "bell-ringing",
-        "bell-simple",
-        "chat-circle",
-        "phone",
-        "paper-plane-tilt",
-        "user",
-        "users",
-        "user-gear",
-        "at"
-      ],
-      content: [
-        "image",
-        "file",
-        "file-text",
-        "file-css",
-        "file-js",
-        "folder",
-        "folder-open",
-        "book-open",
-        "camera",
-        "video-camera",
-        "play",
-        "pause",
-        "microphone",
-        "brackets-curly",
-        "code",
-        "folder-simple",
-        "grid-four",
-        "briefcase",
-        "chart-line",
-        "chart-bar",
-        "database",
-        "map-pin"
-      ],
-      status: [
-        "info",
-        "warning",
-        "check-circle",
-        "x-circle",
-        "question",
-        "shield",
-        "shield-check",
-        "shield-warning",
-        "lock",
-        "lock-open",
-        "fingerprint",
-        "circle-notch"
-      ],
-      time: ["calendar", "clock", "timer", "hourglass"],
-      commerce: [
-        "shopping-cart",
-        "credit-card",
-        "currency-dollar",
-        "tag",
-        "receipt",
-        "storefront"
-      ],
-      formatting: [
-        "text-align-left",
-        "text-align-center",
-        "text-align-right",
-        "text-b",
-        "text-italic",
-        "text-underline",
-        "list-bullets",
-        "list-numbers",
-        "text-aa"
-      ],
-      system: [
-        "cloud",
-        "cloud-arrow-up",
-        "cloud-arrow-down",
-        "desktop",
-        "device-mobile",
-        "globe",
-        "wifi-high",
-        "battery-charging",
-        "sun",
-        "moon",
-        "moon-stars",
-        "palette",
-        "rocket",
-        "feather",
-        "square",
-        "circle",
-        "squares-four",
-        "lightning",
-        "wrench"
-      ]
-    },
-    // Default sprite path for internal/dev use. For consumer apps, icons are exported to
-    // [config.static.root]/icons/pds-icons.svg and components should consume from there.
-    spritePath: "public/assets/pds/icons/pds-icons.svg"
-  },
-  gap: 4,
-  debug: false
-};
-function defaultLog(level = "log", message, ...data) {
-  const debug = this?.debug || this?.design?.debug || false;
-  if (debug || level === "error" || level === "warn") {
-    const method = console[level] || console.log;
-    if (data.length > 0) {
-      method(message, ...data);
-    } else {
-      method(message);
-    }
-  }
-}
-
-// src/js/pds-core/pds-generator.js
-init_pds_enums();
-init_pds_ontology();
-var Generator = class _Generator {
-  // Singleton instance
-  static #instance;
-  static get instance() {
-    return this.#instance;
-  }
-  // Private internal fields
-  #layers;
-  #stylesheets;
-  //#blobURLs;
-  constructor(options = {}) {
-    this.options = {
-      // All defaults should come from config, no hardcoded values
-      debug: false,
-      ...options
-    };
-    if (!this.options.design) {
-      this.options.design = {};
-    }
-    if (this.options.debug) {
-      this.options.log?.("debug", "Generator options:", this.options);
-    }
-    _Generator.#instance = this;
-    this.tokens = this.generateTokens();
-    if (this.options.debug) {
-      this.options.log?.("debug", "Generated tokens:", this.tokens);
-    }
-    this.#generateLayers();
-    if (typeof CSSStyleSheet !== "undefined") {
-      this.#createConstructableStylesheets();
-    } else {
-      if (this.options.debug) {
-        this.options.log?.(
-          "debug",
-          "[Generator] Skipping browser features (CSSStyleSheet not available)"
-        );
-      }
-    }
-  }
-  generateTokens() {
-    const config = this.options.design || {};
-    return {
-      colors: this.#generateColorTokens(config.colors || {}),
-      spacing: this.generateSpacingTokens(config.spatialRhythm || {}),
-      radius: this.#generateRadiusTokens(config.shape || {}),
-      borderWidths: this.#generateBorderWidthTokens(config.shape || {}),
-      typography: this.generateTypographyTokens(config.typography || {}),
-      shadows: this.#generateShadowTokens(config.layers || {}),
-      layout: this.#generateLayoutTokens(config.layout || {}),
-      transitions: this.#generateTransitionTokens(config.behavior || {}),
-      zIndex: this.#generateZIndexTokens(config.layers || {}),
-      icons: this.#generateIconTokens(config.icons || {})
-    };
-  }
-  #generateColorTokens(colorConfig) {
-    const {
-      primary = "#3b82f6",
-      secondary = "#64748b",
-      // REQUIRED for gray scale generation
-      accent = "#ec4899",
-      background = "#ffffff",
-      success = null,
-      warning = "#FFBF00",
-      danger = null,
-      info = null,
-      darkMode = {}
-      // Extract dark mode overrides
-    } = colorConfig;
-    const colors = {
-      // Generate color scales
-      primary: this.#generateColorScale(primary),
-      secondary: this.#generateColorScale(secondary),
-      accent: this.#generateColorScale(accent),
-      // Semantic colors - use provided or derive from primary/accent
-      success: this.#generateColorScale(
-        success || this.#deriveSuccessColor(primary)
-      ),
-      warning: this.#generateColorScale(warning || accent),
-      danger: this.#generateColorScale(
-        danger || this.#deriveDangerColor(primary)
-      ),
-      info: this.#generateColorScale(info || primary),
-      // Neutral grays derived from secondary color
-      gray: this.#generateGrayScale(secondary),
-      // Background-based surface colors for tasteful variations
-      surface: this.#generateBackgroundShades(background)
-    };
-    colors.surface.fieldset = this.#generateFieldsetAdaptiveColors(
-      colors.surface
-    );
-    colors.surfaceSmart = this.#generateSmartSurfaceTokens(colors.surface);
-    colors.dark = this.#generateDarkModeColors(
-      colors,
-      background,
-      darkMode
-      // Pass the darkMode object directly
-    );
-    if (colors.dark && colors.dark.surface) {
-      colors.dark.surfaceSmart = this.#generateSmartSurfaceTokens(
-        colors.dark.surface
-      );
-    }
-    colors.interactive = {
-      light: {
-        fill: this.#pickFillShadeForWhite(colors.primary, 4.5),
-        // For button fills with white text
-        text: colors.primary[600]
-        // For links/outlines on light backgrounds
-      },
-      dark: {
-        fill: this.#pickFillShadeForWhite(colors.dark.primary, 4.5),
-        // For button fills with white text
-        text: this.#pickReadablePrimaryOnSurface(
-          colors.dark.primary,
-          colors.dark.surface.base,
-          4.5
-        )
-        // For links/outlines on dark backgrounds
-      }
-    };
-    return colors;
-  }
-  #generateColorScale(baseColor) {
-    const hsl = this.#hexToHsl(baseColor);
-    return {
-      50: this.#hslToHex(
-        hsl.h,
-        Math.max(hsl.s - 10, 10),
-        Math.min(hsl.l + 45, 95)
-      ),
-      100: this.#hslToHex(
-        hsl.h,
-        Math.max(hsl.s - 5, 15),
-        Math.min(hsl.l + 35, 90)
-      ),
-      200: this.#hslToHex(hsl.h, hsl.s, Math.min(hsl.l + 25, 85)),
-      300: this.#hslToHex(hsl.h, hsl.s, Math.min(hsl.l + 15, 75)),
-      400: this.#hslToHex(hsl.h, hsl.s, Math.min(hsl.l + 5, 65)),
-      500: baseColor,
-      // Base color
-      600: this.#hslToHex(hsl.h, hsl.s, Math.max(hsl.l - 10, 25)),
-      700: this.#hslToHex(hsl.h, hsl.s, Math.max(hsl.l - 20, 20)),
-      800: this.#hslToHex(hsl.h, hsl.s, Math.max(hsl.l - 30, 15)),
-      900: this.#hslToHex(hsl.h, hsl.s, Math.max(hsl.l - 40, 10))
-    };
-  }
-  #deriveSuccessColor(mainColor) {
-    const hsl = this.#hexToHsl(mainColor);
-    return this.#hslToHex(120, Math.max(hsl.s, 60), 45);
-  }
-  #deriveDangerColor(mainColor) {
-    const hsl = this.#hexToHsl(mainColor);
-    return this.#hslToHex(0, Math.max(hsl.s, 70), 50);
-  }
-  #generateGrayScale(supportingColor) {
-    const hsl = this.#hexToHsl(supportingColor);
-    const baseHue = hsl.h;
-    const baseSat = Math.min(hsl.s, 10);
-    return {
-      50: this.#hslToHex(baseHue, baseSat, 98),
-      100: this.#hslToHex(baseHue, baseSat, 95),
-      200: this.#hslToHex(baseHue, baseSat, 88),
-      300: this.#hslToHex(baseHue, baseSat, 78),
-      400: this.#hslToHex(baseHue, baseSat, 60),
-      500: supportingColor,
-      // Use the actual supporting color
-      600: this.#hslToHex(baseHue, Math.min(baseSat + 5, 15), 45),
-      700: this.#hslToHex(baseHue, Math.min(baseSat + 8, 18), 35),
-      800: this.#hslToHex(baseHue, Math.min(baseSat + 10, 20), 20),
-      900: this.#hslToHex(baseHue, Math.min(baseSat + 12, 22), 10)
-    };
-  }
-  #generateBackgroundShades(backgroundBase) {
-    const hsl = this.#hexToHsl(backgroundBase);
-    return {
-      base: backgroundBase,
-      subtle: this.#hslToHex(hsl.h, Math.max(hsl.s, 2), Math.max(hsl.l - 2, 2)),
-      // Very subtle darker
-      elevated: this.#hslToHex(
-        hsl.h,
-        Math.max(hsl.s, 3),
-        Math.max(hsl.l - 4, 5)
-      ),
-      // Slightly darker for elevated surfaces
-      sunken: this.#hslToHex(hsl.h, Math.max(hsl.s, 4), Math.max(hsl.l - 6, 8)),
-      // For input fields, subtle depth
-      overlay: this.#hslToHex(
-        hsl.h,
-        Math.max(hsl.s, 2),
-        Math.min(hsl.l + 2, 98)
-      ),
-      // Slightly lighter for overlays
-      inverse: this.#generateSmartDarkBackground(backgroundBase),
-      // Smart dark background
-      hover: `color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%);`
-    };
-  }
-  #generateFieldsetAdaptiveColors(backgroundShades) {
-    return {
-      base: backgroundShades.subtle,
-      // Subtle darker than base
-      subtle: backgroundShades.elevated,
-      // Elevated from subtle
-      elevated: backgroundShades.sunken,
-      // Sunken from elevated (creates contrast)
-      sunken: this.#darkenColor(backgroundShades.sunken, 0.05),
-      // Slightly darker than sunken
-      overlay: backgroundShades.elevated
-      // Elevated from overlay
-    };
-  }
-  #darkenColor(hexColor, factor = 0.05) {
-    const hsl = this.#hexToHsl(hexColor);
-    const darkerLightness = Math.max(hsl.l - hsl.l * factor, 5);
-    return this.#hslToHex(hsl.h, hsl.s, darkerLightness);
-  }
-  #generateSmartDarkBackground(lightBackground) {
-    const hsl = this.#hexToHsl(lightBackground);
-    if (hsl.l > 50) {
-      const darkSaturation = Math.min(hsl.s + 5, 25);
-      const darkLightness = Math.max(12 - (hsl.l - 50) * 0.1, 8);
-      return this.#hslToHex(hsl.h, darkSaturation, darkLightness);
-    } else {
-      const lightSaturation = Math.max(hsl.s - 10, 5);
-      const lightLightness = Math.min(85 + (50 - hsl.l) * 0.3, 95);
-      return this.#hslToHex(hsl.h, lightSaturation, lightLightness);
-    }
-  }
-  #generateDarkModeColors(lightColors, backgroundBase = "#ffffff", overrides = {}) {
-    const darkBackgroundBase = overrides.background ? overrides.background : this.#generateSmartDarkBackground(backgroundBase);
-    const darkSurface = this.#generateBackgroundShades(darkBackgroundBase);
-    const derivedPrimaryScale = overrides.primary ? this.#generateColorScale(overrides.primary) : this.#adjustColorsForDarkMode(lightColors.primary);
-    return {
-      surface: {
-        ...darkSurface,
-        fieldset: this.#generateDarkModeFieldsetColors(darkSurface)
-      },
-      // For primary colors, use override, or adjust light colors for dark mode (dimmed for accessibility)
-      primary: derivedPrimaryScale,
-      // Adjust other colors for dark mode, with optional overrides
-      secondary: overrides.secondary ? this.#generateColorScale(overrides.secondary) : this.#adjustColorsForDarkMode(lightColors.secondary),
-      accent: overrides.accent ? this.#generateColorScale(overrides.accent) : this.#adjustColorsForDarkMode(lightColors.accent),
-      // Regenerate grays if secondary override is provided (grays are derived from secondary)
-      gray: overrides.secondary ? this.#generateGrayScale(overrides.secondary) : lightColors.gray,
-      // Adjust semantic colors for dark mode
-      success: this.#adjustColorsForDarkMode(lightColors.success),
-      info: this.#adjustColorsForDarkMode(lightColors.info),
-      warning: this.#adjustColorsForDarkMode(lightColors.warning),
-      danger: this.#adjustColorsForDarkMode(lightColors.danger)
-    };
-  }
-  // -------------------------
-  // Color contrast helpers
-  // -------------------------
-  #hexToRgb(hex) {
-    const h = String(hex || "").replace("#", "");
-    const full = h.length === 3 ? h.split("").map((c) => c + c).join("") : h;
-    const num = parseInt(full, 16);
-    return { r: num >> 16 & 255, g: num >> 8 & 255, b: num & 255 };
-  }
-  #luminance(hex) {
-    const { r, g, b } = this.#hexToRgb(hex);
-    const srgb = [r / 255, g / 255, b / 255].map(
-      (v) => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
-    );
-    return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
-  }
-  #contrastRatio(aHex, bHex) {
-    const L1 = this.#luminance(aHex);
-    const L2 = this.#luminance(bHex);
-    const lighter = Math.max(L1, L2);
-    const darker = Math.min(L1, L2);
-    return (lighter + 0.05) / (darker + 0.05);
-  }
-  // Choose a readable 'on' color for a background: prefer white or black if they meet contrast target
-  #findReadableOnColor(bgHex, target = 4.5) {
-    if (!bgHex)
-      return "#000000";
-    const white = "#ffffff";
-    const black = "#000000";
-    const cw = this.#contrastRatio(bgHex, white);
-    if (cw >= target)
-      return white;
-    const cb = this.#contrastRatio(bgHex, black);
-    if (cb >= target)
-      return black;
-    return cb > cw ? black : white;
-  }
-  // Convert hex color to rgba string
-  #rgbaFromHex(hex, alpha = 1) {
-    const { r, g, b } = this.#hexToRgb(hex);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  }
-  // Mix color toward target by a given factor (0 = original, 1 = target)
-  #mixTowards(sourceHex, targetHex, factor = 0.5) {
-    const src = this.#hexToRgb(sourceHex);
-    const tgt = this.#hexToRgb(targetHex);
-    const r = Math.round(src.r + (tgt.r - src.r) * factor);
-    const g = Math.round(src.g + (tgt.g - src.g) * factor);
-    const b = Math.round(src.b + (tgt.b - src.b) * factor);
-    return this.#rgbToHex(r, g, b);
-  }
-  // Convert RGB to hex
-  #rgbToHex(r, g, b) {
-    const toHex = (n) => {
-      const hex = Math.max(0, Math.min(255, Math.round(n))).toString(16);
-      return hex.length === 1 ? "0" + hex : hex;
-    };
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-  }
-  #generateDarkModeFieldsetColors(darkSurface) {
-    return {
-      base: darkSurface.elevated,
-      // Elevated from dark base
-      subtle: darkSurface.overlay,
-      // Overlay from dark subtle
-      elevated: this.#lightenColor(darkSurface.elevated, 0.08),
-      // Slightly lighter than elevated
-      sunken: darkSurface.elevated,
-      // Elevated from sunken
-      overlay: this.#lightenColor(darkSurface.overlay, 0.05)
-      // Slightly lighter than overlay
-    };
-  }
-  /**
-   * Pick a readable primary shade on a given surface background, targeting AA contrast.
-   * Returns the first shade that meets target from a preferred order; falls back to the best ratio.
-   */
-  #pickReadablePrimaryOnSurface(primaryScale = {}, surfaceBg = "#000000", target = 4.5) {
-    const order = ["600", "700", "800", "500", "400", "900", "300", "200"];
-    let best = { shade: null, color: null, ratio: 0 };
-    for (const key of order) {
-      const hex = primaryScale?.[key];
-      if (!hex || typeof hex !== "string")
-        continue;
-      const r = this.#contrastRatio(hex, surfaceBg);
-      if (r > best.ratio)
-        best = { shade: key, color: hex, ratio: r };
-      if (r >= target)
-        return hex;
-    }
-    return best.color || primaryScale?.["600"] || primaryScale?.["500"];
-  }
-  // Pick a color scale shade that supports white text at AA
-  #pickFillShadeForWhite(scale = {}, target = 4.5) {
-    const order = ["600", "700", "800", "500", "400", "900"];
-    let best = { shade: null, color: null, ratio: 0 };
-    for (const key of order) {
-      const hex = scale?.[key];
-      if (!hex || typeof hex !== "string")
-        continue;
-      const r = this.#contrastRatio(hex, "#ffffff");
-      if (r > best.ratio)
-        best = { shade: key, color: hex, ratio: r };
-      if (r >= target)
-        return hex;
-    }
-    return best.color || scale?.["600"] || scale?.["500"];
-  }
-  /**
-   * Generate smart surface tokens with context-aware colors for text, icons, shadows, and borders.
-   * Each surface variant gets its own semantic tokens that automatically adapt to the surface's luminance.
-   *
-   * @param {Object} surfaceShades - Object with surface color variants (base, subtle, elevated, etc.)
-   * @returns {Object} Smart tokens for each surface with text, icon, shadow, and border colors
-   */
-  #generateSmartSurfaceTokens(surfaceShades) {
-    const tokens = {};
-    Object.entries(surfaceShades).forEach(([key, bgColor]) => {
-      if (!bgColor || typeof bgColor !== "string" || !bgColor.startsWith("#")) {
-        return;
-      }
-      const isDark = this.#luminance(bgColor) < 0.5;
-      const textPrimary = this.#findReadableOnColor(bgColor, 4.5);
-      const textSecondary = this.#findReadableOnColor(bgColor, 3);
-      const textMuted = this.#mixTowards(textPrimary, bgColor, 0.4);
-      const icon = textPrimary;
-      const iconSubtle = textMuted;
-      const shadowBase = isDark ? "#ffffff" : "#000000";
-      const shadowOpacity = isDark ? 0.25 : 0.1;
-      const shadowColor = this.#rgbaFromHex(shadowBase, shadowOpacity);
-      const borderBase = isDark ? "#ffffff" : "#000000";
-      const borderOpacity = isDark ? 0.15 : 0.1;
-      const border = this.#rgbaFromHex(borderBase, borderOpacity);
-      tokens[key] = {
-        bg: bgColor,
-        text: textPrimary,
-        textSecondary,
-        textMuted,
-        icon,
-        iconSubtle,
-        shadow: shadowColor,
-        border,
-        scheme: isDark ? "dark" : "light"
-        // CSS color-scheme value
-      };
-    });
-    return tokens;
-  }
-  #lightenColor(hexColor, factor = 0.05) {
-    const hsl = this.#hexToHsl(hexColor);
-    const lighterLightness = Math.min(hsl.l + (100 - hsl.l) * factor, 95);
-    return this.#hslToHex(hsl.h, hsl.s, lighterLightness);
-  }
-  #adjustColorsForDarkMode(colorScale) {
-    const dimmedScale = {};
-    const mapping = {
-      50: { source: "900", dimFactor: 0.8 },
-      100: { source: "800", dimFactor: 0.8 },
-      200: { source: "700", dimFactor: 0.8 },
-      // Increased dimming
-      300: { source: "600", dimFactor: 0.8 },
-      // Increased dimming
-      400: { source: "500", dimFactor: 0.85 },
-      // Increased dimming
-      500: { source: "400", dimFactor: 0.85 },
-      // Increased dimming
-      600: { source: "300", dimFactor: 0.85 },
-      // Increased dimming (buttons use this!)
-      700: { source: "200", dimFactor: 0.85 },
-      // Increased dimming (button hover)
-      800: { source: "100", dimFactor: 0.95 },
-      // Less dimming for text
-      900: { source: "50", dimFactor: 0.95 }
-      // Less dimming for text
-    };
-    Object.entries(mapping).forEach(([key, config]) => {
-      const sourceColor = colorScale[config.source];
-      dimmedScale[key] = this.#dimColorForDarkMode(
-        sourceColor,
-        config.dimFactor
-      );
-    });
-    return dimmedScale;
-  }
-  #dimColorForDarkMode(hexColor, dimFactor = 0.8) {
-    const hsl = this.#hexToHsl(hexColor);
-    const dimmedSaturation = Math.max(hsl.s * dimFactor, 5);
-    const dimmedLightness = Math.max(hsl.l * dimFactor, 5);
-    return this.#hslToHex(hsl.h, dimmedSaturation, dimmedLightness);
-  }
-  /**
-   * Generate spacing tokens based on the provided configuration.
-   * @param {Object} spatialConfig
-   * @returns { String } CSS spacing tokens
-   */
-  generateSpacingTokens(spatialConfig) {
-    const {
-      baseUnit = 4,
-      scaleRatio = 1.25,
-      maxSpacingSteps = 12
-      // Trim to realistic range
-    } = spatialConfig;
-    const validBaseUnit = Number.isFinite(Number(baseUnit)) ? Number(baseUnit) : 4;
-    const validMaxSpacingSteps = Math.min(
-      Number.isFinite(Number(maxSpacingSteps)) ? Number(maxSpacingSteps) : 12,
-      12
-    );
-    const spacing = { 0: "0" };
-    for (let i = 1; i <= validMaxSpacingSteps; i++) {
-      spacing[i] = `${validBaseUnit * i}px`;
-    }
-    return spacing;
-  }
-  #generateRadiusTokens(shapeConfig) {
-    const { radiusSize = "medium", customRadius = null } = shapeConfig;
-    let baseRadius;
-    if (customRadius !== null && customRadius !== void 0) {
-      baseRadius = customRadius;
-    } else if (typeof radiusSize === "number") {
-      baseRadius = radiusSize;
-    } else if (typeof radiusSize === "string") {
-      baseRadius = enums.RadiusSizes[radiusSize] ?? enums.RadiusSizes.medium;
-    } else {
-      baseRadius = enums.RadiusSizes.medium;
-    }
-    const validBaseRadius = Number.isFinite(Number(baseRadius)) ? Number(baseRadius) : enums.RadiusSizes.medium;
-    return {
-      none: "0",
-      xs: `${Number.isFinite(validBaseRadius * 0.25) ? Math.round(validBaseRadius * 0.25) : 0}px`,
-      sm: `${Number.isFinite(validBaseRadius * 0.5) ? Math.round(validBaseRadius * 0.5) : 0}px`,
-      md: `${validBaseRadius}px`,
-      lg: `${Number.isFinite(validBaseRadius * 1.5) ? Math.round(validBaseRadius * 1.5) : 0}px`,
-      xl: `${Number.isFinite(validBaseRadius * 2) ? Math.round(validBaseRadius * 2) : 0}px`,
-      full: "9999px"
-    };
-  }
-  #generateBorderWidthTokens(shapeConfig) {
-    const { borderWidth = "medium" } = shapeConfig;
-    let baseBorderWidth;
-    if (typeof borderWidth === "number") {
-      baseBorderWidth = borderWidth;
-    } else if (typeof borderWidth === "string") {
-      baseBorderWidth = enums.BorderWidths[borderWidth] ?? enums.BorderWidths.medium;
-    } else {
-      baseBorderWidth = enums.BorderWidths.medium;
-    }
-    return {
-      hairline: `${enums.BorderWidths.hairline}px`,
-      thin: `${enums.BorderWidths.thin}px`,
-      medium: `${enums.BorderWidths.medium}px`,
-      thick: `${enums.BorderWidths.thick}px`
-    };
-  }
-  generateTypographyTokens(typographyConfig) {
-    const {
-      fontFamilyHeadings = "system-ui, -apple-system, sans-serif",
-      fontFamilyBody = "system-ui, -apple-system, sans-serif",
-      fontFamilyMono = 'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace',
-      baseFontSize = 16,
-      fontScale = 1.25,
-      // Use consistent 1.25x minor third ratio
-      fontWeightLight = enums.FontWeights.light,
-      fontWeightNormal = enums.FontWeights.normal,
-      fontWeightMedium = enums.FontWeights.medium,
-      fontWeightSemibold = enums.FontWeights.semibold,
-      fontWeightBold = enums.FontWeights.bold,
-      lineHeightTight = enums.LineHeights.tight,
-      lineHeightNormal = enums.LineHeights.normal,
-      lineHeightRelaxed = enums.LineHeights.relaxed
-    } = typographyConfig;
-    const validBaseFontSize = Number.isFinite(Number(baseFontSize)) ? Number(baseFontSize) : 16;
-    const validFontScale = Number.isFinite(Number(fontScale)) ? Number(fontScale) : 1.25;
-    return {
-      fontFamily: {
-        headings: fontFamilyHeadings,
-        body: fontFamilyBody,
-        mono: fontFamilyMono
-      },
-      fontSize: {
-        // Consistent modular scale using 1.25 ratio (minor third)
-        xs: `${Math.round(validBaseFontSize / Math.pow(validFontScale, 2))}px`,
-        // 16 / 1.25² = 10px
-        sm: `${Math.round(validBaseFontSize / validFontScale)}px`,
-        // 16 / 1.25 = 13px
-        base: `${validBaseFontSize}px`,
-        // 16px
-        lg: `${Math.round(validBaseFontSize * validFontScale)}px`,
-        // 16 × 1.25 = 20px
-        xl: `${Math.round(validBaseFontSize * Math.pow(validFontScale, 2))}px`,
-        // 16 × 1.25² = 25px
-        "2xl": `${Math.round(
-          validBaseFontSize * Math.pow(validFontScale, 3)
-        )}px`,
-        // 16 × 1.25³ = 31px
-        "3xl": `${Math.round(
-          validBaseFontSize * Math.pow(validFontScale, 4)
-        )}px`,
-        // 16 × 1.25⁴ = 39px
-        "4xl": `${Math.round(
-          validBaseFontSize * Math.pow(validFontScale, 5)
-        )}px`
-        // 16 × 1.25⁵ = 49px
-      },
-      fontWeight: {
-        light: fontWeightLight?.toString() || "300",
-        normal: fontWeightNormal?.toString() || "400",
-        medium: fontWeightMedium?.toString() || "500",
-        semibold: fontWeightSemibold?.toString() || "600",
-        bold: fontWeightBold?.toString() || "700"
-      },
-      lineHeight: {
-        tight: lineHeightTight?.toString() || "1.25",
-        normal: lineHeightNormal?.toString() || "1.5",
-        relaxed: lineHeightRelaxed?.toString() || "1.75"
-      }
-    };
-  }
-  #generateShadowTokens(layersConfig) {
-    const {
-      baseShadowOpacity = 0.1,
-      shadowBlurMultiplier = 1,
-      shadowOffsetMultiplier = 1
-    } = layersConfig;
-    const shadowColor = `rgba(0, 0, 0, ${baseShadowOpacity})`;
-    const lightShadowColor = `rgba(0, 0, 0, ${baseShadowOpacity * 0.5})`;
-    return {
-      sm: `0 ${1 * shadowOffsetMultiplier}px ${2 * shadowBlurMultiplier}px 0 ${lightShadowColor}`,
-      base: `0 ${1 * shadowOffsetMultiplier}px ${3 * shadowBlurMultiplier}px 0 ${shadowColor}, 0 ${1 * shadowOffsetMultiplier}px ${2 * shadowBlurMultiplier}px 0 ${lightShadowColor}`,
-      md: `0 ${4 * shadowOffsetMultiplier}px ${6 * shadowBlurMultiplier}px ${-1 * shadowOffsetMultiplier}px ${shadowColor}, 0 ${2 * shadowOffsetMultiplier}px ${4 * shadowBlurMultiplier}px ${-1 * shadowOffsetMultiplier}px ${lightShadowColor}`,
-      lg: `0 ${10 * shadowOffsetMultiplier}px ${15 * shadowBlurMultiplier}px ${-3 * shadowOffsetMultiplier}px ${shadowColor}, 0 ${4 * shadowOffsetMultiplier}px ${6 * shadowBlurMultiplier}px ${-2 * shadowOffsetMultiplier}px ${lightShadowColor}`,
-      xl: `0 ${20 * shadowOffsetMultiplier}px ${25 * shadowBlurMultiplier}px ${-5 * shadowOffsetMultiplier}px ${shadowColor}, 0 ${10 * shadowOffsetMultiplier}px ${10 * shadowBlurMultiplier}px ${-5 * shadowOffsetMultiplier}px ${lightShadowColor}`,
-      inner: `inset 0 ${2 * shadowOffsetMultiplier}px ${4 * shadowBlurMultiplier}px 0 ${lightShadowColor}`
-    };
-  }
-  #generateLayoutTokens(layoutConfig) {
-    const {
-      maxWidth = 1200,
-      containerPadding = 16,
-      breakpoints = {
-        sm: 640,
-        md: 768,
-        lg: 1024,
-        xl: 1280
-      }
-    } = layoutConfig;
-    const resolvedMaxWidths = this.#resolveLayoutMaxWidths(layoutConfig);
-    return {
-      maxWidth: this.#formatLength(maxWidth, "1200px"),
-      maxWidthSm: resolvedMaxWidths.sm,
-      maxWidthMd: resolvedMaxWidths.md,
-      maxWidthLg: resolvedMaxWidths.lg,
-      maxWidthXl: resolvedMaxWidths.xl,
-      minHeight: "100vh",
-      containerPadding: this.#formatLength(containerPadding, "16px"),
-      breakpoints: {
-        sm: this.#formatLength(breakpoints.sm, "640px"),
-        md: this.#formatLength(breakpoints.md, "768px"),
-        lg: this.#formatLength(breakpoints.lg, "1024px"),
-        xl: this.#formatLength(breakpoints.xl, "1280px")
-      },
-      // Semantic spacing tokens for large layouts
-      // Use these instead of numbered spacing beyond --spacing-12
-      pageMargin: "120px",
-      // For page-level margins
-      sectionGap: "160px",
-      // Between major page sections
-      containerGap: "200px",
-      // Between container blocks
-      heroSpacing: "240px",
-      // For hero/banner areas
-      footerSpacing: "160px"
-      // Before footer sections
-    };
-  }
-  #resolveLayoutMaxWidths(layoutConfig = {}) {
-    const defaultBreakpoints = {
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280
-    };
-    const {
-      maxWidths = {},
-      maxWidth = 1200,
-      containerPadding = 16,
-      breakpoints = defaultBreakpoints
-    } = layoutConfig || {};
-    const paddingValue = this.#toNumber(containerPadding, 16);
-    const baseMaxWidth = this.#toNumber(maxWidth, defaultBreakpoints.xl);
-    const resolvedBreakpoints = {
-      sm: this.#toNumber(breakpoints.sm, defaultBreakpoints.sm),
-      md: this.#toNumber(breakpoints.md, defaultBreakpoints.md),
-      lg: this.#toNumber(breakpoints.lg, defaultBreakpoints.lg),
-      xl: this.#toNumber(breakpoints.xl, defaultBreakpoints.xl)
-    };
-    const deriveWidth = (bp) => {
-      if (!bp) {
-        return baseMaxWidth;
-      }
-      return Math.max(320, bp - paddingValue * 2);
-    };
-    const fallbackWidths = {
-      sm: Math.min(baseMaxWidth, deriveWidth(resolvedBreakpoints.sm)),
-      md: Math.min(baseMaxWidth, deriveWidth(resolvedBreakpoints.md)),
-      lg: Math.min(baseMaxWidth, deriveWidth(resolvedBreakpoints.lg)),
-      xl: Math.max(320, baseMaxWidth)
-    };
-    return {
-      sm: this.#formatLength(maxWidths.sm, `${fallbackWidths.sm}px`),
-      md: this.#formatLength(maxWidths.md, `${fallbackWidths.md}px`),
-      lg: this.#formatLength(maxWidths.lg, `${fallbackWidths.lg}px`),
-      xl: this.#formatLength(maxWidths.xl, `${fallbackWidths.xl}px`)
-    };
-  }
-  #formatLength(value, fallback) {
-    if (typeof value === "number" && Number.isFinite(value)) {
-      return `${value}px`;
-    }
-    if (typeof value === "string" && value.trim().length > 0) {
-      return value;
-    }
-    return fallback;
-  }
-  #toNumber(value, fallback) {
-    if (typeof value === "number" && Number.isFinite(value)) {
-      return value;
-    }
-    if (typeof value === "string") {
-      const parsed = parseFloat(value);
-      if (Number.isFinite(parsed)) {
-        return parsed;
-      }
-    }
-    return fallback;
-  }
-  #generateTransitionTokens(behaviorConfig) {
-    const {
-      transitionSpeed = enums.TransitionSpeeds.normal,
-      animationEasing = enums.AnimationEasings["ease-out"]
-    } = behaviorConfig;
-    let baseSpeed;
-    if (typeof transitionSpeed === "number") {
-      baseSpeed = transitionSpeed;
-    } else if (typeof transitionSpeed === "string" && enums.TransitionSpeeds[transitionSpeed]) {
-      baseSpeed = enums.TransitionSpeeds[transitionSpeed];
-    } else {
-      baseSpeed = enums.TransitionSpeeds.normal;
-    }
-    return {
-      fast: `${Math.round(baseSpeed * 0.6)}ms`,
-      normal: `${baseSpeed}ms`,
-      slow: `${Math.round(baseSpeed * 1.4)}ms`
-    };
-  }
-  #generateZIndexTokens(layersConfig) {
-    const { baseZIndex = 1e3, zIndexStep = 10 } = layersConfig;
-    return {
-      dropdown: baseZIndex.toString(),
-      sticky: (baseZIndex + zIndexStep * 2).toString(),
-      fixed: (baseZIndex + zIndexStep * 3).toString(),
-      modal: (baseZIndex + zIndexStep * 4).toString(),
-      drawer: (baseZIndex + zIndexStep * 5).toString(),
-      // Added drawer token
-      popover: (baseZIndex + zIndexStep * 6).toString(),
-      tooltip: (baseZIndex + zIndexStep * 7).toString(),
-      notification: (baseZIndex + zIndexStep * 8).toString()
-    };
-  }
-  #generateIconTokens(iconConfig) {
-    const {
-      set = "phosphor",
-      weight = "regular",
-      defaultSize = 24,
-      sizes = {
-        xs: 16,
-        sm: 20,
-        md: 24,
-        lg: 32,
-        xl: 48,
-        "2xl": 64
-      },
-      // Default path for dev/demo; static export places it at [static.root]/icons/pds-icons.svg
-      spritePath = "/assets/pds/icons/pds-icons.svg",
-      // Path for on-demand external SVG icons
-      externalPath = "/assets/img/icons/"
-    } = iconConfig;
-    return {
-      set,
-      weight,
-      defaultSize: `${defaultSize}px`,
-      sizes: Object.fromEntries(
-        Object.entries(sizes).map(([key, value]) => [key, `${value}px`])
-      ),
-      spritePath,
-      externalPath
-    };
-  }
-  #generateColorVariables(colors) {
-    const chunks = [];
-    chunks.push(`  /* Colors */
-`);
-    const generateNestedColors = (obj, prefix = "") => {
-      Object.entries(obj).forEach(([key, value]) => {
-        if (typeof value === "object" && value !== null) {
-          generateNestedColors(value, `${prefix}${key}-`);
-        } else if (typeof value === "string") {
-          chunks.push(`  --color-${prefix}${key}: ${value};
-`);
-        }
-      });
-    };
-    Object.entries(colors).forEach(([category, values]) => {
-      if (category === "dark")
-        return;
-      if (category === "surfaceSmart")
-        return;
-      if (category === "interactive")
-        return;
-      if (typeof values === "object" && values !== null) {
-        generateNestedColors(values, `${category}-`);
-      }
-    });
-    if (colors.surfaceSmart) {
-      chunks.push(`  /* Smart Surface Tokens (context-aware) */
-`);
-      Object.entries(colors.surfaceSmart).forEach(([surfaceKey, tokens]) => {
-        chunks.push(`  --surface-${surfaceKey}-bg: ${tokens.bg};
-`);
-        chunks.push(`  --surface-${surfaceKey}-text: ${tokens.text};
-`);
-        chunks.push(
-          `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};
-`
-        );
-        chunks.push(
-          `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};
-`
-        );
-        chunks.push(`  --surface-${surfaceKey}-icon: ${tokens.icon};
-`);
-        chunks.push(
-          `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};
-`
-        );
-        chunks.push(`  --surface-${surfaceKey}-shadow: ${tokens.shadow};
-`);
-        chunks.push(`  --surface-${surfaceKey}-border: ${tokens.border};
-`);
-      });
-      chunks.push(`
-`);
-    }
-    chunks.push(`  /* Semantic Text Colors */
-`);
-    chunks.push(`  --color-text-primary: var(--color-gray-900);
-`);
-    chunks.push(`  --color-text-secondary: var(--color-gray-600);
-`);
-    chunks.push(`  --color-text-muted: var(--color-gray-600);
-`);
-    chunks.push(`  --color-border: var(--color-gray-300);
-`);
-    chunks.push(`  --color-input-bg: var(--color-surface-base);
-`);
-    chunks.push(`  --color-input-disabled-bg: var(--color-gray-50);
-`);
-    chunks.push(`  --color-input-disabled-text: var(--color-gray-500);
-`);
-    chunks.push(`  --color-code-bg: var(--color-gray-100);
-`);
-    if (colors.interactive && colors.interactive.light) {
-      chunks.push(
-        `  /* Interactive Colors - optimized for specific use cases */
-`
-      );
-      chunks.push(
-        `  --color-primary-fill: ${colors.interactive.light.fill}; /* For button backgrounds with white text */
-`
-      );
-      chunks.push(
-        `  --color-primary-text: ${colors.interactive.light.text}; /* For links and outline buttons on light surfaces */
-`
-      );
-    }
-    chunks.push(`  /* Translucent Surface Tokens */
-`);
-    chunks.push(
-      `  --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);
-`
-    );
-    chunks.push(
-      `  --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
-`
-    );
-    chunks.push(
-      `  --color-surface-translucent-75: color-mix(in oklab, var(--color-surface-subtle) 75%, transparent 25%);
-`
-    );
-    chunks.push(
-      `   /* Backdrop tokens - used for modal dialogs, drawers, overlays */
+</section>`,description:"Semantic section element for content grouping"}))),r}queryTypography(t,e){let r=[],a=this.pds.compiled;if(!a?.tokens?.typography)return r;let o=a.tokens.typography;return(e.includes("heading")||e.includes("title"))&&r.push({text:"Heading font: var(--font-family-heading)",value:"--font-family-heading",icon:"text-aa",category:"Typography Token",score:85,cssVar:"var(--font-family-heading)",description:"Font family for headings"}),(e.includes("body")||e.includes("text"))&&r.push({text:"Body font: var(--font-family-body)",value:"--font-family-body",icon:"text-aa",category:"Typography Token",score:85,cssVar:"var(--font-family-body)",description:"Font family for body text"}),r}querySpacing(t,e){let r=[],a=this.pds.compiled;if(!a?.tokens?.spacing)return r;let o=a.tokens.spacing;for(let[i,l]of Object.entries(o))["2","4","6","8"].includes(i)&&r.push({text:`Spacing ${i}: var(--spacing-${i})`,value:`--spacing-${i}`,icon:"ruler",category:"Spacing Token",score:75,cssVar:`var(--spacing-${i})`,description:`Spacing value: ${l}`});return r}scoreMatch(t,e){let r=t.toLowerCase(),a=e.toLowerCase(),o=0;if(r===a)return 100;a.includes(r)&&(o+=80);let i=this.tokenize(r),l=this.tokenize(a),s=i.filter(p=>l.includes(p)).length;return o+=s/i.length*40,a.startsWith(r)&&(o+=20),Math.min(100,o)}generatePrimitiveExample(t){let e=t.selectors?.[0]||t.id;return e.includes("button")||t.id==="button"?'<button class="btn-primary">Click me</button>':e.includes("card")||t.id==="card"?`<article class="card">
+  <h3>Title</h3>
+  <p>Content</p>
+</article>`:e.includes("badge")||t.id==="badge"?'<span class="badge">New</span>':`<${e}>Content</${e}>`}describeUtility(t){return t.includes("border-gradient")?"Apply animated gradient border effect":t.includes("border-glow")?"Apply glowing border effect":t.includes("flex")?"Flexbox container utility":t.includes("grid")?"Grid container utility":t.includes("gap-")?"Set gap between flex/grid children":t.includes("items-")?"Align items in flex container":t.includes("justify-")?"Justify content in flex container":t===".btn-group"?"Group buttons with connected styling":"Utility class for styling"}}});var Ce={};P(Ce,{deepMerge:()=>Ee,fragmentFromTemplateLike:()=>nt,isObject:()=>Y});function Y(n){return n&&typeof n=="object"&&!Array.isArray(n)}function Ee(n,t){let e={...n};return Y(n)&&Y(t)&&Object.keys(t).forEach(r=>{Y(t[r])?r in n?e[r]=Ee(n[r],t[r]):Object.assign(e,{[r]:t[r]}):Object.assign(e,{[r]:t[r]})}),e}function nt(n){let t=Array.isArray(n?.strings)?n.strings:[],e=Array.isArray(n?.values)?n.values:[],r=new Set,a=[],o=/(\s)(\.[\w-]+)=\s*$/;for(let d=0;d<t.length;d+=1){let g=t[d]??"",h=g.match(o);if(h&&d<e.length){let x=h[2].slice(1),m=`pds-val-${d}`;g=g.replace(o,`$1data-pds-prop="${x}:${m}"`),r.add(d)}a.push(g),d<e.length&&!r.has(d)&&a.push(`<!--pds-val-${d}-->`)}let i=document.createElement("template");i.innerHTML=a.join("");let l=(d,g)=>{let h=d.parentNode;if(!h)return;if(g==null){h.removeChild(d);return}let y=x=>{if(x!=null){if(x instanceof Node){h.insertBefore(x,d);return}if(Array.isArray(x)){x.forEach(m=>y(m));return}h.insertBefore(document.createTextNode(String(x)),d)}};y(g),h.removeChild(d)},s=document.createTreeWalker(i.content,NodeFilter.SHOW_COMMENT),p=[];for(;s.nextNode();){let d=s.currentNode;d?.nodeValue?.startsWith("pds-val-")&&p.push(d)}return p.forEach(d=>{let g=Number(d.nodeValue.replace("pds-val-",""));l(d,e[g])}),i.content.querySelectorAll("*").forEach(d=>{let g=d.getAttribute("data-pds-prop");if(!g)return;let[h,y]=g.split(":"),x=Number(String(y).replace("pds-val-",""));h&&Number.isInteger(x)&&(d[h]=e[x]),d.removeAttribute("data-pds-prop")}),i.content}var Te=N(()=>{});_();var O={"ocean-breeze":{id:"ocean-breeze",name:"Ocean Breeze",tags:["playful"],description:"Fresh and calming ocean-inspired palette with professional undertones",options:{liquidGlassEffects:!0,backgroundMesh:3},colors:{primary:"#0891b2",secondary:"#64748b",accent:"#06b6d4",background:"#f0f9ff",darkMode:{background:"#0c1821",secondary:"#94a3b8",primary:"#0891b2"}},typography:{baseFontSize:17,fontScale:1.5,fontFamilyHeadings:'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',fontFamilyBody:'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'},spatialRhythm:{baseUnit:6,scaleRatio:1.2},shape:{radiusSize:u.RadiusSizes.xxlarge}},"midnight-steel":{id:"midnight-steel",name:"Midnight Steel",description:"Bold industrial aesthetic with sharp contrasts and urban edge",colors:{primary:"#3b82f6",secondary:"#52525b",accent:"#f59e0b",background:"#fafaf9",darkMode:{background:"#18181b",secondary:"#71717a",primary:"#3b82f6"}},typography:{baseFontSize:16,fontScale:1.333,fontFamilyHeadings:"'IBM Plex Sans', system-ui, -apple-system, sans-serif",fontFamilyBody:"'Inter', system-ui, -apple-system, sans-serif",fontWeightSemibold:600},spatialRhythm:{baseUnit:4,scaleRatio:1.25},shape:{radiusSize:u.RadiusSizes.small,borderWidth:u.BorderWidths.thin}},"neural-glow":{id:"neural-glow",name:"Neural Glow",description:"AI-inspired with vibrant purple-blue gradients and futuristic vibes",colors:{primary:"#8b5cf6",secondary:"#6366f1",accent:"#ec4899",background:"#faf5ff",darkMode:{background:"#0f0a1a",secondary:"#818cf8",primary:"#8b5cf6"}},typography:{baseFontSize:16,fontScale:1.618,fontFamilyHeadings:"'Space Grotesk', system-ui, sans-serif",fontFamilyBody:"'Space Grotesk', system-ui, sans-serif"},spatialRhythm:{baseUnit:4,scaleRatio:1.5},shape:{radiusSize:u.RadiusSizes.xlarge,borderWidth:u.BorderWidths.medium},behavior:{transitionSpeed:u.TransitionSpeeds.fast}},"paper-and-ink":{id:"paper-and-ink",name:"Paper & Ink",tags:["app","featured"],description:"Ultra-minimal design with focus on typography and whitespace",colors:{primary:"#171717",secondary:"#737373",accent:"#525252",background:"#ffffff",darkMode:{background:"#0a0a0a",secondary:"#a3a3a3",primary:"#737373"}},typography:{baseFontSize:18,fontScale:1.333,fontFamilyHeadings:"'Helvetica Neue', 'Arial', sans-serif",fontFamilyBody:"'Georgia', 'Times New Roman', serif",fontWeightNormal:400,fontWeightBold:700},spatialRhythm:{baseUnit:4,scaleRatio:1.2},shape:{radiusSize:u.RadiusSizes.none,borderWidth:u.BorderWidths.thin}},"sunset-paradise":{id:"sunset-paradise",name:"Sunset Paradise",description:"Warm tropical colors evoking golden hour by the beach",options:{liquidGlassEffects:!0,backgroundMesh:2},colors:{primary:"#ea580c",secondary:"#d4a373",accent:"#fb923c",background:"#fffbeb",darkMode:{background:"#1a0f0a",secondary:"#c9a482",primary:"#f97316"}},typography:{baseFontSize:16,fontScale:1.5,fontFamilyHeadings:"'Quicksand', 'Comfortaa', sans-serif",fontFamilyBody:"'Quicksand', 'Comfortaa', sans-serif"},spatialRhythm:{baseUnit:6,scaleRatio:1.5},shape:{radiusSize:u.RadiusSizes.xxlarge,borderWidth:u.BorderWidths.medium}},"retro-wave":{id:"retro-wave",name:"Retro Wave",description:"Nostalgic 80s-inspired palette with neon undertones",colors:{primary:"#c026d3",secondary:"#a78bfa",accent:"#22d3ee",background:"#fef3ff",darkMode:{background:"#1a0a1f",secondary:"#c4b5fd",primary:"#d946ef"}},typography:{baseFontSize:15,fontScale:1.5,fontFamilyHeadings:"'Orbitron', 'Impact', monospace",fontFamilyBody:"'Courier New', 'Courier', monospace",fontWeightBold:700},spatialRhythm:{baseUnit:4,scaleRatio:1.25},shape:{radiusSize:u.RadiusSizes.none,borderWidth:u.BorderWidths.thick},behavior:{transitionSpeed:u.TransitionSpeeds.instant}},"forest-canopy":{id:"forest-canopy",name:"Forest Canopy",description:"Natural earth tones with organic, calming green hues",colors:{primary:"#059669",secondary:"#78716c",accent:"#84cc16",background:"#f0fdf4",darkMode:{background:"#0a1410",secondary:"#a8a29e",primary:"#10b981"}},typography:{baseFontSize:16,fontScale:1.414,fontFamilyHeadings:"'Merriweather Sans', 'Arial', sans-serif",fontFamilyBody:"'Merriweather', 'Georgia', serif"},spatialRhythm:{baseUnit:6,scaleRatio:1.3},shape:{radiusSize:u.RadiusSizes.medium,borderWidth:u.BorderWidths.thin}},"ruby-elegance":{id:"ruby-elegance",name:"Ruby Elegance",description:"Sophisticated palette with rich ruby reds and warm accents",colors:{primary:"#dc2626",secondary:"#9ca3af",accent:"#be123c",background:"#fef2f2",darkMode:{background:"#1b0808",secondary:"#d1d5db",primary:"#ef4444"}},typography:{baseFontSize:17,fontScale:1.5,fontFamilyHeadings:"'Playfair Display', 'Georgia', serif",fontFamilyBody:"'Crimson Text', 'Garamond', serif",fontWeightNormal:400,fontWeightSemibold:600},spatialRhythm:{baseUnit:4,scaleRatio:1.333},shape:{radiusSize:u.RadiusSizes.small,borderWidth:u.BorderWidths.thin}},"desert-dawn":{id:"desert-dawn",name:"Desert Dawn",description:"Sun-baked neutrals with grounded terracotta and cool oasis accents",colors:{primary:"#b45309",secondary:"#a8a29e",accent:"#0ea5a8",background:"#fcf6ef",darkMode:{background:"#12100e",secondary:"#d1d5db",primary:"#f59e0b"}},typography:{baseFontSize:16,fontScale:1.414,fontFamilyHeadings:"'Source Sans Pro', system-ui, -apple-system, sans-serif",fontFamilyBody:"'Source Serif Pro', Georgia, serif"},spatialRhythm:{baseUnit:6,scaleRatio:1.3},shape:{radiusSize:u.RadiusSizes.medium,borderWidth:u.BorderWidths.medium}},"contrast-pro":{id:"contrast-pro",name:"Contrast Pro",description:"Accessibility-first, high-contrast UI with assertive clarity",colors:{primary:"#1f2937",secondary:"#111827",accent:"#eab308",background:"#ffffff",darkMode:{background:"#0b0f14",secondary:"#9ca3af",primary:"#9ca3af"}},typography:{baseFontSize:17,fontScale:1.2,fontFamilyHeadings:"system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",fontFamilyBody:"system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",fontWeightBold:700},spatialRhythm:{baseUnit:3,scaleRatio:1.2},shape:{radiusSize:u.RadiusSizes.small,borderWidth:u.BorderWidths.thick},behavior:{transitionSpeed:u.TransitionSpeeds.fast,focusRingWidth:4}},"pastel-play":{id:"pastel-play",name:"Pastel Play",description:"Playful pastels with soft surfaces and friendly rounded shapes",colors:{primary:"#db2777",secondary:"#a78bfa",accent:"#34d399",background:"#fff7fa",darkMode:{background:"#1a1016",secondary:"#c4b5fd",primary:"#ec4899"}},typography:{baseFontSize:16,fontScale:1.333,fontFamilyHeadings:"'Nunito', system-ui, -apple-system, sans-serif",fontFamilyBody:"'Nunito', system-ui, -apple-system, sans-serif",lineHeightRelaxed:u.LineHeights.relaxed},spatialRhythm:{baseUnit:6,scaleRatio:1.4},shape:{radiusSize:u.RadiusSizes.xxlarge,borderWidth:u.BorderWidths.thin},behavior:{transitionSpeed:u.TransitionSpeeds.slow,animationEasing:u.AnimationEasings["ease-out"]}},"brutalist-tech":{id:"brutalist-tech",name:"Brutalist Tech",description:"Stark grayscale with engineered accents and unapologetically bold structure",colors:{primary:"#111111",secondary:"#4b5563",accent:"#06b6d4",background:"#f8fafc",darkMode:{background:"#0b0b0b",secondary:"#9ca3af",primary:"#06b6d4"}},typography:{baseFontSize:15,fontScale:1.25,fontFamilyHeadings:"'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace",fontFamilyBody:"'Inter', system-ui, -apple-system, sans-serif",letterSpacingTight:-.02},spatialRhythm:{baseUnit:4,scaleRatio:1.25},shape:{radiusSize:u.RadiusSizes.none,borderWidth:u.BorderWidths.thick},behavior:{transitionSpeed:u.TransitionSpeeds.instant}},"zen-garden":{id:"zen-garden",name:"Zen Garden",description:"Soft botanicals with contemplative spacing and balanced motion",colors:{primary:"#3f6212",secondary:"#6b7280",accent:"#7c3aed",background:"#f7fbef",darkMode:{background:"#0d130a",secondary:"#a3a3a3",primary:"#84cc16"}},typography:{baseFontSize:17,fontScale:1.414,fontFamilyHeadings:"'Merriweather', Georgia, serif",fontFamilyBody:"'Noto Sans', system-ui, -apple-system, sans-serif"},spatialRhythm:{baseUnit:6,scaleRatio:1.35},shape:{radiusSize:u.RadiusSizes.large,borderWidth:u.BorderWidths.medium},behavior:{transitionSpeed:u.TransitionSpeeds.normal,animationEasing:u.AnimationEasings.ease}},"fitness-pro":{id:"fitness-pro",name:"Fitness Pro",tags:["app","featured"],description:"Health and fitness tracking aesthetic with data-driven dark surfaces and vibrant accent rings",options:{liquidGlassEffects:!0,backgroundMesh:2},colors:{primary:"#e91e63",secondary:"#78909c",accent:"#ab47bc",background:"#fafafa",darkMode:{background:"#1a1d21",secondary:"#78909c",primary:"#0a4ca4"}},typography:{baseFontSize:15,fontScale:1.25,fontFamilyHeadings:"'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",fontFamilyBody:"'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",fontWeightNormal:400,fontWeightMedium:500,fontWeightSemibold:600,fontWeightBold:700,lineHeightNormal:u.LineHeights.tight},spatialRhythm:{baseUnit:4,scaleRatio:1.25,containerPadding:1.25,sectionSpacing:2.5},shape:{radiusSize:u.RadiusSizes.large,borderWidth:u.BorderWidths.thin},layers:{shadowDepth:"medium",blurMedium:12},behavior:{transitionSpeed:u.TransitionSpeeds.fast,animationEasing:u.AnimationEasings["ease-out"],focusRingWidth:2}},"travel-market":{id:"travel-market",name:"Travel Market",description:"Hospitality marketplace design with clean cards, subtle shadows, and trust-building neutrals",options:{liquidGlassEffects:!0,backgroundMesh:3},colors:{primary:"#d93251",secondary:"#717171",accent:"#144990",background:"#ffffff",darkMode:{background:"#222222",secondary:"#b0b0b0",primary:"#ff5a7a"}},typography:{baseFontSize:16,fontScale:1.2,fontFamilyHeadings:"'Circular', system-ui, -apple-system, 'Segoe UI', sans-serif",fontFamilyBody:"'Circular', system-ui, -apple-system, 'Segoe UI', sans-serif",fontWeightNormal:400,fontWeightMedium:500,fontWeightSemibold:600,fontWeightBold:700,lineHeightRelaxed:u.LineHeights.relaxed},spatialRhythm:{baseUnit:4,scaleRatio:1.25,containerMaxWidth:1440,containerPadding:1.5,sectionSpacing:3},shape:{radiusSize:u.RadiusSizes.medium,borderWidth:u.BorderWidths.thin},layers:{shadowDepth:"light",blurLight:8},behavior:{transitionSpeed:u.TransitionSpeeds.normal,animationEasing:u.AnimationEasings["ease-in-out"],hoverOpacity:.9}},"mobility-app":{id:"mobility-app",name:"Mobility App",tags:["app","featured"],description:"On-demand service platform with bold typography, map-ready colors, and action-driven UI",options:{liquidGlassEffects:!0,backgroundMesh:0},colors:{primary:"#000000",secondary:"#545454",accent:"#06c167",background:"#f6f6f6",darkMode:{background:"#0f0f0f",secondary:"#8a8a8a",primary:"#06c167"}},typography:{baseFontSize:16,fontScale:1.3,fontFamilyHeadings:"'UberMove', system-ui, -apple-system, 'Segoe UI', sans-serif",fontFamilyBody:"'UberMove', system-ui, -apple-system, 'Segoe UI', sans-serif",fontWeightNormal:400,fontWeightMedium:500,fontWeightSemibold:600,fontWeightBold:700},spatialRhythm:{baseUnit:4,scaleRatio:1.25,buttonPadding:1.25,inputPadding:1},shape:{radiusSize:u.RadiusSizes.small,borderWidth:u.BorderWidths.medium},behavior:{transitionSpeed:u.TransitionSpeeds.fast,animationEasing:u.AnimationEasings["ease-out"],focusRingWidth:3},a11y:{minTouchTarget:u.TouchTargetSizes.comfortable,focusStyle:u.FocusStyles.ring}},"fintech-secure":{id:"fintech-secure",name:"Fintech Secure",description:"Financial services app UI with trust-building blues, precise spacing, and security-first design",options:{liquidGlassEffects:!1,backgroundMesh:0},colors:{primary:"#0a2540",secondary:"#425466",accent:"#00d4ff",background:"#f7fafc",darkMode:{background:"#0a1929",secondary:"#8796a5",primary:"#00d4ff"}},typography:{baseFontSize:16,fontScale:1.25,fontFamilyHeadings:"'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",fontFamilyBody:"'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",fontFamilyMono:"'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace",fontWeightNormal:400,fontWeightMedium:500,fontWeightSemibold:600,fontWeightBold:700},spatialRhythm:{baseUnit:4,scaleRatio:1.25,containerMaxWidth:1280,sectionSpacing:2.5},shape:{radiusSize:u.RadiusSizes.medium,borderWidth:u.BorderWidths.thin},layers:{shadowDepth:"light",blurLight:6},behavior:{transitionSpeed:u.TransitionSpeeds.fast,animationEasing:u.AnimationEasings["ease-in-out"],focusRingWidth:3,focusRingOpacity:.4},a11y:{minTouchTarget:u.TouchTargetSizes.standard,focusStyle:u.FocusStyles.ring}},"social-feed":{id:"social-feed",name:"Social Feed",tags:["app","featured"],description:"Content-first social platform with minimal chrome, bold actions, and vibrant media presentation",options:{liquidGlassEffects:!0,backgroundMesh:4},colors:{primary:"#1877f2",secondary:"#65676b",accent:"#fe2c55",background:"#ffffff",darkMode:{background:"#18191a",secondary:"#b0b3b8",primary:"#2d88ff"}},typography:{baseFontSize:15,fontScale:1.2,fontFamilyHeadings:"system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",fontFamilyBody:"system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",fontWeightNormal:400,fontWeightMedium:500,fontWeightSemibold:600,fontWeightBold:700,lineHeightNormal:u.LineHeights.relaxed},spatialRhythm:{baseUnit:4,scaleRatio:1.25,containerMaxWidth:680,sectionSpacing:1.5},shape:{radiusSize:u.RadiusSizes.medium,borderWidth:u.BorderWidths.thin},behavior:{transitionSpeed:u.TransitionSpeeds.fast,animationEasing:u.AnimationEasings["ease-out"],hoverOpacity:.85}},"enterprise-dash":{id:"enterprise-dash",tags:["app","featured"],name:"Enterprise Dashboard",description:"Data-dense business intelligence app interface with organized hierarchy and professional polish",options:{liquidGlassEffects:!1},colors:{primary:"#0066cc",secondary:"#5f6368",accent:"#1a73e8",background:"#ffffff",success:"#34a853",warning:"#fbbc04",danger:"#ea4335",darkMode:{background:"#202124",secondary:"#9aa0a6",primary:"#8ab4f8"}},typography:{baseFontSize:14,fontScale:1.2,fontFamilyHeadings:"'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif",fontFamilyBody:"'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif",fontFamilyMono:"'Roboto Mono', ui-monospace, Consolas, monospace",fontWeightNormal:400,fontWeightMedium:500,fontWeightSemibold:600,fontWeightBold:700,lineHeightNormal:u.LineHeights.tight},spatialRhythm:{baseUnit:4,scaleRatio:1.2,containerMaxWidth:1600,containerPadding:1.5,sectionSpacing:2},shape:{radiusSize:u.RadiusSizes.small,borderWidth:u.BorderWidths.thin},layers:{shadowDepth:"light",blurLight:4},behavior:{transitionSpeed:u.TransitionSpeeds.fast,animationEasing:u.AnimationEasings["ease-in-out"],focusRingWidth:2},layout:{densityCompact:.85,gridColumns:12}}};O.default={id:"default",name:"Default",tags:["app","featured"],description:"Fresh and modern design system with balanced aesthetics and usability",options:{liquidGlassEffects:!0,backgroundMesh:4},form:{options:{widgets:{booleans:"toggle",numbers:"input",selects:"standard"},layouts:{fieldsets:"default",arrays:"default"},enhancements:{icons:!0,datalists:!0,rangeOutput:!0},validation:{showErrors:!0,validateOnChange:!1}}},colors:{primary:"#0e7490",secondary:"#a99b95",accent:"#e54271",background:"#e7e6de",darkMode:{background:"#16171a",secondary:"#8b9199",primary:"#06b6d4"},success:null,warning:"#B38600",danger:null,info:null,gradientStops:3,elevationOpacity:.05},typography:{baseFontSize:16,fontScale:1.2,fontFamilyHeadings:'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',fontFamilyBody:'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',fontFamilyMono:'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace',fontWeightLight:u.FontWeights.light,fontWeightNormal:u.FontWeights.normal,fontWeightMedium:u.FontWeights.medium,fontWeightSemibold:u.FontWeights.semibold,fontWeightBold:u.FontWeights.bold,lineHeightTight:u.LineHeights.tight,lineHeightNormal:u.LineHeights.normal,lineHeightRelaxed:u.LineHeights.relaxed,letterSpacingTight:-.025,letterSpacingNormal:0,letterSpacingWide:.025},spatialRhythm:{baseUnit:4,scaleRatio:1.25,maxSpacingSteps:32,containerMaxWidth:1200,containerPadding:1,inputPadding:.75,buttonPadding:1,sectionSpacing:2},layers:{shadowDepth:"medium",blurLight:4,blurMedium:8,blurHeavy:16,zIndexBase:0,zIndexDropdown:1e3,zIndexSticky:1020,zIndexFixed:1030,zIndexModal:1040,zIndexPopover:1050,zIndexTooltip:1060,zIndexNotification:1070},shape:{radiusSize:u.RadiusSizes.large,borderWidth:u.BorderWidths.medium,customRadius:null},behavior:{transitionSpeed:u.TransitionSpeeds.normal,animationEasing:u.AnimationEasings["ease-out"],customTransitionSpeed:null,customEasing:null,focusRingWidth:3,focusRingOpacity:.3,hoverOpacity:.8},layout:{gridColumns:12,gridGutter:1,breakpoints:{sm:640,md:768,lg:1024,xl:1280},densityCompact:.8,densityNormal:1,densityComfortable:1.2,buttonMinHeight:u.TouchTargetSizes.standard,inputMinHeight:40,utilities:{grid:!0,flex:!0,spacing:!0,container:!0},gridSystem:{columns:[1,2,3,4,6],autoFitBreakpoints:{sm:"150px",md:"250px",lg:"350px",xl:"450px"},enableGapUtilities:!0},containerMaxWidth:"1400px",containerPadding:"var(--spacing-6)"},advanced:{linkStyle:u.LinkStyles.inline,colorDerivation:"hsl"},a11y:{minTouchTarget:u.TouchTargetSizes.standard,prefersReducedMotion:!0,focusStyle:u.FocusStyles.ring},icons:{set:"phosphor",weight:"regular",defaultSize:24,externalPath:"/assets/img/icons/",sizes:u.IconSizes,include:{navigation:["arrow-left","arrow-right","arrow-up","arrow-down","arrow-counter-clockwise","caret-left","caret-right","caret-down","caret-up","x","list","list-dashes","dots-three-vertical","dots-three","house","gear","magnifying-glass","funnel","tabs","sidebar"],actions:["plus","minus","check","trash","pencil","floppy-disk","copy","download","upload","share","link","eye","eye-slash","heart","star","bookmark","note-pencil","cursor-click","clipboard","magic-wand","sparkle"],communication:["envelope","bell","bell-ringing","bell-simple","chat-circle","phone","paper-plane-tilt","user","users","user-gear","at"],content:["image","file","file-text","file-css","file-js","folder","folder-open","book-open","camera","video-camera","play","pause","microphone","brackets-curly","code","folder-simple","grid-four","briefcase","chart-line","chart-bar","database","map-pin"],status:["info","warning","check-circle","x-circle","question","shield","shield-check","shield-warning","lock","lock-open","fingerprint","circle-notch"],time:["calendar","clock","timer","hourglass"],commerce:["shopping-cart","credit-card","currency-dollar","tag","receipt","storefront"],formatting:["text-align-left","text-align-center","text-align-right","text-b","text-italic","text-underline","list-bullets","list-numbers","text-aa"],system:["cloud","cloud-arrow-up","cloud-arrow-down","desktop","device-mobile","globe","wifi-high","battery-charging","sun","moon","moon-stars","palette","rocket","feather","square","circle","squares-four","lightning","wrench"]},spritePath:"public/assets/pds/icons/pds-icons.svg"},gap:4,debug:!1};function se(n="log",t,...e){if(this?.debug||this?.design?.debug||!1||n==="error"||n==="warn"){let a=console[n]||console.log;e.length>0?a(t,...e):a(t)}}_();Z();var E=class n{static#u;static get instance(){return this.#u}#e;#o;constructor(t={}){this.options={debug:!1,...t},this.options.design||(this.options.design={}),this.options.debug&&this.options.log?.("debug","Generator options:",this.options),n.#u=this,this.tokens=this.generateTokens(),this.options.debug&&this.options.log?.("debug","Generated tokens:",this.tokens),this.#ve(),typeof CSSStyleSheet<"u"?this.#$e():this.options.debug&&this.options.log?.("debug","[Generator] Skipping browser features (CSSStyleSheet not available)")}generateTokens(){let t=this.options.design||{};return{colors:this.#k(t.colors||{}),spacing:this.generateSpacingTokens(t.spatialRhythm||{}),radius:this.#A(t.shape||{}),borderWidths:this.#W(t.shape||{}),typography:this.generateTypographyTokens(t.typography||{}),shadows:this.#B(t.layers||{}),layout:this.#j(t.layout||{}),transitions:this.#D(t.behavior||{}),zIndex:this.#N(t.layers||{}),icons:this.#P(t.icons||{})}}#k(t){let{primary:e="#3b82f6",secondary:r="#64748b",accent:a="#ec4899",background:o="#ffffff",success:i=null,warning:l="#FFBF00",danger:s=null,info:p=null,darkMode:c={}}=t,d={primary:this.#r(e),secondary:this.#r(r),accent:this.#r(a),success:this.#r(i||this.#S(e)),warning:this.#r(l||a),danger:this.#r(s||this.#$(e)),info:this.#r(p||e),gray:this.#g(r),surface:this.#h(o)};return d.surface.fieldset=this.#z(d.surface),d.surfaceSmart=this.#v(d.surface),d.dark=this.#F(d,o,c),d.dark&&d.dark.surface&&(d.dark.surfaceSmart=this.#v(d.dark.surface)),d.interactive={light:{fill:this.#y(d.primary,4.5),text:d.primary[600]},dark:{fill:this.#y(d.dark.primary,4.5),text:this.#L(d.dark.primary,d.dark.surface.base,4.5)}},d}#r(t){let e=this.#n(t);return{50:this.#t(e.h,Math.max(e.s-10,10),Math.min(e.l+45,95)),100:this.#t(e.h,Math.max(e.s-5,15),Math.min(e.l+35,90)),200:this.#t(e.h,e.s,Math.min(e.l+25,85)),300:this.#t(e.h,e.s,Math.min(e.l+15,75)),400:this.#t(e.h,e.s,Math.min(e.l+5,65)),500:t,600:this.#t(e.h,e.s,Math.max(e.l-10,25)),700:this.#t(e.h,e.s,Math.max(e.l-20,20)),800:this.#t(e.h,e.s,Math.max(e.l-30,15)),900:this.#t(e.h,e.s,Math.max(e.l-40,10))}}#S(t){let e=this.#n(t);return this.#t(120,Math.max(e.s,60),45)}#$(t){let e=this.#n(t);return this.#t(0,Math.max(e.s,70),50)}#g(t){let e=this.#n(t),r=e.h,a=Math.min(e.s,10);return{50:this.#t(r,a,98),100:this.#t(r,a,95),200:this.#t(r,a,88),300:this.#t(r,a,78),400:this.#t(r,a,60),500:t,600:this.#t(r,Math.min(a+5,15),45),700:this.#t(r,Math.min(a+8,18),35),800:this.#t(r,Math.min(a+10,20),20),900:this.#t(r,Math.min(a+12,22),10)}}#h(t){let e=this.#n(t);return{base:t,subtle:this.#t(e.h,Math.max(e.s,2),Math.max(e.l-2,2)),elevated:this.#t(e.h,Math.max(e.s,3),Math.max(e.l-4,5)),sunken:this.#t(e.h,Math.max(e.s,4),Math.max(e.l-6,8)),overlay:this.#t(e.h,Math.max(e.s,2),Math.min(e.l+2,98)),inverse:this.#m(t),hover:"color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%);"}}#z(t){return{base:t.subtle,subtle:t.elevated,elevated:t.sunken,sunken:this.#M(t.sunken,.05),overlay:t.elevated}}#M(t,e=.05){let r=this.#n(t),a=Math.max(r.l-r.l*e,5);return this.#t(r.h,r.s,a)}#m(t){let e=this.#n(t);if(e.l>50){let r=Math.min(e.s+5,25),a=Math.max(12-(e.l-50)*.1,8);return this.#t(e.h,r,a)}else{let r=Math.max(e.s-10,5),a=Math.min(85+(50-e.l)*.3,95);return this.#t(e.h,r,a)}}#F(t,e="#ffffff",r={}){let a=r.background?r.background:this.#m(e),o=this.#h(a),i=r.primary?this.#r(r.primary):this.#i(t.primary);return{surface:{...o,fieldset:this.#T(o)},primary:i,secondary:r.secondary?this.#r(r.secondary):this.#i(t.secondary),accent:r.accent?this.#r(r.accent):this.#i(t.accent),gray:r.secondary?this.#g(r.secondary):t.gray,success:this.#i(t.success),info:this.#i(t.info),warning:this.#i(t.warning),danger:this.#i(t.danger)}}#l(t){let e=String(t||"").replace("#",""),r=e.length===3?e.split("").map(o=>o+o).join(""):e,a=parseInt(r,16);return{r:a>>16&255,g:a>>8&255,b:a&255}}#p(t){let{r:e,g:r,b:a}=this.#l(t),o=[e/255,r/255,a/255].map(i=>i<=.03928?i/12.92:Math.pow((i+.055)/1.055,2.4));return .2126*o[0]+.7152*o[1]+.0722*o[2]}#d(t,e){let r=this.#p(t),a=this.#p(e),o=Math.max(r,a),i=Math.min(r,a);return(o+.05)/(i+.05)}#f(t,e=4.5){if(!t)return"#000000";let r="#ffffff",a="#000000",o=this.#d(t,r);if(o>=e)return r;let i=this.#d(t,a);return i>=e||i>o?a:r}#b(t,e=1){let{r,g:a,b:o}=this.#l(t);return`rgba(${r}, ${a}, ${o}, ${e})`}#E(t,e,r=.5){let a=this.#l(t),o=this.#l(e),i=Math.round(a.r+(o.r-a.r)*r),l=Math.round(a.g+(o.g-a.g)*r),s=Math.round(a.b+(o.b-a.b)*r);return this.#C(i,l,s)}#C(t,e,r){let a=o=>{let i=Math.max(0,Math.min(255,Math.round(o))).toString(16);return i.length===1?"0"+i:i};return`#${a(t)}${a(e)}${a(r)}`}#T(t){return{base:t.elevated,subtle:t.overlay,elevated:this.#x(t.elevated,.08),sunken:t.elevated,overlay:this.#x(t.overlay,.05)}}#L(t={},e="#000000",r=4.5){let a=["600","700","800","500","400","900","300","200"],o={shade:null,color:null,ratio:0};for(let i of a){let l=t?.[i];if(!l||typeof l!="string")continue;let s=this.#d(l,e);if(s>o.ratio&&(o={shade:i,color:l,ratio:s}),s>=r)return l}return o.color||t?.["600"]||t?.["500"]}#y(t={},e=4.5){let r=["600","700","800","500","400","900"],a={shade:null,color:null,ratio:0};for(let o of r){let i=t?.[o];if(!i||typeof i!="string")continue;let l=this.#d(i,"#ffffff");if(l>a.ratio&&(a={shade:o,color:i,ratio:l}),l>=e)return i}return a.color||t?.["600"]||t?.["500"]}#v(t){let e={};return Object.entries(t).forEach(([r,a])=>{if(!a||typeof a!="string"||!a.startsWith("#"))return;let o=this.#p(a)<.5,i=this.#f(a,4.5),l=this.#f(a,3),s=this.#E(i,a,.4),p=i,c=s,d=o?"#ffffff":"#000000",g=o?.25:.1,h=this.#b(d,g),y=o?"#ffffff":"#000000",x=o?.15:.1,m=this.#b(y,x);e[r]={bg:a,text:i,textSecondary:l,textMuted:s,icon:p,iconSubtle:c,shadow:h,border:m,scheme:o?"dark":"light"}}),e}#x(t,e=.05){let r=this.#n(t),a=Math.min(r.l+(100-r.l)*e,95);return this.#t(r.h,r.s,a)}#i(t){let e={};return Object.entries({50:{source:"900",dimFactor:.8},100:{source:"800",dimFactor:.8},200:{source:"700",dimFactor:.8},300:{source:"600",dimFactor:.8},400:{source:"500",dimFactor:.85},500:{source:"400",dimFactor:.85},600:{source:"300",dimFactor:.85},700:{source:"200",dimFactor:.85},800:{source:"100",dimFactor:.95},900:{source:"50",dimFactor:.95}}).forEach(([a,o])=>{let i=t[o.source];e[a]=this.#R(i,o.dimFactor)}),e}#R(t,e=.8){let r=this.#n(t),a=Math.max(r.s*e,5),o=Math.max(r.l*e,5);return this.#t(r.h,a,o)}generateSpacingTokens(t){let{baseUnit:e=4,scaleRatio:r=1.25,maxSpacingSteps:a=12}=t,o=Number.isFinite(Number(e))?Number(e):4,i=Math.min(Number.isFinite(Number(a))?Number(a):12,12),l={0:"0"};for(let s=1;s<=i;s++)l[s]=`${o*s}px`;return l}#A(t){let{radiusSize:e="medium",customRadius:r=null}=t,a;r!=null?a=r:typeof e=="number"?a=e:typeof e=="string"?a=u.RadiusSizes[e]??u.RadiusSizes.medium:a=u.RadiusSizes.medium;let o=Number.isFinite(Number(a))?Number(a):u.RadiusSizes.medium;return{none:"0",xs:`${Number.isFinite(o*.25)?Math.round(o*.25):0}px`,sm:`${Number.isFinite(o*.5)?Math.round(o*.5):0}px`,md:`${o}px`,lg:`${Number.isFinite(o*1.5)?Math.round(o*1.5):0}px`,xl:`${Number.isFinite(o*2)?Math.round(o*2):0}px`,full:"9999px"}}#W(t){let{borderWidth:e="medium"}=t,r;return typeof e=="number"?r=e:typeof e=="string"?r=u.BorderWidths[e]??u.BorderWidths.medium:r=u.BorderWidths.medium,{hairline:`${u.BorderWidths.hairline}px`,thin:`${u.BorderWidths.thin}px`,medium:`${u.BorderWidths.medium}px`,thick:`${u.BorderWidths.thick}px`}}generateTypographyTokens(t){let{fontFamilyHeadings:e="system-ui, -apple-system, sans-serif",fontFamilyBody:r="system-ui, -apple-system, sans-serif",fontFamilyMono:a='ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace',baseFontSize:o=16,fontScale:i=1.25,fontWeightLight:l=u.FontWeights.light,fontWeightNormal:s=u.FontWeights.normal,fontWeightMedium:p=u.FontWeights.medium,fontWeightSemibold:c=u.FontWeights.semibold,fontWeightBold:d=u.FontWeights.bold,lineHeightTight:g=u.LineHeights.tight,lineHeightNormal:h=u.LineHeights.normal,lineHeightRelaxed:y=u.LineHeights.relaxed}=t,x=Number.isFinite(Number(o))?Number(o):16,m=Number.isFinite(Number(i))?Number(i):1.25;return{fontFamily:{headings:e,body:r,mono:a},fontSize:{xs:`${Math.round(x/Math.pow(m,2))}px`,sm:`${Math.round(x/m)}px`,base:`${x}px`,lg:`${Math.round(x*m)}px`,xl:`${Math.round(x*Math.pow(m,2))}px`,"2xl":`${Math.round(x*Math.pow(m,3))}px`,"3xl":`${Math.round(x*Math.pow(m,4))}px`,"4xl":`${Math.round(x*Math.pow(m,5))}px`},fontWeight:{light:l?.toString()||"300",normal:s?.toString()||"400",medium:p?.toString()||"500",semibold:c?.toString()||"600",bold:d?.toString()||"700"},lineHeight:{tight:g?.toString()||"1.25",normal:h?.toString()||"1.5",relaxed:y?.toString()||"1.75"}}}#B(t){let{baseShadowOpacity:e=.1,shadowBlurMultiplier:r=1,shadowOffsetMultiplier:a=1}=t,o=`rgba(0, 0, 0, ${e})`,i=`rgba(0, 0, 0, ${e*.5})`;return{sm:`0 ${1*a}px ${2*r}px 0 ${i}`,base:`0 ${1*a}px ${3*r}px 0 ${o}, 0 ${1*a}px ${2*r}px 0 ${i}`,md:`0 ${4*a}px ${6*r}px ${-1*a}px ${o}, 0 ${2*a}px ${4*r}px ${-1*a}px ${i}`,lg:`0 ${10*a}px ${15*r}px ${-3*a}px ${o}, 0 ${4*a}px ${6*r}px ${-2*a}px ${i}`,xl:`0 ${20*a}px ${25*r}px ${-5*a}px ${o}, 0 ${10*a}px ${10*r}px ${-5*a}px ${i}`,inner:`inset 0 ${2*a}px ${4*r}px 0 ${i}`}}#j(t){let{maxWidth:e=1200,containerPadding:r=16,breakpoints:a={sm:640,md:768,lg:1024,xl:1280}}=t,o=this.#w(t);return{maxWidth:this.#a(e,"1200px"),maxWidthSm:o.sm,maxWidthMd:o.md,maxWidthLg:o.lg,maxWidthXl:o.xl,minHeight:"100vh",containerPadding:this.#a(r,"16px"),breakpoints:{sm:this.#a(a.sm,"640px"),md:this.#a(a.md,"768px"),lg:this.#a(a.lg,"1024px"),xl:this.#a(a.xl,"1280px")},pageMargin:"120px",sectionGap:"160px",containerGap:"200px",heroSpacing:"240px",footerSpacing:"160px"}}#w(t={}){let e={sm:640,md:768,lg:1024,xl:1280},{maxWidths:r={},maxWidth:a=1200,containerPadding:o=16,breakpoints:i=e}=t||{},l=this.#s(o,16),s=this.#s(a,e.xl),p={sm:this.#s(i.sm,e.sm),md:this.#s(i.md,e.md),lg:this.#s(i.lg,e.lg),xl:this.#s(i.xl,e.xl)},c=g=>g?Math.max(320,g-l*2):s,d={sm:Math.min(s,c(p.sm)),md:Math.min(s,c(p.md)),lg:Math.min(s,c(p.lg)),xl:Math.max(320,s)};return{sm:this.#a(r.sm,`${d.sm}px`),md:this.#a(r.md,`${d.md}px`),lg:this.#a(r.lg,`${d.lg}px`),xl:this.#a(r.xl,`${d.xl}px`)}}#a(t,e){return typeof t=="number"&&Number.isFinite(t)?`${t}px`:typeof t=="string"&&t.trim().length>0?t:e}#s(t,e){if(typeof t=="number"&&Number.isFinite(t))return t;if(typeof t=="string"){let r=parseFloat(t);if(Number.isFinite(r))return r}return e}#D(t){let{transitionSpeed:e=u.TransitionSpeeds.normal,animationEasing:r=u.AnimationEasings["ease-out"]}=t,a;return typeof e=="number"?a=e:typeof e=="string"&&u.TransitionSpeeds[e]?a=u.TransitionSpeeds[e]:a=u.TransitionSpeeds.normal,{fast:`${Math.round(a*.6)}ms`,normal:`${a}ms`,slow:`${Math.round(a*1.4)}ms`}}#N(t){let{baseZIndex:e=1e3,zIndexStep:r=10}=t;return{dropdown:e.toString(),sticky:(e+r*2).toString(),fixed:(e+r*3).toString(),modal:(e+r*4).toString(),drawer:(e+r*5).toString(),popover:(e+r*6).toString(),tooltip:(e+r*7).toString(),notification:(e+r*8).toString()}}#P(t){let{set:e="phosphor",weight:r="regular",defaultSize:a=24,sizes:o={xs:16,sm:20,md:24,lg:32,xl:48,"2xl":64},spritePath:i="/assets/pds/icons/pds-icons.svg",externalPath:l="/assets/img/icons/"}=t;return{set:e,weight:r,defaultSize:`${a}px`,sizes:Object.fromEntries(Object.entries(o).map(([s,p])=>[s,`${p}px`])),spritePath:i,externalPath:l}}#O(t){let e=[];e.push(`  /* Colors */
+`);let r=(a,o="")=>{Object.entries(a).forEach(([i,l])=>{typeof l=="object"&&l!==null?r(l,`${o}${i}-`):typeof l=="string"&&e.push(`  --color-${o}${i}: ${l};
+`)})};return Object.entries(t).forEach(([a,o])=>{a!=="dark"&&a!=="surfaceSmart"&&a!=="interactive"&&typeof o=="object"&&o!==null&&r(o,`${a}-`)}),t.surfaceSmart&&(e.push(`  /* Smart Surface Tokens (context-aware) */
+`),Object.entries(t.surfaceSmart).forEach(([a,o])=>{e.push(`  --surface-${a}-bg: ${o.bg};
+`),e.push(`  --surface-${a}-text: ${o.text};
+`),e.push(`  --surface-${a}-text-secondary: ${o.textSecondary};
+`),e.push(`  --surface-${a}-text-muted: ${o.textMuted};
+`),e.push(`  --surface-${a}-icon: ${o.icon};
+`),e.push(`  --surface-${a}-icon-subtle: ${o.iconSubtle};
+`),e.push(`  --surface-${a}-shadow: ${o.shadow};
+`),e.push(`  --surface-${a}-border: ${o.border};
+`)}),e.push(`
+`)),e.push(`  /* Semantic Text Colors */
+`),e.push(`  --color-text-primary: var(--color-gray-900);
+`),e.push(`  --color-text-secondary: var(--color-gray-600);
+`),e.push(`  --color-text-muted: var(--color-gray-600);
+`),e.push(`  --color-border: var(--color-gray-300);
+`),e.push(`  --color-input-bg: var(--color-surface-base);
+`),e.push(`  --color-input-disabled-bg: var(--color-gray-50);
+`),e.push(`  --color-input-disabled-text: var(--color-gray-500);
+`),e.push(`  --color-code-bg: var(--color-gray-100);
+`),t.interactive&&t.interactive.light&&(e.push(`  /* Interactive Colors - optimized for specific use cases */
+`),e.push(`  --color-primary-fill: ${t.interactive.light.fill}; /* For button backgrounds with white text */
+`),e.push(`  --color-primary-text: ${t.interactive.light.text}; /* For links and outline buttons on light surfaces */
+`)),e.push(`  /* Translucent Surface Tokens */
+`),e.push(`  --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);
+`),e.push(`  --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
+`),e.push(`  --color-surface-translucent-75: color-mix(in oklab, var(--color-surface-subtle) 75%, transparent 25%);
+`),e.push(`   /* Backdrop tokens - used for modal dialogs, drawers, overlays */
 
     --backdrop-bg: linear-gradient(
         135deg,
@@ -3986,205 +59,75 @@ var Generator = class _Generator {
     
     /* Legacy alias for backwards compatibility */
     --backdrop-background: var(--backdrop-bg);
-    `
-    );
-    chunks.push(this.#generateMeshGradients(colors));
-    return `${chunks.join("")}
-`;
-  }
-  #generateMeshGradients(colors) {
-    const primary = colors.primary?.[500] || "#3b82f6";
-    const secondary = colors.secondary?.[500] || "#8b5cf6";
-    const accent = colors.accent?.[500] || "#f59e0b";
-    return (
-      /*css*/
-      `
+    `),e.push(this.#U(t)),`${e.join("")}
+`}#U(t){let e=t.primary?.[500]||"#3b82f6",r=t.secondary?.[500]||"#8b5cf6",a=t.accent?.[500]||"#f59e0b";return`
   /* Mesh Gradient Backgrounds */
-  --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 25%, transparent) 0px, transparent 50%),
-    radial-gradient(at 97% 21%, color-mix(in oklab, ${secondary} 22%, transparent) 0px, transparent 50%),
-    radial-gradient(at 52% 99%, color-mix(in oklab, ${accent} 18%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 29%, color-mix(in oklab, ${primary} 15%, transparent) 0px, transparent 50%);
+  --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${e} 25%, transparent) 0px, transparent 50%),
+    radial-gradient(at 97% 21%, color-mix(in oklab, ${r} 22%, transparent) 0px, transparent 50%),
+    radial-gradient(at 52% 99%, color-mix(in oklab, ${a} 18%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 29%, color-mix(in oklab, ${e} 15%, transparent) 0px, transparent 50%);
   
-  --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, ${secondary} 24%, transparent) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, color-mix(in oklab, ${primary} 20%, transparent) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, color-mix(in oklab, ${accent} 17%, transparent) 0px, transparent 50%),
-    radial-gradient(at 80% 100%, color-mix(in oklab, ${secondary} 15%, transparent) 0px, transparent 50%);
+  --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, ${r} 24%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, color-mix(in oklab, ${e} 20%, transparent) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, color-mix(in oklab, ${a} 17%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, color-mix(in oklab, ${r} 15%, transparent) 0px, transparent 50%);
   
-  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, ${accent} 21%, transparent) 0px, transparent 50%),
-    radial-gradient(at 85% 30%, color-mix(in oklab, ${primary} 23%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 80%, color-mix(in oklab, ${secondary} 18%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 90%, color-mix(in oklab, ${accent} 16%, transparent) 0px, transparent 50%);
+  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, ${a} 21%, transparent) 0px, transparent 50%),
+    radial-gradient(at 85% 30%, color-mix(in oklab, ${e} 23%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, color-mix(in oklab, ${r} 18%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, color-mix(in oklab, ${a} 16%, transparent) 0px, transparent 50%);
   
-  --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, ${primary} 19%, transparent) 0px, transparent 50%),
-    radial-gradient(at 20% 80%, color-mix(in oklab, ${secondary} 22%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 60%, color-mix(in oklab, ${accent} 17%, transparent) 0px, transparent 50%),
-    radial-gradient(at 30% 40%, color-mix(in oklab, ${primary} 16%, transparent) 0px, transparent 50%);
+  --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, ${e} 19%, transparent) 0px, transparent 50%),
+    radial-gradient(at 20% 80%, color-mix(in oklab, ${r} 22%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 60%, color-mix(in oklab, ${a} 17%, transparent) 0px, transparent 50%),
+    radial-gradient(at 30% 40%, color-mix(in oklab, ${e} 16%, transparent) 0px, transparent 50%);
   
-  --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, ${primary} 23%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 10%, color-mix(in oklab, ${accent} 20%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 10%, color-mix(in oklab, ${secondary} 18%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 90%, color-mix(in oklab, ${accent} 15%, transparent) 0px, transparent 50%);
-    `
-    );
-  }
-  #generateSpacingVariables(spacing) {
-    const lines = ["  /* Spacing */\n"];
-    Object.entries(spacing).forEach(([key, value]) => {
-      if (key !== null && key !== void 0 && key !== "NaN" && value !== void 0 && !value.includes("NaN")) {
-        lines.push(`  --spacing-${key}: ${value};
-`);
-      }
-    });
-    return `${lines.join("")}
-`;
-  }
-  #generateRadiusVariables(radius) {
-    const lines = ["  /* Border Radius */\n"];
-    Object.entries(radius).forEach(([key, value]) => {
-      lines.push(`  --radius-${key}: ${value};
-`);
-    });
-    return `${lines.join("")}
-`;
-  }
-  #generateBorderWidthVariables(borderWidths) {
-    const lines = ["  /* Border Widths */\n"];
-    Object.entries(borderWidths).forEach(([key, value]) => {
-      lines.push(`  --border-width-${key}: ${value};
-`);
-    });
-    return `${lines.join("")}
-`;
-  }
-  #generateTypographyVariables(typography) {
-    const lines = ["  /* Typography */\n"];
-    Object.entries(typography).forEach(([category, values]) => {
-      const cleanCategory = category.replace(/^font/, "").replace(/^(.)/, (m) => m.toLowerCase()).replace(/([A-Z])/g, "-$1").toLowerCase();
-      Object.entries(values).forEach(([key, value]) => {
-        const kebabKey = key.replace(/([A-Z])/g, "-$1").toLowerCase();
-        lines.push(`  --font-${cleanCategory}-${kebabKey}: ${value};
-`);
-      });
-    });
-    return `${lines.join("")}
-`;
-  }
-  #generateShadowVariables(shadows) {
-    const lines = ["  /* Shadows */\n"];
-    Object.entries(shadows).forEach(([key, value]) => {
-      lines.push(`  --shadow-${key}: ${value};
-`);
-    });
-    return `${lines.join("")}
-`;
-  }
-  #generateLayoutVariables(layout) {
-    const lines = ["  /* Layout */\n"];
-    Object.entries(layout).forEach(([key, value]) => {
-      const kebabKey = key.replace(/([A-Z])/g, "-$1").toLowerCase();
-      if (key === "breakpoints") {
-        return;
-      }
-      lines.push(`  --layout-${kebabKey}: ${value};
-`);
-    });
-    return `${lines.join("")}
-`;
-  }
-  #generateTransitionVariables(transitions) {
-    const lines = ["  /* Transitions */\n"];
-    Object.entries(transitions).forEach(([key, value]) => {
-      lines.push(`  --transition-${key}: ${value};
-`);
-    });
-    return `${lines.join("")}
-`;
-  }
-  #generateZIndexVariables(zIndex) {
-    const lines = ["  /* Z-Index */\n"];
-    Object.entries(zIndex).forEach(([key, value]) => {
-      lines.push(`  --z-${key}: ${value};
-`);
-    });
-    return `${lines.join("")}
-`;
-  }
-  #generateIconVariables(icons) {
-    const lines = ["  /* Icon System */\n"];
-    lines.push(`  --icon-set: ${icons.set};
-`);
-    lines.push(`  --icon-weight: ${icons.weight};
-`);
-    lines.push(`  --icon-size: ${icons.defaultSize};
-`);
-    Object.entries(icons.sizes).forEach(([key, value]) => {
-      lines.push(`  --icon-size-${key}: ${value};
-`);
-    });
-    return `${lines.join("")}
-`;
-  }
-  #generateDarkVariablesOnly(colors) {
-    if (!colors?.dark)
-      return "";
-    const varLines = [];
-    const generateNested = (obj, prefix = "") => {
-      Object.entries(obj).forEach(([key, value]) => {
-        if (typeof value === "object" && value !== null) {
-          generateNested(value, `${prefix}${key}-`);
-        } else if (typeof value === "string") {
-          varLines.push(`  --color-${prefix}${key}: ${value};
-`);
-        }
-      });
-    };
-    Object.entries(colors.dark).forEach(([category, values]) => {
-      if (category === "surfaceSmart")
-        return;
-      if (typeof values === "object" && values !== null) {
-        generateNested(values, `${category}-`);
-      }
-    });
-    const smartLines = [];
-    if (colors.dark.surfaceSmart) {
-      smartLines.push(
-        `  /* Smart Surface Tokens (dark mode, context-aware) */
-`
-      );
-      Object.entries(colors.dark.surfaceSmart).forEach(
-        ([surfaceKey, tokens]) => {
-          smartLines.push(`  --surface-${surfaceKey}-bg: ${tokens.bg};
-`);
-          smartLines.push(`  --surface-${surfaceKey}-text: ${tokens.text};
-`);
-          smartLines.push(
-            `  --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};
-`
-          );
-          smartLines.push(
-            `  --surface-${surfaceKey}-text-muted: ${tokens.textMuted};
-`
-          );
-          smartLines.push(`  --surface-${surfaceKey}-icon: ${tokens.icon};
-`);
-          smartLines.push(
-            `  --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};
-`
-          );
-          smartLines.push(
-            `  --surface-${surfaceKey}-shadow: ${tokens.shadow};
-`
-          );
-          smartLines.push(
-            `  --surface-${surfaceKey}-border: ${tokens.border};
-`
-          );
-        }
-      );
-      smartLines.push(`
-`);
-    }
-    const semantic = `  --color-text-primary: var(--color-gray-100);
+  --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, ${e} 23%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 10%, color-mix(in oklab, ${a} 20%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, color-mix(in oklab, ${r} 18%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, color-mix(in oklab, ${a} 15%, transparent) 0px, transparent 50%);
+    `}#I(t){let e=[`  /* Spacing */
+`];return Object.entries(t).forEach(([r,a])=>{r!=null&&r!=="NaN"&&a!==void 0&&!a.includes("NaN")&&e.push(`  --spacing-${r}: ${a};
+`)}),`${e.join("")}
+`}#H(t){let e=[`  /* Border Radius */
+`];return Object.entries(t).forEach(([r,a])=>{e.push(`  --radius-${r}: ${a};
+`)}),`${e.join("")}
+`}#q(t){let e=[`  /* Border Widths */
+`];return Object.entries(t).forEach(([r,a])=>{e.push(`  --border-width-${r}: ${a};
+`)}),`${e.join("")}
+`}#G(t){let e=[`  /* Typography */
+`];return Object.entries(t).forEach(([r,a])=>{let o=r.replace(/^font/,"").replace(/^(.)/,i=>i.toLowerCase()).replace(/([A-Z])/g,"-$1").toLowerCase();Object.entries(a).forEach(([i,l])=>{let s=i.replace(/([A-Z])/g,"-$1").toLowerCase();e.push(`  --font-${o}-${s}: ${l};
+`)})}),`${e.join("")}
+`}#_(t){let e=[`  /* Shadows */
+`];return Object.entries(t).forEach(([r,a])=>{e.push(`  --shadow-${r}: ${a};
+`)}),`${e.join("")}
+`}#V(t){let e=[`  /* Layout */
+`];return Object.entries(t).forEach(([r,a])=>{let o=r.replace(/([A-Z])/g,"-$1").toLowerCase();r!=="breakpoints"&&e.push(`  --layout-${o}: ${a};
+`)}),`${e.join("")}
+`}#Q(t){let e=[`  /* Transitions */
+`];return Object.entries(t).forEach(([r,a])=>{e.push(`  --transition-${r}: ${a};
+`)}),`${e.join("")}
+`}#Y(t){let e=[`  /* Z-Index */
+`];return Object.entries(t).forEach(([r,a])=>{e.push(`  --z-${r}: ${a};
+`)}),`${e.join("")}
+`}#Z(t){let e=[`  /* Icon System */
+`];return e.push(`  --icon-set: ${t.set};
+`),e.push(`  --icon-weight: ${t.weight};
+`),e.push(`  --icon-size: ${t.defaultSize};
+`),Object.entries(t.sizes).forEach(([r,a])=>{e.push(`  --icon-size-${r}: ${a};
+`)}),`${e.join("")}
+`}#J(t){if(!t?.dark)return"";let e=[],r=(p,c="")=>{Object.entries(p).forEach(([d,g])=>{typeof g=="object"&&g!==null?r(g,`${c}${d}-`):typeof g=="string"&&e.push(`  --color-${c}${d}: ${g};
+`)})};Object.entries(t.dark).forEach(([p,c])=>{p!=="surfaceSmart"&&typeof c=="object"&&c!==null&&r(c,`${p}-`)});let a=[];t.dark.surfaceSmart&&(a.push(`  /* Smart Surface Tokens (dark mode, context-aware) */
+`),Object.entries(t.dark.surfaceSmart).forEach(([p,c])=>{a.push(`  --surface-${p}-bg: ${c.bg};
+`),a.push(`  --surface-${p}-text: ${c.text};
+`),a.push(`  --surface-${p}-text-secondary: ${c.textSecondary};
+`),a.push(`  --surface-${p}-text-muted: ${c.textMuted};
+`),a.push(`  --surface-${p}-icon: ${c.icon};
+`),a.push(`  --surface-${p}-icon-subtle: ${c.iconSubtle};
+`),a.push(`  --surface-${p}-shadow: ${c.shadow};
+`),a.push(`  --surface-${p}-border: ${c.border};
+`)}),a.push(`
+`));let o=`  --color-text-primary: var(--color-gray-100);
   --color-text-secondary: var(--color-gray-300);
   --color-text-muted: var(--color-gray-400);
   --color-border: var(--color-gray-700);
@@ -4192,8 +135,7 @@ var Generator = class _Generator {
   --color-input-disabled-bg: var(--color-gray-900);
   --color-input-disabled-text: var(--color-gray-600);
   --color-code-bg: var(--color-gray-800);
-`;
-    const backdrop = `  /* Backdrop tokens - dark mode */
+`,i=`  /* Backdrop tokens - dark mode */
   --backdrop-bg: linear-gradient(
       135deg,
       rgba(0, 0, 0, 0.6),
@@ -4207,115 +149,31 @@ var Generator = class _Generator {
   
   /* Legacy alias for backwards compatibility */
   --backdrop-background: var(--backdrop-bg);
-`;
-    const mesh = this.#generateMeshGradientsDark(colors);
-    const body = [...varLines, ...smartLines, semantic, backdrop, mesh].join(
-      ""
-    );
-    return `html[data-theme="dark"] {
-${body}}
-`;
-  }
-  // Generate ONLY dark mode variables for the tokens layer (no wrapper, no component rules)
-  #generateDarkVariablesForTokensLayer(colors) {
-    if (!colors?.dark)
-      return "";
-    const varLines = [];
-    const generateNested = (obj, prefix = "") => {
-      Object.entries(obj).forEach(([key, value]) => {
-        if (typeof value === "object" && value !== null) {
-          generateNested(value, `${prefix}${key}-`);
-        } else if (typeof value === "string") {
-          varLines.push(`    --color-${prefix}${key}: ${value};
-`);
-        }
-      });
-    };
-    Object.entries(colors.dark).forEach(([category, values]) => {
-      if (category === "surfaceSmart")
-        return;
-      if (typeof values === "object" && values !== null) {
-        generateNested(values, `${category}-`);
-      }
-    });
-    const smartLines = [];
-    if (colors.dark.surfaceSmart) {
-      smartLines.push(
-        `    /* Smart Surface Tokens (dark mode, context-aware) */
-`
-      );
-      Object.entries(colors.dark.surfaceSmart).forEach(
-        ([surfaceKey, tokens]) => {
-          smartLines.push(`    --surface-${surfaceKey}-bg: ${tokens.bg};
-`);
-          smartLines.push(
-            `    --surface-${surfaceKey}-text: ${tokens.text};
-`
-          );
-          smartLines.push(
-            `    --surface-${surfaceKey}-text-secondary: ${tokens.textSecondary};
-`
-          );
-          smartLines.push(
-            `    --surface-${surfaceKey}-text-muted: ${tokens.textMuted};
-`
-          );
-          smartLines.push(
-            `    --surface-${surfaceKey}-icon: ${tokens.icon};
-`
-          );
-          smartLines.push(
-            `    --surface-${surfaceKey}-icon-subtle: ${tokens.iconSubtle};
-`
-          );
-          smartLines.push(
-            `    --surface-${surfaceKey}-shadow: ${tokens.shadow};
-`
-          );
-          smartLines.push(
-            `    --surface-${surfaceKey}-border: ${tokens.border};
-`
-          );
-        }
-      );
-      smartLines.push(`
-`);
-    }
-    const interactiveLines = [];
-    if (colors.interactive && colors.interactive.dark) {
-      interactiveLines.push(
-        `    /* Interactive Colors - optimized for specific use cases (dark mode) */
-`
-      );
-      interactiveLines.push(
-        `    --color-primary-fill: ${colors.interactive.dark.fill}; /* For button backgrounds with white text */
-`
-      );
-      interactiveLines.push(
-        `    --color-primary-text: ${colors.interactive.dark.text}; /* For links and outline buttons on dark surfaces */
-`
-      );
-    }
-    const semantic = [
-      `    --color-text-primary: var(--color-gray-100);
-`,
-      `    --color-text-secondary: var(--color-gray-300);
-`,
-      `    --color-text-muted: var(--color-gray-400);
-`,
-      `    --color-border: var(--color-gray-700);
-`,
-      `    --color-input-bg: var(--color-gray-800);
-`,
-      `    --color-input-disabled-bg: var(--color-gray-900);
-`,
-      `    --color-input-disabled-text: var(--color-gray-600);
-`,
-      `    --color-code-bg: var(--color-gray-800);
-`,
-      ...interactiveLines
-    ].join("");
-    const backdrop = `    /* Backdrop tokens - dark mode */
+`,l=this.#ee(t);return`html[data-theme="dark"] {
+${[...e,...a,o,i,l].join("")}}
+`}#X(t){if(!t?.dark)return"";let e=[],r=(c,d="")=>{Object.entries(c).forEach(([g,h])=>{typeof h=="object"&&h!==null?r(h,`${d}${g}-`):typeof h=="string"&&e.push(`    --color-${d}${g}: ${h};
+`)})};Object.entries(t.dark).forEach(([c,d])=>{c!=="surfaceSmart"&&typeof d=="object"&&d!==null&&r(d,`${c}-`)});let a=[];t.dark.surfaceSmart&&(a.push(`    /* Smart Surface Tokens (dark mode, context-aware) */
+`),Object.entries(t.dark.surfaceSmart).forEach(([c,d])=>{a.push(`    --surface-${c}-bg: ${d.bg};
+`),a.push(`    --surface-${c}-text: ${d.text};
+`),a.push(`    --surface-${c}-text-secondary: ${d.textSecondary};
+`),a.push(`    --surface-${c}-text-muted: ${d.textMuted};
+`),a.push(`    --surface-${c}-icon: ${d.icon};
+`),a.push(`    --surface-${c}-icon-subtle: ${d.iconSubtle};
+`),a.push(`    --surface-${c}-shadow: ${d.shadow};
+`),a.push(`    --surface-${c}-border: ${d.border};
+`)}),a.push(`
+`));let o=[];t.interactive&&t.interactive.dark&&(o.push(`    /* Interactive Colors - optimized for specific use cases (dark mode) */
+`),o.push(`    --color-primary-fill: ${t.interactive.dark.fill}; /* For button backgrounds with white text */
+`),o.push(`    --color-primary-text: ${t.interactive.dark.text}; /* For links and outline buttons on dark surfaces */
+`));let i=[`    --color-text-primary: var(--color-gray-100);
+`,`    --color-text-secondary: var(--color-gray-300);
+`,`    --color-text-muted: var(--color-gray-400);
+`,`    --color-border: var(--color-gray-700);
+`,`    --color-input-bg: var(--color-gray-800);
+`,`    --color-input-disabled-bg: var(--color-gray-900);
+`,`    --color-input-disabled-text: var(--color-gray-600);
+`,`    --color-code-bg: var(--color-gray-800);
+`,...o].join(""),l=`    /* Backdrop tokens - dark mode */
     --backdrop-bg: linear-gradient(
         135deg,
         rgba(0, 0, 0, 0.6),
@@ -4329,93 +187,61 @@ ${body}}
     
     /* Legacy alias for backwards compatibility */
     --backdrop-background: var(--backdrop-bg);
-`;
-    const mesh = this.#generateMeshGradientsDarkVariablesOnly(colors);
-    const content = [...varLines, ...smartLines, semantic, backdrop, mesh].join(
-      ""
-    );
-    return `
+`,s=this.#K(t);return`
        html[data-theme="dark"] {
-${content}       }
-`;
-  }
-  // Generate only mesh gradient variables for dark mode (for tokens layer)
-  #generateMeshGradientsDarkVariablesOnly(colors) {
-    const dark = colors.dark || colors;
-    const primary = dark.primary?.[400] || "#60a5fa";
-    const secondary = dark.secondary?.[400] || "#a78bfa";
-    const accent = dark.accent?.[400] || "#fbbf24";
-    return (
-      /*css*/
-      `    /* Mesh Gradient Variables (Dark Mode) */
-    --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 20%, transparent) 0px, transparent 50%),
-      radial-gradient(at 97% 21%, color-mix(in oklab, ${secondary} 16%, transparent) 0px, transparent 50%),
-      radial-gradient(at 52% 99%, color-mix(in oklab, ${accent} 13%, transparent) 0px, transparent 50%),
-      radial-gradient(at 10% 29%, color-mix(in oklab, ${primary} 10%, transparent) 0px, transparent 50%);
+${[...e,...a,i,l,s].join("")}       }
+`}#K(t){let e=t.dark||t,r=e.primary?.[400]||"#60a5fa",a=e.secondary?.[400]||"#a78bfa",o=e.accent?.[400]||"#fbbf24";return`    /* Mesh Gradient Variables (Dark Mode) */
+    --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${r} 20%, transparent) 0px, transparent 50%),
+      radial-gradient(at 97% 21%, color-mix(in oklab, ${a} 16%, transparent) 0px, transparent 50%),
+      radial-gradient(at 52% 99%, color-mix(in oklab, ${o} 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 10% 29%, color-mix(in oklab, ${r} 10%, transparent) 0px, transparent 50%);
     
-    --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, ${secondary} 18%, transparent) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, color-mix(in oklab, ${primary} 14%, transparent) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, color-mix(in oklab, ${accent} 12%, transparent) 0px, transparent 50%),
-      radial-gradient(at 80% 100%, color-mix(in oklab, ${secondary} 10%, transparent) 0px, transparent 50%);
+    --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, ${a} 18%, transparent) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, color-mix(in oklab, ${r} 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, color-mix(in oklab, ${o} 12%, transparent) 0px, transparent 50%),
+      radial-gradient(at 80% 100%, color-mix(in oklab, ${a} 10%, transparent) 0px, transparent 50%);
     
-    --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, ${accent} 15%, transparent) 0px, transparent 50%),
-      radial-gradient(at 85% 30%, color-mix(in oklab, ${primary} 17%, transparent) 0px, transparent 50%),
-      radial-gradient(at 50% 80%, color-mix(in oklab, ${secondary} 13%, transparent) 0px, transparent 50%),
-      radial-gradient(at 90% 90%, color-mix(in oklab, ${accent} 11%, transparent) 0px, transparent 50%);
+    --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, ${o} 15%, transparent) 0px, transparent 50%),
+      radial-gradient(at 85% 30%, color-mix(in oklab, ${r} 17%, transparent) 0px, transparent 50%),
+      radial-gradient(at 50% 80%, color-mix(in oklab, ${a} 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 90%, color-mix(in oklab, ${o} 11%, transparent) 0px, transparent 50%);
     
-    --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, ${primary} 14%, transparent) 0px, transparent 50%),
-      radial-gradient(at 20% 80%, color-mix(in oklab, ${secondary} 16%, transparent) 0px, transparent 50%),
-      radial-gradient(at 90% 60%, color-mix(in oklab, ${accent} 12%, transparent) 0px, transparent 50%),
-      radial-gradient(at 30% 40%, color-mix(in oklab, ${primary} 11%, transparent) 0px, transparent 50%);
+    --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, ${r} 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 20% 80%, color-mix(in oklab, ${a} 16%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 60%, color-mix(in oklab, ${o} 12%, transparent) 0px, transparent 50%),
+      radial-gradient(at 30% 40%, color-mix(in oklab, ${r} 11%, transparent) 0px, transparent 50%);
     
-    --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, ${primary} 17%, transparent) 0px, transparent 50%),
-      radial-gradient(at 10% 10%, color-mix(in oklab, ${accent} 14%, transparent) 0px, transparent 50%),
-      radial-gradient(at 90% 10%, color-mix(in oklab, ${secondary} 13%, transparent) 0px, transparent 50%),
-      radial-gradient(at 50% 90%, color-mix(in oklab, ${accent} 10%, transparent) 0px, transparent 50%);
-      `
-    );
-  }
-  #generateMeshGradientsDark(colors) {
-    const dark = colors.dark || colors;
-    const primary = dark.primary?.[400] || "#60a5fa";
-    const secondary = dark.secondary?.[400] || "#a78bfa";
-    const accent = dark.accent?.[400] || "#fbbf24";
-    return (
-      /*css*/
-      `
+    --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, ${r} 17%, transparent) 0px, transparent 50%),
+      radial-gradient(at 10% 10%, color-mix(in oklab, ${o} 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 10%, color-mix(in oklab, ${a} 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 50% 90%, color-mix(in oklab, ${o} 10%, transparent) 0px, transparent 50%);
+      `}#ee(t){let e=t.dark||t,r=e.primary?.[400]||"#60a5fa",a=e.secondary?.[400]||"#a78bfa",o=e.accent?.[400]||"#fbbf24";return`
   /* Mesh Gradient Backgrounds (Dark Mode) */
-  --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${primary} 20%, transparent) 0px, transparent 50%),
-    radial-gradient(at 97% 21%, color-mix(in oklab, ${secondary} 16%, transparent) 0px, transparent 50%),
-    radial-gradient(at 52% 99%, color-mix(in oklab, ${accent} 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 29%, color-mix(in oklab, ${primary} 10%, transparent) 0px, transparent 50%);
+  --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, ${r} 20%, transparent) 0px, transparent 50%),
+    radial-gradient(at 97% 21%, color-mix(in oklab, ${a} 16%, transparent) 0px, transparent 50%),
+    radial-gradient(at 52% 99%, color-mix(in oklab, ${o} 13%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 29%, color-mix(in oklab, ${r} 10%, transparent) 0px, transparent 50%);
   
-  --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, ${secondary} 18%, transparent) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, color-mix(in oklab, ${primary} 14%, transparent) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, color-mix(in oklab, ${accent} 12%, transparent) 0px, transparent 50%),
-    radial-gradient(at 80% 100%, color-mix(in oklab, ${secondary} 10%, transparent) 0px, transparent 50%);
+  --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, ${a} 18%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, color-mix(in oklab, ${r} 14%, transparent) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, color-mix(in oklab, ${o} 12%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, color-mix(in oklab, ${a} 10%, transparent) 0px, transparent 50%);
   
-  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, ${accent} 15%, transparent) 0px, transparent 50%),
-    radial-gradient(at 85% 30%, color-mix(in oklab, ${primary} 17%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 80%, color-mix(in oklab, ${secondary} 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 90%, color-mix(in oklab, ${accent} 11%, transparent) 0px, transparent 50%);
+  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, ${o} 15%, transparent) 0px, transparent 50%),
+    radial-gradient(at 85% 30%, color-mix(in oklab, ${r} 17%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, color-mix(in oklab, ${a} 13%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, color-mix(in oklab, ${o} 11%, transparent) 0px, transparent 50%);
   
-  --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, ${primary} 14%, transparent) 0px, transparent 50%),
-    radial-gradient(at 20% 80%, color-mix(in oklab, ${secondary} 16%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 60%, color-mix(in oklab, ${accent} 12%, transparent) 0px, transparent 50%),
-    radial-gradient(at 30% 40%, color-mix(in oklab, ${primary} 11%, transparent) 0px, transparent 50%);
+  --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, ${r} 14%, transparent) 0px, transparent 50%),
+    radial-gradient(at 20% 80%, color-mix(in oklab, ${a} 16%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 60%, color-mix(in oklab, ${o} 12%, transparent) 0px, transparent 50%),
+    radial-gradient(at 30% 40%, color-mix(in oklab, ${r} 11%, transparent) 0px, transparent 50%);
   
-  --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, ${primary} 17%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 10%, color-mix(in oklab, ${accent} 14%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 10%, color-mix(in oklab, ${secondary} 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 90%, color-mix(in oklab, ${accent} 10%, transparent) 0px, transparent 50%);
-    `
-    );
-  }
-  // Generate dark mode component adjustments (for components layer)
-  #generateDarkModeComponentRules() {
-    const rules = (
-      /*css*/
-      `/* Callout dark mode adjustments */
+  --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, ${r} 17%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 10%, color-mix(in oklab, ${o} 14%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, color-mix(in oklab, ${a} 13%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, color-mix(in oklab, ${o} 10%, transparent) 0px, transparent 50%);
+    `}#te(){return`/* Callout dark mode adjustments */
 html[data-theme="dark"] {
   .callout-success { background-color: var(--color-success-50); border-color: var(--color-success-500); color: var(--color-success-900); }
   .callout-info { background-color: var(--color-info-50); border-color: var(--color-info-500); color: var(--color-info-900); }
@@ -4423,51 +249,11 @@ html[data-theme="dark"] {
   .callout-danger, .callout-error { background-color: var(--color-danger-50); border-color: var(--color-danger-500); color: var(--color-danger-900); }
   img, video { opacity: 0.8; transition: opacity var(--transition-normal); }
   img:hover, video:hover { opacity: 1; }
-}`
-    );
-    return rules;
-  }
-  // If the config specifies options.backgroundMesh (1-5), apply the mesh to body.
-  // Mesh variables are always generated above; this just opts-in the body background.
-  #generateBodyBackgroundMeshRule() {
-    try {
-      const meshOption = this.options?.design?.options?.backgroundMesh;
-      if (this.options.debug) {
-        this.options.log?.(
-          "debug",
-          "backgroundMesh check:",
-          meshOption
-        );
-      }
-      const num = Number(meshOption);
-      if (!Number.isFinite(num) || num === 0)
-        return "";
-      const idx = Math.max(1, Math.min(5, Math.floor(num)));
-      return `/* Optional background mesh applied from config */
+}`}#re(){try{let t=this.options?.design?.options?.backgroundMesh;this.options.debug&&this.options.log?.("debug","backgroundMesh check:",t);let e=Number(t);return!Number.isFinite(e)||e===0?"":`/* Optional background mesh applied from config */
 body {
-  background: var(--background-mesh-0${idx});
+  background: var(--background-mesh-0${Math.max(1,Math.min(5,Math.floor(e)))});
   background-attachment: fixed;
-}`;
-    } catch (e) {
-      if (this.options.debug) {
-        this.options.log?.(
-          "error",
-          "Error in generateBodyBackgroundMeshRule:",
-          e
-        );
-      }
-      return "";
-    }
-  }
-  // Conditionally generate a lightweight ".liquid-glass" utility for frosted glass cards.
-  // Inspired by the referenced article, using gradients, borders, shadows, and backdrop-filter.
-  #generateLiquidGlassUtility() {
-    try {
-      if (!this.options?.design?.options?.liquidGlassEffects)
-        return "";
-      return (
-        /*css*/
-        `/* Liquid glass utility (opt-in via options.liquidGlassEffects) */
+}`}catch(t){return this.options.debug&&this.options.log?.("error","Error in generateBodyBackgroundMeshRule:",t),""}}#ae(){try{return this.options?.design?.options?.liquidGlassEffects?`/* Liquid glass utility (opt-in via options.liquidGlassEffects) */
 .liquid-glass {
   border-radius: var(--radius-lg);
   /* Subtle translucent fill blended with surface */
@@ -4524,18 +310,7 @@ html[data-theme="dark"] .liquid-glass {
       0 18px 32px rgba(0,0,0,0.58);
   }
 }
-`
-      );
-    } catch {
-      return "";
-    }
-  }
-  // Generate border gradient utilities for WHOOP-style card outlines
-  // Creates reusable utilities for standard cards, gradient borders, and glow effects
-  #generateBorderGradientUtilities() {
-    return (
-      /*css*/
-      `/* ============================================================================
+`:""}catch{return""}}#oe(){return`/* ============================================================================
    Border Gradient Utilities
    Card outlines with gradient borders and glow effects
    ============================================================================ */
@@ -4660,32 +435,7 @@ html[data-theme="dark"] .liquid-glass {
   box-shadow: 0 0 12px var(--color-danger-500);
 }
 
-`
-    );
-  }
-  // #generateLightModeCSS(colors) {
-  //   // Emit an explicit light theme block scoped to html[data-theme="light"].
-  //   // We reuse the same color variable generation used for :root so consumers
-  //   // can rely on attribute-scoped tokens for both themes.
-  //   try {
-  //     const colorBlock = this.#generateColorVariables(colors || {});
-  //     return `html[data-theme="light"] {\n${colorBlock}}\n\n`;
-  //   } catch (ex) {
-  //     return "";
-  //   }
-  // }
-  // Legacy #generateBaseStyles() removed - all content moved to #generatePrimitivesLayer()
-  #generateSemanticHTMLStyles() {
-    const { layout = {} } = this.options.design;
-    const breakpoints = layout.breakpoints || {
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280
-    };
-    return (
-      /*css*/
-      `/* Semantic HTML Elements (low-specificity via :where()) */
+`}#ne(){let{layout:t={}}=this.options.design,e=t.breakpoints||{sm:640,md:768,lg:1024,xl:1280};return`/* Semantic HTML Elements (low-specificity via :where()) */
 
 :where(blockquote) {
   margin: 0 0 var(--spacing-4) 0;
@@ -4876,32 +626,7 @@ html[data-theme="dark"] .liquid-glass {
 
 /* Dialog styles moved to #generateDialogStyles() */
 
-`
-    );
-  }
-  #generateFormStyles() {
-    const {
-      gap,
-      inputPadding,
-      buttonPadding,
-      focusRingWidth,
-      focusRingOpacity,
-      borderWidthThin,
-      sectionSpacing,
-      buttonMinHeight,
-      inputMinHeight
-    } = this.options.design;
-    const inputPaddingValue = inputPadding || 0.75;
-    const buttonPaddingValue = buttonPadding || 1;
-    const focusWidth = focusRingWidth || 3;
-    const borderWidth = borderWidthThin || 1;
-    const gapValue = gap || 1;
-    const sectionSpacingValue = sectionSpacing || 2;
-    const minButtonHeight = buttonMinHeight || 44;
-    const minInputHeight = inputMinHeight || 40;
-    return (
-      /*css*/
-      `/* Mobile-First Form Styles - Generated from Design Config */
+`}#ie(){let{gap:t,inputPadding:e,buttonPadding:r,focusRingWidth:a,focusRingOpacity:o,borderWidthThin:i,sectionSpacing:l,buttonMinHeight:s,inputMinHeight:p}=this.options.design,c=e||.75,d=r||1,g=a||3,h=i||1,y=t||1,x=l||2,m=s||44;return`/* Mobile-First Form Styles - Generated from Design Config */
 form {
   margin: 0;
   width: 100%;
@@ -5029,9 +754,9 @@ input, textarea, select {
 
 input, textarea, select {
   width: 100%;
-  min-height: ${minInputHeight}px;
-  padding: calc(var(--spacing-1) * ${inputPaddingValue}) var(--spacing-4);
-  border: ${borderWidth}px solid var(--color-border);
+  min-height: ${p||40}px;
+  padding: calc(var(--spacing-1) * ${c}) var(--spacing-4);
+  border: ${h}px solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -5060,9 +785,7 @@ input, textarea, select {
     border-color: var(--color-danger-500);
     
     &:focus {
-      box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-danger-500) ${Math.round(
-        (focusRingOpacity || 0.3) * 100
-      )}%, transparent);
+      box-shadow: 0 0 0 ${g}px color-mix(in oklab, var(--color-danger-500) ${Math.round((o||.3)*100)}%, transparent);
     }
   }
 }
@@ -5202,9 +925,9 @@ input[type="checkbox"] + label:not(fieldset label):not(label[data-toggle]) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(${minButtonHeight}px * 0.75);
-  padding: calc(var(--spacing-1) * ${buttonPaddingValue * 0.6}) calc(var(--spacing-4) * 0.85);
-  border: ${borderWidth}px solid var(--color-border);
+  min-height: calc(${m}px * 0.75);
+  padding: calc(var(--spacing-1) * ${d*.6}) calc(var(--spacing-4) * 0.85);
+  border: ${h}px solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-sm);
@@ -5244,9 +967,7 @@ input[type="checkbox"]:checked + label:not(fieldset label):not(label[data-toggle
 label:has(input[type="checkbox"]:focus):not(fieldset label):not(label[data-toggle]),
 input[type="checkbox"]:focus + label:not(fieldset label):not(label[data-toggle]) {
   outline: none;
-  box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
-        (focusRingOpacity || 0.3) * 100
-      )}%, transparent);
+  box-shadow: 0 0 0 ${g}px color-mix(in oklab, var(--color-primary-500) ${Math.round((o||.3)*100)}%, transparent);
 }
 
 label:has(input[type="checkbox"]:disabled):not(fieldset label):not(label[data-toggle]),
@@ -5308,8 +1029,8 @@ fieldset[role="group"].buttons {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: calc(${minButtonHeight}px * 0.75);
-    padding: calc(var(--spacing-1) * ${buttonPaddingValue * 0.6}) calc(var(--spacing-4) * 0.85);
+    min-height: calc(${m}px * 0.75);
+    padding: calc(var(--spacing-1) * ${d*.6}) calc(var(--spacing-4) * 0.85);
     border: 2px solid var(--color-border);
     border-radius: var(--radius-md);
     font-family: var(--font-family-body);
@@ -5354,9 +1075,7 @@ fieldset[role="group"].buttons {
   label:has(input[type="radio"]:focus),
   label:has(input[type="checkbox"]:focus) {
     outline: none;
-    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
-        (focusRingOpacity || 0.3) * 100
-      )}%, transparent);
+    box-shadow: 0 0 0 ${g}px color-mix(in oklab, var(--color-primary-500) ${Math.round((o||.3)*100)}%, transparent);
   }
   
   label:has(input[type="radio"]:disabled),
@@ -5508,9 +1227,9 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   gap: var(--spacing-1);
   align-items: center;
   justify-content: center;
-  min-height: ${minButtonHeight}px;
-  padding: calc(var(--spacing-1) * ${buttonPaddingValue}) var(--spacing-6);
-  border: ${borderWidth}px solid transparent;
+  min-height: ${m}px;
+  padding: calc(var(--spacing-1) * ${d}) var(--spacing-6);
+  border: ${h}px solid transparent;
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -5532,9 +1251,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
-        (focusRingOpacity || 0.3) * 100
-      )}%, transparent);
+    box-shadow: 0 0 0 ${g}px color-mix(in oklab, var(--color-primary-500) ${Math.round((o||.3)*100)}%, transparent);
   }
   
   &:disabled {
@@ -5564,9 +1281,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   }
   
   &:focus {
-    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
-        (focusRingOpacity || 0.3) * 100
-      )}%, transparent);
+    box-shadow: 0 0 0 ${g}px color-mix(in oklab, var(--color-primary-500) ${Math.round((o||.3)*100)}%, transparent);
   }
   
   &:disabled {
@@ -5621,20 +1336,20 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 .btn-sm {
   padding: var(--spacing-2) var(--spacing-4);
   font-size: var(--font-size-sm);
-  min-height: calc(${minButtonHeight}px * 0.8);
+  min-height: calc(${m}px * 0.8);
 }
 
 .btn-xs {
   padding: var(--spacing-1) var(--spacing-2);
   font-size: var(--font-size-xs);
-  min-height: calc(${minButtonHeight}px * 0.6);
+  min-height: calc(${m}px * 0.6);
 }
 
 
 .btn-lg {
   padding: var(--spacing-4) var(--spacing-8);
   font-size: var(--font-size-lg);
-  min-height: calc(${minButtonHeight}px * 1.2);
+  min-height: calc(${m}px * 1.2);
 }
 
 /* Working/loading state for buttons */
@@ -5812,13 +1527,13 @@ a.btn-working {
 .array-item {
   position: relative;
   padding: var(--spacing-4);
-  border: ${borderWidth}px solid var(--color-border);
+  border: ${h}px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface-base);
   
   .array-controls {
     padding-top: var(--spacing-3);
-    border-top: ${borderWidth}px solid var(--color-border);
+    border-top: ${h}px solid var(--color-border);
     margin-top: var(--spacing-4);
   }
 }
@@ -5858,20 +1573,7 @@ a.btn-working {
   }
 }
 
-`
-    );
-  }
-  #generateTableStyles() {
-    const { layout = {} } = this.options.design;
-    const breakpoints = layout.breakpoints || {
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280
-    };
-    return (
-      /*css*/
-      `/* Table Styles - Mobile First */
+`}#se(){let{layout:t={}}=this.options.design,e=t.breakpoints||{sm:640,md:768,lg:1024,xl:1280};return`/* Table Styles - Mobile First */
 
 table {
   width: 100%;
@@ -5882,13 +1584,13 @@ table {
   overflow: hidden;
   font-size: var(--font-size-sm);
   
-  @media (min-width: ${breakpoints.sm}px) {
+  @media (min-width: ${e.sm}px) {
     font-size: var(--font-size-base);
   }
 }
 
 .table-responsive {
-  @media (max-width: ${breakpoints.sm - 1}px) {
+  @media (max-width: ${e.sm-1}px) {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     margin: 0 0 var(--spacing-6) 0;
@@ -5952,13 +1654,7 @@ tbody {
   }
 }
 
-`
-    );
-  }
-  #generateCalloutStyles() {
-    return (
-      /*css*/
-      `/* Callout/Notification Styles */
+`}#ce(){return`/* Callout/Notification Styles */
 
 .callout {
   padding: var(--spacing-4);
@@ -6039,13 +1735,7 @@ tbody {
   }
 }
 
-`
-    );
-  }
-  #generateAccordionStyles() {
-    return (
-      /*css*/
-      `/* Accordion (details/summary) */
+`}#le(){return`/* Accordion (details/summary) */
 
 :where(.accordion details) {
   border: 1px solid var(--color-border);
@@ -6137,14 +1827,7 @@ tbody {
     }
   }
 }
-`
-    );
-  }
-  // Legacy #generateToastStyles() removed - was empty/unused
-  #generateBadgeStyles() {
-    return (
-      /*css*/
-      `/* Badge/Pill Styles */
+`}#de(){return`/* Badge/Pill Styles */
 
 .badge {
   display: inline-flex;
@@ -6184,20 +1867,7 @@ tbody {
 .badge-lg { padding: var(--spacing-2) var(--spacing-3); font-size: var(--font-size-sm); }
 .pill { padding: var(--spacing-1) var(--spacing-3); border-radius: var(--radius-full); }
 
-`
-    );
-  }
-  #generateDialogStyles() {
-    const { layout = {}, behavior = {} } = this.options.design;
-    const breakpoints = layout.breakpoints || {
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280
-    };
-    return (
-      /*css*/
-      `/* ============================================================================
+`}#pe(){let{layout:t={},behavior:e={}}=this.options.design;return`/* ============================================================================
    Dialog Primitive
    Native <dialog> element with PDS integration
    ============================================================================ */
@@ -6365,7 +2035,7 @@ dialog.dialog-xl { max-width: min(1200px, calc(100vw - var(--spacing-8))); }
 dialog.dialog-full { max-width: calc(100vw - var(--spacing-8)); max-height: calc(100vh - var(--spacing-8)); }
 
 /* Mobile responsiveness - maximize on mobile */
-@media (max-width: ${breakpoints.sm - 1}px) {
+@media (max-width: ${(t.breakpoints||{sm:640,md:768,lg:1024,xl:1280}).sm-1}px) {
   dialog { 
     max-width: 100vw; 
     max-height: 100vh; 
@@ -6383,20 +2053,7 @@ dialog.dialog-full { max-width: calc(100vw - var(--spacing-8)); max-height: calc
   dialog, dialog::backdrop { transition-duration: 0.01s !important; }
 }
 
-`
-    );
-  }
-  #generateTabStripStyles() {
-    const { layout = {} } = this.options.design;
-    const breakpoints = layout.breakpoints || {
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280
-    };
-    return (
-      /*css*/
-      `/* Tab Strip Component */
+`}#ue(){let{layout:t={}}=this.options.design;return`/* Tab Strip Component */
 
 /* Tab navigation */
 
@@ -6487,19 +2144,13 @@ pds-tabstrip {
 }
 
 /* Mobile responsive */
-@media (max-width: ${breakpoints.sm - 1}px) {
+@media (max-width: ${(t.breakpoints||{sm:640,md:768,lg:1024,xl:1280}).sm-1}px) {
   pds-tabstrip > nav { gap: var(--spacing-1); }
   pds-tabstrip > nav > a { padding: var(--spacing-2) var(--spacing-3); font-size: var(--font-size-sm); }
   pds-tabstrip > pds-tabpanel[data-tabpanel] { padding: var(--spacing-3) 0; }
 }
 
-`
-    );
-  }
-  #generateScrollbarStyles() {
-    return (
-      /*css*/
-      `/* Custom Scrollbars */
+`}#ge(){return`/* Custom Scrollbars */
 ::-webkit-scrollbar { width: 12px; height: 12px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
@@ -6525,15 +2176,7 @@ pds-tabstrip {
 *:hover { scrollbar-color: var(--color-secondary-400) transparent; }
 @media (prefers-color-scheme: dark) { *:hover { scrollbar-color: var(--color-secondary-500) transparent; } }
 
-`
-    );
-  }
-  #generateIconStyles() {
-    const { a11y = {} } = this.options.design;
-    const minTouchTarget = a11y.minTouchTarget || enums.TouchTargetSizes.standard;
-    return (
-      /*css*/
-      `/* Icon System */
+`}#he(){let{a11y:t={}}=this.options.design,e=t.minTouchTarget||u.TouchTargetSizes.standard;return`/* Icon System */
 
 pds-icon {
   display: inline-flex;
@@ -6578,9 +2221,9 @@ button, a {
 
   &.icon-only {
     padding: var(--spacing-2);
-    min-width: ${minTouchTarget}px;
-    width: ${minTouchTarget}px;
-    height: ${minTouchTarget}px;
+    min-width: ${e}px;
+    width: ${e}px;
+    height: ${e}px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -6603,13 +2246,7 @@ button, a {
   input { padding-left: var(--spacing-4); padding-right: calc(var(--icon-size-md) + var(--spacing-6)); width: 100%; }
 }
 
-`
-    );
-  }
-  #generateDropdownStyles() {
-    return (
-      /*css*/
-      `/* Dropdown Component */
+`}#me(){return`/* Dropdown Component */
 
 /* Basic dropdown host */
 nav[data-dropdown] {
@@ -6759,29 +2396,7 @@ nav[data-dropdown] {
     scale: 0.95;
   }
 }
-`
-    );
-  }
-  #generateLayoutUtilities() {
-    const { layout = {} } = this.options.design;
-    const breakpoints = layout.breakpoints || {
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280
-    };
-    const gridSystem = layout.gridSystem || {};
-    const columns = gridSystem.columns || [1, 2, 3, 4, 6];
-    const autoFitBreakpoints = gridSystem.autoFitBreakpoints || {
-      sm: "150px",
-      md: "250px",
-      lg: "350px",
-      xl: "450px"
-    };
-    const layoutMaxWidths = this.#resolveLayoutMaxWidths(layout);
-    const sections = [
-      /*css*/
-      `
+`}#fe(){let{layout:t={}}=this.options.design,e=t.breakpoints||{sm:640,md:768,lg:1024,xl:1280},r=t.gridSystem||{},a=r.columns||[1,2,3,4,6],o=r.autoFitBreakpoints||{sm:"150px",md:"250px",lg:"350px",xl:"450px"},i=this.#w(t),l=[`
 /* ============================================================================
    Layout Utilities
    Modern grid and flex system for building responsive layouts
@@ -6791,9 +2406,9 @@ nav[data-dropdown] {
 .container {
   display: block;
   width: 100%;
-  max-width: ${layout.containerMaxWidth || "1400px"};
+  max-width: ${t.containerMaxWidth||"1400px"};
   margin: 0 auto;
-  padding: ${layout.containerPadding || "var(--spacing-6)"};
+  padding: ${t.containerPadding||"var(--spacing-6)"};
 }
 
 /* Grid System */
@@ -6802,32 +2417,15 @@ nav[data-dropdown] {
   gap: var(--spacing-4);
 }
 
-`
-    ];
-    for (const col of columns) {
-      sections.push(
-        `.grid-cols-${col} { grid-template-columns: repeat(${col}, 1fr); }
-`
-      );
-    }
-    sections.push("\n/* Auto-fit grids (responsive) */\n");
-    for (const [name, minWidth] of Object.entries(autoFitBreakpoints)) {
-      sections.push(
-        `.grid-auto-${name} { grid-template-columns: repeat(auto-fit, minmax(${minWidth}, 1fr)); }
-`
-      );
-    }
-    sections.push(
-      /*css*/
-      `
+`];for(let s of a)l.push(`.grid-cols-${s} { grid-template-columns: repeat(${s}, 1fr); }
+`);l.push(`
+/* Auto-fit grids (responsive) */
+`);for(let[s,p]of Object.entries(o))l.push(`.grid-auto-${s} { grid-template-columns: repeat(auto-fit, minmax(${p}, 1fr)); }
+`);return l.push(`
 /* Gap utilities */
 .gap-0 { gap: 0; } .gap-xs { gap: var(--spacing-1); } .gap-sm { gap: var(--spacing-2); } .gap-md { gap: var(--spacing-4); } .gap-lg { gap: var(--spacing-6); } .gap-xl { gap: var(--spacing-8); }
 
-`
-    );
-    sections.push(
-      /*css*/
-      `
+`),l.push(`
 /* Flexbox System */
 .flex { display: flex; }
 .flex-wrap { flex-wrap: wrap; }
@@ -6855,7 +2453,7 @@ nav[data-dropdown] {
 }
 
 /* Max-width utilities */
-.max-w-sm { max-width: var(--layout-max-width-sm, ${layoutMaxWidths.sm}); } .max-w-md { max-width: var(--layout-max-width-md, ${layoutMaxWidths.md}); } .max-w-lg { max-width: var(--layout-max-width-lg, ${layoutMaxWidths.lg}); } .max-w-xl { max-width: var(--layout-max-width-xl, ${layoutMaxWidths.xl}); }
+.max-w-sm { max-width: var(--layout-max-width-sm, ${i.sm}); } .max-w-md { max-width: var(--layout-max-width-md, ${i.md}); } .max-w-lg { max-width: var(--layout-max-width-lg, ${i.lg}); } .max-w-xl { max-width: var(--layout-max-width-xl, ${i.xl}); }
 
 /* Stack utilities - vertical rhythm for stacked elements */
 [class^="stack-"], [class*=" stack-"] {
@@ -6873,7 +2471,7 @@ nav[data-dropdown] {
 .section-lg { padding-block: var(--spacing-12); }
 
 /* Responsive helpers */
-@media (max-width: ${breakpoints.md - 1}px) {
+@media (max-width: ${e.md-1}px) {
   .mobile-stack { flex-direction: column; }
   .mobile-stack > * { width: 100%; }
 }
@@ -6904,14 +2502,7 @@ nav[data-dropdown] {
 .backdrop-light { --backdrop-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2)); --backdrop-brightness: 1.1; }
 .backdrop-dark { --backdrop-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)); --backdrop-brightness: 0.6; }
 .backdrop-blur-sm { --backdrop-blur: 5px; } .backdrop-blur-md { --backdrop-blur: 10px; } .backdrop-blur-lg { --backdrop-blur: 20px; }
-`
-    );
-    return sections.join("");
-  }
-  #generateMediaUtilities() {
-    return (
-      /*css*/
-      `/* Media Element Utilities */
+`),l.join("")}#be(){return`/* Media Element Utilities */
 
 /* Gallery images */
 .img-gallery {
@@ -6949,34 +2540,20 @@ nav[data-dropdown] {
   height: auto;
 }
 
-`
-    );
-  }
-  #generateMediaQueries() {
-    const { layout = {}, a11y = {} } = this.options.design;
-    const breakpoints = layout.breakpoints || {
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280
-    };
-    const minTouchTarget = a11y.minTouchTarget || enums.TouchTargetSizes.standard;
-    return (
-      /*css*/
-      `/* Mobile-First Responsive Design */
+`}#ye(){let{layout:t={},a11y:e={}}=this.options.design,r=t.breakpoints||{sm:640,md:768,lg:1024,xl:1280},a=e.minTouchTarget||u.TouchTargetSizes.standard;return`/* Mobile-First Responsive Design */
 
-/* Small devices (${breakpoints.sm}px and up) */
-@media (min-width: ${breakpoints.sm}px) {
+/* Small devices (${r.sm}px and up) */
+@media (min-width: ${r.sm}px) {
   .sm\\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); } .sm\\:flex-row { flex-direction: row; } .sm\\:text-sm { font-size: var(--font-size-sm); } .sm\\:p-6 { padding: var(--spacing-6); } .sm\\:gap-6 { gap: var(--spacing-6); } .sm\\:hidden { display: none; } .sm\\:block { display: block; }
 }
 
-/* Medium devices (${breakpoints.md}px and up) */
-@media (min-width: ${breakpoints.md}px) {
+/* Medium devices (${r.md}px and up) */
+@media (min-width: ${r.md}px) {
   .md\\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); } .md\\:text-lg { font-size: var(--font-size-lg); } .md\\:p-8 { padding: var(--spacing-8); } .md\\:gap-8 { gap: var(--spacing-8); } .md\\:flex-row { flex-direction: row; } .md\\:w-1\\/2 { width: 50%; } .md\\:w-1\\/3 { width: 33.333333%; } .md\\:hidden { display: none; } .md\\:block { display: block; }
 }
 
-/* Large devices (${breakpoints.lg}px and up) */
-@media (min-width: ${breakpoints.lg}px) {
+/* Large devices (${r.lg}px and up) */
+@media (min-width: ${r.lg}px) {
   .lg\\:grid-cols-4 { grid-template-columns: repeat(4, 1fr); } .lg\\:text-xl { font-size: var(--font-size-xl); } .lg\\:p-12 { padding: var(--spacing-12); } .lg\\:gap-12 { gap: var(--spacing-12); } .lg\\:w-1\\/4 { width: 25%; } .lg\\:hidden { display: none; } .lg\\:block { display: block; }
 }
 
@@ -6985,8 +2562,8 @@ nav[data-dropdown] {
   /* Touch devices - larger touch targets for interactive elements */
   button, a, select, textarea,
   input:not([type="radio"]):not([type="checkbox"]) {
-    min-height: ${minTouchTarget}px;
-    min-width: ${minTouchTarget}px;
+    min-height: ${a}px;
+    min-width: ${a}px;
   }
   
   /* Radio and checkbox inputs: keep reasonable size but ensure label tap area is large */
@@ -7003,7 +2580,7 @@ nav[data-dropdown] {
   label:has(input[type="checkbox"]):not(fieldset.buttons label),
   fieldset[role="radiogroup"]:not(.buttons) label,
   fieldset[role="group"]:not(.buttons) label {
-    min-height: ${minTouchTarget}px;
+    min-height: ${a}px;
     display: inline-flex;
     align-items: center;
     padding: var(--spacing-2) 0;
@@ -7067,153 +2644,23 @@ nav[data-dropdown] {
   }
 }
 
-`
-    );
-  }
-  // Utility methods for color manipulation
-  #hexToHsl(hex) {
-    const r = parseInt(hex.slice(1, 3), 16) / 255;
-    const g = parseInt(hex.slice(3, 5), 16) / 255;
-    const b = parseInt(hex.slice(5, 7), 16) / 255;
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
-    if (max === min) {
-      h = s = 0;
-    } else {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
-        case r:
-          h = (g - b) / d + (g < b ? 6 : 0);
-          break;
-        case g:
-          h = (b - r) / d + 2;
-          break;
-        case b:
-          h = (r - g) / d + 4;
-          break;
-      }
-      h /= 6;
-    }
-    return { h: h * 360, s: s * 100, l: l * 100 };
-  }
-  #hslToHex(h, s, l) {
-    h = h / 360;
-    s = s / 100;
-    l = l / 100;
-    const hue2rgb = (p, q, t) => {
-      if (t < 0)
-        t += 1;
-      if (t > 1)
-        t -= 1;
-      if (t < 1 / 6)
-        return p + (q - p) * 6 * t;
-      if (t < 1 / 2)
-        return q;
-      if (t < 2 / 3)
-        return p + (q - p) * (2 / 3 - t) * 6;
-      return p;
-    };
-    let r, g, b;
-    if (s === 0) {
-      r = g = b = l;
-    } else {
-      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-      const p = 2 * l - q;
-      r = hue2rgb(p, q, h + 1 / 3);
-      g = hue2rgb(p, q, h);
-      b = hue2rgb(p, q, h - 1 / 3);
-    }
-    const toHex = (c) => {
-      const hex = Math.round(c * 255).toString(16);
-      return hex.length === 1 ? "0" + hex : hex;
-    };
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-  }
-  // Method to get current tokens (useful for debugging)
-  getTokens() {
-    return this.tokens;
-  }
-  // Method to export CSS (useful for build processes)
-  exportCSS() {
-    return this.layeredCSS;
-  }
-  // ========================================================================
-  // LAYER SEPARATION ARCHITECTURE (Best Practices 2025)
-  // ========================================================================
-  /**
-   * Generate separate CSS layers: tokens, primitives, components, utilities
-   * Following the cascade layers pattern from the best practices document
-   */
-  #generateLayers() {
-    this.#layers = {
-      tokens: this.#generateTokensLayer(),
-      primitives: this.#generatePrimitivesLayer(),
-      components: this.#generateComponentsLayer(),
-      utilities: this.#generateUtilitiesLayer()
-    };
-    if (this.options.debug) {
-      this.options.log?.("debug", "[Generator] Layer sizes:", {
-        tokens: `${(this.#layers.tokens.length / 1024).toFixed(2)} KB`,
-        primitives: `${(this.#layers.primitives.length / 1024).toFixed(2)} KB`,
-        components: `${(this.#layers.components.length / 1024).toFixed(2)} KB`,
-        utilities: `${(this.#layers.utilities.length / 1024).toFixed(2)} KB`
-      });
-    }
-  }
-  #generateTokensLayer() {
-    const {
-      colors,
-      spacing,
-      radius,
-      borderWidths,
-      typography,
-      shadows,
-      layout,
-      transitions,
-      zIndex,
-      icons
-    } = this.tokens;
-    const sections = [
-      /*css*/
-      `@layer tokens {
+`}#n(t){let e=parseInt(t.slice(1,3),16)/255,r=parseInt(t.slice(3,5),16)/255,a=parseInt(t.slice(5,7),16)/255,o=Math.max(e,r,a),i=Math.min(e,r,a),l,s,p=(o+i)/2;if(o===i)l=s=0;else{let c=o-i;switch(s=p>.5?c/(2-o-i):c/(o+i),o){case e:l=(r-a)/c+(r<a?6:0);break;case r:l=(a-e)/c+2;break;case a:l=(e-r)/c+4;break}l/=6}return{h:l*360,s:s*100,l:p*100}}#t(t,e,r){t=t/360,e=e/100,r=r/100;let a=(p,c,d)=>(d<0&&(d+=1),d>1&&(d-=1),d<1/6?p+(c-p)*6*d:d<1/2?c:d<2/3?p+(c-p)*(2/3-d)*6:p),o,i,l;if(e===0)o=i=l=r;else{let p=r<.5?r*(1+e):r+e-r*e,c=2*r-p;o=a(c,p,t+1/3),i=a(c,p,t),l=a(c,p,t-1/3)}let s=p=>{let c=Math.round(p*255).toString(16);return c.length===1?"0"+c:c};return`#${s(o)}${s(i)}${s(l)}`}getTokens(){return this.tokens}exportCSS(){return this.layeredCSS}#ve(){this.#e={tokens:this.#xe(),primitives:this.#we(),components:this.#ke(),utilities:this.#Se()},this.options.debug&&this.options.log?.("debug","[Generator] Layer sizes:",{tokens:`${(this.#e.tokens.length/1024).toFixed(2)} KB`,primitives:`${(this.#e.primitives.length/1024).toFixed(2)} KB`,components:`${(this.#e.components.length/1024).toFixed(2)} KB`,utilities:`${(this.#e.utilities.length/1024).toFixed(2)} KB`})}#xe(){let{colors:t,spacing:e,radius:r,borderWidths:a,typography:o,shadows:i,layout:l,transitions:s,zIndex:p,icons:c}=this.tokens,d=[`@layer tokens {
        :root {
-          ${this.#generateColorVariables(colors)}
-          ${this.#generateSpacingVariables(spacing)}
-          ${this.#generateRadiusVariables(radius)}
-          ${this.#generateBorderWidthVariables(borderWidths)}
-          ${this.#generateTypographyVariables(typography)}
-          ${this.#generateShadowVariables(shadows)}
-          ${this.#generateLayoutVariables(layout)}
-          ${this.#generateTransitionVariables(transitions)}
-          ${this.#generateZIndexVariables(zIndex)}
-          ${this.#generateIconVariables(icons)}
+          ${this.#O(t)}
+          ${this.#I(e)}
+          ${this.#H(r)}
+          ${this.#q(a)}
+          ${this.#G(o)}
+          ${this.#_(i)}
+          ${this.#V(l)}
+          ${this.#Q(s)}
+          ${this.#Y(p)}
+          ${this.#Z(c)}
        }
-       ${this.#generateDarkVariablesForTokensLayer(colors)}
-    }`
-    ];
-    sections.push(
-      `
+       ${this.#X(t)}
+    }`];return d.push(`
 /* Non-layered dark variables fallback (ensures attribute wins) */
-`
-    );
-    sections.push(this.#generateDarkVariablesOnly(colors));
-    return sections.join("");
-  }
-  #generatePrimitivesLayer() {
-    const { advanced = {}, a11y = {}, layout = {} } = this.options.design;
-    const tabSize = advanced.tabSize || enums.TabSizes.standard;
-    const minTouchTarget = a11y.minTouchTarget || enums.TouchTargetSizes.standard;
-    const breakpoints = layout.breakpoints || {
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280
-    };
-    return (
-      /*css*/
-      `@layer primitives {
+`),d.push(this.#J(t)),d.join("")}#we(){let{advanced:t={},a11y:e={},layout:r={}}=this.options.design,a=t.tabSize||u.TabSizes.standard,o=e.minTouchTarget||u.TouchTargetSizes.standard,i=r.breakpoints||{sm:640,md:768,lg:1024,xl:1280};return`@layer primitives {
   /* Base HTML reset */
   *, *::before, *::after {
     box-sizing: border-box;
@@ -7229,7 +2676,7 @@ nav[data-dropdown] {
     -webkit-text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    tab-size: ${tabSize};
+    tab-size: ${a};
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
   }
 
@@ -7272,7 +2719,7 @@ nav[data-dropdown] {
     gap: var(--spacing-2);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
-    min-height: ${minTouchTarget}px;
+    min-height: ${o}px;
     touch-action: manipulation;
     user-select: none;
   }
@@ -7499,7 +2946,7 @@ nav[data-dropdown] {
   :where(h6) { font-size: var(--font-size-xs); }
 
   /* Scale up on larger screens */
-  @media (min-width: ${breakpoints.sm}px) {
+  @media (min-width: ${i.sm}px) {
     :where(h1) { font-size: var(--font-size-3xl); }
     :where(h2) { font-size: var(--font-size-2xl); }
     :where(h3) { font-size: var(--font-size-xl); }
@@ -7562,31 +3009,25 @@ nav[data-dropdown] {
   }
 }
 
-`
-    );
-  }
-  #generateComponentsLayer() {
-    return (
-      /*css*/
-      `@layer components {
+`}#ke(){return`@layer components {
 
-${this.#generateSemanticHTMLStyles()}
+${this.#ne()}
 
-${this.#generateFormStyles()}
+${this.#ie()}
 
-${this.#generateCalloutStyles()}
+${this.#ce()}
 
-${this.#generateBadgeStyles()}
+${this.#de()}
 
-${this.#generateDialogStyles()}
+${this.#pe()}
 
-${this.#generateAccordionStyles()}
+${this.#le()}
 
-${this.#generateDropdownStyles()}
+${this.#me()}
 
-${this.#generateTabStripStyles()}
+${this.#ue()}
 
-${this.#generateTableStyles()}
+${this.#se()}
 
 /* Card component */
 
@@ -7628,30 +3069,24 @@ ${this.#generateTableStyles()}
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-${this.#generateScrollbarStyles()}
+${this.#ge()}
 
-${this.#generateDarkModeComponentRules()}
+${this.#te()}
 
 }
-`
-    );
-  }
-  #generateUtilitiesLayer() {
-    return (
-      /*css*/
-      `@layer utilities {
+`}#Se(){return`@layer utilities {
 
-${this.#generateIconStyles()}
+${this.#he()}
 
-${this.#generateLayoutUtilities()}
+${this.#fe()}
 
 /* Optional utilities/features controlled by config options */
 /* - Body background mesh rule (applies one of the generated mesh vars) */
 /* - Liquid glass utility class */
-${this.#generateBodyBackgroundMeshRule()}
-${this.#generateLiquidGlassUtility()}
+${this.#re()}
+${this.#ae()}
 
-${this.#generateBorderGradientUtilities()}
+${this.#oe()}
 
 /* Surface utilities */
 
@@ -7832,852 +3267,22 @@ html[data-theme="dark"] .surface-inverse {
 }
 
 
-${this.#generateMediaUtilities()}
+${this.#be()}
 
-${this.#generateMediaQueries()}
+${this.#ye()}
 
 }
-`
-    );
-  }
-  /**
-   * Create constructable stylesheets for each layer
-   */
-  #createConstructableStylesheets() {
-    this.#stylesheets = {
-      tokens: new CSSStyleSheet(),
-      primitives: new CSSStyleSheet(),
-      components: new CSSStyleSheet(),
-      utilities: new CSSStyleSheet()
-    };
-    this.#updateConstructableStylesheets();
-  }
-  #updateConstructableStylesheets() {
-    this.#stylesheets.tokens.replaceSync(this.#layers.tokens);
-    this.#stylesheets.primitives.replaceSync(this.#layers.primitives);
-    this.#stylesheets.components.replaceSync(this.#layers.components);
-    this.#stylesheets.utilities.replaceSync(this.#layers.utilities);
-  }
-  // /**
-  //  * Create BLOB URLs for live injection
-  //  */
-  // #createBlobURLs() {
-  //   this.#blobURLs = {};
-  //   this.#recreateBlobURLs();
-  // }
-  // #recreateBlobURLs() {
-  //   // Safety check
-  //   if (!this.#layers) {
-  //     this.options.log?.(
-  //       "error",
-  //       "[Generator] Cannot create BLOB URLs: layers not generated"
-  //     );
-  //     return;
-  //   }
-  //   // Revoke old URLs
-  //   if (this.#blobURLs) {
-  //     Object.values(this.#blobURLs).forEach((url) => {
-  //       if (url) URL.revokeObjectURL(url);
-  //     });
-  //   }
-  //   // Create new BLOB URLs for each layer
-  //   this.#blobURLs.tokens = this.#createBlobURL(this.#layers.tokens);
-  //   this.#blobURLs.primitives = this.#createBlobURL(this.#layers.primitives);
-  //   this.#blobURLs.components = this.#createBlobURL(this.#layers.components);
-  //   this.#blobURLs.utilities = this.#createBlobURL(this.#layers.utilities);
-  //   // Combined styles (layers already have @layer wrappers, just concatenate)
-  //   const combined = `${this.#layers.tokens}\n${this.#layers.primitives}\n${
-  //     this.#layers.components
-  //   }\n${this.#layers.utilities}`;
-  //   this.#blobURLs.styles = this.#createBlobURL(combined);
-  //   if (this.options.debug) {
-  //     this.options.log?.(
-  //       "debug",
-  //       "[Generator] Created BLOB URL for combined styles:",
-  //       this.#blobURLs.styles
-  //     );
-  //   }
-  // }
-  // #createBlobURL(css) {
-  //   const blob = new Blob([css], { type: "text/css" });
-  //   return URL.createObjectURL(blob);
-  // }
-  // ========================================================================
-  // PUBLIC GETTERS FOR LAYER ACCESS
-  // ========================================================================
-  // CSS strings (raw)
-  get tokensCSS() {
-    return this.#layers?.tokens || "";
-  }
-  get primitivesCSS() {
-    return this.#layers?.primitives || "";
-  }
-  get componentsCSS() {
-    return this.#layers?.components || "";
-  }
-  get utilitiesCSS() {
-    return this.#layers?.utilities || "";
-  }
-  get layeredCSS() {
-    if (!this.#layers)
-      return "";
-    return `${this.#layers.tokens}
-${this.#layers.primitives}
-${this.#layers.components}
-${this.#layers.utilities}`;
-  }
-  /**
-   * Get a complete compiled representation of the design system state.
-   * This provides structured access to all generated tokens, scales, layers, and metadata.
-   * Linked to ontology and enums for introspection and tooling.
-   *
-   * @returns {Object} Compiled design system state with tokens, layers, metadata, and references
-   */
-  get compiled() {
-    return {
-      // Core token groups - the source data used to generate CSS
-      tokens: {
-        colors: this.tokens.colors,
-        spacing: this.tokens.spacing,
-        radius: this.tokens.radius,
-        borderWidths: this.tokens.borderWidths,
-        typography: this.tokens.typography,
-        shadows: this.tokens.shadows,
-        layout: this.tokens.layout,
-        transitions: this.tokens.transitions,
-        zIndex: this.tokens.zIndex,
-        icons: this.tokens.icons
-      },
-      // Layer information - CSS content and metadata
-      layers: {
-        tokens: {
-          css: this.#layers?.tokens || "",
-          size: this.#layers?.tokens?.length || 0,
-          sizeKB: ((this.#layers?.tokens?.length || 0) / 1024).toFixed(2)
-        },
-        primitives: {
-          css: this.#layers?.primitives || "",
-          size: this.#layers?.primitives?.length || 0,
-          sizeKB: ((this.#layers?.primitives?.length || 0) / 1024).toFixed(2)
-        },
-        components: {
-          css: this.#layers?.components || "",
-          size: this.#layers?.components?.length || 0,
-          sizeKB: ((this.#layers?.components?.length || 0) / 1024).toFixed(2)
-        },
-        utilities: {
-          css: this.#layers?.utilities || "",
-          size: this.#layers?.utilities?.length || 0,
-          sizeKB: ((this.#layers?.utilities?.length || 0) / 1024).toFixed(2)
-        },
-        combined: {
-          css: this.layeredCSS,
-          size: this.layeredCSS?.length || 0,
-          sizeKB: ((this.layeredCSS?.length || 0) / 1024).toFixed(2)
-        }
-      },
-      // Configuration snapshot - what was used to generate this state
-      config: {
-        design: this.options.design || {},
-        preset: this.options.preset || null,
-        debug: this.options.debug || false
-      },
-      // Runtime capabilities and environment
-      capabilities: {
-        constructableStylesheets: typeof CSSStyleSheet !== "undefined",
-        blobURLs: typeof Blob !== "undefined" && typeof URL !== "undefined",
-        shadowDOM: typeof ShadowRoot !== "undefined"
-      },
-      // References to design system metadata
-      references: {
-        // Link to ontology for component/primitive definitions
-        ontology: typeof ontology !== "undefined" ? ontology : null,
-        // Link to enums for valid values
-        enums: typeof enums !== "undefined" ? enums : null
-      },
-      // Computed metadata about the generated design system
-      meta: {
-        generatedAt: (/* @__PURE__ */ new Date()).toISOString(),
-        totalSize: (this.#layers?.tokens?.length || 0) + (this.#layers?.primitives?.length || 0) + (this.#layers?.components?.length || 0) + (this.#layers?.utilities?.length || 0),
-        totalSizeKB: (((this.#layers?.tokens?.length || 0) + (this.#layers?.primitives?.length || 0) + (this.#layers?.components?.length || 0) + (this.#layers?.utilities?.length || 0)) / 1024).toFixed(2),
-        layerCount: 4,
-        tokenGroups: Object.keys(this.tokens).length
-      },
-      // Introspection helpers - methods to query the compiled state
-      helpers: {
-        /**
-         * Get all color scales as a flat array
-         */
-        getColorScales: () => {
-          const scales = [];
-          const colors = this.tokens.colors;
-          for (const [name, scale] of Object.entries(colors)) {
-            if (typeof scale === "object" && scale !== null) {
-              scales.push({ name, scale });
-            }
-          }
-          return scales;
-        },
-        /**
-         * Get a specific color scale by name
-         */
-        getColorScale: (name) => {
-          return this.tokens.colors[name] || null;
-        },
-        /**
-         * Get all spacing values as an array
-         */
-        getSpacingValues: () => {
-          return Object.entries(this.tokens.spacing).map(([key, value]) => ({
-            key,
-            value
-          }));
-        },
-        /**
-         * Get typography configuration
-         */
-        getTypography: () => {
-          return this.tokens.typography;
-        },
-        /**
-         * Get the CSS for a specific layer
-         */
-        getLayerCSS: (layer) => {
-          const validLayers = [
-            "tokens",
-            "primitives",
-            "components",
-            "utilities"
-          ];
-          if (!validLayers.includes(layer)) {
-            throw new Error(
-              `Invalid layer: ${layer}. Must be one of ${validLayers.join(
-                ", "
-              )}`
-            );
-          }
-          return this.#layers?.[layer] || "";
-        },
-        /**
-         * Check if a specific enum value is used in the current configuration
-         */
-        usesEnumValue: (enumGroup, value) => {
-          const config = this.options.design || {};
-          const configStr = JSON.stringify(config);
-          return configStr.includes(value);
-        }
-      }
-    };
-  }
-  // Constructable stylesheets (browser only)
-  get tokensStylesheet() {
-    return this.#stylesheets?.tokens;
-  }
-  get primitivesStylesheet() {
-    return this.#stylesheets?.primitives;
-  }
-  get componentsStylesheet() {
-    return this.#stylesheets?.components;
-  }
-  get utilitiesStylesheet() {
-    return this.#stylesheets?.utilities;
-  }
-  // // BLOB URLs (browser only)
-  // get tokensBlobURL() {
-  //   return this.#blobURLs?.tokens;
-  // }
-  // get primitivesBlobURL() {
-  //   return this.#blobURLs?.primitives;
-  // }
-  // get componentsBlobURL() {
-  //   return this.#blobURLs?.components;
-  // }
-  // get utilitiesBlobURL() {
-  //   return this.#blobURLs?.utilities;
-  // }
-  // get stylesBlobURL() {
-  //   return this.#blobURLs?.styles;
-  // }
-  /**
-   * Generate CSS module files for export
-   * Returns object with filename => content
-   */
-  getCSSModules() {
-    return {
-      "pds-tokens.css.js": this.#generateCSSModule(
-        "tokens",
-        this.#layers.tokens
-      ),
-      "pds-primitives.css.js": this.#generateCSSModule(
-        "primitives",
-        this.#layers.primitives
-      ),
-      "pds-components.css.js": this.#generateCSSModule(
-        "components",
-        this.#layers.components
-      ),
-      "pds-utilities.css.js": this.#generateCSSModule(
-        "utilities",
-        this.#layers.utilities
-      ),
-      "pds-styles.css.js": this.#generateCSSModule("styles", this.layeredCSS)
-    };
-  }
-  #generateCSSModule(name, css) {
-    const escapedCSS = css.replace(/\\/g, "\\\\").replace(/`/g, "\\`").replace(/\$/g, "\\$");
-    return `// Pure Design System - ${name}
+`}#$e(){this.#o={tokens:new CSSStyleSheet,primitives:new CSSStyleSheet,components:new CSSStyleSheet,utilities:new CSSStyleSheet},this.#ze()}#ze(){this.#o.tokens.replaceSync(this.#e.tokens),this.#o.primitives.replaceSync(this.#e.primitives),this.#o.components.replaceSync(this.#e.components),this.#o.utilities.replaceSync(this.#e.utilities)}get tokensCSS(){return this.#e?.tokens||""}get primitivesCSS(){return this.#e?.primitives||""}get componentsCSS(){return this.#e?.components||""}get utilitiesCSS(){return this.#e?.utilities||""}get layeredCSS(){return this.#e?`${this.#e.tokens}
+${this.#e.primitives}
+${this.#e.components}
+${this.#e.utilities}`:""}get compiled(){return{tokens:{colors:this.tokens.colors,spacing:this.tokens.spacing,radius:this.tokens.radius,borderWidths:this.tokens.borderWidths,typography:this.tokens.typography,shadows:this.tokens.shadows,layout:this.tokens.layout,transitions:this.tokens.transitions,zIndex:this.tokens.zIndex,icons:this.tokens.icons},layers:{tokens:{css:this.#e?.tokens||"",size:this.#e?.tokens?.length||0,sizeKB:((this.#e?.tokens?.length||0)/1024).toFixed(2)},primitives:{css:this.#e?.primitives||"",size:this.#e?.primitives?.length||0,sizeKB:((this.#e?.primitives?.length||0)/1024).toFixed(2)},components:{css:this.#e?.components||"",size:this.#e?.components?.length||0,sizeKB:((this.#e?.components?.length||0)/1024).toFixed(2)},utilities:{css:this.#e?.utilities||"",size:this.#e?.utilities?.length||0,sizeKB:((this.#e?.utilities?.length||0)/1024).toFixed(2)},combined:{css:this.layeredCSS,size:this.layeredCSS?.length||0,sizeKB:((this.layeredCSS?.length||0)/1024).toFixed(2)}},config:{design:this.options.design||{},preset:this.options.preset||null,debug:this.options.debug||!1},capabilities:{constructableStylesheets:typeof CSSStyleSheet<"u",blobURLs:typeof Blob<"u"&&typeof URL<"u",shadowDOM:typeof ShadowRoot<"u"},references:{ontology:typeof z<"u"?z:null,enums:typeof u<"u"?u:null},meta:{generatedAt:new Date().toISOString(),totalSize:(this.#e?.tokens?.length||0)+(this.#e?.primitives?.length||0)+(this.#e?.components?.length||0)+(this.#e?.utilities?.length||0),totalSizeKB:(((this.#e?.tokens?.length||0)+(this.#e?.primitives?.length||0)+(this.#e?.components?.length||0)+(this.#e?.utilities?.length||0))/1024).toFixed(2),layerCount:4,tokenGroups:Object.keys(this.tokens).length},helpers:{getColorScales:()=>{let t=[],e=this.tokens.colors;for(let[r,a]of Object.entries(e))typeof a=="object"&&a!==null&&t.push({name:r,scale:a});return t},getColorScale:t=>this.tokens.colors[t]||null,getSpacingValues:()=>Object.entries(this.tokens.spacing).map(([t,e])=>({key:t,value:e})),getTypography:()=>this.tokens.typography,getLayerCSS:t=>{let e=["tokens","primitives","components","utilities"];if(!e.includes(t))throw new Error(`Invalid layer: ${t}. Must be one of ${e.join(", ")}`);return this.#e?.[t]||""},usesEnumValue:(t,e)=>{let r=this.options.design||{};return JSON.stringify(r).includes(e)}}}}get tokensStylesheet(){return this.#o?.tokens}get primitivesStylesheet(){return this.#o?.primitives}get componentsStylesheet(){return this.#o?.components}get utilitiesStylesheet(){return this.#o?.utilities}getCSSModules(){return{"pds-tokens.css.js":this.#c("tokens",this.#e.tokens),"pds-primitives.css.js":this.#c("primitives",this.#e.primitives),"pds-components.css.js":this.#c("components",this.#e.components),"pds-utilities.css.js":this.#c("utilities",this.#e.utilities),"pds-styles.css.js":this.#c("styles",this.layeredCSS)}}#c(t,e){let r=e.replace(/\\/g,"\\\\").replace(/`/g,"\\`").replace(/\$/g,"\\$");return`// Pure Design System - ${t}
 // Auto-generated - do not edit directly
 
-export const ${name} = new CSSStyleSheet();
-${name}.replaceSync(\`${escapedCSS}\`);
+export const ${t} = new CSSStyleSheet();
+${t}.replaceSync(\`${r}\`);
 
-export const ${name}CSS = \`${escapedCSS}\`;
-`;
-  }
-};
-
-// src/js/pds-core/pds-registry.js
-var PDSRegistry = class {
-  constructor() {
-    this._mode = "static";
-    this._staticPaths = {
-      tokens: "/assets/pds/styles/pds-tokens.css.js",
-      primitives: "/assets/pds/styles/pds-primitives.css.js",
-      components: "/assets/pds/styles/pds-components.css.js",
-      utilities: "/assets/pds/styles/pds-utilities.css.js",
-      styles: "/assets/pds/styles/pds-styles.css.js"
-    };
-  }
-  /**
-   * Switch to live mode
-   */
-  setLiveMode() {
-    this._mode = "live";
-  }
-  /**
-   * Switch to static mode with custom paths
-   * Called by consumers who want to use static CSS files
-   */
-  setStaticMode(paths = {}) {
-    this._mode = "static";
-    this._staticPaths = { ...this._staticPaths, ...paths };
-  }
-  /**
-   * Get stylesheet for adoption in shadow DOM
-   * Returns CSSStyleSheet object (constructable stylesheet)
-   */
-  async getStylesheet(layer) {
-    if (this._mode === "live") {
-      return null;
-    } else {
-      try {
-        const module = await import(
-          /* @vite-ignore */
-          this._staticPaths[layer]
-        );
-        return module[layer];
-      } catch (error) {
-        console.error(`[PDS Registry] Failed to load static ${layer}:`, error);
-        console.error(`[PDS Registry] Looking for: ${this._staticPaths[layer]}`);
-        console.error(`[PDS Registry] Make sure you've run 'npm run pds:build' and configured PDS.start() with the correct static.root path`);
-        const fallback = new CSSStyleSheet();
-        fallback.replaceSync("/* Failed to load " + layer + " */");
-        return fallback;
-      }
-    }
-  }
-  /**
-   * Get current mode
-   */
-  get mode() {
-    return this._mode;
-  }
-  /**
-   * Check if in live mode
-   */
-  get isLive() {
-    return this._mode === "live";
-  }
-};
-var registry = new PDSRegistry();
-
-// src/js/pds-core/pds-runtime.js
-function installRuntimeStyles(cssText) {
-  try {
-    if (typeof document === "undefined")
-      return;
-    if (typeof CSSStyleSheet !== "undefined" && "adoptedStyleSheets" in Document.prototype) {
-      const sheet = new CSSStyleSheet();
-      sheet.replaceSync(cssText);
-      sheet._pds = true;
-      const others = (document.adoptedStyleSheets || []).filter(
-        (s) => s._pds !== true
-      );
-      document.adoptedStyleSheets = [...others, sheet];
-      return;
-    }
-    const styleId = "pds-runtime-stylesheet";
-    let el = document.getElementById(styleId);
-    if (!el) {
-      el = document.createElement("style");
-      el.id = styleId;
-      el.type = "text/css";
-      const head = document.head || document.getElementsByTagName("head")[0];
-      if (head)
-        head.appendChild(el);
-      else
-        document.documentElement.appendChild(el);
-    }
-    el.textContent = cssText;
-  } catch (err) {
-    console.warn("installRuntimeStyles failed:", err);
-  }
-}
-function applyStyles(generator) {
-  const target = generator;
-  if (!target || typeof target !== "object") {
-    console.error(
-      "[Runtime] applyStyles requires an explicit generator instance in live mode"
-    );
-    return;
-  }
-  const cssText = target.layeredCSS || target.css || "";
-  if (!cssText) {
-    target.options?.log?.(
-      "warn",
-      "[Runtime] No CSS available on generator to apply"
-    );
-    return;
-  }
-  installRuntimeStyles(cssText);
-}
-async function adoptPrimitives(shadowRoot, additionalSheets = [], generator = null) {
-  try {
-    const primitives = generator?.primitivesStylesheet ? generator.primitivesStylesheet : await registry.getStylesheet("primitives");
-    shadowRoot.adoptedStyleSheets = [primitives, ...additionalSheets];
-  } catch (error) {
-    const componentName = shadowRoot.host?.tagName?.toLowerCase() || "unknown";
-    console.error(
-      `[PDS Adopter] <${componentName}> failed to adopt primitives:`,
-      error
-    );
-    shadowRoot.adoptedStyleSheets = additionalSheets;
-  }
-}
-async function adoptLayers(shadowRoot, layers = ["primitives"], additionalSheets = [], generator = null) {
-  try {
-    const stylesheets = await Promise.all(
-      layers.map(async (layer) => {
-        if (generator) {
-          switch (layer) {
-            case "tokens":
-              return generator.tokensStylesheet;
-            case "primitives":
-              return generator.primitivesStylesheet;
-            case "components":
-              return generator.componentsStylesheet;
-            case "utilities":
-              return generator.utilitiesStylesheet;
-            default:
-              break;
-          }
-        }
-        return registry.getStylesheet(layer);
-      })
-    );
-    const validStylesheets = stylesheets.filter((sheet) => sheet !== null);
-    shadowRoot.adoptedStyleSheets = [...validStylesheets, ...additionalSheets];
-  } catch (error) {
-    const componentName = shadowRoot.host?.tagName?.toLowerCase() || "unknown";
-    console.error(
-      `[PDS Adopter] <${componentName}> failed to adopt layers:`,
-      error
-    );
-    shadowRoot.adoptedStyleSheets = additionalSheets;
-  }
-}
-
-// src/js/pds-core/pds-enhancers.js
-var enhancerDefinitions = [
-  { selector: ".accordion" },
-  { selector: "nav[data-dropdown]" },
-  { selector: "label[data-toggle]" },
-  { selector: 'input[type="range"]' },
-  { selector: "form[data-required]" },
-  { selector: "fieldset[role=group][data-open]" },
-  { selector: "[data-clip]" },
-  { selector: "button, a[class*='btn-']" }
-];
-function enhanceAccordion(elem) {
-  if (elem.dataset.enhancedAccordion)
-    return;
-  elem.dataset.enhancedAccordion = "true";
-  elem.addEventListener("toggle", (event) => {
-    if (event.target.open && event.target.parentElement === elem) {
-      elem.querySelectorAll(":scope > details[open]").forEach((details) => {
-        if (details !== event.target) {
-          details.open = false;
-        }
-      });
-    }
-  }, true);
-}
-function enhanceDropdown(elem) {
-  if (elem.dataset.enhancedDropdown)
-    return;
-  elem.dataset.enhancedDropdown = "true";
-  const menu = elem.lastElementChild;
-  if (!menu)
-    return;
-  const trigger = elem.querySelector("[data-dropdown-toggle]") || elem.querySelector("button");
-  if (trigger && !trigger.hasAttribute("type")) {
-    trigger.setAttribute("type", "button");
-  }
-  if (!menu.id) {
-    menu.id = `dropdown-${Math.random().toString(36).slice(2, 9)}`;
-  }
-  const isMenu = menu.tagName?.toLowerCase() === "menu";
-  if (isMenu && !menu.hasAttribute("role")) {
-    menu.setAttribute("role", "menu");
-  }
-  if (!menu.hasAttribute("aria-hidden")) {
-    menu.setAttribute("aria-hidden", "true");
-  }
-  if (trigger) {
-    trigger.setAttribute("aria-haspopup", "true");
-    trigger.setAttribute("aria-controls", menu.id);
-    trigger.setAttribute("aria-expanded", "false");
-  }
-  const resolveDirection = () => {
-    const mode = (elem.getAttribute("data-mode") || "auto").toLowerCase();
-    if (mode === "up" || mode === "down")
-      return mode;
-    const rect = elem.getBoundingClientRect();
-    const spaceBelow = Math.max(0, window.innerHeight - rect.bottom);
-    const spaceAbove = Math.max(0, rect.top);
-    return spaceAbove > spaceBelow ? "up" : "down";
-  };
-  const openMenu = () => {
-    elem.dataset.dropdownDirection = resolveDirection();
-    menu.setAttribute("aria-hidden", "false");
-    trigger?.setAttribute("aria-expanded", "true");
-  };
-  const closeMenu = () => {
-    menu.setAttribute("aria-hidden", "true");
-    trigger?.setAttribute("aria-expanded", "false");
-  };
-  const toggleMenu = () => {
-    if (menu.getAttribute("aria-hidden") === "false") {
-      closeMenu();
-    } else {
-      openMenu();
-    }
-  };
-  trigger?.addEventListener("click", (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    toggleMenu();
-  });
-  document.addEventListener("click", (event) => {
-    if (!elem.contains(event.target)) {
-      closeMenu();
-    }
-  });
-  elem.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      closeMenu();
-      trigger?.focus();
-    }
-  });
-  elem.addEventListener("focusout", (event) => {
-    if (!event.relatedTarget || !elem.contains(event.relatedTarget)) {
-      closeMenu();
-    }
-  });
-}
-function enhanceToggle(elem) {
-  if (elem.dataset.enhancedToggle)
-    return;
-  elem.dataset.enhancedToggle = "true";
-  const checkbox = elem.querySelector('input[type="checkbox"]');
-  if (!checkbox)
-    return;
-  if (!elem.hasAttribute("tabindex")) {
-    elem.setAttribute("tabindex", "0");
-  }
-  elem.setAttribute("role", "switch");
-  elem.setAttribute("aria-checked", checkbox.checked ? "true" : "false");
-  const toggleSwitch = document.createElement("span");
-  toggleSwitch.className = "toggle-switch";
-  toggleSwitch.setAttribute("role", "presentation");
-  toggleSwitch.setAttribute("aria-hidden", "true");
-  const knob = document.createElement("span");
-  knob.className = "toggle-knob";
-  toggleSwitch.appendChild(knob);
-  elem.insertBefore(toggleSwitch, checkbox.nextSibling);
-  const updateAria = () => {
-    elem.setAttribute("aria-checked", checkbox.checked ? "true" : "false");
-  };
-  const toggle = () => {
-    if (checkbox.disabled)
-      return;
-    checkbox.checked = !checkbox.checked;
-    updateAria();
-    checkbox.dispatchEvent(new Event("change", { bubbles: true }));
-  };
-  elem.addEventListener("click", (event) => {
-    event.preventDefault();
-    toggle();
-  });
-  elem.addEventListener("keydown", (event) => {
-    if (event.key === " " || event.key === "Enter") {
-      event.preventDefault();
-      toggle();
-    }
-  });
-  checkbox.addEventListener("change", updateAria);
-}
-function enhanceRange(elem) {
-  if (elem.dataset.enhancedRange)
-    return;
-  const label = elem.closest("label");
-  const hasRangeOutputClass = label?.classList.contains("range-output");
-  const inputId = elem.id || `range-${Math.random().toString(36).substring(2, 11)}`;
-  const outputId = `${inputId}-output`;
-  elem.id = inputId;
-  if (hasRangeOutputClass) {
-    const labelSpan = label.querySelector("span");
-    if (labelSpan && !labelSpan.classList.contains("range-output-wrapper")) {
-      const wrapper = document.createElement("span");
-      wrapper.className = "range-output-wrapper";
-      wrapper.style.display = "flex";
-      wrapper.style.justifyContent = "space-between";
-      wrapper.style.alignItems = "center";
-      const textSpan = document.createElement("span");
-      textSpan.textContent = labelSpan.textContent;
-      wrapper.appendChild(textSpan);
-      const output = document.createElement("output");
-      output.id = outputId;
-      output.setAttribute("for", inputId);
-      output.style.color = "var(--surface-text-secondary, var(--color-text-secondary))";
-      output.style.fontSize = "0.875rem";
-      output.textContent = elem.value;
-      wrapper.appendChild(output);
-      labelSpan.textContent = "";
-      labelSpan.appendChild(wrapper);
-      const updateOutput = () => {
-        output.textContent = elem.value;
-      };
-      elem.addEventListener("input", updateOutput);
-    }
-  } else {
-    let container = elem.closest(".range-container");
-    if (!container) {
-      container = document.createElement("div");
-      container.className = "range-container";
-      elem.parentNode?.insertBefore(container, elem);
-      container.appendChild(elem);
-    }
-    container.style.position = "relative";
-    const bubble = document.createElement("output");
-    bubble.id = outputId;
-    bubble.setAttribute("for", inputId);
-    bubble.className = "range-bubble";
-    bubble.setAttribute("aria-live", "polite");
-    container.appendChild(bubble);
-    const updateBubble = () => {
-      const min = parseFloat(elem.min) || 0;
-      const max = parseFloat(elem.max) || 100;
-      const value = parseFloat(elem.value);
-      const pct = (value - min) / (max - min);
-      bubble.style.left = `calc(${pct * 100}% )`;
-      bubble.textContent = String(value);
-    };
-    const show = () => bubble.classList.add("visible");
-    const hide = () => bubble.classList.remove("visible");
-    elem.addEventListener("input", updateBubble);
-    elem.addEventListener("pointerdown", show);
-    elem.addEventListener("pointerup", hide);
-    elem.addEventListener("pointerleave", hide);
-    elem.addEventListener("focus", show);
-    elem.addEventListener("blur", hide);
-    updateBubble();
-  }
-  elem.dataset.enhancedRange = "1";
-}
-function enhanceRequired(elem) {
-  if (elem.dataset.enhancedRequired)
-    return;
-  elem.dataset.enhancedRequired = "true";
-  const enhanceRequiredField = (input) => {
-    const label = input.closest("label");
-    if (!label)
-      return;
-    if (label.querySelector(".required-asterisk"))
-      return;
-    const asterisk = document.createElement("span");
-    asterisk.classList.add("required-asterisk");
-    asterisk.textContent = "*";
-    asterisk.style.marginLeft = "4px";
-    label.querySelector("span").appendChild(asterisk);
-    const form = input.closest("form");
-    if (form && !form.querySelector(".required-legend")) {
-      const legend = document.createElement("small");
-      legend.classList.add("required-legend");
-      legend.textContent = "* Required fields";
-      form.insertBefore(
-        legend,
-        form.querySelector(".form-actions") || form.lastElementChild
-      );
-    }
-  };
-  elem.querySelectorAll("[required]").forEach((input) => {
-    enhanceRequiredField(input);
-  });
-}
-function enhanceOpenGroup(elem) {
-  if (elem.dataset.enhancedOpenGroup)
-    return;
-  elem.dataset.enhancedOpenGroup = "true";
-  elem.classList.add("flex", "flex-wrap", "buttons");
-  const addInput = document.createElement("input");
-  addInput.type = "text";
-  addInput.placeholder = "Add item...";
-  addInput.classList.add("input-text", "input-sm");
-  addInput.style.width = "auto";
-  const firstInput = elem.querySelector(
-    'input[type="radio"], input[type="checkbox"]'
-  );
-  elem.appendChild(addInput);
-  addInput.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === "Tab") {
-      const value = addInput.value.trim();
-      if (value) {
-        event.preventDefault();
-        const type = firstInput.type === "radio" ? "radio" : "checkbox";
-        const id = `open-group-${Math.random().toString(36).substring(2, 11)}`;
-        const label = document.createElement("label");
-        const span = document.createElement("span");
-        span.setAttribute("data-label", "");
-        span.textContent = value;
-        const input = document.createElement("input");
-        input.type = type;
-        input.name = firstInput.name || elem.getAttribute("data-name") || "open-group";
-        input.value = value;
-        input.id = id;
-        label.appendChild(span);
-        label.appendChild(input);
-        elem.insertBefore(label, addInput);
-        addInput.value = "";
-      }
-    } else if (event.key === "Backspace" && addInput.value === "") {
-      event.preventDefault();
-      const labels = elem.querySelectorAll("label");
-      if (labels.length > 0) {
-        const lastLabel = labels[labels.length - 1];
-        lastLabel.remove();
-      }
-    }
-  });
-}
-function enhanceClip(elem) {
-  if (elem.dataset.enhancedClip)
-    return;
-  elem.dataset.enhancedClip = "true";
-  if (!elem.hasAttribute("tabindex")) {
-    elem.setAttribute("tabindex", "0");
-  }
-  if (!elem.hasAttribute("role")) {
-    elem.setAttribute("role", "button");
-  }
-  const syncAria = () => {
-    const isOpen = elem.getAttribute("data-clip-open") === "true";
-    elem.setAttribute("aria-expanded", isOpen ? "true" : "false");
-  };
-  const toggleOpen = () => {
-    const isOpen = elem.getAttribute("data-clip-open") === "true";
-    elem.setAttribute("data-clip-open", isOpen ? "false" : "true");
-    syncAria();
-  };
-  elem.addEventListener("click", (event) => {
-    if (event.defaultPrevented)
-      return;
-    toggleOpen();
-  });
-  elem.addEventListener("keydown", (event) => {
-    if (event.key === " " || event.key === "Enter") {
-      event.preventDefault();
-      toggleOpen();
-    }
-  });
-  syncAria();
-}
-function enhanceButtonWorking(elem) {
-  if (elem.dataset.enhancedBtnWorking)
-    return;
-  elem.dataset.enhancedBtnWorking = "true";
-  let originalIcon = null;
-  let addedIcon = false;
-  const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-      if (mutation.attributeName === "class") {
-        const hasWorking = elem.classList.contains("btn-working");
-        const icon = elem.querySelector("pds-icon");
-        if (hasWorking) {
-          if (icon) {
-            if (!originalIcon) {
-              originalIcon = icon.getAttribute("icon");
-            }
-            icon.setAttribute("icon", "circle-notch");
-          } else {
-            const newIcon = document.createElement("pds-icon");
-            newIcon.setAttribute("icon", "circle-notch");
-            newIcon.setAttribute("size", "sm");
-            elem.insertBefore(newIcon, elem.firstChild);
-            addedIcon = true;
-          }
-        } else if (mutation.oldValue?.includes("btn-working")) {
-          if (icon) {
-            if (addedIcon) {
-              icon.remove();
-              addedIcon = false;
-            } else if (originalIcon) {
-              icon.setAttribute("icon", originalIcon);
-              originalIcon = null;
-            }
-          }
-        }
-      }
-    });
-  });
-  observer.observe(elem, {
-    attributes: true,
-    attributeFilter: ["class"],
-    attributeOldValue: true
-  });
-}
-var enhancerRunners = /* @__PURE__ */ new Map([
-  [".accordion", enhanceAccordion],
-  ["nav[data-dropdown]", enhanceDropdown],
-  ["label[data-toggle]", enhanceToggle],
-  ['input[type="range"]', enhanceRange],
-  ["form[data-required]", enhanceRequired],
-  ["fieldset[role=group][data-open]", enhanceOpenGroup],
-  ["[data-clip]", enhanceClip],
-  ["button, a[class*='btn-']", enhanceButtonWorking]
-]);
-var defaultPDSEnhancers = enhancerDefinitions.map((meta) => ({
-  ...meta,
-  run: enhancerRunners.get(meta.selector) || (() => {
-  })
-}));
-
-// src/js/pds-core/pds-enhancers-meta.js
-var defaultPDSEnhancerMetadata = [
-  {
-    selector: ".accordion",
-    description: "Ensures only one <details> element can be open at a time within the accordion.",
-    demoHtml: `
+export const ${t}CSS = \`${r}\`;
+`}};var J=class{constructor(){this._mode="static",this._staticPaths={tokens:"/assets/pds/styles/pds-tokens.css.js",primitives:"/assets/pds/styles/pds-primitives.css.js",components:"/assets/pds/styles/pds-components.css.js",utilities:"/assets/pds/styles/pds-utilities.css.js",styles:"/assets/pds/styles/pds-styles.css.js"}}setLiveMode(){this._mode="live"}setStaticMode(t={}){this._mode="static",this._staticPaths={...this._staticPaths,...t}}async getStylesheet(t){if(this._mode==="live")return null;try{return(await import(this._staticPaths[t]))[t]}catch(e){console.error(`[PDS Registry] Failed to load static ${t}:`,e),console.error(`[PDS Registry] Looking for: ${this._staticPaths[t]}`),console.error("[PDS Registry] Make sure you've run 'npm run pds:build' and configured PDS.start() with the correct static.root path");let r=new CSSStyleSheet;return r.replaceSync("/* Failed to load "+t+" */"),r}}get mode(){return this._mode}get isLive(){return this._mode==="live"}},X=new J;function Pe(n){try{if(typeof document>"u")return;if(typeof CSSStyleSheet<"u"&&"adoptedStyleSheets"in Document.prototype){let r=new CSSStyleSheet;r.replaceSync(n),r._pds=!0;let a=(document.adoptedStyleSheets||[]).filter(o=>o._pds!==!0);document.adoptedStyleSheets=[...a,r];return}let t="pds-runtime-stylesheet",e=document.getElementById(t);if(!e){e=document.createElement("style"),e.id=t,e.type="text/css";let r=document.head||document.getElementsByTagName("head")[0];r?r.appendChild(e):document.documentElement.appendChild(e)}e.textContent=n}catch(t){console.warn("installRuntimeStyles failed:",t)}}function K(n){let t=n;if(!t||typeof t!="object"){console.error("[Runtime] applyStyles requires an explicit generator instance in live mode");return}let e=t.layeredCSS||t.css||"";if(!e){t.options?.log?.("warn","[Runtime] No CSS available on generator to apply");return}Pe(e)}async function de(n,t=[],e=null){try{let r=e?.primitivesStylesheet?e.primitivesStylesheet:await X.getStylesheet("primitives");n.adoptedStyleSheets=[r,...t]}catch(r){let a=n.host?.tagName?.toLowerCase()||"unknown";console.error(`[PDS Adopter] <${a}> failed to adopt primitives:`,r),n.adoptedStyleSheets=t}}async function pe(n,t=["primitives"],e=[],r=null){try{let o=(await Promise.all(t.map(async i=>{if(r)switch(i){case"tokens":return r.tokensStylesheet;case"primitives":return r.primitivesStylesheet;case"components":return r.componentsStylesheet;case"utilities":return r.utilitiesStylesheet;default:break}return X.getStylesheet(i)}))).filter(i=>i!==null);n.adoptedStyleSheets=[...o,...e]}catch(a){let o=n.host?.tagName?.toLowerCase()||"unknown";console.error(`[PDS Adopter] <${o}> failed to adopt layers:`,a),n.adoptedStyleSheets=e}}var Oe=[{selector:".accordion"},{selector:"nav[data-dropdown]"},{selector:"label[data-toggle]"},{selector:'input[type="range"]'},{selector:"form[data-required]"},{selector:"fieldset[role=group][data-open]"},{selector:"[data-clip]"},{selector:"button, a[class*='btn-']"}];function Ue(n){n.dataset.enhancedAccordion||(n.dataset.enhancedAccordion="true",n.addEventListener("toggle",t=>{t.target.open&&t.target.parentElement===n&&n.querySelectorAll(":scope > details[open]").forEach(e=>{e!==t.target&&(e.open=!1)})},!0))}function Ie(n){if(n.dataset.enhancedDropdown)return;n.dataset.enhancedDropdown="true";let t=n.lastElementChild;if(!t)return;let e=n.querySelector("[data-dropdown-toggle]")||n.querySelector("button");e&&!e.hasAttribute("type")&&e.setAttribute("type","button"),t.id||(t.id=`dropdown-${Math.random().toString(36).slice(2,9)}`),t.tagName?.toLowerCase()==="menu"&&!t.hasAttribute("role")&&t.setAttribute("role","menu"),t.hasAttribute("aria-hidden")||t.setAttribute("aria-hidden","true"),e&&(e.setAttribute("aria-haspopup","true"),e.setAttribute("aria-controls",t.id),e.setAttribute("aria-expanded","false"));let a=()=>{let s=(n.getAttribute("data-mode")||"auto").toLowerCase();if(s==="up"||s==="down")return s;let p=n.getBoundingClientRect(),c=Math.max(0,window.innerHeight-p.bottom);return Math.max(0,p.top)>c?"up":"down"},o=()=>{n.dataset.dropdownDirection=a(),t.setAttribute("aria-hidden","false"),e?.setAttribute("aria-expanded","true")},i=()=>{t.setAttribute("aria-hidden","true"),e?.setAttribute("aria-expanded","false")},l=()=>{t.getAttribute("aria-hidden")==="false"?i():o()};e?.addEventListener("click",s=>{s.preventDefault(),s.stopPropagation(),l()}),document.addEventListener("click",s=>{n.contains(s.target)||i()}),n.addEventListener("keydown",s=>{s.key==="Escape"&&(i(),e?.focus())}),n.addEventListener("focusout",s=>{(!s.relatedTarget||!n.contains(s.relatedTarget))&&i()})}function He(n){if(n.dataset.enhancedToggle)return;n.dataset.enhancedToggle="true";let t=n.querySelector('input[type="checkbox"]');if(!t)return;n.hasAttribute("tabindex")||n.setAttribute("tabindex","0"),n.setAttribute("role","switch"),n.setAttribute("aria-checked",t.checked?"true":"false");let e=document.createElement("span");e.className="toggle-switch",e.setAttribute("role","presentation"),e.setAttribute("aria-hidden","true");let r=document.createElement("span");r.className="toggle-knob",e.appendChild(r),n.insertBefore(e,t.nextSibling);let a=()=>{n.setAttribute("aria-checked",t.checked?"true":"false")},o=()=>{t.disabled||(t.checked=!t.checked,a(),t.dispatchEvent(new Event("change",{bubbles:!0})))};n.addEventListener("click",i=>{i.preventDefault(),o()}),n.addEventListener("keydown",i=>{(i.key===" "||i.key==="Enter")&&(i.preventDefault(),o())}),t.addEventListener("change",a)}function qe(n){if(n.dataset.enhancedRange)return;let t=n.closest("label"),e=t?.classList.contains("range-output"),r=n.id||`range-${Math.random().toString(36).substring(2,11)}`,a=`${r}-output`;if(n.id=r,e){let o=t.querySelector("span");if(o&&!o.classList.contains("range-output-wrapper")){let i=document.createElement("span");i.className="range-output-wrapper",i.style.display="flex",i.style.justifyContent="space-between",i.style.alignItems="center";let l=document.createElement("span");l.textContent=o.textContent,i.appendChild(l);let s=document.createElement("output");s.id=a,s.setAttribute("for",r),s.style.color="var(--surface-text-secondary, var(--color-text-secondary))",s.style.fontSize="0.875rem",s.textContent=n.value,i.appendChild(s),o.textContent="",o.appendChild(i);let p=()=>{s.textContent=n.value};n.addEventListener("input",p)}}else{let o=n.closest(".range-container");o||(o=document.createElement("div"),o.className="range-container",n.parentNode?.insertBefore(o,n),o.appendChild(n)),o.style.position="relative";let i=document.createElement("output");i.id=a,i.setAttribute("for",r),i.className="range-bubble",i.setAttribute("aria-live","polite"),o.appendChild(i);let l=()=>{let c=parseFloat(n.min)||0,d=parseFloat(n.max)||100,g=parseFloat(n.value),h=(g-c)/(d-c);i.style.left=`calc(${h*100}% )`,i.textContent=String(g)},s=()=>i.classList.add("visible"),p=()=>i.classList.remove("visible");n.addEventListener("input",l),n.addEventListener("pointerdown",s),n.addEventListener("pointerup",p),n.addEventListener("pointerleave",p),n.addEventListener("focus",s),n.addEventListener("blur",p),l()}n.dataset.enhancedRange="1"}function Ge(n){if(n.dataset.enhancedRequired)return;n.dataset.enhancedRequired="true";let t=e=>{let r=e.closest("label");if(!r||r.querySelector(".required-asterisk"))return;let a=document.createElement("span");a.classList.add("required-asterisk"),a.textContent="*",a.style.marginLeft="4px",r.querySelector("span").appendChild(a);let o=e.closest("form");if(o&&!o.querySelector(".required-legend")){let i=document.createElement("small");i.classList.add("required-legend"),i.textContent="* Required fields",o.insertBefore(i,o.querySelector(".form-actions")||o.lastElementChild)}};n.querySelectorAll("[required]").forEach(e=>{t(e)})}function _e(n){if(n.dataset.enhancedOpenGroup)return;n.dataset.enhancedOpenGroup="true",n.classList.add("flex","flex-wrap","buttons");let t=document.createElement("input");t.type="text",t.placeholder="Add item...",t.classList.add("input-text","input-sm"),t.style.width="auto";let e=n.querySelector('input[type="radio"], input[type="checkbox"]');n.appendChild(t),t.addEventListener("keydown",r=>{if(r.key==="Enter"||r.key==="Tab"){let a=t.value.trim();if(a){r.preventDefault();let o=e.type==="radio"?"radio":"checkbox",i=`open-group-${Math.random().toString(36).substring(2,11)}`,l=document.createElement("label"),s=document.createElement("span");s.setAttribute("data-label",""),s.textContent=a;let p=document.createElement("input");p.type=o,p.name=e.name||n.getAttribute("data-name")||"open-group",p.value=a,p.id=i,l.appendChild(s),l.appendChild(p),n.insertBefore(l,t),t.value=""}}else if(r.key==="Backspace"&&t.value===""){r.preventDefault();let a=n.querySelectorAll("label");a.length>0&&a[a.length-1].remove()}})}function Ve(n){if(n.dataset.enhancedClip)return;n.dataset.enhancedClip="true",n.hasAttribute("tabindex")||n.setAttribute("tabindex","0"),n.hasAttribute("role")||n.setAttribute("role","button");let t=()=>{let r=n.getAttribute("data-clip-open")==="true";n.setAttribute("aria-expanded",r?"true":"false")},e=()=>{let r=n.getAttribute("data-clip-open")==="true";n.setAttribute("data-clip-open",r?"false":"true"),t()};n.addEventListener("click",r=>{r.defaultPrevented||e()}),n.addEventListener("keydown",r=>{(r.key===" "||r.key==="Enter")&&(r.preventDefault(),e())}),t()}function Qe(n){if(n.dataset.enhancedBtnWorking)return;n.dataset.enhancedBtnWorking="true";let t=null,e=!1;new MutationObserver(a=>{a.forEach(o=>{if(o.attributeName==="class"){let i=n.classList.contains("btn-working"),l=n.querySelector("pds-icon");if(i)if(l)t||(t=l.getAttribute("icon")),l.setAttribute("icon","circle-notch");else{let s=document.createElement("pds-icon");s.setAttribute("icon","circle-notch"),s.setAttribute("size","sm"),n.insertBefore(s,n.firstChild),e=!0}else o.oldValue?.includes("btn-working")&&l&&(e?(l.remove(),e=!1):t&&(l.setAttribute("icon",t),t=null))}})}).observe(n,{attributes:!0,attributeFilter:["class"],attributeOldValue:!0})}var Ye=new Map([[".accordion",Ue],["nav[data-dropdown]",Ie],["label[data-toggle]",He],['input[type="range"]',qe],["form[data-required]",Ge],["fieldset[role=group][data-open]",_e],["[data-clip]",Ve],["button, a[class*='btn-']",Qe]]),ue=Oe.map(n=>({...n,run:Ye.get(n.selector)||(()=>{})}));var ge=[{selector:".accordion",description:"Ensures only one <details> element can be open at a time within the accordion.",demoHtml:`
       <div class="accordion">
         <details>
           <summary>Section 1</summary>
@@ -8692,12 +3297,7 @@ var defaultPDSEnhancerMetadata = [
           <p>Content for section 3</p>
         </details>
       </div>
-    `.trim()
-  },
-  {
-    selector: "nav[data-dropdown]",
-    description: "Enhances a nav element with data-dropdown to toggle its last child as a dropdown panel (menu, card, form, etc.).",
-    demoHtml: `
+    `.trim()},{selector:"nav[data-dropdown]",description:"Enhances a nav element with data-dropdown to toggle its last child as a dropdown panel (menu, card, form, etc.).",demoHtml:`
       <nav data-dropdown>
         <button class="btn-primary">Menu</button>
         <div class="card surface-overlay stack-sm">
@@ -8708,32 +3308,17 @@ var defaultPDSEnhancerMetadata = [
           </div>
         </div>
       </nav>
-    `.trim()
-  },
-  {
-    selector: "label[data-toggle]",
-    description: "Creates a toggle switch element from a checkbox.",
-    demoHtml: `
+    `.trim()},{selector:"label[data-toggle]",description:"Creates a toggle switch element from a checkbox.",demoHtml:`
       <label data-toggle>
         <input type="checkbox">
         <span data-label>Enable notifications</span>
       </label>
-    `.trim()
-  },
-  {
-    selector: 'input[type="range"]',
-    description: "Enhances range inputs with an attached <output>.",
-    demoHtml: `
+    `.trim()},{selector:'input[type="range"]',description:"Enhances range inputs with an attached <output>.",demoHtml:`
       <label class="range-output">
         <span data-label>Volume</span>
         <input type="range" min="0" max="100" value="40">
       </label>
-    `.trim()
-  },
-  {
-    selector: "form[data-required]",
-    description: "Enhances required form fields using an asterisk in the label.",
-    demoHtml: `
+    `.trim()},{selector:"form[data-required]",description:"Enhances required form fields using an asterisk in the label.",demoHtml:`
       <form data-required action="#" method="post">
       <label>
         <span>Field Label</span>
@@ -8743,817 +3328,27 @@ var defaultPDSEnhancerMetadata = [
           <button type="submit" class="btn-primary">Submit</button>
         </nav>
       </form>
-    `.trim()
-  },
-  {
-    selector: "fieldset[role=group][data-open]",
-    description: "Enhances a checkbox/radio group to be open (have a way to add and remove items).",
-    demoHtml: `
+    `.trim()},{selector:"fieldset[role=group][data-open]",description:"Enhances a checkbox/radio group to be open (have a way to add and remove items).",demoHtml:`
       <fieldset role="group" data-open>
         <label>
           <span data-label>Test</span>
           <input value="lala" name="test1" type="radio" />
         </label>
       </fieldset>
-    `.trim()
-  },
-  {
-    selector: "[data-clip]",
-    description: "Enables click/keyboard toggling for line-clamped content blocks.",
-    demoHtml: `
+    `.trim()},{selector:"[data-clip]",description:"Enables click/keyboard toggling for line-clamped content blocks.",demoHtml:`
       <div data-clip="2" data-clip-more="more...">
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
         <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
         <p>Duis aute irure dolor in reprehenderit in voluptate velit esse.</p>
       </div>
-    `.trim()
-  },
-  {
-    selector: "button, a[class*='btn-']",
-    description: "Automatically manages spinner icon for buttons with .btn-working class",
-    demoHtml: `
+    `.trim()},{selector:"button, a[class*='btn-']",description:"Automatically manages spinner icon for buttons with .btn-working class",demoHtml:`
       <button class="btn-primary btn-working">
         <span>Saving</span>
       </button>
-    `.trim()
-  }
-];
-
-// src/js/pds-core/pds-paths.js
-var DEFAULT_SEGMENT = "pds";
-var URL_PATTERN = /^([a-z][a-z0-9+\-.]*:)?\/\//i;
-var DRIVE_PATTERN = /^[a-z]:/i;
-function ensureTrailingSlash(value = "") {
-  return value.endsWith("/") ? value : `${value}/`;
-}
-function appendSegmentIfMissing(input = "", segment = DEFAULT_SEGMENT) {
-  const trimmed = input.replace(/\/+$/, "");
-  const regex = new RegExp(`(?:^|/)${segment}$`, "i");
-  if (regex.test(trimmed)) {
-    return trimmed;
-  }
-  return `${trimmed}/${segment}`;
-}
-function stripLeadingDotSlash(value) {
-  return value.replace(/^\.\/+/, "");
-}
-function stripDriveLetter(value) {
-  if (DRIVE_PATTERN.test(value)) {
-    return value.replace(DRIVE_PATTERN, "").replace(/^\/+/, "");
-  }
-  return value;
-}
-function stripPublicPrefix(value) {
-  if (value.startsWith("public/")) {
-    return value.substring("public/".length);
-  }
-  return value;
-}
-function resolvePublicAssetURL(config, options = {}) {
-  const segment = options.segment || DEFAULT_SEGMENT;
-  const defaultRoot = options.defaultRoot || `/assets/${segment}/`;
-  const candidate = config?.public && config.public?.root || config?.static && config.static?.root || null;
-  if (!candidate || typeof candidate !== "string") {
-    return ensureTrailingSlash(defaultRoot);
-  }
-  let normalized = candidate.trim();
-  if (!normalized) {
-    return ensureTrailingSlash(defaultRoot);
-  }
-  normalized = normalized.replace(/\\/g, "/");
-  normalized = appendSegmentIfMissing(normalized, segment);
-  normalized = ensureTrailingSlash(normalized);
-  if (URL_PATTERN.test(normalized)) {
-    return normalized;
-  }
-  normalized = stripLeadingDotSlash(normalized);
-  normalized = stripDriveLetter(normalized);
-  if (normalized.startsWith("/")) {
-    return ensureTrailingSlash(normalized);
-  }
-  normalized = stripPublicPrefix(normalized);
-  if (!normalized.startsWith("/")) {
-    normalized = `/${normalized}`;
-  }
-  normalized = normalized.replace(
-    /\/+/g,
-    (match, offset) => offset === 0 ? match : "/"
-  );
-  return ensureTrailingSlash(normalized);
-}
-
-// src/js/common/font-loader.js
-function isFontAvailable(fontName) {
-  const cleanName = fontName.replace(/['"]/g, "").trim();
-  const systemFonts = [
-    "system-ui",
-    "-apple-system",
-    "sans-serif",
-    "serif",
-    "monospace",
-    "cursive",
-    "fantasy",
-    "ui-sans-serif",
-    "ui-serif",
-    "ui-monospace",
-    "ui-rounded"
-  ];
-  if (systemFonts.includes(cleanName.toLowerCase())) {
-    return true;
-  }
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  if (!context)
-    return false;
-  const testString = "mmmmmmmmmmlli";
-  const testSize = "72px";
-  const baselineFont = "monospace";
-  context.font = `${testSize} ${baselineFont}`;
-  const baselineWidth = context.measureText(testString).width;
-  context.font = `${testSize} "${cleanName}", ${baselineFont}`;
-  const testWidth = context.measureText(testString).width;
-  return baselineWidth !== testWidth;
-}
-function extractPrimaryFont(fontFamily) {
-  if (!fontFamily)
-    return null;
-  const fonts = fontFamily.split(",").map((f) => f.trim());
-  const primaryFont = fonts[0];
-  return primaryFont.replace(/['"]/g, "").trim();
-}
-async function loadGoogleFont(fontFamily, options = {}) {
-  if (!fontFamily) {
-    return Promise.resolve();
-  }
-  const {
-    weights = [400, 500, 600, 700],
-    italic = false
-  } = options;
-  const primaryFont = extractPrimaryFont(fontFamily);
-  if (!primaryFont) {
-    return Promise.resolve();
-  }
-  if (isFontAvailable(primaryFont)) {
-    return Promise.resolve();
-  }
-  const encodedFont = encodeURIComponent(primaryFont);
-  const existingLink = document.querySelector(
-    `link[href*="fonts.googleapis.com"][href*="${encodedFont}"]`
-  );
-  if (existingLink) {
-    console.log(`Font "${primaryFont}" is already loading or loaded`);
-    return Promise.resolve();
-  }
-  console.log(`Loading font "${primaryFont}" from Google Fonts...`);
-  return new Promise((resolve, reject) => {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    const weightsParam = italic ? `ital,wght@0,${weights.join(";0,")};1,${weights.join(";1,")}` : `wght@${weights.join(";")}`;
-    link.href = `https://fonts.googleapis.com/css2?family=${encodedFont}:${weightsParam}&display=swap`;
-    link.setAttribute("data-font-loader", primaryFont);
-    link.onload = () => {
-      console.log(`Successfully loaded font "${primaryFont}"`);
-      resolve();
-    };
-    link.onerror = () => {
-      console.warn(`Failed to load font "${primaryFont}" from Google Fonts`);
-      reject(new Error(`Failed to load font: ${primaryFont}`));
-    };
-    document.head.appendChild(link);
-    setTimeout(() => {
-      if (!isFontAvailable(primaryFont)) {
-        console.warn(`Font "${primaryFont}" did not load within timeout`);
-      }
-      resolve();
-    }, 5e3);
-  });
-}
-async function loadTypographyFonts(typographyConfig) {
-  if (!typographyConfig) {
-    return Promise.resolve();
-  }
-  const fontFamilies = /* @__PURE__ */ new Set();
-  if (typographyConfig.fontFamilyHeadings) {
-    fontFamilies.add(typographyConfig.fontFamilyHeadings);
-  }
-  if (typographyConfig.fontFamilyBody) {
-    fontFamilies.add(typographyConfig.fontFamilyBody);
-  }
-  if (typographyConfig.fontFamilyMono) {
-    fontFamilies.add(typographyConfig.fontFamilyMono);
-  }
-  const loadPromises = Array.from(fontFamilies).map(
-    (fontFamily) => loadGoogleFont(fontFamily).catch((err) => {
-      console.warn(`Could not load font: ${fontFamily}`, err);
-    })
-  );
-  await Promise.all(loadPromises);
-}
-
-// src/js/pds-core/pds-start-helpers.js
-var __ABSOLUTE_URL_PATTERN__ = /^[a-z][a-z0-9+\-.]*:\/\//i;
-var __MODULE_URL__ = (() => {
-  try {
-    return import.meta.url;
-  } catch (e) {
-    return void 0;
-  }
-})();
-var ensureTrailingSlash2 = (value) => typeof value === "string" && value.length && !value.endsWith("/") ? `${value}/` : value;
-function ensureAbsoluteAssetURL(value, options = {}) {
-  if (!value || __ABSOLUTE_URL_PATTERN__.test(value)) {
-    return value;
-  }
-  const { preferModule = true } = options;
-  const tryModule = () => {
-    if (!__MODULE_URL__)
-      return null;
-    try {
-      return new URL(value, __MODULE_URL__).href;
-    } catch (e) {
-      return null;
-    }
-  };
-  const tryWindow = () => {
-    if (typeof window === "undefined" || !window.location?.origin) {
-      return null;
-    }
-    try {
-      return new URL(value, window.location.origin).href;
-    } catch (e) {
-      return null;
-    }
-  };
-  const resolved = preferModule ? tryModule() || tryWindow() : tryWindow() || tryModule();
-  return resolved || value;
-}
-var __MODULE_DEFAULT_ASSET_ROOT__ = (() => {
-  if (!__MODULE_URL__)
-    return void 0;
-  try {
-    const parsed = new URL(__MODULE_URL__);
-    if (/\/public\/assets\/js\//.test(parsed.pathname)) {
-      return new URL("../pds/", __MODULE_URL__).href;
-    }
-  } catch (e) {
-    return void 0;
-  }
-  return void 0;
-})();
-var __foucListenerAttached = false;
-function attachFoucListener(PDS2) {
-  if (__foucListenerAttached || typeof document === "undefined")
-    return;
-  __foucListenerAttached = true;
-  PDS2.addEventListener("pds:ready", (event) => {
-    const mode = event.detail?.mode;
-    if (mode) {
-      document.documentElement.classList.add(`pds-${mode}`, "pds-ready");
-    }
-  });
-}
-function __deepMerge(target = {}, source = {}) {
-  if (!source || typeof source !== "object")
-    return target;
-  const out = Array.isArray(target) ? [...target] : { ...target };
-  for (const [key, value] of Object.entries(source)) {
-    if (value && typeof value === "object" && !Array.isArray(value)) {
-      out[key] = __deepMerge(
-        out[key] && typeof out[key] === "object" ? out[key] : {},
-        value
-      );
-    } else {
-      out[key] = value;
-    }
-  }
-  return out;
-}
-function __slugify(str = "") {
-  return String(str).toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-}
-function stripFunctions(obj) {
-  if (obj === null || obj === void 0)
-    return obj;
-  if (typeof obj === "function")
-    return void 0;
-  if (typeof obj !== "object")
-    return obj;
-  if (Array.isArray(obj)) {
-    return obj.map((item) => stripFunctions(item)).filter((item) => item !== void 0);
-  }
-  const result = {};
-  for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      const value = obj[key];
-      if (typeof value !== "function") {
-        const stripped = stripFunctions(value);
-        if (stripped !== void 0) {
-          result[key] = stripped;
-        }
-      }
-    }
-  }
-  return result;
-}
-function normalizeInitConfig(inputConfig = {}, options = {}, { presets: presets2, defaultLog: defaultLog2 }) {
-  const hasDesignKeys = typeof inputConfig === "object" && ("colors" in inputConfig || "typography" in inputConfig || "spatialRhythm" in inputConfig || "shape" in inputConfig || "behavior" in inputConfig || "layout" in inputConfig || "advanced" in inputConfig || "a11y" in inputConfig || "components" in inputConfig || "icons" in inputConfig);
-  let inlineEnhancers = inputConfig && inputConfig.enhancers;
-  if (inlineEnhancers && !Array.isArray(inlineEnhancers)) {
-    inlineEnhancers = Object.values(inlineEnhancers);
-  }
-  const enhancers = inlineEnhancers ?? options.enhancers ?? [];
-  const presetId = inputConfig && inputConfig.preset;
-  const designOverrides = inputConfig && inputConfig.design;
-  const iconOverrides = inputConfig && inputConfig.icons && typeof inputConfig.icons === "object" ? inputConfig.icons : null;
-  const hasNewShape = "preset" in (inputConfig || {}) || "design" in (inputConfig || {}) || "enhancers" in (inputConfig || {});
-  let generatorConfig;
-  let presetInfo = null;
-  if (hasNewShape) {
-    const effectivePreset = String(presetId || "default").toLowerCase();
-    const found = presets2?.[effectivePreset] || Object.values(presets2 || {}).find(
-      (p) => __slugify(p.name) === effectivePreset || String(p.name || "").toLowerCase() === effectivePreset
-    );
-    if (!found)
-      throw new Error(`PDS preset not found: "${presetId || "default"}"`);
-    presetInfo = {
-      id: found.id || __slugify(found.name),
-      name: found.name || found.id || String(effectivePreset)
-    };
-    let mergedDesign = structuredClone(found);
-    if (designOverrides && typeof designOverrides === "object" || iconOverrides) {
-      const cloneableDesign = designOverrides ? stripFunctions(designOverrides) : {};
-      const cloneableIcons = iconOverrides ? stripFunctions(iconOverrides) : null;
-      const mergedOverrides = cloneableIcons ? __deepMerge(cloneableDesign, { icons: cloneableIcons }) : cloneableDesign;
-      mergedDesign = __deepMerge(
-        mergedDesign,
-        structuredClone(mergedOverrides)
-      );
-    }
-    const {
-      mode,
-      autoDefine,
-      applyGlobalStyles,
-      manageTheme,
-      themeStorageKey,
-      preloadStyles,
-      criticalLayers,
-      managerURL,
-      manager,
-      preset: _preset,
-      design: _design,
-      enhancers: _enhancers,
-      log: userLog,
-      ...otherProps
-    } = inputConfig;
-    generatorConfig = {
-      ...otherProps,
-      design: mergedDesign,
-      preset: presetInfo.name,
-      log: userLog || defaultLog2
-    };
-  } else if (hasDesignKeys) {
-    const { log: userLog, ...designConfig } = inputConfig;
-    generatorConfig = {
-      design: structuredClone(designConfig),
-      log: userLog || defaultLog2
-    };
-  } else {
-    const foundDefault = presets2?.["default"] || Object.values(presets2 || {}).find((p) => __slugify(p.name) === "default");
-    if (!foundDefault)
-      throw new Error("PDS default preset not available");
-    presetInfo = {
-      id: foundDefault.id || "default",
-      name: foundDefault.name || "Default"
-    };
-    generatorConfig = {
-      design: structuredClone(foundDefault),
-      preset: presetInfo.name,
-      log: defaultLog2
-    };
-  }
-  return { generatorConfig, enhancers, presetInfo };
-}
-function resolveThemeAndApply({ manageTheme, themeStorageKey, applyResolvedTheme, setupSystemListenerIfNeeded }) {
-  let resolvedTheme = "light";
-  let storedTheme = null;
-  if (manageTheme && typeof window !== "undefined") {
-    try {
-      storedTheme = localStorage.getItem(themeStorageKey) || null;
-    } catch (e) {
-      storedTheme = null;
-    }
-    try {
-      applyResolvedTheme?.(storedTheme);
-      setupSystemListenerIfNeeded?.(storedTheme);
-    } catch (e) {
-    }
-    if (storedTheme) {
-      if (storedTheme === "system") {
-        const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-        resolvedTheme = prefersDark ? "dark" : "light";
-      } else {
-        resolvedTheme = storedTheme;
-      }
-    } else {
-      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-      resolvedTheme = prefersDark ? "dark" : "light";
-    }
-  }
-  return { resolvedTheme, storedTheme };
-}
-function resolveRuntimeAssetRoot(config, { resolvePublicAssetURL: resolvePublicAssetURL2 }) {
-  const hasCustomRoot = Boolean(config?.public?.root || config?.static?.root);
-  let candidate = resolvePublicAssetURL2(config);
-  if (!hasCustomRoot && __MODULE_DEFAULT_ASSET_ROOT__) {
-    candidate = __MODULE_DEFAULT_ASSET_ROOT__;
-  }
-  return ensureTrailingSlash2(ensureAbsoluteAssetURL(candidate));
-}
-async function setupAutoDefinerAndEnhancers(options, { baseEnhancers = [] } = {}) {
-  const {
-    autoDefineBaseURL = "/auto-define/",
-    autoDefinePreload = [],
-    autoDefineMapper = null,
-    enhancers = [],
-    autoDefineOverrides = null,
-    autoDefinePreferModule = true
-  } = options;
-  const mergedEnhancers = (() => {
-    const map = /* @__PURE__ */ new Map();
-    (baseEnhancers || []).forEach((e) => map.set(e.selector, e));
-    (enhancers || []).forEach((e) => map.set(e.selector, e));
-    return Array.from(map.values());
-  })();
-  let autoDefiner = null;
-  if (typeof window !== "undefined" && typeof document !== "undefined") {
-    let AutoDefinerCtor = null;
-    try {
-      const mod = await Promise.resolve().then(() => (init_auto_definer(), auto_definer_exports));
-      AutoDefinerCtor = mod?.AutoDefiner || mod?.default?.AutoDefiner || mod?.default || null;
-    } catch (e) {
-      console.warn("AutoDefiner not available:", e?.message || e);
-    }
-    const defaultMapper = (tag) => {
-      switch (tag) {
-        case "pds-tabpanel":
-          return "pds-tabstrip.js";
-        default:
-          return `${tag}.js`;
-      }
-    };
-    const { mapper: _overrideMapperIgnored, ...restAutoDefineOverrides } = autoDefineOverrides && typeof autoDefineOverrides === "object" ? autoDefineOverrides : {};
-    const normalizedBaseURL = autoDefineBaseURL ? ensureTrailingSlash2(
-      ensureAbsoluteAssetURL(autoDefineBaseURL, {
-        preferModule: autoDefinePreferModule
-      })
-    ) : autoDefineBaseURL;
-    const autoDefineConfig = {
-      baseURL: normalizedBaseURL,
-      predefine: autoDefinePreload,
-      scanExisting: true,
-      observeShadows: true,
-      patchAttachShadow: true,
-      debounceMs: 16,
-      enhancers: mergedEnhancers,
-      onError: (tag, err) => {
-        if (typeof tag === "string" && tag.startsWith("pds-")) {
-          const litDependentComponents = ["pds-form", "pds-drawer"];
-          const isLitComponent = litDependentComponents.includes(tag);
-          const isMissingLitError = err?.message?.includes("#pds/lit") || err?.message?.includes("Failed to resolve module specifier");
-          if (isLitComponent && isMissingLitError) {
-            console.error(
-              `\u274C PDS component <${tag}> requires Lit but #pds/lit is not in import map.
-              See: https://github.com/Pure-Web-Foundation/pure-ds/blob/main/readme.md#lit-components-not-working`
-            );
-          } else {
-            console.warn(
-              `\u26A0\uFE0F PDS component <${tag}> not found. Assets may not be installed.`
-            );
-          }
-        } else {
-          console.error(`\u274C Auto-define error for <${tag}>:`, err);
-        }
-      },
-      // Apply all user overrides except mapper so we can still wrap it
-      ...restAutoDefineOverrides,
-      mapper: (tag) => {
-        if (customElements.get(tag))
-          return null;
-        if (typeof autoDefineMapper === "function") {
-          try {
-            const mapped = autoDefineMapper(tag);
-            if (mapped === void 0) {
-              return defaultMapper(tag);
-            }
-            return mapped;
-          } catch (e) {
-            console.warn(
-              "Custom autoDefine.mapper error; falling back to default:",
-              e?.message || e
-            );
-            return defaultMapper(tag);
-          }
-        }
-        return defaultMapper(tag);
-      }
-    };
-    if (AutoDefinerCtor) {
-      autoDefiner = new AutoDefinerCtor(autoDefineConfig);
-      if (autoDefinePreload.length > 0 && typeof AutoDefinerCtor.define === "function") {
-        await AutoDefinerCtor.define(...autoDefinePreload, {
-          baseURL: autoDefineBaseURL,
-          mapper: autoDefineConfig.mapper,
-          onError: autoDefineConfig.onError
-        });
-      }
-    }
-  }
-  return { autoDefiner, mergedEnhancers };
-}
-
-// src/js/pds-core/pds-live.js
-var __liveApiReady = false;
-var __queryClass = null;
-async function __attachLiveAPIs(PDS2, { applyResolvedTheme, setupSystemListenerIfNeeded }) {
-  if (__liveApiReady)
-    return;
-  const [ontologyModule, enumsModule, queryModule, commonModule] = await Promise.all([
-    Promise.resolve().then(() => (init_pds_ontology(), pds_ontology_exports)),
-    Promise.resolve().then(() => (init_pds_enums(), pds_enums_exports)),
-    Promise.resolve().then(() => (init_pds_query(), pds_query_exports)),
-    Promise.resolve().then(() => (init_common(), common_exports))
-  ]);
-  const ontology2 = ontologyModule?.default || ontologyModule?.ontology;
-  const findComponentForElement2 = ontologyModule?.findComponentForElement;
-  const enums2 = enumsModule?.enums;
-  __queryClass = queryModule?.PDSQuery || queryModule?.default || null;
-  PDS2.ontology = ontology2;
-  PDS2.findComponentForElement = findComponentForElement2;
-  PDS2.enums = enums2;
-  PDS2.common = commonModule || {};
-  PDS2.presets = presets;
-  PDS2.enhancerMetadata = defaultPDSEnhancerMetadata;
-  PDS2.applyStyles = function(generator) {
-    return applyStyles(generator || Generator.instance);
-  };
-  PDS2.adoptLayers = function(shadowRoot, layers, additionalSheets) {
-    return adoptLayers(
-      shadowRoot,
-      layers,
-      additionalSheets,
-      Generator.instance
-    );
-  };
-  PDS2.adoptPrimitives = function(shadowRoot, additionalSheets) {
-    return adoptPrimitives(shadowRoot, additionalSheets, Generator.instance);
-  };
-  PDS2.getGenerator = async function() {
-    return Generator;
-  };
-  PDS2.query = async function(question) {
-    if (!__queryClass) {
-      const mod = await Promise.resolve().then(() => (init_pds_query(), pds_query_exports));
-      __queryClass = mod?.PDSQuery || mod?.default || null;
-    }
-    if (!__queryClass)
-      return [];
-    const queryEngine = new __queryClass(PDS2);
-    return await queryEngine.search(question);
-  };
-  if (!Object.getOwnPropertyDescriptor(PDS2, "compiled")) {
-    Object.defineProperty(PDS2, "compiled", {
-      get() {
-        if (PDS2.registry?.isLive && Generator.instance) {
-          return Generator.instance.compiled;
-        }
-        return null;
-      },
-      enumerable: true,
-      configurable: false
-    });
-  }
-  PDS2.preloadCritical = function(config, options = {}) {
-    if (typeof window === "undefined" || !document.head || !config) {
-      return;
-    }
-    const { theme, layers = ["tokens"] } = options;
-    try {
-      let resolvedTheme = theme || "light";
-      if (theme === "system" || !theme) {
-        const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-        resolvedTheme = prefersDark ? "dark" : "light";
-      }
-      document.documentElement.setAttribute("data-theme", resolvedTheme);
-      const tempConfig = config.design ? { ...config, theme: resolvedTheme } : { design: config, theme: resolvedTheme };
-      const tempGenerator = new Generator(tempConfig);
-      const criticalCSS = layers.map((layer) => {
-        try {
-          return tempGenerator.css?.[layer] || "";
-        } catch (e) {
-          return "";
-        }
-      }).filter((css) => css.trim()).join("\n");
-      if (criticalCSS) {
-        const existing = document.head.querySelector("style[data-pds-preload]");
-        if (existing)
-          existing.remove();
-        const styleEl = document.createElement("style");
-        styleEl.setAttribute("data-pds-preload", "");
-        styleEl.textContent = criticalCSS;
-        document.head.insertBefore(styleEl, document.head.firstChild);
-      }
-    } catch (error) {
-      console.warn("PDS preload failed:", error);
-    }
-  };
-  __liveApiReady = true;
-}
-async function startLive(PDS2, config, { emitReady, applyResolvedTheme, setupSystemListenerIfNeeded }) {
-  if (!config || typeof config !== "object") {
-    throw new Error(
-      "PDS.start({ mode: 'live', ... }) requires a valid configuration object"
-    );
-  }
-  await __attachLiveAPIs(PDS2, { applyResolvedTheme, setupSystemListenerIfNeeded });
-  attachFoucListener(PDS2);
-  if (typeof document !== "undefined" && document.adoptedStyleSheets) {
-    const css = (
-      /*css*/
-      `
+    `.trim()}];var me="pds",Ze=/^([a-z][a-z0-9+\-.]*:)?\/\//i,he=/^[a-z]:/i;function U(n=""){return n.endsWith("/")?n:`${n}/`}function Je(n="",t=me){let e=n.replace(/\/+$/,"");return new RegExp(`(?:^|/)${t}$`,"i").test(e)?e:`${e}/${t}`}function Xe(n){return n.replace(/^\.\/+/,"")}function Ke(n){return he.test(n)?n.replace(he,"").replace(/^\/+/,""):n}function et(n){return n.startsWith("public/")?n.substring(7):n}function fe(n,t={}){let e=t.segment||me,r=t.defaultRoot||`/assets/${e}/`,a=n?.public&&n.public?.root||n?.static&&n.static?.root||null;if(!a||typeof a!="string")return U(r);let o=a.trim();return o?(o=o.replace(/\\/g,"/"),o=Je(o,e),o=U(o),Ze.test(o)?o:(o=Xe(o),o=Ke(o),o.startsWith("/")||(o=et(o),o.startsWith("/")||(o=`/${o}`),o=o.replace(/\/+/g,(i,l)=>l===0?i:"/")),U(o))):U(r)}function be(n){let t=n.replace(/['"]/g,"").trim();if(["system-ui","-apple-system","sans-serif","serif","monospace","cursive","fantasy","ui-sans-serif","ui-serif","ui-monospace","ui-rounded"].includes(t.toLowerCase()))return!0;let a=document.createElement("canvas").getContext("2d");if(!a)return!1;let o="mmmmmmmmmmlli",i="72px",l="monospace";a.font=`${i} ${l}`;let s=a.measureText(o).width;a.font=`${i} "${t}", ${l}`;let p=a.measureText(o).width;return s!==p}function tt(n){return n?n.split(",").map(r=>r.trim())[0].replace(/['"]/g,"").trim():null}async function rt(n,t={}){if(!n)return Promise.resolve();let{weights:e=[400,500,600,700],italic:r=!1}=t,a=tt(n);if(!a||be(a))return Promise.resolve();let o=encodeURIComponent(a);return document.querySelector(`link[href*="fonts.googleapis.com"][href*="${o}"]`)?(console.log(`Font "${a}" is already loading or loaded`),Promise.resolve()):(console.log(`Loading font "${a}" from Google Fonts...`),new Promise((l,s)=>{let p=document.createElement("link");p.rel="stylesheet";let c=r?`ital,wght@0,${e.join(";0,")};1,${e.join(";1,")}`:`wght@${e.join(";")}`;p.href=`https://fonts.googleapis.com/css2?family=${o}:${c}&display=swap`,p.setAttribute("data-font-loader",a),p.onload=()=>{console.log(`Successfully loaded font "${a}"`),l()},p.onerror=()=>{console.warn(`Failed to load font "${a}" from Google Fonts`),s(new Error(`Failed to load font: ${a}`))},document.head.appendChild(p),setTimeout(()=>{be(a)||console.warn(`Font "${a}" did not load within timeout`),l()},5e3)}))}async function ye(n){if(!n)return Promise.resolve();let t=new Set;n.fontFamilyHeadings&&t.add(n.fontFamilyHeadings),n.fontFamilyBody&&t.add(n.fontFamilyBody),n.fontFamilyMono&&t.add(n.fontFamilyMono);let e=Array.from(t).map(r=>rt(r).catch(a=>{console.warn(`Could not load font: ${r}`,a)}));await Promise.all(e)}var ot=/^[a-z][a-z0-9+\-.]*:\/\//i,I=(()=>{try{return import.meta.url}catch{return}})(),V=n=>typeof n=="string"&&n.length&&!n.endsWith("/")?`${n}/`:n;function Q(n,t={}){if(!n||ot.test(n))return n;let{preferModule:e=!0}=t,r=()=>{if(!I)return null;try{return new URL(n,I).href}catch{return null}},a=()=>{if(typeof window>"u"||!window.location?.origin)return null;try{return new URL(n,window.location.origin).href}catch{return null}};return(e?r()||a():a()||r())||n}var we=(()=>{if(I)try{let n=new URL(I);if(/\/public\/assets\/js\//.test(n.pathname))return new URL("../pds/",I).href}catch{return}})(),ke=!1;function Se(n){ke||typeof document>"u"||(ke=!0,n.addEventListener("pds:ready",t=>{let e=t.detail?.mode;e&&document.documentElement.classList.add(`pds-${e}`,"pds-ready")}))}function re(n={},t={}){if(!t||typeof t!="object")return n;let e=Array.isArray(n)?[...n]:{...n};for(let[r,a]of Object.entries(t))a&&typeof a=="object"&&!Array.isArray(a)?e[r]=re(e[r]&&typeof e[r]=="object"?e[r]:{},a):e[r]=a;return e}function te(n=""){return String(n).toLowerCase().replace(/&/g," and ").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"")}function D(n){if(n==null)return n;if(typeof n=="function")return;if(typeof n!="object")return n;if(Array.isArray(n))return n.map(e=>D(e)).filter(e=>e!==void 0);let t={};for(let e in n)if(n.hasOwnProperty(e)){let r=n[e];if(typeof r!="function"){let a=D(r);a!==void 0&&(t[e]=a)}}return t}function $e(n={},t={},{presets:e,defaultLog:r}){let a=typeof n=="object"&&("colors"in n||"typography"in n||"spatialRhythm"in n||"shape"in n||"behavior"in n||"layout"in n||"advanced"in n||"a11y"in n||"components"in n||"icons"in n),o=n&&n.enhancers;o&&!Array.isArray(o)&&(o=Object.values(o));let i=o??t.enhancers??[],l=n&&n.preset,s=n&&n.design,p=n&&n.icons&&typeof n.icons=="object"?n.icons:null,c="preset"in(n||{})||"design"in(n||{})||"enhancers"in(n||{}),d,g=null;if(c){let h=String(l||"default").toLowerCase(),y=e?.[h]||Object.values(e||{}).find(f=>te(f.name)===h||String(f.name||"").toLowerCase()===h);if(!y)throw new Error(`PDS preset not found: "${l||"default"}"`);g={id:y.id||te(y.name),name:y.name||y.id||String(h)};let x=structuredClone(y);if(s&&typeof s=="object"||p){let f=s?D(s):{},v=p?D(p):null,b=v?re(f,{icons:v}):f;x=re(x,structuredClone(b))}let{mode:m,autoDefine:w,applyGlobalStyles:M,manageTheme:k,themeStorageKey:T,preloadStyles:L,criticalLayers:W,managerURL:B,manager:$,preset:S,design:F,enhancers:R,log:q,...G}=n;d={...G,design:x,preset:g.name,log:q||r}}else if(a){let{log:h,...y}=n;d={design:structuredClone(y),log:h||r}}else{let h=e?.default||Object.values(e||{}).find(y=>te(y.name)==="default");if(!h)throw new Error("PDS default preset not available");g={id:h.id||"default",name:h.name||"Default"},d={design:structuredClone(h),preset:g.name,log:r}}return{generatorConfig:d,enhancers:i,presetInfo:g}}function ze({manageTheme:n,themeStorageKey:t,applyResolvedTheme:e,setupSystemListenerIfNeeded:r}){let a="light",o=null;if(n&&typeof window<"u"){try{o=localStorage.getItem(t)||null}catch{o=null}try{e?.(o),r?.(o)}catch{}o?o==="system"?a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light":a=o:a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}return{resolvedTheme:a,storedTheme:o}}function Me(n,{resolvePublicAssetURL:t}){let e=!!(n?.public?.root||n?.static?.root),r=t(n);return!e&&we&&(r=we),V(Q(r))}async function Fe(n,{baseEnhancers:t=[]}={}){let{autoDefineBaseURL:e="/auto-define/",autoDefinePreload:r=[],autoDefineMapper:a=null,enhancers:o=[],autoDefineOverrides:i=null,autoDefinePreferModule:l=!0}=n,s=(()=>{let c=new Map;return(t||[]).forEach(d=>c.set(d.selector,d)),(o||[]).forEach(d=>c.set(d.selector,d)),Array.from(c.values())})(),p=null;if(typeof window<"u"&&typeof document<"u"){let c=null;try{let m=await Promise.resolve().then(()=>(xe(),ve));c=m?.AutoDefiner||m?.default?.AutoDefiner||m?.default||null}catch(m){console.warn("AutoDefiner not available:",m?.message||m)}let d=m=>{switch(m){case"pds-tabpanel":return"pds-tabstrip.js";default:return`${m}.js`}},{mapper:g,...h}=i&&typeof i=="object"?i:{},x={baseURL:e&&V(Q(e,{preferModule:l})),predefine:r,scanExisting:!0,observeShadows:!0,patchAttachShadow:!0,debounceMs:16,enhancers:s,onError:(m,w)=>{if(typeof m=="string"&&m.startsWith("pds-")){let k=["pds-form","pds-drawer"].includes(m),T=w?.message?.includes("#pds/lit")||w?.message?.includes("Failed to resolve module specifier");k&&T?console.error(`\u274C PDS component <${m}> requires Lit but #pds/lit is not in import map.
+              See: https://github.com/Pure-Web-Foundation/pure-ds/blob/main/readme.md#lit-components-not-working`):console.warn(`\u26A0\uFE0F PDS component <${m}> not found. Assets may not be installed.`)}else console.error(`\u274C Auto-define error for <${m}>:`,w)},...h,mapper:m=>{if(customElements.get(m))return null;if(typeof a=="function")try{let w=a(m);return w===void 0?d(m):w}catch(w){return console.warn("Custom autoDefine.mapper error; falling back to default:",w?.message||w),d(m)}return d(m)}};c&&(p=new c(x),r.length>0&&typeof c.define=="function"&&await c.define(...r,{baseURL:e,mapper:x.mapper,onError:x.onError}))}return{autoDefiner:p,mergedEnhancers:s}}var Le=!1,H=null;async function it(n,{applyResolvedTheme:t,setupSystemListenerIfNeeded:e}){if(Le)return;let[r,a,o,i]=await Promise.all([Promise.resolve().then(()=>(Z(),le)),Promise.resolve().then(()=>(_(),ie)),Promise.resolve().then(()=>(ne(),oe)),Promise.resolve().then(()=>(Te(),Ce))]),l=r?.default||r?.ontology,s=r?.findComponentForElement,p=a?.enums;H=o?.PDSQuery||o?.default||null,n.ontology=l,n.findComponentForElement=s,n.enums=p,n.common=i||{},n.presets=O,n.enhancerMetadata=ge,n.applyStyles=function(c){return K(c||E.instance)},n.adoptLayers=function(c,d,g){return pe(c,d,g,E.instance)},n.adoptPrimitives=function(c,d){return de(c,d,E.instance)},n.getGenerator=async function(){return E},n.query=async function(c){if(!H){let g=await Promise.resolve().then(()=>(ne(),oe));H=g?.PDSQuery||g?.default||null}return H?await new H(n).search(c):[]},Object.getOwnPropertyDescriptor(n,"compiled")||Object.defineProperty(n,"compiled",{get(){return n.registry?.isLive&&E.instance?E.instance.compiled:null},enumerable:!0,configurable:!1}),n.preloadCritical=function(c,d={}){if(typeof window>"u"||!document.head||!c)return;let{theme:g,layers:h=["tokens"]}=d;try{let y=g||"light";(g==="system"||!g)&&(y=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),document.documentElement.setAttribute("data-theme",y);let x=c.design?{...c,theme:y}:{design:c,theme:y},m=new E(x),w=h.map(M=>{try{return m.css?.[M]||""}catch{return""}}).filter(M=>M.trim()).join(`
+`);if(w){let M=document.head.querySelector("style[data-pds-preload]");M&&M.remove();let k=document.createElement("style");k.setAttribute("data-pds-preload",""),k.textContent=w,document.head.insertBefore(k,document.head.firstChild)}}catch(y){console.warn("PDS preload failed:",y)}},Le=!0}async function st(n,t,{emitReady:e,applyResolvedTheme:r,setupSystemListenerIfNeeded:a}){if(!t||typeof t!="object")throw new Error("PDS.start({ mode: 'live', ... }) requires a valid configuration object");if(await it(n,{applyResolvedTheme:r,setupSystemListenerIfNeeded:a}),Se(n),typeof document<"u"&&document.adoptedStyleSheets){let d=`
           html { opacity: 0; }
           html.pds-ready { opacity: 1; transition: opacity 0.3s ease-in; }
-        `
-    );
-    try {
-      const hasFoucSheet = document.adoptedStyleSheets.some((sheet) => sheet._pdsFouc);
-      if (!hasFoucSheet) {
-        const foucSheet = new CSSStyleSheet();
-        foucSheet.replaceSync(css);
-        foucSheet._pdsFouc = true;
-        document.adoptedStyleSheets = [foucSheet, ...document.adoptedStyleSheets];
-      }
-    } catch (e) {
-      console.warn("Constructable stylesheets not supported, using <style> tag fallback:", e);
-      const existingFoucStyle = document.head.querySelector("style[data-pds-fouc]");
-      if (!existingFoucStyle) {
-        const foucStyle = document.createElement("style");
-        foucStyle.setAttribute("data-pds-fouc", "");
-        foucStyle.textContent = css;
-        document.head.insertBefore(foucStyle, document.head.firstChild);
-      }
-    }
-  }
-  let applyGlobalStyles = config.applyGlobalStyles ?? true;
-  let manageTheme = config.manageTheme ?? true;
-  let themeStorageKey = config.themeStorageKey ?? "pure-ds-theme";
-  let preloadStyles = config.preloadStyles ?? false;
-  let criticalLayers = config.criticalLayers ?? ["tokens", "primitives"];
-  const cfgAuto = config && config.autoDefine || null;
-  try {
-    const { resolvedTheme } = resolveThemeAndApply({
-      manageTheme,
-      themeStorageKey,
-      applyResolvedTheme,
-      setupSystemListenerIfNeeded
-    });
-    const normalized = normalizeInitConfig(config, {}, { presets, defaultLog });
-    const userEnhancers = normalized.enhancers;
-    const { log: logFn, ...configToClone } = normalized.generatorConfig;
-    const generatorConfig = structuredClone(configToClone);
-    generatorConfig.log = logFn;
-    if (manageTheme) {
-      generatorConfig.theme = resolvedTheme;
-    }
-    const generator = new Generator(generatorConfig);
-    if (generatorConfig.design?.typography) {
-      try {
-        await loadTypographyFonts(generatorConfig.design.typography);
-      } catch (ex) {
-        generatorConfig?.log?.("warn", "Failed to load some fonts from Google Fonts:", ex);
-      }
-    }
-    if (preloadStyles && typeof window !== "undefined" && document.head) {
-      try {
-        const criticalCSS = criticalLayers.map((layer) => {
-          try {
-            return generator.css?.[layer] || "";
-          } catch (e) {
-            generatorConfig?.log?.(
-              "warn",
-              `Failed to generate critical CSS for layer "${layer}":`,
-              e
-            );
-            return "";
-          }
-        }).filter((css) => css.trim()).join("\n");
-        if (criticalCSS) {
-          const existingCritical = document.head.querySelector(
-            "style[data-pds-critical]"
-          );
-          if (existingCritical) {
-            existingCritical.remove();
-          }
-          const styleEl = document.createElement("style");
-          styleEl.setAttribute("data-pds-critical", "");
-          styleEl.textContent = criticalCSS;
-          const insertAfter = document.head.querySelector(
-            'meta[charset], meta[name="viewport"]'
-          );
-          if (insertAfter) {
-            insertAfter.parentNode.insertBefore(
-              styleEl,
-              insertAfter.nextSibling
-            );
-          } else {
-            document.head.insertBefore(styleEl, document.head.firstChild);
-          }
-        }
-      } catch (error) {
-        generatorConfig?.log?.("warn", "Failed to preload critical styles:", error);
-      }
-    }
-    PDS2.registry.setLiveMode();
-    if (normalized.presetInfo?.name) {
-      generatorConfig?.log?.("log", `PDS live with preset "${normalized.presetInfo.name}"`);
-    } else {
-      generatorConfig?.log?.("log", "PDS live with custom config");
-    }
-    if (applyGlobalStyles) {
-      await applyStyles(Generator.instance);
-      if (typeof window !== "undefined") {
-        setTimeout(() => {
-          const criticalStyle = document.head.querySelector(
-            "style[data-pds-critical]"
-          );
-          if (criticalStyle)
-            criticalStyle.remove();
-          const preloadStyle = document.head.querySelector(
-            "style[data-pds-preload]"
-          );
-          if (preloadStyle)
-            preloadStyle.remove();
-          const legacyRuntime = document.getElementById(
-            "pds-runtime-stylesheet"
-          );
-          if (legacyRuntime)
-            legacyRuntime.remove();
-        }, 100);
-      }
-    }
-    const assetRootURL = resolveRuntimeAssetRoot(config, { resolvePublicAssetURL });
-    let derivedAutoDefineBaseURL;
-    if (cfgAuto && cfgAuto.baseURL) {
-      derivedAutoDefineBaseURL = ensureTrailingSlash2(
-        ensureAbsoluteAssetURL(cfgAuto.baseURL, { preferModule: false })
-      );
-    } else {
-      derivedAutoDefineBaseURL = `${assetRootURL}components/`;
-    }
-    let autoDefiner = null;
-    let mergedEnhancers = [];
-    try {
-      const res = await setupAutoDefinerAndEnhancers({
-        autoDefineBaseURL: derivedAutoDefineBaseURL,
-        autoDefinePreload: cfgAuto && Array.isArray(cfgAuto.predefine) && cfgAuto.predefine || [],
-        autoDefineMapper: cfgAuto && typeof cfgAuto.mapper === "function" && cfgAuto.mapper || null,
-        enhancers: userEnhancers,
-        autoDefineOverrides: cfgAuto || null,
-        autoDefinePreferModule: !(cfgAuto && cfgAuto.baseURL)
-      }, { baseEnhancers: defaultPDSEnhancers });
-      autoDefiner = res.autoDefiner;
-      mergedEnhancers = res.mergedEnhancers || [];
-    } catch (error) {
-      generatorConfig?.log?.("error", "\u274C Failed to initialize AutoDefiner/Enhancers:", error);
-    }
-    const resolvedConfig = generator?.options || generatorConfig;
-    const cloneableConfig = stripFunctions(config);
-    PDS2.currentConfig = Object.freeze({
-      mode: "live",
-      ...structuredClone(cloneableConfig),
-      design: structuredClone(normalized.generatorConfig.design),
-      preset: normalized.generatorConfig.preset,
-      theme: resolvedTheme,
-      enhancers: mergedEnhancers
-    });
-    emitReady({
-      mode: "live",
-      generator,
-      config: resolvedConfig,
-      theme: resolvedTheme,
-      autoDefiner
-    });
-    return {
-      generator,
-      config: resolvedConfig,
-      theme: resolvedTheme,
-      autoDefiner
-    };
-  } catch (error) {
-    PDS2.dispatchEvent(new CustomEvent("pds:error", { detail: { error } }));
-    throw error;
-  }
-}
-export {
-  startLive
-};
-//# sourceMappingURL=pds-manager.js.map
+        `;try{if(!document.adoptedStyleSheets.some(h=>h._pdsFouc)){let h=new CSSStyleSheet;h.replaceSync(d),h._pdsFouc=!0,document.adoptedStyleSheets=[h,...document.adoptedStyleSheets]}}catch(g){if(console.warn("Constructable stylesheets not supported, using <style> tag fallback:",g),!document.head.querySelector("style[data-pds-fouc]")){let y=document.createElement("style");y.setAttribute("data-pds-fouc",""),y.textContent=d,document.head.insertBefore(y,document.head.firstChild)}}}let o=t.applyGlobalStyles??!0,i=t.manageTheme??!0,l=t.themeStorageKey??"pure-ds-theme",s=t.preloadStyles??!1,p=t.criticalLayers??["tokens","primitives"],c=t&&t.autoDefine||null;try{let{resolvedTheme:d}=ze({manageTheme:i,themeStorageKey:l,applyResolvedTheme:r,setupSystemListenerIfNeeded:a}),g=$e(t,{},{presets:O,defaultLog:se}),h=g.enhancers,{log:y,...x}=g.generatorConfig,m=structuredClone(x);m.log=y,i&&(m.theme=d);let w=new E(m);if(m.design?.typography)try{await ye(m.design.typography)}catch($){m?.log?.("warn","Failed to load some fonts from Google Fonts:",$)}if(s&&typeof window<"u"&&document.head)try{let $=p.map(S=>{try{return w.css?.[S]||""}catch(F){return m?.log?.("warn",`Failed to generate critical CSS for layer "${S}":`,F),""}}).filter(S=>S.trim()).join(`
+`);if($){let S=document.head.querySelector("style[data-pds-critical]");S&&S.remove();let F=document.createElement("style");F.setAttribute("data-pds-critical",""),F.textContent=$;let R=document.head.querySelector('meta[charset], meta[name="viewport"]');R?R.parentNode.insertBefore(F,R.nextSibling):document.head.insertBefore(F,document.head.firstChild)}}catch($){m?.log?.("warn","Failed to preload critical styles:",$)}n.registry.setLiveMode(),g.presetInfo?.name?m?.log?.("log",`PDS live with preset "${g.presetInfo.name}"`):m?.log?.("log","PDS live with custom config"),o&&(await K(E.instance),typeof window<"u"&&setTimeout(()=>{let $=document.head.querySelector("style[data-pds-critical]");$&&$.remove();let S=document.head.querySelector("style[data-pds-preload]");S&&S.remove();let F=document.getElementById("pds-runtime-stylesheet");F&&F.remove()},100));let M=Me(t,{resolvePublicAssetURL:fe}),k;c&&c.baseURL?k=V(Q(c.baseURL,{preferModule:!1})):k=`${M}components/`;let T=null,L=[];try{let $=await Fe({autoDefineBaseURL:k,autoDefinePreload:c&&Array.isArray(c.predefine)&&c.predefine||[],autoDefineMapper:c&&typeof c.mapper=="function"&&c.mapper||null,enhancers:h,autoDefineOverrides:c||null,autoDefinePreferModule:!(c&&c.baseURL)},{baseEnhancers:ue});T=$.autoDefiner,L=$.mergedEnhancers||[]}catch($){m?.log?.("error","\u274C Failed to initialize AutoDefiner/Enhancers:",$)}let W=w?.options||m,B=D(t);return n.currentConfig=Object.freeze({mode:"live",...structuredClone(B),design:structuredClone(g.generatorConfig.design),preset:g.generatorConfig.preset,theme:d,enhancers:L}),e({mode:"live",generator:w,config:W,theme:d,autoDefiner:T}),{generator:w,config:W,theme:d,autoDefiner:T}}catch(d){throw n.dispatchEvent(new CustomEvent("pds:error",{detail:{error:d}})),d}}export{st as startLive};

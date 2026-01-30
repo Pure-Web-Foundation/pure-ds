@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html } from "#pds/lit";
 
 export default {
   title: "Foundations/Dividers",

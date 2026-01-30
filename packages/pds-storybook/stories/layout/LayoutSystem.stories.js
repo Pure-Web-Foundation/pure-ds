@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html } from "#pds/lit";
 
 const layoutSystemStyles = html`
   <style>

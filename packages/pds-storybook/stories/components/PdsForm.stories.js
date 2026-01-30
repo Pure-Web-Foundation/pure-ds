@@ -1,4 +1,4 @@
-import { html, nothing } from "lit";
+import { html, nothing } from "#pds/lit";
 import { createComponentDocsPage } from "../reference/reference-docs.js";
 import showdown from "showdown";
 

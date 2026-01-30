@@ -1,7 +1,7 @@
 {
   "name": "@pure-ds/core",
   "shortname": "pds",
-  "version": "0.5.39",
+  "version": "0.5.41",
   "description": "Pure Design System - Why develop a Design System when you can generate one?",
   "repository": {
     "type": "git",
@@ -48,6 +48,7 @@
     "dist/types/",
     "public/assets/js/",
     "public/assets/pds/components/",
+    "public/assets/pds/external/",
     "public/assets/pds/vscode-custom-data.json",
     "public/assets/pds/pds.css-data.json",
     "public/assets/pds/pds-css-complete.json",

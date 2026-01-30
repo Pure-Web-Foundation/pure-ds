@@ -359,11 +359,13 @@ This component uses `import { ... } from "#pds/lit"` and **requires** an import 
 <script type="importmap">
 {
   "imports": {
-    "#pds/lit": "/assets/js/lit.js"
+    "#pds/lit": "/assets/pds/external/lit.js"
   }
 }
 </script>
 ```
+
+**Note:** `#pds/lit` is a convenience bundle that re-exports Lit and adds PDS helpers (`lazyProps`, `msg()`, `loadLocale()`). If a project prefers its own Lit bundle, it must provide equivalents and map `#pds/lit` accordingly.
 
 **When generating code with lazy-loaded components, ALWAYS wait for definition:**
 

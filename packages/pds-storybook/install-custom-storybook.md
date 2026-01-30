@@ -81,8 +81,8 @@ For example, if you have `public/assets/js/components/my-component-card.js`, the
 Your story files can use absolute path imports that reference ESM bundles in your `public` folder. PDS Storybook includes a Vite plugin that loads these files as virtual modules, bypassing Vite's restriction on importing from `public/`:
 
 ```javascript
-// This works - loads your actual public/assets/js/lit.js bundle
-import { html } from '/assets/js/lit.js';
+// This works - loads your actual public/assets/pds/external/lit.js bundle
+import { html } from '/assets/pds/external/lit.js';
 
 // Any other ESM module in your public folder works too
 import { MyUtil } from '/assets/js/utils.js';

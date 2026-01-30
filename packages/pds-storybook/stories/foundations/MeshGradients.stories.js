@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html } from "#pds/lit";
 import { highlight, getCurrentTheme, preloadShiki } from "../utils/shiki.js";
 
 // Pre-load Shiki

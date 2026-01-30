@@ -67,6 +67,18 @@ async function run() {
       console.warn('Failed to copy pds-manager.js to public/assets/pds/core:', err.message);
     }
 
+    // Copy Lit bundle to public/assets/pds/external for import-map usage
+    try {
+      const externalDir = path.join(process.cwd(), 'public', 'assets', 'pds', 'external');
+      await mkdir(externalDir, { recursive: true });
+      const litSrc = path.join(process.cwd(), 'public', 'assets', 'js', 'lit.js');
+      const litDest = path.join(externalDir, 'lit.js');
+      await copyFile(litSrc, litDest);
+      console.log('Copied lit.js to', litDest);
+    } catch (err) {
+      console.warn('Failed to copy lit.js to public/assets/pds/external:', err.message);
+    }
+
     // Ensure dist/types exists and copy declaration files
     const typesDir = path.join(outdir, 'types');
     await mkdir(typesDir, { recursive: true });

@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html, lazyProps, ref } from "#pds/lit";
 
 const docsParameters = {
   description: {
@@ -31,24 +31,9 @@ const threeSatellitesSource = `const satellites = [
   { key: "file", icon: "file", label: "Upload File" },
 ];
 
-<pds-fab .satellites=${"${satellites}"}>
+<pds-fab ${"${lazyProps({ satellites })}"}>
   <pds-icon icon="plus" size="lg"></pds-icon>
 </pds-fab>`;
-
-const whenFabReady = (selector, callback) => {
-  customElements.whenDefined("pds-fab").then(() => {
-    const waitForFab = () => {
-      const fab = document.querySelector(selector);
-      if (fab) {
-        callback(fab);
-      } else {
-        requestAnimationFrame(waitForFab);
-      }
-    };
-
-    requestAnimationFrame(waitForFab);
-  });
-};
 
 if (typeof window !== "undefined") {
   import("../reference/reference-docs.js")
@@ -96,15 +81,14 @@ export default {
 
 export const NoSatellites = {
   render: () => {
-    whenFabReady("#fab-no-sats", (fab) => {
-      fab.addEventListener("click", (e) => {
-        // If clicked on main FAB (not a satellite)
-        if (e.target === fab.shadowRoot.querySelector(".fab")) {
-          console.log("Main FAB clicked (no satellites)");
-          PDS.toast("Main action triggered!", { type: "info" });
-        }
-      });
-    });
+    const handleClick = (event) => {
+      const path = typeof event.composedPath === "function" ? event.composedPath() : [];
+      const isMainFab = path.some((node) => node?.classList?.contains("fab"));
+      if (isMainFab) {
+        console.log("Main FAB clicked (no satellites)");
+        PDS.toast("Main action triggered!", { type: "info" });
+      }
+    };
 
     return html`
       <div class="callout callout-info" style="margin-bottom: 200px;">
@@ -118,7 +102,7 @@ export const NoSatellites = {
         </p>
       </div>
 
-      <pds-fab id="fab-no-sats">
+      <pds-fab id="fab-no-sats" @click=${handleClick}>
         <pds-icon icon="plus" morph size="lg"></pds-icon>
       </pds-fab>
     `;
@@ -132,15 +116,10 @@ export const ThreeSatellites = {
       { key: "image", icon: "image", label: "Choose Image" },
       { key: "file", icon: "file", label: "Upload File" },
     ];
-
-    whenFabReady("#fab-three", (fab) => {
-      fab.satellites = satellites;
-
-      fab.addEventListener("satellite-click", (e) => {
-        console.log("Satellite clicked:", e.detail);
-        PDS.toast(`Action: ${e.detail.label}`, { type: "success" });
-      });
-    });
+    const handleSatelliteClick = (event) => {
+      console.log("Satellite clicked:", event.detail);
+      PDS.toast(`Action: ${event.detail.label}`, { type: "success" });
+    };
 
     return html`
       <div class="callout callout-info" style="margin-bottom: 200px;">
@@ -154,7 +133,12 @@ export const ThreeSatellites = {
         </p>
       </div>
 
-      <pds-fab id="fab-three" .satellites=${satellites}>
+      <pds-fab
+        id="fab-three"
+        ${lazyProps({ satellites })}
+        data-satellites-source=${"${lazyProps({ satellites })}"}
+        @satellite-click=${handleSatelliteClick}
+      >
         <pds-icon icon="plus" size="lg"></pds-icon>
       </pds-fab>
     `;
@@ -171,20 +155,17 @@ export const ThreeSatellites = {
 
 export const FiveSatellites = {
   render: () => {
-    whenFabReady("#fab-five", (fab) => {
-      fab.satellites = [
-        { key: "message", icon: "chat", label: "New Message" },
-        { key: "call", icon: "phone", label: "Start Call" },
-        { key: "video", icon: "video", label: "Video Chat" },
-        { key: "email", icon: "envelope", label: "Send Email" },
-        { key: "calendar", icon: "calendar", label: "Schedule Meeting" },
-      ];
-
-      fab.addEventListener("satellite-click", (e) => {
-        console.log("Satellite clicked:", e.detail);
-        PDS.toast(`Starting: ${e.detail.label}`, { type: "success" });
-      });
-    });
+    const satellites = [
+      { key: "message", icon: "chat", label: "New Message" },
+      { key: "call", icon: "phone", label: "Start Call" },
+      { key: "video", icon: "video", label: "Video Chat" },
+      { key: "email", icon: "envelope", label: "Send Email" },
+      { key: "calendar", icon: "calendar", label: "Schedule Meeting" },
+    ];
+    const handleSatelliteClick = (event) => {
+      console.log("Satellite clicked:", event.detail);
+      PDS.toast(`Starting: ${event.detail.label}`, { type: "success" });
+    };
 
     return html`
       <div class="callout callout-info" style="margin-bottom: 200px;">
@@ -197,7 +178,12 @@ export const FiveSatellites = {
         </p>
       </div>
 
-      <pds-fab id="fab-five">
+      <pds-fab
+        id="fab-five"
+        ${lazyProps({ satellites })}
+        data-satellites-source=${"${lazyProps({ satellites })}"}
+        @satellite-click=${handleSatelliteClick}
+      >
         <pds-icon icon="user" size="lg"></pds-icon>
       </pds-fab>
     `;
@@ -206,21 +192,18 @@ export const FiveSatellites = {
 
 export const MaxSatellites = {
   render: () => {
-    whenFabReady("#fab-max", (fab) => {
-      fab.satellites = [
-        { key: "home", icon: "house", label: "Home" },
-        { key: "search", icon: "magnifying-glass", label: "Search" },
-        { key: "notifications", icon: "bell", label: "Notifications" },
-        { key: "messages", icon: "chat", label: "Messages" },
-        { key: "settings", icon: "gear", label: "Settings" },
-        { key: "profile", icon: "user-circle", label: "Profile" },
-      ];
-
-      fab.addEventListener("satellite-click", (e) => {
-        console.log("Satellite clicked:", e.detail);
-        PDS.toast(`Navigate to: ${e.detail.label}`, { type: "info" });
-      });
-    });
+    const satellites = [
+      { key: "home", icon: "house", label: "Home" },
+      { key: "search", icon: "magnifying-glass", label: "Search" },
+      { key: "notifications", icon: "bell", label: "Notifications" },
+      { key: "messages", icon: "chat", label: "Messages" },
+      { key: "settings", icon: "gear", label: "Settings" },
+      { key: "profile", icon: "user-circle", label: "Profile" },
+    ];
+    const handleSatelliteClick = (event) => {
+      console.log("Satellite clicked:", event.detail);
+      PDS.toast(`Navigate to: ${event.detail.label}`, { type: "info" });
+    };
 
     return html`
       <div class="callout callout-warning" style="margin-bottom: 200px;">
@@ -234,7 +217,12 @@ export const MaxSatellites = {
         </p>
       </div>
 
-      <pds-fab id="fab-max">
+      <pds-fab
+        id="fab-max"
+        ${lazyProps({ satellites })}
+        data-satellites-source=${"${lazyProps({ satellites })}"}
+        @satellite-click=${handleSatelliteClick}
+      >
         <pds-icon icon="list" morph size="lg"></pds-icon>
       </pds-fab>
     `;
@@ -243,17 +231,14 @@ export const MaxSatellites = {
 
 export const CustomStyling = {
   render: () => {
-    whenFabReady("#fab-custom", (fab) => {
-      fab.satellites = [
-        { key: "like", icon: "heart", label: "Like" },
-        { key: "share", icon: "share", label: "Share" },
-        { key: "bookmark", icon: "bookmark", label: "Bookmark" },
-      ];
-
-      fab.addEventListener("satellite-click", (e) => {
-        PDS.toast(`${e.detail.label} saved!`, { type: "success" });
-      });
-    });
+    const satellites = [
+      { key: "like", icon: "heart", label: "Like" },
+      { key: "share", icon: "share", label: "Share" },
+      { key: "bookmark", icon: "bookmark", label: "Bookmark" },
+    ];
+    const handleSatelliteClick = (event) => {
+      PDS.toast(`${event.detail.label} saved!`, { type: "success" });
+    };
 
     return html`
       <div class="callout callout-info" style="margin-bottom: 200px;">
@@ -275,7 +260,12 @@ export const CustomStyling = {
         }
       </style>
 
-      <pds-fab id="fab-custom">
+      <pds-fab
+        id="fab-custom"
+        ${lazyProps({ satellites })}
+        data-satellites-source=${"${lazyProps({ satellites })}"}
+        @satellite-click=${handleSatelliteClick}
+      >
         <pds-icon icon="heart" morph size="xl"></pds-icon>
       </pds-fab>
     `;
@@ -284,18 +274,15 @@ export const CustomStyling = {
 
 export const WithCustomRadius = {
   render: () => {
-    whenFabReady("#fab-radius", (fab) => {
-      fab.satellites = [
-        { key: "add", icon: "plus", label: "Add Item" },
-        { key: "edit", icon: "pencil", label: "Edit" },
-        { key: "delete", icon: "trash", label: "Delete" },
-        { key: "share", icon: "share", label: "Share" },
-      ];
-
-      fab.addEventListener("satellite-click", (e) => {
-        PDS.toast(e.detail.label, { type: "info" });
-      });
-    });
+    const satellites = [
+      { key: "add", icon: "plus", label: "Add Item" },
+      { key: "edit", icon: "pencil", label: "Edit" },
+      { key: "delete", icon: "trash", label: "Delete" },
+      { key: "share", icon: "share", label: "Share" },
+    ];
+    const handleSatelliteClick = (event) => {
+      PDS.toast(event.detail.label, { type: "info" });
+    };
 
     return html`
       <div class="callout callout-info" style="margin-bottom: 200px;">
@@ -308,7 +295,13 @@ export const WithCustomRadius = {
         </p>
       </div>
 
-      <pds-fab id="fab-radius" radius="150">
+      <pds-fab
+        id="fab-radius"
+        radius="150"
+        ${lazyProps({ satellites })}
+        data-satellites-source=${"${lazyProps({ satellites })}"}
+        @satellite-click=${handleSatelliteClick}
+      >
         <pds-icon icon="star" size="lg"></pds-icon>
       </pds-fab>
     `;
@@ -317,17 +310,14 @@ export const WithCustomRadius = {
 
 export const WithoutIcons = {
   render: () => {
-    whenFabReady("#fab-no-icons", (fab) => {
-      fab.satellites = [
-        { key: "create", label: "Create New" },
-        { key: "import", label: "Import" },
-        { key: "template", label: "From Template" },
-      ];
-
-      fab.addEventListener("satellite-click", (e) => {
-        PDS.toast(`Action: ${e.detail.label}`, { type: "success" });
-      });
-    });
+    const satellites = [
+      { key: "create", label: "Create New" },
+      { key: "import", label: "Import" },
+      { key: "template", label: "From Template" },
+    ];
+    const handleSatelliteClick = (event) => {
+      PDS.toast(`Action: ${event.detail.label}`, { type: "success" });
+    };
 
     return html`
       <div class="callout callout-info" style="margin-bottom: 200px;">
@@ -338,7 +328,12 @@ export const WithoutIcons = {
         <p>Hover over satellites to see full labels.</p>
       </div>
 
-      <pds-fab id="fab-no-icons">
+      <pds-fab
+        id="fab-no-icons"
+        ${lazyProps({ satellites })}
+        data-satellites-source=${"${lazyProps({ satellites })}"}
+        @satellite-click=${handleSatelliteClick}
+      >
         <pds-icon icon="plus" size="lg"></pds-icon>
       </pds-fab>
     `;
@@ -347,6 +342,10 @@ export const WithoutIcons = {
 
 export const Playground = {
   render: (args, { updateArgs } = {}) => {
+    let fabEl = null;
+    const setFabRef = (element) => {
+      fabEl = element;
+    };
     const layoutDefaults = {
       2: { radius: 80, spread: 60, startAngle: 210 },
       3: { radius: 80, spread: 90, startAngle: 180 },
@@ -392,12 +391,13 @@ export const Playground = {
       return configs[count] || configs[4];
     };
 
-    whenFabReady("#fab-playground", (fab) => {
-      if (!fab.dataset.playgroundInit) {
-        fab.satellites = getSatellites(4);
+    requestAnimationFrame(() => {
+      const fab = fabEl;
+      if (!fab) return;
 
-        fab.addEventListener("satellite-click", (e) => {
-          PDS.toast(`Clicked: ${e.detail.label}`, { type: "info" });
+      if (!fab.dataset.playgroundInit) {
+        fab.addEventListener("satellite-click", (event) => {
+          PDS.toast(`Clicked: ${event.detail.label}`, { type: "info" });
         });
 
         const group = document.querySelector("#fab-count-group");
@@ -475,6 +475,9 @@ export const Playground = {
         radius="${args.radius}"
         spread="${args.spread}"
         start-angle="${args.startAngle}"
+        ${ref(setFabRef)}
+        ${lazyProps({ satellites: getSatellites(4) })}
+        data-satellites-source=${"${lazyProps({ satellites })}"}
       >
         <pds-icon icon="gear" morph size="lg"></pds-icon>
       </pds-fab>
@@ -489,23 +492,29 @@ export const Playground = {
 
 export const ProgrammaticControl = {
   render: () => {
-    whenFabReady("#fab-programmatic", (fab) => {
+    let fabEl = null;
+    const setFabRef = (element) => {
+      fabEl = element;
+    };
+    const satellites = [
+      { key: "edit", icon: "pencil", label: "Edit" },
+      { key: "share", icon: "share", label: "Share" },
+      { key: "delete", icon: "trash", label: "Delete" },
+    ];
+    const handleSatelliteClick = (event) => {
+      PDS.toast(`Action: ${event.detail.label}`, { type: "info" });
+    };
+
+    requestAnimationFrame(() => {
+      const fab = fabEl;
+      if (!fab || fab.dataset.programmaticInit) return;
+
       const openBtn = document.querySelector("#open-fab-btn");
       const closeBtn = document.querySelector("#close-fab-btn");
       const toggleBtn = document.querySelector("#toggle-fab-btn");
       const add2Btn = document.querySelector("#add-2-sats");
       const add4Btn = document.querySelector("#add-4-sats");
       const add6Btn = document.querySelector("#add-6-sats");
-
-      fab.satellites = [
-        { key: "edit", icon: "pencil", label: "Edit" },
-        { key: "share", icon: "share", label: "Share" },
-        { key: "delete", icon: "trash", label: "Delete" },
-      ];
-
-      fab.addEventListener("satellite-click", (e) => {
-        PDS.toast(`Action: ${e.detail.label}`, { type: "info" });
-      });
 
       openBtn?.addEventListener("click", () => {
         fab.open = true;
@@ -548,6 +557,8 @@ export const ProgrammaticControl = {
           { key: "profile", icon: "user", label: "Profile" },
         ];
       });
+
+      fab.dataset.programmaticInit = "true";
     });
 
     return html`
@@ -600,7 +611,13 @@ fab.addEventListener('satellite-click', (e) => {
 });</code></pre>
       </div>
 
-      <pds-fab id="fab-programmatic">
+      <pds-fab
+        id="fab-programmatic"
+        ${ref(setFabRef)}
+        ${lazyProps({ satellites })}
+        data-satellites-source=${"${lazyProps({ satellites })}"}
+        @satellite-click=${handleSatelliteClick}
+      >
         <pds-icon icon="sparkle" morph size="lg"></pds-icon>
       </pds-fab>
     `;

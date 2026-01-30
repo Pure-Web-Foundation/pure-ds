@@ -126,7 +126,7 @@ Most PDS features work with plain HTML + classes. For components like `pds-form`
 <script type="importmap">
 {
   "imports": {
-    "#pds/lit": "/assets/js/lit.js"
+    "#pds/lit": "/assets/pds/external/lit.js"
   }
 }
 </script>

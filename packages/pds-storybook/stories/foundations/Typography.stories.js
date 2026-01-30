@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html } from "#pds/lit";
 
 // Story-specific styles (not PDS classes - demo only)
 const typographyStoryStyles = html`

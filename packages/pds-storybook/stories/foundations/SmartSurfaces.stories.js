@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html } from "#pds/lit";
 
 // Story-specific styles for smart surfaces demos
 const smartSurfacesStoryStyles = html`

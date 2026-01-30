@@ -1405,7 +1405,7 @@ await PDS.start({ design: myPreset });
   <script type="importmap">
   {
     "imports": {
-      "#pds/lit": "https://cdn.jsdelivr.net/npm/lit@3/index.js"
+      "#pds/lit": "https://cdn.jsdelivr.net/npm/@pure-ds/core@latest/public/assets/pds/external/lit.js"
     }
   }
   </script>
@@ -1785,10 +1785,61 @@ export default {
 <script type="importmap">
 {
   "imports": {
-    "#pds/lit": "/assets/js/lit.js"
+    "#pds/lit": "/assets/pds/external/lit.js"
   }
 }
 </script>
+```
+
+**About the bundle:** `#pds/lit` is a convenience bundle that re-exports official Lit APIs and adds PDS helpers:
+- `lazyProps` (waits for custom element definition before applying object props)
+- `msg()` (PDS localization helper)
+- `loadLocale()` (loads translation strings)
+
+**Prefer not to use the bundle?** Create your own module and alias `#pds/lit` to it:
+
+```javascript
+// pds-lit.js (example)
+export * from "lit";
+export * from "lit/directives/repeat.js";
+export * from "lit/directives/keyed.js";
+export * from "lit/directives/class-map.js";
+export { ref, createRef } from "lit/directives/ref.js";
+export { ifDefined } from "lit/directives/if-defined.js";
+export { until } from "lit/directives/until.js";
+export { unsafeHTML } from "lit/directives/unsafe-html.js";
+export { unsafeSVG } from "lit/directives/unsafe-svg.js";
+
+// Optional: use PDS localization helper
+// export { msg } from "@pure-ds/core/src/js/common/msg.js";
+
+// Minimal lazyProps implementation (see src/js/lit.js)
+import { Directive, directive } from "lit/directive.js";
+class LazyPropsDirective extends Directive {
+  #pendingProps = null;
+  #element = null;
+  render(_props) { return null; }
+  update(part, [props]) {
+    const element = part.element;
+    if (this.#element !== element) {
+      this.#element = element;
+      this.#pendingProps = props;
+      this.#applyProps();
+    } else if (JSON.stringify(this.#pendingProps) !== JSON.stringify(props)) {
+      this.#pendingProps = props;
+      this.#applyProps();
+    }
+    return null;
+  }
+  async #applyProps() {
+    if (!this.#element || !this.#pendingProps) return;
+    await customElements.whenDefined(this.#element.tagName.toLowerCase());
+    for (const [key, value] of Object.entries(this.#pendingProps)) {
+      this.#element[key] = value;
+    }
+  }
+}
+export const lazyProps = directive(LazyPropsDirective);
 ```
 
 Or in bundlers (Vite, Webpack, etc.):

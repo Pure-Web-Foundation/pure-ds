@@ -68,10 +68,10 @@ const config = {
       process.cwd()
     ];
     
-    // Ensure Lit import alias is resolved
+    // Ensure Lit import alias is resolved to PDS bundle
     const aliases = {
       ...config.resolve.alias,
-      '#pds/lit': 'lit',
+      '#pds/lit': resolve(pdsSrcPath, 'js/lit.js'),
     };
 
     // In monorepo, pds-configurator is in a separate package, not in src/js
@@ -184,7 +184,7 @@ const config = {
         config.resolve.alias['@user/pds-config'] = resolve(currentDirname, '../default-pds.config.js');
     }
 
-    // Support absolute path imports like: import { html } from '/assets/js/lit.js';
+    // Support absolute path imports like: import { html } from '/assets/pds/external/lit.js';
     // Vite blocks direct imports from public/, so we disable Vite's public directory
     // handling (Storybook uses staticDirs instead) and resolve these imports ourselves.
     const userPublicPath = resolve(process.cwd(), 'public');

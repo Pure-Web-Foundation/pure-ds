@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html } from "#pds/lit";
 import { enhancementHeader } from "./_enhancement-header.js";
 
 export default {
