@@ -270,7 +270,7 @@ export class PdsFab extends HTMLElement {
   }
 
   #render() {
-    const count = this.#satellites.length;
+    const count = this.satellites.length;
     
     // Auto-adjust spread and radius if not explicitly set by user
     const hasCustomRadius = this.#hasCustomRadius;
@@ -427,7 +427,7 @@ export class PdsFab extends HTMLElement {
       </style>
       
       <div class="wrap" role="group" aria-label="Floating actions">
-        ${this.#satellites.map((sat, i) => {
+        ${this.satellites.map((sat, i) => {
           const angleDeg = startAngle + step * i;
           const rad = (angleDeg * Math.PI) / 180;
           const tx = Math.cos(rad) * activeRadius;
@@ -495,7 +495,7 @@ export class PdsFab extends HTMLElement {
   }
   
   #updateIconState() {
-    const count = this.#satellites.length;
+    const count = this.satellites.length;
     const slot = this.shadowRoot?.querySelector('.fab slot');
     const fab = this.shadowRoot?.querySelector('.fab');
     
@@ -561,7 +561,7 @@ export class PdsFab extends HTMLElement {
   #onSatelliteClick(e) {
     const button = e.currentTarget;
     const key = button.dataset.key;
-    const sat = this.#satellites.find(s => s.key === key);
+    const sat = this.satellites.find(s => s.key === key);
     
     if (sat) {
       this.dispatchEvent(new CustomEvent('satellite-click', {

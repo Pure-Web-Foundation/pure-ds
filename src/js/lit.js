@@ -25,6 +25,60 @@ export { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 
 export { msg } from "./common/msg.js";
 
+import { Directive, directive } from "lit/directive.js";
+
+/**
+ * Directive that waits for a custom element to be defined before setting properties
+ * Useful for lazy-loaded web components
+ * 
+ * @example
+ * html`<pds-fab ${lazyProps({ satellites: [...], open: true })}></pds-fab>`
+ */
+class LazyPropsDirective extends Directive {
+  #pendingProps = null;
+  #element = null;
+
+  render(_props) {
+    return nothing;
+  }
+
+  update(part, [props]) {
+    const element = part.element;
+    
+    if (this.#element !== element) {
+      this.#element = element;
+      this.#pendingProps = props;
+      this.#applyProps();
+    } else if (JSON.stringify(this.#pendingProps) !== JSON.stringify(props)) {
+      this.#pendingProps = props;
+      this.#applyProps();
+    }
+
+    return nothing;
+  }
+
+  async #applyProps() {
+    if (!this.#element || !this.#pendingProps) return;
+
+    const tagName = this.#element.tagName.toLowerCase();
+    
+    // Wait for element to be defined
+    await customElements.whenDefined(tagName);
+    
+    // Apply all properties
+    for (const [key, value] of Object.entries(this.#pendingProps)) {
+      this.#element[key] = value;
+    }
+  }
+}
+
+/**
+ * Applies properties to an element after it's defined (for lazy-loaded components)
+ * @param {Object} props - Properties to set on the element
+ * @returns {import('lit/directive.js').DirectiveResult}
+ */
+export const lazyProps = directive(LazyPropsDirective);
+
 /**
  * Loads the strings from a given (5-letter-code) locale
  * @param {String} locale

@@ -1476,6 +1476,14 @@ customElements.define(
           : "dark surface in light mode";
 
       return html`
+
+          <pds-fab>
+            <pds-icon icon="plus" .satellites=${[
+              { key:"test", icon: "code", label: "Code"},
+
+            ]}></pds-icon>
+          </pds-fab>
+
         <div
           class="showcase-container ${this.inspectorActive
             ? "inspector-active"
