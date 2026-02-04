@@ -8,16 +8,7 @@ if (main && !main.querySelector("my-home")) {
   main.innerHTML = "<my-home></my-home>";
 }
 
-/**
- * Generates an HTML NodeList by parsing the given HTML string
- * @param {String} html
- * @returns {NodeListOf<ChildNode>} DOM element
- */
-const parseHTML = (html) => {
-  return new DOMParser().parseFromString(html, "text/html").body.childNodes;
-};
-
-const settingsBtn = parseHTML(
+const settingsBtn = PDS.parse(
   /*html*/ `<button id="settings-btn" class="icon-only btn-xs btn-outline" aria-label="Settings">
     <pds-icon icon="gear"></pds-icon>
   </button>`,

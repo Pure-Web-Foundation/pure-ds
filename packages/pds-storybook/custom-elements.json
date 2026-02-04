@@ -605,11 +605,11 @@
             {
               "kind": "field",
               "name": "startAngle",
-              "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up). Auto-detected based on FAB corner position if not specified: bottom-right=180°, bottom-left=315°, top-right=225°, top-left=45°",
+              "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\r\nIf not specified, the angle is auto-detected based on the FAB's corner position:\r\n- Bottom-right: 180° (fly left/up)\r\n- Bottom-left: 315° (fly right/up)\r\n- Top-right: 225° (fly left/down)\r\n- Top-left: 45° (fly right/down)",
               "type": {
                 "text": "number"
               },
-              "default": "180",
+              "default": "180 (or auto-detected)",
               "attribute": "start-angle"
             },
             {
@@ -623,47 +623,47 @@
           ],
           "events": [
             {
-              "description": "Fired when a satellite button is clicked",
               "name": "satellite-click",
               "type": {
                 "text": "CustomEvent"
-              }
+              },
+              "description": "Fired when a satellite button is clicked"
             }
           ],
           "attributes": [
             {
               "name": "open",
+              "description": "Controls whether the FAB is expanded",
               "type": {
                 "text": "boolean"
               },
-              "description": "Controls whether the FAB is expanded",
               "fieldName": "open"
             },
             {
               "name": "radius",
+              "description": "Distance in pixels from the main FAB to satellites",
               "type": {
                 "text": "number"
               },
               "default": "100",
-              "description": "Distance in pixels from the main FAB to satellites",
               "fieldName": "radius"
             },
             {
               "name": "spread",
+              "description": "Arc angle in degrees for satellite distribution",
               "type": {
                 "text": "number"
               },
               "default": "90",
-              "description": "Arc angle in degrees for satellite distribution",
               "fieldName": "spread"
             },
             {
               "name": "start-angle",
+              "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\r\nIf not specified, the angle is auto-detected based on the FAB's corner position:\r\n- Bottom-right: 180° (fly left/up)\r\n- Bottom-left: 315° (fly right/up)\r\n- Top-right: 225° (fly left/down)\r\n- Top-left: 45° (fly right/down)",
               "type": {
                 "text": "number"
               },
-              "default": "180",
-              "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up). Auto-detected based on FAB corner position if not specified: bottom-right=180°, bottom-left=315°, top-right=225°, top-left=45°",
+              "default": "180 (or auto-detected)",
               "fieldName": "startAngle"
             }
           ],
@@ -675,6 +675,14 @@
         }
       ],
       "exports": [
+        {
+          "kind": "js",
+          "name": "PdsFab",
+          "declaration": {
+            "name": "PdsFab",
+            "module": "public/assets/pds/components/pds-fab.js"
+          }
+        },
         {
           "kind": "custom-element-definition",
           "name": "pds-fab",
@@ -1082,6 +1090,86 @@
               "kind": "method",
               "name": "notifyInstances",
               "static": true
+            },
+            {
+              "kind": "field",
+              "name": "_currentIcon",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_pendingIcon",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_morphing",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_morphTimer",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_templateReady",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_stackEl",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_svgOldEl",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_svgNewEl",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_iconOldGroupEl",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_iconNewGroupEl",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
             }
           ],
           "attributes": [
@@ -1121,6 +1209,13 @@
               "description": "Rotation angle in degrees"
             },
             {
+              "name": "morph",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Morph the icon when the icon name changes"
+            },
+            {
               "type": {
                 "text": "string"
               },
@@ -1157,6 +1252,160 @@
           "declaration": {
             "name": "SvgIcon",
             "module": "public/assets/pds/components/pds-icon.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-omnibox.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsOmnibox",
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "settings"
+            },
+            {
+              "kind": "field",
+              "name": "name"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "value"
+            },
+            {
+              "kind": "field",
+              "name": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "required"
+            },
+            {
+              "kind": "field",
+              "name": "autocomplete"
+            },
+            {
+              "kind": "field",
+              "name": "icon"
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity"
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity"
+            }
+          ],
+          "events": [
+            {
+              "name": "input",
+              "type": {
+                "text": "Event"
+              }
+            },
+            {
+              "name": "change",
+              "type": {
+                "text": "Event"
+              }
+            },
+            {
+              "name": "suggestions-updated",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "name"
+            },
+            {
+              "name": "placeholder"
+            },
+            {
+              "name": "value"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "required"
+            },
+            {
+              "name": "autocomplete"
+            },
+            {
+              "name": "icon"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-omnibox",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "PdsOmnibox",
+          "declaration": {
+            "name": "PdsOmnibox",
+            "module": "public/assets/pds/components/pds-omnibox.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-omnibox",
+          "declaration": {
+            "name": "PdsOmnibox",
+            "module": "public/assets/pds/components/pds-omnibox.js"
           }
         }
       ]
@@ -2469,95 +2718,6 @@
           "declaration": {
             "name": "UploadArea",
             "module": "public/assets/pds/components/pds-upload.js"
-          }
-        }
-      ]
-    }
-    ,
-    {
-      "kind": "javascript-module",
-      "path": "public/assets/pds/components/pds-omnibox.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Omnibox search input with PDS styling and form-associated behavior.",
-          "name": "PdsOmnibox",
-          "members": [
-            {
-              "kind": "field",
-              "name": "settings",
-              "description": "AutoComplete settings object provided by the consumer.",
-              "type": {
-                "text": "object"
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "name": "name",
-              "type": {
-                "text": "string"
-              },
-              "description": "Form field name for submitted data"
-            },
-            {
-              "name": "placeholder",
-              "type": {
-                "text": "string"
-              },
-              "description": "Placeholder text for the search input"
-            },
-            {
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "description": "Current input value"
-            },
-            {
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "description": "Disable the input"
-            },
-            {
-              "name": "required",
-              "type": {
-                "text": "boolean"
-              },
-              "description": "Mark the input as required"
-            },
-            {
-              "name": "autocomplete",
-              "type": {
-                "text": "string"
-              },
-              "description": "Native autocomplete attribute (default: off)"
-            }
-          ],
-          "superclass": {
-            "name": "HTMLElement"
-          },
-          "tagName": "pds-omnibox",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "PdsOmnibox",
-          "declaration": {
-            "name": "PdsOmnibox",
-            "module": "public/assets/pds/components/pds-omnibox.js"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "pds-omnibox",
-          "declaration": {
-            "name": "PdsOmnibox",
-            "module": "public/assets/pds/components/pds-omnibox.js"
           }
         }
       ]

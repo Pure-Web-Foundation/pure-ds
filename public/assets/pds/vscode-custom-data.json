@@ -76,15 +76,15 @@
         },
         {
           "name": "radius",
-          "description": "Distance in pixels from the main FAB to satellites (default: 100)"
+          "description": "Distance in pixels from the main FAB to satellites"
         },
         {
           "name": "spread",
-          "description": "Arc angle in degrees for satellite distribution (default: 90)"
+          "description": "Arc angle in degrees for satellite distribution"
         },
         {
           "name": "start-angle",
-          "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up, default: 180)"
+          "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\r\nIf not specified, the angle is auto-detected based on the FAB's corner position:\r\n- Bottom-right: 180° (fly left/up)\r\n- Bottom-left: 315° (fly right/up)\r\n- Top-right: 225° (fly left/down)\r\n- Top-left: 45° (fly right/down)"
         }
       ]
     },
@@ -674,6 +674,11 @@
           "description": "Rotation angle in degrees"
         },
         {
+          "name": "morph",
+          "description": "Morph the icon when the icon name changes",
+          "valueSet": "v"
+        },
+        {
           "name": "sprite",
           "description": "Override sprite sheet path"
         },
@@ -681,6 +686,40 @@
           "name": "no-sprite",
           "description": "Force fallback icon rendering",
           "valueSet": "v"
+        }
+      ]
+    },
+    {
+      "name": "pds-omnibox",
+      "description": "PdsOmnibox component",
+      "attributes": [
+        {
+          "name": "name",
+          "description": ""
+        },
+        {
+          "name": "placeholder",
+          "description": ""
+        },
+        {
+          "name": "value",
+          "description": ""
+        },
+        {
+          "name": "disabled",
+          "description": ""
+        },
+        {
+          "name": "required",
+          "description": ""
+        },
+        {
+          "name": "autocomplete",
+          "description": ""
+        },
+        {
+          "name": "icon",
+          "description": ""
         }
       ]
     },
@@ -835,28 +874,6 @@
           "description": "Optional cap on the number of files the user may select"
         }
       ]
-    }
-  ],
-  "globalAttributes": [
-    {
-      "name": "data-dropdown",
-      "description": "Progressive enhancement: nav[data-dropdown]",
-      "valueSet": "v"
-    },
-    {
-      "name": "data-toggle",
-      "description": "Progressive enhancement: label[data-toggle]",
-      "valueSet": "v"
-    },
-    {
-      "name": "data-required",
-      "description": "Progressive enhancement: form[data-required]",
-      "valueSet": "v"
-    },
-    {
-      "name": "data-open",
-      "description": "Progressive enhancement: fieldset[role=group][data-open]",
-      "valueSet": "v"
     }
   ]
 }

@@ -111,3 +111,12 @@ export function fragmentFromTemplateLike(templateLike) {
 
   return tpl.content;
 }
+
+/**
+ * Parses an HTML string into a NodeList
+ * @param {String} html
+ * @returns {NodeListOf<ChildNode>}
+ */
+export function parseHTML(html) {
+  return new DOMParser().parseFromString(html, "text/html").body.childNodes;
+}

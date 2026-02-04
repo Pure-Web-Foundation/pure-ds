@@ -1281,28 +1281,28 @@
     },
     {
       "name": "--layout-maxWidthSm",
-      "description": "Layout maxWidth sm",
+      "description": "Layout maxWidthSm",
       "syntax": "<length>",
-      "value": "400px",
+      "value": "608px",
       "category": "Layout Tokens"
     },
     {
       "name": "--layout-maxWidthMd",
-      "description": "Layout maxWidth md",
+      "description": "Layout maxWidthMd",
       "syntax": "<length>",
-      "value": "600px",
+      "value": "736px",
       "category": "Layout Tokens"
     },
     {
       "name": "--layout-maxWidthLg",
-      "description": "Layout maxWidth lg",
+      "description": "Layout maxWidthLg",
       "syntax": "<length>",
-      "value": "800px",
+      "value": "992px",
       "category": "Layout Tokens"
     },
     {
       "name": "--layout-maxWidthXl",
-      "description": "Layout maxWidth xl",
+      "description": "Layout maxWidthXl",
       "syntax": "<length>",
       "value": "1200px",
       "category": "Layout Tokens"
@@ -1318,7 +1318,7 @@
       "name": "--layout-containerPadding",
       "description": "Layout containerPadding",
       "syntax": "<length>",
-      "value": "var(--spacing-6)px",
+      "value": "var(--spacing-6)",
       "category": "Layout Tokens"
     },
     {
@@ -1428,6 +1428,51 @@
       "category": "Primitives"
     },
     {
+      "name": "badge-primary",
+      "description": "Badge / Pill primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "badge-secondary",
+      "description": "Badge / Pill primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "badge-success",
+      "description": "Badge / Pill primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "badge-info",
+      "description": "Badge / Pill primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "badge-warning",
+      "description": "Badge / Pill primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "badge-danger",
+      "description": "Badge / Pill primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "badge-outline",
+      "description": "Badge / Pill primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "badge-sm",
+      "description": "Badge / Pill primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "badge-lg",
+      "description": "Badge / Pill primitive component",
+      "category": "Primitives"
+    },
+    {
       "name": "pill",
       "description": "Badge / Pill primitive component",
       "category": "Primitives"
@@ -1468,22 +1513,7 @@
       "category": "Primitives"
     },
     {
-      "name": "surface",
-      "description": "Surface primitive component",
-      "category": "Primitives"
-    },
-    {
       "name": "surface-base",
-      "description": "Surface primitive component",
-      "category": "Primitives"
-    },
-    {
-      "name": "surface-raised",
-      "description": "Surface primitive component",
-      "category": "Primitives"
-    },
-    {
-      "name": "surface-overlay",
       "description": "Surface primitive component",
       "category": "Primitives"
     },
@@ -1503,28 +1533,103 @@
       "category": "Primitives"
     },
     {
-      "name": "alert",
-      "description": "Alert primitive component",
+      "name": "surface-overlay",
+      "description": "Surface primitive component",
       "category": "Primitives"
     },
     {
-      "name": "alert-info",
-      "description": "Alert primitive component",
+      "name": "surface-inverse",
+      "description": "Surface primitive component",
       "category": "Primitives"
     },
     {
-      "name": "alert-success",
-      "description": "Alert primitive component",
+      "name": "surface-translucent",
+      "description": "Surface primitive component",
       "category": "Primitives"
     },
     {
-      "name": "alert-warning",
-      "description": "Alert primitive component",
+      "name": "surface-translucent-25",
+      "description": "Surface primitive component",
       "category": "Primitives"
     },
     {
-      "name": "alert-danger",
-      "description": "Alert primitive component",
+      "name": "surface-translucent-50",
+      "description": "Surface primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "surface-translucent-75",
+      "description": "Surface primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "surface-primary",
+      "description": "Surface primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "surface-secondary",
+      "description": "Surface primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "surface-success",
+      "description": "Surface primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "surface-warning",
+      "description": "Surface primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "surface-danger",
+      "description": "Surface primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "surface-info",
+      "description": "Surface primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "callout",
+      "description": "Callout primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "callout-info",
+      "description": "Callout primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "callout-success",
+      "description": "Callout primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "callout-warning",
+      "description": "Callout primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "callout-danger",
+      "description": "Callout primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "callout-error",
+      "description": "Callout primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "callout-dismissible",
+      "description": "Callout primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "empty-state",
+      "description": "Empty State primitive component",
       "category": "Primitives"
     },
     {
@@ -1538,8 +1643,58 @@
       "category": "Primitives"
     },
     {
+      "name": "table-striped",
+      "description": "Table primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "table-bordered",
+      "description": "Table primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "table-compact",
+      "description": "Table primitive component",
+      "category": "Primitives"
+    },
+    {
       "name": "data-table",
       "description": "Table primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "btn-primary",
+      "description": "Button primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "btn-secondary",
+      "description": "Button primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "btn-outline",
+      "description": "Button primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "btn-sm",
+      "description": "Button primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "btn-xs",
+      "description": "Button primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "btn-lg",
+      "description": "Button primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "btn-working",
+      "description": "Button primitive component",
       "category": "Primitives"
     },
     {
@@ -1558,12 +1713,87 @@
       "category": "Primitives"
     },
     {
-      "name": "icon",
+      "name": "icon-xs",
       "description": "Icon primitive component",
       "category": "Primitives"
     },
     {
-      "name": "icon-*",
+      "name": "icon-sm",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-md",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-lg",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-xl",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-primary",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-secondary",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-accent",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-success",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-warning",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-danger",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-info",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-muted",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-subtle",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-text",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-text-start",
+      "description": "Icon primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "icon-text-end",
       "description": "Icon primitive component",
       "category": "Primitives"
     },
@@ -1578,312 +1808,493 @@
       "category": "Primitives"
     },
     {
+      "name": "img-gallery",
+      "description": "Gallery primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "form-container",
+      "description": "Form Container primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "form-actions",
+      "description": "Form Container primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "field-description",
+      "description": "Form Container primitive component",
+      "category": "Primitives"
+    },
+    {
+      "name": "container",
+      "description": "Centered max-width wrapper with padding",
+      "category": "Layout Utilities"
+    },
+    {
       "name": "grid",
       "description": "CSS Grid layout container",
       "category": "Layout Utilities"
     },
     {
-      "name": "demo-grid",
-      "description": "CSS Grid layout container",
-      "category": "Layout Utilities"
-    },
-    {
-      "name": "grid-auto-sm",
-      "description": "Responsive auto-fit grid",
-      "category": "Layout Utilities"
-    },
-    {
-      "name": "grid-auto-md",
-      "description": "Responsive auto-fit grid",
-      "category": "Layout Utilities"
-    },
-    {
-      "name": "grid-auto-lg",
-      "description": "Responsive auto-fit grid",
-      "category": "Layout Utilities"
-    },
-    {
-      "name": "grid-auto-xl",
-      "description": "Responsive auto-fit grid",
-      "category": "Layout Utilities"
-    },
-    {
       "name": "grid-cols-1",
-      "description": "Fixed column grid",
+      "description": "Fixed column count grids",
       "category": "Layout Utilities"
     },
     {
       "name": "grid-cols-2",
-      "description": "Fixed column grid",
+      "description": "Fixed column count grids",
       "category": "Layout Utilities"
     },
     {
       "name": "grid-cols-3",
-      "description": "Fixed column grid",
+      "description": "Fixed column count grids",
       "category": "Layout Utilities"
     },
     {
       "name": "grid-cols-4",
-      "description": "Fixed column grid",
+      "description": "Fixed column count grids",
       "category": "Layout Utilities"
     },
     {
       "name": "grid-cols-6",
-      "description": "Fixed column grid",
+      "description": "Fixed column count grids",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "grid-auto-sm",
+      "description": "Responsive auto-fit grid with minimum widths",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "grid-auto-md",
+      "description": "Responsive auto-fit grid with minimum widths",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "grid-auto-lg",
+      "description": "Responsive auto-fit grid with minimum widths",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "grid-auto-xl",
+      "description": "Responsive auto-fit grid with minimum widths",
       "category": "Layout Utilities"
     },
     {
       "name": "flex",
-      "description": "Flexbox layout container",
+      "description": "Flexbox layout with direction and wrap modifiers",
       "category": "Layout Utilities"
     },
     {
       "name": "flex-wrap",
-      "description": "Flexbox layout container",
+      "description": "Flexbox layout with direction and wrap modifiers",
       "category": "Layout Utilities"
     },
     {
-      "name": "container",
-      "description": "Centered max-width container",
+      "name": "flex-col",
+      "description": "Flexbox layout with direction and wrap modifiers",
       "category": "Layout Utilities"
     },
     {
-      "name": "media-grid",
-      "description": "Grid for media elements",
+      "name": "flex-row",
+      "description": "Flexbox layout with direction and wrap modifiers",
       "category": "Layout Utilities"
     },
     {
-      "name": "btn-group",
-      "description": "btn-group utility class",
-      "category": "Utilities"
+      "name": "grow",
+      "description": "Fill remaining flex space",
+      "category": "Layout Utilities"
     },
     {
-      "name": "demo-grid",
-      "description": "demo-grid utility class",
-      "category": "Utilities"
+      "name": "stack-sm",
+      "description": "Vertical flex layout with predefined gaps",
+      "category": "Layout Utilities"
     },
     {
-      "name": "color-scale",
-      "description": "color-scale utility class",
-      "category": "Utilities"
+      "name": "stack-md",
+      "description": "Vertical flex layout with predefined gaps",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "stack-lg",
+      "description": "Vertical flex layout with predefined gaps",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "stack-xl",
+      "description": "Vertical flex layout with predefined gaps",
+      "category": "Layout Utilities"
     },
     {
       "name": "gap-0",
-      "description": "Gap spacing of 0 units",
-      "category": "Utilities"
+      "description": "Spacing between flex/grid children",
+      "category": "Layout Utilities"
     },
     {
-      "name": "gap-1",
-      "description": "Gap spacing of 1 units",
-      "category": "Utilities"
+      "name": "gap-xs",
+      "description": "Spacing between flex/grid children",
+      "category": "Layout Utilities"
     },
     {
-      "name": "gap-2",
-      "description": "Gap spacing of 2 units",
-      "category": "Utilities"
+      "name": "gap-sm",
+      "description": "Spacing between flex/grid children",
+      "category": "Layout Utilities"
     },
     {
-      "name": "gap-3",
-      "description": "Gap spacing of 3 units",
-      "category": "Utilities"
+      "name": "gap-md",
+      "description": "Spacing between flex/grid children",
+      "category": "Layout Utilities"
     },
     {
-      "name": "gap-4",
-      "description": "Gap spacing of 4 units",
-      "category": "Utilities"
+      "name": "gap-lg",
+      "description": "Spacing between flex/grid children",
+      "category": "Layout Utilities"
     },
     {
-      "name": "gap-5",
-      "description": "Gap spacing of 5 units",
-      "category": "Utilities"
-    },
-    {
-      "name": "gap-6",
-      "description": "Gap spacing of 6 units",
-      "category": "Utilities"
-    },
-    {
-      "name": "gap-7",
-      "description": "Gap spacing of 7 units",
-      "category": "Utilities"
-    },
-    {
-      "name": "gap-8",
-      "description": "Gap spacing of 8 units",
-      "category": "Utilities"
-    },
-    {
-      "name": "gap-9",
-      "description": "Gap spacing of 9 units",
-      "category": "Utilities"
-    },
-    {
-      "name": "gap-10",
-      "description": "Gap spacing of 10 units",
-      "category": "Utilities"
-    },
-    {
-      "name": "gap-11",
-      "description": "Gap spacing of 11 units",
-      "category": "Utilities"
-    },
-    {
-      "name": "gap-12",
-      "description": "Gap spacing of 12 units",
-      "category": "Utilities"
+      "name": "gap-xl",
+      "description": "Spacing between flex/grid children",
+      "category": "Layout Utilities"
     },
     {
       "name": "items-start",
-      "description": "Align items: start",
-      "category": "Utilities"
-    },
-    {
-      "name": "items-end",
-      "description": "Align items: end",
-      "category": "Utilities"
+      "description": "Cross-axis alignment for flex/grid",
+      "category": "Layout Utilities"
     },
     {
       "name": "items-center",
-      "description": "Align items: center",
-      "category": "Utilities"
+      "description": "Cross-axis alignment for flex/grid",
+      "category": "Layout Utilities"
     },
     {
-      "name": "items-baseline",
-      "description": "Align items: baseline",
-      "category": "Utilities"
+      "name": "items-end",
+      "description": "Cross-axis alignment for flex/grid",
+      "category": "Layout Utilities"
     },
     {
       "name": "items-stretch",
-      "description": "Align items: stretch",
-      "category": "Utilities"
+      "description": "Cross-axis alignment for flex/grid",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "items-baseline",
+      "description": "Cross-axis alignment for flex/grid",
+      "category": "Layout Utilities"
     },
     {
       "name": "justify-start",
-      "description": "Justify content: start",
-      "category": "Utilities"
-    },
-    {
-      "name": "justify-end",
-      "description": "Justify content: end",
-      "category": "Utilities"
+      "description": "Main-axis alignment for flex/grid",
+      "category": "Layout Utilities"
     },
     {
       "name": "justify-center",
-      "description": "Justify content: center",
-      "category": "Utilities"
+      "description": "Main-axis alignment for flex/grid",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "justify-end",
+      "description": "Main-axis alignment for flex/grid",
+      "category": "Layout Utilities"
     },
     {
       "name": "justify-between",
-      "description": "Justify content: between",
-      "category": "Utilities"
+      "description": "Main-axis alignment for flex/grid",
+      "category": "Layout Utilities"
     },
     {
       "name": "justify-around",
-      "description": "Justify content: around",
-      "category": "Utilities"
+      "description": "Main-axis alignment for flex/grid",
+      "category": "Layout Utilities"
     },
     {
       "name": "justify-evenly",
-      "description": "Justify content: evenly",
-      "category": "Utilities"
+      "description": "Main-axis alignment for flex/grid",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "max-w-sm",
+      "description": "Content width constraints",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "max-w-md",
+      "description": "Content width constraints",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "max-w-lg",
+      "description": "Content width constraints",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "max-w-xl",
+      "description": "Content width constraints",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "section",
+      "description": "Vertical padding for content sections",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "section-lg",
+      "description": "Vertical padding for content sections",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "mobile-stack",
+      "description": "Stack on mobile, row on desktop",
+      "category": "Layout Utilities"
+    },
+    {
+      "name": "text-left",
+      "description": "alignment utility class",
+      "category": "text"
+    },
+    {
+      "name": "text-center",
+      "description": "alignment utility class",
+      "category": "text"
+    },
+    {
+      "name": "text-right",
+      "description": "alignment utility class",
+      "category": "text"
+    },
+    {
+      "name": "text-muted",
+      "description": "color utility class",
+      "category": "text"
+    },
+    {
+      "name": "truncate",
+      "description": "overflow utility class",
+      "category": "text"
+    },
+    {
+      "name": "backdrop",
+      "description": "base utility class",
+      "category": "backdrop"
+    },
+    {
+      "name": "backdrop-light",
+      "description": "variants utility class",
+      "category": "backdrop"
+    },
+    {
+      "name": "backdrop-dark",
+      "description": "variants utility class",
+      "category": "backdrop"
+    },
+    {
+      "name": "backdrop-blur-sm",
+      "description": "blur utility class",
+      "category": "backdrop"
+    },
+    {
+      "name": "backdrop-blur-md",
+      "description": "blur utility class",
+      "category": "backdrop"
+    },
+    {
+      "name": "backdrop-blur-lg",
+      "description": "blur utility class",
+      "category": "backdrop"
+    },
+    {
+      "name": "shadow-sm",
+      "description": "scale utility class",
+      "category": "shadow"
+    },
+    {
+      "name": "shadow-base",
+      "description": "scale utility class",
+      "category": "shadow"
+    },
+    {
+      "name": "shadow-md",
+      "description": "scale utility class",
+      "category": "shadow"
+    },
+    {
+      "name": "shadow-lg",
+      "description": "scale utility class",
+      "category": "shadow"
+    },
+    {
+      "name": "shadow-xl",
+      "description": "scale utility class",
+      "category": "shadow"
+    },
+    {
+      "name": "shadow-inner",
+      "description": "scale utility class",
+      "category": "shadow"
+    },
+    {
+      "name": "shadow-none",
+      "description": "scale utility class",
+      "category": "shadow"
     },
     {
       "name": "border-gradient",
-      "description": "border-gradient utility class",
-      "category": "Utilities"
+      "description": "gradient utility class",
+      "category": "border"
     },
     {
       "name": "border-gradient-primary",
-      "description": "border-gradient-primary utility class",
-      "category": "Utilities"
+      "description": "gradient utility class",
+      "category": "border"
     },
     {
       "name": "border-gradient-accent",
-      "description": "border-gradient-accent utility class",
-      "category": "Utilities"
+      "description": "gradient utility class",
+      "category": "border"
     },
     {
       "name": "border-gradient-secondary",
-      "description": "border-gradient-secondary utility class",
-      "category": "Utilities"
+      "description": "gradient utility class",
+      "category": "border"
     },
     {
       "name": "border-gradient-soft",
-      "description": "border-gradient-soft utility class",
-      "category": "Utilities"
+      "description": "gradient utility class",
+      "category": "border"
     },
     {
       "name": "border-gradient-medium",
-      "description": "border-gradient-medium utility class",
-      "category": "Utilities"
+      "description": "gradient utility class",
+      "category": "border"
     },
     {
       "name": "border-gradient-strong",
-      "description": "border-gradient-strong utility class",
-      "category": "Utilities"
+      "description": "gradient utility class",
+      "category": "border"
     },
     {
       "name": "border-glow",
-      "description": "border-glow utility class",
-      "category": "Utilities"
+      "description": "glow utility class",
+      "category": "border"
     },
     {
       "name": "border-glow-sm",
-      "description": "border-glow-sm utility class",
-      "category": "Utilities"
+      "description": "glow utility class",
+      "category": "border"
     },
     {
       "name": "border-glow-lg",
-      "description": "border-glow-lg utility class",
-      "category": "Utilities"
-    },
-    {
-      "name": "border-gradient-glow",
-      "description": "border-gradient-glow utility class",
-      "category": "Utilities"
+      "description": "glow utility class",
+      "category": "border"
     },
     {
       "name": "border-glow-primary",
-      "description": "Border glow effect with primary color",
-      "category": "Utilities"
-    },
-    {
-      "name": "border-glow-secondary",
-      "description": "Border glow effect with secondary color",
-      "category": "Utilities"
+      "description": "glow utility class",
+      "category": "border"
     },
     {
       "name": "border-glow-accent",
-      "description": "Border glow effect with accent color",
-      "category": "Utilities"
+      "description": "glow utility class",
+      "category": "border"
     },
     {
       "name": "border-glow-success",
-      "description": "Border glow effect with success color",
-      "category": "Utilities"
+      "description": "glow utility class",
+      "category": "border"
     },
     {
       "name": "border-glow-warning",
-      "description": "Border glow effect with warning color",
-      "category": "Utilities"
+      "description": "glow utility class",
+      "category": "border"
     },
     {
       "name": "border-glow-danger",
-      "description": "Border glow effect with danger color",
-      "category": "Utilities"
+      "description": "glow utility class",
+      "category": "border"
     },
     {
-      "name": "border-glow-info",
-      "description": "Border glow effect with info color",
-      "category": "Utilities"
+      "name": "border-gradient-glow",
+      "description": "combined utility class",
+      "category": "border"
+    },
+    {
+      "name": "img-gallery",
+      "description": "image utility class",
+      "category": "media"
+    },
+    {
+      "name": "img-rounded-sm",
+      "description": "image utility class",
+      "category": "media"
+    },
+    {
+      "name": "img-rounded-md",
+      "description": "image utility class",
+      "category": "media"
+    },
+    {
+      "name": "img-rounded-lg",
+      "description": "image utility class",
+      "category": "media"
+    },
+    {
+      "name": "img-rounded-xl",
+      "description": "image utility class",
+      "category": "media"
+    },
+    {
+      "name": "img-rounded-full",
+      "description": "image utility class",
+      "category": "media"
+    },
+    {
+      "name": "img-inline",
+      "description": "image utility class",
+      "category": "media"
+    },
+    {
+      "name": "video-responsive",
+      "description": "video utility class",
+      "category": "media"
+    },
+    {
+      "name": "figure-responsive",
+      "description": "figure utility class",
+      "category": "media"
+    },
+    {
+      "name": "liquid-glass",
+      "description": "glass utility class",
+      "category": "effects"
     }
   ],
-  "dataAttributes": [],
+  "dataAttributes": [
+    {
+      "name": "data-dropdown",
+      "description": "Enhancement: nav[data-dropdown]",
+      "category": "Data Enhancements"
+    },
+    {
+      "name": "data-toggle",
+      "description": "Enhancement: label[data-toggle]",
+      "category": "Data Enhancements"
+    },
+    {
+      "name": "data-open",
+      "description": "Enhancement: fieldset[role=group][data-open]",
+      "category": "Data Enhancements"
+    },
+    {
+      "name": "data-content",
+      "description": "Enhancement: hr[data-content]",
+      "category": "Data Enhancements"
+    }
+  ],
   "metadata": {
     "generator": "PDS CSS Data Generator",
-    "generatedAt": "2025-12-19T15:38:18.395Z",
-    "totalProperties": 165,
-    "totalClasses": 91,
-    "totalAttributes": 0
+    "generatedAt": "2026-02-04T12:47:12.258Z",
+    "totalProperties": 169,
+    "totalClasses": 169,
+    "totalAttributes": 4
   }
 }

@@ -22,6 +22,8 @@ pds-icon {
 .icon-lg, pds-icon[size="lg"] { width: var(--icon-size-lg); height: var(--icon-size-lg); }
 .icon-xl, pds-icon[size="xl"] { width: var(--icon-size-xl); height: var(--icon-size-xl); }
 .icon-2xl, pds-icon[size="2xl"] { width: var(--icon-size-2xl); height: var(--icon-size-2xl); }
+.icon-32xl, pds-icon[size="3xl"] { width: var(--icon-size-3xl); height: var(--icon-size-3xl); }
+
 
 /* Icon color utilities */
 .icon-primary, pds-icon.primary { color: var(--color-primary-600); }
@@ -138,7 +140,7 @@ button, a {
 }
 
 /* Max-width utilities */
-.max-w-sm { max-width: 400px; } .max-w-md { max-width: 600px; } .max-w-lg { max-width: 800px; } .max-w-xl { max-width: 1200px; }
+.max-w-sm { max-width: var(--layout-max-width-sm, 608px); } .max-w-md { max-width: var(--layout-max-width-md, 736px); } .max-w-lg { max-width: var(--layout-max-width-lg, 992px); } .max-w-xl { max-width: var(--layout-max-width-xl, 1200px); }
 
 /* Stack utilities - vertical rhythm for stacked elements */
 [class^="stack-"], [class*=" stack-"] {
@@ -731,6 +733,8 @@ pds-icon {
 .icon-lg, pds-icon[size="lg"] { width: var(--icon-size-lg); height: var(--icon-size-lg); }
 .icon-xl, pds-icon[size="xl"] { width: var(--icon-size-xl); height: var(--icon-size-xl); }
 .icon-2xl, pds-icon[size="2xl"] { width: var(--icon-size-2xl); height: var(--icon-size-2xl); }
+.icon-32xl, pds-icon[size="3xl"] { width: var(--icon-size-3xl); height: var(--icon-size-3xl); }
+
 
 /* Icon color utilities */
 .icon-primary, pds-icon.primary { color: var(--color-primary-600); }
@@ -847,7 +851,7 @@ button, a {
 }
 
 /* Max-width utilities */
-.max-w-sm { max-width: 400px; } .max-w-md { max-width: 600px; } .max-w-lg { max-width: 800px; } .max-w-xl { max-width: 1200px; }
+.max-w-sm { max-width: var(--layout-max-width-sm, 608px); } .max-w-md { max-width: var(--layout-max-width-md, 736px); } .max-w-lg { max-width: var(--layout-max-width-lg, 992px); } .max-w-xl { max-width: var(--layout-max-width-xl, 1200px); }
 
 /* Stack utilities - vertical rhythm for stacked elements */
 [class^="stack-"], [class*=" stack-"] {

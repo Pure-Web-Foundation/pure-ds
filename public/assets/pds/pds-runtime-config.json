@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-01-19T14:26:20.230Z",
+  "exportedAt": "2026-02-04T12:47:12.267Z",
   "staticRoot": "/assets/pds/",
   "presetId": "default",
   "preset": "Default",
@@ -171,7 +171,8 @@
           "md": 24,
           "lg": 32,
           "xl": 48,
-          "2xl": 64
+          "2xl": 64,
+          "3xl": 96
         },
         "include": {
           "navigation": [

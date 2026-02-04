@@ -1631,40 +1631,40 @@
     },
     {
       "name": "--layout-maxWidthSm",
-      "description": "Layout maxWidth sm",
+      "description": "Layout maxWidthSm",
       "syntax": "<length>",
       "references": [
         {
           "name": "Value",
-          "url": "data:text/plain,400px"
+          "url": "data:text/plain,608px"
         }
       ]
     },
     {
       "name": "--layout-maxWidthMd",
-      "description": "Layout maxWidth md",
+      "description": "Layout maxWidthMd",
       "syntax": "<length>",
       "references": [
         {
           "name": "Value",
-          "url": "data:text/plain,600px"
+          "url": "data:text/plain,736px"
         }
       ]
     },
     {
       "name": "--layout-maxWidthLg",
-      "description": "Layout maxWidth lg",
+      "description": "Layout maxWidthLg",
       "syntax": "<length>",
       "references": [
         {
           "name": "Value",
-          "url": "data:text/plain,800px"
+          "url": "data:text/plain,992px"
         }
       ]
     },
     {
       "name": "--layout-maxWidthXl",
-      "description": "Layout maxWidth xl",
+      "description": "Layout maxWidthXl",
       "syntax": "<length>",
       "references": [
         {
@@ -1691,7 +1691,7 @@
       "references": [
         {
           "name": "Value",
-          "url": "data:text/plain,var(--spacing-6)px"
+          "url": "data:text/plain,var(--spacing-6)"
         }
       ]
     },
@@ -1832,6 +1832,42 @@
       "description": "Badge / Pill primitive component"
     },
     {
+      "name": "badge-primary",
+      "description": "Badge / Pill primitive component"
+    },
+    {
+      "name": "badge-secondary",
+      "description": "Badge / Pill primitive component"
+    },
+    {
+      "name": "badge-success",
+      "description": "Badge / Pill primitive component"
+    },
+    {
+      "name": "badge-info",
+      "description": "Badge / Pill primitive component"
+    },
+    {
+      "name": "badge-warning",
+      "description": "Badge / Pill primitive component"
+    },
+    {
+      "name": "badge-danger",
+      "description": "Badge / Pill primitive component"
+    },
+    {
+      "name": "badge-outline",
+      "description": "Badge / Pill primitive component"
+    },
+    {
+      "name": "badge-sm",
+      "description": "Badge / Pill primitive component"
+    },
+    {
+      "name": "badge-lg",
+      "description": "Badge / Pill primitive component"
+    },
+    {
       "name": "pill",
       "description": "Badge / Pill primitive component"
     },
@@ -1864,19 +1900,7 @@
       "description": "Card primitive component"
     },
     {
-      "name": "surface",
-      "description": "Surface primitive component"
-    },
-    {
       "name": "surface-base",
-      "description": "Surface primitive component"
-    },
-    {
-      "name": "surface-raised",
-      "description": "Surface primitive component"
-    },
-    {
-      "name": "surface-overlay",
       "description": "Surface primitive component"
     },
     {
@@ -1892,24 +1916,84 @@
       "description": "Surface primitive component"
     },
     {
-      "name": "alert",
-      "description": "Alert primitive component"
+      "name": "surface-overlay",
+      "description": "Surface primitive component"
     },
     {
-      "name": "alert-info",
-      "description": "Alert primitive component"
+      "name": "surface-inverse",
+      "description": "Surface primitive component"
     },
     {
-      "name": "alert-success",
-      "description": "Alert primitive component"
+      "name": "surface-translucent",
+      "description": "Surface primitive component"
     },
     {
-      "name": "alert-warning",
-      "description": "Alert primitive component"
+      "name": "surface-translucent-25",
+      "description": "Surface primitive component"
     },
     {
-      "name": "alert-danger",
-      "description": "Alert primitive component"
+      "name": "surface-translucent-50",
+      "description": "Surface primitive component"
+    },
+    {
+      "name": "surface-translucent-75",
+      "description": "Surface primitive component"
+    },
+    {
+      "name": "surface-primary",
+      "description": "Surface primitive component"
+    },
+    {
+      "name": "surface-secondary",
+      "description": "Surface primitive component"
+    },
+    {
+      "name": "surface-success",
+      "description": "Surface primitive component"
+    },
+    {
+      "name": "surface-warning",
+      "description": "Surface primitive component"
+    },
+    {
+      "name": "surface-danger",
+      "description": "Surface primitive component"
+    },
+    {
+      "name": "surface-info",
+      "description": "Surface primitive component"
+    },
+    {
+      "name": "callout",
+      "description": "Callout primitive component"
+    },
+    {
+      "name": "callout-info",
+      "description": "Callout primitive component"
+    },
+    {
+      "name": "callout-success",
+      "description": "Callout primitive component"
+    },
+    {
+      "name": "callout-warning",
+      "description": "Callout primitive component"
+    },
+    {
+      "name": "callout-danger",
+      "description": "Callout primitive component"
+    },
+    {
+      "name": "callout-error",
+      "description": "Callout primitive component"
+    },
+    {
+      "name": "callout-dismissible",
+      "description": "Callout primitive component"
+    },
+    {
+      "name": "empty-state",
+      "description": "Empty State primitive component"
     },
     {
       "name": "dialog",
@@ -1920,8 +2004,48 @@
       "description": "Table primitive component"
     },
     {
+      "name": "table-striped",
+      "description": "Table primitive component"
+    },
+    {
+      "name": "table-bordered",
+      "description": "Table primitive component"
+    },
+    {
+      "name": "table-compact",
+      "description": "Table primitive component"
+    },
+    {
       "name": "data-table",
       "description": "Table primitive component"
+    },
+    {
+      "name": "btn-primary",
+      "description": "Button primitive component"
+    },
+    {
+      "name": "btn-secondary",
+      "description": "Button primitive component"
+    },
+    {
+      "name": "btn-outline",
+      "description": "Button primitive component"
+    },
+    {
+      "name": "btn-sm",
+      "description": "Button primitive component"
+    },
+    {
+      "name": "btn-xs",
+      "description": "Button primitive component"
+    },
+    {
+      "name": "btn-lg",
+      "description": "Button primitive component"
+    },
+    {
+      "name": "btn-working",
+      "description": "Button primitive component"
     },
     {
       "name": "icon-only",
@@ -1936,11 +2060,71 @@
       "description": "Accordion primitive component"
     },
     {
-      "name": "icon",
+      "name": "icon-xs",
       "description": "Icon primitive component"
     },
     {
-      "name": "icon-*",
+      "name": "icon-sm",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "icon-md",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "icon-lg",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "icon-xl",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "icon-primary",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "icon-secondary",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "icon-accent",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "icon-success",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "icon-warning",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "icon-danger",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "icon-info",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "icon-muted",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "icon-subtle",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "icon-text",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "icon-text-start",
+      "description": "Icon primitive component"
+    },
+    {
+      "name": "icon-text-end",
       "description": "Icon primitive component"
     },
     {
@@ -1952,244 +2136,96 @@
       "description": "Gallery primitive component"
     },
     {
+      "name": "img-gallery",
+      "description": "Gallery primitive component"
+    },
+    {
+      "name": "form-container",
+      "description": "Form Container primitive component"
+    },
+    {
+      "name": "form-actions",
+      "description": "Form Container primitive component"
+    },
+    {
+      "name": "field-description",
+      "description": "Form Container primitive component"
+    },
+    {
+      "name": "container",
+      "description": "Centered max-width wrapper with padding"
+    },
+    {
       "name": "grid",
       "description": "CSS Grid layout container"
     },
     {
-      "name": "demo-grid",
-      "description": "CSS Grid layout container"
-    },
-    {
-      "name": "grid-auto-sm",
-      "description": "Responsive auto-fit grid"
-    },
-    {
-      "name": "grid-auto-md",
-      "description": "Responsive auto-fit grid"
-    },
-    {
-      "name": "grid-auto-lg",
-      "description": "Responsive auto-fit grid"
-    },
-    {
-      "name": "grid-auto-xl",
-      "description": "Responsive auto-fit grid"
-    },
-    {
       "name": "grid-cols-1",
-      "description": "Fixed column grid"
+      "description": "Fixed column count grids"
     },
     {
       "name": "grid-cols-2",
-      "description": "Fixed column grid"
+      "description": "Fixed column count grids"
     },
     {
       "name": "grid-cols-3",
-      "description": "Fixed column grid"
+      "description": "Fixed column count grids"
     },
     {
       "name": "grid-cols-4",
-      "description": "Fixed column grid"
+      "description": "Fixed column count grids"
     },
     {
       "name": "grid-cols-6",
-      "description": "Fixed column grid"
+      "description": "Fixed column count grids"
+    },
+    {
+      "name": "grid-auto-sm",
+      "description": "Responsive auto-fit grid with minimum widths"
+    },
+    {
+      "name": "grid-auto-md",
+      "description": "Responsive auto-fit grid with minimum widths"
+    },
+    {
+      "name": "grid-auto-lg",
+      "description": "Responsive auto-fit grid with minimum widths"
+    },
+    {
+      "name": "grid-auto-xl",
+      "description": "Responsive auto-fit grid with minimum widths"
     },
     {
       "name": "flex",
-      "description": "Flexbox layout container"
+      "description": "Flexbox layout with direction and wrap modifiers"
     },
     {
       "name": "flex-wrap",
-      "description": "Flexbox layout container"
+      "description": "Flexbox layout with direction and wrap modifiers"
     },
     {
-      "name": "container",
-      "description": "Centered max-width container"
+      "name": "flex-col",
+      "description": "Flexbox layout with direction and wrap modifiers"
     },
     {
-      "name": "media-grid",
-      "description": "Grid for media elements"
+      "name": "flex-row",
+      "description": "Flexbox layout with direction and wrap modifiers"
     },
     {
-      "name": "btn-group",
-      "description": "btn-group utility class"
+      "name": "grow",
+      "description": "Fill remaining flex space"
     },
     {
-      "name": "demo-grid",
-      "description": "demo-grid utility class"
+      "name": "stack-sm",
+      "description": "Vertical flex layout with predefined gaps"
     },
     {
-      "name": "color-scale",
-      "description": "color-scale utility class"
+      "name": "stack-md",
+      "description": "Vertical flex layout with predefined gaps"
     },
     {
-      "name": "gap-0",
-      "description": "Gap spacing of 0 units"
-    },
-    {
-      "name": "gap-1",
-      "description": "Gap spacing of 1 units"
-    },
-    {
-      "name": "gap-2",
-      "description": "Gap spacing of 2 units"
-    },
-    {
-      "name": "gap-3",
-      "description": "Gap spacing of 3 units"
-    },
-    {
-      "name": "gap-4",
-      "description": "Gap spacing of 4 units"
-    },
-    {
-      "name": "gap-5",
-      "description": "Gap spacing of 5 units"
-    },
-    {
-      "name": "gap-6",
-      "description": "Gap spacing of 6 units"
-    },
-    {
-      "name": "gap-7",
-      "description": "Gap spacing of 7 units"
-    },
-    {
-      "name": "gap-8",
-      "description": "Gap spacing of 8 units"
-    },
-    {
-      "name": "gap-9",
-      "description": "Gap spacing of 9 units"
-    },
-    {
-      "name": "gap-10",
-      "description": "Gap spacing of 10 units"
-    },
-    {
-      "name": "gap-11",
-      "description": "Gap spacing of 11 units"
-    },
-    {
-      "name": "gap-12",
-      "description": "Gap spacing of 12 units"
-    },
-    {
-      "name": "items-start",
-      "description": "Align items: start"
-    },
-    {
-      "name": "items-end",
-      "description": "Align items: end"
-    },
-    {
-      "name": "items-center",
-      "description": "Align items: center"
-    },
-    {
-      "name": "items-baseline",
-      "description": "Align items: baseline"
-    },
-    {
-      "name": "items-stretch",
-      "description": "Align items: stretch"
-    },
-    {
-      "name": "justify-start",
-      "description": "Justify content: start"
-    },
-    {
-      "name": "justify-end",
-      "description": "Justify content: end"
-    },
-    {
-      "name": "justify-center",
-      "description": "Justify content: center"
-    },
-    {
-      "name": "justify-between",
-      "description": "Justify content: between"
-    },
-    {
-      "name": "justify-around",
-      "description": "Justify content: around"
-    },
-    {
-      "name": "justify-evenly",
-      "description": "Justify content: evenly"
-    },
-    {
-      "name": "border-gradient",
-      "description": "border-gradient utility class"
-    },
-    {
-      "name": "border-gradient-primary",
-      "description": "border-gradient-primary utility class"
-    },
-    {
-      "name": "border-gradient-accent",
-      "description": "border-gradient-accent utility class"
-    },
-    {
-      "name": "border-gradient-secondary",
-      "description": "border-gradient-secondary utility class"
-    },
-    {
-      "name": "border-gradient-soft",
-      "description": "border-gradient-soft utility class"
-    },
-    {
-      "name": "border-gradient-medium",
-      "description": "border-gradient-medium utility class"
-    },
-    {
-      "name": "border-gradient-strong",
-      "description": "border-gradient-strong utility class"
-    },
-    {
-      "name": "border-glow",
-      "description": "border-glow utility class"
-    },
-    {
-      "name": "border-glow-sm",
-      "description": "border-glow-sm utility class"
-    },
-    {
-      "name": "border-glow-lg",
-      "description": "border-glow-lg utility class"
-    },
-    {
-      "name": "border-gradient-glow",
-      "description": "border-gradient-glow utility class"
-    },
-    {
-      "name": "border-glow-primary",
-      "description": "Border glow effect with primary color"
-    },
-    {
-      "name": "border-glow-secondary",
-      "description": "Border glow effect with secondary color"
-    },
-    {
-      "name": "border-glow-accent",
-      "description": "Border glow effect with accent color"
-    },
-    {
-      "name": "border-glow-success",
-      "description": "Border glow effect with success color"
-    },
-    {
-      "name": "border-glow-warning",
-      "description": "Border glow effect with warning color"
-    },
-    {
-      "name": "border-glow-danger",
-      "description": "Border glow effect with danger color"
-    },
-    {
-      "name": "border-glow-info",
-      "description": "Border glow effect with info color"
+      "name": "stack-lg",
+      "description": "Vertical flex layout with predefined gaps"
     }
   ],
   "pseudoElements": []

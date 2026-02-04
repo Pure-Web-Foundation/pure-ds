@@ -454,11 +454,7 @@ export class PdsOmnibox extends HTMLElement {
 
 		if (!this.settings) return;
 
-		const AutoComplete =
-			(PDS && PDS.AutoComplete) ||
-			(PDS && typeof PDS.loadAutoComplete === "function"
-				? await PDS.loadAutoComplete()
-				: null);
+		const AutoComplete = PDS.AutoComplete
 
 		if (AutoComplete && typeof AutoComplete.connect === "function") {
       const settings = {
@@ -468,11 +464,7 @@ export class PdsOmnibox extends HTMLElement {
         },
         ...this.settings
       };
-      // const ev = {
-      //   ...e,
-      //   target: this.#input
-      // }
-			//AutoComplete.connect(ev, settings, this.#root);
+      
 
 			this.#input._autoComplete = new AutoComplete(this.#input.parentNode, this.#input, settings);
 			this.#wrapAutoCompleteResultsHandler(this.#input._autoComplete);

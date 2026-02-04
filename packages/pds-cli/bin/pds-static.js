@@ -449,7 +449,10 @@ async function main(options = {}) {
 
   // 4c) Copy Lit bundle into target/external for #pds/lit import map
   try {
-    const litSource = path.join(repoRoot, 'public/assets/js/lit.js');
+    const litSourceNew = path.join(repoRoot, 'public/assets/pds/external/lit.js');
+    const litSourceLegacy = path.join(repoRoot, 'public/assets/js/lit.js');
+    const litSource = existsSync(litSourceNew) ? litSourceNew : litSourceLegacy;
+
     if (!existsSync(litSource)) {
       log('⚠️  lit.js not found in package assets; skipping copy', 'yellow');
     } else {

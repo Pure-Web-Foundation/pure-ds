@@ -11,13 +11,15 @@ PDS follows the [Pure Web Manifesto](https://pureweb.dev/manifesto): "The browse
 3. **Progressive Enhancement**: Semantic HTML first, enhance where needed
 4. **Components as Last Resort**: Web Components only when native HTML cannot achieve it
 
-### The Three Layers
+### The Four Layers
 
 **Layer 1 — Styles**: From minimal config, PDS generates complete CSS: tokens, scales, semantics, surfaces, states. Zero specificity via `:where()`.
 
 **Layer 2 — Enhancements**: Behavior added to semantic HTML via selector-based upgrades (`data-dropdown`, `data-toggle`, etc.).
 
 **Layer 3 — Web Components**: `<pds-tabstrip>`, `<pds-drawer>`, etc. only when native HTML has no equivalent.
+
+**Layer 4: LLM Support**: Install `@pure-ds/core` and get instant PDS AI Coding Instrucions at your fingertips (GitHub Copilot & Cursor support built in)
 
 ---
 
@@ -442,6 +444,12 @@ form.getFormData(); // May throw error
   </pds-tabpanel>
 </pds-tabstrip>
 ```
+
+### Empty State Pattern
+
+- Use the `.empty-state` primitive for empty or onboarding states.
+- Structure: heading + supporting text, an icon, then primary/secondary actions.
+- Keep actions as buttons or links with PDS button classes, and include a meaningful icon when available.
 
 ```javascript
 // Dialogs & Toasts: PDS API

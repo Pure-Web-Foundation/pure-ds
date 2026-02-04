@@ -1,5 +1,7 @@
 /// <reference path="./pds.d.ts" />
 
+import { AutoComplete } from "pure-web/ac";
+
 /**
  * Public PDS runtime object exported to consumers.
  *
@@ -119,6 +121,9 @@ PDS.adoptLayers = adoptLayers;
 /** Convenience to adopt only primitives into a ShadowRoot */
 PDS.adoptPrimitives = adoptPrimitives;
 
+/** Parse an HTML string into a NodeList */
+PDS.parse = common.parseHTML;
+
 /** Create a constructable CSSStyleSheet from a CSS string */
 PDS.createStylesheet = createStylesheet;
 
@@ -127,21 +132,7 @@ PDS.isLiveMode = () => registry.isLive;
 PDS.ask = ask;
 PDS.toast = toast;
 PDS.common = common;
-PDS.AutoComplete = null;
-PDS.loadAutoComplete = async () => {
-  if (PDS.AutoComplete) return PDS.AutoComplete;
-  try {
-    const mod = await import("pure-web/ac");
-    const AutoComplete = mod?.AutoComplete || mod?.default || mod;
-    if (AutoComplete) {
-      PDS.AutoComplete = AutoComplete;
-      return AutoComplete;
-    }
-  } catch (error) {
-    __defaultLog("warn", "PDS.loadAutoComplete failed", error);
-  }
-  return null;
-};
+PDS.AutoComplete = AutoComplete;
 
 function __emitPDSReady(detail) {
   const hasCustomEvent = typeof CustomEvent === "function";
