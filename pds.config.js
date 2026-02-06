@@ -1,7 +1,11 @@
+// @ts-check
+
+/** @typedef {import("./src/js/pds-core/pds-config.js").PDSInitConfig} PDSInitConfig */
+
+/** @type {PDSInitConfig} */
 export const config = {
   mode: "live",
   preset: "default",
-
   autoDefine: {
     predefine: ["pds-icon", "pds-drawer", "pds-toaster"]
   },

@@ -67,14 +67,31 @@ export class Generator {
   generateTokens() {
     // Access design configuration from options.design
     const config = this.options.design || {};
+    const shadowOpacityConfig = this.#resolveShadowOpacityConfig(config);
+    const layersConfig = config.layers || {};
+    const shadowConfig = this.#mergeShadowConfig(
+      layersConfig,
+      shadowOpacityConfig.light,
+    );
+    const shadows = this.#generateShadowTokens(shadowConfig);
+    const darkShadows =
+      shadowOpacityConfig.dark != null
+        ? this.#generateShadowTokens(
+            this.#mergeShadowConfig(layersConfig, shadowOpacityConfig.dark),
+          )
+        : null;
 
     return {
-      colors: this.#generateColorTokens(config.colors || {}),
+      colors: this.#generateColorTokens(
+        config.colors || {},
+        shadowOpacityConfig,
+      ),
       spacing: this.generateSpacingTokens(config.spatialRhythm || {}),
       radius: this.#generateRadiusTokens(config.shape || {}),
       borderWidths: this.#generateBorderWidthTokens(config.shape || {}),
       typography: this.generateTypographyTokens(config.typography || {}),
-      shadows: this.#generateShadowTokens(config.layers || {}),
+      shadows,
+      darkShadows,
       layout: this.#generateLayoutTokens(config.layout || {}),
       transitions: this.#generateTransitionTokens(config.behavior || {}),
       zIndex: this.#generateZIndexTokens(config.layers || {}),
@@ -82,7 +99,36 @@ export class Generator {
     };
   }
 
-  #generateColorTokens(colorConfig) {
+  #resolveShadowOpacityConfig(config = {}) {
+    const layout = config.layout || {};
+    const layers = config.layers || {};
+
+    return {
+      light: this.#normalizeOpacity(
+        layout.baseShadowOpacity ?? layers.baseShadowOpacity,
+      ),
+      dark: this.#normalizeOpacity(
+        layout.darkMode?.baseShadowOpacity ??
+          layers.darkMode?.baseShadowOpacity,
+      ),
+    };
+  }
+
+  #normalizeOpacity(value) {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return undefined;
+    return Math.min(Math.max(numeric, 0), 1);
+  }
+
+  #mergeShadowConfig(layersConfig = {}, baseShadowOpacity) {
+    const merged = { ...layersConfig };
+    if (baseShadowOpacity != null) {
+      merged.baseShadowOpacity = baseShadowOpacity;
+    }
+    return merged;
+  }
+
+  #generateColorTokens(colorConfig, shadowOpacityConfig = {}) {
     const {
       primary = "#3b82f6",
       secondary = "#64748b", // REQUIRED for gray scale generation
@@ -124,7 +170,10 @@ export class Generator {
     );
 
     // Generate smart surface tokens with context-aware text, icons, shadows, and borders
-    colors.surfaceSmart = this.#generateSmartSurfaceTokens(colors.surface);
+    colors.surfaceSmart = this.#generateSmartSurfaceTokens(
+      colors.surface,
+      shadowOpacityConfig,
+    );
 
     // Generate dark mode variants using darkMode overrides from config
     colors.dark = this.#generateDarkModeColors(
@@ -137,6 +186,7 @@ export class Generator {
     if (colors.dark && colors.dark.surface) {
       colors.dark.surfaceSmart = this.#generateSmartSurfaceTokens(
         colors.dark.surface,
+        shadowOpacityConfig,
       );
     }
 
@@ -444,8 +494,10 @@ export class Generator {
    * @param {Object} surfaceShades - Object with surface color variants (base, subtle, elevated, etc.)
    * @returns {Object} Smart tokens for each surface with text, icon, shadow, and border colors
    */
-  #generateSmartSurfaceTokens(surfaceShades) {
+  #generateSmartSurfaceTokens(surfaceShades, shadowOpacityConfig = {}) {
     const tokens = {};
+    const lightShadowOpacity = shadowOpacityConfig.light ?? 0.1;
+    const darkShadowOpacity = shadowOpacityConfig.dark ?? 0.25;
 
     Object.entries(surfaceShades).forEach(([key, bgColor]) => {
       // Skip non-color values (like 'hover' which uses CSS functions)
@@ -467,7 +519,9 @@ export class Generator {
       // Context-aware shadows: light shadows on dark surfaces, dark shadows on light
       // Light shadows need higher opacity to be visible on dark backgrounds
       const shadowBase = isDark ? "#ffffff" : "#000000";
-      const shadowOpacity = isDark ? 0.25 : 0.1;
+      const shadowOpacity = isDark
+        ? darkShadowOpacity
+        : lightShadowOpacity;
       const shadowColor = this.#rgbaFromHex(shadowBase, shadowOpacity);
 
       // Semi-transparent borders that work on any surface
@@ -1168,7 +1222,7 @@ export class Generator {
     return `${lines.join("")}\n`;
   }
 
-  #generateDarkVariablesOnly(colors) {
+  #generateDarkVariablesOnly(colors, darkShadows) {
     if (!colors?.dark) return "";
 
     const varLines = [];
@@ -1225,11 +1279,19 @@ export class Generator {
     const backdrop = `  /* Backdrop tokens - dark mode */\n  --backdrop-bg: linear-gradient(\n      135deg,\n      rgba(0, 0, 0, 0.6),\n      rgba(0, 0, 0, 0.4)\n    );\n  --backdrop-blur: 10px;\n  --backdrop-saturate: 120%;\n  --backdrop-brightness: 0.7;\n  --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));\n  --backdrop-opacity: 1;\n  \n  /* Legacy alias for backwards compatibility */\n  --backdrop-background: var(--backdrop-bg);\n`;
 
     const mesh = this.#generateMeshGradientsDark(colors);
+    const shadowLines = darkShadows
+      ? [this.#generateShadowVariables(darkShadows)]
+      : [];
 
     // Return ONLY variables, no component rules
-    const body = [...varLines, ...smartLines, semantic, backdrop, mesh].join(
-      "",
-    );
+    const body = [
+      ...varLines,
+      ...smartLines,
+      ...shadowLines,
+      semantic,
+      backdrop,
+      mesh,
+    ].join("");
 
     // Dark mode selector only - .surface-inverse is handled separately in utilities
     // to avoid inheriting the full dark palette (which would override --color-surface-inverse)
@@ -1237,7 +1299,7 @@ export class Generator {
   }
 
   // Generate ONLY dark mode variables for the tokens layer (no wrapper, no component rules)
-  #generateDarkVariablesForTokensLayer(colors) {
+  #generateDarkVariablesForTokensLayer(colors, darkShadows) {
     if (!colors?.dark) return "";
 
     const varLines = [];
@@ -1322,10 +1384,18 @@ export class Generator {
     const backdrop = `    /* Backdrop tokens - dark mode */\n    --backdrop-bg: linear-gradient(\n        135deg,\n        rgba(0, 0, 0, 0.6),\n        rgba(0, 0, 0, 0.4)\n      );\n    --backdrop-blur: 10px;\n    --backdrop-saturate: 120%;\n    --backdrop-brightness: 0.7;\n    --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));\n    --backdrop-opacity: 1;\n    \n    /* Legacy alias for backwards compatibility */\n    --backdrop-background: var(--backdrop-bg);\n`;
 
     const mesh = this.#generateMeshGradientsDarkVariablesOnly(colors);
+    const shadowLines = darkShadows
+      ? [this.#generateShadowVariables(darkShadows)]
+      : [];
 
-    const content = [...varLines, ...smartLines, semantic, backdrop, mesh].join(
-      "",
-    );
+    const content = [
+      ...varLines,
+      ...smartLines,
+      ...shadowLines,
+      semantic,
+      backdrop,
+      mesh,
+    ].join("");
 
     return `\n       html[data-theme="dark"] {\n${content}       }\n`;
   }
@@ -4164,6 +4234,7 @@ nav[data-dropdown] {
       borderWidths,
       typography,
       shadows,
+      darkShadows,
       layout,
       transitions,
       zIndex,
@@ -4184,7 +4255,7 @@ nav[data-dropdown] {
           ${this.#generateZIndexVariables(zIndex)}
           ${this.#generateIconVariables(icons)}
        }
-       ${this.#generateDarkVariablesForTokensLayer(colors)}
+       ${this.#generateDarkVariablesForTokensLayer(colors, darkShadows)}
     }`,
     ];
 
@@ -4195,7 +4266,7 @@ nav[data-dropdown] {
     sections.push(
       `\n/* Non-layered dark variables fallback (ensures attribute wins) */\n`,
     );
-    sections.push(this.#generateDarkVariablesOnly(colors));
+    sections.push(this.#generateDarkVariablesOnly(colors, darkShadows));
 
     return sections.join("");
   }

@@ -1,7 +1,12 @@
+// @ts-check
+
+/** @typedef {import("@pure-ds/core/src/js/pds-core/pds-config.js").PDSInitConfig} PDSInitConfig */
+
 const standardPDSEnhancers = Array.isArray(globalThis.PDS?.defaultEnhancers)
   ? globalThis.PDS.defaultEnhancers
   : [];
 
+/** @type {PDSInitConfig} */
 export const config = {
   mode: "static",
   preset: "social-feed",

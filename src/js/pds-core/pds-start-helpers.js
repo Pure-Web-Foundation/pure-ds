@@ -3,6 +3,8 @@
  * Kept separate to avoid pulling live-only logic into the base runtime bundle.
  */
 
+import { validateDesignConfig, validateInitConfig } from "./pds-config.js";
+
 const __ABSOLUTE_URL_PATTERN__ = /^[a-z][a-z0-9+\-.]*:\/\//i;
 const __MODULE_URL__ = (() => {
   try {
@@ -130,6 +132,11 @@ export function stripFunctions(obj) {
 
 // Internal: normalize first-arg config to a full generator config and extract enhancers if provided inline
 export function normalizeInitConfig(inputConfig = {}, options = {}, { presets, defaultLog }) {
+  const logFn =
+    inputConfig && typeof inputConfig.log === "function"
+      ? inputConfig.log
+      : defaultLog;
+
   // If caller passed a plain design config (legacy), keep as-is
   const hasDesignKeys =
     typeof inputConfig === "object" &&
@@ -167,10 +174,17 @@ export function normalizeInitConfig(inputConfig = {}, options = {}, { presets, d
     "design" in (inputConfig || {}) ||
     "enhancers" in (inputConfig || {});
 
+  if (inputConfig && typeof inputConfig === "object") {
+    validateInitConfig(inputConfig, { log: logFn, context: "PDS.start" });
+  }
+
   let generatorConfig;
   let presetInfo = null;
 
   if (hasNewShape) {
+    if (designOverrides && typeof designOverrides === "object") {
+      validateDesignConfig(designOverrides, { log: logFn, context: "PDS.start" });
+    }
     // Always resolve a preset; default if none provided
     const effectivePreset = String(presetId || "default").toLowerCase();
     const found =
@@ -228,6 +242,7 @@ export function normalizeInitConfig(inputConfig = {}, options = {}, { presets, d
       log: userLog || defaultLog,
     };
   } else if (hasDesignKeys) {
+    validateDesignConfig(inputConfig, { log: logFn, context: "PDS.start" });
     // Back-compat: treat the provided object as the full design, wrap it
     const { log: userLog, ...designConfig } = inputConfig;
     generatorConfig = {

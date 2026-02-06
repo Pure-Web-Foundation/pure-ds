@@ -30,3 +30,4 @@ packages/pds-storybook/stories/getting-started.md
 # Generated LLM instruction files (source is pds.llm.md)
 /.github/copilot-instructions.md
 /.cursorrules
+public/assets/pds/external/lit.js

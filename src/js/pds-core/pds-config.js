@@ -1,6 +1,673 @@
 import { enums } from "./pds-enums.js";
 
 /**
+ * Design config types (SSoT) - mirror generator input and document output impact.
+ * These types are used for validation and live-edit mapping.
+ */
+
+/**
+ * @typedef {Object} PDSDarkModeColorsConfig
+ * @property {string} [background] - Affects dark surface palette and smart surface tokens.
+ * @property {string} [primary] - Affects --color-dark-primary-* and interactive dark fills.
+ * @property {string} [secondary] - Affects --color-dark-gray-* and dark borders/text.
+ * @property {string} [accent] - Affects --color-dark-accent-* and accent interactions.
+ */
+
+/**
+ * @typedef {Object} PDSColorsConfig
+ * @property {string} [primary] - Drives primary scale: --color-primary-50..900 and interactive tokens.
+ * @property {string} [secondary] - Drives neutral scale: --color-gray-50..900.
+ * @property {string} [accent] - Drives accent scale: --color-accent-50..900.
+ * @property {string} [background] - Drives surface shades: --color-surface-* and smart surfaces.
+ * @property {string | null} [success] - Drives semantic success scale: --color-success-*.
+ * @property {string | null} [warning] - Drives semantic warning scale: --color-warning-*.
+ * @property {string | null} [danger] - Drives semantic danger scale: --color-danger-*.
+ * @property {string | null} [info] - Drives semantic info scale: --color-info-*.
+ * @property {number} [gradientStops] - Affects generated gradient scales.
+ * @property {number} [elevationOpacity] - Affects smart surface shadows (opacity).
+ * @property {PDSDarkModeColorsConfig} [darkMode] - Overrides dark mode palette generation.
+ */
+
+/**
+ * @typedef {Object} PDSTypographyConfig
+ * @property {string} [fontFamilyHeadings] - Affects --font-family-headings and heading styles.
+ * @property {string} [fontFamilyBody] - Affects --font-family-body and body text.
+ * @property {string} [fontFamilyMono] - Affects --font-family-mono and code styling.
+ * @property {number} [baseFontSize] - Sets base scale for --font-size-*.
+ * @property {number} [fontScale] - Controls modular scale for --font-size-*.
+ * @property {string | number} [fontWeightLight] - Affects --font-weight-light.
+ * @property {string | number} [fontWeightNormal] - Affects --font-weight-normal.
+ * @property {string | number} [fontWeightMedium] - Affects --font-weight-medium.
+ * @property {string | number} [fontWeightSemibold] - Affects --font-weight-semibold.
+ * @property {string | number} [fontWeightBold] - Affects --font-weight-bold.
+ * @property {string | number} [lineHeightTight] - Affects --line-height-tight.
+ * @property {string | number} [lineHeightNormal] - Affects --line-height-normal.
+ * @property {string | number} [lineHeightRelaxed] - Affects --line-height-relaxed.
+ * @property {number} [letterSpacingTight] - Affects --letter-spacing-tight.
+ * @property {number} [letterSpacingNormal] - Affects --letter-spacing-normal.
+ * @property {number} [letterSpacingWide] - Affects --letter-spacing-wide.
+ */
+
+/**
+ * @typedef {Object} PDSSpatialRhythmConfig
+ * @property {number} [baseUnit] - Generates spacing scale --spacing-1..N.
+ * @property {number} [scaleRatio] - Reserved for derived spacing systems.
+ * @property {number} [maxSpacingSteps] - Caps spacing tokens output.
+ * @property {number | string} [containerMaxWidth] - Affects layout container sizing.
+ * @property {number} [containerPadding] - Affects container padding tokens.
+ * @property {number} [inputPadding] - Affects input padding tokens.
+ * @property {number} [buttonPadding] - Affects button padding tokens.
+ * @property {number} [sectionSpacing] - Affects section spacing tokens.
+ */
+
+/**
+ * @typedef {Object} PDSShapeConfig
+ * @property {string | number} [radiusSize] - Drives --radius-* scale.
+ * @property {string | number | null} [customRadius] - Overrides radius scale base.
+ * @property {string | number} [borderWidth] - Drives --border-width-* scale.
+ */
+
+/**
+ * @typedef {Object} PDSBehaviorConfig
+ * @property {string | number} [transitionSpeed] - Drives --transition-* durations.
+ * @property {string} [animationEasing] - Drives --ease-* tokens.
+ * @property {number | null} [customTransitionSpeed] - Overrides transition durations.
+ * @property {string | null} [customEasing] - Overrides easing curve.
+ * @property {number} [focusRingWidth] - Affects focus ring thickness.
+ * @property {number} [focusRingOpacity] - Affects focus ring opacity.
+ * @property {number} [hoverOpacity] - Affects hover overlay opacity.
+ */
+
+/**
+ * @typedef {Object} PDSLayoutConfig
+ * @property {number | string} [maxWidth] - Drives layout max width tokens.
+ * @property {{ sm?: number | string, md?: number | string, lg?: number | string, xl?: number | string }} [maxWidths] - Per-breakpoint max widths.
+ * @property {number | string} [containerPadding] - Drives layout container padding token.
+ * @property {{ sm?: number, md?: number, lg?: number, xl?: number }} [breakpoints] - Drives breakpoint tokens.
+ * @property {number} [gridColumns] - Affects grid utilities.
+ * @property {number} [gridGutter] - Affects grid gap utilities.
+ * @property {number} [densityCompact] - Affects density tokens/utilities.
+ * @property {number} [densityNormal] - Affects density tokens/utilities.
+ * @property {number} [densityComfortable] - Affects density tokens/utilities.
+ * @property {number} [buttonMinHeight] - Affects min-height tokens for buttons.
+ * @property {number} [inputMinHeight] - Affects min-height tokens for inputs.
+ * @property {number} [baseShadowOpacity] - Affects layout shadow opacity.
+ * @property {{ baseShadowOpacity?: number }} [darkMode] - Dark mode shadow opacity overrides.
+ * @property {Record<string, any>} [utilities] - Toggles layout utilities generation.
+ * @property {Record<string, any>} [gridSystem] - Grid system configuration.
+ * @property {number | string} [containerMaxWidth] - Affects container sizing token.
+ */
+
+/**
+ * @typedef {Object} PDSLayersConfig
+ * @property {number} [baseShadowOpacity] - Drives --shadow-* opacity.
+ * @property {number} [shadowBlurMultiplier] - Scales shadow blur.
+ * @property {number} [shadowOffsetMultiplier] - Scales shadow offsets.
+ * @property {string} [shadowDepth] - Base depth style selection.
+ * @property {number} [blurLight] - Affects blur tokens.
+ * @property {number} [blurMedium] - Affects blur tokens.
+ * @property {number} [blurHeavy] - Affects blur tokens.
+ * @property {number} [baseZIndex] - Drives z-index token base.
+ * @property {number} [zIndexStep] - Drives z-index step scale.
+ * @property {number} [zIndexBase]
+ * @property {number} [zIndexDropdown]
+ * @property {number} [zIndexSticky]
+ * @property {number} [zIndexFixed]
+ * @property {number} [zIndexModal]
+ * @property {number} [zIndexPopover]
+ * @property {number} [zIndexTooltip]
+ * @property {number} [zIndexNotification]
+ * @property {{ baseShadowOpacity?: number }} [darkMode] - Dark mode shadow opacity overrides.
+ */
+
+/**
+ * @typedef {Object} PDSIconsConfig
+ * @property {string} [set] - Icon set name, affects icon resolution.
+ * @property {string} [weight] - Default icon weight.
+ * @property {number} [defaultSize] - Default icon size token.
+ * @property {Record<string, number | string>} [sizes] - Icon size scale tokens.
+ * @property {string} [spritePath] - Sprite URL used by icon component.
+ * @property {string} [externalPath] - External icon path for on-demand icons.
+ * @property {Record<string, string[]>} [include] - Icon allowlist for build.
+ */
+
+/**
+ * @typedef {Object} PDSDesignConfig
+ * @property {string} [id]
+ * @property {string} [name]
+ * @property {string[]} [tags]
+ * @property {string} [description]
+ * @property {Record<string, any>} [options]
+ * @property {Record<string, any>} [form]
+ * @property {PDSColorsConfig} [colors] - Affects tokens.colors and --color-* variables.
+ * @property {PDSTypographyConfig} [typography] - Affects tokens.typography and --font-* variables.
+ * @property {PDSSpatialRhythmConfig} [spatialRhythm] - Affects tokens.spacing and --spacing-* variables.
+ * @property {PDSShapeConfig} [shape] - Affects tokens.radius/borderWidths and --radius-* variables.
+ * @property {PDSBehaviorConfig} [behavior] - Affects tokens.transitions and motion variables.
+ * @property {PDSLayoutConfig} [layout] - Affects tokens.layout and layout utilities.
+ * @property {PDSLayersConfig} [layers] - Affects tokens.shadows/zIndex and layer effects.
+ * @property {Record<string, any>} [advanced]
+ * @property {Record<string, any>} [a11y]
+ * @property {PDSIconsConfig} [icons] - Affects tokens.icons and icon component behavior.
+ * @property {Record<string, any>} [components]
+ * @property {number} [gap]
+ * @property {boolean} [debug]
+ */
+
+/**
+ * @typedef {Object} PDSInitConfig
+ * @property {string} [mode]
+ * @property {string} [preset]
+ * @property {PDSDesignConfig} [design]
+ * @property {Record<string, any> | Array<any>} [enhancers]
+ * @property {boolean} [applyGlobalStyles]
+ * @property {boolean} [manageTheme]
+ * @property {string} [themeStorageKey]
+ * @property {boolean} [preloadStyles]
+ * @property {string[]} [criticalLayers]
+ * @property {Record<string, any>} [autoDefine]
+ * @property {string} [managerURL]
+ * @property {any} [manager]
+ * @property {any} [log]
+ */
+
+const __ANY_TYPE__ = "any";
+
+const __DESIGN_CONFIG_SPEC__ = {
+  type: "object",
+  allowUnknown: false,
+  properties: {
+    id: { type: "string" },
+    name: { type: "string" },
+    tags: { type: "array", items: { type: "string" } },
+    description: { type: "string" },
+    options: { type: "object", allowUnknown: true },
+    form: { type: "object", allowUnknown: true },
+    colors: {
+      type: "object",
+      allowUnknown: false,
+      properties: {
+        primary: {
+          type: "string",
+          relations: {
+            tokens: [
+              "--color-primary-*",
+              "--color-primary-fill",
+              "--color-primary-text",
+              "--background-mesh-*",
+            ],
+          },
+        },
+        secondary: {
+          type: "string",
+          relations: {
+            tokens: ["--color-secondary-*", "--color-gray-*", "--background-mesh-*"]
+          },
+        },
+        accent: {
+          type: "string",
+          relations: {
+            tokens: ["--color-accent-*", "--background-mesh-*"]
+          },
+        },
+        background: {
+          type: "string",
+          relations: {
+            tokens: [
+              "--color-surface-*",
+              "--color-surface-translucent-*",
+              "--surface-*-bg",
+              "--surface-*-text",
+              "--surface-*-text-secondary",
+              "--surface-*-text-muted",
+              "--surface-*-icon",
+              "--surface-*-icon-subtle",
+              "--surface-*-shadow",
+              "--surface-*-border",
+            ],
+          },
+        },
+        success: {
+          type: ["string", "null"],
+          relations: { tokens: ["--color-success-*"] },
+        },
+        warning: {
+          type: ["string", "null"],
+          relations: { tokens: ["--color-warning-*"] },
+        },
+        danger: {
+          type: ["string", "null"],
+          relations: { tokens: ["--color-danger-*"] },
+        },
+        info: {
+          type: ["string", "null"],
+          relations: { tokens: ["--color-info-*"] },
+        },
+        gradientStops: { type: "number" },
+        elevationOpacity: {
+          type: "number",
+          relations: { tokens: ["--surface-*-shadow"] },
+        },
+        darkMode: {
+          type: "object",
+          allowUnknown: true,
+          properties: {
+            background: {
+              type: "string",
+              relations: {
+                theme: "dark",
+                tokens: [
+                  "--color-surface-*",
+                  "--color-surface-translucent-*",
+                  "--surface-*-bg",
+                  "--surface-*-text",
+                  "--surface-*-text-secondary",
+                  "--surface-*-text-muted",
+                  "--surface-*-icon",
+                  "--surface-*-icon-subtle",
+                  "--surface-*-shadow",
+                  "--surface-*-border",
+                ],
+              },
+            },
+            primary: {
+              type: "string",
+              relations: {
+                theme: "dark",
+                tokens: ["--color-primary-*", "--color-primary-fill", "--color-primary-text"],
+              },
+            },
+            secondary: {
+              type: "string",
+              relations: {
+                theme: "dark",
+                tokens: ["--color-secondary-*", "--color-gray-*"]
+              },
+            },
+            accent: {
+              type: "string",
+              relations: { theme: "dark", tokens: ["--color-accent-*"] },
+            },
+          },
+        },
+      },
+    },
+    typography: {
+      type: "object",
+      allowUnknown: false,
+      properties: {
+        fontFamilyHeadings: {
+          type: "string",
+          relations: { tokens: ["--font-family-headings"] },
+        },
+        fontFamilyBody: {
+          type: "string",
+          relations: { tokens: ["--font-family-body"] },
+        },
+        fontFamilyMono: {
+          type: "string",
+          relations: { tokens: ["--font-family-mono"] },
+        },
+        baseFontSize: {
+          type: "number",
+          relations: { tokens: ["--font-size-*"] },
+        },
+        fontScale: {
+          type: "number",
+          relations: { tokens: ["--font-size-*"] },
+        },
+        fontWeightLight: {
+          type: ["string", "number"],
+          relations: { tokens: ["--font-weight-light"] },
+        },
+        fontWeightNormal: {
+          type: ["string", "number"],
+          relations: { tokens: ["--font-weight-normal"] },
+        },
+        fontWeightMedium: {
+          type: ["string", "number"],
+          relations: { tokens: ["--font-weight-medium"] },
+        },
+        fontWeightSemibold: {
+          type: ["string", "number"],
+          relations: { tokens: ["--font-weight-semibold"] },
+        },
+        fontWeightBold: {
+          type: ["string", "number"],
+          relations: { tokens: ["--font-weight-bold"] },
+        },
+        lineHeightTight: {
+          type: ["string", "number"],
+          relations: { tokens: ["--font-line-height-tight"] },
+        },
+        lineHeightNormal: {
+          type: ["string", "number"],
+          relations: { tokens: ["--font-line-height-normal"] },
+        },
+        lineHeightRelaxed: {
+          type: ["string", "number"],
+          relations: { tokens: ["--font-line-height-relaxed"] },
+        },
+        letterSpacingTight: { type: "number" },
+        letterSpacingNormal: { type: "number" },
+        letterSpacingWide: { type: "number" },
+      },
+    },
+    spatialRhythm: {
+      type: "object",
+      allowUnknown: false,
+      properties: {
+        baseUnit: {
+          type: "number",
+          relations: { tokens: ["--spacing-*"] },
+        },
+        scaleRatio: { type: "number" },
+        maxSpacingSteps: {
+          type: "number",
+          relations: { tokens: ["--spacing-*"] },
+        },
+        containerMaxWidth: { type: ["number", "string"] },
+        containerPadding: { type: "number" },
+        inputPadding: {
+          type: "number",
+          relations: {
+            rules: [{ selectors: ["input", "textarea", "select"], properties: ["padding"] }],
+          },
+        },
+        buttonPadding: {
+          type: "number",
+          relations: {
+            rules: [{ selectors: ["button", ".btn"], properties: ["padding"] }],
+          },
+        },
+        sectionSpacing: {
+          type: "number",
+          relations: {
+            rules: [{ selectors: ["section"], properties: ["margin", "padding"] }],
+          },
+        },
+      },
+    },
+    shape: {
+      type: "object",
+      allowUnknown: false,
+      properties: {
+        radiusSize: {
+          type: ["string", "number"],
+          relations: { tokens: ["--radius-*"] },
+        },
+        customRadius: { type: ["string", "number", "null"] },
+        borderWidth: {
+          type: ["string", "number"],
+          relations: { tokens: ["--border-width-*"] },
+        },
+      },
+    },
+    behavior: {
+      type: "object",
+      allowUnknown: false,
+      properties: {
+        transitionSpeed: {
+          type: ["string", "number"],
+          relations: { tokens: ["--transition-*"] },
+        },
+        animationEasing: { type: "string" },
+        customTransitionSpeed: { type: ["number", "null"] },
+        customEasing: { type: ["string", "null"] },
+        focusRingWidth: {
+          type: "number",
+          relations: { rules: [{ selectors: [":focus-visible"], properties: ["outline-width", "box-shadow"] }] },
+        },
+        focusRingOpacity: {
+          type: "number",
+          relations: { rules: [{ selectors: [":focus-visible"], properties: ["box-shadow", "outline-color"] }] },
+        },
+        hoverOpacity: { type: "number" },
+      },
+    },
+    layout: {
+      type: "object",
+      allowUnknown: false,
+      properties: {
+        maxWidth: {
+          type: ["number", "string"],
+          relations: { tokens: ["--layout-max-width", "--layout-max-width-*"] },
+        },
+        maxWidths: {
+          type: "object",
+          allowUnknown: false,
+          properties: {
+            sm: { type: ["number", "string"], relations: { tokens: ["--layout-max-width-sm"] } },
+            md: { type: ["number", "string"], relations: { tokens: ["--layout-max-width-md"] } },
+            lg: { type: ["number", "string"], relations: { tokens: ["--layout-max-width-lg"] } },
+            xl: { type: ["number", "string"], relations: { tokens: ["--layout-max-width-xl"] } },
+          },
+        },
+        containerPadding: {
+          type: ["number", "string"],
+          relations: { tokens: ["--layout-container-padding"] },
+        },
+        breakpoints: {
+          type: "object",
+          allowUnknown: false,
+          properties: {
+            sm: { type: "number" },
+            md: { type: "number" },
+            lg: { type: "number" },
+            xl: { type: "number" },
+          },
+        },
+        gridColumns: { type: "number" },
+        gridGutter: { type: "number" },
+        densityCompact: { type: "number" },
+        densityNormal: { type: "number" },
+        densityComfortable: { type: "number" },
+        buttonMinHeight: { type: "number" },
+        inputMinHeight: { type: "number" },
+        baseShadowOpacity: {
+          type: "number",
+          relations: { tokens: ["--shadow-*"] },
+        },
+        darkMode: {
+          type: "object",
+          allowUnknown: true,
+          properties: {
+            baseShadowOpacity: { type: "number", relations: { theme: "dark", tokens: ["--shadow-*"] } },
+          },
+        },
+        utilities: { type: "object", allowUnknown: true },
+        gridSystem: { type: "object", allowUnknown: true },
+        containerMaxWidth: { type: ["number", "string"] },
+      },
+    },
+    layers: {
+      type: "object",
+      allowUnknown: false,
+      properties: {
+        baseShadowOpacity: {
+          type: "number",
+          relations: { tokens: ["--shadow-*"] },
+        },
+        shadowBlurMultiplier: {
+          type: "number",
+          relations: { tokens: ["--shadow-*"] },
+        },
+        shadowOffsetMultiplier: {
+          type: "number",
+          relations: { tokens: ["--shadow-*"] },
+        },
+        shadowDepth: { type: "string" },
+        blurLight: { type: "number" },
+        blurMedium: { type: "number" },
+        blurHeavy: { type: "number" },
+        baseZIndex: { type: "number", relations: { tokens: ["--z-*"] } },
+        zIndexStep: { type: "number", relations: { tokens: ["--z-*"] } },
+        zIndexBase: { type: "number" },
+        zIndexDropdown: { type: "number" },
+        zIndexSticky: { type: "number" },
+        zIndexFixed: { type: "number" },
+        zIndexModal: { type: "number" },
+        zIndexPopover: { type: "number" },
+        zIndexTooltip: { type: "number" },
+        zIndexNotification: { type: "number" },
+        darkMode: {
+          type: "object",
+          allowUnknown: true,
+          properties: {
+            baseShadowOpacity: { type: "number", relations: { theme: "dark", tokens: ["--shadow-*"] } },
+          },
+        },
+      },
+    },
+    advanced: { type: "object", allowUnknown: true },
+    a11y: { type: "object", allowUnknown: true },
+    icons: {
+      type: "object",
+      allowUnknown: false,
+      properties: {
+        set: { type: "string" },
+        weight: { type: "string" },
+        defaultSize: { type: "number", relations: { tokens: ["--icon-size"] } },
+        sizes: { type: "object", allowUnknown: true },
+        spritePath: { type: "string" },
+        externalPath: { type: "string" },
+        include: { type: "object", allowUnknown: true },
+      },
+    },
+    components: { type: "object", allowUnknown: true },
+    gap: { type: "number" },
+    debug: { type: "boolean" },
+  },
+};
+
+const __INIT_CONFIG_SPEC__ = {
+  type: "object",
+  allowUnknown: true,
+  properties: {
+    mode: { type: "string" },
+    preset: { type: "string" },
+    design: { type: "object" },
+    enhancers: { type: ["object", "array"] },
+    applyGlobalStyles: { type: "boolean" },
+    manageTheme: { type: "boolean" },
+    themeStorageKey: { type: "string" },
+    preloadStyles: { type: "boolean" },
+    criticalLayers: { type: "array", items: { type: "string" } },
+    autoDefine: { type: "object" },
+    managerURL: { type: "string" },
+    manager: { type: __ANY_TYPE__ },
+    log: { type: __ANY_TYPE__ },
+  },
+};
+
+function __getValueType(value) {
+  if (value === null) return "null";
+  if (Array.isArray(value)) return "array";
+  return typeof value;
+}
+
+function __matchesExpectedType(value, expected) {
+  if (expected === __ANY_TYPE__) return true;
+  const actual = __getValueType(value);
+  if (Array.isArray(expected)) {
+    return expected.includes(actual);
+  }
+  return actual === expected;
+}
+
+function __validateAgainstSpec(value, spec, path, issues) {
+  if (!spec) return;
+  const expectedType = spec.type || __ANY_TYPE__;
+  if (!__matchesExpectedType(value, expectedType)) {
+    issues.push({
+      path,
+      expected: expectedType,
+      actual: __getValueType(value),
+      message: `Expected ${expectedType} but got ${__getValueType(value)}`,
+    });
+    return;
+  }
+
+  if (expectedType === "array" && spec.items && Array.isArray(value)) {
+    value.forEach((item, index) => {
+      __validateAgainstSpec(item, spec.items, `${path}[${index}]`, issues);
+    });
+  }
+
+  if (expectedType === "object" && value && typeof value === "object") {
+    const props = spec.properties || {};
+    for (const [key, val] of Object.entries(value)) {
+      if (!Object.prototype.hasOwnProperty.call(props, key)) {
+        if (!spec.allowUnknown) {
+          issues.push({
+            path: `${path}.${key}`,
+            expected: "known property",
+            actual: "unknown",
+            message: `Unknown property "${key}"`,
+          });
+        }
+        continue;
+      }
+      __validateAgainstSpec(val, props[key], `${path}.${key}`, issues);
+    }
+  }
+}
+
+function __collectRelations(spec, basePath = "", out = {}) {
+  if (!spec || typeof spec !== "object") return out;
+  if (spec.relations && basePath) {
+    out[basePath] = spec.relations;
+  }
+
+  if (spec.type === "object" && spec.properties) {
+    Object.entries(spec.properties).forEach(([key, value]) => {
+      const nextPath = basePath ? `${basePath}.${key}` : key;
+      __collectRelations(value, nextPath, out);
+    });
+  }
+
+  if (spec.type === "array" && spec.items) {
+    const nextPath = `${basePath}[]`;
+    __collectRelations(spec.items, nextPath, out);
+  }
+
+  return out;
+}
+
+/**
+ * Machine-readable config relations for live editing.
+ * Keys are design config paths (e.g., "colors.accent").
+ */
+export const PDS_CONFIG_RELATIONS = __collectRelations(
+  __DESIGN_CONFIG_SPEC__,
+  ""
+);
+
+export function validateDesignConfig(designConfig, { log, context = "PDS config" } = {}) {
+  if (!designConfig || typeof designConfig !== "object") return [];
+  const issues = [];
+  __validateAgainstSpec(designConfig, __DESIGN_CONFIG_SPEC__, "design", issues);
+  if (issues.length && typeof log === "function") {
+    issues.forEach((issue) => {
+      log("warn", `[${context}] ${issue.message} at ${issue.path}`);
+    });
+  }
+  return issues;
+}
+
+export function validateInitConfig(initConfig, { log, context = "PDS config" } = {}) {
+  if (!initConfig || typeof initConfig !== "object") return [];
+  const issues = [];
+  __validateAgainstSpec(initConfig, __INIT_CONFIG_SPEC__, "config", issues);
+  if (issues.length && typeof log === "function") {
+    issues.forEach((issue) => {
+      log("warn", `[${context}] ${issue.message} at ${issue.path}`);
+    });
+  }
+  return issues;
+}
+
+/**
  * Design system presets - pre-configured themes for quick starts.
  * Expose as an object keyed by preset id.
  */
@@ -931,6 +1598,10 @@ presets.default = {
   layout: {
     gridColumns: 12,
     gridGutter: 1.0,
+    baseShadowOpacity: 0.1,
+    darkMode: {
+      baseShadowOpacity: 0.25,
+    },
     breakpoints: {
       sm: 640,
       md: 768,
