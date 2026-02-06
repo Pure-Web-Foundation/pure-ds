@@ -132,6 +132,25 @@ import { enums } from "./pds-enums.js";
  */
 
 /**
+ * @typedef {Object} PDSEnhancer
+ * @property {string} selector
+ * @property {string} [description]
+ * @property {(element: Element) => void} run
+ */
+
+/**
+ * @typedef {Object} PDSAutoDefineConfig
+ * @property {string[]} [predefine]
+ * @property {(tag: string) => (string | undefined | null)} [mapper]
+ * @property {PDSEnhancer[]} [enhancers]
+ * @property {boolean} [scanExisting]
+ * @property {boolean} [observeShadows]
+ * @property {boolean} [patchAttachShadow]
+ * @property {number} [debounceMs]
+ * @property {(error: any) => void} [onError]
+ */
+
+/**
  * @typedef {Object} PDSDesignConfig
  * @property {string} [id]
  * @property {string} [name]
@@ -159,13 +178,13 @@ import { enums } from "./pds-enums.js";
  * @property {string} [mode]
  * @property {string} [preset]
  * @property {PDSDesignConfig} [design]
- * @property {Record<string, any> | Array<any>} [enhancers]
+ * @property {PDSEnhancer[] | Record<string, PDSEnhancer>} [enhancers]
  * @property {boolean} [applyGlobalStyles]
  * @property {boolean} [manageTheme]
  * @property {string} [themeStorageKey]
  * @property {boolean} [preloadStyles]
  * @property {string[]} [criticalLayers]
- * @property {Record<string, any>} [autoDefine]
+ * @property {PDSAutoDefineConfig} [autoDefine]
  * @property {string} [managerURL]
  * @property {any} [manager]
  * @property {any} [log]

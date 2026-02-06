@@ -1,9 +1,11 @@
 // @ts-check
 
-/** @typedef {import("@pure-ds/core/src/js/pds-core/pds-config.js").PDSInitConfig} PDSInitConfig */
+/** @typedef {import("@pure-ds/core/dist/types/src/js/pds-core/pds-config").PDSInitConfig} PDSInitConfig */
 
-const standardPDSEnhancers = Array.isArray(globalThis.PDS?.defaultEnhancers)
-  ? globalThis.PDS.defaultEnhancers
+const pdsGlobal = globalThis.PDS;
+
+const standardPDSEnhancers = Array.isArray(pdsGlobal?.defaultEnhancers)
+  ? pdsGlobal.defaultEnhancers
   : [];
 
 /** @type {PDSInitConfig} */

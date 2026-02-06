@@ -1,6 +1,6 @@
 // @ts-check
 
-/** @typedef {import("./src/js/pds-core/pds-config.js").PDSInitConfig} PDSInitConfig */
+/** @typedef {import("./src/js/pds-core/pds-config").PDSInitConfig} PDSInitConfig */
 
 /** @type {PDSInitConfig} */
 export const config = {
