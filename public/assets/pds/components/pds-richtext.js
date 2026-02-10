@@ -341,7 +341,13 @@ export class RichText extends HTMLElement {
   async #adoptStyles() {
     // Component stylesheet (tokens + semantic vars)
     const componentStyles = PDS.createStylesheet(/*css*/ `@layer richtext {
-      :host { display:block; color: var(--rt-fg, var(--color-text-primary)); font: var(--font-body-sm, 14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,sans-serif); }
+      :host {
+        display: block;
+        color: var(--rt-fg, var(--color-text-primary));
+        font-family: var(--rt-font-family, var(--font-family-body));
+        font-size: var(--rt-font-size, var(--font-size-base));
+        line-height: var(--rt-line-height, var(--font-line-height-normal));
+      }
       :host([disabled]) { opacity: .6; pointer-events: none; }
       .box { border: 1px solid var(--rt-border, var(--color-border, currentColor)); border-radius: var(--radius-md,8px); background: var(--rt-bg, var(--color-input-bg)); }
       .box:focus-within { 
@@ -357,7 +363,7 @@ export class RichText extends HTMLElement {
       .tbtn { transition: none; display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius: var(--radius-sm,6px); cursor:pointer; user-select:none; color: inherit; background: transparent; border:none; }
       .tbtn:hover { background: var(--color-surface-hover, color-mix(in oklab, CanvasText 12%, transparent)); }
       .edwrap { position:relative; }
-      .ed { display: block; min-height:90px; max-height: 400px; overflow:auto; padding: var(--spacing-1, 0) var(--spacing-2, 0); outline:none; word-break:break-word; border-radius: 0 0 var(--radius-md,8px) var(--radius-md,8px); background: var(--rt-editor-bg, var(--color-input-bg)); }
+      .ed { display: block; font-weight: normal; min-height:90px; max-height: 400px; overflow:auto; padding: var(--spacing-1, 0) var(--spacing-2, 0); outline:none; word-break:break-word; border-radius: 0 0 var(--radius-md,8px) var(--radius-md,8px); background: var(--rt-editor-bg, var(--color-input-bg)); }
       .ed[contenteditable="true"]:empty::before { content: attr(data-ph); color: var(--rt-muted, var(--color-text-muted)); pointer-events:none; }
       .send { margin-left:auto; display:inline-flex; gap: var(--spacing-2,8px); align-items:center; }
       button.icon { background:transparent; border:0; color:inherit; cursor:pointer; padding:6px; border-radius: var(--radius-sm,6px); }

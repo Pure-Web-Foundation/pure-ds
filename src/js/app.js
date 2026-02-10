@@ -1,6 +1,6 @@
 import { PDS } from "./pds";
 import { config } from "../../pds.config.js"
-import "../../packages/pds-configurator/src/pds-configurator.js";
+import "../../packages/pds-configurator/src/pds-home.js";
 
 // Initialize PDS once at app startup using the new unified shape
 await PDS.start(config);
@@ -11,7 +11,7 @@ document.body.innerHTML = /*html*/ `
 		</header>
 		
 		<main>
-      <pds-configurator></pds-configurator>
+		<pds-home class="container"></pds-home>
     </main>
     <pds-drawer id="global-drawer" position="bottom"></pds-drawer>
 `

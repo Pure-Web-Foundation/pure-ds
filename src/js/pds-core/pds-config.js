@@ -187,6 +187,7 @@ import { enums } from "./pds-enums.js";
  * @property {PDSAutoDefineConfig} [autoDefine]
  * @property {string} [managerURL]
  * @property {any} [manager]
+ * @property {boolean} [liveEdit]
  * @property {any} [log]
  */
 
@@ -575,6 +576,7 @@ const __INIT_CONFIG_SPEC__ = {
     autoDefine: { type: "object" },
     managerURL: { type: "string" },
     manager: { type: __ANY_TYPE__ },
+    liveEdit: { type: "boolean" },
     log: { type: __ANY_TYPE__ },
   },
 };

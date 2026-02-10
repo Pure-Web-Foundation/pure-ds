@@ -1,6 +1,6 @@
 // @ts-check
 
-/** @typedef {import("@pure-ds/core/dist/types/src/js/pds-core/pds-config").PDSInitConfig} PDSInitConfig */
+/** @typedef {import("@pure-ds/core").PDSInitConfig} PDSInitConfig */
 
 const pdsGlobal = globalThis.PDS;
 

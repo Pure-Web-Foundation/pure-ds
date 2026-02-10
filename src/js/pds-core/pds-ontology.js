@@ -247,6 +247,14 @@ export const ontology = {
       category: "form"
     },
     { 
+      id: "pds-live-edit", 
+      name: "Live Edit", 
+      description: "Contextual live editing for PDS design settings",
+      selectors: ["pds-live-edit"],
+      tags: ["editor", "live", "config", "tooling"],
+      category: "tooling"
+    },
+    { 
       id: "pds-splitpanel", 
       name: "Split Panel", 
       description: "Resizable split pane layout",

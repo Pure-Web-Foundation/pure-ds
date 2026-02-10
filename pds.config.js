@@ -5,6 +5,7 @@
 /** @type {PDSInitConfig} */
 export const config = {
   mode: "live",
+  //liveEdit: true,
   preset: "default",
   autoDefine: {
     predefine: ["pds-icon", "pds-drawer", "pds-toaster"]

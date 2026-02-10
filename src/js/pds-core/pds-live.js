@@ -4,7 +4,7 @@
  */
 import { Generator } from "./pds-generator.js";
 import { applyStyles, adoptLayers, adoptPrimitives } from "./pds-runtime.js";
-import { presets, defaultLog } from "./pds-config.js";
+import { presets, defaultLog, PDS_CONFIG_RELATIONS } from "./pds-config.js";
 import { defaultPDSEnhancers } from "./pds-enhancers.js";
 import { defaultPDSEnhancerMetadata } from "./pds-enhancers-meta.js";
 import { resolvePublicAssetURL } from "./pds-paths.js";
@@ -45,6 +45,7 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
   PDS.enums = enums;
   PDS.common = commonModule || {};
   PDS.presets = presets;
+  PDS.configRelations = PDS_CONFIG_RELATIONS;
   PDS.enhancerMetadata = defaultPDSEnhancerMetadata;
   PDS.applyStyles = function(generator) {
     return applyStyles(generator || Generator.instance);
@@ -344,6 +345,20 @@ export async function startLive(PDS, config, { emitReady, applyResolvedTheme, se
       theme: resolvedTheme,
       enhancers: mergedEnhancers,
     });
+
+    
+    if (config?.liveEdit && typeof document !== "undefined") {
+      try {
+        if (!document.querySelector("pds-live-edit")) {
+          setTimeout(() => {
+            const liveEditor = document.createElement("pds-live-edit");
+            document.body.appendChild(liveEditor);  
+          }, 1000);
+        }
+      } catch (error) {
+        generatorConfig?.log?.("warn", "Live editor failed to start:", error);
+      }
+    }
 
     emitReady({
       mode: "live",

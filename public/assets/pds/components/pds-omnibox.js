@@ -60,6 +60,12 @@ export class PdsOmnibox extends HTMLElement {
 	disconnectedCallback() {
 		this.#teardownAutoCompleteSizing();
 		this.#teardownSuggestionsObserver();
+		const autoComplete = this.#input?._autoComplete;
+		if (autoComplete) {
+			autoComplete.controller?.().clear?.("disconnected");
+			autoComplete.resultsDiv?.remove?.();
+			this.#input._autoComplete = null;
+		}
 		if (this.#suggestionsUpdatedHandler) {
 			this.removeEventListener("suggestions-updated", this.#suggestionsUpdatedHandler);
 			this.#suggestionsUpdatedHandler = null;
@@ -315,13 +321,12 @@ export class PdsOmnibox extends HTMLElement {
 
 							&:hover,
 							&.selected {
-								background-color: var(--accent-color, var(--ac-accent-color-default));
-								color: var(--ac-bg, var(--ac-bg-default));
+								background-color: var(--color-surface-elevated);
+								
 
 								svg-icon,
 								pds-icon {
-									--icon-fill-color: var(--color-surface-base);
-									color: var(--color-surface-base);
+									filter: brightness(120%)
 								}
 
 								small,
@@ -399,8 +404,8 @@ export class PdsOmnibox extends HTMLElement {
 
 							.ac-itm:hover,
 							.ac-itm.selected {
-								background-color: var(--color-accent-300);
-								color: var(--color-surface-base);
+								background-color: var(--color-primary-500);
+								color: var(--color-primary-contrast, #ffffff);
 							}
 						}
 					}
@@ -464,9 +469,22 @@ export class PdsOmnibox extends HTMLElement {
         },
         ...this.settings
       };
-      
 
-			this.#input._autoComplete = new AutoComplete(this.#input.parentNode, this.#input, settings);
+			const container = this.#input?.parentElement;
+			if (container?.style) {
+				container.style.removeProperty("--ac-bg-default");
+				container.style.removeProperty("--ac-color-default");
+				container.style.removeProperty("--ac-accent-color");
+			}
+
+			if (!this.#input._autoComplete) {
+				this.#input._autoComplete = new AutoComplete(
+					this.#input.parentNode,
+					this.#input,
+					settings
+				);
+			}
+
 			this.#wrapAutoCompleteResultsHandler(this.#input._autoComplete);
 			setTimeout(() => {
 				this.#input._autoComplete.focusHandler(e);

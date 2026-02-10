@@ -77,16 +77,55 @@ function enhanceDropdown(elem) {
   }
 
   const resolveDirection = () => {
-    const mode = (elem.getAttribute("data-mode") || "auto").toLowerCase();
+    const mode = (
+      elem.getAttribute("data-direction") ||
+      elem.getAttribute("data-dropdown-direction") ||
+      elem.getAttribute("data-mode") ||
+      "auto"
+    ).toLowerCase();
     if (mode === "up" || mode === "down") return mode;
     const rect = elem.getBoundingClientRect();
+    const menuRect = menu?.getBoundingClientRect?.() || { height: 0 };
+    const menuHeight = Math.max(
+      menu?.offsetHeight || 0,
+      menu?.scrollHeight || 0,
+      menuRect.height || 0,
+      200
+    );
     const spaceBelow = Math.max(0, window.innerHeight - rect.bottom);
     const spaceAbove = Math.max(0, rect.top);
+    if (spaceBelow >= menuHeight) return "down";
+    if (spaceAbove >= menuHeight) return "up";
     return spaceAbove > spaceBelow ? "up" : "down";
+  };
+
+  const resolveAlign = () => {
+    const align = (
+      elem.getAttribute("data-align") ||
+      elem.getAttribute("data-dropdown-align") ||
+      "auto"
+    ).toLowerCase();
+    if (align === "left" || align === "right" || align === "start" || align === "end") {
+      return align === "start" ? "left" : align === "end" ? "right" : align;
+    }
+    const rect = elem.getBoundingClientRect();
+    const menuRect = menu?.getBoundingClientRect?.() || { width: 0 };
+    const menuWidth = Math.max(
+      menu?.offsetWidth || 0,
+      menu?.scrollWidth || 0,
+      menuRect.width || 0,
+      240
+    );
+    const spaceRight = Math.max(0, window.innerWidth - rect.left);
+    const spaceLeft = Math.max(0, rect.right);
+    if (spaceRight >= menuWidth) return "left";
+    if (spaceLeft >= menuWidth) return "right";
+    return spaceLeft > spaceRight ? "right" : "left";
   };
 
   const openMenu = () => {
     elem.dataset.dropdownDirection = resolveDirection();
+    elem.dataset.dropdownAlign = resolveAlign();
     menu.setAttribute("aria-hidden", "false");
     trigger?.setAttribute("aria-expanded", "true");
   };
