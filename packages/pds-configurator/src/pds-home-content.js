@@ -254,7 +254,7 @@ export const HOME_CONTENT = [
             project: {
               type: "object",
               title: "Project",
-              //required: ["projectType", "goals"],
+              required: ["projectType", "goals"],
               properties: {
                 projectType: {
                   type: "string",

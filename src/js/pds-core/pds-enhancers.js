@@ -303,9 +303,16 @@ function enhanceRequired(elem) {
     elem.dataset.enhancedRequired = "true";
   
   const enhanceRequiredField = (input) => {
-   
-    const label = input.closest("label");
+    let label;
+    if(input.closest("[role$=group]")) { // Handles both radiogroup and group
+      label = input.closest("[role$=group]").querySelector("legend");
+    }
+    else{
+      label = input.closest("label");
+    }
     if (!label) return;
+    
+
     if (label.querySelector(".required-asterisk")) return;
 
     const asterisk = document.createElement("span");
