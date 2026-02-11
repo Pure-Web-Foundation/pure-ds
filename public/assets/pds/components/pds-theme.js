@@ -13,6 +13,39 @@ const THEME_OPTIONS = [
 
 const DEFAULT_LABEL = "Theme";
 const LAYERS = ["tokens", "primitives", "components", "utilities"];
+const DEFAULT_THEMES = ["light", "dark"];
+const VALID_THEMES = new Set(DEFAULT_THEMES);
+
+const normalizePresetThemes = (preset) => {
+  const themes = Array.isArray(preset?.themes)
+    ? preset.themes.map((theme) => String(theme).toLowerCase())
+    : DEFAULT_THEMES;
+  const normalized = themes.filter((theme) => VALID_THEMES.has(theme));
+  return normalized.length ? normalized : DEFAULT_THEMES;
+};
+
+const resolveThemePreference = (preference) => {
+  const normalized = String(preference || "").toLowerCase();
+  if (VALID_THEMES.has(normalized)) return normalized;
+
+  if (typeof document !== "undefined") {
+    const applied = document.documentElement?.getAttribute("data-theme");
+    if (VALID_THEMES.has(applied)) return applied;
+  }
+
+  if (typeof window !== "undefined" && window.matchMedia) {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return prefersDark ? "dark" : "light";
+  }
+
+  return "light";
+};
+
+const isPresetThemeCompatible = (preset, themePreference) => {
+  const resolvedTheme = resolveThemePreference(themePreference);
+  const themes = normalizePresetThemes(preset);
+  return themes.includes(resolvedTheme);
+};
 
 class PdsTheme extends HTMLElement {
   static get observedAttributes() {
@@ -123,6 +156,21 @@ class PdsTheme extends HTMLElement {
       return;
     }
 
+    const currentPreset = PDS.currentConfig?.design || null;
+    if (currentPreset && !isPresetThemeCompatible(currentPreset, value)) {
+      const resolvedTheme = resolveThemePreference(value);
+      const presetName =
+        currentPreset?.name ||
+        PDS.currentPreset?.name ||
+        PDS.currentConfig?.preset ||
+        "current preset";
+      console.warn(
+        `PDS theme "${resolvedTheme}" not supported by preset "${presetName}".`
+      );
+      this.#syncCheckedState();
+      return;
+    }
+
     if (PDS.theme !== value) {
       PDS.theme = value;
     }
@@ -157,10 +205,20 @@ class PdsTheme extends HTMLElement {
 
   #syncCheckedState() {
     const currentTheme = PDS.theme || "system";
+    const currentPreset = PDS.currentConfig?.design || null;
+    const supportedThemes = normalizePresetThemes(currentPreset);
     this.shadowRoot
       .querySelectorAll('input[type="radio"]')
       .forEach((radio) => {
         radio.checked = radio.value === currentTheme;
+        if (radio.value === "system") {
+          radio.disabled = false;
+        } else if (currentPreset) {
+          const resolved = resolveThemePreference(radio.value);
+          radio.disabled = !supportedThemes.includes(resolved);
+        } else {
+          radio.disabled = false;
+        }
       });
   }
 }

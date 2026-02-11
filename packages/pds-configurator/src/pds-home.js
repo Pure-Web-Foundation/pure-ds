@@ -1,6 +1,11 @@
 import { LitElement, html, nothing, unsafeHTML } from "../../../src/js/lit.js";
 import { PDS } from "../../../src/js/pds.js";
 import { HOME_CONTENT } from "./pds-home-content.js";
+import {
+  isPresetThemeCompatible,
+  normalizePresetThemes,
+  resolveThemePreference,
+} from "../../../src/js/pds-core/pds-theme-utils.js";
 
 function mdInline(input) {
   let text = String(input ?? "");
@@ -214,6 +219,7 @@ customElements.define(
       this._presetOmniboxSettings = null;
       this._handleOmniboxScroll = null;
       this._omniboxScrollRaf = null;
+      this._themeChangeHandler = null;
     }
 
     createRenderRoot() {
@@ -229,6 +235,11 @@ customElements.define(
       this._setupPresetOmnibox();
       this._setupForm();
       this._setupOmniboxAutoHide();
+      this._themeChangeHandler = () => {
+        this._presetOmniboxSettings = this._buildPresetOmniboxSettings();
+        this._setupPresetOmnibox();
+      };
+      PDS.addEventListener("pds:theme:changed", this._themeChangeHandler);
     }
 
     disconnectedCallback() {
@@ -240,6 +251,10 @@ customElements.define(
       if (this._omniboxScrollRaf) {
         window.cancelAnimationFrame(this._omniboxScrollRaf);
         this._omniboxScrollRaf = null;
+      }
+      if (this._themeChangeHandler) {
+        PDS.removeEventListener("pds:theme:changed", this._themeChangeHandler);
+        this._themeChangeHandler = null;
       }
     }
 
@@ -394,13 +409,11 @@ customElements.define(
     }
 
     _buildPresetOmniboxSettings() {
+      const resolvedTheme = resolveThemePreference(PDS.theme);
       return {
         hideCategory: true,
         iconHandler: (item) => {
           const preset = PDS.presets[item.id];
-
-          console.log("Preset item:", item);
-
           return /*html*/ `<span style="display: flex;  gap: 1px;  flex-shrink: 0;">
                     <span style="display: inline-block; width: 10px; height: 20px; background-color: ${preset.colors.primary}"></span>
                     <span style="display: inline-block; width: 10px; height: 20px; background-color: ${preset.colors.secondary}"></span>
@@ -409,9 +422,11 @@ customElements.define(
         },
         categories: {
           Presets: {
-
             trigger: (options) => true,
-            action: (options) => this._applyPresetSelection(options),
+            action: (options) => {
+              if (options?.disabled) return options?.id;
+              return this._applyPresetSelection(options);
+            },
             getItems: (options) => {
               
               const all = Object.values(PDS.presets || {});
@@ -424,12 +439,33 @@ customElements.define(
                 return name.includes(query) || description.includes(query);
               });
 
-              return filtered.map((preset) => ({
-                id: preset.id,
-                text: preset.name,
-                description: preset.description,
-                icon: "palette",
-              }));
+              return filtered.map((preset) => {
+                const supportedThemes = normalizePresetThemes(preset);
+                const isCompatible = isPresetThemeCompatible(
+                  preset,
+                  resolvedTheme
+                );
+                const themeHint =
+                  supportedThemes.length === 1
+                    ? `${supportedThemes[0]} only`
+                    : `Not available in ${resolvedTheme} mode`;
+                const description = preset.description || "";
+                const displayDescription = isCompatible
+                  ? description
+                  : description
+                    ? `${description} - ${themeHint}`
+                    : themeHint;
+
+                return {
+                  id: preset.id,
+                  text: preset.name,
+                  description: displayDescription,
+                  icon: "palette",
+                  class: isCompatible ? "" : "disabled",
+                  disabled: !isCompatible,
+                  tooltip: isCompatible ? "" : themeHint,
+                };
+              });
             },
           },
           
@@ -438,6 +474,7 @@ customElements.define(
     }
 
     _applyPresetSelection(options) {
+      if (options?.disabled) return;
       const preset = PDS.presets?.[options?.id];
       if (!preset) return;
       

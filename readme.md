@@ -571,7 +571,7 @@ PDS.dispatchEvent(new CustomEvent('pds:toast', {
 <script type="importmap">
   {
     "imports": {
-      "#showdown": "https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.mjs"
+      "#showdown": "https://cdn.jsdelivr.net/npm/showdown@2.1.0/+esm"
     }
   }
 </script>

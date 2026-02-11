@@ -19,6 +19,10 @@ import {
   setupAutoDefinerAndEnhancers,
   stripFunctions,
 } from "./pds-start-helpers.js";
+import {
+  isPresetThemeCompatible,
+  resolveThemePreference,
+} from "./pds-theme-utils.js";
 
 let __liveApiReady = false;
 let __queryClass = null;
@@ -155,6 +159,17 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
       presets,
       defaultLog,
     });
+
+    const resolvedTheme = resolveThemePreference(PDS.theme);
+    if (!isPresetThemeCompatible(normalized.generatorConfig.design, resolvedTheme)) {
+      const presetName =
+        normalized.presetInfo?.name ||
+        normalized.generatorConfig?.design?.name ||
+        presetId;
+      console.warn(
+        `PDS theme "${resolvedTheme}" not supported by preset "${presetName}".`
+      );
+    }
 
     if (baseConfig.theme && !normalized.generatorConfig.theme) {
       normalized.generatorConfig.theme = baseConfig.theme;
@@ -337,6 +352,16 @@ export async function startLive(PDS, config, { emitReady, applyResolvedTheme, se
 
     // 2) Normalize first-arg API: support { preset, design, enhancers }
     const normalized = normalizeInitConfig(config, {}, { presets, defaultLog });
+    if (manageTheme && !isPresetThemeCompatible(normalized.generatorConfig.design, resolvedTheme)) {
+      const presetName =
+        normalized.presetInfo?.name ||
+        normalized.generatorConfig?.design?.name ||
+        normalized.generatorConfig?.preset ||
+        "current preset";
+      console.warn(
+        `PDS theme "${resolvedTheme}" not supported by preset "${presetName}".`
+      );
+    }
     const userEnhancers = normalized.enhancers;
     const { log: logFn, ...configToClone } = normalized.generatorConfig;
     const generatorConfig = structuredClone(configToClone);

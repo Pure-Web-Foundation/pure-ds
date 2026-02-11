@@ -9,15 +9,16 @@ export const HOME_CONTENT = [
         type: "cards",
         cardVariant: "feature",
         cards: [
-          {
-            title: "Design System, generated",
-            body: "Turn a **Deterministic Config** into a cohesive, light & dark mode supporting, system of color, type, spacing, and motion.",
-            icon: "palette",
-          },
+          
           {
             title: "Pure Web Manifesto, materialized",
             body: "HTML & CSS First, Progressive Enhancement by default, and Web Components only when the platform truly needs extending.",
             icon: "squares-four",
+          },
+          {
+            title: "Design System, generated",
+            body: "Turn a **Deterministic Config** into a cohesive, light & dark mode supporting, system of color, type, spacing, and motion.",
+            icon: "palette",
           },
           {
             title: "Bundle Splitting, made redundant",
@@ -253,7 +254,7 @@ export const HOME_CONTENT = [
             project: {
               type: "object",
               title: "Project",
-              required: ["projectType", "goals"],
+              //required: ["projectType", "goals"],
               properties: {
                 projectType: {
                   type: "string",

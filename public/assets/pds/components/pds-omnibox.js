@@ -19,207 +19,225 @@ const DEFAULT_PLACEHOLDER = "Search...";
 const DEFAULT_ICON = "magnifying-glass";
 
 export class PdsOmnibox extends HTMLElement {
-	static formAssociated = true;
+  static formAssociated = true;
 
-	static get observedAttributes() {
-		return ["name", "placeholder", "value", "disabled", "required", "autocomplete", "icon", "item-grid"];
-	}
+  static get observedAttributes() {
+    return [
+      "name",
+      "placeholder",
+      "value",
+      "disabled",
+      "required",
+      "autocomplete",
+      "icon",
+      "item-grid",
+    ];
+  }
 
-	#root;
-	#internals;
-	#input;
-	#icon;
-	#settings;
-	#defaultValue = "";
-	#autoCompleteResizeHandler;
-	#autoCompleteScrollHandler;
-	#autoCompleteViewportHandler;
-	#lengthProbe;
-	#suggestionsUpdatedHandler;
-	#suggestionsObserver;
+  #root;
+  #internals;
+  #input;
+  #icon;
+  #settings;
+  #defaultValue = "";
+  #autoCompleteResizeHandler;
+  #autoCompleteScrollHandler;
+  #autoCompleteViewportHandler;
+  #lengthProbe;
+  #suggestionsUpdatedHandler;
+  #suggestionsObserver;
 
-	constructor() {
-		super();
-		this.#root = this.attachShadow({ mode: "open" });
-		this.#internals = this.attachInternals();
-		this.#renderStructure();
-		void this.#adoptStyles();
-	}
+  constructor() {
+    super();
+    this.#root = this.attachShadow({ mode: "open" });
+    this.#internals = this.attachInternals();
+    this.#renderStructure();
+    void this.#adoptStyles();
+  }
 
-	connectedCallback() {
-		this.#defaultValue = this.getAttribute("value") || "";
-		this.#syncAttributes();
-		this.#updateFormValue(this.#input.value || "");
-		if (!this.#suggestionsUpdatedHandler) {
-			this.#suggestionsUpdatedHandler = (event) => {
-				this.#handleSuggestionsUpdated(event);
-			};
-			this.addEventListener("suggestions-updated", this.#suggestionsUpdatedHandler);
-		}
-	}
+  connectedCallback() {
+    this.#defaultValue = this.getAttribute("value") || "";
+    this.#syncAttributes();
+    this.#updateFormValue(this.#input.value || "");
+    if (!this.#suggestionsUpdatedHandler) {
+      this.#suggestionsUpdatedHandler = (event) => {
+        this.#handleSuggestionsUpdated(event);
+      };
+      this.addEventListener(
+        "suggestions-updated",
+        this.#suggestionsUpdatedHandler,
+      );
+    }
+  }
 
-	disconnectedCallback() {
-		this.#teardownAutoCompleteSizing();
-		this.#teardownSuggestionsObserver();
-		const autoComplete = this.#input?._autoComplete;
-		if (autoComplete) {
-			autoComplete.controller?.().clear?.("disconnected");
-			autoComplete.resultsDiv?.remove?.();
-			this.#input._autoComplete = null;
-		}
-		if (this.#suggestionsUpdatedHandler) {
-			this.removeEventListener("suggestions-updated", this.#suggestionsUpdatedHandler);
-			this.#suggestionsUpdatedHandler = null;
-		}
-	}
+  disconnectedCallback() {
+    this.#teardownAutoCompleteSizing();
+    this.#teardownSuggestionsObserver();
+    const autoComplete = this.#input?._autoComplete;
+    if (autoComplete) {
+      autoComplete.controller?.().clear?.("disconnected");
+      autoComplete.resultsDiv?.remove?.();
+      this.#input._autoComplete = null;
+    }
+    if (this.#suggestionsUpdatedHandler) {
+      this.removeEventListener(
+        "suggestions-updated",
+        this.#suggestionsUpdatedHandler,
+      );
+      this.#suggestionsUpdatedHandler = null;
+    }
+  }
 
-	attributeChangedCallback(name, oldValue, newValue) {
-		if (oldValue === newValue) return;
-		this.#syncAttributes();
-	}
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+    this.#syncAttributes();
+  }
 
-	get settings() {
-		return this.#settings;
-	}
+  get settings() {
+    return this.#settings;
+  }
 
-	set settings(value) {
-		this.#settings = value;
-	}
+  set settings(value) {
+    this.#settings = value;
+  }
 
-	get name() {
-		return this.getAttribute("name") || "";
-	}
+  get name() {
+    return this.getAttribute("name") || "";
+  }
 
-	set name(value) {
-		if (value == null || value === "") this.removeAttribute("name");
-		else this.setAttribute("name", value);
-	}
+  set name(value) {
+    if (value == null || value === "") this.removeAttribute("name");
+    else this.setAttribute("name", value);
+  }
 
-	get placeholder() {
-		return this.getAttribute("placeholder") || DEFAULT_PLACEHOLDER;
-	}
+  get placeholder() {
+    return this.getAttribute("placeholder") || DEFAULT_PLACEHOLDER;
+  }
 
-	set placeholder(value) {
-		if (value == null || value === "") this.removeAttribute("placeholder");
-		else this.setAttribute("placeholder", value);
-	}
+  set placeholder(value) {
+    if (value == null || value === "") this.removeAttribute("placeholder");
+    else this.setAttribute("placeholder", value);
+  }
 
-	get value() {
-		return this.#input?.value || "";
-	}
+  get value() {
+    return this.#input?.value || "";
+  }
 
-	set value(value) {
-		const next = value == null ? "" : String(value);
-		if (this.#input) this.#input.value = next;
-		this.#updateFormValue(next);
-	}
+  set value(value) {
+    const next = value == null ? "" : String(value);
+    if (this.#input) this.#input.value = next;
+    this.#updateFormValue(next);
+  }
 
-	get disabled() {
-		return this.hasAttribute("disabled");
-	}
+  get disabled() {
+    return this.hasAttribute("disabled");
+  }
 
-	set disabled(value) {
-		if (value) this.setAttribute("disabled", "");
-		else this.removeAttribute("disabled");
-	}
+  set disabled(value) {
+    if (value) this.setAttribute("disabled", "");
+    else this.removeAttribute("disabled");
+  }
 
-	get required() {
-		return this.hasAttribute("required");
-	}
+  get required() {
+    return this.hasAttribute("required");
+  }
 
-	set required(value) {
-		if (value) this.setAttribute("required", "");
-		else this.removeAttribute("required");
-	}
+  set required(value) {
+    if (value) this.setAttribute("required", "");
+    else this.removeAttribute("required");
+  }
 
-	get autocomplete() {
-		return this.getAttribute("autocomplete") || "off";
-	}
+  get autocomplete() {
+    return this.getAttribute("autocomplete") || "off";
+  }
 
-	set autocomplete(value) {
-		if (value == null || value === "") this.removeAttribute("autocomplete");
-		else this.setAttribute("autocomplete", value);
-	}
+  set autocomplete(value) {
+    if (value == null || value === "") this.removeAttribute("autocomplete");
+    else this.setAttribute("autocomplete", value);
+  }
 
-	get icon() {
-		return this.getAttribute("icon") || DEFAULT_ICON;
-	}
+  get icon() {
+    return this.getAttribute("icon") || DEFAULT_ICON;
+  }
 
-	set icon(value) {
-		if (value == null || value === "") this.removeAttribute("icon");
-		else this.setAttribute("icon", value);
-	}
+  set icon(value) {
+    if (value == null || value === "") this.removeAttribute("icon");
+    else this.setAttribute("icon", value);
+  }
 
-	get itemGrid() {
-		return this.getAttribute("item-grid") || "";
-	}
+  get itemGrid() {
+    return this.getAttribute("item-grid") || "";
+  }
 
-	set itemGrid(value) {
-		if (value == null || value === "") this.removeAttribute("item-grid");
-		else this.setAttribute("item-grid", value);
-	}
+  set itemGrid(value) {
+    if (value == null || value === "") this.removeAttribute("item-grid");
+    else this.setAttribute("item-grid", value);
+  }
 
-	formAssociatedCallback() {}
+  formAssociatedCallback() {}
 
-	formDisabledCallback(disabled) {
-		if (!this.#input) return;
-		this.#input.disabled = disabled;
-	}
+  formDisabledCallback(disabled) {
+    if (!this.#input) return;
+    this.#input.disabled = disabled;
+  }
 
-	formResetCallback() {
-		this.value = this.#defaultValue;
-	}
+  formResetCallback() {
+    this.value = this.#defaultValue;
+  }
 
-	formStateRestoreCallback(state) {
-		this.value = state ?? "";
-	}
+  formStateRestoreCallback(state) {
+    this.value = state ?? "";
+  }
 
-	checkValidity() {
-		return this.#input?.checkValidity?.() ?? true;
-	}
+  checkValidity() {
+    return this.#input?.checkValidity?.() ?? true;
+  }
 
-	reportValidity() {
-		return this.#input?.reportValidity?.() ?? true;
-	}
+  reportValidity() {
+    return this.#input?.reportValidity?.() ?? true;
+  }
 
-	#renderStructure() {
-		this.#root.innerHTML = `
+  #renderStructure() {
+    this.#root.innerHTML = `
 			<div class="ac-container input-icon">
 				<pds-icon morph icon="${DEFAULT_ICON}"></pds-icon>
 				<input class="ac-input" type="search" placeholder="${DEFAULT_PLACEHOLDER}" autocomplete="off" />
 			</div>
 		`;
 
-		this.#lengthProbe = document.createElement("div");
-		this.#lengthProbe.style.cssText = "position:absolute; visibility:hidden; width:0; height:0; pointer-events:none;";
-		this.#root.appendChild(this.#lengthProbe);
+    this.#lengthProbe = document.createElement("div");
+    this.#lengthProbe.style.cssText =
+      "position:absolute; visibility:hidden; width:0; height:0; pointer-events:none;";
+    this.#root.appendChild(this.#lengthProbe);
 
-		this.#input = this.#root.querySelector("input");
-		this.#icon = this.#root.querySelector("pds-icon");
-		this.#input.addEventListener("input", () => {
-			this.#updateFormValue(this.#input.value);
-			this.#updateSuggestionMaxHeight();
-			this.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
-		});
-		this.#input.addEventListener("change", () => {
-			this.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
-		});
-		this.#input.addEventListener("focus", (e) => {
-			this.#handleAutoComplete(e);
-		});
-		this.#input.addEventListener("show-results", (event) => {
-			this.dispatchEvent(
-				new CustomEvent("suggestions-updated", {
-					detail: { results: event?.detail?.results ?? [] },
-					bubbles: true,
-					composed: true,
-				})
-			);
-		});
-	}
+    this.#input = this.#root.querySelector("input");
+    this.#icon = this.#root.querySelector("pds-icon");
+    this.#input.addEventListener("input", () => {
+      this.#updateFormValue(this.#input.value);
+      this.#updateSuggestionMaxHeight();
+      this.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+    });
+    this.#input.addEventListener("change", () => {
+      this.dispatchEvent(
+        new Event("change", { bubbles: true, composed: true }),
+      );
+    });
+    this.#input.addEventListener("focus", (e) => {
+      this.#handleAutoComplete(e);
+    });
+    this.#input.addEventListener("show-results", (event) => {
+      this.dispatchEvent(
+        new CustomEvent("suggestions-updated", {
+          detail: { results: event?.detail?.results ?? [] },
+          bubbles: true,
+          composed: true,
+        }),
+      );
+    });
+  }
 
-	async #adoptStyles() {
-		const componentStyles = PDS.createStylesheet(/*css*/`
+  async #adoptStyles() {
+    const componentStyles = PDS.createStylesheet(/*css*/ `
 			@layer omnibox {
 				:host {
 					display: block;
@@ -291,6 +309,12 @@ export class PdsOmnibox extends HTMLElement {
 								justify-self: center;
 							}
 
+							&.disabled{
+								mouse-events: none;
+								opacity: 0.5;
+                cursor: not-allowed;
+							}
+
 							> .text {
 								grid-column: 2;
 								min-width: var(--spacing-0);
@@ -332,7 +356,7 @@ export class PdsOmnibox extends HTMLElement {
 							&:hover,
 							&.selected {
 								background-color: var(--color-surface-elevated);
-								
+								border: 2px dotted var(--color-primary-500);
 
 								svg-icon,
 								pds-icon {
@@ -371,6 +395,20 @@ export class PdsOmnibox extends HTMLElement {
 						}
 					}
 
+          .ac-suggestion.ac-active[data-direction="down"] {
+            border-radius: 0 0 var(--ac-rad) var(--ac-rad);
+
+            .ac-itm:first-child {
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+
+            .ac-itm:last-child {
+              border-bottom-left-radius: var(--ac-rad);
+              border-bottom-right-radius: var(--ac-rad);
+            }
+          }
+
 					&.ac-active[data-direction="up"] {
 						.ac-input {
 							border-top-left-radius: 0;
@@ -380,6 +418,7 @@ export class PdsOmnibox extends HTMLElement {
 						.ac-suggestion {
 							top: auto;
 							bottom: calc(100% + var(--ac-suggest-offset));
+              border-radius: var(--ac-rad) var(--ac-rad) 0 0;
 						}
 
 						.ac-itm:last-child {
@@ -390,8 +429,26 @@ export class PdsOmnibox extends HTMLElement {
 						.ac-itm:first-child {
 							border-top-left-radius: var(--ac-rad);
 							border-top-right-radius: var(--ac-rad);
+              border-bottom-left-radius: 0;
+              border-bottom-right-radius: 0;
 						}
 					}
+
+          .ac-suggestion.ac-active[data-direction="up"] {
+            border-radius: var(--ac-rad) var(--ac-rad) 0 0;
+
+            .ac-itm:last-child {
+              border-bottom-left-radius: 0;
+              border-bottom-right-radius: 0;
+            }
+
+            .ac-itm:first-child {
+              border-top-left-radius: var(--ac-rad);
+              border-top-right-radius: var(--ac-rad);
+              border-bottom-left-radius: 0;
+              border-bottom-right-radius: 0;
+            }
+          }
 				}
 
 				@media (max-width: var(--breakpoint-sm)) {
@@ -417,240 +474,332 @@ export class PdsOmnibox extends HTMLElement {
 								background-color: var(--color-primary-500);
 								color: var(--color-primary-contrast, #ffffff);
 							}
+
+							&.is-disabled {
+								cursor: not-allowed;
+								color: var(--color-text-muted);
+
+								small,
+								.category {
+									color: var(--color-text-muted);
+								}
+
+								svg-icon,
+								pds-icon {
+									--icon-fill-color: var(--color-text-muted);
+									color: var(--color-text-muted);
+									filter: none;
+								}
+							}
+
+							&.is-disabled:hover,
+							&.is-disabled.selected {
+								background-color: var(--ac-bg, var(--ac-bg-default));
+								box-shadow: none;
+							}
+						}
+
+						.preset-colors {
+							display: flex;
+							gap: var(--spacing-1);
+							flex-shrink: 0;
+						}
+
+						.preset-colors span {
+							width: var(--spacing-2);
+							height: var(--spacing-5);
 						}
 					}
 				}
 			}
 		`);
 
-		await PDS.adoptLayers(this.#root, LAYERS, [componentStyles]);
-	}
+    await PDS.adoptLayers(this.#root, LAYERS, [componentStyles]);
+  }
 
-	#syncAttributes() {
-		if (!this.#input) return;
+  #syncAttributes() {
+    if (!this.#input) return;
 
-		this.#input.placeholder = this.placeholder;
-		this.#input.autocomplete = this.autocomplete;
-		if (this.#icon) this.#icon.setAttribute("icon", this.icon);
+    this.#input.placeholder = this.placeholder;
+    this.#input.autocomplete = this.autocomplete;
+    if (this.#icon) this.#icon.setAttribute("icon", this.icon);
 
-		if (this.hasAttribute("value")) {
-			const v = this.getAttribute("value") || "";
-			if (this.#input.value !== v) this.#input.value = v;
-		}
+    if (this.hasAttribute("value")) {
+      const v = this.getAttribute("value") || "";
+      if (this.#input.value !== v) this.#input.value = v;
+    }
 
-		if (this.disabled) this.#input.setAttribute("disabled", "");
-		else this.#input.removeAttribute("disabled");
+    if (this.disabled) this.#input.setAttribute("disabled", "");
+    else this.#input.removeAttribute("disabled");
 
-		if (this.required) this.#input.setAttribute("required", "");
-		else this.#input.removeAttribute("required");
+    if (this.required) this.#input.setAttribute("required", "");
+    else this.#input.removeAttribute("required");
 
-		if (this.itemGrid) this.style.setProperty("--ac-grid", this.itemGrid);
-		else this.style.removeProperty("--ac-grid");
+    if (this.itemGrid) this.style.setProperty("--ac-grid", this.itemGrid);
+    else this.style.removeProperty("--ac-grid");
 
-		this.#updateFormValue(this.#input.value);
-	}
+    this.#updateFormValue(this.#input.value);
+  }
 
-	#updateFormValue(value) {
-		this.#internals.setFormValue(value);
-		this.#syncValidity();
-	}
+  #updateFormValue(value) {
+    this.#internals.setFormValue(value);
+    this.#syncValidity();
+  }
 
-	#syncValidity() {
-		if (!this.#input) return;
-		if (this.#input.checkValidity()) {
-			this.#internals.setValidity({}, "", this.#input);
-			return;
-		}
-		this.#internals.setValidity(
-			{ customError: true },
-			this.#input.validationMessage || "Invalid value",
-			this.#input
-		);
-	}
+  #syncValidity() {
+    if (!this.#input) return;
+    if (this.#input.checkValidity()) {
+      this.#internals.setValidity({}, "", this.#input);
+      return;
+    }
+    this.#internals.setValidity(
+      { customError: true },
+      this.#input.validationMessage || "Invalid value",
+      this.#input,
+    );
+  }
 
-	async #handleAutoComplete(e) {
+  async #handleAutoComplete(e) {
+    if (!this.settings) return;
 
-		if (!this.settings) return;
+    const AutoComplete = PDS.AutoComplete;
 
-		const AutoComplete = PDS.AutoComplete
-
-		if (AutoComplete && typeof AutoComplete.connect === "function") {
+    if (AutoComplete && typeof AutoComplete.connect === "function") {
       const settings = {
         //debug: true,
         iconHandler: (item) => {
           return item.icon ? `<pds-icon icon="${item.icon}"></pds-icon>` : null;
         },
-        ...this.settings
+        ...this.settings,
       };
 
-			const container = this.#input?.parentElement;
-			if (container?.style) {
-				container.style.removeProperty("--ac-bg-default");
-				container.style.removeProperty("--ac-color-default");
-				container.style.removeProperty("--ac-accent-color");
+      const container = this.#input?.parentElement;
+      if (container?.style) {
+        container.style.removeProperty("--ac-bg-default");
+        container.style.removeProperty("--ac-color-default");
+        container.style.removeProperty("--ac-accent-color");
 
-				const gridOverride = this.itemGrid;
-				if (gridOverride) {
-					container.style.setProperty("--ac-grid", gridOverride);
-				} else if (settings.hideCategory === true) {
-					container.style.setProperty("--ac-grid", "45px 1fr");
-				} else {
-					container.style.removeProperty("--ac-grid");
-				}
-			}
+        const gridOverride = this.itemGrid;
+        if (gridOverride) {
+          container.style.setProperty("--ac-grid", gridOverride);
+        } else if (settings.hideCategory === true) {
+          container.style.setProperty("--ac-grid", "45px 1fr");
+        } else {
+          container.style.removeProperty("--ac-grid");
+        }
+      }
 
-			if (!this.#input._autoComplete) {
-				this.#input._autoComplete = new AutoComplete(
-					this.#input.parentNode,
-					this.#input,
-					settings
-				);
-			}
+      if (!this.#input._autoComplete) {
+        this.#input._autoComplete = new AutoComplete(
+          this.#input.parentNode,
+          this.#input,
+          settings,
+        );
+      }
 
-			this.#wrapAutoCompleteResultsHandler(this.#input._autoComplete);
-			setTimeout(() => {
-				this.#input._autoComplete.focusHandler(e);
-				this.#setupAutoCompleteSizing();
-				this.#updateSuggestionMaxHeight();
-				this.#setupSuggestionsObserver();
-			}, 100);
+      this.#wrapAutoCompleteResultsHandler(this.#input._autoComplete);
+      setTimeout(() => {
+        this.#input._autoComplete.focusHandler(e);
+        this.#setupAutoCompleteSizing();
+        this.#updateSuggestionMaxHeight();
+        this.#setupSuggestionsObserver();
+      }, 100);
+    }
+  }
 
-		}
-	}
+  #wrapAutoCompleteResultsHandler(autoComplete) {
+    if (!autoComplete || autoComplete.__pdsSuggestionsWrapped) return;
+    autoComplete.__pdsSuggestionsWrapped = true;
+    const originalResultsHandler =
+      autoComplete.resultsHandler?.bind(autoComplete);
+    if (!originalResultsHandler) return;
 
-	#wrapAutoCompleteResultsHandler(autoComplete) {
-		if (!autoComplete || autoComplete.__pdsSuggestionsWrapped) return;
-		autoComplete.__pdsSuggestionsWrapped = true;
-		const originalResultsHandler = autoComplete.resultsHandler?.bind(autoComplete);
-		if (!originalResultsHandler) return;
+    autoComplete.resultsHandler = (results, options) => {
+      const container = this.#input?.parentElement;
+      if (container && autoComplete.settings) {
+        autoComplete.settings.direction =
+          this.#resolveSuggestionDirection(container);
+      }
+      this.dispatchEvent(
+        new CustomEvent("suggestions-updated", {
+          detail: { results },
+          bubbles: true,
+          composed: true,
+        }),
+      );
+      const res = originalResultsHandler(results, options);
+      this.#updateSuggestionMaxHeight();
+      return res;
+    };
+  }
 
-		autoComplete.resultsHandler = (results, options) => {
-			this.dispatchEvent(
-				new CustomEvent("suggestions-updated", {
-					detail: { results },
-					bubbles: true,
-					composed: true,
-				})
-			);
-			return originalResultsHandler(results, options);
-		};
-	}
+  #setupAutoCompleteSizing() {
+    if (this.#autoCompleteResizeHandler) return;
+    this.#autoCompleteResizeHandler = () => this.#updateSuggestionMaxHeight();
+    this.#autoCompleteScrollHandler = () => this.#updateSuggestionMaxHeight();
+    this.#autoCompleteViewportHandler = () => this.#updateSuggestionMaxHeight();
 
-	#setupAutoCompleteSizing() {
-		if (this.#autoCompleteResizeHandler) return;
-		this.#autoCompleteResizeHandler = () => this.#updateSuggestionMaxHeight();
-		this.#autoCompleteScrollHandler = () => this.#updateSuggestionMaxHeight();
-		this.#autoCompleteViewportHandler = () => this.#updateSuggestionMaxHeight();
+    window.addEventListener("resize", this.#autoCompleteResizeHandler);
+    window.addEventListener("scroll", this.#autoCompleteScrollHandler, true);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener(
+        "resize",
+        this.#autoCompleteViewportHandler,
+      );
+      window.visualViewport.addEventListener(
+        "scroll",
+        this.#autoCompleteViewportHandler,
+      );
+    }
+  }
 
-		window.addEventListener("resize", this.#autoCompleteResizeHandler);
-		window.addEventListener("scroll", this.#autoCompleteScrollHandler, true);
-		if (window.visualViewport) {
-			window.visualViewport.addEventListener("resize", this.#autoCompleteViewportHandler);
-			window.visualViewport.addEventListener("scroll", this.#autoCompleteViewportHandler);
-		}
-	}
+  #setupSuggestionsObserver() {
+    if (this.#suggestionsObserver) return;
+    const container = this.#input?.parentElement;
+    const root = container?.shadowRoot ?? container;
+    const suggestion = root?.querySelector?.(".ac-suggestion");
+    if (!suggestion) return;
+    this.#suggestionsObserver = new MutationObserver(() => {
+      if (!suggestion.classList.contains("ac-active")) {
+        this.#resetIconToDefault();
+      }
+    });
+    this.#suggestionsObserver.observe(suggestion, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  }
 
-	#setupSuggestionsObserver() {
-		if (this.#suggestionsObserver) return;
-		const container = this.#input?.parentElement;
-		const root = container?.shadowRoot ?? container;
-		const suggestion = root?.querySelector?.(".ac-suggestion");
-		if (!suggestion) return;
-		this.#suggestionsObserver = new MutationObserver(() => {
-			if (!suggestion.classList.contains("ac-active")) {
-				this.#resetIconToDefault();
-			}
-		});
-		this.#suggestionsObserver.observe(suggestion, {
-			attributes: true,
-			attributeFilter: ["class"],
-		});
-	}
+  #teardownSuggestionsObserver() {
+    if (!this.#suggestionsObserver) return;
+    this.#suggestionsObserver.disconnect();
+    this.#suggestionsObserver = null;
+  }
 
-	#teardownSuggestionsObserver() {
-		if (!this.#suggestionsObserver) return;
-		this.#suggestionsObserver.disconnect();
-		this.#suggestionsObserver = null;
-	}
+  #teardownAutoCompleteSizing() {
+    if (!this.#autoCompleteResizeHandler) return;
+    window.removeEventListener("resize", this.#autoCompleteResizeHandler);
+    window.removeEventListener("scroll", this.#autoCompleteScrollHandler, true);
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener(
+        "resize",
+        this.#autoCompleteViewportHandler,
+      );
+      window.visualViewport.removeEventListener(
+        "scroll",
+        this.#autoCompleteViewportHandler,
+      );
+    }
+    this.#autoCompleteResizeHandler = null;
+    this.#autoCompleteScrollHandler = null;
+    this.#autoCompleteViewportHandler = null;
+  }
 
-	#teardownAutoCompleteSizing() {
-		if (!this.#autoCompleteResizeHandler) return;
-		window.removeEventListener("resize", this.#autoCompleteResizeHandler);
-		window.removeEventListener("scroll", this.#autoCompleteScrollHandler, true);
-		if (window.visualViewport) {
-			window.visualViewport.removeEventListener("resize", this.#autoCompleteViewportHandler);
-			window.visualViewport.removeEventListener("scroll", this.#autoCompleteViewportHandler);
-		}
-		this.#autoCompleteResizeHandler = null;
-		this.#autoCompleteScrollHandler = null;
-		this.#autoCompleteViewportHandler = null;
-	}
+  #updateSuggestionMaxHeight() {
+    if (!this.#input) return;
+    const container = this.#input.parentElement;
+    if (!container) return;
 
-	#updateSuggestionMaxHeight() {
-		if (!this.#input) return;
-		const container = this.#input.parentElement;
-		if (!container) return;
+    const rect = container.getBoundingClientRect();
+    const viewportHeight = window.visualViewport?.height || window.innerHeight;
+    const gap = this.#readSpacingToken(container, "--ac-viewport-gap") || 0;
+    const root = container.shadowRoot ?? container;
+    const suggestion = root?.querySelector?.(".ac-suggestion");
+    const currentDirection =
+      suggestion?.getAttribute("data-direction") ||
+      container.getAttribute("data-direction") ||
+      "down";
 
-		const rect = container.getBoundingClientRect();
-		const viewportHeight = window.visualViewport?.height || window.innerHeight;
-		const gap = this.#readSpacingToken(container, "--ac-viewport-gap") || 0;
-		const direction = container.getAttribute("data-direction") || "down";
+    const availableDown = viewportHeight - rect.bottom - gap;
+    const availableUp = rect.top - gap;
+    const direction = this.#resolveSuggestionDirection(container);
 
-		const available = direction === "up"
-			? rect.top - gap
-			: viewportHeight - rect.bottom - gap;
+    if (direction !== currentDirection) {
+      container.setAttribute("data-direction", direction);
+      if (suggestion) suggestion.setAttribute("data-direction", direction);
+      if (suggestion) {
+        const offset =
+          this.#readSpacingToken(container, "--ac-suggest-offset") || 0;
+        if (direction === "up") {
+          suggestion.style.top = "auto";
+          suggestion.style.bottom = `${rect.height + offset}px`;
+        } else {
+          suggestion.style.bottom = "auto";
+          suggestion.style.top = `${rect.height + offset}px`;
+        }
+      }
+    }
 
-		const maxHeight = Math.max(0, Math.floor(available));
-		container.style.setProperty("--ac-max-height", `${maxHeight}px`);
-	}
+    const available = direction === "up" ? availableUp : availableDown;
 
-	#readSpacingToken(element, tokenName) {
-		const value = getComputedStyle(element).getPropertyValue(tokenName).trim();
-		if (!value) return 0;
-		if (!this.#lengthProbe) return 0;
-		this.#lengthProbe.style.height = value;
-		const resolved = getComputedStyle(this.#lengthProbe).height;
-		const parsed = Number.parseFloat(resolved);
-		return Number.isFinite(parsed) ? parsed : 0;
-	}
+    const maxHeight = Math.max(0, Math.floor(available));
+    container.style.setProperty("--ac-max-height", `${maxHeight}px`);
+  }
 
-	#handleSuggestionsUpdated(event) {
-		
-		const results = event?.detail?.results;
-		if (!Array.isArray(results) || !this.settings?.categories) return;
-		if (!results.length) {
-			this.#icon?.setAttribute("icon", this.icon);
-			return;
-		}
+  #resolveSuggestionDirection(container) {
+    const rect = container.getBoundingClientRect();
+    const viewportHeight = window.visualViewport?.height || window.innerHeight;
+    const gap = this.#readSpacingToken(container, "--ac-viewport-gap") || 0;
+    const availableDown = viewportHeight - rect.bottom - gap;
+    const availableUp = rect.top - gap;
+    const maxDefault =
+      this.#readSpacingToken(container, "--ac-max-height-default") || 300;
+    const minDown = Math.min(maxDefault, 180);
 
-		const categories = this.settings.categories;
-		const firstResult = results[0];
-		const categoryConfig = categories[firstResult?.category] || {};
-		const useIconForInput = categoryConfig?.useIconForInput ?? this.settings?.useIconForInput;
+    return availableDown >= minDown || availableDown >= availableUp
+      ? "down"
+      : "up";
+  }
 
-		if (typeof useIconForInput === "string") {
-			this.#icon?.setAttribute("icon", useIconForInput);
-			return;
-		}
+  #readSpacingToken(element, tokenName) {
+    const value = getComputedStyle(element).getPropertyValue(tokenName).trim();
+    if (!value) return 0;
+    if (!this.#lengthProbe) return 0;
+    this.#lengthProbe.style.height = value;
+    const resolved = getComputedStyle(this.#lengthProbe).height;
+    const parsed = Number.parseFloat(resolved);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
 
-		if (useIconForInput === true) {
-			const icon =
-				firstResult?.icon ||
-				firstResult?.element?.querySelector?.("pds-icon, svg-icon")?.getAttribute?.("icon");
-			if (icon) {
-				this.#icon?.setAttribute("icon", icon);
-				return;
-			}
-		}
+  #handleSuggestionsUpdated(event) {
+    const results = event?.detail?.results;
+    if (!Array.isArray(results) || !this.settings?.categories) return;
+    if (!results.length) {
+      this.#icon?.setAttribute("icon", this.icon);
+      return;
+    }
 
-		this.#resetIconToDefault();
-	}
+    const categories = this.settings.categories;
+    const firstResult = results[0];
+    const categoryConfig = categories[firstResult?.category] || {};
+    const useIconForInput =
+      categoryConfig?.useIconForInput ?? this.settings?.useIconForInput;
 
-	#resetIconToDefault() {
-		this.#icon?.setAttribute("icon", this.icon);
-	}
+    if (typeof useIconForInput === "string") {
+      this.#icon?.setAttribute("icon", useIconForInput);
+      return;
+    }
+
+    if (useIconForInput === true) {
+      const icon =
+        firstResult?.icon ||
+        firstResult?.element
+          ?.querySelector?.("pds-icon, svg-icon")
+          ?.getAttribute?.("icon");
+      if (icon) {
+        this.#icon?.setAttribute("icon", icon);
+        return;
+      }
+    }
+
+    this.#resetIconToDefault();
+  }
+
+  #resetIconToDefault() {
+    this.#icon?.setAttribute("icon", this.icon);
+  }
 }
 
 if (!customElements.get("pds-omnibox")) {
-	customElements.define("pds-omnibox", PdsOmnibox);
+  customElements.define("pds-omnibox", PdsOmnibox);
 }

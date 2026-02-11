@@ -12,6 +12,10 @@ import { deepMerge } from "../../../src/js/common/common.js";
 import { loadTypographyFonts } from "../../../src/js/common/font-loader.js";
 import { AutoComplete } from "pure-web/ac";
 import { figmafyTokens } from "./figma-export.js";
+import {
+  isPresetThemeCompatible,
+  resolveThemePreference,
+} from "../../../src/js/pds-core/pds-theme-utils.js";
 const STORAGE_KEY = "pure-ds-config";
 
 customElements.define(
@@ -686,6 +690,22 @@ customElements.define(
     async handleThemeChange(e) {
       try {
         const value = e.target.value;
+        const presetId = (this._stored && this._stored.preset) || "default";
+        const preset = presets?.[presetId] || presets?.default;
+        const resolvedTheme = resolveThemePreference(value);
+        if (preset && !isPresetThemeCompatible(preset, resolvedTheme)) {
+          const presetName = preset?.name || presetId;
+          console.warn(
+            `PDS theme "${resolvedTheme}" not supported by preset "${presetName}".`
+          );
+          if (PDS.toast) {
+            await PDS.toast(
+              `"${presetName}" does not support ${resolvedTheme} mode.`,
+              { type: "warning", duration: 2000 }
+            );
+          }
+          return;
+        }
         // Update centralized theme via PDS (this persists + applies + sets up listeners)
         PDS.theme = value;
 

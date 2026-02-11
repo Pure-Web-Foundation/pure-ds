@@ -312,7 +312,18 @@ function enhanceRequired(elem) {
     asterisk.classList.add("required-asterisk");
     asterisk.textContent = "*";
     asterisk.style.marginLeft = "4px";
-    label.querySelector("span").appendChild(asterisk);
+
+    const labelText = label.querySelector("span, [data-label]");
+    if (labelText) {
+      labelText.appendChild(asterisk);
+    } else {
+      const field = label.querySelector("input, select, textarea");
+      if (field) {
+        label.insertBefore(asterisk, field);
+      } else {
+        label.appendChild(asterisk);
+      }
+    }
 
     const form = input.closest("form");
     if (form && !form.querySelector(".required-legend")) {

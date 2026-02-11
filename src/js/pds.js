@@ -68,6 +68,10 @@ import {
   setupAutoDefinerAndEnhancers,
   stripFunctions,
 } from "./pds-core/pds-start-helpers.js";
+import {
+  isPresetThemeCompatible,
+  resolveThemePreference,
+} from "./pds-core/pds-theme-utils.js";
 
 const __slugifyPreset = (str = "") =>
   String(str)
@@ -261,6 +265,24 @@ Object.defineProperty(PDS, "theme", {
   set(value) {
     try {
       if (typeof window === "undefined") return;
+      const currentPreset = PDS.currentConfig?.design || null;
+      const resolvedTheme = resolveThemePreference(value);
+      if (currentPreset && !isPresetThemeCompatible(currentPreset, resolvedTheme)) {
+        const presetName =
+          currentPreset?.name ||
+          PDS.currentPreset?.name ||
+          PDS.currentConfig?.preset ||
+          "current preset";
+        console.warn(
+          `PDS theme "${resolvedTheme}" not supported by preset "${presetName}".`
+        );
+        PDS.dispatchEvent(
+          new CustomEvent("pds:theme:blocked", {
+            detail: { theme: value, resolvedTheme, preset: presetName },
+          })
+        );
+        return;
+      }
       if (value === null || value === undefined) {
         localStorage.removeItem(__themeStorageKey);
       } else {
