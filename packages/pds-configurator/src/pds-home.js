@@ -115,7 +115,7 @@ const BLOCK_RENDERERS = {
           `
         : nothing}
       <article class="card surface-subtle stack-sm">
-        <div class="stack-sm">
+        <div class="stack-lg">
           ${(block.items || []).map(
             (item) => html`
               <div class="stack-2">
@@ -174,8 +174,7 @@ const CUSTOM_RENDERERS = {
       data-home-section=${customSection.id}
     >
       <div class="stack-lg">
-        ${context.header}
-        ${context.renderBlocks(customSection.blocks)}
+        ${context.header} ${context.renderBlocks(customSection.blocks)}
         ${context.scrollButton}
       </div>
     </section>
@@ -212,6 +211,7 @@ customElements.define(
       this.sections = [];
       this._omniboxSettings = null;
       this._roleOmniboxSettings = null;
+      this._presetOmniboxSettings = null;
       this._handleOmniboxScroll = null;
       this._omniboxScrollRaf = null;
     }
@@ -223,8 +223,10 @@ customElements.define(
     firstUpdated() {
       this._omniboxSettings = this._buildOmniboxSettings();
       this._roleOmniboxSettings = this._buildRoleOmniboxSettings();
+      this._presetOmniboxSettings = this._buildPresetOmniboxSettings();
       this._setupSections();
       this._setupOmnibox();
+      this._setupPresetOmnibox();
       this._setupForm();
       this._setupOmniboxAutoHide();
     }
@@ -297,17 +299,16 @@ customElements.define(
       return {
         hideCategory: true,
         iconHandler: (item) => {
-          return item.icon ? `<pds-icon icon="${item.icon}"></pds-icon>` : '';
+          return item.icon ? `<pds-icon icon="${item.icon}"></pds-icon>` : "";
         },
         categories: {
           Roles: {
-            
             trigger: (options) => options.search.length === 0,
             getItems: () =>
               ROLE_OPTIONS.map((role) => ({
                 text: role,
                 id: role,
-                icon: ""
+                icon: "",
               })),
             action: (options) => {
               this._applyOmniboxSelection(options);
@@ -386,6 +387,67 @@ customElements.define(
       omnibox.settings = this._omniboxSettings;
     }
 
+    _setupPresetOmnibox() {
+      const omnibox = this.querySelector("#pds-home-preset-omnibox");
+      if (!omnibox) return;
+      omnibox.settings = this._presetOmniboxSettings;
+    }
+
+    _buildPresetOmniboxSettings() {
+      return {
+        hideCategory: true,
+        iconHandler: (item) => {
+          const preset = PDS.presets[item.id];
+
+          console.log("Preset item:", item);
+
+          return /*html*/ `<span style="display: flex;  gap: 1px;  flex-shrink: 0;">
+                    <span style="display: inline-block; width: 10px; height: 20px; background-color: ${preset.colors.primary}"></span>
+                    <span style="display: inline-block; width: 10px; height: 20px; background-color: ${preset.colors.secondary}"></span>
+                    <span style="display: inline-block; width: 10px; height: 20px; background-color: ${preset.colors.accent}"></span>
+                  </span>`;
+        },
+        categories: {
+          Presets: {
+
+            trigger: (options) => true,
+            action: (options) => this._applyPresetSelection(options),
+            getItems: (options) => {
+              
+              const all = Object.values(PDS.presets || {});
+              const query = (options.search || "").toLowerCase();
+
+              const filtered = all.filter((preset) => {
+                if (!query) return true;
+                const name = preset.name?.toLowerCase() || "";
+                const description = preset.description?.toLowerCase() || "";
+                return name.includes(query) || description.includes(query);
+              });
+
+              return filtered.map((preset) => ({
+                id: preset.id,
+                text: preset.name,
+                description: preset.description,
+                icon: "palette",
+              }));
+            },
+          },
+          
+        },
+      };
+    }
+
+    _applyPresetSelection(options) {
+      const preset = PDS.presets?.[options?.id];
+      if (!preset) return;
+      
+      PDS.applyLivePreset(preset.id);
+
+      if (PDS.toast) {
+        PDS.toast(`Preset selected: ${preset.name}`, { type: "info" });
+      }
+    }
+
     _setupOmniboxAutoHide() {
       const omnibox = this.querySelector("#pds-home-omnibox");
       if (!omnibox) return;
@@ -446,7 +508,8 @@ customElements.define(
       form.defineRenderer(
         "role-omnibox",
         ({ id, path, value, attrs, set }) => html`
-          <pds-omnibox style="--ac-grid: 0 1fr 0"
+          <pds-omnibox
+            item-grid="0 1fr 0"
             id=${id}
             name=${path}
             placeholder=${attrs?.placeholder || "Select a role"}
@@ -479,18 +542,19 @@ customElements.define(
 
     #renderSection(section, index) {
       const nextSection = HOME_CONTENT[index + 1];
-      const header = section?.title || section?.lead
-        ? html`
-            <header>
-              ${section.type === "hero"
-                ? html`<h1>${section.title}</h1>`
-                : html`<h2>${section.title}</h2>`}
-              ${section.lead
-                ? html`<p class="text-muted">${section.lead}</p>`
-                : nothing}
-            </header>
-          `
-        : nothing;
+      const header =
+        section?.title || section?.lead
+          ? html`
+              <header>
+                ${section.type === "hero"
+                  ? html`<h1>${section.title}</h1>`
+                  : html`<h2>${section.title}</h2>`}
+                ${section.lead
+                  ? html`<p class="text-muted">${section.lead}</p>`
+                  : nothing}
+              </header>
+            `
+          : nothing;
 
       const scrollButton = nextSection
         ? html`
@@ -532,10 +596,11 @@ customElements.define(
 
       if (section.type === "hero") {
         return html`
-          <section class="home-section home-hero" data-home-section=${section.id}>
-            ${header}
-            ${context.renderBlocks(section.blocks)}
-            ${scrollButton}
+          <section
+            class="home-section home-hero"
+            data-home-section=${section.id}
+          >
+            ${header} ${context.renderBlocks(section.blocks)} ${scrollButton}
           </section>
         `;
       }
@@ -547,9 +612,7 @@ customElements.define(
             data-home-section=${section.id}
           >
             <div class="stack-lg">
-              ${header}
-              ${context.renderBlocks(section.blocks)}
-              ${scrollButton}
+              ${header} ${context.renderBlocks(section.blocks)} ${scrollButton}
             </div>
           </section>
         `;

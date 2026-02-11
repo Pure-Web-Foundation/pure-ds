@@ -359,8 +359,12 @@ export class RichText extends HTMLElement {
         }
       }
       
-      .toolbar {background-color: var(--surface-subtle-bg);  display:flex; gap: var(--spacing-2,10px); align-items:center; border-bottom: 1px solid var(--rt-border, var(--color-border-muted)); border-radius: var(--radius-md,8px) var(--radius-md,8px) 0 0; }
-      .tbtn { transition: none; display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius: var(--radius-sm,6px); cursor:pointer; user-select:none; color: inherit; background: transparent; border:none; }
+      .toolbar { background-color: var(--surface-subtle-bg); display: flex; gap: var(--spacing-0, 2px); align-items: center; padding: var(--spacing-0, 2px); border-bottom: 1px solid var(--rt-border, var(--color-border-muted)); border-radius: var(--radius-md,8px) var(--radius-md,8px) 0 0; width: 100%; max-width: 100%; flex-wrap: nowrap; box-sizing: border-box; overflow: hidden; }
+      .tbtn { transition: none; display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius: var(--radius-sm,6px); cursor:pointer; user-select:none; color: inherit; background: transparent; border:none;
+
+        padding: var(--spacing-0) var(--spacing-6, 8px);
+
+       }
       .tbtn:hover { background: var(--color-surface-hover, color-mix(in oklab, CanvasText 12%, transparent)); }
       .edwrap { position:relative; }
       .ed { display: block; font-weight: normal; min-height:90px; max-height: 400px; overflow:auto; padding: var(--spacing-1, 0) var(--spacing-2, 0); outline:none; word-break:break-word; border-radius: 0 0 var(--radius-md,8px) var(--radius-md,8px); background: var(--rt-editor-bg, var(--color-input-bg)); }
@@ -595,9 +599,28 @@ export class RichText extends HTMLElement {
 
   #toggleCode() {
     // Wrap selection with <code> or unwrap if already in code
-    const sel = window.getSelection();
+    const root = this.shadowRoot;
+    const getSel = () =>
+      root && typeof root.getSelection === "function"
+        ? root.getSelection()
+        : window.getSelection();
+    let sel = getSel();
     if (!sel || sel.rangeCount === 0) return;
-    const range = sel.getRangeAt(0);
+    let range = sel.getRangeAt(0);
+    const inEditor = (r) => {
+      const node =
+        r.commonAncestorContainer.nodeType === 1
+          ? r.commonAncestorContainer
+          : r.commonAncestorContainer.parentNode;
+      return !!(node && this.#editorDiv && this.#editorDiv.contains(node));
+    };
+    if (!inEditor(range)) {
+      this.#focus();
+      sel = getSel();
+      if (!sel || sel.rangeCount === 0) return;
+      range = sel.getRangeAt(0);
+      if (!inEditor(range)) return;
+    }
     // Simple toggle: if ancestor <code>, unwrap; else wrap
     const codeAncestor = this.#closestAncestor(
       range.commonAncestorContainer,
@@ -610,7 +633,28 @@ export class RichText extends HTMLElement {
       parent.removeChild(codeAncestor);
     } else {
       const wrapper = document.createElement("code");
-      range.surroundContents(wrapper);
+      if (range.collapsed) {
+        const caret = document.createTextNode("\u200B");
+        wrapper.appendChild(caret);
+        range.insertNode(wrapper);
+        const next = document.createRange();
+        next.setStart(caret, 1);
+        next.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(next);
+      } else {
+        try {
+          range.surroundContents(wrapper);
+        } catch {
+          const contents = range.extractContents();
+          wrapper.appendChild(contents);
+          range.insertNode(wrapper);
+        }
+        const next = document.createRange();
+        next.selectNodeContents(wrapper);
+        sel.removeAllRanges();
+        sel.addRange(next);
+      }
     }
   }
 

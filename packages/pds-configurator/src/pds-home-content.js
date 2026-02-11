@@ -44,6 +44,13 @@ export const HOME_CONTENT = [
         cardVariant: "feature",
         cards: [
           {
+            title: "Configurable presets",
+            body: "Start with a preset, then customize with your own tokens and surfaces.",
+            icon: "list",
+            extra:
+              "<div class='omnibox-shell'><pds-omnibox id='pds-home-preset-omnibox' placeholder='Search presets...'></pds-omnibox><small class='text-muted'>Pick a preset to preview the system.</small></div>",
+          },
+          {
             title: "Smart surfaces",
             body: "Auto-balanced backgrounds, text, and shadows across light and dark.",
             icon: "magic-wand",
@@ -331,7 +338,7 @@ export const HOME_CONTENT = [
             "ui:layout": "grid",
             "ui:layoutOptions": { columns: "auto", autoSize: "md", gap: "md" },
           },
-          "/content/notes": { "ui:widget": "richtext", "ui:icon": "note-pencil" },
+          "/content/notes": { "ui:widget": "richtext" },
           "/content/assets": { "ui:widget": "upload", "ui:icon": "upload" },
           "/preferences": {
             "ui:layout": "grid",
@@ -376,7 +383,7 @@ export const HOME_CONTENT = [
             icon: "code",
           },
           {
-            title: "LinkedIn tag",
+            title: "LinkedIn Posts",
             body: "Follow [#puredesignsystem](https://www.linkedin.com/feed/hashtag/puredesignsystem/).",
             icon: "tag",
           },

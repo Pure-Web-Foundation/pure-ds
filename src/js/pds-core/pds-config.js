@@ -801,6 +801,7 @@ export const presets = {
     id: "paper-and-ink",
     name: "Paper & Ink",
     tags: ["app", "featured"],
+    themes: ["light"], // Not optimized for dark mode 
     description: "Ultra-minimal design with focus on typography and whitespace",
     colors: {
       primary: "#171717",
@@ -1039,6 +1040,7 @@ export const presets = {
   "pastel-play": {
     id: "pastel-play",
     name: "Pastel Play",
+    themes: ["light"], // Not optimized for dark mode due to pastel contrast challenges
     description:
       "Playful pastels with soft surfaces and friendly rounded shapes",
     colors: {
@@ -1083,7 +1085,7 @@ export const presets = {
       accent: "#06b6d4", // cyan signal
       background: "#f8fafc",
       darkMode: {
-        background: "#0b0b0b",
+        background: "#0c0c0c",
         secondary: "#9ca3af",
         // Set a chromatic primary in dark mode to ensure both:
         // - outline/link contrast on dark surface, and

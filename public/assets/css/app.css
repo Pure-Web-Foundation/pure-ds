@@ -29,10 +29,12 @@ html {
   margin: auto;
 
   .home-section {
-    pds-icon {
-      color: var(--home-icon-color, var(--color-primary-400));
-    }
 
+    h4 {
+      pds-icon {
+        color: var(--home-icon-color, var(--color-primary-400));
+      }
+    }
     
 
     article:nth-of-type(4n + 1) {
@@ -210,4 +212,24 @@ h1, h2 {
   min-width: unset;
   width: 32px;
   height: 32px;
+}
+
+
+/* Preset color swatches */
+.preset-colors {
+  display: flex;
+  gap: 1px;
+  flex-shrink: 0;
+}
+
+.preset-colors span {
+  width: 10px;
+  height: 20px;
+}
+
+.preset-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
 }

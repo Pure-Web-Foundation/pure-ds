@@ -23,6 +23,69 @@ import {
 let __liveApiReady = false;
 let __queryClass = null;
 
+function getStoredLiveConfig() {
+  if (typeof window === "undefined" || !window.localStorage) return null;
+  try {
+    const raw = window.localStorage.getItem("pure-ds-config");
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed && ("preset" in parsed || "design" in parsed)) return parsed;
+  } catch (e) {
+    return null;
+  }
+  return null;
+}
+
+function deepMergeConfig(target = {}, source = {}) {
+  if (!source || typeof source !== "object") return target;
+  const out = Array.isArray(target) ? [...target] : { ...target };
+  for (const [key, value] of Object.entries(source)) {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      out[key] = deepMergeConfig(
+        out[key] && typeof out[key] === "object" ? out[key] : {},
+        value
+      );
+    } else {
+      out[key] = value;
+    }
+  }
+  return out;
+}
+
+function applyStoredConfigOverrides(baseConfig) {
+  const stored = getStoredLiveConfig();
+  if (!stored || !baseConfig || typeof baseConfig !== "object") return baseConfig;
+
+  const storedPreset = stored.preset;
+  const storedDesign =
+    stored.design && typeof stored.design === "object" ? stored.design : null;
+
+  if (!storedPreset && !storedDesign) return baseConfig;
+
+  const hasNewShape =
+    "preset" in baseConfig || "design" in baseConfig || "enhancers" in baseConfig;
+
+  let nextConfig = { ...baseConfig };
+
+  if (storedPreset) {
+    nextConfig.preset = storedPreset;
+  }
+
+  if (storedDesign) {
+    if (hasNewShape) {
+      const baseDesign =
+        baseConfig.design && typeof baseConfig.design === "object"
+          ? baseConfig.design
+          : {};
+      nextConfig.design = deepMergeConfig(baseDesign, storedDesign);
+    } else {
+      nextConfig = deepMergeConfig(baseConfig, storedDesign);
+    }
+  }
+
+  return nextConfig;
+}
+
 async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIfNeeded }) {
   if (__liveApiReady) return;
 
@@ -72,6 +135,80 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
     if (!__queryClass) return [];
     const queryEngine = new __queryClass(PDS);
     return await queryEngine.search(question);
+  };
+
+  PDS.applyLivePreset = async function(presetId, options = {}) {
+    if (!presetId) return false;
+    if (!PDS.registry?.isLive) {
+      console.warn("PDS.applyLivePreset is only available in live mode.");
+      return false;
+    }
+
+    const baseConfig = PDS.currentConfig || {};
+    const { design: _design, preset: _preset, ...rest } = baseConfig;
+    const inputConfig = {
+      ...structuredClone(stripFunctions(rest)),
+      preset: presetId,
+    };
+
+    const normalized = normalizeInitConfig(inputConfig, {}, {
+      presets,
+      defaultLog,
+    });
+
+    if (baseConfig.theme && !normalized.generatorConfig.theme) {
+      normalized.generatorConfig.theme = baseConfig.theme;
+    }
+
+    const generator = new Generator(normalized.generatorConfig);
+
+    if (normalized.generatorConfig.design?.typography) {
+      try {
+        await loadTypographyFonts(normalized.generatorConfig.design.typography);
+      } catch (error) {
+        normalized.generatorConfig?.log?.(
+          "warn",
+          "Failed to load some fonts from Google Fonts:",
+          error,
+        );
+      }
+    }
+
+    await applyStyles(generator);
+
+    const presetInfo = normalized.presetInfo || { id: presetId, name: presetId };
+    PDS.currentPreset = presetInfo;
+    PDS.currentConfig = Object.freeze({
+      ...baseConfig,
+      preset: normalized.generatorConfig.preset,
+      design: structuredClone(normalized.generatorConfig.design),
+      theme: normalized.generatorConfig.theme || baseConfig.theme,
+    });
+
+    const persist = options?.persist !== false;
+    if (persist && typeof window !== "undefined") {
+      const storageKey = "pure-ds-config";
+      try {
+        const storedRaw = localStorage.getItem(storageKey);
+        const storedParsed = storedRaw ? JSON.parse(storedRaw) : null;
+        const nextStored = {
+          ...(storedParsed && typeof storedParsed === "object"
+            ? storedParsed
+            : {}),
+          preset: presetInfo.id || presetId,
+          design: structuredClone(normalized.generatorConfig.design || {}),
+        };
+        localStorage.setItem(storageKey, JSON.stringify(nextStored));
+      } catch (error) {
+        normalized.generatorConfig?.log?.(
+          "warn",
+          "Failed to store preset:",
+          error,
+        );
+      }
+    }
+
+    return true;
   };
 
   // Live-only compiled getter
@@ -147,6 +284,8 @@ export async function startLive(PDS, config, { emitReady, applyResolvedTheme, se
       "PDS.start({ mode: 'live', ... }) requires a valid configuration object"
     );
   }
+
+  config = applyStoredConfigOverrides(config);
 
   // Attach live-only API surface (ontology, presets, query, etc.)
   await __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIfNeeded });

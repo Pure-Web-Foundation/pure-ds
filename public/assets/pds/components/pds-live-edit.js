@@ -952,7 +952,7 @@ async function applyDesignPatch(patch) {
     try {
       const nextStored = {
         preset: resolvedPresetId || null,
-        design: deepMerge(shallowClone(storedOverrides), patch),
+        design: shallowClone(nextDesign),
       };
       window.localStorage.setItem("pure-ds-config", JSON.stringify(nextStored));
     } catch (e) {}

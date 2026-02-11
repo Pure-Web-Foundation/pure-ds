@@ -10,6 +10,7 @@
  * @attr {boolean} disabled - Disable the input
  * @attr {boolean} required - Mark the input as required
  * @attr {string} autocomplete - Native autocomplete attribute (default: off)
+ * @attr {string} item-grid - Grid template columns for suggestion items
  *
  * @property {Object} settings - AutoComplete settings object (required by consumer)
  */
@@ -21,7 +22,7 @@ export class PdsOmnibox extends HTMLElement {
 	static formAssociated = true;
 
 	static get observedAttributes() {
-		return ["name", "placeholder", "value", "disabled", "required", "autocomplete", "icon"];
+		return ["name", "placeholder", "value", "disabled", "required", "autocomplete", "icon", "item-grid"];
 	}
 
 	#root;
@@ -147,6 +148,15 @@ export class PdsOmnibox extends HTMLElement {
 	set icon(value) {
 		if (value == null || value === "") this.removeAttribute("icon");
 		else this.setAttribute("icon", value);
+	}
+
+	get itemGrid() {
+		return this.getAttribute("item-grid") || "";
+	}
+
+	set itemGrid(value) {
+		if (value == null || value === "") this.removeAttribute("item-grid");
+		else this.setAttribute("item-grid", value);
 	}
 
 	formAssociatedCallback() {}
@@ -434,6 +444,9 @@ export class PdsOmnibox extends HTMLElement {
 		if (this.required) this.#input.setAttribute("required", "");
 		else this.#input.removeAttribute("required");
 
+		if (this.itemGrid) this.style.setProperty("--ac-grid", this.itemGrid);
+		else this.style.removeProperty("--ac-grid");
+
 		this.#updateFormValue(this.#input.value);
 	}
 
@@ -475,6 +488,15 @@ export class PdsOmnibox extends HTMLElement {
 				container.style.removeProperty("--ac-bg-default");
 				container.style.removeProperty("--ac-color-default");
 				container.style.removeProperty("--ac-accent-color");
+
+				const gridOverride = this.itemGrid;
+				if (gridOverride) {
+					container.style.setProperty("--ac-grid", gridOverride);
+				} else if (settings.hideCategory === true) {
+					container.style.setProperty("--ac-grid", "45px 1fr");
+				} else {
+					container.style.removeProperty("--ac-grid");
+				}
 			}
 
 			if (!this.#input._autoComplete) {
