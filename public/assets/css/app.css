@@ -50,6 +50,14 @@ html {
       --home-icon-color: var(--color-error-600);
     }
   }
+
+  header {
+    p {
+      margin: auto;
+      text-align: center;
+      max-width: 35rem;
+    }
+  }
 }
 
 article {
@@ -67,7 +75,7 @@ article {
 
 .home-hero {
   margin-top: 60px;
-  text-align: center;
+  text-align: left;
 }
 
 h1 {
@@ -102,8 +110,48 @@ h1, h2 {
 }
 
 .home-hero {
-  padding: var(--spacing-10) var(--spacing-6);
   border-radius: var(--radius-xl);
+}
+
+.home-hero .hero-panel {
+  background-color: transparent;
+  box-shadow: none;
+  --hero-logo-size: clamp(var(--spacing-10), 12vw, 400px);
+  display: grid;
+  gap: var(--spacing-3);
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  
+}
+
+.home-hero .hero-panel-logo {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  
+  
+}
+
+.home-hero .hero-panel-logo img {
+  max-width: 1400px;
+  height: 15vw;
+  border-radius: 0;
+}
+
+.home-hero .hero-panel-copy {
+  
+}
+
+
+@media (max-width: 720px) {
+  .home-hero .hero-panel {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .home-hero .hero-panel-copy {
+    text-align: center;
+  }
 }
 
 .home-hero .hero-grid {
@@ -189,6 +237,144 @@ h1, h2 {
 .form-showcase fieldset,
 .form-showcase label {
   text-align: left;
+}
+
+.getting-started-terminal {
+  display: flex;
+  justify-content: center;
+  text-align: left;
+}
+
+.terminal-shell {
+  width: 100%;
+  max-width: 70vw;
+  background: var(--color-gray-900);
+  color: var(--color-gray-50);
+  border: 1px solid color-mix(
+    in srgb,
+    var(--color-gray-900) 70%,
+    var(--color-gray-500) 30%
+  );
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  aspect-ratio: 3/2;
+}
+
+.terminal-titlebar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-3);
+  background: color-mix(
+    in srgb,
+    var(--color-gray-900) 78%,
+    var(--color-gray-500) 22%
+  );
+  border-bottom: 1px solid color-mix(
+    in srgb,
+    var(--color-gray-900) 70%,
+    var(--color-gray-500) 30%
+  );
+}
+
+.terminal-dots {
+  display: flex;
+  gap: var(--spacing-1);
+}
+
+.terminal-dot {
+  width: var(--spacing-2);
+  height: var(--spacing-2);
+  border-radius: 50%;
+}
+
+.terminal-dot-red {
+  background: var(--color-error-500);
+}
+
+.terminal-dot-yellow {
+  background: var(--color-warning-500);
+}
+
+.terminal-dot-green {
+  background: var(--color-success-500);
+}
+
+.terminal-title {
+  font-size: var(--font-size-sm);
+  color: color-mix(
+    in srgb,
+    var(--color-gray-50) 70%,
+    var(--color-gray-500) 30%
+  );
+}
+
+.terminal-title-spacer {
+  flex: 1;
+}
+
+.terminal-code {
+  margin: 0;
+  padding: var(--spacing-4);
+  overflow-x: auto;
+  background: transparent;
+  font-family: var(
+    --font-family-mono,
+    "Consolas",
+    "Monaco",
+    "Courier New",
+    monospace
+  );
+  font-size: var(--font-size-lg);
+  line-height: var(--font-line-height-relaxed);
+}
+
+.terminal-code code {
+  font-family: inherit;
+  background: transparent;
+  padding: 0;
+}
+
+.terminal-token {
+  font-weight: var(--font-weight-semibold);
+}
+
+.terminal-token-cmd {
+  color: var(--color-accent-300);
+}
+
+.terminal-token-action {
+  color: var(--color-info-300);
+}
+
+.terminal-token-arg {
+  color: var(--color-primary-300);
+}
+
+.terminal-prompt {
+  color: var(--color-success-400);
+}
+
+.terminal-cursor {
+  display: inline-block;
+  width: var(--spacing-1);
+  height: var(--spacing-4);
+  margin-left: var(--spacing-1);
+  background: currentColor;
+  vertical-align: middle;
+  animation: terminal-cursor-blink var(--transition-slow) steps(1) infinite;
+}
+
+@keyframes terminal-cursor-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 
 .omnibox-shell {

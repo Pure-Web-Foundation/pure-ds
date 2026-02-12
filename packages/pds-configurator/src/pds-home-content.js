@@ -3,16 +3,23 @@ export const HOME_CONTENT = [
     id: "hero",
     type: "hero",
     title: "Pure Design System",
-    lead: "Design systems that generate themselves. Configure once, ship consistent UI everywhere.",
+    lead: "Design systems that generate themselves. Configure once, ship consistent UI everywhere, and start building fast with only actual web standards.",
+    logo: "/assets/img/pds-logo.svg",
+
+  },
+  {
+    id: "intro",
+    type: "cards",
+    title: "What is PDS?",
+    lead: "The essence of PDS in four points.",
     blocks: [
       {
         type: "cards",
         cardVariant: "feature",
         cards: [
-          
           {
             title: "Pure Web Manifesto, materialized",
-            body: "HTML & CSS First, Progressive Enhancement by default, and Web Components only when the platform truly needs extending.",
+            body: "HTML & CSS First, Progressive Enhancement by default, and Web Components only when the platform truly needs extending. PDS is the de-facto materialized [Pure Web Manifesto](https://pureweb.dev/manifesto).",
             icon: "squares-four",
           },
           {
@@ -71,7 +78,7 @@ export const HOME_CONTENT = [
             title: "Components",
             body: "PDS is not a component library, but it does include a set of thoughtfully designed, accessible, and customizable **Web Components** for when you need them.",
             icon: "gear",
-          }
+          },
         ],
       },
     ],
@@ -276,7 +283,9 @@ export const HOME_CONTENT = [
                 goals: {
                   type: "string",
                   maxLength: 512,
-                  examples: ["Unify brand, launch new product UI, and ship faster"],
+                  examples: [
+                    "Unify brand, launch new product UI, and ship faster",
+                  ],
                 },
               },
             },
@@ -287,7 +296,9 @@ export const HOME_CONTENT = [
                 notes: {
                   type: "string",
                   title: "Content notes",
-                  examples: ["Include multi-brand support and internationalization"],
+                  examples: [
+                    "Include multi-brand support and internationalization",
+                  ],
                 },
                 assets: {
                   type: "string",
@@ -321,8 +332,14 @@ export const HOME_CONTENT = [
             "ui:layout": "grid",
             "ui:layoutOptions": { columns: "auto", autoSize: "md", gap: "md" },
           },
-          "/identity/fullName": { "ui:icon": "user", "ui:autocomplete": "name" },
-          "/identity/email": { "ui:icon": "envelope", "ui:autocomplete": "email" },
+          "/identity/fullName": {
+            "ui:icon": "user",
+            "ui:autocomplete": "name",
+          },
+          "/identity/email": {
+            "ui:icon": "envelope",
+            "ui:autocomplete": "email",
+          },
           "/identity/company": { "ui:icon": "briefcase" },
           "/identity/role": { "ui:widget": "role-omnibox" },
           "/project": {
@@ -359,8 +376,20 @@ export const HOME_CONTENT = [
             rangeOutput: true,
           },
         },
-      }
-      
+      },
+    ],
+  },
+  {
+    id: "getting-started",
+    type: "custom",
+    customKey: "getting-started",
+    title: "Getting started",
+    lead: "Give PDS a go right now",
+    blocks: [
+      {
+        type: "terminal",
+        command: "npm init @pure-ds/app",
+      },
     ],
   },
   {
@@ -373,6 +402,12 @@ export const HOME_CONTENT = [
         type: "cards",
         cardVariant: "feature",
         cards: [
+          {
+            title: "Storybook",
+            body: "Explore components, patterns, and code in our [Storybook](https://puredesignsystem.z6.web.core.windows.net/storybook/).",
+            icon: "book-open",
+          },
+
           {
             title: "NPM package",
             body: "Install from [@pure-ds/core](https://www.npmjs.com/package/@pure-ds/core).",

@@ -45,6 +45,22 @@ const ROLE_OPTIONS = [
 ];
 
 const BLOCK_RENDERERS = {
+  "hero-panel": (block) => html`
+    <article class="hero-panel ">
+      <div class="hero-panel-logo">
+        <img
+          src=${block.logo}
+          alt=${block.logoAlt || `${block.title} logo`}
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+      <header class="stack-sm hero-panel-copy">
+        <h1>${block.title}</h1>
+        ${block.lead ? html`<p class="text-muted">${block.lead}</p>` : nothing}
+      </header>
+    </article>
+  `,
   cards: (block) => {
     const layout =
       block.cardLayout === "columns" ? "home-columns" : "grid grid-auto-md";
@@ -202,6 +218,40 @@ const CUSTOM_RENDERERS = {
       </section>
     `;
   },
+  "getting-started": (customSection, context) => {
+    const terminalBlock = (customSection.blocks || []).find(
+      (block) => block.type === "terminal",
+    );
+    const command = terminalBlock?.command || "npm init @pure-ds/app";
+
+    return html`
+      <section class="home-section" data-home-section=${customSection.id}>
+        <div class="stack-lg">
+          ${context.header}
+          <div class="getting-started-terminal">
+            <div class="terminal-shell card surface-elevated">
+              <header class="terminal-titlebar">
+                <div class="terminal-dots" aria-hidden="true">
+                  <span class="terminal-dot terminal-dot-red"></span>
+                  <span class="terminal-dot terminal-dot-yellow"></span>
+                  <span class="terminal-dot terminal-dot-green"></span>
+                </div>
+                <span class="terminal-title">Terminal</span>
+                <span class="terminal-title-spacer"></span>
+              </header>
+              <pre
+                class="terminal-code"
+                data-terminal-code
+                data-command=${command}
+                aria-label="Command line"
+              ><code class="language-bash"><span class="terminal-prompt">$</span> <span data-terminal-typed></span><span class="terminal-cursor" aria-hidden="true"></span></code></pre>
+            </div>
+          </div>
+          ${context.scrollButton}
+        </div>
+      </section>
+    `;
+  },
 };
 
 customElements.define(
@@ -220,6 +270,14 @@ customElements.define(
       this._handleOmniboxScroll = null;
       this._omniboxScrollRaf = null;
       this._themeChangeHandler = null;
+      this._gettingStartedTyped = false;
+      this._cancelGettingStartedTyping = false;
+      this._gettingStartedObserver = null;
+      this._gettingStartedVisibilityHandler = null;
+      this._gettingStartedFocusHandler = null;
+      this._gettingStartedTypingToken = 0;
+      this._gettingStartedTypingInProgress = false;
+      this._gettingStartedTypingTimer = null;
     }
 
     createRenderRoot() {
@@ -234,7 +292,9 @@ customElements.define(
       this._setupOmnibox();
       this._setupPresetOmnibox();
       this._setupForm();
+      this._setupGettingStartedTerminal();
       this._setupOmniboxAutoHide();
+      this._setupGettingStartedTriggers();
       this._themeChangeHandler = () => {
         this._presetOmniboxSettings = this._buildPresetOmniboxSettings();
         this._setupPresetOmnibox();
@@ -244,6 +304,7 @@ customElements.define(
 
     disconnectedCallback() {
       super.disconnectedCallback();
+      this._cancelGettingStartedTyping = true;
       if (this._handleOmniboxScroll) {
         window.removeEventListener("scroll", this._handleOmniboxScroll);
         this._handleOmniboxScroll = null;
@@ -255,6 +316,22 @@ customElements.define(
       if (this._themeChangeHandler) {
         PDS.removeEventListener("pds:theme:changed", this._themeChangeHandler);
         this._themeChangeHandler = null;
+      }
+      if (this._gettingStartedObserver) {
+        this._gettingStartedObserver.disconnect();
+        this._gettingStartedObserver = null;
+      }
+      this._clearGettingStartedTimer();
+      if (this._gettingStartedVisibilityHandler) {
+        document.removeEventListener(
+          "visibilitychange",
+          this._gettingStartedVisibilityHandler,
+        );
+        this._gettingStartedVisibilityHandler = null;
+      }
+      if (this._gettingStartedFocusHandler) {
+        window.removeEventListener("focus", this._gettingStartedFocusHandler);
+        this._gettingStartedFocusHandler = null;
       }
     }
 
@@ -577,6 +654,172 @@ customElements.define(
       });
     }
 
+    _setupGettingStartedTerminal() {
+      if (this._gettingStartedTyped) return;
+      const terminal = this.querySelector("[data-terminal-code]");
+      if (!terminal) return;
+
+      const typed = terminal.querySelector("[data-terminal-typed]");
+      const command = terminal.getAttribute("data-command") || "";
+      if (!typed || !command) return;
+
+      this._gettingStartedTyped = true;
+      this._restartGettingStartedTyping(typed, command);
+    }
+
+    _setupGettingStartedTriggers() {
+      const terminal = this.querySelector("[data-terminal-code]");
+      if (!terminal) return;
+
+      const typed = terminal.querySelector("[data-terminal-typed]");
+      const command = terminal.getAttribute("data-command") || "";
+      if (!typed || !command) return;
+
+      if (!this._gettingStartedObserver) {
+        this._gettingStartedObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                this._restartGettingStartedTyping(typed, command);
+              }
+            });
+          },
+          { threshold: 0.08 },
+        );
+        this._gettingStartedObserver.observe(terminal);
+      }
+
+      if (!this._gettingStartedVisibilityHandler) {
+        this._gettingStartedVisibilityHandler = () => {
+          if (!document.hidden) {
+            this._restartGettingStartedTyping(typed, command);
+          }
+        };
+        document.addEventListener(
+          "visibilitychange",
+          this._gettingStartedVisibilityHandler,
+        );
+      }
+
+      if (!this._gettingStartedFocusHandler) {
+        this._gettingStartedFocusHandler = () => {
+          this._restartGettingStartedTyping(typed, command);
+        };
+        window.addEventListener("focus", this._gettingStartedFocusHandler);
+      }
+    }
+
+    _restartGettingStartedTyping(target, text) {
+      const token = ++this._gettingStartedTypingToken;
+      target.textContent = "";
+      this._cancelGettingStartedTyping = false;
+      this._gettingStartedTypingInProgress = true;
+      this._clearGettingStartedTimer();
+
+      const stream = this._buildTerminalCharStream(text);
+
+      const initialDelay = 140 + Math.random() * 220;
+      this._gettingStartedTypingTimer = window.setTimeout(() => {
+        if (this._cancelGettingStartedTyping) return;
+        if (token !== this._gettingStartedTypingToken) return;
+
+        this._typeText(target, stream, token, 0);
+      }, initialDelay);
+    }
+
+    _typeText(target, stream, token, index) {
+      if (this._cancelGettingStartedTyping) return;
+      if (token !== this._gettingStartedTypingToken) return;
+
+      if (index >= stream.length) {
+        this._gettingStartedTypingInProgress = false;
+        return;
+      }
+
+      const { char, className } = stream[index];
+      window.requestAnimationFrame(() => {
+        if (this._cancelGettingStartedTyping) return;
+        if (token !== this._gettingStartedTypingToken) return;
+
+        if (className) {
+          const span = document.createElement("span");
+          span.className = className;
+          span.textContent = char;
+          target.appendChild(span);
+        } else {
+          target.appendChild(document.createTextNode(char));
+        }
+        const delay = this._getHumanTypingDelay(char);
+
+        this._gettingStartedTypingTimer = window.setTimeout(() => {
+          this._typeText(target, stream, token, index + 1);
+        }, delay);
+      });
+    }
+
+    _clearGettingStartedTimer() {
+      if (this._gettingStartedTypingTimer) {
+        window.clearTimeout(this._gettingStartedTypingTimer);
+        this._gettingStartedTypingTimer = null;
+      }
+    }
+
+    _getHumanTypingDelay(char) {
+      const base = 50 + Math.random() * 90;
+      const pauseChars = new Set([" ", "/", "-", "@", "."]);
+      const extraPause = pauseChars.has(char) ? 120 + Math.random() * 170 : 0;
+      const occasionalPause = Math.random() < 0.12 ? 160 + Math.random() * 160 : 0;
+      return Math.round(base + extraPause + occasionalPause);
+    }
+
+    _formatTerminalCommand(text) {
+      const match = text.match(/^(\S+)(\s+)(\S+)(\s+)(.+)$/);
+      if (!match) {
+        return this._escapeHTML(text);
+      }
+
+      const [, cmd, gap1, action, gap2, rest] = match;
+      return [
+        `<span class="terminal-token terminal-token-cmd">${this._escapeHTML(cmd)}</span>`,
+        gap1,
+        `<span class="terminal-token terminal-token-action">${this._escapeHTML(action)}</span>`,
+        gap2,
+        `<span class="terminal-token terminal-token-arg">${this._escapeHTML(rest)}</span>`,
+      ].join("");
+    }
+
+    _buildTerminalCharStream(text) {
+      const match = text.match(/^(\S+)(\s+)(\S+)(\s+)(.+)$/);
+      if (!match) {
+        return Array.from(text).map((char) => ({ char, className: "" }));
+      }
+
+      const [, cmd, gap1, action, gap2, rest] = match;
+      const segments = [
+        { text: cmd, className: "terminal-token terminal-token-cmd" },
+        { text: gap1, className: "" },
+        { text: action, className: "terminal-token terminal-token-action" },
+        { text: gap2, className: "" },
+        { text: rest, className: "terminal-token terminal-token-arg" },
+      ];
+
+      return segments.flatMap((segment) =>
+        Array.from(segment.text).map((char) => ({
+          char,
+          className: segment.className,
+        })),
+      );
+    }
+
+    _escapeHTML(html) {
+      return String(html ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     #renderSection(section, index) {
       const nextSection = HOME_CONTENT[index + 1];
       const header =
@@ -618,7 +861,7 @@ customElements.define(
           `;
 
       const context = {
-        header,
+        header: section.type === "hero" ? nothing : header,
         renderBlock: null,
         renderBlocks: null,
         scrollToSection: (target) => this._scrollToSection(target),
@@ -632,12 +875,21 @@ customElements.define(
       context.renderBlocks = (blocks) => (blocks || []).map(renderBlock);
 
       if (section.type === "hero") {
+        const heroPanel = {
+          type: "hero-panel",
+          title: section.title,
+          lead: section.lead,
+          logo: section.logo,
+          logoAlt: section.logoAlt,
+        };
+        const heroBlocks = [heroPanel, ...(section.blocks || [])];
+
         return html`
           <section
             class="home-section home-hero"
             data-home-section=${section.id}
           >
-            ${header} ${context.renderBlocks(section.blocks)} ${scrollButton}
+            ${context.renderBlocks(heroBlocks)} ${scrollButton}
           </section>
         `;
       }

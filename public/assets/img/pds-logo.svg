@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-3 -3 116 116" width="200" height="200" role="img" aria-label="PDS generative mark">
+  <defs>
+    <!-- Gradient seed -->
+    <linearGradient id="seedGradient" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="30%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#FF6A00"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Grid geometry -->
+  <!-- 3x3, cell 30, gap 10, radius 8 -->
+  <g>
+    
+    <!-- Active seed tile -->
+    <rect x="0" y="0" width="30" height="30" rx="8" fill="url(#seedGradient)" stroke="url(#seedGradient)" stroke-width="6"/>
+
+    <!-- Spark -->
+    <g transform="translate(18,18) scale(2)" fill="white">
+      <path d="M0 -6 L1.5 -1.5 L6 0 L1.5 1.5 L0 6 L-1.5 1.5 L-6 0 L-1.5 -1.5 Z"/>
+    </g>
+
+    <!-- Remaining tiles -->
+    <g fill="none" stroke="currentColor" stroke-opacity="1" stroke-width="6">
+      
+      <!-- Row 1 -->
+      <rect x="40" y="0" width="30" height="30" rx="8" stroke="#FF6A00"/>
+      <rect x="80" y="0" width="30" height="30" rx="8" stroke="#aaaaaa55" stroke-dasharray="0 13.25" stroke-dashoffset="6.625" stroke-linecap="round" />
+
+      <!-- Row 2 -->
+      <rect x="0" y="40" width="30" height="30" rx="8" stroke="#6340e8"/>
+      <rect x="40" y="40" width="30" height="30" rx="8" stroke="#adadad"/>
+      <rect x="80" y="40" width="30" height="30" rx="8" stroke="#aaaaaa55" stroke-dasharray="0 13.25" stroke-dashoffset="6.625" stroke-linecap="round"/>
+
+      <!-- Row 3 -->
+      <rect x="0" y="80" width="30" height="30" rx="8" stroke="#aaaaaa55" stroke-dasharray="0 13.25" stroke-dashoffset="6.625" stroke-linecap="round"/>
+      <rect x="40" y="80" width="30" height="30" rx="8" stroke="#aaaaaa55" stroke-dasharray="0 13.25" stroke-dashoffset="6.625" stroke-linecap="round"/>
+      <rect x="80" y="80" width="30" height="30" rx="8" stroke="#aaaaaa55" stroke-dasharray="0 13.25" stroke-dashoffset="6.625" stroke-linecap="round"/>
+
+    </g>
+  </g>
+</svg>

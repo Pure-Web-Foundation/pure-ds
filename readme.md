@@ -6,7 +6,7 @@
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](#license)
 [![npm version](https://img.shields.io/npm/v/@pure-ds/core.svg)](https://www.npmjs.com/package/@pure-ds/core)
 
-![Pure Design System logo](public/assets/img/logo.png)
+![Pure Design System logo](public/assets/img/pds-logo.svg)
 
 ## With Great Standards Comes Great Power
 

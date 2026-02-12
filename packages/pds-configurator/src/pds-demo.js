@@ -6,15 +6,13 @@ import {
   unsafeHTML,
 } from "../../../src/js/lit.js";
 import { PDS } from "../../../src/js/pds.js";
+import { escapeHTML, highlightWithShiki, loadShiki } from "./shiki.js";
 
 import { AutoComplete } from "pure-web/ac";
 
 customElements.define(
   "pds-demo",
   class extends LitElement {
-    #shiki = null;
-    #shikiLoading = false;
-
     static properties = {
       config: { type: Object },
       designer: { type: Object },
@@ -923,61 +921,17 @@ customElements.define(
      * Load Shiki syntax highlighter (shared CDN module)
      */
     async loadShiki() {
-      if (this.#shiki) return this.#shiki;
-      if (this.#shikiLoading) {
-        while (this.#shikiLoading) {
-          await new Promise((resolve) => setTimeout(resolve, 50));
-        }
-        return this.#shiki;
-      }
-
-      this.#shikiLoading = true;
-      try {
-        const shiki = await import("https://esm.sh/shiki@1.0.0");
-        this.#shiki = await shiki.getHighlighter({
-          themes: ["github-dark", "github-light"],
-          langs: ["html", "css", "javascript", "json"],
-        });
-        return this.#shiki;
-      } catch (error) {
-        console.error("Failed to load Shiki:", error);
-        return null;
-      } finally {
-        this.#shikiLoading = false;
-      }
+      return loadShiki();
     }
 
     /**
      * Highlight code with Shiki
      */
     async highlightWithShiki(code, lang = "html") {
-      const highlighter = await this.loadShiki();
-      if (!highlighter) {
-        return this.escapeHTML(code);
-      }
-
-      try {
-        // Detect theme from document
-        const isDark =
-          document.documentElement.getAttribute("data-theme") === "dark";
-        const theme = isDark ? "github-dark" : "github-light";
-
-        const html = highlighter.codeToHtml(code, { lang, theme });
-        // Extract content - Shiki wraps in pre>code
-        const match = html.match(/<code[^>]*>([\s\S]*)<\/code>/);
-        return match ? match[1] : this.escapeHTML(code);
-      } catch (error) {
-        console.error("Shiki highlighting failed:", error);
-        return this.escapeHTML(code);
-      }
+      return highlightWithShiki(code, lang);
     }
     escapeHTML(html) {
-      return html
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+      return escapeHTML(html);
     }
 
     /**

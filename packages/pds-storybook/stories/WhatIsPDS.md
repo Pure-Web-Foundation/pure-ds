@@ -1,4 +1,4 @@
-![Pure Design System logo](/assets/img/logo.png) 
+![Pure Design System logo](/assets/img/pds-logo.svg) 
 
 With PDS, we deliver on the promise [Pure Web Foundation](//pureweb.dev) has made with the [Pure Web Manifesto](//pureweb.dev/manifesto)
 
