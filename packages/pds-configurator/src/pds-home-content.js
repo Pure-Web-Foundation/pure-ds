@@ -380,6 +380,79 @@ export const HOME_CONTENT = [
     ],
   },
   {
+    id: "need-help",
+    type: "custom",
+    customKey: "need-help",
+    surfaceClass: "surface-base",
+    title: "Need help?",
+    lead: "Webinars, consultancy, and component-building to help teams launch PDS with confidence.",
+    blocks: [
+      {
+        type: "cards",
+        cardVariant: "feature",
+        cardLayout: "columns",
+        cardIconSize: "lg",
+        cards: [
+          {
+            title: "Webinars & enablement",
+            body: "Live, team-friendly sessions with Q&A, recordings, and tailored guidance.",
+            icon: "sparkle",
+          },
+          {
+            title: "Consultancy",
+            body: "Audit your system, align tokens, and plan migration paths that stick.",
+            icon: "briefcase",
+          },
+          {
+            title: "Component-building",
+            body: "Ship custom web components and enhancements aligned to PDS patterns.",
+            icon: "gear",
+          },
+        ],
+      },
+      {
+        type: "list",
+        title: "How we help you",
+        lead: "This is how we structure our engagements to set teams up for long-term success with PDS.",
+        items: [
+          {
+            title: "Clear scope & outcomes",
+            body: "Define goals, success metrics, and artifacts before kickoff.",
+            icon: "shield-check",
+          },
+          {
+            title: "Upstream-first",
+            body: "Work lands in shared docs, examples, and PRs rather than bespoke forks.",
+            icon: "sparkle",
+          },
+          {
+            title: "Time-boxed phases",
+            body: "Short discovery, hands-on build, and knowledge transfer.",
+            icon: "chart-line",
+          },
+          {
+            title: "Asynchronous handoff",
+            body: "Written summaries, recordings, and next steps after each session.",
+            icon: "list",
+          },
+        ],
+      },
+      {
+        type: "callout",
+        variant: "success",
+        icon: "magic-wand",
+        title: "Need help launching PDS quickly?",
+        body: "Let us plan a focused engagement and ship the first version together.",
+      },
+      {
+        type: "cta",
+        text: "Start a conversation",
+        icon: "sparkle",
+        href: "mailto:help@pure-ds.com?subject=Need%20help%20with%20PDS",
+      },
+    ],
+  },
+  {
     id: "getting-started",
     type: "custom",
     customKey: "getting-started",

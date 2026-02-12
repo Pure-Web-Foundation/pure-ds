@@ -177,13 +177,22 @@ const BLOCK_RENDERERS = {
   form: (block) => html` <pds-form id=${block.id} data-required></pds-form> `,
   cta: (block, context) => html`
     <nav>
-      <button
-        class="btn-outline"
-        @click=${() => context.scrollToSection(block.target)}
-      >
-        <pds-icon icon=${block.icon}></pds-icon>
-        ${block.text}
-      </button>
+      ${block.href
+        ? html`
+            <a class="btn btn-outline" href=${block.href}>
+              <pds-icon icon=${block.icon}></pds-icon>
+              ${block.text}
+            </a>
+          `
+        : html`
+            <button
+              class="btn-outline"
+              @click=${() => context.scrollToSection(block.target)}
+            >
+              <pds-icon icon=${block.icon}></pds-icon>
+              ${block.text}
+            </button>
+          `}
     </nav>
   `,
 };
@@ -245,6 +254,35 @@ const CUSTOM_RENDERERS = {
                 data-command=${command}
                 aria-label="Command line"
               ><code class="language-bash"><span class="terminal-prompt">$</span> <span data-terminal-typed></span><span class="terminal-cursor" aria-hidden="true"></span></code></pre>
+            </div>
+          </div>
+          ${context.scrollButton}
+        </div>
+      </section>
+    `;
+  },
+  "need-help": (customSection, context) => {
+    const blocks = customSection.blocks || [];
+    const servicesBlock = blocks.find((block) => block.type === "cards");
+    const detailsBlock = blocks.find((block) => block.type === "list");
+    const calloutBlock = blocks.find((block) => block.type === "callout");
+    const ctaBlock = blocks.find((block) => block.type === "cta");
+
+    return html`
+      <section
+        class="home-section ${customSection.surfaceClass || ""}"
+        data-home-section=${customSection.id}
+      >
+        <div class="stack-lg">
+          ${context.header}
+          <div class="home-columns">
+            <div class="stack-lg">
+              ${servicesBlock ? context.renderBlock(servicesBlock) : nothing}
+            </div>
+            <div class="stack-lg">
+              ${detailsBlock ? context.renderBlock(detailsBlock) : nothing}
+              ${calloutBlock ? context.renderBlock(calloutBlock) : nothing}
+              ${ctaBlock ? context.renderBlock(ctaBlock) : nothing}
             </div>
           </div>
           ${context.scrollButton}
@@ -941,6 +979,10 @@ customElements.define(
           id="pds-home-omnibox"
           placeholder="Search tokens, components, and utilities..."
         ></pds-omnibox>
+
+        <footer>
+          &copy; ${new Date().getFullYear()} pure-ds.com. All rights reserved.
+        </footer>
       `;
     }
 
