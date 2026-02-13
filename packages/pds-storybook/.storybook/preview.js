@@ -7,7 +7,6 @@ import { presets } from '@pds-src/js/pds-core/pds-config.js';
 import { Generator } from '@pds-src/js/pds-core/pds-generator.js';
 import { applyStyles } from '@pds-src/js/pds-core/pds-runtime.js';
 import { config as userConfig } from '@user/pds-config';
-import './addons/pds-configurator/preview.js';
 import { withHTMLExtractor } from './addons/html-preview/preview.js';
 import { withDescription } from './addons/description/preview.js';
 import './htmlPreview.css';

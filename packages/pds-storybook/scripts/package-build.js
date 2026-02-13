@@ -32,12 +32,7 @@ console.log('Copying source...');
 rmSync(destSource, { recursive: true, force: true });
 cpSync(srcSource, destSource, { recursive: true });
 
-// Copy pds-configurator source
-console.log('Copying pds-configurator...');
-const pdsConfiguratorSrc = join(monorepoRoot, 'packages/pds-configurator/src');
-const destPdsConfigurator = join(destSource, 'js/pds-configurator');
-mkdirSync(destPdsConfigurator, { recursive: true });
-cpSync(pdsConfiguratorSrc, destPdsConfigurator, { recursive: true });
+// pds-configurator package has been removed from the monorepo
 
 // Copy custom-elements.json
 console.log('Copying custom-elements.json...');

@@ -17,22 +17,6 @@ npm run storybook
 
 Opens at **http://localhost:6006**
 
-### Using the Configurator
-
-1. Click the **circle icon** (⚙️) in the Storybook toolbar
-2. A drawer opens at the bottom with the full PDS configurator
-3. Change colors, typography, spacing, presets
-4. Watch all stories update in real-time!
-
-### Using Quick Search
-
-1. Click the **search icon** (🔍) in the toolbar
-2. Type natural language queries:
-   - "what is the focus border color?"
-   - "button hover states"
-   - "primary color scale"
-3. Results appear instantly
-
 ### Generating Stories
 
 ```bash
@@ -42,7 +26,7 @@ npm run generate-stories
 
 This reads:
 - `../../src/js/pds-core/pds-ontology.js`
-- `../../src/js/pds-configurator/pds-demo.js`
+- `../src/pds-demo.js`
 
 And outputs story files to `stories/`.
 

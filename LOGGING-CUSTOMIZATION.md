@@ -126,7 +126,7 @@ The custom `log()` method is used throughout:
 - `pds.js` - Main PDS runtime and initialization
 - Core system components and utilities
 
-**Note:** Some utility functions (like `font-loader.js`, `msg.js`) and UI components (pds-configurator) still use direct `console` calls as they don't have access to the config object and are meant for developer tooling/debugging.
+**Note:** Some utility functions (like `font-loader.js`, `msg.js`) still use direct `console` calls as they don't have access to the config object and are meant for developer tooling/debugging.
 
 ## TypeScript Support
 

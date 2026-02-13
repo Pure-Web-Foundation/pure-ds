@@ -1,35 +1,13 @@
 ﻿# PDS Storybook
 
-**Pure Design System** Storybook showcase with live configuration capabilities.
+**Pure Design System** Storybook showcase for the core runtime and UI surfaces.
 
 This is the reference Storybook implementation demonstrating all features of the Pure Design System, including:
 
-- 🎨 **Live Configuration** - Real-time design system updates via embedded configurator
-- 🔍 **Smart Search** - Natural language queries for tokens and components
 - 📚 **Comprehensive Stories** - All tokens, primitives, components, patterns, and enhancements
 - 🎯 **Best Practices** - Organized by design system standards
 
 ## Features
-
-### Live Configurator
-
-Click the **PDS Configurator** button in the Storybook toolbar to open a configuration panel (via `pds-drawer[position=bottom]`) that includes:
-
-- Full `pds-config-form` with simple/advanced modes
-- Real-time preset switching
-- Color, typography, spacing customization
-- Export configuration as JSON
-- Instant application to all visible stories
-
-### Quick Search / Omnibox
-
-Click the search icon in the toolbar to query the design system using natural language:
-
-- "what is the focus border color on inputs?"
-- "button hover states"
-- "how to create a card layout?"
-
-Powered by the PDS query system from `pds-query.js`.
 
 ### Story Organization
 
@@ -93,7 +71,7 @@ npm run generate-stories
 
 This reads:
 - `src/js/pds-core/pds-ontology.js` - Component metadata
-- `src/js/pds-configurator/pds-demo.js` - Demo HTML sections
+- `packages/pds-storybook/src/pds-demo.js` - Demo HTML sections
 
 And outputs to `stories/` organized by groups.
 
@@ -158,20 +136,6 @@ await PDS.start({
 >
 > Components in the `predefine` array (`pds-icon`, `pds-drawer`) are available immediately after `PDS.start()` completes.
 
-### Configurator Addon
-
-Custom Storybook addon at `.storybook/addons/pds-configurator/`:
-
-**Manager Side** (`Tool.js`):
-- Toolbar button to open configurator
-- Search/omnibox for queries
-- Event bus communication
-
-**Preview Side** (`preview.js`):
-- Creates `<pds-drawer>` with `<pds-config-form>`
-- Listens to `pds:design:updated` events
-- Calls `PDS.applyDesign()` and forces remount
-
 ### Story Generator
 
 `scripts/generate-stories.js` automatically creates stories by:
@@ -224,13 +188,7 @@ Modify `.storybook/preview.js` to change:
 packages/pds-storybook/
 ├── .storybook/
 │   ├── main.js                      # Storybook configuration
-│   ├── preview.js                   # PDS initialization
-│   └── addons/
-│       └── pds-configurator/        # Custom addon
-│           ├── register.js          # Manager registration
-│           ├── Tool.js              # Toolbar UI
-│           ├── preview.js           # Preview logic
-│           └── constants.js         # Event constants
+│   └── preview.js                   # PDS initialization
 ├── scripts/
 │   └── generate-stories.js          # Story generator
 ├── stories/

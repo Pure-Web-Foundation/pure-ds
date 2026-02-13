@@ -29,7 +29,6 @@ const config = {
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
-    './addons/pds-configurator/register.js',
     './addons/html-preview/register.js',
     './addons/description/register.js'
   ],
@@ -74,15 +73,11 @@ const config = {
       '#pds/lit': resolve(pdsSrcPath, 'js/lit.js'),
     };
 
-    // In monorepo, pds-configurator is in a separate package, not in src/js
-    // This must be defined BEFORE @pds-src to take precedence
-    if (!isPackage) {
-       aliases['@pds-src/js/pds-configurator'] = resolve(currentDirname, '../../../packages/pds-configurator/src');
-       
-       // Map the local src folder to the monorepo root src folder
-       // This eliminates the need for a copied src folder during development
+     // In monorepo, map the local src folder to the monorepo root src folder
+     // This eliminates the need for a copied src folder during development
+     if (!isPackage) {
        aliases[resolve(currentDirname, '../src')] = pdsSrcPath;
-    }
+     }
 
     aliases['@pds-src'] = pdsSrcPath;
     config.resolve.alias = aliases;

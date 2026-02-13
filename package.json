@@ -1,7 +1,7 @@
 {
   "name": "@pure-ds/core",
   "shortname": "pds",
-  "version": "0.5.61",
+  "version": "0.6.1",
   "description": "Pure Design System - Why develop a Design System when you can generate one?",
   "repository": {
     "type": "git",
@@ -39,7 +39,6 @@
       "import": "./public/assets/js/pds.js"
     },
     "./pds-core": "./src/js/pds.js",
-    "./pds-configurator": "./public/assets/js/pds-configurator.js",
     "./auto-define/*": "./public/auto-define/*"
   },
   "files": [
@@ -59,9 +58,7 @@
     "packages/pds-cli/lib/",
     "src/js/pds.d.ts",
     "src/js/pds.js",
-    "src/js/pds-configurator.js",
     "src/js/pds-core/",
-    "src/js/pds-configurator/",
     "custom-elements.json",
     "custom-elements-manifest.config.js",
     "pds.html-data.json",

@@ -15,8 +15,6 @@ A comprehensive Storybook showcase demonstrating all PDS features.
 
 #### Key Features:
 - ✅ **Live Mode** - Runtime style generation with instant updates
-- ✅ **Configurator Addon** - Custom toolbar button opens `pds-drawer[position=bottom]` with full `pds-config-form`
-- ✅ **Smart Search** - Omnibox in toolbar uses `pds-query` for natural language queries
 - ✅ **Auto-Generated Stories** - Script reads ontology and demo component
 - ✅ **Best Practice Organization** - 5 main groups following design system standards
 
@@ -56,28 +54,9 @@ stories/
     └── RequiredFields.stories.js
 ```
 
-#### Configurator Addon Architecture:
-
-**Manager Side** (`.storybook/addons/pds-configurator/`):
-- `register.js` - Registers addon with Storybook
-- `Tool.js` - React component for toolbar UI
-- `constants.js` - Event constants and IDs
-- **Toolbar Features:**
-  - Configurator toggle button (opens drawer)
-  - Search/omnibox for quick queries
-  - Event-based communication with preview
-
-**Preview Side**:
-- `preview.js` - Runs in story iframe
-- Creates `<pds-drawer>` dynamically
-- Embeds `<pds-config-form>` from main PDS package
-- Listens to `pds:design:updated` events
-- Applies design via `PDS.applyDesign()`
-- Forces Storybook remount to refresh all stories
-
 #### Story Generator (`scripts/generate-stories.js`):
 - Parses `pds-ontology.js` for metadata
-- Extracts HTML from `pds-demo.js` sections
+- Extracts HTML from `packages/pds-storybook/src/pds-demo.js` sections
 - Generates CSF3 format stories
 - Adds argTypes for preset/color controls
 - Organizes by best-practice groups
@@ -149,13 +128,7 @@ packages/
 ├── pds-storybook/              # Standalone showcase
 │   ├── .storybook/
 │   │   ├── main.js             # Framework config
-│   │   ├── preview.js          # PDS live mode init
-│   │   └── addons/
-│   │       └── pds-configurator/
-│   │           ├── register.js  # Manager registration
-│   │           ├── Tool.js      # Toolbar UI (React)
-│   │           ├── preview.js   # Preview logic
-│   │           └── constants.js # Events
+│   │   └── preview.js          # PDS live mode init
 │   ├── scripts/
 │   │   └── generate-stories.js  # Auto-generator
 │   ├── stories/                 # All story files
@@ -185,8 +158,6 @@ npm run storybook
 
 Opens at http://localhost:6006 with:
 - All PDS stories organized by groups
-- Configurator button in toolbar
-- Search button in toolbar
 - Preset/theme switchers in toolbar
 
 ### Using CLI in Consumer Projects
@@ -208,7 +179,7 @@ pds-storybook --update
 ### Live vs Static Mode
 
 **Standalone Storybook**: Uses **live mode**
-- Runtime generation enables instant configurator updates
+- Runtime generation enables instant updates
 - Full access to `PDS.compiled` object model
 - Demonstrates dynamic capabilities
 
@@ -226,14 +197,6 @@ Follows design system best practices:
 4. **Patterns** - Layout compositions (templates)
 5. **Enhancements** - Progressive behaviors
 
-### Configurator Integration
-
-Embedded as **bottom drawer** (not sidebar) because:
-- Doesn't compete with Storybook's native sidebar
-- Provides more horizontal space for form controls
-- Mimics PDS demo configurator UX
-- Easy to hide when not needed
-
 ### CLI Detection Strategy
 
 **Strict validation** for environment:
@@ -250,7 +213,7 @@ Embedded as **bottom drawer** (not sidebar) because:
 - **5 Primitive** stories (UI elements)
 - **3 Pattern** stories (layouts/utilities)
 - **4 Enhancement** stories (progressive behaviors)
-- **1 Custom Addon** (configurator + search)
+- **0 Custom Addons**
 - **1 CLI Tool** (reentrant integration)
 
 ## 🔧 Technical Implementation

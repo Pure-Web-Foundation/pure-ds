@@ -26,7 +26,7 @@ if (!ontologyMatch) {
 }
 
 // Load demo content
-const demoPath = join(ROOT_DIR, 'packages/pds-configurator/src/pds-demo.js');
+const demoPath = join(ROOT_DIR, 'packages/pds-storybook/src/pds-demo.js');
 const demoContent = readFileSync(demoPath, 'utf-8');
 
 // Story groups based on design system best practices
