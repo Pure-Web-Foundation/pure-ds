@@ -3,7 +3,6 @@
  * keeps its UI in sync with programmatic theme changes.
  *
  * @element pds-theme
- * @attr {string} label - Optional legend text (defaults to "Theme").
  */
 const THEME_OPTIONS = [
   { value: "system", label: "System", icon: "moon-stars" },
@@ -11,7 +10,6 @@ const THEME_OPTIONS = [
   { value: "dark", label: "Dark", icon: "moon" },
 ];
 
-const DEFAULT_LABEL = "Theme";
 const LAYERS = ["tokens", "primitives", "components", "utilities"];
 const DEFAULT_THEMES = ["light", "dark"];
 const VALID_THEMES = new Set(DEFAULT_THEMES);
@@ -48,9 +46,6 @@ const isPresetThemeCompatible = (preset, themePreference) => {
 };
 
 class PdsTheme extends HTMLElement {
-  static get observedAttributes() {
-    return ["label"];
-  }
 
   #observer;
   #listening = false;
@@ -65,36 +60,12 @@ class PdsTheme extends HTMLElement {
       void this.#setup();
     } else {
       this.#attachObserver();
-      this.#syncLegend();
       this.#syncCheckedState();
     }
   }
 
   disconnectedCallback() {
     this.#teardownObserver();
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue === newValue) return;
-    if (name === "label") {
-      this.#syncLegend();
-    }
-  }
-
-  /**
-   * Gets the legend/aria-label text to display.
-   * @returns {string}
-   */
-  get label() {
-    return this.getAttribute("label")?.trim() || DEFAULT_LABEL;
-  }
-
-  set label(value) {
-    if (value == null || value === "") {
-      this.removeAttribute("label");
-    } else {
-      this.setAttribute("label", value);
-    }
   }
 
   async #setup() {
@@ -120,7 +91,6 @@ class PdsTheme extends HTMLElement {
     }
 
     this.#attachObserver();
-    this.#syncLegend();
     this.#syncCheckedState();
   }
 
@@ -138,8 +108,7 @@ class PdsTheme extends HTMLElement {
 
     return /*html*/`
       <form part="form">
-        <fieldset part="fieldset" role="radiogroup" aria-label="${DEFAULT_LABEL}" class="buttons">
-          <legend part="legend">${DEFAULT_LABEL}</legend>
+        <fieldset part="fieldset" role="radiogroup" class="buttons">
           ${optionsMarkup}
         </fieldset>
       </form>`;
@@ -194,13 +163,6 @@ class PdsTheme extends HTMLElement {
     if (!this.#observer) return;
     this.#observer.disconnect();
     this.#observer = undefined;
-  }
-
-  #syncLegend() {
-    const legend = this.shadowRoot.querySelector("legend");
-    const fieldset = this.shadowRoot.querySelector("fieldset");
-    if (legend) legend.textContent = this.label;
-    if (fieldset) fieldset.setAttribute("aria-label", this.label);
   }
 
   #syncCheckedState() {

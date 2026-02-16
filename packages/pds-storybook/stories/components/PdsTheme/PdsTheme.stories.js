@@ -8,10 +8,6 @@ It updates \`PDS.theme\`, stays in sync with programmatic changes, and emits \`p
 
 ## Quick Reference
 
-| Attribute | Type | Default | Description |
-|-----------|------|---------|-------------|
-| \`label\` | string | \`"Theme"\` | Custom legend + aria-label |
-
 Listen for global theme updates with \`PDS.addEventListener('pds:theme:changed', handler)\` when other UI needs to respond.
 `;
 
@@ -22,10 +18,11 @@ const docsParameters = {
   page: createComponentDocsPage('pds-theme')
 };
 
-const renderThemeToggle = (args) => html`
-  <pds-theme
-    label=${args.label || ''}
-  ></pds-theme>
+const renderThemeToggle = () => html`
+  <label>
+    <span data-label>Theme</span>
+    <pds-theme></pds-theme>
+  </label>
 `;
 
 export default {
@@ -37,30 +34,22 @@ export default {
     },
     docs: docsParameters
   },
-  argTypes: {
-    label: {
-      control: 'text',
-      description: 'Legend + aria-label text'
-    }
-  }
+  argTypes: {}
 };
 
 export const Playground = {
   name: 'Interactive Playground',
-  args: {
-    label: 'Theme'
-  },
   parameters: {
     docs: {
       description: {
-        story: 'Use the controls to adjust the component label.'
+        story: 'Wrap the component in a label with a `data-label` span to provide the field label.'
       }
     }
   },
-  render: (args) => html`
+  render: () => html`
     <div class="stack-md">
       <p class="text-muted">The toggle updates <code>PDS.theme</code> so the rest of your UI stays in sync.</p>
-      ${renderThemeToggle(args)}
+      ${renderThemeToggle()}
     </div>
   `
 };
