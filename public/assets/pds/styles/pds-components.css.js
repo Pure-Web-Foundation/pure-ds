@@ -9,7 +9,7 @@ components.replaceSync(`@layer components {
 :where(blockquote) {
   margin: 0 0 var(--spacing-4) 0;
   padding: var(--spacing-6) var(--spacing-8);
-  border-left: 4px solid var(--color-primary-500);
+  border-left: calc(var(--border-width-thick) + var(--border-width-thin)) solid var(--color-primary-500);
   background-color: var(--color-surface-elevated);
   border-radius: var(--radius-none);
   font-size: var(--font-size-lg);
@@ -32,7 +32,7 @@ components.replaceSync(`@layer components {
 :where(hr) {
   margin: var(--spacing-8) 0;
   border: none;
-  border-top: 1px solid var(--color-border);
+  border-top: var(--border-width-thin) solid var(--color-border);
   height: 0;
 }
 
@@ -121,7 +121,7 @@ components.replaceSync(`@layer components {
   font-size: var(--font-size-sm);
   color: var(--color-text-primary);
   background-color: var(--color-surface-elevated);
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--radius-sm);
   box-shadow: 0 2px 0 0 var(--color-border);
 }
@@ -144,12 +144,12 @@ components.replaceSync(`@layer components {
 
 :where(details):not(.accordion *) {
   margin: 0 0 var(--spacing-2) 0;
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface-base);
   
   &[open] :where(summary) {
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: var(--border-width-thin) solid var(--color-border);
     background-color: var(--color-surface-subtle);
     
     &::after {
@@ -327,7 +327,7 @@ input, textarea, select {
   width: 100%;
   min-height: 40px;
   padding: calc(var(--spacing-1) * 0.75) var(--spacing-4);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -395,7 +395,7 @@ input[type="range"] {
     border-radius: 50%;
     box-shadow: var(--shadow-sm);
     cursor: grab;
-    border: 1px solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
+    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
   }
 
   /* Mozilla track */
@@ -412,7 +412,7 @@ input[type="range"] {
     background: color-mix(in srgb, var(--color-primary-500) 15%, var(--color-surface-base));
     border-radius: 50%;
     box-shadow: var(--shadow-sm);
-    border: 1px solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
+    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
     transform: translateY(calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2));
   }
 
@@ -498,7 +498,7 @@ input[type="checkbox"] + label:not(fieldset label):not(label[data-toggle]) {
   justify-content: center;
   min-height: calc(44px * 0.75);
   padding: calc(var(--spacing-1) * 0.6) calc(var(--spacing-4) * 0.85);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-sm);
@@ -526,7 +526,7 @@ input[type="checkbox"]:checked + label:not(fieldset label):not(label[data-toggle
   background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
   color: var(--color-primary-700);
   border-color: var(--color-primary-500);
-  border-width: 2px;
+  border-width: var(--border-width-medium);
   font-weight: var(--font-weight-semibold);
   
   &:hover {
@@ -602,7 +602,7 @@ fieldset[role="group"].buttons {
     justify-content: center;
     min-height: calc(44px * 0.75);
     padding: calc(var(--spacing-1) * 0.6) calc(var(--spacing-4) * 0.85);
-    border: 2px solid var(--color-border);
+    border: var(--border-width-medium) solid var(--color-border);
     border-radius: var(--radius-md);
     font-family: var(--font-family-body);
     font-size: var(--font-size-sm);
@@ -634,7 +634,7 @@ fieldset[role="group"].buttons {
   label:has(input[type="checkbox"]:checked) {
     background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
     border-color: var(--color-primary-500);
-    border-width: 2px;
+    border-width: var(--border-width-medium);
     font-weight: var(--font-weight-semibold);
     
     &:hover {
@@ -800,7 +800,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   justify-content: center;
   min-height: 44px;
   padding: calc(var(--spacing-1) * 1) var(--spacing-6);
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -1053,7 +1053,7 @@ a.btn-working {
   gap: var(--spacing-3);
   width: 100%;
   background: var(--color-input-bg);
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--radius-md);
   min-height: var(--input-min-height, 40px);
   position: relative;
@@ -1098,13 +1098,13 @@ a.btn-working {
 .array-item {
   position: relative;
   padding: var(--spacing-4);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface-base);
   
   .array-controls {
     padding-top: var(--spacing-3);
-    border-top: 1px solid var(--color-border);
+    border-top: 2px solid var(--color-border);
     margin-top: var(--spacing-4);
   }
 }
@@ -1152,7 +1152,7 @@ a.btn-working {
   padding: var(--spacing-4);
   border-radius: var(--radius-md);
   margin: 0 0 var(--spacing-4) 0;
-  border-left: 4px solid;
+  border-left: calc(var(--border-width-thick) + var(--border-width-thin)) solid;
   display: flex;
   align-items: flex-start;
   gap: var(--spacing-3);
@@ -1256,7 +1256,7 @@ a.btn-working {
 
 .badge-outline {
   background-color: transparent;
-  border: 1px solid currentColor;
+  border: var(--border-width-thin) solid currentColor;
   &.badge-primary { color: var(--color-text-primary); }
   &.badge-secondary { color: var(--color-secondary-600); }
   &.badge-success { color: var(--color-success-600); }
@@ -1370,7 +1370,7 @@ dialog {
     justify-content: space-between;
     gap: var(--spacing-4);
     padding: var(--spacing-6);
-    border-bottom: 1px solid var(--surface-overlay-border);
+    border-bottom: var(--border-width-thin) solid var(--surface-overlay-border);
     flex-shrink: 0;   
 
     h2,
@@ -1427,7 +1427,7 @@ dialog {
     justify-content: flex-end;
     align-items: center;
     padding: var(--spacing-6);
-    border-top: 1px solid var(--surface-overlay-border);
+    border-top: var(--border-width-thin) solid var(--surface-overlay-border);
     flex-shrink: 0;
   }
 }
@@ -1462,7 +1462,7 @@ dialog.dialog-full { max-width: calc(100vw - var(--spacing-8)); max-height: calc
 /* Accordion (details/summary) */
 
 :where(.accordion details) {
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface-base);
   margin: 0 0 var(--spacing-3) 0;
@@ -1566,7 +1566,7 @@ nav[data-dropdown] {
     padding: var(--spacing-2);
     margin: 0;
     background: var(--color-surface-overlay);
-    border: 1px solid var(--color-border);
+    border: var(--border-width-thin) solid var(--color-border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
     top: 100%;
@@ -1618,7 +1618,7 @@ nav[data-dropdown] {
     padding: var(--spacing-1) 0;
 
     & + li {
-      border-top: 1px solid var(--color-border);
+      border-top: var(--border-width-thin) solid var(--color-border);
       margin-top: var(--spacing-2);
     }
 
@@ -1635,7 +1635,7 @@ nav[data-dropdown] {
 
     & > hr {
       border: none;
-      border-top: 3px solid var(--color-border);
+      border-top: var(--border-width-thick) solid var(--color-border);
       margin: var(--spacing-2) 0;
     }
   }
@@ -1715,7 +1715,7 @@ pds-tabstrip {
   & > nav {
     display: flex;
     gap: var(--spacing-1);
-    border-bottom: 2px solid var(--color-border);
+    border-bottom: var(--border-width-medium) solid var(--color-border);
     margin-bottom: var(--spacing-6);
     position: relative;
     overflow-x: auto;
@@ -1744,8 +1744,8 @@ pds-tabstrip {
       background: transparent;
       cursor: pointer;
       transition: color var(--transition-fast);
-      border-bottom: 2px solid transparent;
-      margin-bottom: -2px; /* Overlap the nav border */
+      border-bottom: var(--border-width-medium) solid transparent;
+      margin-bottom: calc(-1 * var(--border-width-medium)); /* Overlap the nav border */
 
       &:hover {
         color: var(--color-text-primary);
@@ -1842,13 +1842,13 @@ th {
   text-align: left;
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
-  border-bottom: 2px solid var(--color-border);
+  border-bottom: var(--border-width-medium) solid var(--color-border);
 }
 
 td {
   padding: var(--spacing-3) var(--spacing-4);
   color: var(--color-text-secondary);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: var(--border-width-thin) solid var(--color-border);
 }
 
 tbody {
@@ -1872,10 +1872,10 @@ tbody {
 }
 
 .table-bordered {
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
   
   th, td {
-    border: 1px solid var(--color-border);
+    border: var(--border-width-thin) solid var(--color-border);
   }
 }
 
@@ -1918,7 +1918,7 @@ tbody {
 .card-outlined,
 .card-basic {
   background: var(--color-surface-base);
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
 }
 
 .card-interactive:hover {
@@ -1933,11 +1933,11 @@ tbody {
 ::-webkit-scrollbar-thumb {
   background: var(--color-secondary-300);
   border-radius: var(--radius-full);
-  border: 3px solid transparent;
+  border: var(--border-width-thick) solid transparent;
   background-clip: padding-box;
   transition: background-color var(--transition-fast);
-  &:hover { background: var(--color-secondary-400); border: 2px solid transparent; background-clip: padding-box; }
-  &:active { background: var(--color-secondary-500); border: 2px solid transparent; background-clip: padding-box; }
+  &:hover { background: var(--color-secondary-400); border: var(--border-width-medium) solid transparent; background-clip: padding-box; }
+  &:active { background: var(--color-secondary-500); border: var(--border-width-medium) solid transparent; background-clip: padding-box; }
   @media (prefers-color-scheme: dark) {
     background: var(--color-secondary-600);
     &:hover { background: var(--color-secondary-500); }
@@ -1975,7 +1975,7 @@ export const componentsCSS = `@layer components {
 :where(blockquote) {
   margin: 0 0 var(--spacing-4) 0;
   padding: var(--spacing-6) var(--spacing-8);
-  border-left: 4px solid var(--color-primary-500);
+  border-left: calc(var(--border-width-thick) + var(--border-width-thin)) solid var(--color-primary-500);
   background-color: var(--color-surface-elevated);
   border-radius: var(--radius-none);
   font-size: var(--font-size-lg);
@@ -1998,7 +1998,7 @@ export const componentsCSS = `@layer components {
 :where(hr) {
   margin: var(--spacing-8) 0;
   border: none;
-  border-top: 1px solid var(--color-border);
+  border-top: var(--border-width-thin) solid var(--color-border);
   height: 0;
 }
 
@@ -2087,7 +2087,7 @@ export const componentsCSS = `@layer components {
   font-size: var(--font-size-sm);
   color: var(--color-text-primary);
   background-color: var(--color-surface-elevated);
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--radius-sm);
   box-shadow: 0 2px 0 0 var(--color-border);
 }
@@ -2110,12 +2110,12 @@ export const componentsCSS = `@layer components {
 
 :where(details):not(.accordion *) {
   margin: 0 0 var(--spacing-2) 0;
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface-base);
   
   &[open] :where(summary) {
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: var(--border-width-thin) solid var(--color-border);
     background-color: var(--color-surface-subtle);
     
     &::after {
@@ -2293,7 +2293,7 @@ input, textarea, select {
   width: 100%;
   min-height: 40px;
   padding: calc(var(--spacing-1) * 0.75) var(--spacing-4);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -2361,7 +2361,7 @@ input[type="range"] {
     border-radius: 50%;
     box-shadow: var(--shadow-sm);
     cursor: grab;
-    border: 1px solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
+    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
   }
 
   /* Mozilla track */
@@ -2378,7 +2378,7 @@ input[type="range"] {
     background: color-mix(in srgb, var(--color-primary-500) 15%, var(--color-surface-base));
     border-radius: 50%;
     box-shadow: var(--shadow-sm);
-    border: 1px solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
+    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
     transform: translateY(calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2));
   }
 
@@ -2464,7 +2464,7 @@ input[type="checkbox"] + label:not(fieldset label):not(label[data-toggle]) {
   justify-content: center;
   min-height: calc(44px * 0.75);
   padding: calc(var(--spacing-1) * 0.6) calc(var(--spacing-4) * 0.85);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-sm);
@@ -2492,7 +2492,7 @@ input[type="checkbox"]:checked + label:not(fieldset label):not(label[data-toggle
   background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
   color: var(--color-primary-700);
   border-color: var(--color-primary-500);
-  border-width: 2px;
+  border-width: var(--border-width-medium);
   font-weight: var(--font-weight-semibold);
   
   &:hover {
@@ -2568,7 +2568,7 @@ fieldset[role="group"].buttons {
     justify-content: center;
     min-height: calc(44px * 0.75);
     padding: calc(var(--spacing-1) * 0.6) calc(var(--spacing-4) * 0.85);
-    border: 2px solid var(--color-border);
+    border: var(--border-width-medium) solid var(--color-border);
     border-radius: var(--radius-md);
     font-family: var(--font-family-body);
     font-size: var(--font-size-sm);
@@ -2600,7 +2600,7 @@ fieldset[role="group"].buttons {
   label:has(input[type="checkbox"]:checked) {
     background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
     border-color: var(--color-primary-500);
-    border-width: 2px;
+    border-width: var(--border-width-medium);
     font-weight: var(--font-weight-semibold);
     
     &:hover {
@@ -2766,7 +2766,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   justify-content: center;
   min-height: 44px;
   padding: calc(var(--spacing-1) * 1) var(--spacing-6);
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -3019,7 +3019,7 @@ a.btn-working {
   gap: var(--spacing-3);
   width: 100%;
   background: var(--color-input-bg);
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--radius-md);
   min-height: var(--input-min-height, 40px);
   position: relative;
@@ -3064,13 +3064,13 @@ a.btn-working {
 .array-item {
   position: relative;
   padding: var(--spacing-4);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface-base);
   
   .array-controls {
     padding-top: var(--spacing-3);
-    border-top: 1px solid var(--color-border);
+    border-top: 2px solid var(--color-border);
     margin-top: var(--spacing-4);
   }
 }
@@ -3118,7 +3118,7 @@ a.btn-working {
   padding: var(--spacing-4);
   border-radius: var(--radius-md);
   margin: 0 0 var(--spacing-4) 0;
-  border-left: 4px solid;
+  border-left: calc(var(--border-width-thick) + var(--border-width-thin)) solid;
   display: flex;
   align-items: flex-start;
   gap: var(--spacing-3);
@@ -3222,7 +3222,7 @@ a.btn-working {
 
 .badge-outline {
   background-color: transparent;
-  border: 1px solid currentColor;
+  border: var(--border-width-thin) solid currentColor;
   &.badge-primary { color: var(--color-text-primary); }
   &.badge-secondary { color: var(--color-secondary-600); }
   &.badge-success { color: var(--color-success-600); }
@@ -3336,7 +3336,7 @@ dialog {
     justify-content: space-between;
     gap: var(--spacing-4);
     padding: var(--spacing-6);
-    border-bottom: 1px solid var(--surface-overlay-border);
+    border-bottom: var(--border-width-thin) solid var(--surface-overlay-border);
     flex-shrink: 0;   
 
     h2,
@@ -3393,7 +3393,7 @@ dialog {
     justify-content: flex-end;
     align-items: center;
     padding: var(--spacing-6);
-    border-top: 1px solid var(--surface-overlay-border);
+    border-top: var(--border-width-thin) solid var(--surface-overlay-border);
     flex-shrink: 0;
   }
 }
@@ -3428,7 +3428,7 @@ dialog.dialog-full { max-width: calc(100vw - var(--spacing-8)); max-height: calc
 /* Accordion (details/summary) */
 
 :where(.accordion details) {
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface-base);
   margin: 0 0 var(--spacing-3) 0;
@@ -3532,7 +3532,7 @@ nav[data-dropdown] {
     padding: var(--spacing-2);
     margin: 0;
     background: var(--color-surface-overlay);
-    border: 1px solid var(--color-border);
+    border: var(--border-width-thin) solid var(--color-border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
     top: 100%;
@@ -3584,7 +3584,7 @@ nav[data-dropdown] {
     padding: var(--spacing-1) 0;
 
     & + li {
-      border-top: 1px solid var(--color-border);
+      border-top: var(--border-width-thin) solid var(--color-border);
       margin-top: var(--spacing-2);
     }
 
@@ -3601,7 +3601,7 @@ nav[data-dropdown] {
 
     & > hr {
       border: none;
-      border-top: 3px solid var(--color-border);
+      border-top: var(--border-width-thick) solid var(--color-border);
       margin: var(--spacing-2) 0;
     }
   }
@@ -3681,7 +3681,7 @@ pds-tabstrip {
   & > nav {
     display: flex;
     gap: var(--spacing-1);
-    border-bottom: 2px solid var(--color-border);
+    border-bottom: var(--border-width-medium) solid var(--color-border);
     margin-bottom: var(--spacing-6);
     position: relative;
     overflow-x: auto;
@@ -3710,8 +3710,8 @@ pds-tabstrip {
       background: transparent;
       cursor: pointer;
       transition: color var(--transition-fast);
-      border-bottom: 2px solid transparent;
-      margin-bottom: -2px; /* Overlap the nav border */
+      border-bottom: var(--border-width-medium) solid transparent;
+      margin-bottom: calc(-1 * var(--border-width-medium)); /* Overlap the nav border */
 
       &:hover {
         color: var(--color-text-primary);
@@ -3808,13 +3808,13 @@ th {
   text-align: left;
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
-  border-bottom: 2px solid var(--color-border);
+  border-bottom: var(--border-width-medium) solid var(--color-border);
 }
 
 td {
   padding: var(--spacing-3) var(--spacing-4);
   color: var(--color-text-secondary);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: var(--border-width-thin) solid var(--color-border);
 }
 
 tbody {
@@ -3838,10 +3838,10 @@ tbody {
 }
 
 .table-bordered {
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
   
   th, td {
-    border: 1px solid var(--color-border);
+    border: var(--border-width-thin) solid var(--color-border);
   }
 }
 
@@ -3884,7 +3884,7 @@ tbody {
 .card-outlined,
 .card-basic {
   background: var(--color-surface-base);
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
 }
 
 .card-interactive:hover {
@@ -3899,11 +3899,11 @@ tbody {
 ::-webkit-scrollbar-thumb {
   background: var(--color-secondary-300);
   border-radius: var(--radius-full);
-  border: 3px solid transparent;
+  border: var(--border-width-thick) solid transparent;
   background-clip: padding-box;
   transition: background-color var(--transition-fast);
-  &:hover { background: var(--color-secondary-400); border: 2px solid transparent; background-clip: padding-box; }
-  &:active { background: var(--color-secondary-500); border: 2px solid transparent; background-clip: padding-box; }
+  &:hover { background: var(--color-secondary-400); border: var(--border-width-medium) solid transparent; background-clip: padding-box; }
+  &:active { background: var(--color-secondary-500); border: var(--border-width-medium) solid transparent; background-clip: padding-box; }
   @media (prefers-color-scheme: dark) {
     background: var(--color-secondary-600);
     &:hover { background: var(--color-secondary-500); }

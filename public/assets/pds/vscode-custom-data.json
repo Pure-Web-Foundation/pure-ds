@@ -690,6 +690,10 @@
       ]
     },
     {
+      "name": "EDITOR_TAG",
+      "description": "PdsLiveEdit component"
+    },
+    {
       "name": "pds-omnibox",
       "description": "PdsOmnibox component",
       "attributes": [
@@ -719,6 +723,10 @@
         },
         {
           "name": "icon",
+          "description": ""
+        },
+        {
+          "name": "item-grid",
           "description": ""
         }
       ]
@@ -839,13 +847,7 @@
     },
     {
       "name": "pds-theme",
-      "description": "PdsTheme component",
-      "attributes": [
-        {
-          "name": "label",
-          "description": ""
-        }
-      ]
+      "description": "PdsTheme component"
     },
     {
       "name": "pds-toaster",

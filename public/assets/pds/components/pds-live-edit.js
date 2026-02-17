@@ -33,6 +33,7 @@ const QUICK_RULES = [
     paths: [
       "colors.secondary",
       "shape.radiusSize",
+      "shape.borderWidth",
       "spatialRhythm.inputPadding",
       "layout.inputMinHeight",
       "typography.fontFamilyBody",
@@ -96,7 +97,12 @@ const QUICK_STYLE_PROPERTIES = [
 ];
 
 const INLINE_VAR_REGEX = /var\(\s*(--[^)\s,]+)\s*/g;
+const CUSTOM_PROP_REGEX = /--.+/;
 const COLOR_VALUE_REGEX = /#(?:[0-9a-f]{3,8})\b|rgba?\([^)]*\)|hsla?\([^)]*\)/gi;
+
+const ENUM_FIELD_OPTIONS = {
+  "shape.borderWidth": ["hairline", "thin", "medium", "thick"],
+};
 
 let cachedTokenIndex = null;
 let cachedTokenIndexMeta = null;
@@ -148,6 +154,17 @@ ${EDITOR_TAG} {
 }
 [${TARGET_ATTR}] {
   position: relative;
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: -2px;
+}
+[${TARGET_ATTR}]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-primary-500);
+  opacity: 0.08;
+  pointer-events: none;
+  z-index: var(--z-base);
 }
 .${DROPDOWN_CLASS} {
   position: fixed;
@@ -174,6 +191,10 @@ ${EDITOR_TAG} {
 .${DROPDOWN_CLASS} .pds-live-editor-menu {
   padding: var(--spacing-1);
   max-width: 350px;
+  padding-bottom: 0;
+}
+.${DROPDOWN_CLASS} .pds-live-editor-form-container {
+  padding-bottom: var(--spacing-2);
 }
 .${DROPDOWN_CLASS} .pds-live-editor-title {
   display: block;
@@ -194,12 +215,22 @@ ${EDITOR_TAG} {
   margin-top: var(--spacing-2);
 }
 .${DROPDOWN_CLASS} .pds-live-editor-menu input[type="color"] {
-  width: var(--spacing-9);
   height: var(--spacing-6);
-  max-width: var(--spacing-9);
   min-width: var(--spacing-9);
+  max-width: unset;
   padding: 0;
   border-radius: var(--radius-sm);
+}
+.${DROPDOWN_CLASS} .pds-live-editor-footer {
+  display: flex;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-base);
+  position: sticky;
+  justify-content: space-between;
+  bottom: 0;
+  z-index: 1;
 }
 `;
   document.head.appendChild(style);
@@ -329,6 +360,33 @@ function setValueAtJsonPath(target, jsonPath, value) {
   });
 }
 
+function getEnumOptions(path) {
+  if (path === "shape.borderWidth") {
+    const enumKeys = Object.keys(PDS?.enums?.BorderWidths || {});
+    if (enumKeys.length) return enumKeys;
+  }
+  return ENUM_FIELD_OPTIONS[path] || null;
+}
+
+function normalizeEnumValue(path, value) {
+  const options = getEnumOptions(path);
+  if (!options || !options.length) return value;
+  if (typeof value === "string" && options.includes(value)) return value;
+
+  if (path === "shape.borderWidth" && typeof value === "number") {
+    const source = PDS?.enums?.BorderWidths || {
+      hairline: 0.5,
+      thin: 1,
+      medium: 2,
+      thick: 3,
+    };
+    const found = Object.entries(source).find(([, num]) => Number(num) === Number(value));
+    if (found) return found[0];
+  }
+
+  return value;
+}
+
 function normalizePaths(paths) {
   const relations = PDS?.configRelations || {};
   const seen = new Set();
@@ -385,6 +443,18 @@ function collectQuickRulePaths(target) {
   }).flatMap((rule) => rule.paths);
 }
 
+function pathExistsInDesign(path, design) {
+  if (!path || !design) return false;
+  const segments = path.split(".");
+  let current = design;
+  for (const segment of segments) {
+    if (!current || typeof current !== "object") return false;
+    if (!(segment in current)) return false;
+    current = current[segment];
+  }
+  return true;
+}
+
 function filterPathsByContext(target, paths) {
   if (!target || !paths.length) return paths;
   const isGlobal = target.matches("body, main");
@@ -395,6 +465,7 @@ function filterPathsByContext(target, paths) {
     )
   );
   const theme = getActiveTheme();
+  const design = PDS?.currentConfig?.design || {};
 
   return paths.filter((path) => {
     if (!theme.isDark && path.includes(DARK_MODE_PATH_MARKER)) return false;
@@ -402,6 +473,12 @@ function filterPathsByContext(target, paths) {
     if (GLOBAL_LAYOUT_PATHS.has(path) && !isGlobal) return false;
     if (FORM_CONTEXT_PATHS.has(path) && !isInForm) return false;
     if (SURFACE_CONTEXT_PATHS.has(path) && !(isOnSurface || isGlobal)) return false;
+    // Opacity fields should never be under colors category
+    if (path.startsWith("colors.") && path.toLowerCase().includes("opacity")) return false;
+    // Always allow borderWidth in quick edit (design may be partial/override-only)
+    if (path === "shape.borderWidth") return true;
+    // Filter out paths that don't exist in the current design config
+    if (!pathExistsInDesign(path, design)) return false;
     return true;
   });
 }
@@ -575,18 +652,23 @@ function getTokenIndex() {
   return cachedTokenIndex;
 }
 
+function extractAllVarRefs(text) {
+  const vars = new Set();
+  if (!text) return vars;
+  // Extract all custom property names (--*) from text, including nested var() fallbacks
+  const customPropMatches = text.matchAll(/--[a-zA-Z0-9_-]+/g);
+  for (const match of customPropMatches) {
+    vars.add(match[0]);
+  }
+  return vars;
+}
+
 function collectVarRefsFromInline(element) {
   const vars = new Set();
   if (!element || typeof element.getAttribute !== "function") return vars;
   const styleAttr = element.getAttribute("style") || "";
   if (!styleAttr) return vars;
-  INLINE_VAR_REGEX.lastIndex = 0;
-  let match = INLINE_VAR_REGEX.exec(styleAttr);
-  while (match) {
-    if (match[1]) vars.add(match[1]);
-    match = INLINE_VAR_REGEX.exec(styleAttr);
-  }
-  return vars;
+  return extractAllVarRefs(styleAttr);
 }
 
 function collectScanTargets(target, limit = 120) {
@@ -595,6 +677,48 @@ function collectScanTargets(target, limit = 120) {
   const descendants = Array.from(target.querySelectorAll("*"));
   if (descendants.length <= limit) return nodes.concat(descendants);
   return nodes.concat(descendants.slice(0, limit));
+}
+
+function collectVarRefsFromMatchingRules(element) {
+  const vars = new Set();
+  if (!element || typeof window === "undefined") return vars;
+  
+  try {
+    // Scan all stylesheets for rules that match this element
+    const sheets = Array.from(document.styleSheets);
+    
+    for (const sheet of sheets) {
+      try {
+        // Skip external sheets due to CORS
+        const rules = sheet.cssRules || sheet.rules;
+        if (!rules) continue;
+        
+        for (const rule of rules) {
+          // Check CSSStyleRule (ignoring @media, @keyframes, etc for now)
+          if (rule.type === CSSRule.STYLE_RULE) {
+            try {
+              if (element.matches(rule.selectorText)) {
+                // Extract var refs from all properties in this rule
+                const cssText = rule.style.cssText;
+                if (cssText) {
+                  const extracted = extractAllVarRefs(cssText);
+                  extracted.forEach(v => vars.add(v));
+                }
+              }
+            } catch (e) {
+              // Invalid selector or matching error
+            }
+          }
+        }
+      } catch (e) {
+        // CORS or other sheet access error
+      }
+    }
+  } catch (e) {
+    // Fallback silently
+  }
+  
+  return vars;
 }
 
 function collectPathsFromComputedStyles(target) {
@@ -615,6 +739,7 @@ function collectPathsFromComputedStyles(target) {
 
   scanTargets.forEach((node) => {
     addVarSet(collectVarRefsFromInline(node));
+    addVarSet(collectVarRefsFromMatchingRules(node));
 
     let style = null;
     try {
@@ -624,10 +749,27 @@ function collectPathsFromComputedStyles(target) {
     }
     if (!style) return;
 
+    // Extract var refs from all properties (custom AND standard)
+    // We scan custom properties to find nested var() chains
+    // We scan standard properties to find var() usage
+    // We do NOT add custom property names themselves - those are definitions, not usage
+    for (let i = 0; i < style.length; i += 1) {
+      const propName = style[i];
+      const propValue = style.getPropertyValue(propName);
+      if (propValue) {
+        // Extract all var() references including nested fallbacks
+        addVarSet(extractAllVarRefs(propValue));
+      }
+    }
+
     QUICK_STYLE_PROPERTIES.forEach((prop) => {
       const value = style.getPropertyValue(prop);
       if (!value) return;
       const trimmed = value.trim();
+      
+      // Extract var refs from the value (handles var() with fallbacks)
+      addVarSet(extractAllVarRefs(trimmed));
+      
       if (trimmed && valueToVars.has(trimmed)) {
         valueToVars.get(trimmed).forEach((varName) => addVarName(varName));
       }
@@ -690,10 +832,11 @@ function collectQuickContext(target) {
   const hints = computed?.hints || {};
   const debug = computed?.debug || { vars: [], paths: [] };
 
+  // Prioritize quick rule paths first (selector-based), then computed/relations
   const filtered = filterPathsByContext(target, [
+    ...byQuickRules,
     ...byComputed,
     ...byRelations,
-    ...byQuickRules,
   ]);
   if (!filtered.length) {
     return {
@@ -779,38 +922,64 @@ function buildSchemaFromPaths(paths, design, hints = {}) {
       if (i === rest.length - 1) {
         const value = getValueAtPath(design, [category, ...rest]);
         const hintValue = hints[path];
+        const enumOptions = getEnumOptions(path);
+        const normalizedValue = normalizeEnumValue(path, value);
+        const normalizedHint = normalizeEnumValue(path, hintValue);
         const inferredType = Array.isArray(value)
           ? "array"
           : value === null
             ? "string"
             : typeof value;
-        const schemaType = inferredType === "number" || inferredType === "boolean"
-          ? inferredType
-          : "string";
+        const schemaType = enumOptions?.length
+          ? "string"
+          : inferredType === "number" || inferredType === "boolean"
+            ? inferredType
+            : "string";
         current.properties[segment] = {
           type: schemaType,
           title: titleize(segment),
+          ...(enumOptions?.length
+            ? {
+                oneOf: enumOptions.map((option) => ({
+                  const: option,
+                  title: titleize(option),
+                })),
+              }
+            : {}),
           examples:
-            value !== undefined && value !== null
-              ? [value]
-              : hintValue !== undefined
-                ? [hintValue]
+            normalizedValue !== undefined && normalizedValue !== null
+              ? [normalizedValue]
+              : normalizedHint !== undefined
+                ? [normalizedHint]
                 : undefined,
         };
 
         const pointer = `/${[category, ...rest].join("/")}`;
-        const uiEntry = {
-          "ui:icon": CATEGORY_ICONS[category] || "sparkle",
-        };
+        const uiEntry = {};
 
-        if (isColorValue(value, path)) {
-          uiEntry["ui:widget"] = "input-color";
-        } else if (schemaType === "number") {
+        if (enumOptions?.length) {
+          uiEntry["ui:widget"] = "select";
+        }
+
+        // Check for opacity/numeric fields BEFORE color check
+        const pathLower = String(path || "").toLowerCase();
+        const isOpacityField = pathLower.includes("opacity");
+        
+        if (isOpacityField || (schemaType === "number" && !isColorValue(value, path))) {
           const bounds = inferRangeBounds(path, value);
           uiEntry["ui:widget"] = "input-range";
           uiEntry["ui:min"] = bounds.min;
           uiEntry["ui:max"] = bounds.max;
           uiEntry["ui:step"] = bounds.step;
+        } else if (isColorValue(value, path)) {
+          uiEntry["ui:widget"] = "input-color";
+        }
+
+        const isTextOrNumberInput =
+          (schemaType === "string" || schemaType === "number") &&
+          !uiEntry["ui:widget"];
+        if (isTextOrNumberInput) {
+          uiEntry["ui:icon"] = CATEGORY_ICONS[category] || "sparkle";
         }
 
         uiSchema[pointer] = uiEntry;
@@ -1010,7 +1179,7 @@ function setFormSchemas(form, schema, uiSchema, design) {
   form.values = shallowClone(design);
 }
 
-async function buildForm(paths, design, onChange, hints = {}) {
+async function buildForm(paths, design, onSubmit, onUndo, hints = {}) {
   const { schema, uiSchema } = buildSchemaFromPaths(paths, design, hints);
   const form = document.createElement("pds-form");
   form.setAttribute("hide-actions", "");
@@ -1022,8 +1191,14 @@ async function buildForm(paths, design, onChange, hints = {}) {
       rangeOutput: true,
     },
   };
-  form.addEventListener("pw:value-change", onChange);
+  form.addEventListener("pw:submit", onSubmit);
   const values = shallowClone(design || {});
+  Object.keys(ENUM_FIELD_OPTIONS).forEach((path) => {
+    const normalized = normalizeEnumValue(path, getValueAtPath(values, path.split(".")));
+    if (normalized !== undefined) {
+      setValueAtPath(values, path.split("."), normalized);
+    }
+  });
   Object.entries(hints || {}).forEach(([path, hintValue]) => {
     const segments = path.split(".");
     const currentValue = getValueAtPath(values, segments);
@@ -1039,7 +1214,42 @@ async function buildForm(paths, design, onChange, hints = {}) {
     });
   }
 
-  return form;
+  // Apply button (will trigger form submit programmatically)
+  const applyBtn = document.createElement("button");
+  applyBtn.className = "btn-primary btn-sm";
+  applyBtn.type = "button";
+  applyBtn.textContent = "Apply";
+  applyBtn.addEventListener("click", async () => {
+    // Manually trigger pw:submit event for pds-form
+    if (typeof form.getValuesFlat === "function") {
+      // Wait for form to be ready if it's still loading
+      if (!customElements.get("pds-form")) {
+        await customElements.whenDefined("pds-form");
+      }
+      
+      const flatValues = form.getValuesFlat();
+      const event = new CustomEvent("pw:submit", {
+        detail: {
+          json: flatValues,
+          formData: new FormData(),
+          valid: true,
+          issues: []
+        },
+        bubbles: true,
+        cancelable: true
+      });
+      form.dispatchEvent(event);
+    }
+  });
+
+  // Undo button
+  const undoBtn = document.createElement("button");
+  undoBtn.className = "btn-secondary btn-sm";
+  undoBtn.type = "button";
+  undoBtn.textContent = "Undo";
+  undoBtn.addEventListener("click", onUndo);
+
+  return { form, applyBtn, undoBtn };
 }
 
 class PdsLiveEdit extends HTMLElement {
@@ -1054,13 +1264,13 @@ class PdsLiveEdit extends HTMLElement {
     this._holdOpen = false;
     this._closeTimer = null;
     this._drawer = null;
-    this._pendingPatch = null;
-    this._applyTimer = null;
     this._selectors = null;
     this._lastPointer = null;
-    this._boundDocPointer = this._handleDocumentPointer.bind(this);
     this._boundDocKeydown = this._handleDocumentKeydown.bind(this);
     this._connected = false;
+    this._undoStack = [];
+    this._dropdownMenuOpen = false;
+    this._dropdownObserver = null;
   }
 
   connectedCallback() {
@@ -1100,17 +1310,37 @@ class PdsLiveEdit extends HTMLElement {
 
   _handleMouseOver(event) {
     if (!event?.target || !(event.target instanceof Element)) return;
-    this._clearCloseTimer();
-    if (this._activeDropdown && this._activeDropdown.contains(event.target)) return;
+    
+    // Check if we're hovering over the dropdown (including Shadow DOM elements)
+    if (this._activeDropdown) {
+      const path = event.composedPath ? event.composedPath() : [event.target];
+      const isOverDropdown = path.some(node => node === this._activeDropdown);
+      if (isOverDropdown) {
+        this._clearCloseTimer();
+        return;
+      }
+    }
+    
     const target = this._findEditableTarget(event.target);
-    if (!target || target === this._activeTarget) return;
-
-    this._removeActiveUI();
-    this._showForTarget(target);
+    
+    // If hovering over the same active target, just clear timer
+    if (target && target === this._activeTarget) {
+      this._clearCloseTimer();
+      return;
+    }
+    
+    // If hovering over a new target, show its editor
+    if (target && target !== this._activeTarget) {
+      this._removeActiveUI();
+      this._showForTarget(target);
+    }
   }
 
   _handleMouseOut(event) {
     if (!this._activeTarget) return;
+    
+    // Schedule a delayed close - the safe zone logic will determine if we actually close
+    this._scheduleClose();
   }
 
   _findEditableTarget(node) {
@@ -1148,15 +1378,21 @@ class PdsLiveEdit extends HTMLElement {
     this._positionDropdown(target, dropdown);
     this._addRepositionListeners();
     this._addDocumentListeners();
+    this._addMouseMoveListener();
 
     this._activeTarget = target;
     this._activeDropdown = dropdown;
+    
+    // Watch for dropdown menu opening/closing
+    this._watchDropdownState();
   }
 
   _removeActiveUI() {
     this._clearCloseTimer();
     this._removeRepositionListeners();
     this._removeDocumentListeners();
+    this._removeMouseMoveListener();
+    this._unwatchDropdownState();
     if (this._activeDropdown && this._activeDropdown.parentNode) {
       this._activeDropdown.parentNode.removeChild(this._activeDropdown);
     }
@@ -1166,34 +1402,29 @@ class PdsLiveEdit extends HTMLElement {
     this._activeTarget = null;
     this._activeDropdown = null;
     this._holdOpen = false;
+    this._lastPointer = null;
+    this._dropdownMenuOpen = false;
+    
+    // Always re-enable mouseover when UI is removed
+    this._addMouseOverListener();
   }
 
   _addDocumentListeners() {
     if (typeof document === "undefined") return;
-    document.addEventListener("pointerdown", this._boundDocPointer, true);
     document.addEventListener("keydown", this._boundDocKeydown, true);
   }
 
   _removeDocumentListeners() {
     if (typeof document === "undefined") return;
-    document.removeEventListener("pointerdown", this._boundDocPointer, true);
     document.removeEventListener("keydown", this._boundDocKeydown, true);
   }
 
-  _handleDocumentPointer(event) {
-    if (!this._activeDropdown || !this._activeTarget) return;
-    const target = event?.target;
-    if (!(target instanceof Element)) return;
-    if (this._activeDropdown.contains(target)) return;
-    if (this._activeTarget.contains(target)) return;
-    this._removeActiveUI();
-  }
-
   _handleDocumentKeydown(event) {
-    if (!event) return;
-    if (event.key !== "Escape") return;
-    event.preventDefault();
-    this._removeActiveUI();
+    if (!event || event.key !== "Escape") return;
+    if (this._activeDropdown || this._activeTarget) {
+      event.preventDefault();
+      this._removeActiveUI();
+    }
   }
 
   _scheduleClose() {
@@ -1204,11 +1435,12 @@ class PdsLiveEdit extends HTMLElement {
       if (this._activeDropdown && this._activeDropdown.matches(":hover")) return;
       if (this._activeTarget && this._activeTarget.matches(":hover")) return;
       if (this._isPointerWithinSafeZone()) {
+        // Still in safe zone, check again soon
         this._scheduleClose();
         return;
       }
       this._removeActiveUI();
-    }, 500);
+    }, 300);
   }
 
   _clearCloseTimer() {
@@ -1309,6 +1541,102 @@ class PdsLiveEdit extends HTMLElement {
     this._lastPointer = { x: event.clientX, y: event.clientY };
   }
 
+  _addMouseMoveListener() {
+    if (typeof document === "undefined") return;
+    document.addEventListener("mousemove", this._boundMouseMove, true);
+  }
+
+  _removeMouseMoveListener() {
+    if (typeof document === "undefined") return;
+    document.removeEventListener("mousemove", this._boundMouseMove, true);
+  }
+
+  _addMouseOverListener() {
+    if (typeof document === "undefined") return;
+    document.addEventListener("mouseover", this._boundMouseOver, true);
+  }
+
+  _removeMouseOverListener() {
+    if (typeof document === "undefined") return;
+    document.removeEventListener("mouseover", this._boundMouseOver, true);
+  }
+
+  _watchDropdownState() {
+    if (!this._activeDropdown) return;
+    
+    const menu = this._activeDropdown.querySelector("menu");
+    if (!menu) return;
+    
+    // Create a MutationObserver to watch for aria-hidden changes
+    this._dropdownObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === "aria-hidden") {
+          const isOpen = menu.getAttribute("aria-hidden") === "false";
+          
+          if (isOpen && !this._dropdownMenuOpen) {
+            // Dropdown just opened - pause mouseover
+            this._dropdownMenuOpen = true;
+            this._removeMouseOverListener();
+          } else if (!isOpen && this._dropdownMenuOpen) {
+            // Dropdown just closed - resume mouseover
+            this._dropdownMenuOpen = false;
+            this._addMouseOverListener();
+          }
+        }
+      });
+    });
+    
+    this._dropdownObserver.observe(menu, {
+      attributes: true,
+      attributeFilter: ["aria-hidden"]
+    });
+  }
+
+  _unwatchDropdownState() {
+    if (this._dropdownObserver) {
+      this._dropdownObserver.disconnect();
+      this._dropdownObserver = null;
+    }
+  }
+
+  _watchDropdownState() {
+    if (!this._activeDropdown) return;
+    
+    const menu = this._activeDropdown.querySelector("menu");
+    if (!menu) return;
+    
+    // Create a MutationObserver to watch for aria-hidden changes
+    this._dropdownObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === "aria-hidden") {
+          const isOpen = menu.getAttribute("aria-hidden") === "false";
+          
+          if (isOpen && !this._dropdownMenuOpen) {
+            // Dropdown just opened - pause mouseover
+            this._dropdownMenuOpen = true;
+            this._removeMouseOverListener();
+          } else if (!isOpen && this._dropdownMenuOpen) {
+            // Dropdown just closed - resume mouseover
+            this._dropdownMenuOpen = false;
+            this._addMouseOverListener();
+          }
+        }
+      });
+    });
+    
+    this._dropdownObserver.observe(menu, {
+      attributes: true,
+      attributeFilter: ["aria-hidden"]
+    });
+  }
+
+  _unwatchDropdownState() {
+    if (this._dropdownObserver) {
+      this._dropdownObserver.disconnect();
+      this._dropdownObserver = null;
+    }
+  }
+
   _isPointerWithinSafeZone() {
     if (!this._lastPointer || !this._activeTarget || !this._activeDropdown) return false;
     const targetRect = this._activeTarget.getBoundingClientRect();
@@ -1352,26 +1680,17 @@ class PdsLiveEdit extends HTMLElement {
     title.textContent = "Quick edit";
     header.appendChild(title);
 
-    const openButton = document.createElement("button");
-    openButton.className = "btn-outline btn-xs icon-only";
-    openButton.setAttribute("type", "button");
-    openButton.setAttribute("aria-label", "More settings");
-    const openIcon = document.createElement("pds-icon");
-    openIcon.setAttribute("icon", "gear");
-    openIcon.setAttribute("size", "sm");
-    openButton.appendChild(openIcon);
-    openButton.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      this._openDrawer(target, quickPaths);
-    });
-    header.appendChild(openButton);
-
     quickItem.appendChild(header);
 
     const design = shallowClone(PDS?.currentConfig?.design || {});
     const formContainer = document.createElement("div");
+    formContainer.className = "pds-live-editor-form-container";
     quickItem.appendChild(formContainer);
+
+    // Create footer with Apply/Undo/Gear buttons
+    const footer = document.createElement("div");
+    footer.className = "pds-live-editor-footer";
+    quickItem.appendChild(footer);
 
     menu.appendChild(quickItem);
 
@@ -1379,27 +1698,60 @@ class PdsLiveEdit extends HTMLElement {
     nav.appendChild(menu);
 
     const limitedPaths = quickPaths.slice(0, QUICK_EDIT_LIMIT);
-    this._renderQuickForm(formContainer, limitedPaths, design, hints);
+    this._renderQuickForm(formContainer, footer, limitedPaths, design, hints, target, quickPaths);
 
+    // Log debug info to console instead of rendering
     if (debug && (debug.vars?.length || debug.paths?.length)) {
-      const debugBlock = document.createElement("div");
-      debugBlock.className = "pds-live-editor-debug";
       const debugVars = (debug.vars || []).slice(0, 8).join(", ");
       const debugPaths = (debug.paths || []).slice(0, 8).join(", ");
-      debugBlock.textContent = `vars: ${debugVars}\npaths: ${debugPaths}`;
-      quickItem.appendChild(debugBlock);
+      console.log(`[PDS Live Edit] vars: ${debugVars}`);
+      console.log(`[PDS Live Edit] paths: ${debugPaths}`);
     }
 
     return nav;
   }
 
-  async _renderQuickForm(container, paths, design, hints) {
+  async _renderQuickForm(container, footer, paths, design, hints, target, quickPaths) {
     container.replaceChildren();
-    const form = await buildForm(paths, design, (event) =>
-      this._handleValueChange(event),
+    footer.replaceChildren();
+    
+    const { form, applyBtn, undoBtn } = await buildForm(
+      paths,
+      design,
+      (event) => this._handleFormSubmit(event, form),
+      () => this._handleUndo(),
       hints
     );
+    
+    // Store reference to undo button for enabling/disabling
+    form._undoBtn = undoBtn;
+    
+    // Disable undo initially if no history
+    undoBtn.disabled = this._undoStack.length === 0;
+    
+    // Add form to container
     container.appendChild(form);
+    
+    // Create gear button for footer
+    const gearBtn = document.createElement("button");
+    gearBtn.className = "btn-outline btn-sm icon-only";
+    gearBtn.type = "button";
+    gearBtn.setAttribute("aria-label", "More settings");
+    const gearIcon = document.createElement("pds-icon");
+    gearIcon.setAttribute("icon", "caret-right");
+    gearIcon.setAttribute("size", "sm");
+    gearBtn.appendChild(gearIcon);
+    gearBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this._openDrawer(target, quickPaths);
+      this._removeActiveUI();
+    });
+    
+    // Add buttons to footer
+    footer.appendChild(applyBtn);
+    footer.appendChild(undoBtn);
+    footer.appendChild(gearBtn);
   }
 
   async _openDrawer(target, quickPaths) {
@@ -1526,29 +1878,62 @@ class PdsLiveEdit extends HTMLElement {
     }
   }
 
-  _handleValueChange(event) {
-    const form = event?.currentTarget;
+  async _handleFormSubmit(event, form) {
     if (!form || typeof form.getValuesFlat !== "function") return;
+    
+    // Save current STORED config (preset + overrides) to undo stack before applying
+    const storedConfig = getStoredConfig() || { preset: null, design: {} };
+    try {
+      this._undoStack.push(structuredClone(storedConfig));
+    } catch (e) {
+      // Fallback for environments without structuredClone
+      this._undoStack.push(JSON.parse(JSON.stringify(storedConfig)));
+    }
+    
+    // Limit undo stack size
+    if (this._undoStack.length > 10) {
+      this._undoStack.shift();
+    }
+    
+    // Apply the changes
     const flatValues = form.getValuesFlat();
     const patch = {};
     Object.entries(flatValues || {}).forEach(([path, value]) => {
       setValueAtJsonPath(patch, path, value);
     });
-    this._schedulePatch(patch);
+    await applyDesignPatch(patch);
+    
+    // Enable undo button
+    if (form._undoBtn) {
+      form._undoBtn.disabled = false;
+    }
   }
 
-  _schedulePatch(patch) {
-    this._pendingPatch = this._pendingPatch
-      ? deepMerge(this._pendingPatch, patch)
-      : patch;
-
-    if (this._applyTimer) return;
-    this._applyTimer = window.setTimeout(async () => {
-      const nextPatch = this._pendingPatch;
-      this._pendingPatch = null;
-      this._applyTimer = null;
-      await applyDesignPatch(nextPatch);
-    }, 50);
+  async _handleUndo() {
+    if (this._undoStack.length === 0) return;
+    
+    // Get the previous stored config (preset + overrides)
+    const previousConfig = this._undoStack.pop();
+    
+    // Update localStorage to fully replace with previous config
+    setStoredConfig(previousConfig);
+    
+    // Apply an empty patch to trigger regeneration with the restored design
+    await applyDesignPatch({});
+    
+    // Re-render the form with the current dropdown's form container
+    if (this._activeDropdown) {
+      const formContainer = this._activeDropdown.querySelector('.pds-live-editor-form-container');
+      const footer = this._activeDropdown.querySelector('.pds-live-editor-footer');
+      if (formContainer && footer) {
+        // Get the actual current design after applyDesignPatch has run
+        const currentDesign = shallowClone(PDS?.currentConfig?.design || {});
+        const quickContext = collectQuickContext(this._activeTarget);
+        const limitedPaths = quickContext.paths.slice(0, QUICK_EDIT_LIMIT);
+        const quickPaths = quickContext.paths;
+        await this._renderQuickForm(formContainer, footer, limitedPaths, currentDesign, quickContext.hints, this._activeTarget, quickPaths);
+      }
+    }
   }
 }
 

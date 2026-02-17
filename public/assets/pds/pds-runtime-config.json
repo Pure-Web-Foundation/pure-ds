@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-02-04T12:47:12.267Z",
+  "exportedAt": "2026-02-17T11:41:35.713Z",
   "staticRoot": "/assets/pds/",
   "presetId": "default",
   "preset": "Default",
@@ -115,6 +115,10 @@
       "layout": {
         "gridColumns": 12,
         "gridGutter": 1,
+        "baseShadowOpacity": 0.1,
+        "darkMode": {
+          "baseShadowOpacity": 0.25
+        },
         "breakpoints": {
           "sm": 640,
           "md": 768,

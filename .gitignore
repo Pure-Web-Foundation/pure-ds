@@ -31,3 +31,5 @@ packages/pds-storybook/stories/getting-started.md
 /.github/copilot-instructions.md
 /.cursorrules
 public/assets/pds/external/lit.js
+public/assets/pds/core/pds-manager.js
+public/assets/pds/core/pds-manager.js

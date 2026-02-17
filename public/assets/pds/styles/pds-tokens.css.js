@@ -460,6 +460,14 @@ tokens.replaceSync(`@layer tokens {
     --surface-inverse-shadow: rgba(0, 0, 0, 0.1);
     --surface-inverse-border: rgba(0, 0, 0, 0.1);
 
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.125);
+  --shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.25), 0 1px 2px 0 rgba(0, 0, 0, 0.125);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.25), 0 2px 4px -1px rgba(0, 0, 0, 0.125);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.25), 0 4px 6px -2px rgba(0, 0, 0, 0.125);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.125);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.125);
+
     --color-text-primary: var(--color-gray-100);
     --color-text-secondary: var(--color-gray-300);
     --color-text-muted: var(--color-gray-400);
@@ -656,6 +664,14 @@ html[data-theme="dark"] {
   --surface-inverse-icon-subtle: #616161;
   --surface-inverse-shadow: rgba(0, 0, 0, 0.1);
   --surface-inverse-border: rgba(0, 0, 0, 0.1);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.125);
+  --shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.25), 0 1px 2px 0 rgba(0, 0, 0, 0.125);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.25), 0 2px 4px -1px rgba(0, 0, 0, 0.125);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.25), 0 4px 6px -2px rgba(0, 0, 0, 0.125);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.125);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.125);
 
   --color-text-primary: var(--color-gray-100);
   --color-text-secondary: var(--color-gray-300);
@@ -1166,6 +1182,14 @@ export const tokensCSS = `@layer tokens {
     --surface-inverse-shadow: rgba(0, 0, 0, 0.1);
     --surface-inverse-border: rgba(0, 0, 0, 0.1);
 
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.125);
+  --shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.25), 0 1px 2px 0 rgba(0, 0, 0, 0.125);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.25), 0 2px 4px -1px rgba(0, 0, 0, 0.125);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.25), 0 4px 6px -2px rgba(0, 0, 0, 0.125);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.125);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.125);
+
     --color-text-primary: var(--color-gray-100);
     --color-text-secondary: var(--color-gray-300);
     --color-text-muted: var(--color-gray-400);
@@ -1362,6 +1386,14 @@ html[data-theme="dark"] {
   --surface-inverse-icon-subtle: #616161;
   --surface-inverse-shadow: rgba(0, 0, 0, 0.1);
   --surface-inverse-border: rgba(0, 0, 0, 0.1);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.125);
+  --shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.25), 0 1px 2px 0 rgba(0, 0, 0, 0.125);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.25), 0 2px 4px -1px rgba(0, 0, 0, 0.125);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.25), 0 4px 6px -2px rgba(0, 0, 0, 0.125);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.125);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.125);
 
   --color-text-primary: var(--color-gray-100);
   --color-text-secondary: var(--color-gray-300);

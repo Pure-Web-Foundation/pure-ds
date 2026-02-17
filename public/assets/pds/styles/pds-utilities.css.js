@@ -219,7 +219,7 @@ body {
     inset 0 -40px 80px rgba(255,255,255,0.12),
     0 10px 30px rgba(0,0,0,0.10);
   /* Glossy border with slight light and dark edges */
-  border: 1px solid color-mix(in oklab, var(--color-primary-500) 22%, transparent);
+  border: var(--border-width-thin) solid color-mix(in oklab, var(--color-primary-500) 22%, transparent);
   outline: 1px solid color-mix(in oklab, #ffffff 18%, transparent);
   outline-offset: -1px;
 }
@@ -235,7 +235,7 @@ html[data-theme="dark"] .liquid-glass {
     inset 0 1px 0 rgba(255,255,255,0.12),
     inset 0 -40px 80px rgba(0,0,0,0.55),
     0 18px 38px rgba(0,0,0,0.65);
-  border: 1px solid color-mix(in oklab, var(--color-primary-300) 26%, transparent);
+  border: var(--border-width-thin) solid color-mix(in oklab, var(--color-primary-300) 26%, transparent);
   outline: 1px solid color-mix(in oklab, #ffffff 16%, transparent);
 }
 
@@ -308,7 +308,7 @@ html[data-theme="dark"] .liquid-glass {
 
 /* Gradient border with different strengths/thickness */
 .border-gradient-soft {
-  border: 1px solid transparent;
+  border: var(--border-width-thin) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
     linear-gradient(var(--gradient-angle, 135deg),
@@ -318,7 +318,7 @@ html[data-theme="dark"] .liquid-glass {
 }
 
 .border-gradient-medium {
-  border: 2px solid transparent;
+  border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
     linear-gradient(var(--gradient-angle, 135deg),
@@ -328,7 +328,7 @@ html[data-theme="dark"] .liquid-glass {
 }
 
 .border-gradient-strong {
-  border: 3px solid transparent;
+  border: var(--border-width-thick) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
     linear-gradient(var(--gradient-angle, 135deg),
@@ -683,7 +683,7 @@ html[data-theme="dark"] .surface-inverse {
   }
   
   button, input, textarea, select {
-    border-width: 2px;
+    border-width: var(--border-width-medium);
   }
 }
 
@@ -930,7 +930,7 @@ body {
     inset 0 -40px 80px rgba(255,255,255,0.12),
     0 10px 30px rgba(0,0,0,0.10);
   /* Glossy border with slight light and dark edges */
-  border: 1px solid color-mix(in oklab, var(--color-primary-500) 22%, transparent);
+  border: var(--border-width-thin) solid color-mix(in oklab, var(--color-primary-500) 22%, transparent);
   outline: 1px solid color-mix(in oklab, #ffffff 18%, transparent);
   outline-offset: -1px;
 }
@@ -946,7 +946,7 @@ html[data-theme="dark"] .liquid-glass {
     inset 0 1px 0 rgba(255,255,255,0.12),
     inset 0 -40px 80px rgba(0,0,0,0.55),
     0 18px 38px rgba(0,0,0,0.65);
-  border: 1px solid color-mix(in oklab, var(--color-primary-300) 26%, transparent);
+  border: var(--border-width-thin) solid color-mix(in oklab, var(--color-primary-300) 26%, transparent);
   outline: 1px solid color-mix(in oklab, #ffffff 16%, transparent);
 }
 
@@ -1019,7 +1019,7 @@ html[data-theme="dark"] .liquid-glass {
 
 /* Gradient border with different strengths/thickness */
 .border-gradient-soft {
-  border: 1px solid transparent;
+  border: var(--border-width-thin) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
     linear-gradient(var(--gradient-angle, 135deg),
@@ -1029,7 +1029,7 @@ html[data-theme="dark"] .liquid-glass {
 }
 
 .border-gradient-medium {
-  border: 2px solid transparent;
+  border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
     linear-gradient(var(--gradient-angle, 135deg),
@@ -1039,7 +1039,7 @@ html[data-theme="dark"] .liquid-glass {
 }
 
 .border-gradient-strong {
-  border: 3px solid transparent;
+  border: var(--border-width-thick) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
     linear-gradient(var(--gradient-angle, 135deg),
@@ -1394,7 +1394,7 @@ html[data-theme="dark"] .surface-inverse {
   }
   
   button, input, textarea, select {
-    border-width: 2px;
+    border-width: var(--border-width-medium);
   }
 }
 

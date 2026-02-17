@@ -35,7 +35,8 @@ PDS follows the [Pure Web Manifesto](https://pureweb.dev/manifesto): "The browse
 | **Primitives & Utilities** | `src/js/pds-core/pds-ontology.js` | `.card`, `.badge`, `.btn-*`, `.flex`, `.gap-*`, `.surface-*` |
 | **Enhancements** | `src/js/pds-core/pds-enhancers.js` | Enhancement metadata (`defaultPDSEnhancerMetadata`) + runtime (`defaultPDSEnhancers`) |
 | **Generator Logic** | `src/js/pds-core/pds-generator.js` | How CSS is generated, token naming conventions |
-| **Config** | `pds.config.js` | What's enabled in this workspace |
+| **Config (Runtime)** | `pds.config.js` | What's enabled in this workspace |
+| **Config (SSoT)** | `src/js/pds-core/pds-config.js` | JSDoc types + validation spec + `PDS_CONFIG_RELATIONS` for deterministic token mapping |
 
 **For consuming projects** using `@pure-ds/core`, files are in `node_modules/@pure-ds/core/`:
 - `custom-elements.json`

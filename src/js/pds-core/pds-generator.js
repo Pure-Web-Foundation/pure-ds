@@ -686,12 +686,17 @@ export class Generator {
       baseBorderWidth = enums.BorderWidths.medium;
     }
 
-    // Generate a scale of border widths based on the enums
+    const validBase = Number.isFinite(Number(baseBorderWidth))
+      ? Number(baseBorderWidth)
+      : enums.BorderWidths.medium;
+    const toPx = (value) => `${Math.max(0, Math.round(value * 100) / 100)}px`;
+
+    // Generate a derived border width scale based on configured base width
     return {
-      hairline: `${enums.BorderWidths.hairline}px`,
-      thin: `${enums.BorderWidths.thin}px`,
-      medium: `${enums.BorderWidths.medium}px`,
-      thick: `${enums.BorderWidths.thick}px`,
+      hairline: toPx(validBase * 0.25),
+      thin: toPx(validBase * 0.5),
+      medium: toPx(validBase),
+      thick: toPx(validBase * 1.5),
     };
   }
 
@@ -1544,7 +1549,7 @@ html[data-theme="dark"] {
     inset 0 -40px 80px rgba(255,255,255,0.12),
     0 10px 30px rgba(0,0,0,0.10);
   /* Glossy border with slight light and dark edges */
-  border: 1px solid color-mix(in oklab, var(--color-primary-500) 22%, transparent);
+  border: var(--border-width-thin) solid color-mix(in oklab, var(--color-primary-500) 22%, transparent);
   outline: 1px solid color-mix(in oklab, #ffffff 18%, transparent);
   outline-offset: -1px;
 }
@@ -1560,7 +1565,7 @@ html[data-theme="dark"] .liquid-glass {
     inset 0 1px 0 rgba(255,255,255,0.12),
     inset 0 -40px 80px rgba(0,0,0,0.55),
     0 18px 38px rgba(0,0,0,0.65);
-  border: 1px solid color-mix(in oklab, var(--color-primary-300) 26%, transparent);
+  border: var(--border-width-thin) solid color-mix(in oklab, var(--color-primary-300) 26%, transparent);
   outline: 1px solid color-mix(in oklab, #ffffff 16%, transparent);
 }
 
@@ -1640,7 +1645,7 @@ html[data-theme="dark"] .liquid-glass {
 
 /* Gradient border with different strengths/thickness */
 .border-gradient-soft {
-  border: 1px solid transparent;
+  border: var(--border-width-thin) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
     linear-gradient(var(--gradient-angle, 135deg),
@@ -1650,7 +1655,7 @@ html[data-theme="dark"] .liquid-glass {
 }
 
 .border-gradient-medium {
-  border: 2px solid transparent;
+  border: var(--border-width-medium) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
     linear-gradient(var(--gradient-angle, 135deg),
@@ -1660,7 +1665,7 @@ html[data-theme="dark"] .liquid-glass {
 }
 
 .border-gradient-strong {
-  border: 3px solid transparent;
+  border: var(--border-width-thick) solid transparent;
   background:
     linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
     linear-gradient(var(--gradient-angle, 135deg),
@@ -1748,7 +1753,7 @@ html[data-theme="dark"] .liquid-glass {
 :where(blockquote) {
   margin: 0 0 var(--spacing-4) 0;
   padding: var(--spacing-6) var(--spacing-8);
-  border-left: 4px solid var(--color-primary-500);
+  border-left: calc(var(--border-width-thick) + var(--border-width-thin)) solid var(--color-primary-500);
   background-color: var(--color-surface-elevated);
   border-radius: var(--radius-none);
   font-size: var(--font-size-lg);
@@ -1771,7 +1776,7 @@ html[data-theme="dark"] .liquid-glass {
 :where(hr) {
   margin: var(--spacing-8) 0;
   border: none;
-  border-top: 1px solid var(--color-border);
+  border-top: var(--border-width-thin) solid var(--color-border);
   height: 0;
 }
 
@@ -1860,7 +1865,7 @@ html[data-theme="dark"] .liquid-glass {
   font-size: var(--font-size-sm);
   color: var(--color-text-primary);
   background-color: var(--color-surface-elevated);
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--radius-sm);
   box-shadow: 0 2px 0 0 var(--color-border);
 }
@@ -1883,12 +1888,12 @@ html[data-theme="dark"] .liquid-glass {
 
 :where(details):not(.accordion *) {
   margin: 0 0 var(--spacing-2) 0;
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface-base);
   
   &[open] :where(summary) {
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: var(--border-width-thin) solid var(--color-border);
     background-color: var(--color-surface-subtle);
     
     &::after {
@@ -1939,6 +1944,7 @@ html[data-theme="dark"] .liquid-glass {
 
   #generateFormStyles() {
     const {
+      shape = {},
       gap,
       inputPadding,
       buttonPadding,
@@ -1950,10 +1956,18 @@ html[data-theme="dark"] .liquid-glass {
       inputMinHeight,
     } = this.options.design;
 
+    const shapeBorderWidth =
+      typeof shape.borderWidth === "number"
+        ? shape.borderWidth
+        : typeof shape.borderWidth === "string"
+          ? (enums.BorderWidths[shape.borderWidth] ?? null)
+          : null;
+
     const inputPaddingValue = inputPadding || 0.75;
     const buttonPaddingValue = buttonPadding || 1.0;
     const focusWidth = focusRingWidth || 3;
-    const borderWidth = borderWidthThin || 1;
+    const borderWidth =
+      borderWidthThin || shapeBorderWidth || enums.BorderWidths.thin;
     const gapValue = gap || 1.0;
     const sectionSpacingValue = sectionSpacing || 2.0;
     const minButtonHeight = buttonMinHeight || 44;
@@ -2089,7 +2103,7 @@ input, textarea, select {
   width: 100%;
   min-height: ${minInputHeight}px;
   padding: calc(var(--spacing-1) * ${inputPaddingValue}) var(--spacing-4);
-  border: ${borderWidth}px solid var(--color-border);
+  border: var(--border-width-medium) solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -2159,7 +2173,7 @@ input[type="range"] {
     border-radius: 50%;
     box-shadow: var(--shadow-sm);
     cursor: grab;
-    border: 1px solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
+    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
   }
 
   /* Mozilla track */
@@ -2176,7 +2190,7 @@ input[type="range"] {
     background: color-mix(in srgb, var(--color-primary-500) 15%, var(--color-surface-base));
     border-radius: 50%;
     box-shadow: var(--shadow-sm);
-    border: 1px solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
+    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
     transform: translateY(calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2));
   }
 
@@ -2264,7 +2278,7 @@ input[type="checkbox"] + label:not(fieldset label):not(label[data-toggle]) {
   padding: calc(var(--spacing-1) * ${
     buttonPaddingValue * 0.6
   }) calc(var(--spacing-4) * 0.85);
-  border: ${borderWidth}px solid var(--color-border);
+  border: var(--border-width-medium) solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-sm);
@@ -2292,7 +2306,7 @@ input[type="checkbox"]:checked + label:not(fieldset label):not(label[data-toggle
   background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
   color: var(--color-primary-700);
   border-color: var(--color-primary-500);
-  border-width: 2px;
+  border-width: var(--border-width-medium);
   font-weight: var(--font-weight-semibold);
   
   &:hover {
@@ -2372,7 +2386,7 @@ fieldset[role="group"].buttons {
     padding: calc(var(--spacing-1) * ${
       buttonPaddingValue * 0.6
     }) calc(var(--spacing-4) * 0.85);
-    border: 2px solid var(--color-border);
+    border: var(--border-width-medium) solid var(--color-border);
     border-radius: var(--radius-md);
     font-family: var(--font-family-body);
     font-size: var(--font-size-sm);
@@ -2404,7 +2418,7 @@ fieldset[role="group"].buttons {
   label:has(input[type="checkbox"]:checked) {
     background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
     border-color: var(--color-primary-500);
-    border-width: 2px;
+    border-width: var(--border-width-medium);
     font-weight: var(--font-weight-semibold);
     
     &:hover {
@@ -2572,7 +2586,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   justify-content: center;
   min-height: ${minButtonHeight}px;
   padding: calc(var(--spacing-1) * ${buttonPaddingValue}) var(--spacing-6);
-  border: ${borderWidth}px solid transparent;
+  border: var(--border-width-medium) solid transparent;
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -2829,7 +2843,7 @@ a.btn-working {
   gap: var(--spacing-3);
   width: 100%;
   background: var(--color-input-bg);
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--radius-md);
   min-height: var(--input-min-height, 40px);
   position: relative;
@@ -2874,13 +2888,13 @@ a.btn-working {
 .array-item {
   position: relative;
   padding: var(--spacing-4);
-  border: ${borderWidth}px solid var(--color-border);
+  border: var(--border-width-medium) solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface-base);
   
   .array-controls {
     padding-top: var(--spacing-3);
-    border-top: ${borderWidth}px solid var(--color-border);
+    border-top: var(--border-width-medium) solid var(--color-border);
     margin-top: var(--spacing-4);
   }
 }
@@ -2970,13 +2984,13 @@ th {
   text-align: left;
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
-  border-bottom: 2px solid var(--color-border);
+  border-bottom: var(--border-width-medium) solid var(--color-border);
 }
 
 td {
   padding: var(--spacing-3) var(--spacing-4);
   color: var(--color-text-secondary);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: var(--border-width-thin) solid var(--color-border);
 }
 
 tbody {
@@ -3000,10 +3014,10 @@ tbody {
 }
 
 .table-bordered {
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
   
   th, td {
-    border: 1px solid var(--color-border);
+    border: var(--border-width-thin) solid var(--color-border);
   }
 }
 
@@ -3023,7 +3037,7 @@ tbody {
   padding: var(--spacing-4);
   border-radius: var(--radius-md);
   margin: 0 0 var(--spacing-4) 0;
-  border-left: 4px solid;
+  border-left: calc(var(--border-width-thick) + var(--border-width-thin)) solid;
   display: flex;
   align-items: flex-start;
   gap: var(--spacing-3);
@@ -3105,7 +3119,7 @@ tbody {
     return /*css*/ `/* Accordion (details/summary) */
 
 :where(.accordion details) {
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface-base);
   margin: 0 0 var(--spacing-3) 0;
@@ -3227,7 +3241,7 @@ tbody {
 
 .badge-outline {
   background-color: transparent;
-  border: 1px solid currentColor;
+  border: var(--border-width-thin) solid currentColor;
   &.badge-primary { color: var(--color-text-primary); }
   &.badge-secondary { color: var(--color-secondary-600); }
   &.badge-success { color: var(--color-success-600); }
@@ -3351,7 +3365,7 @@ dialog {
     justify-content: space-between;
     gap: var(--spacing-4);
     padding: var(--spacing-6);
-    border-bottom: 1px solid var(--surface-overlay-border);
+    border-bottom: var(--border-width-thin) solid var(--surface-overlay-border);
     flex-shrink: 0;   
 
     h2,
@@ -3408,7 +3422,7 @@ dialog {
     justify-content: flex-end;
     align-items: center;
     padding: var(--spacing-6);
-    border-top: 1px solid var(--surface-overlay-border);
+    border-top: var(--border-width-thin) solid var(--surface-overlay-border);
     flex-shrink: 0;
   }
 }
@@ -3460,7 +3474,7 @@ pds-tabstrip {
   & > nav {
     display: flex;
     gap: var(--spacing-1);
-    border-bottom: 2px solid var(--color-border);
+    border-bottom: var(--border-width-medium) solid var(--color-border);
     margin-bottom: var(--spacing-6);
     position: relative;
     overflow-x: auto;
@@ -3489,8 +3503,8 @@ pds-tabstrip {
       background: transparent;
       cursor: pointer;
       transition: color var(--transition-fast);
-      border-bottom: 2px solid transparent;
-      margin-bottom: -2px; /* Overlap the nav border */
+      border-bottom: var(--border-width-medium) solid transparent;
+      margin-bottom: calc(-1 * var(--border-width-medium)); /* Overlap the nav border */
 
       &:hover {
         color: var(--color-text-primary);
@@ -3557,11 +3571,11 @@ pds-tabstrip {
 ::-webkit-scrollbar-thumb {
   background: var(--color-secondary-300);
   border-radius: var(--radius-full);
-  border: 3px solid transparent;
+  border: var(--border-width-thick) solid transparent;
   background-clip: padding-box;
   transition: background-color var(--transition-fast);
-  &:hover { background: var(--color-secondary-400); border: 2px solid transparent; background-clip: padding-box; }
-  &:active { background: var(--color-secondary-500); border: 2px solid transparent; background-clip: padding-box; }
+  &:hover { background: var(--color-secondary-400); border: var(--border-width-medium) solid transparent; background-clip: padding-box; }
+  &:active { background: var(--color-secondary-500); border: var(--border-width-medium) solid transparent; background-clip: padding-box; }
   @media (prefers-color-scheme: dark) {
     background: var(--color-secondary-600);
     &:hover { background: var(--color-secondary-500); }
@@ -3672,7 +3686,7 @@ nav[data-dropdown] {
     padding: var(--spacing-2);
     margin: 0;
     background: var(--color-surface-overlay);
-    border: 1px solid var(--color-border);
+    border: var(--border-width-thin) solid var(--color-border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
     top: 100%;
@@ -3724,7 +3738,7 @@ nav[data-dropdown] {
     padding: var(--spacing-1) 0;
 
     & + li {
-      border-top: 1px solid var(--color-border);
+      border-top: var(--border-width-thin) solid var(--color-border);
       margin-top: var(--spacing-2);
     }
 
@@ -3741,7 +3755,7 @@ nav[data-dropdown] {
 
     & > hr {
       border: none;
-      border-top: 3px solid var(--color-border);
+      border-top: var(--border-width-thick) solid var(--color-border);
       margin: var(--spacing-2) 0;
     }
   }
@@ -4094,7 +4108,7 @@ nav[data-dropdown] {
   }
   
   button, input, textarea, select {
-    border-width: 2px;
+    border-width: var(--border-width-medium);
   }
 }
 
@@ -4375,7 +4389,7 @@ nav[data-dropdown] {
     font: inherit;
     color: var(--color-text-primary);
     background: var(--color-input-bg);
-    border: 1px solid var(--color-border);
+    border: var(--border-width-thin) solid var(--color-border);
     border-radius: var(--radius-md);
     padding: var(--spacing-2) var(--spacing-3);
     min-height: 40px;
@@ -4470,7 +4484,7 @@ nav[data-dropdown] {
     transform: translateY(-50%);
     width: var(--spacing-5);
     height: var(--spacing-5);
-    border: var(--border-width-md) solid var(--color-border);
+    border: var(--border-width-medium) solid var(--color-border);
     border-radius: var(--radius-sm);
     background: var(--color-surface-base);
     transition: all var(--transition-fast);
@@ -4688,7 +4702,7 @@ ${this.#generateTableStyles()}
 .card-outlined,
 .card-basic {
   background: var(--color-surface-base);
-  border: 1px solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border);
 }
 
 .card-interactive:hover {

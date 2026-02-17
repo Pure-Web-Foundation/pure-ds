@@ -1258,6 +1258,327 @@
     },
     {
       "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-live-edit.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "EDITOR_TAG",
+          "type": {
+            "text": "string"
+          },
+          "default": "\"pds-live-edit\""
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsLiveEdit",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_teardown"
+            },
+            {
+              "kind": "method",
+              "name": "_handleMouseOver",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_handleMouseOut",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_findEditableTarget",
+              "parameters": [
+                {
+                  "name": "node"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_showForTarget",
+              "parameters": [
+                {
+                  "name": "target"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_removeActiveUI"
+            },
+            {
+              "kind": "method",
+              "name": "_addDocumentListeners"
+            },
+            {
+              "kind": "method",
+              "name": "_removeDocumentListeners"
+            },
+            {
+              "kind": "method",
+              "name": "_handleDocumentPointer",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_handleDocumentKeydown",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_scheduleClose"
+            },
+            {
+              "kind": "method",
+              "name": "_clearCloseTimer"
+            },
+            {
+              "kind": "method",
+              "name": "_addRepositionListeners"
+            },
+            {
+              "kind": "method",
+              "name": "_removeRepositionListeners"
+            },
+            {
+              "kind": "method",
+              "name": "_repositionDropdown"
+            },
+            {
+              "kind": "method",
+              "name": "_positionDropdown",
+              "parameters": [
+                {
+                  "name": "target"
+                },
+                {
+                  "name": "dropdown"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_handleMouseMove",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_isPointerWithinSafeZone"
+            },
+            {
+              "kind": "method",
+              "name": "_buildDropdown",
+              "parameters": [
+                {
+                  "name": "target"
+                },
+                {
+                  "name": "quickPaths"
+                },
+                {
+                  "name": "hints"
+                },
+                {
+                  "name": "debug"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_renderQuickForm",
+              "parameters": [
+                {
+                  "name": "container"
+                },
+                {
+                  "name": "paths"
+                },
+                {
+                  "name": "design"
+                },
+                {
+                  "name": "hints"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_openDrawer",
+              "parameters": [
+                {
+                  "name": "target"
+                },
+                {
+                  "name": "quickPaths"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_handleValueChange",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_schedulePatch",
+              "parameters": [
+                {
+                  "name": "patch"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "_boundMouseOver"
+            },
+            {
+              "kind": "field",
+              "name": "_boundMouseOut"
+            },
+            {
+              "kind": "field",
+              "name": "_boundMouseMove"
+            },
+            {
+              "kind": "field",
+              "name": "_boundReposition"
+            },
+            {
+              "kind": "field",
+              "name": "_activeTarget",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_activeDropdown",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_holdOpen",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_closeTimer",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_drawer",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_pendingPatch",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_applyTimer",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_selectors",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_lastPointer",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_boundDocPointer"
+            },
+            {
+              "kind": "field",
+              "name": "_boundDocKeydown"
+            },
+            {
+              "kind": "field",
+              "name": "_connected",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "EDITOR_TAG",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "EDITOR_TAG",
+          "declaration": {
+            "name": "PdsLiveEdit",
+            "module": "public/assets/pds/components/pds-live-edit.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "public/assets/pds/components/pds-omnibox.js",
       "declarations": [
         {
@@ -1305,6 +1626,10 @@
             {
               "kind": "field",
               "name": "icon"
+            },
+            {
+              "kind": "field",
+              "name": "itemGrid"
             },
             {
               "kind": "method",
@@ -1382,6 +1707,9 @@
             },
             {
               "name": "icon"
+            },
+            {
+              "name": "item-grid"
             }
           ],
           "superclass": {
@@ -2240,23 +2568,7 @@
           "kind": "class",
           "description": "",
           "name": "PdsTheme",
-          "members": [
-            {
-              "kind": "field",
-              "name": "label",
-              "description": "Gets the legend/aria-label text to display.",
-              "return": {
-                "type": {
-                  "text": "string"
-                }
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "name": "label"
-            }
-          ],
+          "members": [],
           "superclass": {
             "name": "HTMLElement"
           },

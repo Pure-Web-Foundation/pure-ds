@@ -92,7 +92,7 @@ primitives.replaceSync(`@layer primitives {
     font: inherit;
     color: var(--color-text-primary);
     background: var(--color-input-bg);
-    border: 1px solid var(--color-border);
+    border: var(--border-width-thin) solid var(--color-border);
     border-radius: var(--radius-md);
     padding: var(--spacing-2) var(--spacing-3);
     min-height: 40px;
@@ -187,7 +187,7 @@ primitives.replaceSync(`@layer primitives {
     transform: translateY(-50%);
     width: var(--spacing-5);
     height: var(--spacing-5);
-    border: var(--border-width-md) solid var(--color-border);
+    border: var(--border-width-medium) solid var(--color-border);
     border-radius: var(--radius-sm);
     background: var(--color-surface-base);
     transition: all var(--transition-fast);
@@ -443,7 +443,7 @@ export const primitivesCSS = `@layer primitives {
     font: inherit;
     color: var(--color-text-primary);
     background: var(--color-input-bg);
-    border: 1px solid var(--color-border);
+    border: var(--border-width-thin) solid var(--color-border);
     border-radius: var(--radius-md);
     padding: var(--spacing-2) var(--spacing-3);
     min-height: 40px;
@@ -538,7 +538,7 @@ export const primitivesCSS = `@layer primitives {
     transform: translateY(-50%);
     width: var(--spacing-5);
     height: var(--spacing-5);
-    border: var(--border-width-md) solid var(--color-border);
+    border: var(--border-width-medium) solid var(--color-border);
     border-radius: var(--radius-sm);
     background: var(--color-surface-base);
     transition: all var(--transition-fast);
