@@ -3274,10 +3274,12 @@ tbody {
 /* Dialog base styles */
 dialog {
   position: fixed;
-  inset: 0;
+  left: 50%;
+  top: 50%;
+  width: min(600px, calc(100vw - var(--spacing-8)));
   max-width: min(600px, calc(100vw - var(--spacing-8)));
-  max-height: calc(100vh - var(--spacing-8));
-  margin: auto;
+  max-height: calc(100dvh - var(--spacing-8));
+  margin: 0;
   padding: 0;
   border: none;
   border-radius: var(--radius-lg);
@@ -3289,7 +3291,7 @@ dialog {
   
   /* Smooth transitions */
   opacity: 0;
-  transform: scale(0.95);
+  transform: translate(-50%, -50%) scale(0.95);
   transition: 
     opacity var(--transition-normal) ease,
     transform var(--transition-normal) ease;
@@ -3300,19 +3302,35 @@ dialog {
 /* Open state */
 dialog[open] {
   opacity: 1;
-  transform: scale(1);
+  transform: translate(-50%, -50%) scale(1);
   animation: pds-dialog-enter var(--transition-normal) ease;
 }
 
 @keyframes pds-dialog-enter {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: translate(-50%, -50%) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translate(-50%, -50%) scale(1);
   }
+}
+
+/* Safari fallback: disable scale animation to avoid dialog clipping bugs */
+dialog.dialog-no-scale-animation {
+  transform: translate(-50%, -50%);
+  transition: opacity var(--transition-normal) ease;
+}
+
+dialog.dialog-no-scale-animation[open] {
+  transform: translate(-50%, -50%);
+  animation: pds-dialog-fade-enter var(--transition-normal) ease;
+}
+
+@keyframes pds-dialog-fade-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Backdrop styling */
@@ -3427,21 +3445,60 @@ dialog {
 }
 
 /* Dialog size modifiers */
-dialog.dialog-sm { max-width: min(400px, calc(100vw - var(--spacing-8))); }
-dialog.dialog-lg { max-width: min(800px, calc(100vw - var(--spacing-8))); }
-dialog.dialog-xl { max-width: min(1200px, calc(100vw - var(--spacing-8))); }
-dialog.dialog-full { max-width: calc(100vw - var(--spacing-8)); max-height: calc(100vh - var(--spacing-8)); }
+dialog.dialog-sm { width: min(400px, calc(100vw - var(--spacing-8))); max-width: min(400px, calc(100vw - var(--spacing-8))); }
+dialog.dialog-lg { width: min(800px, calc(100vw - var(--spacing-8))); max-width: min(800px, calc(100vw - var(--spacing-8))); }
+dialog.dialog-xl { width: min(1200px, calc(100vw - var(--spacing-8))); max-width: min(1200px, calc(100vw - var(--spacing-8))); }
+dialog.dialog-full { width: calc(100vw - var(--spacing-8)); max-width: calc(100vw - var(--spacing-8)); max-height: calc(100dvh - var(--spacing-8)); }
 
 /* Mobile responsiveness - maximize on mobile */
 @media (max-width: ${breakpoints.sm - 1}px) {
+  dialog,
+  dialog.dialog-no-scale-animation,
+  dialog.dialog-no-scale-animation[open] {
+    left: 0 !important;
+    top: 0 !important;
+  }
+
+  dialog.dialog-no-scale-animation,
+  dialog.dialog-no-scale-animation[open] {
+    transform: none !important;
+  }
+
+  dialog[open] {
+    left: 0 !important;
+    top: 0 !important;
+  }
+
   dialog { 
     max-width: 100vw; 
-    max-height: 100vh; 
-    --dialog-max-height: 100vh; /* Override custom maxHeight on mobile */
+    width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh; 
+    --dialog-max-height: 100dvh; /* Override custom maxHeight on mobile */
     border-radius: 0; 
-    top: 50%; 
-    transform: translateY(-50%); 
-    margin: 0; 
+    margin: 0;
+    transform: scale(0.98);
+  }
+  dialog[open] {
+    transform: scale(1);
+    animation: pds-dialog-enter-mobile var(--transition-normal) ease;
+  }
+
+  dialog.dialog-no-scale-animation {
+    transition: opacity var(--transition-normal) ease;
+  }
+  dialog.dialog-no-scale-animation[open] {
+    animation: pds-dialog-fade-enter var(--transition-normal) ease;
+  }
+  @keyframes pds-dialog-enter-mobile {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
   dialog header, dialog form > header, dialog article, dialog form > article, dialog footer, dialog form > footer { padding: var(--spacing-4); }
 }

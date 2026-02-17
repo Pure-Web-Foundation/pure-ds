@@ -41,6 +41,34 @@ function appendMessageContent(container, message) {
   container.appendChild(document.createTextNode(text));
 }
 
+function isSafariBrowser() {
+  const userAgent = navigator.userAgent;
+  const isSafariEngine = /Safari/i.test(userAgent);
+  const isOtherBrowser = /(Chrome|Chromium|CriOS|FxiOS|EdgiOS|OPiOS|Opera)/i.test(userAgent);
+  return isSafariEngine && !isOtherBrowser;
+}
+
+function playDialogEnterAnimation(dialog) {
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+    return;
+  }
+
+  const isMobile = window.matchMedia?.('(max-width: 639px)').matches;
+  const animationName = dialog.classList.contains('dialog-no-scale-animation')
+    ? 'pds-dialog-fade-enter'
+    : isMobile
+      ? 'pds-dialog-enter-mobile'
+      : 'pds-dialog-enter';
+
+  dialog.style.animation = 'none';
+  void dialog.offsetWidth;
+  dialog.style.animation = `${animationName} var(--transition-normal) ease`;
+
+  dialog.addEventListener('animationend', () => {
+    dialog.style.animation = '';
+  }, { once: true });
+}
+
 /**
  * Create a PDS-compliant dialog with proper semantic structure
  * @param {string|Node|Array} message - Message content (string or DOM nodes)
@@ -63,6 +91,10 @@ export async function ask(message, options = {}) {
   return new Promise((resolve) => {
     // Create native dialog element
     const dialog = document.createElement("dialog");
+
+    if (isSafariBrowser()) {
+      dialog.classList.add("dialog-no-scale-animation");
+    }
     
     if(config.options?.liquidGlassEffects)
       dialog.classList.add("liquid-glass");
@@ -213,6 +245,8 @@ export async function ask(message, options = {}) {
 
     // Show the dialog as modal
     dialog.showModal();
+
+    requestAnimationFrame(() => playDialogEnterAnimation(dialog));
   });
 }
 
