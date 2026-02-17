@@ -1290,12 +1290,10 @@ dialog {
   
   /* Smooth transitions */
   opacity: 0;
-  scale: 0.95;
+  transform: scale(0.95);
   transition: 
-    opacity 0.2s ease,
-    scale 0.2s ease,
-    overlay 0.2s ease allow-discrete,
-    display 0.2s ease allow-discrete;
+    opacity var(--transition-normal) ease,
+    transform var(--transition-normal) ease;
   
   
 }
@@ -1303,14 +1301,18 @@ dialog {
 /* Open state */
 dialog[open] {
   opacity: 1;
-  scale: 1;
+  transform: scale(1);
+  animation: pds-dialog-enter var(--transition-normal) ease;
 }
 
-/* Starting style for smooth open animation */
-@starting-style {
-  dialog[open] {
+@keyframes pds-dialog-enter {
+  from {
     opacity: 0;
-    scale: 0.95;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
@@ -1319,20 +1321,17 @@ dialog::backdrop {
   background: var(--backdrop-bg);
   backdrop-filter: var(--backdrop-filter);
   opacity: 0;
-  transition: 
-    opacity 0.2s ease,
-    overlay 0.2s ease allow-discrete,
-    display 0.2s ease allow-discrete;
+  transition: opacity var(--transition-normal) ease;
 }
 
 dialog[open]::backdrop {
   opacity: var(--backdrop-opacity, 1);
+  animation: pds-dialog-backdrop-enter var(--transition-normal) ease;
 }
 
-@starting-style {
-  dialog[open]::backdrop {
-    opacity: 0;
-  }
+@keyframes pds-dialog-backdrop-enter {
+  from { opacity: 0; }
+  to { opacity: var(--backdrop-opacity, 1); }
 }
 
 /* Dialog - constrain max height to 90vh, support custom maxHeight via CSS variable */
