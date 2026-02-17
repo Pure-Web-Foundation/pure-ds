@@ -1,6 +1,6 @@
 /**
  * PDS Enhancers - Single Source of Truth
- * 
+ *
  * This file defines all progressive enhancements for the Pure Design System.
  * Each enhancer has:
  * - selector: CSS selector to target elements
@@ -30,24 +30,28 @@ function enhanceAccordion(elem) {
   if (elem.dataset.enhancedAccordion) return;
   elem.dataset.enhancedAccordion = "true";
 
-  elem.addEventListener("toggle", (event) => {
-    // Only handle toggle events from direct child details elements
-    // to avoid closing parent details when nested accordions are used
-    if (event.target.open && event.target.parentElement === elem) {
-      elem.querySelectorAll(":scope > details[open]").forEach((details) => {
-        if (details !== event.target) {
-          details.open = false;
-        }
-      });
-    }
-  }, true);
+  elem.addEventListener(
+    "toggle",
+    (event) => {
+      // Only handle toggle events from direct child details elements
+      // to avoid closing parent details when nested accordions are used
+      if (event.target.open && event.target.parentElement === elem) {
+        elem.querySelectorAll(":scope > details[open]").forEach((details) => {
+          if (details !== event.target) {
+            details.open = false;
+          }
+        });
+      }
+    },
+    true,
+  );
 }
 
 function enhanceDropdown(elem) {
   if (elem.dataset.enhancedDropdown) return;
   elem.dataset.enhancedDropdown = "true";
-  const menu = elem.lastElementChild
-  
+  const menu = elem.lastElementChild;
+
   if (!menu) return;
 
   const trigger =
@@ -90,7 +94,7 @@ function enhanceDropdown(elem) {
       menu?.offsetHeight || 0,
       menu?.scrollHeight || 0,
       menuRect.height || 0,
-      200
+      200,
     );
     const spaceBelow = Math.max(0, window.innerHeight - rect.bottom);
     const spaceAbove = Math.max(0, rect.top);
@@ -105,7 +109,12 @@ function enhanceDropdown(elem) {
       elem.getAttribute("data-dropdown-align") ||
       "auto"
     ).toLowerCase();
-    if (align === "left" || align === "right" || align === "start" || align === "end") {
+    if (
+      align === "left" ||
+      align === "right" ||
+      align === "start" ||
+      align === "end"
+    ) {
       return align === "start" ? "left" : align === "end" ? "right" : align;
     }
     const rect = elem.getBoundingClientRect();
@@ -114,7 +123,7 @@ function enhanceDropdown(elem) {
       menu?.offsetWidth || 0,
       menu?.scrollWidth || 0,
       menuRect.width || 0,
-      240
+      240,
     );
     const spaceRight = Math.max(0, window.innerWidth - rect.left);
     const spaceLeft = Math.max(0, rect.right);
@@ -123,16 +132,42 @@ function enhanceDropdown(elem) {
     return spaceLeft > spaceRight ? "right" : "left";
   };
 
+  // Store click handler reference for cleanup
+  let clickHandler = null;
+
   const openMenu = () => {
     elem.dataset.dropdownDirection = resolveDirection();
     elem.dataset.dropdownAlign = resolveAlign();
     menu.setAttribute("aria-hidden", "false");
     trigger?.setAttribute("aria-expanded", "true");
+
+    // Add click-outside handler when opening
+    if (!clickHandler) {
+      clickHandler = (event) => {
+        // Use composedPath() to handle Shadow DOM
+        const path = event.composedPath ? event.composedPath() : [event.target];
+        const clickedInside = path.some((node) => node === elem);
+
+        if (!clickedInside) {
+          closeMenu();
+        }
+      };
+      // Use a slight delay to avoid closing immediately if this was triggered by a click
+      setTimeout(() => {
+        document.addEventListener("click", clickHandler);
+      }, 0);
+    }
   };
 
   const closeMenu = () => {
     menu.setAttribute("aria-hidden", "true");
     trigger?.setAttribute("aria-expanded", "false");
+
+    // Remove click-outside handler when closing
+    if (clickHandler) {
+      document.removeEventListener("click", clickHandler);
+      clickHandler = null;
+    }
   };
 
   const toggleMenu = () => {
@@ -149,12 +184,6 @@ function enhanceDropdown(elem) {
     toggleMenu();
   });
 
-  document.addEventListener("click", (event) => {
-    if (!elem.contains(event.target)) {
-      closeMenu();
-    }
-  });
-
   elem.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       closeMenu();
@@ -163,8 +192,15 @@ function enhanceDropdown(elem) {
   });
 
   elem.addEventListener("focusout", (event) => {
-    if (!event.relatedTarget || !elem.contains(event.relatedTarget)) {
-      closeMenu();
+    // Only close if focus is explicitly moving to an element outside the dropdown
+    // Don't close if relatedTarget is null (which happens when clicking non-focusable elements inside)
+    // Use composedPath() to handle Shadow DOM properly
+    if (event.relatedTarget) {
+      const path = event.composedPath ? event.composedPath() : [event.relatedTarget];
+      const focusedInside = path.some((node) => node === elem);
+      if (!focusedInside) {
+        closeMenu();
+      }
     }
   });
 }
@@ -298,20 +334,18 @@ function enhanceRange(elem) {
 }
 
 function enhanceRequired(elem) {
-  
-   if (elem.dataset.enhancedRequired) return;
-    elem.dataset.enhancedRequired = "true";
-  
+  if (elem.dataset.enhancedRequired) return;
+  elem.dataset.enhancedRequired = "true";
+
   const enhanceRequiredField = (input) => {
     let label;
-    if(input.closest("[role$=group]")) { // Handles both radiogroup and group
+    if (input.closest("[role$=group]")) {
+      // Handles both radiogroup and group
       label = input.closest("[role$=group]").querySelector("legend");
-    }
-    else{
+    } else {
       label = input.closest("label");
     }
     if (!label) return;
-    
 
     if (label.querySelector(".required-asterisk")) return;
 
@@ -339,15 +373,14 @@ function enhanceRequired(elem) {
       legend.textContent = "* Required fields";
       form.insertBefore(
         legend,
-        form.querySelector(".form-actions") || form.lastElementChild
+        form.querySelector(".form-actions") || form.lastElementChild,
       );
     }
-  }
+  };
 
   elem.querySelectorAll("[required]").forEach((input) => {
     enhanceRequiredField(input);
   });
-  
 }
 
 function enhanceOpenGroup(elem) {
@@ -362,7 +395,7 @@ function enhanceOpenGroup(elem) {
   addInput.classList.add("input-text", "input-sm");
   addInput.style.width = "auto";
   const firstInput = elem.querySelector(
-    'input[type="radio"], input[type="checkbox"]'
+    'input[type="radio"], input[type="checkbox"]',
   );
 
   elem.appendChild(addInput);
@@ -373,9 +406,7 @@ function enhanceOpenGroup(elem) {
         event.preventDefault();
 
         const type = firstInput.type === "radio" ? "radio" : "checkbox";
-        const id = `open-group-${Math.random()
-          .toString(36)
-          .substring(2, 11)}`;
+        const id = `open-group-${Math.random().toString(36).substring(2, 11)}`;
         const label = document.createElement("label");
 
         const span = document.createElement("span");
@@ -510,7 +541,7 @@ const enhancerRunners = new Map([
 /**
  * Complete enhancers with runtime functions.
  * Used by PDS.enhancer() and AutoDefiner at runtime.
- * 
+ *
  * This is the canonical runtime array of enhancer objects.
  */
 export const defaultPDSEnhancers = enhancerDefinitions.map((meta) => ({
