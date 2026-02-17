@@ -22,6 +22,26 @@ const dropdownStoryStyles = html`
     .story-glass-demo-travel {
       background-image: url('https://images.unsplash.com/photo-1517832207067-4db24a2ae47c?auto=format&fit=crop&w=1200&q=80');
     }
+    .story-corner-nav {
+      position: fixed;
+      z-index: var(--z-dropdown, 1050);
+    }
+    .story-corner-nav.top-left {
+      top: 10px;
+      left: 10px;
+    }
+    .story-corner-nav.top-right {
+      top: 10px;
+      right: 10px;
+    }
+    .story-corner-nav.bottom-left {
+      bottom: 10px;
+      left: 10px;
+    }
+    .story-corner-nav.bottom-right {
+      bottom: 10px;
+      right: 10px;
+    }
   </style>
 `;
 
@@ -206,5 +226,51 @@ export const ProfilePanel = () => html`
         <a class="btn btn-secondary btn-sm" href="#billing">Billing</a>
       </div>
     </article>
+  </nav>
+`;
+
+export const AutoPositionCorners = () => html`
+  ${dropdownStoryStyles}
+  ${enhancementHeader('dropdown', {
+    description: 'Four corner triggers use automatic positioning (`data-mode="auto"`) so each menu opens in the only available direction and alignment.'
+  })}
+  <nav data-dropdown data-mode="auto" class="story-corner-nav top-left">
+    <button class="btn-primary icon-only" aria-label="Top Left menu">
+      <pds-icon icon="list" size="sm"></pds-icon>
+    </button>
+    <menu>
+      <li><a href="#">Item 1</a></li>
+      <li><a href="#">Item 2</a></li>
+    </menu>
+  </nav>
+
+  <nav data-dropdown data-mode="auto" class="story-corner-nav top-right">
+    <button class="btn-primary icon-only" aria-label="Top Right menu">
+      <pds-icon icon="list" size="sm"></pds-icon>
+    </button>
+    <menu>
+      <li><a href="#">Item 1</a></li>
+      <li><a href="#">Item 2</a></li>
+    </menu>
+  </nav>
+
+  <nav data-dropdown data-mode="auto" class="story-corner-nav bottom-left">
+    <button class="btn-primary icon-only" aria-label="Bottom Left menu">
+      <pds-icon icon="list" size="sm"></pds-icon>
+    </button>
+    <menu>
+      <li><a href="#">Item 1</a></li>
+      <li><a href="#">Item 2</a></li>
+    </menu>
+  </nav>
+
+  <nav data-dropdown data-mode="auto" class="story-corner-nav bottom-right">
+    <button class="btn-primary icon-only" aria-label="Bottom Right menu">
+      <pds-icon icon="list" size="sm"></pds-icon>
+    </button>
+    <menu>
+      <li><a href="#">Item 1</a></li>
+      <li><a href="#">Item 2</a></li>
+    </menu>
   </nav>
 `;

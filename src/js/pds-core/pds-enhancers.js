@@ -80,6 +80,30 @@ function enhanceDropdown(elem) {
     trigger.setAttribute("aria-expanded", "false");
   }
 
+  const measureMenuSize = () => {
+    const previousStyle = menu.getAttribute("style");
+    menu.style.visibility = "hidden";
+    menu.style.display = "inline-block";
+    menu.style.pointerEvents = "none";
+
+    const rect = menu.getBoundingClientRect();
+    const width = Math.max(menu.offsetWidth || 0, menu.scrollWidth || 0, rect.width || 0, 1);
+    const height = Math.max(
+      menu.offsetHeight || 0,
+      menu.scrollHeight || 0,
+      rect.height || 0,
+      1,
+    );
+
+    if (previousStyle === null) {
+      menu.removeAttribute("style");
+    } else {
+      menu.setAttribute("style", previousStyle);
+    }
+
+    return { width, height };
+  };
+
   const resolveDirection = () => {
     const mode = (
       elem.getAttribute("data-direction") ||
@@ -88,18 +112,15 @@ function enhanceDropdown(elem) {
       "auto"
     ).toLowerCase();
     if (mode === "up" || mode === "down") return mode;
-    const rect = elem.getBoundingClientRect();
-    const menuRect = menu?.getBoundingClientRect?.() || { height: 0 };
-    const menuHeight = Math.max(
-      menu?.offsetHeight || 0,
-      menu?.scrollHeight || 0,
-      menuRect.height || 0,
-      200,
-    );
-    const spaceBelow = Math.max(0, window.innerHeight - rect.bottom);
-    const spaceAbove = Math.max(0, rect.top);
-    if (spaceBelow >= menuHeight) return "down";
-    if (spaceAbove >= menuHeight) return "up";
+    const anchorRect = (trigger || elem).getBoundingClientRect();
+    const { height: menuHeight } = measureMenuSize();
+    const spaceBelow = Math.max(0, window.innerHeight - anchorRect.bottom);
+    const spaceAbove = Math.max(0, anchorRect.top);
+    const fitsDown = spaceBelow >= menuHeight;
+    const fitsUp = spaceAbove >= menuHeight;
+    if (fitsDown && !fitsUp) return "down";
+    if (fitsUp && !fitsDown) return "up";
+    if (fitsDown && fitsUp) return "down";
     return spaceAbove > spaceBelow ? "up" : "down";
   };
 
@@ -117,19 +138,17 @@ function enhanceDropdown(elem) {
     ) {
       return align === "start" ? "left" : align === "end" ? "right" : align;
     }
-    const rect = elem.getBoundingClientRect();
-    const menuRect = menu?.getBoundingClientRect?.() || { width: 0 };
-    const menuWidth = Math.max(
-      menu?.offsetWidth || 0,
-      menu?.scrollWidth || 0,
-      menuRect.width || 0,
-      240,
-    );
-    const spaceRight = Math.max(0, window.innerWidth - rect.left);
-    const spaceLeft = Math.max(0, rect.right);
-    if (spaceRight >= menuWidth) return "left";
-    if (spaceLeft >= menuWidth) return "right";
-    return spaceLeft > spaceRight ? "right" : "left";
+    const anchorRect = (trigger || elem).getBoundingClientRect();
+    const { width: menuWidth } = measureMenuSize();
+    const spaceForLeftAligned = Math.max(0, window.innerWidth - anchorRect.left);
+    const spaceForRightAligned = Math.max(0, anchorRect.right);
+    const fitsLeft = spaceForLeftAligned >= menuWidth;
+    const fitsRight = spaceForRightAligned >= menuWidth;
+
+    if (fitsLeft && !fitsRight) return "left";
+    if (fitsRight && !fitsLeft) return "right";
+    if (fitsLeft && fitsRight) return "left";
+    return spaceForRightAligned > spaceForLeftAligned ? "right" : "left";
   };
 
   // Store click handler reference for cleanup

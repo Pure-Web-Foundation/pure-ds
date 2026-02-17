@@ -3861,9 +3861,12 @@ nav[data-dropdown] {
     }
   }
 
-  &[data-mode="auto"] > :last-child {
+  &[data-mode="auto"]:not([data-dropdown-direction]) > :last-child {
     top: 100%;
     bottom: auto;
+    margin-top: var(--spacing-2);
+    margin-bottom: 0;
+    transform-origin: top center;
   }
 
   @media (prefers-reduced-motion: reduce) {
