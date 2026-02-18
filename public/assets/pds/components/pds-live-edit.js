@@ -137,6 +137,7 @@ const SURFACE_CONTEXT_PATHS = new Set([
 const DARK_MODE_PATH_MARKER = ".darkMode.";
 const QUICK_EDIT_LIMIT = 4;
 const DROPDOWN_VIEWPORT_PADDING = 8;
+const FONT_FAMILY_PATH_REGEX = /^typography\.fontFamily/i;
 
 function isHoverCapable() {
   if (typeof window === "undefined" || !window.matchMedia) return false;
@@ -443,6 +444,33 @@ function collectQuickRulePaths(target) {
   }).flatMap((rule) => rule.paths);
 }
 
+function isHeadingElement(target) {
+  if (!target || !(target instanceof Element)) return false;
+  const tag = target.tagName?.toLowerCase?.() || "";
+  if (/^h[1-6]$/.test(tag)) return true;
+  if (target.getAttribute("role") === "heading") return true;
+  return false;
+}
+
+function hasMeaningfulText(target) {
+  if (!target || !(target instanceof Element)) return false;
+  const tag = target.tagName?.toLowerCase?.() || "";
+  if (["script", "style", "svg", "path", "defs", "symbol"].includes(tag)) return false;
+  const text = target.textContent || "";
+  return text.trim().length > 0;
+}
+
+function collectTypographyPathsForTarget(target) {
+  if (!target || !(target instanceof Element)) return [];
+  if (isHeadingElement(target)) {
+    return ["typography.fontFamilyHeadings"];
+  }
+  if (hasMeaningfulText(target)) {
+    return ["typography.fontFamilyBody"];
+  }
+  return [];
+}
+
 function pathExistsInDesign(path, design) {
   if (!path || !design) return false;
   const segments = path.split(".");
@@ -455,7 +483,7 @@ function pathExistsInDesign(path, design) {
   return true;
 }
 
-function filterPathsByContext(target, paths) {
+function filterPathsByContext(target, paths, alwaysAllow = new Set()) {
   if (!target || !paths.length) return paths;
   const isGlobal = target.matches("body, main");
   const isInForm = Boolean(target.closest("form, pds-form"));
@@ -468,6 +496,7 @@ function filterPathsByContext(target, paths) {
   const design = PDS?.currentConfig?.design || {};
 
   return paths.filter((path) => {
+    if (alwaysAllow.has(path)) return true;
     if (!theme.isDark && path.includes(DARK_MODE_PATH_MARKER)) return false;
     if (path.startsWith("typography.") && !isGlobal) return false;
     if (GLOBAL_LAYOUT_PATHS.has(path) && !isGlobal) return false;
@@ -768,7 +797,10 @@ function collectPathsFromComputedStyles(target) {
       const trimmed = value.trim();
       
       // Extract var refs from the value (handles var() with fallbacks)
-      addVarSet(extractAllVarRefs(trimmed));
+      const directVarRefs = extractAllVarRefs(trimmed);
+      addVarSet(directVarRefs);
+      const hasDirectVarRefs = directVarRefs.size > 0;
+      if (hasDirectVarRefs) return;
       
       if (trimmed && valueToVars.has(trimmed)) {
         valueToVars.get(trimmed).forEach((varName) => addVarName(varName));
@@ -829,15 +861,18 @@ function collectQuickContext(target) {
   const byComputed = computed?.paths || [];
   const byRelations = collectPathsFromRelations(target);
   const byQuickRules = collectQuickRulePaths(target);
+  const byTypographyContext = collectTypographyPathsForTarget(target);
   const hints = computed?.hints || {};
   const debug = computed?.debug || { vars: [], paths: [] };
+  const alwaysAllow = new Set(byTypographyContext);
 
   // Prioritize quick rule paths first (selector-based), then computed/relations
   const filtered = filterPathsByContext(target, [
+    ...byTypographyContext,
     ...byQuickRules,
     ...byComputed,
     ...byRelations,
-  ]);
+  ], alwaysAllow);
   if (!filtered.length) {
     return {
       paths: normalizePaths(DEFAULT_QUICK_PATHS),
@@ -858,6 +893,105 @@ function collectDrawerPaths(quickPaths) {
     expanded.push(...fields);
   });
   return normalizePaths([...quickPaths, ...expanded]);
+}
+
+function splitFontFamilyStack(value) {
+  if (typeof value !== "string") return [];
+  const input = value.trim();
+  if (!input) return [];
+  const parts = [];
+  let buffer = "";
+  let quote = null;
+  for (let i = 0; i < input.length; i += 1) {
+    const char = input[i];
+    if (quote) {
+      buffer += char;
+      if (char === quote && input[i - 1] !== "\\") {
+        quote = null;
+      }
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      quote = char;
+      buffer += char;
+      continue;
+    }
+    if (char === ",") {
+      const token = buffer.trim();
+      if (token) parts.push(token);
+      buffer = "";
+      continue;
+    }
+    buffer += char;
+  }
+  const last = buffer.trim();
+  if (last) parts.push(last);
+  return parts;
+}
+
+function getPresetFontFamilyVariations() {
+  const presets = Object.values(PDS?.presets || {});
+  const seen = new Set();
+  const items = [];
+  const addItem = (fontFamily) => {
+    const normalized = String(fontFamily || "").trim().replace(/\s+/g, " ");
+    if (!normalized || seen.has(normalized)) return;
+    seen.add(normalized);
+    items.push({
+      id: normalized,
+      text: normalized,
+      style: `font-family: ${normalized}`,
+    });
+  };
+
+  presets.forEach((preset) => {
+    const typography = preset?.typography || {};
+    ["fontFamilyHeadings", "fontFamilyBody"].forEach((key) => {
+      const stack = typography[key];
+      if (typeof stack !== "string" || !stack.trim()) return;
+
+      addItem(stack);
+      const parts = splitFontFamilyStack(stack);
+      parts.forEach((part) => addItem(part));
+      for (let i = 1; i < parts.length; i += 1) {
+        addItem(parts.slice(i).join(", "));
+      }
+    });
+  });
+
+  return items;
+}
+
+function buildFontFamilyOmniboxSettings() {
+  const allItems = getPresetFontFamilyVariations();
+  const filterItems = (search) => {
+    const query = String(search || "").trim().toLowerCase();
+    if (!query) return allItems;
+    return allItems.filter((item) => item.text.toLowerCase().includes(query));
+  };
+
+  return {    
+    hideCategory: true,
+    iconHandler: (item) => {
+      
+      return "";
+    },
+    categories: {
+      FontFamilies: {
+        trigger: () => true,
+        getItems: (options) => filterItems(options?.search),
+        action: (options, ev) => {
+          const input = document.querySelector("[name='/typography/fontFamilyHeadings']");
+          
+          if (input && input.tagName === "PDS-OMNIBOX") {
+            input.value = options?.text || "";
+            
+          }
+          return options?.text || options?.id;
+        },
+      },
+    },
+  };
 }
 
 function buildSchemaFromPaths(paths, design, hints = {}) {
@@ -914,6 +1048,13 @@ function buildSchemaFromPaths(paths, design, hints = {}) {
     if (!parent) {
       parent = { type: "object", title: titleize(category), properties: {} };
       schema.properties[category] = parent;
+
+      if (category === "colors") {
+        uiSchema[`/${category}`] = {
+          "ui:layout": "flex",
+          "ui:layoutOptions": { wrap: true, gap: "sm" },
+        };
+      }
     }
 
     let current = parent;
@@ -973,6 +1114,8 @@ function buildSchemaFromPaths(paths, design, hints = {}) {
           uiEntry["ui:step"] = bounds.step;
         } else if (isColorValue(value, path)) {
           uiEntry["ui:widget"] = "input-color";
+        } else if (FONT_FAMILY_PATH_REGEX.test(path) && schemaType === "string") {
+          uiEntry["ui:widget"] = "font-family-omnibox";
         }
 
         const isTextOrNumberInput =
@@ -1173,6 +1316,155 @@ async function applyPresetSelection(presetId) {
   await applyDesignPatch({});
 }
 
+function figmafyTokens(rawTokens) {
+  const isPlainObject = (value) =>
+    value !== null && typeof value === "object" && !Array.isArray(value);
+
+  const detectType = (path, key, value) => {
+    const root = path[0];
+
+    if (root === "colors") {
+      if (key === "scheme") return "string";
+      return "color";
+    }
+
+    if (root === "spacing" || root === "radius" || root === "borderWidths") {
+      return "dimension";
+    }
+
+    if (root === "typography") {
+      const group = path[1];
+      if (group === "fontFamily") return "fontFamily";
+      if (group === "fontSize") return "fontSize";
+      if (group === "fontWeight") return "fontWeight";
+      if (group === "lineHeight") return "lineHeight";
+      return "string";
+    }
+
+    if (root === "shadows") return "shadow";
+    if (root === "layout") return "dimension";
+    if (root === "transitions") return "duration";
+    if (root === "zIndex") return "number";
+
+    if (root === "icons") {
+      if (key === "defaultSize" || path.includes("sizes")) {
+        return "dimension";
+      }
+      return "string";
+    }
+
+    if (typeof value === "number") {
+      return "number";
+    }
+
+    if (typeof value === "string") {
+      if (/^\d+(\.\d+)?ms$/.test(value)) return "duration";
+      if (/^\d+(\.\d+)?(px|rem|em|vh|vw|%)$/.test(value)) return "dimension";
+
+      if (
+        /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(value) ||
+        /^(rgb|rgba|hsl|hsla|oklab|lab)\(/.test(value)
+      ) {
+        return "color";
+      }
+    }
+
+    return undefined;
+  };
+
+  const walk = (node, path = []) => {
+    if (node == null) return node;
+
+    if (Array.isArray(node)) {
+      return node.map((item, index) => walk(item, path.concat(String(index))));
+    }
+
+    if (isPlainObject(node)) {
+      if (
+        Object.prototype.hasOwnProperty.call(node, "value") &&
+        (Object.prototype.hasOwnProperty.call(node, "type") ||
+          Object.keys(node).length === 1)
+      ) {
+        return node;
+      }
+
+      const result = {};
+      for (const [key, value] of Object.entries(node)) {
+        result[key] = walk(value, path.concat(key));
+      }
+      return result;
+    }
+
+    const key = path[path.length - 1] ?? "";
+    const type = detectType(path, key, node);
+    let value = node;
+
+    if (type === "number" && typeof value === "string") {
+      const num = Number(value);
+      if (!Number.isNaN(num)) value = num;
+    }
+
+    return type ? { value, type } : { value };
+  };
+
+  return walk(rawTokens, []);
+}
+
+function downloadTextFile(content, filename, mimeType) {
+  if (typeof document === "undefined") return;
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+function getLiveEditExportConfig() {
+  const stored = getStoredConfig();
+  const design = shallowClone(PDS?.currentConfig?.design || stored?.design || {});
+  const preset = stored?.preset || PDS?.currentConfig?.preset || PDS?.currentPreset || null;
+  return {
+    preset,
+    design,
+  };
+}
+
+function buildConfigModuleContent(config) {
+  return `export const pdsConfig = ${JSON.stringify(config, null, 2)};\n\nexport default pdsConfig;\n`;
+}
+
+async function exportFromLiveEdit(format) {
+  try {
+    if (format === "config") {
+      const config = getLiveEditExportConfig();
+      const content = buildConfigModuleContent(config);
+      downloadTextFile(content, "pds.config.js", "text/javascript");
+      await PDS?.toast?.("Exported config file", { type: "success" });
+      return;
+    }
+
+    if (format === "figma") {
+      const Generator = await getGeneratorClass();
+      const generator = Generator?.instance;
+      if (!generator || typeof generator.generateTokens !== "function") {
+        throw new Error("Token generator unavailable");
+      }
+
+      const rawTokens = generator.generateTokens();
+      const figmaTokens = figmafyTokens(rawTokens);
+      const content = JSON.stringify(figmaTokens, null, 2);
+      downloadTextFile(content, "design-tokens.figma.json", "application/json");
+      await PDS?.toast?.("Exported Figma tokens", { type: "success" });
+      return;
+    }
+  } catch (error) {
+    console.warn("[pds-live-edit] Export failed", error);
+    await PDS?.toast?.("Export failed", { type: "error" });
+  }
+}
+
 function setFormSchemas(form, schema, uiSchema, design) {
   form.jsonSchema = schema;
   form.uiSchema = uiSchema;
@@ -1181,7 +1473,13 @@ function setFormSchemas(form, schema, uiSchema, design) {
 
 async function buildForm(paths, design, onSubmit, onUndo, hints = {}) {
   const { schema, uiSchema } = buildSchemaFromPaths(paths, design, hints);
+
+  if (!customElements.get("pds-form")) {
+    await customElements.whenDefined("pds-form");
+  }
+
   const form = document.createElement("pds-form");
+  const fontFamilyOmniboxSettings = buildFontFamilyOmniboxSettings();
   form.setAttribute("hide-actions", "");
   form.options = {
     layouts: {
@@ -1191,6 +1489,62 @@ async function buildForm(paths, design, onSubmit, onUndo, hints = {}) {
       rangeOutput: true,
     },
   };
+  form.defineRenderer(
+    "font-family-omnibox",
+    ({ id, path, value, attrs, set }) => {
+      const resolveSelectedValue = (options, actionResult) => {
+        if (typeof actionResult === "string" && actionResult.trim()) {
+          return actionResult;
+        }
+        const fromText = String(options?.text || "").trim();
+        if (fromText) return fromText;
+        return String(options?.id || "").trim();
+      };
+
+      const categories = Object.fromEntries(
+        Object.entries(fontFamilyOmniboxSettings.categories || {}).map(
+          ([categoryName, categoryConfig]) => {
+            const originalAction = categoryConfig?.action;
+            return [
+              categoryName,
+              {
+                ...categoryConfig,
+                action: (options) => {                  
+                  const actionResult =
+                    typeof originalAction === "function"
+                      ? originalAction(options)
+                      : undefined;
+                  const selected = resolveSelectedValue(options, actionResult);
+                  if (selected) {
+                    set(selected);
+                  }
+                  return actionResult;
+                },
+              },
+            ];
+          }
+        )
+      );
+
+      const omnibox = document.createElement("pds-omnibox");
+      omnibox.id = id;
+      omnibox.setAttribute("name", path);
+      omnibox.setAttribute("item-grid", "0 1fr");
+      omnibox.setAttribute("placeholder", attrs?.placeholder || "Select a font family");           
+      omnibox.value = value ?? "";
+      omnibox.settings = {
+        ...fontFamilyOmniboxSettings,
+        categories,
+      };
+      omnibox.addEventListener("input", (event) => {
+        set(event?.target?.value ?? omnibox.value ?? "");
+      });
+      omnibox.addEventListener("change", (event) => {
+        set(event?.target?.value ?? omnibox.value ?? "");
+      });
+      return omnibox;
+    }
+  );
   form.addEventListener("pw:submit", onSubmit);
   const values = shallowClone(design || {});
   Object.keys(ENUM_FIELD_OPTIONS).forEach((path) => {
@@ -1207,12 +1561,6 @@ async function buildForm(paths, design, onSubmit, onUndo, hints = {}) {
     }
   });
   setFormSchemas(form, schema, uiSchema, values);
-
-  if (!customElements.get("pds-form")) {
-    customElements.whenDefined("pds-form").then(() => {
-      setFormSchemas(form, schema, uiSchema, values);
-    });
-  }
 
   // Apply button (will trigger form submit programmatically)
   const applyBtn = document.createElement("button");
@@ -1821,6 +2169,65 @@ class PdsLiveEdit extends HTMLElement {
     const themeToggle = document.createElement("pds-theme");
     themeCard.appendChild(themeToggle);
 
+    const exportCard = document.createElement("section");
+    exportCard.className = "card surface-elevated stack-sm";
+
+    const exportTitle = document.createElement("h4");
+    exportTitle.textContent = "Export";
+    exportCard.appendChild(exportTitle);
+
+    const exportNav = document.createElement("nav");
+    exportNav.setAttribute("data-dropdown", "");
+    exportNav.setAttribute("data-mode", "auto");
+
+    const exportButton = document.createElement("button");
+    exportButton.className = "btn-primary";
+    const exportIcon = document.createElement("pds-icon");
+    exportIcon.setAttribute("icon", "download");
+    exportIcon.setAttribute("size", "sm");
+    const exportLabel = document.createElement("span");
+    exportLabel.textContent = "Download";
+    const exportCaret = document.createElement("pds-icon");
+    exportCaret.setAttribute("icon", "caret-down");
+    exportCaret.setAttribute("size", "sm");
+    exportButton.append(exportIcon, exportLabel, exportCaret);
+
+    const exportMenu = document.createElement("menu");
+
+    const configItem = document.createElement("li");
+    const configLink = document.createElement("a");
+    configLink.href = "#";
+    configLink.addEventListener("click", async (event) => {
+      event.preventDefault();
+      await this._handleExport("config");
+    });
+    const configIcon = document.createElement("pds-icon");
+    configIcon.setAttribute("icon", "file-js");
+    configIcon.setAttribute("size", "sm");
+    const configLabel = document.createElement("span");
+    configLabel.textContent = "Config File";
+    configLink.append(configIcon, configLabel);
+    configItem.appendChild(configLink);
+
+    const figmaItem = document.createElement("li");
+    const figmaLink = document.createElement("a");
+    figmaLink.href = "#";
+    figmaLink.addEventListener("click", async (event) => {
+      event.preventDefault();
+      await this._handleExport("figma");
+    });
+    const figmaIcon = document.createElement("pds-icon");
+    figmaIcon.setAttribute("icon", "brackets-curly");
+    figmaIcon.setAttribute("size", "sm");
+    const figmaLabel = document.createElement("span");
+    figmaLabel.textContent = "Figma Tokens (JSON)";
+    figmaLink.append(figmaIcon, figmaLabel);
+    figmaItem.appendChild(figmaLink);
+
+    exportMenu.append(configItem, figmaItem);
+    exportNav.append(exportButton, exportMenu);
+    exportCard.appendChild(exportNav);
+
     const searchCard = document.createElement("section");
     searchCard.className = "card surface-elevated stack-sm";
 
@@ -1867,6 +2274,7 @@ class PdsLiveEdit extends HTMLElement {
 
     content.appendChild(presetCard);
     content.appendChild(themeCard);
+    content.appendChild(exportCard);
     content.appendChild(searchCard);
 
     this._drawer.replaceChildren(header, content);
@@ -1876,6 +2284,10 @@ class PdsLiveEdit extends HTMLElement {
     } else {
       this._drawer.setAttribute("open", "");
     }
+  }
+
+  async _handleExport(format) {
+    await exportFromLiveEdit(format);
   }
 
   async _handleFormSubmit(event, form) {
