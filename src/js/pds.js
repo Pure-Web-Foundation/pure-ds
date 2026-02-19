@@ -62,23 +62,14 @@ import {
   ensureAbsoluteAssetURL,
   ensureTrailingSlash,
   attachFoucListener,
-  normalizeInitConfig,
   resolveRuntimeAssetRoot,
   resolveThemeAndApply,
   setupAutoDefinerAndEnhancers,
-  stripFunctions,
 } from "./pds-core/pds-start-helpers.js";
 import {
   isPresetThemeCompatible,
   resolveThemePreference,
 } from "./pds-core/pds-theme-utils.js";
-
-const __slugifyPreset = (str = "") =>
-  String(str)
-    .toLowerCase()
-    .replace(/&/g, " and ")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
 
 const __defaultLog = function (level = "log", message, ...data) {
   const isStaticMode = Boolean(PDS.registry && !PDS.registry.isLive);
@@ -98,6 +89,27 @@ const __defaultLog = function (level = "log", message, ...data) {
     method(message);
   }
 };
+
+function __stripFunctionsForClone(value) {
+  if (value === null || value === undefined) return value;
+  if (typeof value === "function") return undefined;
+  if (typeof value !== "object") return value;
+
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => __stripFunctionsForClone(item))
+      .filter((item) => item !== undefined);
+  }
+
+  const result = {};
+  for (const [key, entry] of Object.entries(value)) {
+    const stripped = __stripFunctionsForClone(entry);
+    if (stripped !== undefined) {
+      result[key] = stripped;
+    }
+  }
+  return result;
+}
 
 async function __loadRuntimeConfig(assetRootURL, config = {}) {
   if (config?.runtimeConfig === false) return null;
@@ -435,57 +447,21 @@ async function staticInit(config) {
       setupSystemListenerIfNeeded: __setupSystemListenerIfNeeded,
     });
 
-    // Normalize first-arg to allow { preset, design, enhancers }
+    // Load runtime config for static assets; config metadata remains live-mode only
     const runtimeConfig = await __loadRuntimeConfig(assetRootURL, config);
-    const runtimeDesign =
-      runtimeConfig?.config?.design || runtimeConfig?.design || null;
-    const runtimePresetLabel =
-      runtimeConfig?.config?.preset || runtimeConfig?.preset || "default";
-    const runtimePresetId =
-      runtimeConfig?.presetId || __slugifyPreset(runtimePresetLabel) || "default";
-    const runtimePresets = runtimeDesign
-      ? {
-          [String(runtimePresetId).toLowerCase()]: runtimeDesign,
-          ...(String(runtimePresetId).toLowerCase() !== "default"
-            ? { default: runtimeDesign }
-            : {}),
-        }
-      : null;
-
-    const inlineDesign =
-      config?.design && typeof config.design === "object"
-        ? stripFunctions(config.design)
-        : null;
-    const inlinePresetId = __slugifyPreset(config?.preset || "default") || "default";
-    const inlinePresets = inlineDesign
-      ? {
-          [String(inlinePresetId).toLowerCase()]: inlineDesign,
-          ...(String(inlinePresetId).toLowerCase() !== "default"
-            ? { default: inlineDesign }
-            : {}),
-        }
-      : null;
-
-    const presets = runtimePresets || config?.presets || inlinePresets || {};
-    if (!Object.keys(presets || {}).length) {
-      throw new Error(
-        "PDS static mode requires preset data. Run pds:build or provide config.presets/config.design."
-      );
-    }
-    const normalizedInput = runtimeConfig?.config
+    const userEnhancers = Array.isArray(config?.enhancers)
+      ? config.enhancers
+      : config?.enhancers && typeof config.enhancers === "object"
+        ? Object.values(config.enhancers)
+        : [];
+    const resolvedConfig = runtimeConfig?.config
       ? {
           ...runtimeConfig.config,
           ...config,
-          preset: config?.preset || runtimePresetId,
-          design: inlineDesign || runtimeDesign || runtimeConfig?.config?.design,
+          design: config?.design || runtimeConfig.config.design,
+          preset: config?.preset || runtimeConfig.config.preset,
         }
-      : config;
-
-    const normalized = normalizeInitConfig(normalizedInput, {}, {
-      presets,
-      defaultLog: __defaultLog,
-    });
-    const userEnhancers = normalized.enhancers;
+      : { ...config };
     
 
     // 2) Derive static asset URLs from the normalized public root
@@ -545,12 +521,12 @@ async function staticInit(config) {
 
     // Expose current config as frozen read-only on PDS, preserving input shape
     // Strip functions before cloning to avoid DataCloneError
-    const cloneableConfig = stripFunctions(config);
+    const cloneableConfig = __stripFunctionsForClone(config);
     PDS.currentConfig = Object.freeze({
       mode: "static",
       ...structuredClone(cloneableConfig),
-      design: structuredClone(normalized.generatorConfig.design),
-      preset: normalized.generatorConfig.preset,
+      design: structuredClone(resolvedConfig.design || {}),
+      preset: resolvedConfig.preset,
       theme: resolvedTheme,
       enhancers: mergedEnhancers,
     });
@@ -558,12 +534,12 @@ async function staticInit(config) {
     // 6) Emit ready event (unified)
     __emitPDSReady({
       mode: "static",
-      config: normalized.generatorConfig,
+      config: resolvedConfig,
       theme: resolvedTheme,
       autoDefiner,
     });
     return {
-      config: normalized.generatorConfig,
+      config: resolvedConfig,
       theme: resolvedTheme,
       autoDefiner,
     };

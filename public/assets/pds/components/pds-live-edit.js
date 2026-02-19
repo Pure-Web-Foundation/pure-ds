@@ -188,14 +188,22 @@ ${EDITOR_TAG} {
 .${DROPDOWN_CLASS} menu {
   min-width: max-content;
   max-width: 350px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: visible;
 }
 .${DROPDOWN_CLASS} .pds-live-editor-menu {
+  display: block;
+  background-color: var(--color-surface-base);
   padding: var(--spacing-1);
   max-width: 350px;
   padding-bottom: 0;
+  overflow: visible;
 }
 .${DROPDOWN_CLASS} .pds-live-editor-form-container {
   padding-bottom: var(--spacing-2);
+  overflow: visible;
 }
 .${DROPDOWN_CLASS} .pds-live-editor-title {
   display: block;
@@ -589,6 +597,62 @@ function toColorInputValue(value) {
   return hexValue || value;
 }
 
+function isColorPath(path) {
+  return String(path || "").toLowerCase().startsWith("colors.");
+}
+
+function inferColorVariableCandidates(path) {
+  const normalizedPath = String(path || "").toLowerCase();
+  const key = normalizedPath.replace(/^colors\./, "").replace(/^darkmode\./, "");
+  const tail = key.split(".").pop();
+
+  const directMap = {
+    primary: ["--color-primary-500"],
+    secondary: ["--color-secondary-500", "--color-gray-500"],
+    accent: ["--color-accent-500"],
+    background: ["--color-surface-base"],
+    success: ["--color-success-500"],
+    warning: ["--color-warning-500"],
+    danger: ["--color-danger-500"],
+    info: ["--color-info-500"],
+  };
+
+  const candidates = new Set();
+  if (tail && directMap[tail]) {
+    directMap[tail].forEach((item) => candidates.add(item));
+  }
+  if (tail) {
+    candidates.add(`--color-${tail}-500`);
+  }
+
+  return Array.from(candidates);
+}
+
+function resolveColorValueForPath(path, value, hintValue) {
+  if (!isColorPath(path)) return null;
+
+  const fromValue = toColorInputValue(value);
+  if (normalizeHexColor(fromValue)) return fromValue;
+
+  const fromHint = toColorInputValue(hintValue);
+  if (normalizeHexColor(fromHint)) return fromHint;
+
+  if (typeof window === "undefined" || typeof document === "undefined") return null;
+  const root = document.documentElement;
+  if (!root) return null;
+
+  const style = window.getComputedStyle(root);
+  const candidates = inferColorVariableCandidates(path);
+  for (const varName of candidates) {
+    const raw = style.getPropertyValue(varName).trim();
+    if (!raw) continue;
+    const resolved = toColorInputValue(raw);
+    if (normalizeHexColor(resolved)) return resolved;
+  }
+
+  return null;
+}
+
 function getCustomPropertyNames(style) {
   const names = [];
   if (!style) return names;
@@ -929,7 +993,92 @@ function splitFontFamilyStack(value) {
   return parts;
 }
 
-function getPresetFontFamilyVariations() {
+const GENERIC_FONT_FAMILIES = new Set([
+  "serif",
+  "sans-serif",
+  "monospace",
+  "cursive",
+  "fantasy",
+  "system-ui",
+  "ui-serif",
+  "ui-sans-serif",
+  "ui-monospace",
+  "ui-rounded",
+  "emoji",
+  "math",
+  "fangsong",
+]);
+
+let loadGoogleFontFnPromise = null;
+
+function normalizeFontName(fontFamily) {
+  return String(fontFamily || "")
+    .trim()
+    .replace(/^['"]+|['"]+$/g, "")
+    .trim();
+}
+
+function isLikelyLoadableFont(fontFamily) {
+  const normalized = normalizeFontName(fontFamily).toLowerCase();
+  if (!normalized) return false;
+  return !GENERIC_FONT_FAMILIES.has(normalized);
+}
+
+async function getLoadGoogleFontFn() {
+  if (typeof PDS?.loadGoogleFont === "function") {
+    return PDS.loadGoogleFont;
+  }
+  if (loadGoogleFontFnPromise) return loadGoogleFontFnPromise;
+  loadGoogleFontFnPromise = (async () => {
+    const candidates = [
+      PDS?.currentConfig?.managerURL,
+      "../core/pds-manager.js",
+      "/assets/pds/core/pds-manager.js",
+    ].filter(Boolean);
+
+    const attempted = new Set();
+    for (const candidate of candidates) {
+      try {
+        const resolved = new URL(candidate, import.meta.url).href;
+        if (attempted.has(resolved)) continue;
+        attempted.add(resolved);
+        const mod = await import(resolved);
+        if (typeof mod?.loadGoogleFont === "function") {
+          return mod.loadGoogleFont;
+        }
+      } catch (e) {}
+    }
+    return null;
+  })();
+  return loadGoogleFontFnPromise;
+}
+
+async function loadTypographyFontsForDesign(typography) {
+  if (!typography || typeof typography !== "object") return;
+
+  const loadGoogleFont = await getLoadGoogleFontFn();
+  if (typeof loadGoogleFont !== "function") return;
+
+  const families = [
+    typography.fontFamilyHeadings,
+    typography.fontFamilyBody,
+    typography.fontFamilyMono,
+  ];
+
+  const fontNames = new Set();
+  families.forEach((stack) => {
+    splitFontFamilyStack(stack).forEach((item) => {
+      const fontName = normalizeFontName(item);
+      if (isLikelyLoadableFont(fontName)) {
+        fontNames.add(fontName);
+      }
+    });
+  });
+
+  await Promise.allSettled(Array.from(fontNames).map((name) => loadGoogleFont(name)));
+}
+
+function getPresetFontFamilyVariations(previewFontSize = resolveFontFamilyPreviewFontSize()) {
   const presets = Object.values(PDS?.presets || {});
   const seen = new Set();
   const items = [];
@@ -938,9 +1087,11 @@ function getPresetFontFamilyVariations() {
     if (!normalized || seen.has(normalized)) return;
     seen.add(normalized);
     items.push({
+      //index: items.length,
       id: normalized,
+      value: normalized,
       text: normalized,
-      style: `font-family: ${normalized}`,
+      style: `font-family: ${normalized}; font-size: ${previewFontSize};`,
     });
   };
 
@@ -959,35 +1110,95 @@ function getPresetFontFamilyVariations() {
     });
   });
 
-  return items;
+  return items.sort((a, b) =>
+    String(b?.text || "").localeCompare(String(a?.text || ""), undefined, {
+      sensitivity: "base",
+    })
+  );
+}
+
+function resolveFontFamilyPreviewFontSize(control) {
+  const controlInput = control?.querySelector?.(".ac-input");
+  if (controlInput) {
+    const fontSize = getComputedStyle(controlInput).fontSize;
+    if (fontSize) return fontSize;
+  }
+
+  const selectors = [
+    "[name='/typography/fontFamilyBody']",
+    "[name='/typography/fontFamilyHeadings']",
+    "[name='/typography/fontFamilyMono']",
+  ];
+
+  for (const selector of selectors) {
+    const omnibox = document.querySelector(selector);
+    const input = omnibox?.shadowRoot?.querySelector?.(".ac-input");
+    if (!input) continue;
+    const fontSize = getComputedStyle(input).fontSize;
+    if (fontSize) return fontSize;
+  }
+
+  return "var(--font-size-md)";
+}
+
+async function loadGoogleFontsForFontFamilyItems(items) {
+  if (!Array.isArray(items) || !items.length) return;
+
+  const loadGoogleFont = await getLoadGoogleFontFn();
+  if (typeof loadGoogleFont !== "function") return;
+
+  const fontNames = new Set();
+  items.forEach((item) => {
+    const stack = item?.value || item?.text;
+    splitFontFamilyStack(stack).forEach((entry) => {
+      const fontName = normalizeFontName(entry);
+      if (isLikelyLoadableFont(fontName)) {
+        fontNames.add(fontName);
+      }
+    });
+  });
+
+  if (!fontNames.size) return;
+  await Promise.allSettled(Array.from(fontNames).map((name) => loadGoogleFont(name)));
 }
 
 function buildFontFamilyOmniboxSettings() {
-  const allItems = getPresetFontFamilyVariations();
-  const filterItems = (search) => {
+  const filterItems = (items, search) => {
     const query = String(search || "").trim().toLowerCase();
-    if (!query) return allItems;
-    return allItems.filter((item) => item.text.toLowerCase().includes(query));
+    if (!query) return items;
+    return items.filter((item) => {
+      const text = String(
+        item?.text || item?.id || item?.element?.textContent || ""
+      ).toLowerCase();
+      return text.includes(query);
+    });
   };
 
-  return {    
+
+  return {   
+    //debug: true,
+    itemGrid: "0 1fr 0",
     hideCategory: true,
-    iconHandler: (item) => {
-      
+    iconHandler: (item) => {      
       return "";
     },
     categories: {
       FontFamilies: {
         trigger: () => true,
-        getItems: (options) => filterItems(options?.search),
-        action: (options, ev) => {
-          const input = document.querySelector("[name='/typography/fontFamilyHeadings']");
+        getItems: async (options) => {
+          const previewFontSize = resolveFontFamilyPreviewFontSize(options?.control);
+          const allItems = getPresetFontFamilyVariations(previewFontSize);
+          const items = filterItems(allItems, options?.search);
           
-          if (input && input.tagName === "PDS-OMNIBOX") {
-            input.value = options?.text || "";
-            
+          await loadGoogleFontsForFontFamilyItems(items);
+
+          return items;
+        },
+        action: (options) => {
+          const input = document.querySelector("pds-omnibox");
+          if (input) {
+            input.value = options.text;
           }
-          return options?.text || options?.id;
         },
       },
     },
@@ -1034,7 +1245,7 @@ function buildSchemaFromPaths(paths, design, hints = {}) {
   };
 
   const isColorValue = (value, path) => {
-    if (String(path || "").toLowerCase().startsWith("colors.")) return true;
+    if (isColorPath(path)) return true;
     if (typeof value !== "string") return false;
     return /^#([0-9a-f]{3,8})$/i.test(value) || /^rgba?\(/i.test(value) || /^hsla?\(/i.test(value);
   };
@@ -1064,8 +1275,12 @@ function buildSchemaFromPaths(paths, design, hints = {}) {
         const value = getValueAtPath(design, [category, ...rest]);
         const hintValue = hints[path];
         const enumOptions = getEnumOptions(path);
-        const normalizedValue = normalizeEnumValue(path, value);
-        const normalizedHint = normalizeEnumValue(path, hintValue);
+        const resolvedColorValue = resolveColorValueForPath(path, value, hintValue);
+        const normalizedValue = normalizeEnumValue(path, resolvedColorValue ?? value);
+        const normalizedHint = normalizeEnumValue(
+          path,
+          resolvedColorValue ?? hintValue,
+        );
         const inferredType = Array.isArray(value)
           ? "array"
           : value === null
@@ -1232,6 +1447,10 @@ async function applyDesignPatch(patch) {
   const nextOptions = { ...currentOptions, design: nextDesign };
   if (resolvedPresetId) nextOptions.preset = resolvedPresetId;
 
+  try {
+    await loadTypographyFontsForDesign(nextDesign?.typography);
+  } catch (e) {}
+
   const nextGenerator = new Generator(nextOptions);
   if (PDS?.applyStyles) {
     await PDS.applyStyles(nextGenerator);
@@ -1305,6 +1524,17 @@ function getPresetOptions() {
 function getActivePresetId() {
   const stored = getStoredConfig();
   return stored?.preset || PDS?.currentConfig?.preset || PDS?.currentPreset || null;
+}
+
+function getPresetNameById(presetId) {
+  if (!presetId) return "";
+  const presets = PDS?.presets || {};
+  const preset =
+    presets?.[presetId] ||
+    Object.values(presets || {}).find(
+      (candidate) => String(candidate?.id || candidate?.name) === String(presetId)
+    );
+  return preset?.name || String(presetId);
 }
 
 async function applyPresetSelection(presetId) {
@@ -1471,12 +1701,50 @@ function setFormSchemas(form, schema, uiSchema, design) {
   form.values = shallowClone(design);
 }
 
-async function buildForm(paths, design, onSubmit, onUndo, hints = {}) {
-  const { schema, uiSchema } = buildSchemaFromPaths(paths, design, hints);
+async function waitForElementDefinition(tagName, timeoutMs = 4000) {
+  if (customElements.get(tagName)) return true;
 
-  if (!customElements.get("pds-form")) {
-    await customElements.whenDefined("pds-form");
+  let probe = null;
+  try {
+    if (typeof document !== "undefined" && document.body) {
+      probe = document.createElement(tagName);
+      probe.setAttribute("hidden", "");
+      probe.setAttribute("aria-hidden", "true");
+      probe.style.display = "none";
+      document.body.appendChild(probe);
+    }
+  } catch (e) {}
+
+  await Promise.race([
+    customElements.whenDefined(tagName),
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error(`Timed out waiting for <${tagName}> definition`)), timeoutMs);
+    }),
+  ]);
+
+  try {
+    if (probe && probe.parentNode) {
+      probe.parentNode.removeChild(probe);
+    }
+  } catch (e) {}
+
+  if (!customElements.get(tagName)) {
+    throw new Error(`<${tagName}> is not defined`);
   }
+
+  return true;
+}
+
+async function createConfiguredForm({
+  schema,
+  uiSchema,
+  values,
+  onSubmit,
+  onUndo,
+  normalizeFlatValues,
+  formOptions,
+}) {
+  await waitForElementDefinition("pds-form");
 
   const form = document.createElement("pds-form");
   const fontFamilyOmniboxSettings = buildFontFamilyOmniboxSettings();
@@ -1488,16 +1756,38 @@ async function buildForm(paths, design, onSubmit, onUndo, hints = {}) {
     enhancements: {
       rangeOutput: true,
     },
+    ...(formOptions && typeof formOptions === "object" ? formOptions : {}),
   };
+
   form.defineRenderer(
     "font-family-omnibox",
     ({ id, path, value, attrs, set }) => {
-      const resolveSelectedValue = (options, actionResult) => {
+      const resolveSelectedValue = (options, actionResult, selectionEvent) => {
         if (typeof actionResult === "string" && actionResult.trim()) {
           return actionResult;
         }
+
+        const eventDetail = selectionEvent?.detail;
+        const fromEventValue = String(eventDetail?.value || "").trim();
+        if (fromEventValue) return fromEventValue;
+
+        const fromEventText = String(eventDetail?.text || "").trim();
+        if (fromEventText) return fromEventText;
+
+        const fromEventElementText = String(
+          eventDetail?.element?.textContent || ""
+        ).trim();
+        if (fromEventElementText) return fromEventElementText;
+
         const fromText = String(options?.text || "").trim();
         if (fromText) return fromText;
+
+        const fromValue = String(options?.value || "").trim();
+        if (fromValue) return fromValue;
+
+        const fromElementText = String(options?.element?.textContent || "").trim();
+        if (fromElementText) return fromElementText;
+
         return String(options?.id || "").trim();
       };
 
@@ -1509,15 +1799,36 @@ async function buildForm(paths, design, onSubmit, onUndo, hints = {}) {
               categoryName,
               {
                 ...categoryConfig,
-                action: (options) => {                  
+                action: (...args) => {
+                  const [options, selectionEvent] = args;
                   const actionResult =
                     typeof originalAction === "function"
-                      ? originalAction(options)
+                      ? originalAction(...args)
                       : undefined;
-                  const selected = resolveSelectedValue(options, actionResult);
+
+                  if (actionResult && typeof actionResult.then === "function") {
+                    return actionResult.then((resolved) => {
+                      const selected = resolveSelectedValue(
+                        options,
+                        resolved,
+                        selectionEvent
+                      );
+                      if (selected) {
+                        set(selected);
+                      }
+                      return resolved;
+                    });
+                  }
+
+                  const selected = resolveSelectedValue(
+                    options,
+                    actionResult,
+                    selectionEvent
+                  );
                   if (selected) {
                     set(selected);
                   }
+
                   return actionResult;
                 },
               },
@@ -1529,8 +1840,11 @@ async function buildForm(paths, design, onSubmit, onUndo, hints = {}) {
       const omnibox = document.createElement("pds-omnibox");
       omnibox.id = id;
       omnibox.setAttribute("name", path);
-      omnibox.setAttribute("item-grid", "0 1fr");
-      omnibox.setAttribute("placeholder", attrs?.placeholder || "Select a font family");           
+      omnibox.setAttribute("item-grid", "0 1fr 0");
+      omnibox.setAttribute(
+        "placeholder",
+        attrs?.placeholder || "Select a font family"
+      );
       omnibox.value = value ?? "";
       omnibox.settings = {
         ...fontFamilyOmniboxSettings,
@@ -1542,62 +1856,362 @@ async function buildForm(paths, design, onSubmit, onUndo, hints = {}) {
       omnibox.addEventListener("change", (event) => {
         set(event?.target?.value ?? omnibox.value ?? "");
       });
+      omnibox.addEventListener("result-selected", (event) => {
+        const selected = resolveSelectedValue(event?.detail, undefined, event);
+        if (!selected) return;
+        omnibox.value = selected;
+        set(selected);
+      });
       return omnibox;
     }
   );
-  form.addEventListener("pw:submit", onSubmit);
-  const values = shallowClone(design || {});
-  Object.keys(ENUM_FIELD_OPTIONS).forEach((path) => {
-    const normalized = normalizeEnumValue(path, getValueAtPath(values, path.split(".")));
-    if (normalized !== undefined) {
-      setValueAtPath(values, path.split("."), normalized);
-    }
-  });
-  Object.entries(hints || {}).forEach(([path, hintValue]) => {
-    const segments = path.split(".");
-    const currentValue = getValueAtPath(values, segments);
-    if (currentValue === undefined || currentValue === null) {
-      setValueAtPath(values, segments, hintValue);
-    }
-  });
-  setFormSchemas(form, schema, uiSchema, values);
 
-  // Apply button (will trigger form submit programmatically)
+  form.addEventListener("pw:submit", onSubmit);
+  if (typeof normalizeFlatValues === "function") {
+    form._normalizeFlatValues = normalizeFlatValues;
+  }
+  setFormSchemas(form, schema, uiSchema, values || {});
+
   const applyBtn = document.createElement("button");
   applyBtn.className = "btn-primary btn-sm";
   applyBtn.type = "button";
   applyBtn.textContent = "Apply";
   applyBtn.addEventListener("click", async () => {
-    // Manually trigger pw:submit event for pds-form
     if (typeof form.getValuesFlat === "function") {
-      // Wait for form to be ready if it's still loading
       if (!customElements.get("pds-form")) {
         await customElements.whenDefined("pds-form");
       }
-      
-      const flatValues = form.getValuesFlat();
+
+      const flatValues =
+        typeof form._normalizeFlatValues === "function"
+          ? form._normalizeFlatValues(form.getValuesFlat())
+          : form.getValuesFlat();
       const event = new CustomEvent("pw:submit", {
         detail: {
           json: flatValues,
           formData: new FormData(),
           valid: true,
-          issues: []
+          issues: [],
         },
         bubbles: true,
-        cancelable: true
+        cancelable: true,
       });
       form.dispatchEvent(event);
     }
   });
 
-  // Undo button
   const undoBtn = document.createElement("button");
-  undoBtn.className = "btn-secondary btn-sm";
+  undoBtn.className = "btn-secondary btn-sm icon-only";
   undoBtn.type = "button";
-  undoBtn.textContent = "Undo";
+  undoBtn.setAttribute("aria-label", "Undo");
+  undoBtn.setAttribute("title", "Undo");
+  const undoIcon = document.createElement("pds-icon");
+  undoIcon.setAttribute("icon", "arrow-counter-clockwise");
+  undoIcon.setAttribute("size", "sm");
+  undoBtn.appendChild(undoIcon);
   undoBtn.addEventListener("click", onUndo);
 
   return { form, applyBtn, undoBtn };
+}
+
+async function buildForm(paths, design, onSubmit, onUndo, hints = {}) {
+  const quickPayload = buildQuickConfigPayload(paths, design, hints);
+  const schema = quickPayload?.schema;
+  const uiSchema = quickPayload?.uiSchema;
+  const values = quickPayload?.values;
+
+  if (!schema || !uiSchema) {
+    throw new Error("Central config form metadata is unavailable for quick edit");
+  }
+
+  return createConfiguredForm({
+    schema,
+    uiSchema,
+    values: values || {},
+    onSubmit,
+    onUndo,
+    formOptions: {
+      layouts: {
+        arrays: "compact",
+      },
+      enhancements: {
+        rangeOutput: true,
+      },
+    },
+  });
+}
+
+function getConfigFormPayloadFromMetadata(design) {
+  if (typeof PDS?.buildConfigFormSchema === "function") {
+    return PDS.buildConfigFormSchema(design);
+  }
+
+  const payload = PDS?.configFormSchema;
+  if (payload && payload.schema && payload.uiSchema) {
+    return {
+      schema: payload.schema,
+      uiSchema: payload.uiSchema,
+      values: shallowClone(design || payload.values || {}),
+      metadata: payload.metadata || {},
+    };
+  }
+
+  return null;
+}
+
+function deepClone(value) {
+  if (typeof structuredClone === "function") {
+    try {
+      return structuredClone(value);
+    } catch (e) {
+      // Fall through to JSON clone
+    }
+  }
+  return JSON.parse(JSON.stringify(value));
+}
+
+function shouldKeepPathForSelection(selectedPaths, path) {
+  if (!path) return true;
+  return selectedPaths.some((selectedPath) => {
+    if (selectedPath === path) return true;
+    return selectedPath.startsWith(`${path}.`);
+  });
+}
+
+function pruneSchemaForPaths(node, selectedPaths, path = "") {
+  if (!node || typeof node !== "object") return node;
+  if (!isObjectSchemaNode(node)) return deepClone(node);
+
+  if (path && !shouldKeepPathForSelection(selectedPaths, path)) {
+    return null;
+  }
+
+  const properties = {};
+  Object.entries(node.properties || {}).forEach(([key, childNode]) => {
+    const childPath = path ? `${path}.${key}` : key;
+    if (!shouldKeepPathForSelection(selectedPaths, childPath)) return;
+    const prunedChild = pruneSchemaForPaths(childNode, selectedPaths, childPath);
+    if (prunedChild) {
+      properties[key] = prunedChild;
+    }
+  });
+
+  if (!Object.keys(properties).length) return null;
+
+  const clonedNode = deepClone(node);
+  clonedNode.properties = properties;
+  if (Array.isArray(clonedNode.required)) {
+    clonedNode.required = clonedNode.required.filter((key) =>
+      Object.prototype.hasOwnProperty.call(properties, key)
+    );
+  }
+  return clonedNode;
+}
+
+function uiPointerToPath(pointer) {
+  if (!pointer || pointer === "/") return "";
+  return pointer
+    .replace(/^\//, "")
+    .split("/")
+    .filter(Boolean)
+    .join(".");
+}
+
+function filterUiSchemaForPaths(uiSchema, selectedPaths) {
+  if (!uiSchema || typeof uiSchema !== "object") return {};
+  const filtered = {};
+  Object.entries(uiSchema).forEach(([pointer, value]) => {
+    const path = uiPointerToPath(pointer);
+    if (!path || shouldKeepPathForSelection(selectedPaths, path)) {
+      filtered[pointer] = deepClone(value);
+    }
+  });
+  return filtered;
+}
+
+function buildValuesForPaths(valuesSource, selectedPaths, hints = {}) {
+  const values = {};
+  selectedPaths.forEach((path) => {
+    const segments = path.split(".");
+    let value = getValueAtPath(valuesSource, segments);
+    if ((value === undefined || value === null) && hints[path] !== undefined) {
+      value = hints[path];
+    }
+    if (isColorPath(path)) {
+      const resolvedColorValue = resolveColorValueForPath(path, value, hints[path]);
+      if (resolvedColorValue) {
+        value = resolvedColorValue;
+      }
+    }
+    if (value !== undefined) {
+      setValueAtPath(values, segments, deepClone(value));
+    }
+  });
+  return values;
+}
+
+function buildQuickConfigPayload(paths, design, hints = {}) {
+  const payload = getConfigFormPayloadFromMetadata(design);
+  if (!payload?.schema || !payload?.uiSchema) return null;
+
+  const selectedPaths = normalizePaths(paths);
+  if (!selectedPaths.length) return null;
+
+  const schema = pruneSchemaForPaths(payload.schema, selectedPaths, "");
+  if (!schema) return null;
+
+  const uiSchema = filterUiSchemaForPaths(payload.uiSchema, selectedPaths);
+  const valuesSource =
+    payload?.values && typeof payload.values === "object"
+      ? payload.values
+      : shallowClone(design || {});
+  const values = buildValuesForPaths(valuesSource || {}, selectedPaths, hints);
+
+  return { schema, uiSchema, values };
+}
+
+const FULL_CONFIG_GROUPS_KEY = "__groups";
+
+function isObjectSchemaNode(node) {
+  return !!(node && typeof node === "object" && node.type === "object" && node.properties);
+}
+
+function buildGroupedFullConfigPayload(payload, design) {
+  const values =
+    payload?.values && typeof payload.values === "object"
+      ? payload.values
+      : shallowClone(design || {});
+
+  if (!payload?.schema || !payload?.uiSchema || !isObjectSchemaNode(payload.schema)) {
+    return {
+      schema: payload?.schema,
+      uiSchema: payload?.uiSchema,
+      values,
+      normalizeFlatValues: null,
+    };
+  }
+
+  const rootProperties = payload.schema.properties || {};
+  const groupedKeys = [];
+  const scalarKeys = [];
+
+  Object.entries(rootProperties).forEach(([key, schemaNode]) => {
+    if (isObjectSchemaNode(schemaNode)) {
+      groupedKeys.push(key);
+      return;
+    }
+    scalarKeys.push(key);
+  });
+
+  if (!groupedKeys.length || !scalarKeys.length) {
+    return {
+      schema: payload.schema,
+      uiSchema: payload.uiSchema,
+      values,
+      normalizeFlatValues: null,
+    };
+  }
+
+  const transformedSchema = {
+    ...payload.schema,
+    properties: {
+      ...Object.fromEntries(scalarKeys.map((key) => [key, rootProperties[key]])),
+      [FULL_CONFIG_GROUPS_KEY]: {
+        type: "object",
+        title: "Design Groups",
+        properties: Object.fromEntries(
+          groupedKeys.map((key) => [key, rootProperties[key]])
+        ),
+      },
+    },
+  };
+
+  const transformedValues = {
+    ...Object.fromEntries(scalarKeys.map((key) => [key, values?.[key]])),
+    [FULL_CONFIG_GROUPS_KEY]: Object.fromEntries(
+      groupedKeys.map((key) => [key, values?.[key]])
+    ),
+  };
+
+  const transformedUiSchema = { ...(payload.uiSchema || {}) };
+  const addGroupPrefix = (path = "") => `/${FULL_CONFIG_GROUPS_KEY}${path}`;
+
+  groupedKeys.forEach((key) => {
+    const originalPath = `/${key}`;
+
+    if (Object.prototype.hasOwnProperty.call(transformedUiSchema, originalPath)) {
+      transformedUiSchema[addGroupPrefix(originalPath)] = transformedUiSchema[originalPath];
+      delete transformedUiSchema[originalPath];
+    }
+
+    Object.keys(transformedUiSchema).forEach((path) => {
+      if (!path.startsWith(`${originalPath}/`)) return;
+      transformedUiSchema[addGroupPrefix(path)] = transformedUiSchema[path];
+      delete transformedUiSchema[path];
+    });
+  });
+
+  transformedUiSchema[`/${FULL_CONFIG_GROUPS_KEY}`] = {
+    "ui:layout": "accordion",
+    "ui:layoutOptions": { openFirst: false },
+  };
+
+  const normalizeFlatValues = (flatValues = {}) => {
+    const normalized = {};
+    const groupPointerPrefix = `/${FULL_CONFIG_GROUPS_KEY}/`;
+    const groupDotPrefix = `${FULL_CONFIG_GROUPS_KEY}.`;
+    Object.entries(flatValues || {}).forEach(([path, value]) => {
+      const inputPath = String(path || "");
+      if (!inputPath) return;
+      if (inputPath === FULL_CONFIG_GROUPS_KEY || inputPath === `/${FULL_CONFIG_GROUPS_KEY}`) {
+        return;
+      }
+
+      if (inputPath.startsWith(groupPointerPrefix)) {
+        normalized[`/${inputPath.slice(groupPointerPrefix.length)}`] = value;
+        return;
+      }
+
+      if (inputPath.startsWith(groupDotPrefix)) {
+        normalized[inputPath.slice(groupDotPrefix.length)] = value;
+        return;
+      }
+
+      normalized[inputPath] = value;
+    });
+    return normalized;
+  };
+
+  return {
+    schema: transformedSchema,
+    uiSchema: transformedUiSchema,
+    values: transformedValues,
+    normalizeFlatValues,
+  };
+}
+
+async function buildFullConfigForm(design, onSubmit, onUndo) {
+  const payload = getConfigFormPayloadFromMetadata(design);
+  if (!payload?.schema || !payload?.uiSchema) return null;
+
+  const groupedPayload = buildGroupedFullConfigPayload(payload, design);
+
+  return createConfiguredForm({
+    schema: groupedPayload.schema,
+    uiSchema: groupedPayload.uiSchema,
+    values: groupedPayload.values,
+    onSubmit,
+    onUndo,
+    normalizeFlatValues: groupedPayload.normalizeFlatValues,
+    formOptions: {
+      layouts: {
+        arrays: "compact",
+      },
+      enhancements: {
+        rangeOutput: true,
+      },
+    },
+  });
 }
 
 class PdsLiveEdit extends HTMLElement {
@@ -2017,7 +2631,7 @@ class PdsLiveEdit extends HTMLElement {
     button.appendChild(icon);
 
     const menu = document.createElement("menu");
-    const quickItem = document.createElement("li");
+  const quickItem = document.createElement("div");
     quickItem.className = "pds-live-editor-menu";
 
     const header = document.createElement("div");
@@ -2063,13 +2677,28 @@ class PdsLiveEdit extends HTMLElement {
     container.replaceChildren();
     footer.replaceChildren();
     
-    const { form, applyBtn, undoBtn } = await buildForm(
-      paths,
-      design,
-      (event) => this._handleFormSubmit(event, form),
-      () => this._handleUndo(),
-      hints
-    );
+    let form;
+    let applyBtn;
+    let undoBtn;
+    try {
+      const result = await buildForm(
+        paths,
+        design,
+        (event) => this._handleFormSubmit(event, form),
+        () => this._handleUndo(),
+        hints
+      );
+      form = result.form;
+      applyBtn = result.applyBtn;
+      undoBtn = result.undoBtn;
+    } catch (error) {
+      const fallback = document.createElement("p");
+      fallback.className = "text-muted";
+      fallback.textContent = "Editor form unavailable. Lazy component definition did not complete in time.";
+      container.appendChild(fallback);
+      console.warn("[PDS Live Edit] Failed to render quick form:", error);
+      return;
+    }
     
     // Store reference to undo button for enabling/disabling
     form._undoBtn = undoBtn;
@@ -2137,26 +2766,72 @@ class PdsLiveEdit extends HTMLElement {
     presetText.textContent = "Choose a base style";
     presetLabel.appendChild(presetText);
 
-    const presetSelect = document.createElement("select");
-    const presetOptions = getPresetOptions();
-    const activePreset = getActivePresetId();
+    let presetControlRendered = false;
+    try {
+      await waitForElementDefinition("pds-omnibox");
 
-    presetOptions.forEach((preset) => {
-      const option = document.createElement("option");
-      option.value = preset.id;
-      option.textContent = preset.name;
-      if (String(preset.id) === String(activePreset)) {
-        option.selected = true;
+      const presetOmnibox = document.createElement("pds-omnibox");
+      presetOmnibox.setAttribute("item-grid", "0 1fr 0");
+      presetOmnibox.setAttribute("placeholder", "Search presets...");
+
+      const activePresetId = getActivePresetId();
+      const activePresetName = getPresetNameById(activePresetId);
+      if (activePresetName) {
+        presetOmnibox.value = activePresetName;
       }
-      presetSelect.appendChild(option);
-    });
 
-    presetSelect.addEventListener("change", async (event) => {
-      const nextPreset = event.target?.value;
-      await applyPresetSelection(nextPreset);
-    });
+      const omniboxSettingsBuilder =
+        typeof PDS?.buildPresetOmniboxSettings === "function"
+          ? PDS.buildPresetOmniboxSettings.bind(PDS)
+          : null;
 
-    presetLabel.appendChild(presetSelect);
+      if (omniboxSettingsBuilder) {
+        presetOmnibox.settings = omniboxSettingsBuilder({
+          onSelect: async ({ preset, selection }) => {
+            if (selection?.disabled) return selection?.id;
+            const presetId = preset?.id || selection?.id;
+            await applyPresetSelection(presetId);
+            return presetId;
+          },
+        });
+      }
+
+      presetOmnibox.addEventListener("result-selected", (event) => {
+        const selectedText = event?.detail?.text;
+        if (typeof selectedText === "string" && selectedText.trim()) {
+          presetOmnibox.value = selectedText;
+        }
+      });
+
+      presetLabel.appendChild(presetOmnibox);
+      presetControlRendered = true;
+    } catch (error) {
+      console.warn("[PDS Live Edit] Preset omnibox unavailable, falling back to select.", error);
+    }
+
+    if (!presetControlRendered) {
+      const presetSelect = document.createElement("select");
+      const presetOptions = getPresetOptions();
+      const activePreset = getActivePresetId();
+
+      presetOptions.forEach((preset) => {
+        const option = document.createElement("option");
+        option.value = preset.id;
+        option.textContent = preset.name;
+        if (String(preset.id) === String(activePreset)) {
+          option.selected = true;
+        }
+        presetSelect.appendChild(option);
+      });
+
+      presetSelect.addEventListener("change", async (event) => {
+        const nextPreset = event.target?.value;
+        await applyPresetSelection(nextPreset);
+      });
+
+      presetLabel.appendChild(presetSelect);
+    }
+
     presetCard.appendChild(presetLabel);
 
     const themeCard = document.createElement("section");
@@ -2168,6 +2843,48 @@ class PdsLiveEdit extends HTMLElement {
 
     const themeToggle = document.createElement("pds-theme");
     themeCard.appendChild(themeToggle);
+
+    const configCard = document.createElement("section");
+    configCard.className = "card surface-elevated stack-sm";
+
+    const configTitle = document.createElement("h4");
+    configTitle.textContent = "Configuration";
+    configCard.appendChild(configTitle);
+
+    const configDescription = document.createElement("p");
+    configDescription.className = "text-muted";
+    configDescription.textContent =
+      "Edit the full design config generated from PDS metadata.";
+    configCard.appendChild(configDescription);
+
+    const configFormContainer = document.createElement("div");
+    configFormContainer.className = "stack-sm";
+    configCard.appendChild(configFormContainer);
+
+    const configFooter = document.createElement("div");
+    configFooter.className = "flex gap-sm";
+    configCard.appendChild(configFooter);
+
+    const fullDesign = shallowClone(PDS?.currentConfig?.design || {});
+    const fullConfigFormResult = await buildFullConfigForm(
+      fullDesign,
+      (event) => this._handleFormSubmit(event, fullConfigFormResult?.form),
+      () => this._handleUndo()
+    );
+
+    if (fullConfigFormResult?.form) {
+      fullConfigFormResult.form._undoBtn = fullConfigFormResult.undoBtn;
+      fullConfigFormResult.undoBtn.disabled = this._undoStack.length === 0;
+      configFormContainer.appendChild(fullConfigFormResult.form);
+      configFooter.appendChild(fullConfigFormResult.applyBtn);
+      configFooter.appendChild(fullConfigFormResult.undoBtn);
+    } else {
+      const unavailable = document.createElement("p");
+      unavailable.className = "text-muted";
+      unavailable.textContent =
+        "Full config metadata is unavailable in this runtime.";
+      configFormContainer.appendChild(unavailable);
+    }
 
     const exportCard = document.createElement("section");
     exportCard.className = "card surface-elevated stack-sm";
@@ -2228,54 +2945,28 @@ class PdsLiveEdit extends HTMLElement {
     exportNav.append(exportButton, exportMenu);
     exportCard.appendChild(exportNav);
 
-    const searchCard = document.createElement("section");
-    searchCard.className = "card surface-elevated stack-sm";
+    const resetCard = document.createElement("section");
+    resetCard.className = "card surface-elevated stack-sm";
 
-    const searchTitle = document.createElement("h4");
-    searchTitle.textContent = "Search PDS";
-    searchCard.appendChild(searchTitle);
+    const resetTitle = document.createElement("h4");
+    resetTitle.textContent = "Reset";
+    resetCard.appendChild(resetTitle);
 
-    const omnibox = document.createElement("pds-omnibox");
-    omnibox.setAttribute("placeholder", "Search tokens, utilities, components...");
-    omnibox.settings = {
-      iconHandler: (item) => {
-        return item.icon ? `<pds-icon icon="${item.icon}"></pds-icon>` : null;
-      },
-      categories: {
-        Query: {
-          trigger: (options) => options.search.length >= 2,
-          getItems: async (options) => {
-            const query = (options.search || "").trim();
-            if (!query) return [];
-            try {
-              const results = await PDS.query(query);
-              return (results || []).map((result) => ({
-                text: result.text,
-                id: result.value,
-                icon: result.icon || "magnifying-glass",
-                category: result.category,
-                code: result.code,
-              }));
-            } catch (error) {
-              console.warn("Omnibox query failed:", error);
-              return [];
-            }
-          },
-          action: async (options) => {
-            if (options?.code && navigator.clipboard) {
-              await navigator.clipboard.writeText(options.code);
-              await PDS.toast("Copied token to clipboard", { type: "success" });
-            }
-          },
-        },
-      },
-    };
-    searchCard.appendChild(omnibox);
+    const resetButton = document.createElement("button");
+    resetButton.type = "button";
+    resetButton.className = "btn-outline";
+    resetButton.textContent = "Reset Config";
+    resetButton.addEventListener("click", () => {
+      window.localStorage.removeItem("pure-ds-config");
+      window.location.reload();
+    });
+    resetCard.appendChild(resetButton);
 
     content.appendChild(presetCard);
     content.appendChild(themeCard);
+    content.appendChild(configCard);
     content.appendChild(exportCard);
-    content.appendChild(searchCard);
+    content.appendChild(resetCard);
 
     this._drawer.replaceChildren(header, content);
 
@@ -2308,7 +2999,14 @@ class PdsLiveEdit extends HTMLElement {
     }
     
     // Apply the changes
-    const flatValues = form.getValuesFlat();
+    const eventJson = event?.detail?.json;
+    const hasEventPayload =
+      eventJson && typeof eventJson === "object" && Object.keys(eventJson).length > 0;
+    const flatValues = hasEventPayload
+      ? eventJson
+      : typeof form._normalizeFlatValues === "function"
+        ? form._normalizeFlatValues(form.getValuesFlat())
+        : form.getValuesFlat();
     const patch = {};
     Object.entries(flatValues || {}).forEach(([path, value]) => {
       setValueAtJsonPath(patch, path, value);

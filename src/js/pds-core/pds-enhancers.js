@@ -15,6 +15,7 @@ const enhancerDefinitions = [
   { selector: ".accordion" },
   { selector: "nav[data-dropdown]" },
   { selector: "label[data-toggle]" },
+  { selector: "label[data-color]" },
   { selector: 'input[type="range"]' },
   { selector: "form[data-required]" },
   { selector: "fieldset[role=group][data-open]" },
@@ -272,8 +273,108 @@ function enhanceToggle(elem) {
   checkbox.addEventListener("change", updateAria);
 }
 
+function enhanceColorInput(elem) {
+  if (elem.dataset.enhancedColorInput) return;
+
+  const input = elem.querySelector('input[type="color"]');
+  if (!input) return;
+
+  elem.dataset.enhancedColorInput = "true";
+
+  let control = elem.querySelector(':scope > .color-control');
+  let swatch = elem.querySelector(':scope > .color-control > .color-swatch');
+  let output = elem.querySelector(':scope > .color-control > output');
+
+  if (!control) {
+    control = document.createElement("span");
+    control.className = "color-control";
+    input.before(control);
+  }
+
+  if (!swatch) {
+    swatch = document.createElement("span");
+    swatch.className = "color-swatch";
+    control.appendChild(swatch);
+  }
+
+  if (input.parentElement !== swatch) {
+    swatch.appendChild(input);
+  }
+
+  if (!output) {
+    output = document.createElement("output");
+    control.appendChild(output);
+  }
+
+  const sync = () => {
+    const isUnset = input.dataset.colorUnset === "1";
+
+    if (isUnset) {
+      output.value = "";
+      output.textContent = "not set";
+      control.dataset.value = "";
+      control.dataset.unset = "1";
+      swatch.dataset.unset = "1";
+      return;
+    }
+
+    output.value = input.value;
+    output.textContent = input.value;
+    control.dataset.value = input.value;
+    delete control.dataset.unset;
+    delete swatch.dataset.unset;
+  };
+
+  sync();
+
+  const setResolved = () => {
+    if (input.dataset.colorUnset === "1") {
+      input.dataset.colorUnset = "0";
+    }
+    sync();
+  };
+
+  input.addEventListener("input", setResolved, { passive: true });
+  input.addEventListener("change", setResolved, { passive: true });
+}
+
 function enhanceRange(elem) {
   if (elem.dataset.enhancedRange) return;
+
+  const wireProgrammaticUpdates = (updateFn) => {
+    if (elem.dataset.enhancedRangeProgrammatic) return;
+    elem.dataset.enhancedRangeProgrammatic = "1";
+
+    const descriptor =
+      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(elem), "value") ||
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
+
+    if (descriptor?.get && descriptor?.set) {
+      Object.defineProperty(elem, "value", {
+        configurable: true,
+        enumerable: descriptor.enumerable,
+        get() {
+          return descriptor.get.call(this);
+        },
+        set(nextValue) {
+          descriptor.set.call(this, nextValue);
+          updateFn();
+        },
+      });
+    }
+
+    const attrObserver = new MutationObserver((mutations) => {
+      const shouldUpdate = mutations.some((mutation) => {
+        const attr = mutation.attributeName;
+        return attr === "value" || attr === "min" || attr === "max";
+      });
+      if (shouldUpdate) updateFn();
+    });
+    attrObserver.observe(elem, {
+      attributes: true,
+      attributeFilter: ["value", "min", "max"],
+    });
+  };
 
   const label = elem.closest("label");
   const hasRangeOutputClass = label?.classList.contains("range-output");
@@ -312,6 +413,9 @@ function enhanceRange(elem) {
         output.textContent = elem.value;
       };
       elem.addEventListener("input", updateOutput);
+      elem.addEventListener("change", updateOutput);
+      wireProgrammaticUpdates(updateOutput);
+      updateOutput();
     }
   } else {
     let container = elem.closest(".range-container");
@@ -346,6 +450,8 @@ function enhanceRange(elem) {
     elem.addEventListener("pointerleave", hide);
     elem.addEventListener("focus", show);
     elem.addEventListener("blur", hide);
+    elem.addEventListener("change", updateBubble);
+    wireProgrammaticUpdates(updateBubble);
     updateBubble();
   }
 
@@ -413,9 +519,9 @@ function enhanceOpenGroup(elem) {
   addInput.placeholder = "Add item...";
   addInput.classList.add("input-text", "input-sm");
   addInput.style.width = "auto";
-  const firstInput = elem.querySelector(
-    'input[type="radio"], input[type="checkbox"]',
-  );
+
+  const getFirstInput = () =>
+    elem.querySelector('input[type="radio"], input[type="checkbox"]');
 
   elem.appendChild(addInput);
   addInput.addEventListener("keydown", (event) => {
@@ -424,7 +530,8 @@ function enhanceOpenGroup(elem) {
       if (value) {
         event.preventDefault();
 
-        const type = firstInput.type === "radio" ? "radio" : "checkbox";
+        const firstInput = getFirstInput();
+        const type = firstInput?.type === "radio" ? "radio" : "checkbox";
         const id = `open-group-${Math.random().toString(36).substring(2, 11)}`;
         const label = document.createElement("label");
 
@@ -435,7 +542,7 @@ function enhanceOpenGroup(elem) {
         const input = document.createElement("input");
         input.type = type;
         input.name =
-          firstInput.name || elem.getAttribute("data-name") || "open-group";
+          firstInput?.name || elem.getAttribute("data-name") || "open-group";
         input.value = value;
         input.id = id;
 
@@ -550,6 +657,7 @@ const enhancerRunners = new Map([
   [".accordion", enhanceAccordion],
   ["nav[data-dropdown]", enhanceDropdown],
   ["label[data-toggle]", enhanceToggle],
+  ["label[data-color]", enhanceColorInput],
   ['input[type="range"]', enhanceRange],
   ["form[data-required]", enhanceRequired],
   ["fieldset[role=group][data-open]", enhanceOpenGroup],

@@ -53,7 +53,6 @@ import { enums } from "./pds-enums.js";
  * @property {number} [baseUnit] - Generates spacing scale --spacing-1..N.
  * @property {number} [scaleRatio] - Reserved for derived spacing systems.
  * @property {number} [maxSpacingSteps] - Caps spacing tokens output.
- * @property {number | string} [containerMaxWidth] - Affects layout container sizing.
  * @property {number} [containerPadding] - Affects container padding tokens.
  * @property {number} [inputPadding] - Affects input padding tokens.
  * @property {number} [buttonPadding] - Affects button padding tokens.
@@ -151,13 +150,89 @@ import { enums } from "./pds-enums.js";
  */
 
 /**
+ * @typedef {Object} PDSDesignOptionsConfig
+ * @property {boolean} [liquidGlassEffects]
+ * @property {number} [backgroundMesh]
+ */
+
+/**
+ * @typedef {Object} PDSFormOptionsWidgetsConfig
+ * @property {"toggle"|"toggle-with-icons"|"checkbox"} [booleans]
+ * @property {"input"|"range"} [numbers]
+ * @property {"standard"|"dropdown"} [selects]
+ */
+
+/**
+ * @typedef {Object} PDSFormOptionsLayoutsConfig
+ * @property {"default"|"flex"|"grid"|"accordion"|"tabs"|"card"} [fieldsets]
+ * @property {"default"|"compact"} [arrays]
+ */
+
+/**
+ * @typedef {Object} PDSFormOptionsEnhancementsConfig
+ * @property {boolean} [icons]
+ * @property {boolean} [datalists]
+ * @property {boolean} [rangeOutput]
+ * @property {boolean} [colorInput]
+ */
+
+/**
+ * @typedef {Object} PDSFormOptionsValidationConfig
+ * @property {boolean} [showErrors]
+ * @property {boolean} [validateOnChange]
+ */
+
+/**
+ * @typedef {Object} PDSFormOptionsConfig
+ * @property {PDSFormOptionsWidgetsConfig} [widgets]
+ * @property {PDSFormOptionsLayoutsConfig} [layouts]
+ * @property {PDSFormOptionsEnhancementsConfig} [enhancements]
+ * @property {PDSFormOptionsValidationConfig} [validation]
+ */
+
+/**
+ * @typedef {Object} PDSFormConfig
+ * @property {PDSFormOptionsConfig} [options]
+ */
+
+/**
+ * @typedef {Object} PDSAdvancedConfig
+ * @property {string} [linkStyle]
+ * @property {string} [colorDerivation]
+ */
+
+/**
+ * @typedef {Object} PDSA11yConfig
+ * @property {string | number} [minTouchTarget]
+ * @property {boolean} [prefersReducedMotion]
+ * @property {string} [focusStyle]
+ */
+
+/**
+ * @typedef {Object} PDSConfigEditorFieldMetadata
+ * @property {string} [label]
+ * @property {string} [description]
+ * @property {string} [widget]
+ * @property {string} [icon]
+ * @property {number} [min]
+ * @property {number} [max]
+ * @property {number} [step]
+ * @property {string[]} [enum]
+ * @property {string} [placeholder]
+ * @property {number} [maxLength]
+ * @property {number} [rows]
+ * @property {Record<string, any>} [options]
+ */
+
+/**
  * @typedef {Object} PDSDesignConfig
  * @property {string} [id]
  * @property {string} [name]
  * @property {string[]} [tags]
+ * @property {string[]} [themes]
  * @property {string} [description]
- * @property {Record<string, any>} [options]
- * @property {Record<string, any>} [form]
+ * @property {PDSDesignOptionsConfig} [options]
+ * @property {PDSFormConfig} [form]
  * @property {PDSColorsConfig} [colors] - Affects tokens.colors and --color-* variables.
  * @property {PDSTypographyConfig} [typography] - Affects tokens.typography and --font-* variables.
  * @property {PDSSpatialRhythmConfig} [spatialRhythm] - Affects tokens.spacing and --spacing-* variables.
@@ -165,11 +240,10 @@ import { enums } from "./pds-enums.js";
  * @property {PDSBehaviorConfig} [behavior] - Affects tokens.transitions and motion variables.
  * @property {PDSLayoutConfig} [layout] - Affects tokens.layout and layout utilities.
  * @property {PDSLayersConfig} [layers] - Affects tokens.shadows/zIndex and layer effects.
- * @property {Record<string, any>} [advanced]
- * @property {Record<string, any>} [a11y]
+ * @property {PDSAdvancedConfig} [advanced]
+ * @property {PDSA11yConfig} [a11y]
  * @property {PDSIconsConfig} [icons] - Affects tokens.icons and icon component behavior.
  * @property {Record<string, any>} [components]
- * @property {number} [gap]
  * @property {boolean} [debug]
  */
 
@@ -197,12 +271,77 @@ const __DESIGN_CONFIG_SPEC__ = {
   type: "object",
   allowUnknown: false,
   properties: {
-    id: { type: "string" },
-    name: { type: "string" },
-    tags: { type: "array", items: { type: "string" } },
-    description: { type: "string" },
-    options: { type: "object", allowUnknown: true },
-    form: { type: "object", allowUnknown: true },
+    id: { type: "string", minLength: 1, maxLength: 64 },
+    name: { type: "string", minLength: 1, maxLength: 80 },
+    tags: { type: "array", uniqueItems: true, items: { type: "string" } },
+    themes: {
+      type: "array",
+      uniqueItems: true,
+      items: {
+        type: "string",
+        oneOf: [
+          { const: "light", title: "Light" },
+          { const: "dark", title: "Dark" },
+          { const: "system", title: "System" },
+        ],
+      },
+    },
+    description: { type: "string", maxLength: 500 },
+    options: {
+      type: "object",
+      allowUnknown: true,
+      properties: {
+        liquidGlassEffects: { type: "boolean" },
+        backgroundMesh: { type: "number" },
+      },
+    },
+    form: {
+      type: "object",
+      allowUnknown: true,
+      properties: {
+        options: {
+          type: "object",
+          allowUnknown: true,
+          properties: {
+            widgets: {
+              type: "object",
+              allowUnknown: false,
+              properties: {
+                booleans: { type: "string" },
+                numbers: { type: "string" },
+                selects: { type: "string" },
+              },
+            },
+            layouts: {
+              type: "object",
+              allowUnknown: false,
+              properties: {
+                fieldsets: { type: "string" },
+                arrays: { type: "string" },
+              },
+            },
+            enhancements: {
+              type: "object",
+              allowUnknown: false,
+              properties: {
+                icons: { type: "boolean" },
+                datalists: { type: "boolean" },
+                rangeOutput: { type: "boolean" },
+                colorInput: { type: "boolean" },
+              },
+            },
+            validation: {
+              type: "object",
+              allowUnknown: false,
+              properties: {
+                showErrors: { type: "boolean" },
+                validateOnChange: { type: "boolean" },
+              },
+            },
+          },
+        },
+      },
+    },
     colors: {
       type: "object",
       allowUnknown: false,
@@ -270,7 +409,7 @@ const __DESIGN_CONFIG_SPEC__ = {
         },
         darkMode: {
           type: "object",
-          allowUnknown: true,
+          allowUnknown: false,
           properties: {
             background: {
               type: "string",
@@ -386,7 +525,6 @@ const __DESIGN_CONFIG_SPEC__ = {
           type: "number",
           relations: { tokens: ["--spacing-*"] },
         },
-        containerMaxWidth: { type: ["number", "string"] },
         containerPadding: { type: "number" },
         inputPadding: {
           type: "number",
@@ -490,13 +628,39 @@ const __DESIGN_CONFIG_SPEC__ = {
         },
         darkMode: {
           type: "object",
-          allowUnknown: true,
+          allowUnknown: false,
           properties: {
             baseShadowOpacity: { type: "number", relations: { theme: "dark", tokens: ["--shadow-*"] } },
           },
         },
-        utilities: { type: "object", allowUnknown: true },
-        gridSystem: { type: "object", allowUnknown: true },
+        utilities: {
+          type: "object",
+          allowUnknown: true,
+          properties: {
+            grid: { type: "boolean" },
+            flex: { type: "boolean" },
+            spacing: { type: "boolean" },
+            container: { type: "boolean" },
+          },
+        },
+        gridSystem: {
+          type: "object",
+          allowUnknown: true,
+          properties: {
+            columns: { type: "array", items: { type: "number" } },
+            autoFitBreakpoints: {
+              type: "object",
+              allowUnknown: false,
+              properties: {
+                sm: { type: "string" },
+                md: { type: "string" },
+                lg: { type: "string" },
+                xl: { type: "string" },
+              },
+            },
+            enableGapUtilities: { type: "boolean" },
+          },
+        },
         containerMaxWidth: { type: ["number", "string"] },
       },
     },
@@ -532,15 +696,30 @@ const __DESIGN_CONFIG_SPEC__ = {
         zIndexNotification: { type: "number" },
         darkMode: {
           type: "object",
-          allowUnknown: true,
+          allowUnknown: false,
           properties: {
             baseShadowOpacity: { type: "number", relations: { theme: "dark", tokens: ["--shadow-*"] } },
           },
         },
       },
     },
-    advanced: { type: "object", allowUnknown: true },
-    a11y: { type: "object", allowUnknown: true },
+    advanced: {
+      type: "object",
+      allowUnknown: true,
+      properties: {
+        linkStyle: { type: "string" },
+        colorDerivation: { type: "string" },
+      },
+    },
+    a11y: {
+      type: "object",
+      allowUnknown: true,
+      properties: {
+        minTouchTarget: { type: ["string", "number"] },
+        prefersReducedMotion: { type: "boolean" },
+        focusStyle: { type: "string" },
+      },
+    },
     icons: {
       type: "object",
       allowUnknown: false,
@@ -548,14 +727,38 @@ const __DESIGN_CONFIG_SPEC__ = {
         set: { type: "string" },
         weight: { type: "string" },
         defaultSize: { type: "number", relations: { tokens: ["--icon-size"] } },
-        sizes: { type: "object", allowUnknown: true },
+        sizes: {
+          type: "object",
+          allowUnknown: true,
+          properties: {
+            xs: { type: ["number", "string"] },
+            sm: { type: ["number", "string"] },
+            md: { type: ["number", "string"] },
+            lg: { type: ["number", "string"] },
+            xl: { type: ["number", "string"] },
+            "2xl": { type: ["number", "string"] },
+          },
+        },
         spritePath: { type: "string" },
         externalPath: { type: "string" },
-        include: { type: "object", allowUnknown: true },
+        include: {
+          type: "object",
+          allowUnknown: true,
+          properties: {
+            navigation: { type: "array", items: { type: "string" } },
+            actions: { type: "array", items: { type: "string" } },
+            communication: { type: "array", items: { type: "string" } },
+            content: { type: "array", items: { type: "string" } },
+            status: { type: "array", items: { type: "string" } },
+            time: { type: "array", items: { type: "string" } },
+            commerce: { type: "array", items: { type: "string" } },
+            formatting: { type: "array", items: { type: "string" } },
+            system: { type: "array", items: { type: "string" } },
+          },
+        },
       },
     },
     components: { type: "object", allowUnknown: true },
-    gap: { type: "number" },
     debug: { type: "boolean" },
   },
 };
@@ -677,6 +880,588 @@ export const PDS_CONFIG_RELATIONS = __collectRelations(
   __DESIGN_CONFIG_SPEC__,
   ""
 );
+
+export const PDS_DESIGN_CONFIG_SPEC = __DESIGN_CONFIG_SPEC__;
+
+const __CONFIG_EDITOR_METADATA_OVERRIDES__ = {
+  "colors.primary": { widget: "input-color" },
+  "colors.secondary": { widget: "input-color" },
+  "colors.accent": { widget: "input-color" },
+  "colors.background": { widget: "input-color" },
+  "colors.success": { widget: "input-color" },
+  "colors.warning": { widget: "input-color" },
+  "colors.danger": { widget: "input-color" },
+  "colors.info": { widget: "input-color" },
+  "colors.gradientStops": { min: 2, max: 8, step: 1, widget: "range" },
+  "colors.elevationOpacity": { min: 0, max: 1, step: 0.01, widget: "range" },
+  "colors.darkMode.background": { widget: "input-color" },
+  "colors.darkMode.primary": { widget: "input-color" },
+  "colors.darkMode.secondary": { widget: "input-color" },
+  "colors.darkMode.accent": { widget: "input-color" },
+
+  "description": {
+    widget: "textarea",
+    maxLength: 500,
+    rows: 4,
+    placeholder: "Summarize the visual and interaction intent",
+  },
+
+  "typography.fontFamilyHeadings": {
+    widget: "font-family-omnibox",
+    icon: "text-aa",
+    placeholder: "Heading font stack",
+  },
+  "typography.fontFamilyBody": {
+    widget: "font-family-omnibox",
+    icon: "text-aa",
+    placeholder: "Body font stack",
+  },
+  "typography.fontFamilyMono": {
+    widget: "font-family-omnibox",
+    icon: "text-aa",
+    placeholder: "Monospace font stack",
+  },
+  "typography.baseFontSize": { min: 8, max: 32, step: 1, widget: "input-range" },
+  "typography.fontScale": { min: 1, max: 2, step: 0.01, widget: "range" },
+  "typography.fontWeightLight": { min: 100, max: 800, step: 100, widget: "input-range" },
+  "typography.fontWeightNormal": { min: 100, max: 800, step: 100, widget: "input-range" },
+  "typography.fontWeightMedium": { min: 100, max: 800, step: 100, widget: "input-range" },
+  "typography.fontWeightSemibold": { min: 100, max: 800, step: 100, widget: "input-range" },
+  "typography.fontWeightBold": { min: 100, max: 800, step: 100, widget: "input-range" },
+  "typography.lineHeightTight": { min: 0.75, max: 3, step: 0.001, widget: "input-range" },
+  "typography.lineHeightNormal": { min: 0.75, max: 3, step: 0.001, widget: "input-range" },
+  "typography.lineHeightRelaxed": { min: 0.75, max: 3, step: 0.001, widget: "input-range" },
+  "typography.letterSpacingTight": { min: -0.1, max: 0.1, step: 0.001, widget: "range" },
+  "typography.letterSpacingNormal": { min: -0.1, max: 0.1, step: 0.001, widget: "range" },
+  "typography.letterSpacingWide": { min: -0.1, max: 0.1, step: 0.001, widget: "range" },
+
+  "spatialRhythm.baseUnit": { min: 1, max: 16, step: 1, widget: "range" },
+  "spatialRhythm.scaleRatio": { min: 1, max: 2, step: 0.01, widget: "range" },
+  "spatialRhythm.maxSpacingSteps": { min: 4, max: 64, step: 1, widget: "range" },
+  "spatialRhythm.containerPadding": { min: 0, max: 8, step: 0.05, widget: "range" },
+  "spatialRhythm.inputPadding": { min: 0, max: 4, step: 0.05, widget: "range" },
+  "spatialRhythm.buttonPadding": { min: 0, max: 4, step: 0.05, widget: "range" },
+  "spatialRhythm.sectionSpacing": { min: 0, max: 8, step: 0.05, widget: "range" },
+
+  "shape.radiusSize": {
+    oneOf: Object.entries(enums.RadiusSizes).map(([name, value]) => ({
+      const: value,
+      title: name,
+    })),
+  },
+  "shape.borderWidth": {
+    widget: "select",
+    oneOf: Object.entries(enums.BorderWidths).map(([name, value]) => ({
+      const: value,
+      title: name,
+    })),
+  },
+  "shape.customRadius": { min: 0, max: 64, step: 1, widget: "range" },
+
+  "behavior.transitionSpeed": {
+    oneOf: Object.entries(enums.TransitionSpeeds).map(([name, value]) => ({
+      const: value,
+      title: name,
+    })),
+  },
+  "behavior.animationEasing": {
+    enum: Object.values(enums.AnimationEasings),
+  },
+  "behavior.customTransitionSpeed": { min: 0, max: 1000, step: 10, widget: "range" },
+  "behavior.focusRingWidth": { min: 0, max: 8, step: 1, widget: "range" },
+  "behavior.focusRingOpacity": { min: 0, max: 1, step: 0.01, widget: "range" },
+  "behavior.hoverOpacity": { min: 0, max: 1, step: 0.01, widget: "range" },
+
+  "layout.gridColumns": { min: 1, max: 24, step: 1, widget: "range" },
+  "layout.gridGutter": { min: 0, max: 8, step: 0.05, widget: "range" },
+  "layout.maxWidth": { widget: "input-text", placeholder: "e.g. 1200 or 1200px" },
+  "layout.maxWidths.sm": { widget: "input-text", placeholder: "e.g. 640 or 640px" },
+  "layout.maxWidths.md": { widget: "input-text", placeholder: "e.g. 768 or 768px" },
+  "layout.maxWidths.lg": { widget: "input-text", placeholder: "e.g. 1024 or 1024px" },
+  "layout.maxWidths.xl": { widget: "input-text", placeholder: "e.g. 1280 or 1280px" },
+  "layout.containerMaxWidth": { widget: "input-text", placeholder: "e.g. 1400px" },
+  "layout.containerPadding": { widget: "input-text", placeholder: "e.g. var(--spacing-6)" },
+  "layout.breakpoints.sm": { min: 320, max: 2560, step: 1, widget: "input-number" },
+  "layout.breakpoints.md": { min: 480, max: 3200, step: 1, widget: "input-number" },
+  "layout.breakpoints.lg": { min: 640, max: 3840, step: 1, widget: "input-number" },
+  "layout.breakpoints.xl": { min: 768, max: 5120, step: 1, widget: "input-number" },
+  "layout.baseShadowOpacity": { min: 0, max: 1, step: 0.01, widget: "range" },
+  "layout.darkMode.baseShadowOpacity": { min: 0, max: 1, step: 0.01, widget: "range" },
+  "layout.densityCompact": { min: 0.5, max: 2, step: 0.05, widget: "range" },
+  "layout.densityNormal": { min: 0.5, max: 2, step: 0.05, widget: "range" },
+  "layout.densityComfortable": { min: 0.5, max: 2, step: 0.05, widget: "range" },
+  "layout.buttonMinHeight": { min: 24, max: 96, step: 1, widget: "range" },
+  "layout.inputMinHeight": { min: 24, max: 96, step: 1, widget: "range" },
+
+  "layers.baseShadowOpacity": { min: 0, max: 1, step: 0.01, widget: "range" },
+  "layers.shadowBlurMultiplier": { min: 0, max: 8, step: 0.1, widget: "range" },
+  "layers.shadowOffsetMultiplier": { min: 0, max: 8, step: 0.1, widget: "range" },
+  "layers.blurLight": { min: 0, max: 48, step: 1, widget: "range" },
+  "layers.blurMedium": { min: 0, max: 64, step: 1, widget: "range" },
+  "layers.blurHeavy": { min: 0, max: 96, step: 1, widget: "range" },
+  "layers.baseZIndex": { min: 0, max: 10000, step: 10, widget: "range" },
+  "layers.zIndexStep": { min: 1, max: 100, step: 1, widget: "range" },
+  "layers.darkMode.baseShadowOpacity": { min: 0, max: 1, step: 0.01, widget: "range" },
+
+  "advanced.linkStyle": { enum: Object.values(enums.LinkStyles) },
+  "a11y.minTouchTarget": {
+    oneOf: Object.entries(enums.TouchTargetSizes).map(([name, value]) => ({
+      const: value,
+      title: name,
+    })),
+  },
+  "a11y.focusStyle": { enum: Object.values(enums.FocusStyles) },
+
+  "icons.defaultSize": { min: 8, max: 128, step: 1, widget: "range", icon: "sparkle" },
+};
+
+function __toConfigPath(pathSegments = []) {
+  return pathSegments.join(".");
+}
+
+function __toJsonPointer(pathSegments = []) {
+  return `/${pathSegments.join("/")}`;
+}
+
+function __getValueAtPath(source, pathSegments = []) {
+  if (!source || typeof source !== "object") return undefined;
+  return pathSegments.reduce((current, segment) => {
+    if (current === null || current === undefined) return undefined;
+    if (typeof current !== "object") return undefined;
+    return current[segment];
+  }, source);
+}
+
+function __resolveExampleValue(value, fallbackSource, pathSegments = []) {
+  if (value !== undefined && value !== null) return value;
+  const fallback = __getValueAtPath(fallbackSource, pathSegments);
+  return fallback !== undefined && fallback !== null ? fallback : undefined;
+}
+
+function __toTitleCase(value = "") {
+  return String(value)
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^./, (char) => char.toUpperCase());
+}
+
+function __resolveExpectedType(spec, value) {
+  if (!spec) return "string";
+  const expected = spec.type || "string";
+  if (Array.isArray(expected)) {
+    const actual = __getValueType(value);
+    if (actual !== "undefined" && expected.includes(actual)) return actual;
+    if (expected.includes("string")) return "string";
+    return expected.find((item) => item !== "null") || expected[0] || "string";
+  }
+  return expected;
+}
+
+function __copySchemaConstraints(target, spec, keys = []) {
+  if (!target || !spec || !Array.isArray(keys)) return target;
+  keys.forEach((key) => {
+    if (spec[key] !== undefined) {
+      target[key] = spec[key];
+    }
+  });
+  return target;
+}
+
+function __buildSchemaChoices(spec, metadata) {
+  if (Array.isArray(metadata?.oneOf) && metadata.oneOf.length) {
+    return metadata.oneOf;
+  }
+  if (Array.isArray(metadata?.enum) && metadata.enum.length) {
+    return metadata.enum.map((option) => ({
+      const: option,
+      title: __toTitleCase(option),
+    }));
+  }
+  if (Array.isArray(spec?.oneOf) && spec.oneOf.length) {
+    return spec.oneOf;
+  }
+  if (Array.isArray(spec?.enum) && spec.enum.length) {
+    return spec.enum.map((option) => ({
+      const: option,
+      title: __toTitleCase(option),
+    }));
+  }
+  return null;
+}
+
+function __normalizeEditorWidget(widget) {
+  if (!widget) return widget;
+  if (widget === "range") return "input-range";
+  return widget;
+}
+
+function __resolveSchemaTypeFromChoices(schemaType, choices) {
+  if (!Array.isArray(choices) || !choices.length) return schemaType;
+  const choiceTypes = new Set();
+  for (const option of choices) {
+    if (!option || option.const === undefined) continue;
+    choiceTypes.add(__getValueType(option.const));
+  }
+  if (!choiceTypes.size) return schemaType;
+  if (choiceTypes.size === 1) {
+    const only = Array.from(choiceTypes)[0];
+    if (only === "number") return "number";
+    if (only === "string") return "string";
+    if (only === "boolean") return "boolean";
+  }
+  return schemaType;
+}
+
+function __inferEditorMetadata(path, spec, value) {
+  const type = __resolveExpectedType(spec, value);
+  const lowerPath = path.toLowerCase();
+  const base = {
+    label: __toTitleCase(path.split(".").slice(-1)[0] || path),
+  };
+
+  if (type === "boolean") {
+    base.widget = "toggle";
+  }
+
+  if (type === "number") {
+    base.widget = "range";
+    if (lowerPath.includes("opacity")) {
+      base.min = 0;
+      base.max = 1;
+      base.step = 0.01;
+    } else if (lowerPath.includes("lineheight")) {
+      base.min = 0.75;
+      base.max = 3;
+      base.step = 0.001;
+      base.widget = "input-range";
+    } else if (lowerPath.includes("fontweight")) {
+      base.min = 100;
+      base.max = 800;
+      base.step = 100;
+      base.widget = "input-range";
+    } else if (lowerPath.endsWith("basefontsize")) {
+      base.min = 8;
+      base.max = 32;
+      base.step = 1;
+      base.widget = "input-range";
+    } else if (lowerPath.includes("scale") || lowerPath.includes("ratio")) {
+      base.min = 1;
+      base.max = 2;
+      base.step = 0.01;
+    } else {
+      base.min = 0;
+      base.max = Math.max(10, Number.isFinite(Number(value)) ? Number(value) * 4 : 100);
+      base.step = 1;
+    }
+  }
+
+  if (type === "string" && path.startsWith("colors.")) {
+    base.widget = "input-color";
+  }
+
+  if (type === "string" && lowerPath === "description") {
+    base.widget = "textarea";
+    base.maxLength = 500;
+    base.rows = 4;
+  }
+
+  const override = __CONFIG_EDITOR_METADATA_OVERRIDES__[path] || {};
+  const merged = { ...base, ...override };
+  if (merged.widget) {
+    merged.widget = __normalizeEditorWidget(merged.widget);
+  }
+  return merged;
+}
+
+function __buildConfigSchemaNode(
+  spec,
+  value,
+  pathSegments,
+  uiSchema,
+  metadataOut,
+  fallbackSource
+) {
+  if (!spec || typeof spec !== "object") return null;
+  const resolvedValueForType = __resolveExampleValue(
+    value,
+    fallbackSource,
+    pathSegments
+  );
+  const expectedType = __resolveExpectedType(spec, resolvedValueForType);
+
+  if (expectedType === "object" && spec.properties) {
+    const schemaNode = { type: "object", properties: {} };
+    if (pathSegments.length > 0) {
+      schemaNode.title = __toTitleCase(pathSegments[pathSegments.length - 1]);
+    }
+    const valueNode = {};
+    for (const [key, childSpec] of Object.entries(spec.properties)) {
+      const childValue =
+        value && typeof value === "object" && !Array.isArray(value)
+          ? value[key]
+          : undefined;
+      const child = __buildConfigSchemaNode(
+        childSpec,
+        childValue,
+        [...pathSegments, key],
+        uiSchema,
+        metadataOut,
+        fallbackSource
+      );
+      if (!child) continue;
+      schemaNode.properties[key] = child.schema;
+      if (child.hasValue) {
+        valueNode[key] = child.value;
+      }
+    }
+    if (!Object.keys(schemaNode.properties).length) return null;
+    return {
+      schema: schemaNode,
+      value: valueNode,
+      hasValue: Object.keys(valueNode).length > 0,
+    };
+  }
+
+  if (expectedType === "array") {
+    const path = __toConfigPath(pathSegments);
+    const metadata = __inferEditorMetadata(path, spec, value);
+    metadataOut[path] = metadata;
+    const resolvedArrayExample = __resolveExampleValue(
+      value,
+      fallbackSource,
+      pathSegments
+    );
+
+    const itemType = spec.items?.type || "string";
+    const normalizedItemType = Array.isArray(itemType) ? itemType[0] : itemType;
+    const itemSchema = {
+      type: normalizedItemType,
+    };
+
+    const itemChoices = __buildSchemaChoices(spec?.items, null);
+    if (itemChoices) {
+      itemSchema.oneOf = itemChoices;
+    }
+
+    if (
+      normalizedItemType === "string" &&
+      Array.isArray(resolvedArrayExample) &&
+      resolvedArrayExample.length > 0
+    ) {
+      const firstString = resolvedArrayExample.find(
+        (entry) => typeof entry === "string" && entry.trim().length > 0
+      );
+      if (firstString) {
+        itemSchema.examples = [firstString];
+      }
+    }
+
+    __copySchemaConstraints(itemSchema, spec?.items, [
+      "minimum",
+      "maximum",
+      "exclusiveMinimum",
+      "exclusiveMaximum",
+      "multipleOf",
+      "minLength",
+      "maxLength",
+      "pattern",
+      "format",
+      "minItems",
+      "maxItems",
+      "uniqueItems",
+      "description",
+      "default",
+    ]);
+
+    const schemaNode = {
+      type: "array",
+      items: itemSchema,
+    };
+
+    __copySchemaConstraints(schemaNode, spec, [
+      "minItems",
+      "maxItems",
+      "uniqueItems",
+      "description",
+      "default",
+    ]);
+
+    const pointer = __toJsonPointer(pathSegments);
+    const uiEntry = {};
+    const itemHasChoices = Array.isArray(itemSchema.oneOf) && itemSchema.oneOf.length > 0;
+    if (normalizedItemType === "string" && itemHasChoices) {
+      uiEntry["ui:widget"] = schemaNode.maxItems === 1 ? "radio" : "checkbox-group";
+    }
+    if (
+      normalizedItemType === "string" &&
+      Array.isArray(resolvedArrayExample) &&
+      resolvedArrayExample.length > 0
+    ) {
+      const placeholderPreview = resolvedArrayExample
+        .filter((entry) => typeof entry === "string" && entry.trim().length > 0)
+        .slice(0, 5)
+        .join(", ");
+      if (placeholderPreview) {
+        uiEntry["ui:placeholder"] = placeholderPreview;
+      }
+    }
+    if (Object.keys(uiEntry).length) {
+      uiSchema[pointer] = {
+        ...(uiSchema[pointer] || {}),
+        ...uiEntry,
+      };
+    }
+
+    return {
+      schema: schemaNode,
+      value: Array.isArray(value) ? value : [],
+      hasValue: Array.isArray(value),
+    };
+  }
+
+  const path = __toConfigPath(pathSegments);
+  const metadata = __inferEditorMetadata(path, spec, resolvedValueForType);
+  metadataOut[path] = metadata;
+
+  const choices = __buildSchemaChoices(spec, metadata);
+  const schemaType = expectedType === "null" ? "string" : expectedType;
+  const normalizedSchemaType = __resolveSchemaTypeFromChoices(schemaType, choices);
+  const schemaNode = {
+    type: normalizedSchemaType,
+    title: metadata.label || __toTitleCase(pathSegments[pathSegments.length - 1] || path),
+  };
+
+  if (choices) {
+    schemaNode.oneOf = choices;
+  }
+
+  __copySchemaConstraints(schemaNode, spec, [
+    "minimum",
+    "maximum",
+    "exclusiveMinimum",
+    "exclusiveMaximum",
+    "multipleOf",
+    "minLength",
+    "maxLength",
+    "pattern",
+    "format",
+    "description",
+    "default",
+  ]);
+
+  if (typeof metadata.maxLength === "number" && schemaNode.maxLength === undefined) {
+    schemaNode.maxLength = metadata.maxLength;
+  }
+
+  if (
+    (schemaNode.type === "number" || schemaNode.type === "integer") &&
+    typeof metadata.min === "number" &&
+    schemaNode.minimum === undefined
+  ) {
+    schemaNode.minimum = metadata.min;
+  }
+  if (
+    (schemaNode.type === "number" || schemaNode.type === "integer") &&
+    typeof metadata.max === "number" &&
+    schemaNode.maximum === undefined
+  ) {
+    schemaNode.maximum = metadata.max;
+  }
+  if (
+    (schemaNode.type === "number" || schemaNode.type === "integer") &&
+    typeof metadata.step === "number" &&
+    schemaNode.multipleOf === undefined
+  ) {
+    schemaNode.multipleOf = metadata.step;
+  }
+
+  const exampleValue = resolvedValueForType;
+  if (exampleValue !== undefined) {
+    schemaNode.examples = [exampleValue];
+  }
+
+  const pointer = __toJsonPointer(pathSegments);
+  const uiEntry = {};
+  if (metadata.widget) uiEntry["ui:widget"] = metadata.widget;
+  if (metadata.icon) uiEntry["ui:icon"] = metadata.icon;
+  if (typeof metadata.min === "number") uiEntry["ui:min"] = metadata.min;
+  if (typeof metadata.max === "number") uiEntry["ui:max"] = metadata.max;
+  if (typeof metadata.step === "number") uiEntry["ui:step"] = metadata.step;
+  if (metadata.placeholder) uiEntry["ui:placeholder"] = metadata.placeholder;
+  if (typeof metadata.rows === "number") {
+    uiEntry["ui:options"] = {
+      ...(uiEntry["ui:options"] || {}),
+      rows: metadata.rows,
+    };
+  }
+  if (
+    metadata.widget === "input-range" &&
+    exampleValue !== undefined
+  ) {
+    uiEntry["ui:allowUnset"] = true;
+  }
+  if (
+    typeof metadata.min === "number" ||
+    typeof metadata.max === "number" ||
+    typeof metadata.step === "number"
+  ) {
+    uiEntry["ui:options"] = {
+      ...(uiEntry["ui:options"] || {}),
+      ...(typeof metadata.min === "number" ? { min: metadata.min } : {}),
+      ...(typeof metadata.max === "number" ? { max: metadata.max } : {}),
+      ...(typeof metadata.step === "number" ? { step: metadata.step } : {}),
+    };
+  }
+  if (Object.keys(uiEntry).length) {
+    uiSchema[pointer] = uiEntry;
+  }
+
+  return {
+    schema: schemaNode,
+    value,
+    hasValue: value !== undefined,
+  };
+}
+
+export function buildDesignConfigFormSchema(designConfig = {}) {
+  const metadata = {};
+  const uiSchema = {
+    "/colors": {
+      "ui:layout": "flex",
+      "ui:layoutOptions": { wrap: true, gap: "sm" },
+    },
+    "/colors/darkMode": {
+      "ui:layout": "flex",
+      "ui:layoutOptions": { wrap: true, gap: "sm" },
+    },
+  };
+
+  const fallbackSource = presets?.default && typeof presets.default === "object"
+    ? presets.default
+    : null;
+
+  const root = __buildConfigSchemaNode(
+    __DESIGN_CONFIG_SPEC__,
+    designConfig,
+    [],
+    uiSchema,
+    metadata,
+    fallbackSource
+  );
+
+  return {
+    schema: root?.schema || { type: "object", properties: {} },
+    uiSchema,
+    values: root?.value || {},
+    metadata,
+  };
+}
+
+export function getDesignConfigEditorMetadata(designConfig = {}) {
+  return buildDesignConfigFormSchema(designConfig).metadata;
+}
 
 export function validateDesignConfig(designConfig, { log, context = "PDS config" } = {}) {
   if (!designConfig || typeof designConfig !== "object") return [];
@@ -1253,7 +2038,6 @@ export const presets = {
     spatialRhythm: {
       baseUnit: 4,
       scaleRatio: 1.25,
-      containerMaxWidth: 1440,
       containerPadding: 1.5,
       sectionSpacing: 3.0,
     },
@@ -1361,7 +2145,6 @@ export const presets = {
     spatialRhythm: {
       baseUnit: 4,
       scaleRatio: 1.25,
-      containerMaxWidth: 1280,
       sectionSpacing: 2.5,
     },
     shape: {
@@ -1420,7 +2203,6 @@ export const presets = {
     spatialRhythm: {
       baseUnit: 4,
       scaleRatio: 1.25,
-      containerMaxWidth: 680,
       sectionSpacing: 1.5,
     },
     shape: {
@@ -1473,7 +2255,6 @@ export const presets = {
     spatialRhythm: {
       baseUnit: 4,
       scaleRatio: 1.2,
-      containerMaxWidth: 1600,
       containerPadding: 1.5,
       sectionSpacing: 2.0,
     },
@@ -1530,6 +2311,7 @@ presets.default = {
         icons: true,             // Enable icon-enhanced inputs
         datalists: true,         // Enable datalist autocomplete
         rangeOutput: true,       // Use .range-output for ranges
+        colorInput: true,        // Use label[data-color] for color inputs
       },
       validation: {
         showErrors: true,        // Show validation errors inline
@@ -1594,7 +2376,6 @@ presets.default = {
     // Advanced spacing options
     scaleRatio: 1.25,
     maxSpacingSteps: 32,
-    containerMaxWidth: 1200,
     containerPadding: 1.0,
     inputPadding: 0.75,
     buttonPadding: 1.0,
@@ -1602,6 +2383,10 @@ presets.default = {
   },
 
   layers: {
+    baseShadowOpacity: 0.1,
+    darkMode: {
+      baseShadowOpacity: 0.25,
+    },
     shadowDepth: "medium",
     blurLight: 4,
     blurMedium: 8,
@@ -1832,13 +2617,19 @@ presets.default = {
     },
     // Default sprite path for internal/dev use. For consumer apps, icons are exported to
     // [config.static.root]/icons/pds-icons.svg and components should consume from there.
-    spritePath: "public/assets/pds/icons/pds-icons.svg",
+    spritePath: "/assets/pds/icons/pds-icons.svg",
   },
-
-  gap: 4,
 
   debug: false,
 };
+
+export const PDS_DEFAULT_CONFIG_EDITOR_METADATA = getDesignConfigEditorMetadata(
+  presets.default
+);
+
+export const PDS_DEFAULT_CONFIG_FORM_SCHEMA = buildDesignConfigFormSchema(
+  presets.default
+);
 // Note: presets is now a stable object keyed by id
 
 /**

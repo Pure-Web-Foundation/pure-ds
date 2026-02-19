@@ -3,8 +3,6 @@
  * Kept separate to avoid pulling live-only logic into the base runtime bundle.
  */
 
-import { validateDesignConfig, validateInitConfig } from "./pds-config.js";
-
 const __ABSOLUTE_URL_PATTERN__ = /^[a-z][a-z0-9+\-.]*:\/\//i;
 const __MODULE_URL__ = (() => {
   try {
@@ -131,7 +129,11 @@ export function stripFunctions(obj) {
 }
 
 // Internal: normalize first-arg config to a full generator config and extract enhancers if provided inline
-export function normalizeInitConfig(inputConfig = {}, options = {}, { presets, defaultLog }) {
+export function normalizeInitConfig(
+  inputConfig = {},
+  options = {},
+  { presets, defaultLog, validateDesignConfig, validateInitConfig } = {}
+) {
   const logFn =
     inputConfig && typeof inputConfig.log === "function"
       ? inputConfig.log
@@ -174,7 +176,7 @@ export function normalizeInitConfig(inputConfig = {}, options = {}, { presets, d
     "design" in (inputConfig || {}) ||
     "enhancers" in (inputConfig || {});
 
-  if (inputConfig && typeof inputConfig === "object") {
+  if (inputConfig && typeof inputConfig === "object" && typeof validateInitConfig === "function") {
     validateInitConfig(inputConfig, { log: logFn, context: "PDS.start" });
   }
 
@@ -182,7 +184,11 @@ export function normalizeInitConfig(inputConfig = {}, options = {}, { presets, d
   let presetInfo = null;
 
   if (hasNewShape) {
-    if (designOverrides && typeof designOverrides === "object") {
+    if (
+      designOverrides &&
+      typeof designOverrides === "object" &&
+      typeof validateDesignConfig === "function"
+    ) {
       validateDesignConfig(designOverrides, { log: logFn, context: "PDS.start" });
     }
     // Always resolve a preset; default if none provided
@@ -242,7 +248,9 @@ export function normalizeInitConfig(inputConfig = {}, options = {}, { presets, d
       log: userLog || defaultLog,
     };
   } else if (hasDesignKeys) {
-    validateDesignConfig(inputConfig, { log: logFn, context: "PDS.start" });
+    if (typeof validateDesignConfig === "function") {
+      validateDesignConfig(inputConfig, { log: logFn, context: "PDS.start" });
+    }
     // Back-compat: treat the provided object as the full design, wrap it
     const { log: userLog, ...designConfig } = inputConfig;
     generatorConfig = {

@@ -323,7 +323,7 @@ input, textarea, select {
   width: 100%;
   min-height: 40px;
   padding: calc(var(--spacing-1) * 0.75) var(--spacing-4);
-  border: 2px solid var(--color-border);
+  border: var(--border-width-medium) solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -494,7 +494,7 @@ input[type="checkbox"] + label:not(fieldset label):not(label[data-toggle]) {
   justify-content: center;
   min-height: calc(44px * 0.75);
   padding: calc(var(--spacing-1) * 0.6) calc(var(--spacing-4) * 0.85);
-  border: 2px solid var(--color-border);
+  border: var(--border-width-medium) solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-sm);
@@ -796,7 +796,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   justify-content: center;
   min-height: 44px;
   padding: calc(var(--spacing-1) * 1) var(--spacing-6);
-  border: 2px solid transparent;
+  border: var(--border-width-medium) solid transparent;
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -968,7 +968,7 @@ a.btn-working {
   color: var(--color-text-secondary);
   padding: var(--spacing-6) var(--spacing-4);
   background-color: var(--color-surface-subtle);
-  max-width: var(--layout-max-width-md);
+  max-width: var(--layout-max-width-md, 736px);
   border-radius: var(--radius-md);
   nav {
     margin-top: var(--spacing-4);
@@ -1094,13 +1094,13 @@ a.btn-working {
 .array-item {
   position: relative;
   padding: var(--spacing-4);
-  border: 2px solid var(--color-border);
+  border: var(--border-width-medium) solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface-base);
   
   .array-controls {
     padding-top: var(--spacing-3);
-    border-top: 2px solid var(--color-border);
+    border-top: var(--border-width-medium) solid var(--color-border);
     margin-top: var(--spacing-4);
   }
 }
@@ -1509,6 +1509,12 @@ dialog.dialog-full { width: calc(100vw - var(--spacing-8)); max-width: calc(100v
   dialog, dialog::backdrop { transition-duration: 0.01s !important; }
 }
 
+html:has(dialog[open]:modal) {
+ overflow: hidden;
+ scrollbar-gutter: stable;
+}
+
+
 
 
 /* Accordion (details/summary) */
@@ -1737,9 +1743,12 @@ nav[data-dropdown] {
     }
   }
 
-  &[data-mode="auto"] > :last-child {
+  &[data-mode="auto"]:not([data-dropdown-direction]) > :last-child {
     top: 100%;
     bottom: auto;
+    margin-top: var(--spacing-2);
+    margin-bottom: 0;
+    transform-origin: top center;
   }
 
   @media (prefers-reduced-motion: reduce) {

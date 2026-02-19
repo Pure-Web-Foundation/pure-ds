@@ -1621,57 +1621,27 @@
     {
       "name": "--layout-maxWidth",
       "description": "Layout maxWidth",
-      "syntax": "<length>",
-      "references": [
-        {
-          "name": "Value",
-          "url": "data:text/plain,1200px"
-        }
-      ]
+      "syntax": "<length>"
     },
     {
       "name": "--layout-maxWidthSm",
       "description": "Layout maxWidthSm",
-      "syntax": "<length>",
-      "references": [
-        {
-          "name": "Value",
-          "url": "data:text/plain,608px"
-        }
-      ]
+      "syntax": "<length>"
     },
     {
       "name": "--layout-maxWidthMd",
       "description": "Layout maxWidthMd",
-      "syntax": "<length>",
-      "references": [
-        {
-          "name": "Value",
-          "url": "data:text/plain,736px"
-        }
-      ]
+      "syntax": "<length>"
     },
     {
       "name": "--layout-maxWidthLg",
       "description": "Layout maxWidthLg",
-      "syntax": "<length>",
-      "references": [
-        {
-          "name": "Value",
-          "url": "data:text/plain,992px"
-        }
-      ]
+      "syntax": "<length>"
     },
     {
       "name": "--layout-maxWidthXl",
       "description": "Layout maxWidthXl",
-      "syntax": "<length>",
-      "references": [
-        {
-          "name": "Value",
-          "url": "data:text/plain,1200px"
-        }
-      ]
+      "syntax": "<length>"
     },
     {
       "name": "--layout-minHeight",

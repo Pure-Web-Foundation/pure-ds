@@ -1276,35 +1276,30 @@
       "name": "--layout-maxWidth",
       "description": "Layout maxWidth",
       "syntax": "<length>",
-      "value": "1200px",
       "category": "Layout Tokens"
     },
     {
       "name": "--layout-maxWidthSm",
       "description": "Layout maxWidthSm",
       "syntax": "<length>",
-      "value": "608px",
       "category": "Layout Tokens"
     },
     {
       "name": "--layout-maxWidthMd",
       "description": "Layout maxWidthMd",
       "syntax": "<length>",
-      "value": "736px",
       "category": "Layout Tokens"
     },
     {
       "name": "--layout-maxWidthLg",
       "description": "Layout maxWidthLg",
       "syntax": "<length>",
-      "value": "992px",
       "category": "Layout Tokens"
     },
     {
       "name": "--layout-maxWidthXl",
       "description": "Layout maxWidthXl",
       "syntax": "<length>",
-      "value": "1200px",
       "category": "Layout Tokens"
     },
     {
@@ -2292,7 +2287,7 @@
   ],
   "metadata": {
     "generator": "PDS CSS Data Generator",
-    "generatedAt": "2026-02-17T11:41:36.229Z",
+    "generatedAt": "2026-02-18T13:01:52.698Z",
     "totalProperties": 169,
     "totalClasses": 169,
     "totalAttributes": 4

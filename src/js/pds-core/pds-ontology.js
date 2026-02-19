@@ -462,6 +462,12 @@ export const ontology = {
       tags: ["switch", "boolean", "form"]
     },
     {
+      id: "color-input",
+      selector: "label[data-color]",
+      description: "Enhanced color input with swatch shell and hex output",
+      tags: ["color", "input", "form"]
+    },
+    {
       id: "range",
       selector: 'input[type="range"]',
       description: "Enhanced range slider with output",

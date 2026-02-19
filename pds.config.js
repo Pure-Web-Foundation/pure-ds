@@ -5,10 +5,10 @@
 /** @type {PDSInitConfig} */
 export const config = {
   mode: "live",
-  //liveEdit: true,
+  liveEdit: true,
   preset: "default",
   autoDefine: {
-    predefine: ["pds-icon", "pds-drawer", "pds-toaster"]
+    predefine: ["pds-icon", "pds-drawer", "pds-toaster", "pds-form"]
   },
 
   log(level, message, ...data) {

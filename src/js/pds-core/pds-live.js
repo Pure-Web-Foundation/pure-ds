@@ -4,7 +4,18 @@
  */
 import { Generator } from "./pds-generator.js";
 import { applyStyles, adoptLayers, adoptPrimitives } from "./pds-runtime.js";
-import { presets, defaultLog, PDS_CONFIG_RELATIONS } from "./pds-config.js";
+import {
+  presets,
+  defaultLog,
+  PDS_CONFIG_RELATIONS,
+  PDS_DESIGN_CONFIG_SPEC,
+  PDS_DEFAULT_CONFIG_EDITOR_METADATA,
+  PDS_DEFAULT_CONFIG_FORM_SCHEMA,
+  buildDesignConfigFormSchema,
+  getDesignConfigEditorMetadata,
+  validateDesignConfig,
+  validateInitConfig,
+} from "./pds-config.js";
 import { defaultPDSEnhancers } from "./pds-enhancers.js";
 import { defaultPDSEnhancerMetadata } from "./pds-enhancers-meta.js";
 import { resolvePublicAssetURL } from "./pds-paths.js";
@@ -21,6 +32,7 @@ import {
 } from "./pds-start-helpers.js";
 import {
   isPresetThemeCompatible,
+  normalizePresetThemes,
   resolveThemePreference,
 } from "./pds-theme-utils.js";
 
@@ -90,6 +102,142 @@ function applyStoredConfigOverrides(baseConfig) {
   return nextConfig;
 }
 
+function buildPresetOmniboxSettings(PDS, options = {}) {
+  const {
+    hideCategory = true,
+    itemGrid = "45px 1fr",
+    includeIncompatible = true,
+    disableIncompatible = true,
+    categoryName = "Presets",
+    theme,
+    onSelect,
+    iconHandler,
+  } = options || {};
+
+  const resolvedTheme = resolveThemePreference(theme ?? PDS?.theme);
+
+  const defaultIconHandler = (item) => {
+    const preset = findPresetById(item?.id);
+    const colors = preset?.colors || {};
+    const primary = colors?.primary;
+    const secondary = colors?.secondary;
+    const accent = colors?.accent;
+
+    if (primary && secondary && accent) {
+      return `<span style="display:flex;gap:1px;flex-shrink:0;" aria-hidden="true">
+        <span style="display:inline-block;width:10px;height:20px;background-color:${primary};">&nbsp;</span>
+        <span style="display:inline-block;width:10px;height:20px;background-color:${secondary};">&nbsp;</span>
+        <span style="display:inline-block;width:10px;height:20px;background-color:${accent};">&nbsp;</span>
+      </span>`;
+    }
+
+    if (item?.icon) {
+      return `<pds-icon icon="${item.icon}" size="sm"></pds-icon>`;
+    }
+    return "";
+  };
+
+  const getPresetEntries = () => {
+    const source = PDS?.presets || {};
+    return Object.values(source || {}).filter((preset) => {
+      const presetId = preset?.id || preset?.name;
+      return Boolean(presetId);
+    });
+  };
+
+  const findPresetById = (presetId) => {
+    if (!presetId) return null;
+    const entries = getPresetEntries();
+    return (
+      entries.find((preset) => String(preset?.id || preset?.name) === String(presetId)) ||
+      null
+    );
+  };
+
+  return {
+    hideCategory,
+    itemGrid,
+    iconHandler:
+      typeof iconHandler === "function" ? iconHandler : defaultIconHandler,
+    categories: {
+      [categoryName]: {
+        trigger: () => true,
+        getItems: (context = {}) => {
+          const query = String(context?.search || "").toLowerCase().trim();
+          const entries = getPresetEntries();
+
+          return entries
+            .filter((preset) => {
+              const name = String(preset?.name || preset?.id || "").toLowerCase();
+              const description = String(preset?.description || "").toLowerCase();
+              const tags = Array.isArray(preset?.tags)
+                ? preset.tags.map((tag) => String(tag).toLowerCase())
+                : [];
+
+              if (query) {
+                const matchesQuery =
+                  name.includes(query) ||
+                  description.includes(query) ||
+                  tags.some((tag) => tag.includes(query));
+                if (!matchesQuery) return false;
+              }
+
+              const compatible = isPresetThemeCompatible(preset, resolvedTheme);
+              if (!includeIncompatible && !compatible) return false;
+              return true;
+            })
+            .map((preset) => {
+              const presetId = preset?.id || preset?.name;
+              const compatible = isPresetThemeCompatible(preset, resolvedTheme);
+              const supportedThemes = normalizePresetThemes(preset);
+              const themeHint =
+                supportedThemes.length === 1
+                  ? `${supportedThemes[0]} only`
+                  : `Not available in ${resolvedTheme} mode`;
+              const baseDescription = String(preset?.description || "").trim();
+              const description = compatible
+                ? baseDescription
+                : baseDescription
+                  ? `${baseDescription} - ${themeHint}`
+                  : themeHint;
+
+              return {
+                id: presetId,
+                text: preset?.name || String(presetId),
+                description,
+                icon: "palette",
+                class:
+                  !compatible && disableIncompatible ? "disabled" : "",
+                disabled: !compatible && disableIncompatible,
+                tooltip: !compatible ? themeHint : "",
+              };
+            })
+            .sort((a, b) =>
+              String(a.text || "").localeCompare(String(b.text || ""))
+            );
+        },
+        action: async (selection) => {
+          if (!selection?.id) return selection?.id;
+          if (selection?.disabled) return selection?.id;
+
+          const preset = findPresetById(selection.id);
+          if (!preset) return selection?.id;
+
+          if (typeof onSelect === "function") {
+            return await onSelect({ preset, selection, resolvedTheme });
+          }
+
+          if (typeof PDS?.applyLivePreset === "function") {
+            await PDS.applyLivePreset(preset.id || selection.id);
+          }
+
+          return preset.id || selection.id;
+        },
+      },
+    },
+  };
+}
+
 async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIfNeeded }) {
   if (__liveApiReady) return;
 
@@ -113,6 +261,11 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
   PDS.common = commonModule || {};
   PDS.presets = presets;
   PDS.configRelations = PDS_CONFIG_RELATIONS;
+  PDS.configSpec = PDS_DESIGN_CONFIG_SPEC;
+  PDS.configEditorMetadata = PDS_DEFAULT_CONFIG_EDITOR_METADATA;
+  PDS.configFormSchema = PDS_DEFAULT_CONFIG_FORM_SCHEMA;
+  PDS.buildConfigFormSchema = buildDesignConfigFormSchema;
+  PDS.getConfigEditorMetadata = getDesignConfigEditorMetadata;
   PDS.enhancerMetadata = defaultPDSEnhancerMetadata;
   PDS.applyStyles = function(generator) {
     return applyStyles(generator || Generator.instance);
@@ -140,6 +293,9 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
     const queryEngine = new __queryClass(PDS);
     return await queryEngine.search(question);
   };
+  PDS.buildPresetOmniboxSettings = function(options = {}) {
+    return buildPresetOmniboxSettings(PDS, options);
+  };
 
   PDS.applyLivePreset = async function(presetId, options = {}) {
     if (!presetId) return false;
@@ -158,6 +314,8 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
     const normalized = normalizeInitConfig(inputConfig, {}, {
       presets,
       defaultLog,
+      validateDesignConfig,
+      validateInitConfig,
     });
 
     const resolvedTheme = resolveThemePreference(PDS.theme);
@@ -199,6 +357,12 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
       design: structuredClone(normalized.generatorConfig.design),
       theme: normalized.generatorConfig.theme || baseConfig.theme,
     });
+    PDS.configEditorMetadata = getDesignConfigEditorMetadata(
+      normalized.generatorConfig.design
+    );
+    PDS.configFormSchema = buildDesignConfigFormSchema(
+      normalized.generatorConfig.design
+    );
 
     const persist = options?.persist !== false;
     if (persist && typeof window !== "undefined") {
@@ -351,7 +515,12 @@ export async function startLive(PDS, config, { emitReady, applyResolvedTheme, se
     });
 
     // 2) Normalize first-arg API: support { preset, design, enhancers }
-    const normalized = normalizeInitConfig(config, {}, { presets, defaultLog });
+    const normalized = normalizeInitConfig(config, {}, {
+      presets,
+      defaultLog,
+      validateDesignConfig,
+      validateInitConfig,
+    });
     if (manageTheme && !isPresetThemeCompatible(normalized.generatorConfig.design, resolvedTheme)) {
       const presetName =
         normalized.presetInfo?.name ||
@@ -509,6 +678,12 @@ export async function startLive(PDS, config, { emitReady, applyResolvedTheme, se
       theme: resolvedTheme,
       enhancers: mergedEnhancers,
     });
+    PDS.configEditorMetadata = getDesignConfigEditorMetadata(
+      normalized.generatorConfig.design
+    );
+    PDS.configFormSchema = buildDesignConfigFormSchema(
+      normalized.generatorConfig.design
+    );
 
     
     if (config?.liveEdit && typeof document !== "undefined") {

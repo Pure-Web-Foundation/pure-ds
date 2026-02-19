@@ -23,6 +23,7 @@ const DEFAULT_OPTIONS = {
     icons: true, // Enable icon-enhanced inputs
     datalists: true, // Enable datalist autocomplete
     rangeOutput: true, // Use .range-output for ranges
+    colorInput: true, // Use label[data-color] enhancement for color widgets
   },
   validation: {
     showErrors: true, // Show validation errors inline
@@ -836,7 +837,11 @@ export class SchemaForm extends LitElement {
         ${!this.hideLegend && !context.hideLegend
           ? html`<legend>${legend}</legend>`
           : nothing}
-        ${node.children.map((child) => this.#renderNode(child, context))}
+        ${node.children.map((child) =>
+          this.#renderNode(
+            child,
+            context?.hideLegend ? { ...context, hideLegend: false } : context
+          ))}
       </fieldset>
     `;
 
@@ -1144,25 +1149,35 @@ export class SchemaForm extends LitElement {
     const ui = node.ui || this.#uiFor(path);
     const itemSchema = node.item?.schema;
 
-    // Check if this is a simple string array that should use the open group enhancement
-    const isSimpleStringArray =
-      itemSchema?.type === "string" &&
-      !itemSchema.format &&
-      !itemSchema.enum &&
-      (!itemSchema.maxLength || itemSchema.maxLength <= 100);
+    const primitiveArrayTypes = new Set(["string", "number", "integer", "boolean"]);
+    const primitiveItemType = itemSchema?.type;
+    const isPrimitiveArray =
+      primitiveArrayTypes.has(primitiveItemType) &&
+      !itemSchema?.format;
+
+    const parsePrimitiveValue = (rawValue) => {
+      if (primitiveItemType === "number") {
+        const parsed = Number.parseFloat(rawValue);
+        return Number.isFinite(parsed) ? parsed : rawValue;
+      }
+      if (primitiveItemType === "integer") {
+        const parsed = Number.parseInt(rawValue, 10);
+        return Number.isFinite(parsed) ? parsed : rawValue;
+      }
+      if (primitiveItemType === "boolean") {
+        return rawValue === "true";
+      }
+      return rawValue;
+    };
 
     // Check layout preference: use 'open' for simple string arrays by default, or if explicitly set
     let arrayLayout = ui?.["ui:arrayLayout"];
     if (!arrayLayout) {
       // If not explicitly set, use global option with smart default based on array type
-      const globalDefault = this.#getOption("layouts.arrays", "default");
-      arrayLayout =
-        globalDefault === "default" && isSimpleStringArray
-          ? "open"
-          : globalDefault;
+      arrayLayout = isPrimitiveArray ? "open" : this.#getOption("layouts.arrays", "default");
     }
 
-    const useOpenGroup = arrayLayout === "open" && isSimpleStringArray;
+    const useOpenGroup = arrayLayout === "open" && isPrimitiveArray;
 
     // Check if this is a single-selection array (maxItems: 1) for radio group
     const isSingleSelection = node.schema?.maxItems === 1;
@@ -1189,11 +1204,13 @@ export class SchemaForm extends LitElement {
           this.#setByPath(
             this.#data,
             path,
-            checkedInput && checkedInput.value ? [checkedInput.value] : []
+            checkedInput && checkedInput.value
+              ? [parsePrimitiveValue(checkedInput.value)]
+              : []
           );
         } else {
           // For checkbox groups, all items in DOM are in the array
-          this.#setByPath(this.#data, path, values);
+          this.#setByPath(this.#data, path, values.map((entry) => parsePrimitiveValue(entry)));
         }
         this.#emit("pw:array-change", {
           path,
@@ -1211,7 +1228,9 @@ export class SchemaForm extends LitElement {
           this.#setByPath(
             this.#data,
             path,
-            checkedInput && checkedInput.value ? [checkedInput.value] : []
+            checkedInput && checkedInput.value
+              ? [parsePrimitiveValue(checkedInput.value)]
+              : []
           );
           this.#emit("pw:array-change", {
             path,
@@ -1253,16 +1272,16 @@ export class SchemaForm extends LitElement {
           ${arr.map((value, i) => {
             const id = `${path}-${i}`;
             const isChecked = isSingleSelection
-              ? value === selectedValue
+              ? String(value) === String(selectedValue)
               : false;
             return html`
               <label for=${id}>
-                <span data-label>${value}</span>
+                <span data-label>${String(value)}</span>
                 <input
                   id=${id}
                   type=${inputType}
                   name=${path}
-                  value=${value}
+                  value=${String(value)}
                   ?checked=${isChecked}
                 />
               </label>
@@ -1408,6 +1427,7 @@ export class SchemaForm extends LitElement {
       schema: node.schema,
       get: (p) => this.#getByPath(this.#data, p ?? path),
       set: (val, p) => this.#assignValue(p ?? path, val),
+      unset: (p) => this.#unsetValue(p ?? path),
       attrs,
       host: this,
     };
@@ -1496,6 +1516,11 @@ export class SchemaForm extends LitElement {
     const isRange = node.widgetKey === "input-range";
     const useRangeOutput =
       isRange && this.#getOption("enhancements.rangeOutput", true);
+
+    // Add data-color for color inputs if enabled
+    const isColorInput = node.widgetKey === "input-color";
+    const useColorInput =
+      isColorInput && this.#getOption("enhancements.colorInput", true);
     
     // Build class list for label
     const labelClasses = [];
@@ -1540,7 +1565,7 @@ export class SchemaForm extends LitElement {
     const after = this.#renderCustomContent(ui?.["ui:after"], renderContext);
 
     const labelTpl = html`
-      <label for=${id} ?data-toggle=${isToggle} class=${ifDefined(labelClass)}>
+      <label for=${id} ?data-toggle=${isToggle} ?data-color=${useColorInput} class=${ifDefined(labelClass)}>
         ${renderControlAndLabel(isToggle)}
         ${help ? html`<div data-help>${help}</div>` : nothing}
       </label>
@@ -1675,10 +1700,28 @@ export class SchemaForm extends LitElement {
     // Range input renderer for ui:widget = 'input-range'
     this.defineRenderer(
       "input-range",
-      ({ id, path, value, attrs, set, ui }) => {
+      ({ id, path, value, attrs, set, unset, ui, schema }) => {
         const min = ui?.["ui:min"] ?? attrs.min ?? 0;
         const max = ui?.["ui:max"] ?? attrs.max ?? 100;
-        const step = attrs.step || 1;
+        const step =
+          ui?.["ui:step"] ??
+          ui?.["ui:options"]?.step ??
+          attrs.step ??
+          (Number(min) >= 0 && Number(max) <= 1 ? 0.01 : 1);
+        const fallbackExample =
+          Array.isArray(schema?.examples) && schema.examples.length > 0
+            ? schema.examples[0]
+            : undefined;
+        const defaultValue = attrs.placeholder ?? fallbackExample;
+        const parsedDefault = Number.parseFloat(defaultValue);
+        const hasNumericDefault = Number.isFinite(parsedDefault);
+        const visualValue =
+          value !== undefined && value !== null
+            ? Number(value)
+            : hasNumericDefault
+              ? Math.min(Number(max), Math.max(Number(min), parsedDefault))
+              : Number(min);
+        const canUnset = Boolean(ui?.["ui:allowUnset"]) && defaultValue !== undefined;
         return html`
           <div class="range-container">
             <input
@@ -1688,12 +1731,29 @@ export class SchemaForm extends LitElement {
               min=${min}
               max=${max}
               step=${step}
-              .value=${value ?? min}
+              .value=${visualValue}
               ?disabled=${!!attrs.disabled}
               @input=${(e) => set(Number(e.target.value))}
             />
-            <div class="range-bubble" aria-hidden="true">${value ?? min}</div>
+            <div class="range-bubble" aria-hidden="true">${visualValue}</div>
           </div>
+          ${canUnset
+            ? html`
+                <div class="flex items-center justify-between gap-sm">
+                  <small class="text-muted">Default: ${defaultValue}</small>
+                  <a
+                    href="#"
+                    class="text-muted"
+                    @click=${(event) => {
+                      event.preventDefault();
+                      unset(path);
+                    }}
+                  >
+                    Use default
+                  </a>
+                </div>
+              `
+            : nothing}
         `;
       }
     );
@@ -1797,19 +1857,38 @@ export class SchemaForm extends LitElement {
 
     this.defineRenderer(
       "input-color",
-      ({ id, path, value, attrs, set }) => html`
+      ({ id, path, value, attrs, set, schema }) => {
+        const fallbackExample =
+          Array.isArray(schema?.examples) && schema.examples.length > 0
+            ? schema.examples[0]
+            : undefined;
+        const hasUserValue =
+          value !== undefined && value !== null && String(value).trim() !== "";
+        const hasFallbackExample =
+          fallbackExample !== undefined &&
+          fallbackExample !== null &&
+          String(fallbackExample).trim() !== "";
+        const isUnset = !hasUserValue && !hasFallbackExample;
+        const controlValue = hasUserValue
+          ? value
+          : hasFallbackExample
+            ? fallbackExample
+            : "#000000";
+        return html`
         <input
           id=${id}
           name=${path}
+          data-color-unset=${isUnset ? "1" : "0"}
           placeholder=${ifDefined(attrs.placeholder)}
           type="color"
-          .value=${value ?? ""}
+          .value=${controlValue}
           ?readonly=${!!attrs.readOnly}
           ?disabled=${!!attrs.disabled}
           ?required=${!!attrs.required}
           @input=${(e) => set(e.target.value)}
         />
-      `
+      `;
+      }
     );
 
     this.defineRenderer(
@@ -2270,6 +2349,24 @@ export class SchemaForm extends LitElement {
 
     const validity = { valid: true };
     this.#emit("pw:value-change", { path, name: path, value: val, validity });
+  }
+
+  #unsetValue(path) {
+    this.#deleteByPathPrefix(this.#data, path);
+
+    const hadDependents = this.#applyCalculatedValues(path);
+    if (!hadDependents) {
+      this.requestUpdate();
+    }
+
+    const validity = { valid: true };
+    this.#emit("pw:value-change", {
+      path,
+      name: path,
+      value: undefined,
+      validity,
+      unset: true,
+    });
   }
 
   #applyCalculatedValues(changedPath) {

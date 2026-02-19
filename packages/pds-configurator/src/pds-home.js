@@ -428,6 +428,7 @@ customElements.define(
     _buildRoleOmniboxSettings() {
       return {
         hideCategory: true,
+        itemGrid: "0 1fr 0",
         iconHandler: (item) => {
           return item.icon ? `<pds-icon icon="${item.icon}"></pds-icon>` : "";
         },
@@ -661,7 +662,6 @@ customElements.define(
         "role-omnibox",
         ({ id, path, value, attrs, set }) => html`
           <pds-omnibox
-            item-grid="0 1fr 0"
             id=${id}
             name=${path}
             placeholder=${attrs?.placeholder || "Select a role"}

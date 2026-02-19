@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-02-17T11:41:35.713Z",
+  "exportedAt": "2026-02-18T13:01:52.713Z",
   "staticRoot": "/assets/pds/",
   "presetId": "default",
   "preset": "Default",
@@ -78,13 +78,16 @@
         "baseUnit": 4,
         "scaleRatio": 1.25,
         "maxSpacingSteps": 32,
-        "containerMaxWidth": 1200,
         "containerPadding": 1,
         "inputPadding": 0.75,
         "buttonPadding": 1,
         "sectionSpacing": 2
       },
       "layers": {
+        "baseShadowOpacity": 0.1,
+        "darkMode": {
+          "baseShadowOpacity": 0.25
+        },
         "shadowDepth": "medium",
         "blurLight": 4,
         "blurMedium": 8,
@@ -322,9 +325,8 @@
             "wrench"
           ]
         },
-        "spritePath": "public/assets/pds/icons/pds-icons.svg"
+        "spritePath": "/assets/pds/icons/pds-icons.svg"
       },
-      "gap": 4,
       "debug": false
     }
   },
@@ -334,5 +336,5878 @@
     "components": "/assets/pds/styles/pds-components.css.js",
     "utilities": "/assets/pds/styles/pds-utilities.css.js",
     "styles": "/assets/pds/styles/pds-styles.css.js"
+  },
+  "metadata": {
+    "configRelations": {
+      "colors.primary": {
+        "tokens": [
+          "--color-primary-*",
+          "--color-primary-fill",
+          "--color-primary-text",
+          "--background-mesh-*"
+        ]
+      },
+      "colors.secondary": {
+        "tokens": [
+          "--color-secondary-*",
+          "--color-gray-*",
+          "--background-mesh-*"
+        ]
+      },
+      "colors.accent": {
+        "tokens": [
+          "--color-accent-*",
+          "--background-mesh-*"
+        ]
+      },
+      "colors.background": {
+        "tokens": [
+          "--color-surface-*",
+          "--color-surface-translucent-*",
+          "--surface-*-bg",
+          "--surface-*-text",
+          "--surface-*-text-secondary",
+          "--surface-*-text-muted",
+          "--surface-*-icon",
+          "--surface-*-icon-subtle",
+          "--surface-*-shadow",
+          "--surface-*-border"
+        ]
+      },
+      "colors.success": {
+        "tokens": [
+          "--color-success-*"
+        ]
+      },
+      "colors.warning": {
+        "tokens": [
+          "--color-warning-*"
+        ]
+      },
+      "colors.danger": {
+        "tokens": [
+          "--color-danger-*"
+        ]
+      },
+      "colors.info": {
+        "tokens": [
+          "--color-info-*"
+        ]
+      },
+      "colors.elevationOpacity": {
+        "tokens": [
+          "--surface-*-shadow"
+        ]
+      },
+      "colors.darkMode.background": {
+        "theme": "dark",
+        "tokens": [
+          "--color-surface-*",
+          "--color-surface-translucent-*",
+          "--surface-*-bg",
+          "--surface-*-text",
+          "--surface-*-text-secondary",
+          "--surface-*-text-muted",
+          "--surface-*-icon",
+          "--surface-*-icon-subtle",
+          "--surface-*-shadow",
+          "--surface-*-border"
+        ]
+      },
+      "colors.darkMode.primary": {
+        "theme": "dark",
+        "tokens": [
+          "--color-primary-*",
+          "--color-primary-fill",
+          "--color-primary-text"
+        ]
+      },
+      "colors.darkMode.secondary": {
+        "theme": "dark",
+        "tokens": [
+          "--color-secondary-*",
+          "--color-gray-*"
+        ]
+      },
+      "colors.darkMode.accent": {
+        "theme": "dark",
+        "tokens": [
+          "--color-accent-*"
+        ]
+      },
+      "typography.fontFamilyHeadings": {
+        "tokens": [
+          "--font-family-headings"
+        ]
+      },
+      "typography.fontFamilyBody": {
+        "tokens": [
+          "--font-family-body"
+        ]
+      },
+      "typography.fontFamilyMono": {
+        "tokens": [
+          "--font-family-mono"
+        ]
+      },
+      "typography.baseFontSize": {
+        "tokens": [
+          "--font-size-*"
+        ]
+      },
+      "typography.fontScale": {
+        "tokens": [
+          "--font-size-*"
+        ]
+      },
+      "typography.fontWeightLight": {
+        "tokens": [
+          "--font-weight-light"
+        ]
+      },
+      "typography.fontWeightNormal": {
+        "tokens": [
+          "--font-weight-normal"
+        ]
+      },
+      "typography.fontWeightMedium": {
+        "tokens": [
+          "--font-weight-medium"
+        ]
+      },
+      "typography.fontWeightSemibold": {
+        "tokens": [
+          "--font-weight-semibold"
+        ]
+      },
+      "typography.fontWeightBold": {
+        "tokens": [
+          "--font-weight-bold"
+        ]
+      },
+      "typography.lineHeightTight": {
+        "tokens": [
+          "--font-line-height-tight"
+        ]
+      },
+      "typography.lineHeightNormal": {
+        "tokens": [
+          "--font-line-height-normal"
+        ]
+      },
+      "typography.lineHeightRelaxed": {
+        "tokens": [
+          "--font-line-height-relaxed"
+        ]
+      },
+      "spatialRhythm.baseUnit": {
+        "tokens": [
+          "--spacing-*"
+        ]
+      },
+      "spatialRhythm.maxSpacingSteps": {
+        "tokens": [
+          "--spacing-*"
+        ]
+      },
+      "spatialRhythm.inputPadding": {
+        "rules": [
+          {
+            "selectors": [
+              "input",
+              "textarea",
+              "select"
+            ],
+            "properties": [
+              "padding"
+            ]
+          }
+        ]
+      },
+      "spatialRhythm.buttonPadding": {
+        "rules": [
+          {
+            "selectors": [
+              "button",
+              ".btn"
+            ],
+            "properties": [
+              "padding"
+            ]
+          }
+        ]
+      },
+      "spatialRhythm.sectionSpacing": {
+        "rules": [
+          {
+            "selectors": [
+              "section"
+            ],
+            "properties": [
+              "margin",
+              "padding"
+            ]
+          }
+        ]
+      },
+      "shape.radiusSize": {
+        "tokens": [
+          "--radius-*"
+        ]
+      },
+      "shape.borderWidth": {
+        "tokens": [
+          "--border-width-*"
+        ]
+      },
+      "behavior.transitionSpeed": {
+        "tokens": [
+          "--transition-*"
+        ]
+      },
+      "behavior.focusRingWidth": {
+        "rules": [
+          {
+            "selectors": [
+              ":focus-visible"
+            ],
+            "properties": [
+              "outline-width",
+              "box-shadow"
+            ]
+          }
+        ]
+      },
+      "behavior.focusRingOpacity": {
+        "rules": [
+          {
+            "selectors": [
+              ":focus-visible"
+            ],
+            "properties": [
+              "box-shadow",
+              "outline-color"
+            ]
+          }
+        ]
+      },
+      "layout.maxWidth": {
+        "tokens": [
+          "--layout-max-width",
+          "--layout-max-width-*"
+        ]
+      },
+      "layout.maxWidths.sm": {
+        "tokens": [
+          "--layout-max-width-sm"
+        ]
+      },
+      "layout.maxWidths.md": {
+        "tokens": [
+          "--layout-max-width-md"
+        ]
+      },
+      "layout.maxWidths.lg": {
+        "tokens": [
+          "--layout-max-width-lg"
+        ]
+      },
+      "layout.maxWidths.xl": {
+        "tokens": [
+          "--layout-max-width-xl"
+        ]
+      },
+      "layout.containerPadding": {
+        "tokens": [
+          "--layout-container-padding"
+        ]
+      },
+      "layout.baseShadowOpacity": {
+        "tokens": [
+          "--shadow-*"
+        ]
+      },
+      "layout.darkMode.baseShadowOpacity": {
+        "theme": "dark",
+        "tokens": [
+          "--shadow-*"
+        ]
+      },
+      "layers.baseShadowOpacity": {
+        "tokens": [
+          "--shadow-*"
+        ]
+      },
+      "layers.shadowBlurMultiplier": {
+        "tokens": [
+          "--shadow-*"
+        ]
+      },
+      "layers.shadowOffsetMultiplier": {
+        "tokens": [
+          "--shadow-*"
+        ]
+      },
+      "layers.baseZIndex": {
+        "tokens": [
+          "--z-*"
+        ]
+      },
+      "layers.zIndexStep": {
+        "tokens": [
+          "--z-*"
+        ]
+      },
+      "layers.darkMode.baseShadowOpacity": {
+        "theme": "dark",
+        "tokens": [
+          "--shadow-*"
+        ]
+      },
+      "icons.defaultSize": {
+        "tokens": [
+          "--icon-size"
+        ]
+      }
+    },
+    "configSpec": {
+      "type": "object",
+      "allowUnknown": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "tags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "themes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "oneOf": [
+              {
+                "const": "light",
+                "title": "Light"
+              },
+              {
+                "const": "dark",
+                "title": "Dark"
+              },
+              {
+                "const": "system",
+                "title": "System"
+              }
+            ]
+          }
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "options": {
+          "type": "object",
+          "allowUnknown": true,
+          "properties": {
+            "liquidGlassEffects": {
+              "type": "boolean"
+            },
+            "backgroundMesh": {
+              "type": "number"
+            }
+          }
+        },
+        "form": {
+          "type": "object",
+          "allowUnknown": true,
+          "properties": {
+            "options": {
+              "type": "object",
+              "allowUnknown": true,
+              "properties": {
+                "widgets": {
+                  "type": "object",
+                  "allowUnknown": false,
+                  "properties": {
+                    "booleans": {
+                      "type": "string"
+                    },
+                    "numbers": {
+                      "type": "string"
+                    },
+                    "selects": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "layouts": {
+                  "type": "object",
+                  "allowUnknown": false,
+                  "properties": {
+                    "fieldsets": {
+                      "type": "string"
+                    },
+                    "arrays": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "enhancements": {
+                  "type": "object",
+                  "allowUnknown": false,
+                  "properties": {
+                    "icons": {
+                      "type": "boolean"
+                    },
+                    "datalists": {
+                      "type": "boolean"
+                    },
+                    "rangeOutput": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "validation": {
+                  "type": "object",
+                  "allowUnknown": false,
+                  "properties": {
+                    "showErrors": {
+                      "type": "boolean"
+                    },
+                    "validateOnChange": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "colors": {
+          "type": "object",
+          "allowUnknown": false,
+          "properties": {
+            "primary": {
+              "type": "string",
+              "relations": {
+                "tokens": [
+                  "--color-primary-*",
+                  "--color-primary-fill",
+                  "--color-primary-text",
+                  "--background-mesh-*"
+                ]
+              }
+            },
+            "secondary": {
+              "type": "string",
+              "relations": {
+                "tokens": [
+                  "--color-secondary-*",
+                  "--color-gray-*",
+                  "--background-mesh-*"
+                ]
+              }
+            },
+            "accent": {
+              "type": "string",
+              "relations": {
+                "tokens": [
+                  "--color-accent-*",
+                  "--background-mesh-*"
+                ]
+              }
+            },
+            "background": {
+              "type": "string",
+              "relations": {
+                "tokens": [
+                  "--color-surface-*",
+                  "--color-surface-translucent-*",
+                  "--surface-*-bg",
+                  "--surface-*-text",
+                  "--surface-*-text-secondary",
+                  "--surface-*-text-muted",
+                  "--surface-*-icon",
+                  "--surface-*-icon-subtle",
+                  "--surface-*-shadow",
+                  "--surface-*-border"
+                ]
+              }
+            },
+            "success": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "relations": {
+                "tokens": [
+                  "--color-success-*"
+                ]
+              }
+            },
+            "warning": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "relations": {
+                "tokens": [
+                  "--color-warning-*"
+                ]
+              }
+            },
+            "danger": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "relations": {
+                "tokens": [
+                  "--color-danger-*"
+                ]
+              }
+            },
+            "info": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "relations": {
+                "tokens": [
+                  "--color-info-*"
+                ]
+              }
+            },
+            "gradientStops": {
+              "type": "number"
+            },
+            "elevationOpacity": {
+              "type": "number",
+              "relations": {
+                "tokens": [
+                  "--surface-*-shadow"
+                ]
+              }
+            },
+            "darkMode": {
+              "type": "object",
+              "allowUnknown": false,
+              "properties": {
+                "background": {
+                  "type": "string",
+                  "relations": {
+                    "theme": "dark",
+                    "tokens": [
+                      "--color-surface-*",
+                      "--color-surface-translucent-*",
+                      "--surface-*-bg",
+                      "--surface-*-text",
+                      "--surface-*-text-secondary",
+                      "--surface-*-text-muted",
+                      "--surface-*-icon",
+                      "--surface-*-icon-subtle",
+                      "--surface-*-shadow",
+                      "--surface-*-border"
+                    ]
+                  }
+                },
+                "primary": {
+                  "type": "string",
+                  "relations": {
+                    "theme": "dark",
+                    "tokens": [
+                      "--color-primary-*",
+                      "--color-primary-fill",
+                      "--color-primary-text"
+                    ]
+                  }
+                },
+                "secondary": {
+                  "type": "string",
+                  "relations": {
+                    "theme": "dark",
+                    "tokens": [
+                      "--color-secondary-*",
+                      "--color-gray-*"
+                    ]
+                  }
+                },
+                "accent": {
+                  "type": "string",
+                  "relations": {
+                    "theme": "dark",
+                    "tokens": [
+                      "--color-accent-*"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "typography": {
+          "type": "object",
+          "allowUnknown": false,
+          "properties": {
+            "fontFamilyHeadings": {
+              "type": "string",
+              "relations": {
+                "tokens": [
+                  "--font-family-headings"
+                ]
+              }
+            },
+            "fontFamilyBody": {
+              "type": "string",
+              "relations": {
+                "tokens": [
+                  "--font-family-body"
+                ]
+              }
+            },
+            "fontFamilyMono": {
+              "type": "string",
+              "relations": {
+                "tokens": [
+                  "--font-family-mono"
+                ]
+              }
+            },
+            "baseFontSize": {
+              "type": "number",
+              "relations": {
+                "tokens": [
+                  "--font-size-*"
+                ]
+              }
+            },
+            "fontScale": {
+              "type": "number",
+              "relations": {
+                "tokens": [
+                  "--font-size-*"
+                ]
+              }
+            },
+            "fontWeightLight": {
+              "type": [
+                "string",
+                "number"
+              ],
+              "relations": {
+                "tokens": [
+                  "--font-weight-light"
+                ]
+              }
+            },
+            "fontWeightNormal": {
+              "type": [
+                "string",
+                "number"
+              ],
+              "relations": {
+                "tokens": [
+                  "--font-weight-normal"
+                ]
+              }
+            },
+            "fontWeightMedium": {
+              "type": [
+                "string",
+                "number"
+              ],
+              "relations": {
+                "tokens": [
+                  "--font-weight-medium"
+                ]
+              }
+            },
+            "fontWeightSemibold": {
+              "type": [
+                "string",
+                "number"
+              ],
+              "relations": {
+                "tokens": [
+                  "--font-weight-semibold"
+                ]
+              }
+            },
+            "fontWeightBold": {
+              "type": [
+                "string",
+                "number"
+              ],
+              "relations": {
+                "tokens": [
+                  "--font-weight-bold"
+                ]
+              }
+            },
+            "lineHeightTight": {
+              "type": [
+                "string",
+                "number"
+              ],
+              "relations": {
+                "tokens": [
+                  "--font-line-height-tight"
+                ]
+              }
+            },
+            "lineHeightNormal": {
+              "type": [
+                "string",
+                "number"
+              ],
+              "relations": {
+                "tokens": [
+                  "--font-line-height-normal"
+                ]
+              }
+            },
+            "lineHeightRelaxed": {
+              "type": [
+                "string",
+                "number"
+              ],
+              "relations": {
+                "tokens": [
+                  "--font-line-height-relaxed"
+                ]
+              }
+            },
+            "letterSpacingTight": {
+              "type": "number"
+            },
+            "letterSpacingNormal": {
+              "type": "number"
+            },
+            "letterSpacingWide": {
+              "type": "number"
+            }
+          }
+        },
+        "spatialRhythm": {
+          "type": "object",
+          "allowUnknown": false,
+          "properties": {
+            "baseUnit": {
+              "type": "number",
+              "relations": {
+                "tokens": [
+                  "--spacing-*"
+                ]
+              }
+            },
+            "scaleRatio": {
+              "type": "number"
+            },
+            "maxSpacingSteps": {
+              "type": "number",
+              "relations": {
+                "tokens": [
+                  "--spacing-*"
+                ]
+              }
+            },
+            "containerPadding": {
+              "type": "number"
+            },
+            "inputPadding": {
+              "type": "number",
+              "relations": {
+                "rules": [
+                  {
+                    "selectors": [
+                      "input",
+                      "textarea",
+                      "select"
+                    ],
+                    "properties": [
+                      "padding"
+                    ]
+                  }
+                ]
+              }
+            },
+            "buttonPadding": {
+              "type": "number",
+              "relations": {
+                "rules": [
+                  {
+                    "selectors": [
+                      "button",
+                      ".btn"
+                    ],
+                    "properties": [
+                      "padding"
+                    ]
+                  }
+                ]
+              }
+            },
+            "sectionSpacing": {
+              "type": "number",
+              "relations": {
+                "rules": [
+                  {
+                    "selectors": [
+                      "section"
+                    ],
+                    "properties": [
+                      "margin",
+                      "padding"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "shape": {
+          "type": "object",
+          "allowUnknown": false,
+          "properties": {
+            "radiusSize": {
+              "type": [
+                "string",
+                "number"
+              ],
+              "relations": {
+                "tokens": [
+                  "--radius-*"
+                ]
+              }
+            },
+            "customRadius": {
+              "type": [
+                "string",
+                "number",
+                "null"
+              ]
+            },
+            "borderWidth": {
+              "type": [
+                "string",
+                "number"
+              ],
+              "relations": {
+                "tokens": [
+                  "--border-width-*"
+                ]
+              }
+            }
+          }
+        },
+        "behavior": {
+          "type": "object",
+          "allowUnknown": false,
+          "properties": {
+            "transitionSpeed": {
+              "type": [
+                "string",
+                "number"
+              ],
+              "relations": {
+                "tokens": [
+                  "--transition-*"
+                ]
+              }
+            },
+            "animationEasing": {
+              "type": "string"
+            },
+            "customTransitionSpeed": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "customEasing": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "focusRingWidth": {
+              "type": "number",
+              "relations": {
+                "rules": [
+                  {
+                    "selectors": [
+                      ":focus-visible"
+                    ],
+                    "properties": [
+                      "outline-width",
+                      "box-shadow"
+                    ]
+                  }
+                ]
+              }
+            },
+            "focusRingOpacity": {
+              "type": "number",
+              "relations": {
+                "rules": [
+                  {
+                    "selectors": [
+                      ":focus-visible"
+                    ],
+                    "properties": [
+                      "box-shadow",
+                      "outline-color"
+                    ]
+                  }
+                ]
+              }
+            },
+            "hoverOpacity": {
+              "type": "number"
+            }
+          }
+        },
+        "layout": {
+          "type": "object",
+          "allowUnknown": false,
+          "properties": {
+            "maxWidth": {
+              "type": [
+                "number",
+                "string"
+              ],
+              "relations": {
+                "tokens": [
+                  "--layout-max-width",
+                  "--layout-max-width-*"
+                ]
+              }
+            },
+            "maxWidths": {
+              "type": "object",
+              "allowUnknown": false,
+              "properties": {
+                "sm": {
+                  "type": [
+                    "number",
+                    "string"
+                  ],
+                  "relations": {
+                    "tokens": [
+                      "--layout-max-width-sm"
+                    ]
+                  }
+                },
+                "md": {
+                  "type": [
+                    "number",
+                    "string"
+                  ],
+                  "relations": {
+                    "tokens": [
+                      "--layout-max-width-md"
+                    ]
+                  }
+                },
+                "lg": {
+                  "type": [
+                    "number",
+                    "string"
+                  ],
+                  "relations": {
+                    "tokens": [
+                      "--layout-max-width-lg"
+                    ]
+                  }
+                },
+                "xl": {
+                  "type": [
+                    "number",
+                    "string"
+                  ],
+                  "relations": {
+                    "tokens": [
+                      "--layout-max-width-xl"
+                    ]
+                  }
+                }
+              }
+            },
+            "containerPadding": {
+              "type": [
+                "number",
+                "string"
+              ],
+              "relations": {
+                "tokens": [
+                  "--layout-container-padding"
+                ]
+              }
+            },
+            "breakpoints": {
+              "type": "object",
+              "allowUnknown": false,
+              "properties": {
+                "sm": {
+                  "type": "number"
+                },
+                "md": {
+                  "type": "number"
+                },
+                "lg": {
+                  "type": "number"
+                },
+                "xl": {
+                  "type": "number"
+                }
+              }
+            },
+            "gridColumns": {
+              "type": "number"
+            },
+            "gridGutter": {
+              "type": "number"
+            },
+            "densityCompact": {
+              "type": "number"
+            },
+            "densityNormal": {
+              "type": "number"
+            },
+            "densityComfortable": {
+              "type": "number"
+            },
+            "buttonMinHeight": {
+              "type": "number"
+            },
+            "inputMinHeight": {
+              "type": "number"
+            },
+            "baseShadowOpacity": {
+              "type": "number",
+              "relations": {
+                "tokens": [
+                  "--shadow-*"
+                ]
+              }
+            },
+            "darkMode": {
+              "type": "object",
+              "allowUnknown": false,
+              "properties": {
+                "baseShadowOpacity": {
+                  "type": "number",
+                  "relations": {
+                    "theme": "dark",
+                    "tokens": [
+                      "--shadow-*"
+                    ]
+                  }
+                }
+              }
+            },
+            "utilities": {
+              "type": "object",
+              "allowUnknown": true,
+              "properties": {
+                "grid": {
+                  "type": "boolean"
+                },
+                "flex": {
+                  "type": "boolean"
+                },
+                "spacing": {
+                  "type": "boolean"
+                },
+                "container": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "gridSystem": {
+              "type": "object",
+              "allowUnknown": true,
+              "properties": {
+                "columns": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "autoFitBreakpoints": {
+                  "type": "object",
+                  "allowUnknown": false,
+                  "properties": {
+                    "sm": {
+                      "type": "string"
+                    },
+                    "md": {
+                      "type": "string"
+                    },
+                    "lg": {
+                      "type": "string"
+                    },
+                    "xl": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "enableGapUtilities": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "containerMaxWidth": {
+              "type": [
+                "number",
+                "string"
+              ]
+            }
+          }
+        },
+        "layers": {
+          "type": "object",
+          "allowUnknown": false,
+          "properties": {
+            "baseShadowOpacity": {
+              "type": "number",
+              "relations": {
+                "tokens": [
+                  "--shadow-*"
+                ]
+              }
+            },
+            "shadowBlurMultiplier": {
+              "type": "number",
+              "relations": {
+                "tokens": [
+                  "--shadow-*"
+                ]
+              }
+            },
+            "shadowOffsetMultiplier": {
+              "type": "number",
+              "relations": {
+                "tokens": [
+                  "--shadow-*"
+                ]
+              }
+            },
+            "shadowDepth": {
+              "type": "string"
+            },
+            "blurLight": {
+              "type": "number"
+            },
+            "blurMedium": {
+              "type": "number"
+            },
+            "blurHeavy": {
+              "type": "number"
+            },
+            "baseZIndex": {
+              "type": "number",
+              "relations": {
+                "tokens": [
+                  "--z-*"
+                ]
+              }
+            },
+            "zIndexStep": {
+              "type": "number",
+              "relations": {
+                "tokens": [
+                  "--z-*"
+                ]
+              }
+            },
+            "zIndexBase": {
+              "type": "number"
+            },
+            "zIndexDropdown": {
+              "type": "number"
+            },
+            "zIndexSticky": {
+              "type": "number"
+            },
+            "zIndexFixed": {
+              "type": "number"
+            },
+            "zIndexModal": {
+              "type": "number"
+            },
+            "zIndexPopover": {
+              "type": "number"
+            },
+            "zIndexTooltip": {
+              "type": "number"
+            },
+            "zIndexNotification": {
+              "type": "number"
+            },
+            "darkMode": {
+              "type": "object",
+              "allowUnknown": false,
+              "properties": {
+                "baseShadowOpacity": {
+                  "type": "number",
+                  "relations": {
+                    "theme": "dark",
+                    "tokens": [
+                      "--shadow-*"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "advanced": {
+          "type": "object",
+          "allowUnknown": true,
+          "properties": {
+            "linkStyle": {
+              "type": "string"
+            },
+            "colorDerivation": {
+              "type": "string"
+            }
+          }
+        },
+        "a11y": {
+          "type": "object",
+          "allowUnknown": true,
+          "properties": {
+            "minTouchTarget": {
+              "type": [
+                "string",
+                "number"
+              ]
+            },
+            "prefersReducedMotion": {
+              "type": "boolean"
+            },
+            "focusStyle": {
+              "type": "string"
+            }
+          }
+        },
+        "icons": {
+          "type": "object",
+          "allowUnknown": false,
+          "properties": {
+            "set": {
+              "type": "string"
+            },
+            "weight": {
+              "type": "string"
+            },
+            "defaultSize": {
+              "type": "number",
+              "relations": {
+                "tokens": [
+                  "--icon-size"
+                ]
+              }
+            },
+            "sizes": {
+              "type": "object",
+              "allowUnknown": true,
+              "properties": {
+                "xs": {
+                  "type": [
+                    "number",
+                    "string"
+                  ]
+                },
+                "sm": {
+                  "type": [
+                    "number",
+                    "string"
+                  ]
+                },
+                "md": {
+                  "type": [
+                    "number",
+                    "string"
+                  ]
+                },
+                "lg": {
+                  "type": [
+                    "number",
+                    "string"
+                  ]
+                },
+                "xl": {
+                  "type": [
+                    "number",
+                    "string"
+                  ]
+                },
+                "2xl": {
+                  "type": [
+                    "number",
+                    "string"
+                  ]
+                }
+              }
+            },
+            "spritePath": {
+              "type": "string"
+            },
+            "externalPath": {
+              "type": "string"
+            },
+            "include": {
+              "type": "object",
+              "allowUnknown": true,
+              "properties": {
+                "navigation": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "actions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "communication": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "content": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "status": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "time": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "commerce": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "formatting": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "system": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "components": {
+          "type": "object",
+          "allowUnknown": true
+        },
+        "debug": {
+          "type": "boolean"
+        }
+      }
+    },
+    "configEditorMetadata": {
+      "id": {
+        "label": "Id"
+      },
+      "name": {
+        "label": "Name"
+      },
+      "tags": {
+        "label": "Tags"
+      },
+      "themes": {
+        "label": "Themes"
+      },
+      "description": {
+        "label": "Description",
+        "widget": "textarea",
+        "maxLength": 500,
+        "rows": 4,
+        "placeholder": "Summarize the visual and interaction intent"
+      },
+      "options.liquidGlassEffects": {
+        "label": "Liquid Glass Effects",
+        "widget": "toggle"
+      },
+      "options.backgroundMesh": {
+        "label": "Background Mesh",
+        "widget": "input-range",
+        "min": 0,
+        "max": 16,
+        "step": 1
+      },
+      "form.options.widgets.booleans": {
+        "label": "Booleans"
+      },
+      "form.options.widgets.numbers": {
+        "label": "Numbers"
+      },
+      "form.options.widgets.selects": {
+        "label": "Selects"
+      },
+      "form.options.layouts.fieldsets": {
+        "label": "Fieldsets"
+      },
+      "form.options.layouts.arrays": {
+        "label": "Arrays"
+      },
+      "form.options.enhancements.icons": {
+        "label": "Icons",
+        "widget": "toggle"
+      },
+      "form.options.enhancements.datalists": {
+        "label": "Datalists",
+        "widget": "toggle"
+      },
+      "form.options.enhancements.rangeOutput": {
+        "label": "Range Output",
+        "widget": "toggle"
+      },
+      "form.options.validation.showErrors": {
+        "label": "Show Errors",
+        "widget": "toggle"
+      },
+      "form.options.validation.validateOnChange": {
+        "label": "Validate On Change",
+        "widget": "toggle"
+      },
+      "colors.primary": {
+        "label": "Primary",
+        "widget": "input-color"
+      },
+      "colors.secondary": {
+        "label": "Secondary",
+        "widget": "input-color"
+      },
+      "colors.accent": {
+        "label": "Accent",
+        "widget": "input-color"
+      },
+      "colors.background": {
+        "label": "Background",
+        "widget": "input-color"
+      },
+      "colors.success": {
+        "label": "Success",
+        "widget": "input-color"
+      },
+      "colors.warning": {
+        "label": "Warning",
+        "widget": "input-color"
+      },
+      "colors.danger": {
+        "label": "Danger",
+        "widget": "input-color"
+      },
+      "colors.info": {
+        "label": "Info",
+        "widget": "input-color"
+      },
+      "colors.gradientStops": {
+        "label": "Gradient Stops",
+        "widget": "input-range",
+        "min": 2,
+        "max": 8,
+        "step": 1
+      },
+      "colors.elevationOpacity": {
+        "label": "Elevation Opacity",
+        "widget": "input-range",
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "colors.darkMode.background": {
+        "label": "Background",
+        "widget": "input-color"
+      },
+      "colors.darkMode.primary": {
+        "label": "Primary",
+        "widget": "input-color"
+      },
+      "colors.darkMode.secondary": {
+        "label": "Secondary",
+        "widget": "input-color"
+      },
+      "colors.darkMode.accent": {
+        "label": "Accent",
+        "widget": "input-color"
+      },
+      "typography.fontFamilyHeadings": {
+        "label": "Font Family Headings",
+        "widget": "font-family-omnibox",
+        "icon": "text-aa",
+        "placeholder": "Heading font stack"
+      },
+      "typography.fontFamilyBody": {
+        "label": "Font Family Body",
+        "widget": "font-family-omnibox",
+        "icon": "text-aa",
+        "placeholder": "Body font stack"
+      },
+      "typography.fontFamilyMono": {
+        "label": "Font Family Mono",
+        "widget": "font-family-omnibox",
+        "icon": "text-aa",
+        "placeholder": "Monospace font stack"
+      },
+      "typography.baseFontSize": {
+        "label": "Base Font Size",
+        "widget": "input-range",
+        "min": 8,
+        "max": 32,
+        "step": 1
+      },
+      "typography.fontScale": {
+        "label": "Font Scale",
+        "widget": "input-range",
+        "min": 1,
+        "max": 2,
+        "step": 0.01
+      },
+      "typography.fontWeightLight": {
+        "label": "Font Weight Light",
+        "widget": "input-range",
+        "min": 100,
+        "max": 800,
+        "step": 100
+      },
+      "typography.fontWeightNormal": {
+        "label": "Font Weight Normal",
+        "widget": "input-range",
+        "min": 100,
+        "max": 800,
+        "step": 100
+      },
+      "typography.fontWeightMedium": {
+        "label": "Font Weight Medium",
+        "widget": "input-range",
+        "min": 100,
+        "max": 800,
+        "step": 100
+      },
+      "typography.fontWeightSemibold": {
+        "label": "Font Weight Semibold",
+        "widget": "input-range",
+        "min": 100,
+        "max": 800,
+        "step": 100
+      },
+      "typography.fontWeightBold": {
+        "label": "Font Weight Bold",
+        "widget": "input-range",
+        "min": 100,
+        "max": 800,
+        "step": 100
+      },
+      "typography.lineHeightTight": {
+        "label": "Line Height Tight",
+        "widget": "input-range",
+        "min": 0.75,
+        "max": 3,
+        "step": 0.001
+      },
+      "typography.lineHeightNormal": {
+        "label": "Line Height Normal",
+        "widget": "input-range",
+        "min": 0.75,
+        "max": 3,
+        "step": 0.001
+      },
+      "typography.lineHeightRelaxed": {
+        "label": "Line Height Relaxed",
+        "widget": "input-range",
+        "min": 0.75,
+        "max": 3,
+        "step": 0.001
+      },
+      "typography.letterSpacingTight": {
+        "label": "Letter Spacing Tight",
+        "widget": "input-range",
+        "min": -0.1,
+        "max": 0.1,
+        "step": 0.001
+      },
+      "typography.letterSpacingNormal": {
+        "label": "Letter Spacing Normal",
+        "widget": "input-range",
+        "min": -0.1,
+        "max": 0.1,
+        "step": 0.001
+      },
+      "typography.letterSpacingWide": {
+        "label": "Letter Spacing Wide",
+        "widget": "input-range",
+        "min": -0.1,
+        "max": 0.1,
+        "step": 0.001
+      },
+      "spatialRhythm.baseUnit": {
+        "label": "Base Unit",
+        "widget": "input-range",
+        "min": 1,
+        "max": 16,
+        "step": 1
+      },
+      "spatialRhythm.scaleRatio": {
+        "label": "Scale Ratio",
+        "widget": "input-range",
+        "min": 1,
+        "max": 2,
+        "step": 0.01
+      },
+      "spatialRhythm.maxSpacingSteps": {
+        "label": "Max Spacing Steps",
+        "widget": "input-range",
+        "min": 4,
+        "max": 64,
+        "step": 1
+      },
+      "spatialRhythm.containerPadding": {
+        "label": "Container Padding",
+        "widget": "input-range",
+        "min": 0,
+        "max": 8,
+        "step": 0.05
+      },
+      "spatialRhythm.inputPadding": {
+        "label": "Input Padding",
+        "widget": "input-range",
+        "min": 0,
+        "max": 4,
+        "step": 0.05
+      },
+      "spatialRhythm.buttonPadding": {
+        "label": "Button Padding",
+        "widget": "input-range",
+        "min": 0,
+        "max": 4,
+        "step": 0.05
+      },
+      "spatialRhythm.sectionSpacing": {
+        "label": "Section Spacing",
+        "widget": "input-range",
+        "min": 0,
+        "max": 8,
+        "step": 0.05
+      },
+      "shape.radiusSize": {
+        "label": "Radius Size",
+        "widget": "input-range",
+        "min": 0,
+        "max": 64,
+        "step": 1,
+        "oneOf": [
+          {
+            "const": 0,
+            "title": "none"
+          },
+          {
+            "const": 4,
+            "title": "small"
+          },
+          {
+            "const": 8,
+            "title": "medium"
+          },
+          {
+            "const": 16,
+            "title": "large"
+          },
+          {
+            "const": 24,
+            "title": "xlarge"
+          },
+          {
+            "const": 32,
+            "title": "xxlarge"
+          }
+        ]
+      },
+      "shape.customRadius": {
+        "label": "Custom Radius",
+        "min": 0,
+        "max": 64,
+        "step": 1,
+        "widget": "input-range"
+      },
+      "shape.borderWidth": {
+        "label": "Border Width",
+        "widget": "select",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "oneOf": [
+          {
+            "const": 0.5,
+            "title": "hairline"
+          },
+          {
+            "const": 1,
+            "title": "thin"
+          },
+          {
+            "const": 2,
+            "title": "medium"
+          },
+          {
+            "const": 3,
+            "title": "thick"
+          }
+        ]
+      },
+      "behavior.transitionSpeed": {
+        "label": "Transition Speed",
+        "widget": "input-range",
+        "min": 0,
+        "max": 1000,
+        "step": 1,
+        "oneOf": [
+          {
+            "const": 150,
+            "title": "fast"
+          },
+          {
+            "const": 250,
+            "title": "normal"
+          },
+          {
+            "const": 350,
+            "title": "slow"
+          }
+        ]
+      },
+      "behavior.animationEasing": {
+        "label": "Animation Easing",
+        "enum": [
+          "linear",
+          "ease",
+          "ease-in",
+          "ease-out",
+          "ease-in-out",
+          "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+        ]
+      },
+      "behavior.customTransitionSpeed": {
+        "label": "Custom Transition Speed",
+        "widget": "input-range",
+        "min": 0,
+        "max": 1000,
+        "step": 10
+      },
+      "behavior.customEasing": {
+        "label": "Custom Easing"
+      },
+      "behavior.focusRingWidth": {
+        "label": "Focus Ring Width",
+        "widget": "input-range",
+        "min": 0,
+        "max": 8,
+        "step": 1
+      },
+      "behavior.focusRingOpacity": {
+        "label": "Focus Ring Opacity",
+        "widget": "input-range",
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "behavior.hoverOpacity": {
+        "label": "Hover Opacity",
+        "widget": "input-range",
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "layout.maxWidth": {
+        "label": "Max Width",
+        "widget": "input-text",
+        "placeholder": "e.g. 1200 or 1200px"
+      },
+      "layout.maxWidths.sm": {
+        "label": "Sm",
+        "widget": "input-text",
+        "placeholder": "e.g. 640 or 640px"
+      },
+      "layout.maxWidths.md": {
+        "label": "Md",
+        "widget": "input-text",
+        "placeholder": "e.g. 768 or 768px"
+      },
+      "layout.maxWidths.lg": {
+        "label": "Lg",
+        "widget": "input-text",
+        "placeholder": "e.g. 1024 or 1024px"
+      },
+      "layout.maxWidths.xl": {
+        "label": "Xl",
+        "widget": "input-text",
+        "placeholder": "e.g. 1280 or 1280px"
+      },
+      "layout.containerPadding": {
+        "label": "Container Padding",
+        "widget": "input-text",
+        "placeholder": "e.g. var(--spacing-6)"
+      },
+      "layout.breakpoints.sm": {
+        "label": "Sm",
+        "widget": "input-number",
+        "min": 320,
+        "max": 2560,
+        "step": 1
+      },
+      "layout.breakpoints.md": {
+        "label": "Md",
+        "widget": "input-number",
+        "min": 480,
+        "max": 3200,
+        "step": 1
+      },
+      "layout.breakpoints.lg": {
+        "label": "Lg",
+        "widget": "input-number",
+        "min": 640,
+        "max": 3840,
+        "step": 1
+      },
+      "layout.breakpoints.xl": {
+        "label": "Xl",
+        "widget": "input-number",
+        "min": 768,
+        "max": 5120,
+        "step": 1
+      },
+      "layout.gridColumns": {
+        "label": "Grid Columns",
+        "widget": "input-range",
+        "min": 1,
+        "max": 24,
+        "step": 1
+      },
+      "layout.gridGutter": {
+        "label": "Grid Gutter",
+        "widget": "input-range",
+        "min": 0,
+        "max": 8,
+        "step": 0.05
+      },
+      "layout.densityCompact": {
+        "label": "Density Compact",
+        "widget": "input-range",
+        "min": 0.5,
+        "max": 2,
+        "step": 0.05
+      },
+      "layout.densityNormal": {
+        "label": "Density Normal",
+        "widget": "input-range",
+        "min": 0.5,
+        "max": 2,
+        "step": 0.05
+      },
+      "layout.densityComfortable": {
+        "label": "Density Comfortable",
+        "widget": "input-range",
+        "min": 0.5,
+        "max": 2,
+        "step": 0.05
+      },
+      "layout.buttonMinHeight": {
+        "label": "Button Min Height",
+        "widget": "input-range",
+        "min": 24,
+        "max": 96,
+        "step": 1
+      },
+      "layout.inputMinHeight": {
+        "label": "Input Min Height",
+        "widget": "input-range",
+        "min": 24,
+        "max": 96,
+        "step": 1
+      },
+      "layout.baseShadowOpacity": {
+        "label": "Base Shadow Opacity",
+        "widget": "input-range",
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "layout.darkMode.baseShadowOpacity": {
+        "label": "Base Shadow Opacity",
+        "widget": "input-range",
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "layout.utilities.grid": {
+        "label": "Grid",
+        "widget": "toggle"
+      },
+      "layout.utilities.flex": {
+        "label": "Flex",
+        "widget": "toggle"
+      },
+      "layout.utilities.spacing": {
+        "label": "Spacing",
+        "widget": "toggle"
+      },
+      "layout.utilities.container": {
+        "label": "Container",
+        "widget": "toggle"
+      },
+      "layout.gridSystem.columns": {
+        "label": "Columns"
+      },
+      "layout.gridSystem.autoFitBreakpoints.sm": {
+        "label": "Sm"
+      },
+      "layout.gridSystem.autoFitBreakpoints.md": {
+        "label": "Md"
+      },
+      "layout.gridSystem.autoFitBreakpoints.lg": {
+        "label": "Lg"
+      },
+      "layout.gridSystem.autoFitBreakpoints.xl": {
+        "label": "Xl"
+      },
+      "layout.gridSystem.enableGapUtilities": {
+        "label": "Enable Gap Utilities",
+        "widget": "toggle"
+      },
+      "layout.containerMaxWidth": {
+        "label": "Container Max Width",
+        "widget": "input-text",
+        "placeholder": "e.g. 1400px"
+      },
+      "layers.baseShadowOpacity": {
+        "label": "Base Shadow Opacity",
+        "widget": "input-range",
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "layers.shadowBlurMultiplier": {
+        "label": "Shadow Blur Multiplier",
+        "widget": "input-range",
+        "min": 0,
+        "max": 8,
+        "step": 0.1
+      },
+      "layers.shadowOffsetMultiplier": {
+        "label": "Shadow Offset Multiplier",
+        "widget": "input-range",
+        "min": 0,
+        "max": 8,
+        "step": 0.1
+      },
+      "layers.shadowDepth": {
+        "label": "Shadow Depth"
+      },
+      "layers.blurLight": {
+        "label": "Blur Light",
+        "widget": "input-range",
+        "min": 0,
+        "max": 48,
+        "step": 1
+      },
+      "layers.blurMedium": {
+        "label": "Blur Medium",
+        "widget": "input-range",
+        "min": 0,
+        "max": 64,
+        "step": 1
+      },
+      "layers.blurHeavy": {
+        "label": "Blur Heavy",
+        "widget": "input-range",
+        "min": 0,
+        "max": 96,
+        "step": 1
+      },
+      "layers.baseZIndex": {
+        "label": "Base ZIndex",
+        "widget": "input-range",
+        "min": 0,
+        "max": 10000,
+        "step": 10
+      },
+      "layers.zIndexStep": {
+        "label": "Z Index Step",
+        "widget": "input-range",
+        "min": 1,
+        "max": 100,
+        "step": 1
+      },
+      "layers.zIndexBase": {
+        "label": "Z Index Base",
+        "widget": "input-range",
+        "min": 0,
+        "max": 10,
+        "step": 1
+      },
+      "layers.zIndexDropdown": {
+        "label": "Z Index Dropdown",
+        "widget": "input-range",
+        "min": 0,
+        "max": 4000,
+        "step": 1
+      },
+      "layers.zIndexSticky": {
+        "label": "Z Index Sticky",
+        "widget": "input-range",
+        "min": 0,
+        "max": 4080,
+        "step": 1
+      },
+      "layers.zIndexFixed": {
+        "label": "Z Index Fixed",
+        "widget": "input-range",
+        "min": 0,
+        "max": 4120,
+        "step": 1
+      },
+      "layers.zIndexModal": {
+        "label": "Z Index Modal",
+        "widget": "input-range",
+        "min": 0,
+        "max": 4160,
+        "step": 1
+      },
+      "layers.zIndexPopover": {
+        "label": "Z Index Popover",
+        "widget": "input-range",
+        "min": 0,
+        "max": 4200,
+        "step": 1
+      },
+      "layers.zIndexTooltip": {
+        "label": "Z Index Tooltip",
+        "widget": "input-range",
+        "min": 0,
+        "max": 4240,
+        "step": 1
+      },
+      "layers.zIndexNotification": {
+        "label": "Z Index Notification",
+        "widget": "input-range",
+        "min": 0,
+        "max": 4280,
+        "step": 1
+      },
+      "layers.darkMode.baseShadowOpacity": {
+        "label": "Base Shadow Opacity",
+        "widget": "input-range",
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "advanced.linkStyle": {
+        "label": "Link Style",
+        "enum": [
+          "inline",
+          "block",
+          "button"
+        ]
+      },
+      "advanced.colorDerivation": {
+        "label": "Color Derivation"
+      },
+      "a11y.minTouchTarget": {
+        "label": "Min Touch Target",
+        "widget": "input-range",
+        "min": 0,
+        "max": 176,
+        "step": 1,
+        "oneOf": [
+          {
+            "const": 36,
+            "title": "compact"
+          },
+          {
+            "const": 44,
+            "title": "standard"
+          },
+          {
+            "const": 48,
+            "title": "comfortable"
+          },
+          {
+            "const": 56,
+            "title": "spacious"
+          }
+        ]
+      },
+      "a11y.prefersReducedMotion": {
+        "label": "Prefers Reduced Motion",
+        "widget": "toggle"
+      },
+      "a11y.focusStyle": {
+        "label": "Focus Style",
+        "enum": [
+          "ring",
+          "outline",
+          "border",
+          "glow"
+        ]
+      },
+      "icons.set": {
+        "label": "Set"
+      },
+      "icons.weight": {
+        "label": "Weight"
+      },
+      "icons.defaultSize": {
+        "label": "Default Size",
+        "widget": "input-range",
+        "min": 8,
+        "max": 128,
+        "step": 1,
+        "icon": "sparkle"
+      },
+      "icons.sizes.xs": {
+        "label": "Xs",
+        "widget": "input-range",
+        "min": 0,
+        "max": 64,
+        "step": 1
+      },
+      "icons.sizes.sm": {
+        "label": "Sm",
+        "widget": "input-range",
+        "min": 0,
+        "max": 80,
+        "step": 1
+      },
+      "icons.sizes.md": {
+        "label": "Md",
+        "widget": "input-range",
+        "min": 0,
+        "max": 96,
+        "step": 1
+      },
+      "icons.sizes.lg": {
+        "label": "Lg",
+        "widget": "input-range",
+        "min": 0,
+        "max": 128,
+        "step": 1
+      },
+      "icons.sizes.xl": {
+        "label": "Xl",
+        "widget": "input-range",
+        "min": 0,
+        "max": 192,
+        "step": 1
+      },
+      "icons.sizes.2xl": {
+        "label": "2xl",
+        "widget": "input-range",
+        "min": 0,
+        "max": 256,
+        "step": 1
+      },
+      "icons.spritePath": {
+        "label": "Sprite Path"
+      },
+      "icons.externalPath": {
+        "label": "External Path"
+      },
+      "icons.include.navigation": {
+        "label": "Navigation"
+      },
+      "icons.include.actions": {
+        "label": "Actions"
+      },
+      "icons.include.communication": {
+        "label": "Communication"
+      },
+      "icons.include.content": {
+        "label": "Content"
+      },
+      "icons.include.status": {
+        "label": "Status"
+      },
+      "icons.include.time": {
+        "label": "Time"
+      },
+      "icons.include.commerce": {
+        "label": "Commerce"
+      },
+      "icons.include.formatting": {
+        "label": "Formatting"
+      },
+      "icons.include.system": {
+        "label": "System"
+      },
+      "components": {
+        "label": "Components"
+      },
+      "debug": {
+        "label": "Debug",
+        "widget": "toggle"
+      }
+    },
+    "configFormSchema": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "minLength": 1,
+            "maxLength": 64,
+            "examples": [
+              "default"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "minLength": 1,
+            "maxLength": 80,
+            "examples": [
+              "Default"
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "examples": [
+                "app"
+              ]
+            },
+            "uniqueItems": true
+          },
+          "themes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "oneOf": [
+                {
+                  "const": "light",
+                  "title": "Light"
+                },
+                {
+                  "const": "dark",
+                  "title": "Dark"
+                },
+                {
+                  "const": "system",
+                  "title": "System"
+                }
+              ]
+            },
+            "uniqueItems": true
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "maxLength": 500,
+            "examples": [
+              "Fresh and modern design system with balanced aesthetics and usability"
+            ]
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "liquidGlassEffects": {
+                "type": "boolean",
+                "title": "Liquid Glass Effects",
+                "examples": [
+                  true
+                ]
+              },
+              "backgroundMesh": {
+                "type": "number",
+                "title": "Background Mesh",
+                "minimum": 0,
+                "maximum": 16,
+                "multipleOf": 1,
+                "examples": [
+                  4
+                ]
+              }
+            },
+            "title": "Options"
+          },
+          "form": {
+            "type": "object",
+            "properties": {
+              "options": {
+                "type": "object",
+                "properties": {
+                  "widgets": {
+                    "type": "object",
+                    "properties": {
+                      "booleans": {
+                        "type": "string",
+                        "title": "Booleans",
+                        "examples": [
+                          "toggle"
+                        ]
+                      },
+                      "numbers": {
+                        "type": "string",
+                        "title": "Numbers",
+                        "examples": [
+                          "input"
+                        ]
+                      },
+                      "selects": {
+                        "type": "string",
+                        "title": "Selects",
+                        "examples": [
+                          "standard"
+                        ]
+                      }
+                    },
+                    "title": "Widgets"
+                  },
+                  "layouts": {
+                    "type": "object",
+                    "properties": {
+                      "fieldsets": {
+                        "type": "string",
+                        "title": "Fieldsets",
+                        "examples": [
+                          "default"
+                        ]
+                      },
+                      "arrays": {
+                        "type": "string",
+                        "title": "Arrays",
+                        "examples": [
+                          "default"
+                        ]
+                      }
+                    },
+                    "title": "Layouts"
+                  },
+                  "enhancements": {
+                    "type": "object",
+                    "properties": {
+                      "icons": {
+                        "type": "boolean",
+                        "title": "Icons",
+                        "examples": [
+                          true
+                        ]
+                      },
+                      "datalists": {
+                        "type": "boolean",
+                        "title": "Datalists",
+                        "examples": [
+                          true
+                        ]
+                      },
+                      "rangeOutput": {
+                        "type": "boolean",
+                        "title": "Range Output",
+                        "examples": [
+                          true
+                        ]
+                      }
+                    },
+                    "title": "Enhancements"
+                  },
+                  "validation": {
+                    "type": "object",
+                    "properties": {
+                      "showErrors": {
+                        "type": "boolean",
+                        "title": "Show Errors",
+                        "examples": [
+                          true
+                        ]
+                      },
+                      "validateOnChange": {
+                        "type": "boolean",
+                        "title": "Validate On Change",
+                        "examples": [
+                          false
+                        ]
+                      }
+                    },
+                    "title": "Validation"
+                  }
+                },
+                "title": "Options"
+              }
+            },
+            "title": "Form"
+          },
+          "colors": {
+            "type": "object",
+            "properties": {
+              "primary": {
+                "type": "string",
+                "title": "Primary",
+                "examples": [
+                  "#0e7490"
+                ]
+              },
+              "secondary": {
+                "type": "string",
+                "title": "Secondary",
+                "examples": [
+                  "#a99b95"
+                ]
+              },
+              "accent": {
+                "type": "string",
+                "title": "Accent",
+                "examples": [
+                  "#e54271"
+                ]
+              },
+              "background": {
+                "type": "string",
+                "title": "Background",
+                "examples": [
+                  "#e7e6de"
+                ]
+              },
+              "success": {
+                "type": "string",
+                "title": "Success"
+              },
+              "warning": {
+                "type": "string",
+                "title": "Warning",
+                "examples": [
+                  "#B38600"
+                ]
+              },
+              "danger": {
+                "type": "string",
+                "title": "Danger"
+              },
+              "info": {
+                "type": "string",
+                "title": "Info"
+              },
+              "gradientStops": {
+                "type": "number",
+                "title": "Gradient Stops",
+                "minimum": 2,
+                "maximum": 8,
+                "multipleOf": 1,
+                "examples": [
+                  3
+                ]
+              },
+              "elevationOpacity": {
+                "type": "number",
+                "title": "Elevation Opacity",
+                "minimum": 0,
+                "maximum": 1,
+                "multipleOf": 0.01,
+                "examples": [
+                  0.05
+                ]
+              },
+              "darkMode": {
+                "type": "object",
+                "properties": {
+                  "background": {
+                    "type": "string",
+                    "title": "Background",
+                    "examples": [
+                      "#16171a"
+                    ]
+                  },
+                  "primary": {
+                    "type": "string",
+                    "title": "Primary",
+                    "examples": [
+                      "#06b6d4"
+                    ]
+                  },
+                  "secondary": {
+                    "type": "string",
+                    "title": "Secondary",
+                    "examples": [
+                      "#8b9199"
+                    ]
+                  },
+                  "accent": {
+                    "type": "string",
+                    "title": "Accent"
+                  }
+                },
+                "title": "Dark Mode"
+              }
+            },
+            "title": "Colors"
+          },
+          "typography": {
+            "type": "object",
+            "properties": {
+              "fontFamilyHeadings": {
+                "type": "string",
+                "title": "Font Family Headings",
+                "examples": [
+                  "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+                ]
+              },
+              "fontFamilyBody": {
+                "type": "string",
+                "title": "Font Family Body",
+                "examples": [
+                  "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+                ]
+              },
+              "fontFamilyMono": {
+                "type": "string",
+                "title": "Font Family Mono",
+                "examples": [
+                  "ui-monospace, \"Cascadia Code\", \"Source Code Pro\", Menlo, Consolas, monospace"
+                ]
+              },
+              "baseFontSize": {
+                "type": "number",
+                "title": "Base Font Size",
+                "minimum": 8,
+                "maximum": 32,
+                "multipleOf": 1,
+                "examples": [
+                  16
+                ]
+              },
+              "fontScale": {
+                "type": "number",
+                "title": "Font Scale",
+                "minimum": 1,
+                "maximum": 2,
+                "multipleOf": 0.01,
+                "examples": [
+                  1.2
+                ]
+              },
+              "fontWeightLight": {
+                "type": "number",
+                "title": "Font Weight Light",
+                "minimum": 100,
+                "maximum": 800,
+                "multipleOf": 100,
+                "examples": [
+                  300
+                ]
+              },
+              "fontWeightNormal": {
+                "type": "number",
+                "title": "Font Weight Normal",
+                "minimum": 100,
+                "maximum": 800,
+                "multipleOf": 100,
+                "examples": [
+                  400
+                ]
+              },
+              "fontWeightMedium": {
+                "type": "number",
+                "title": "Font Weight Medium",
+                "minimum": 100,
+                "maximum": 800,
+                "multipleOf": 100,
+                "examples": [
+                  500
+                ]
+              },
+              "fontWeightSemibold": {
+                "type": "number",
+                "title": "Font Weight Semibold",
+                "minimum": 100,
+                "maximum": 800,
+                "multipleOf": 100,
+                "examples": [
+                  600
+                ]
+              },
+              "fontWeightBold": {
+                "type": "number",
+                "title": "Font Weight Bold",
+                "minimum": 100,
+                "maximum": 800,
+                "multipleOf": 100,
+                "examples": [
+                  700
+                ]
+              },
+              "lineHeightTight": {
+                "type": "number",
+                "title": "Line Height Tight",
+                "minimum": 0.75,
+                "maximum": 3,
+                "multipleOf": 0.001,
+                "examples": [
+                  1.25
+                ]
+              },
+              "lineHeightNormal": {
+                "type": "number",
+                "title": "Line Height Normal",
+                "minimum": 0.75,
+                "maximum": 3,
+                "multipleOf": 0.001,
+                "examples": [
+                  1.5
+                ]
+              },
+              "lineHeightRelaxed": {
+                "type": "number",
+                "title": "Line Height Relaxed",
+                "minimum": 0.75,
+                "maximum": 3,
+                "multipleOf": 0.001,
+                "examples": [
+                  1.75
+                ]
+              },
+              "letterSpacingTight": {
+                "type": "number",
+                "title": "Letter Spacing Tight",
+                "minimum": -0.1,
+                "maximum": 0.1,
+                "multipleOf": 0.001,
+                "examples": [
+                  -0.025
+                ]
+              },
+              "letterSpacingNormal": {
+                "type": "number",
+                "title": "Letter Spacing Normal",
+                "minimum": -0.1,
+                "maximum": 0.1,
+                "multipleOf": 0.001,
+                "examples": [
+                  0
+                ]
+              },
+              "letterSpacingWide": {
+                "type": "number",
+                "title": "Letter Spacing Wide",
+                "minimum": -0.1,
+                "maximum": 0.1,
+                "multipleOf": 0.001,
+                "examples": [
+                  0.025
+                ]
+              }
+            },
+            "title": "Typography"
+          },
+          "spatialRhythm": {
+            "type": "object",
+            "properties": {
+              "baseUnit": {
+                "type": "number",
+                "title": "Base Unit",
+                "minimum": 1,
+                "maximum": 16,
+                "multipleOf": 1,
+                "examples": [
+                  4
+                ]
+              },
+              "scaleRatio": {
+                "type": "number",
+                "title": "Scale Ratio",
+                "minimum": 1,
+                "maximum": 2,
+                "multipleOf": 0.01,
+                "examples": [
+                  1.25
+                ]
+              },
+              "maxSpacingSteps": {
+                "type": "number",
+                "title": "Max Spacing Steps",
+                "minimum": 4,
+                "maximum": 64,
+                "multipleOf": 1,
+                "examples": [
+                  32
+                ]
+              },
+              "containerPadding": {
+                "type": "number",
+                "title": "Container Padding",
+                "minimum": 0,
+                "maximum": 8,
+                "multipleOf": 0.05,
+                "examples": [
+                  1
+                ]
+              },
+              "inputPadding": {
+                "type": "number",
+                "title": "Input Padding",
+                "minimum": 0,
+                "maximum": 4,
+                "multipleOf": 0.05,
+                "examples": [
+                  0.75
+                ]
+              },
+              "buttonPadding": {
+                "type": "number",
+                "title": "Button Padding",
+                "minimum": 0,
+                "maximum": 4,
+                "multipleOf": 0.05,
+                "examples": [
+                  1
+                ]
+              },
+              "sectionSpacing": {
+                "type": "number",
+                "title": "Section Spacing",
+                "minimum": 0,
+                "maximum": 8,
+                "multipleOf": 0.05,
+                "examples": [
+                  2
+                ]
+              }
+            },
+            "title": "Spatial Rhythm"
+          },
+          "shape": {
+            "type": "object",
+            "properties": {
+              "radiusSize": {
+                "type": "number",
+                "title": "Radius Size",
+                "oneOf": [
+                  {
+                    "const": 0,
+                    "title": "none"
+                  },
+                  {
+                    "const": 4,
+                    "title": "small"
+                  },
+                  {
+                    "const": 8,
+                    "title": "medium"
+                  },
+                  {
+                    "const": 16,
+                    "title": "large"
+                  },
+                  {
+                    "const": 24,
+                    "title": "xlarge"
+                  },
+                  {
+                    "const": 32,
+                    "title": "xxlarge"
+                  }
+                ],
+                "minimum": 0,
+                "maximum": 64,
+                "multipleOf": 1,
+                "examples": [
+                  16
+                ]
+              },
+              "customRadius": {
+                "type": "string",
+                "title": "Custom Radius"
+              },
+              "borderWidth": {
+                "type": "number",
+                "title": "Border Width",
+                "oneOf": [
+                  {
+                    "const": 0.5,
+                    "title": "hairline"
+                  },
+                  {
+                    "const": 1,
+                    "title": "thin"
+                  },
+                  {
+                    "const": 2,
+                    "title": "medium"
+                  },
+                  {
+                    "const": 3,
+                    "title": "thick"
+                  }
+                ],
+                "minimum": 0,
+                "maximum": 10,
+                "multipleOf": 1,
+                "examples": [
+                  2
+                ]
+              }
+            },
+            "title": "Shape"
+          },
+          "behavior": {
+            "type": "object",
+            "properties": {
+              "transitionSpeed": {
+                "type": "number",
+                "title": "Transition Speed",
+                "oneOf": [
+                  {
+                    "const": 150,
+                    "title": "fast"
+                  },
+                  {
+                    "const": 250,
+                    "title": "normal"
+                  },
+                  {
+                    "const": 350,
+                    "title": "slow"
+                  }
+                ],
+                "minimum": 0,
+                "maximum": 1000,
+                "multipleOf": 1,
+                "examples": [
+                  250
+                ]
+              },
+              "animationEasing": {
+                "type": "string",
+                "title": "Animation Easing",
+                "oneOf": [
+                  {
+                    "const": "linear",
+                    "title": "Linear"
+                  },
+                  {
+                    "const": "ease",
+                    "title": "Ease"
+                  },
+                  {
+                    "const": "ease-in",
+                    "title": "Ease in"
+                  },
+                  {
+                    "const": "ease-out",
+                    "title": "Ease out"
+                  },
+                  {
+                    "const": "ease-in-out",
+                    "title": "Ease in out"
+                  },
+                  {
+                    "const": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+                    "title": "Cubic bezier(0.68, 0.55, 0.265, 1.55)"
+                  }
+                ],
+                "examples": [
+                  "ease-out"
+                ]
+              },
+              "customTransitionSpeed": {
+                "type": "number",
+                "title": "Custom Transition Speed",
+                "minimum": 0,
+                "maximum": 1000,
+                "multipleOf": 10
+              },
+              "customEasing": {
+                "type": "string",
+                "title": "Custom Easing"
+              },
+              "focusRingWidth": {
+                "type": "number",
+                "title": "Focus Ring Width",
+                "minimum": 0,
+                "maximum": 8,
+                "multipleOf": 1,
+                "examples": [
+                  3
+                ]
+              },
+              "focusRingOpacity": {
+                "type": "number",
+                "title": "Focus Ring Opacity",
+                "minimum": 0,
+                "maximum": 1,
+                "multipleOf": 0.01,
+                "examples": [
+                  0.3
+                ]
+              },
+              "hoverOpacity": {
+                "type": "number",
+                "title": "Hover Opacity",
+                "minimum": 0,
+                "maximum": 1,
+                "multipleOf": 0.01,
+                "examples": [
+                  0.8
+                ]
+              }
+            },
+            "title": "Behavior"
+          },
+          "layout": {
+            "type": "object",
+            "properties": {
+              "maxWidth": {
+                "type": "string",
+                "title": "Max Width"
+              },
+              "maxWidths": {
+                "type": "object",
+                "properties": {
+                  "sm": {
+                    "type": "string",
+                    "title": "Sm"
+                  },
+                  "md": {
+                    "type": "string",
+                    "title": "Md"
+                  },
+                  "lg": {
+                    "type": "string",
+                    "title": "Lg"
+                  },
+                  "xl": {
+                    "type": "string",
+                    "title": "Xl"
+                  }
+                },
+                "title": "Max Widths"
+              },
+              "containerPadding": {
+                "type": "string",
+                "title": "Container Padding",
+                "examples": [
+                  "var(--spacing-6)"
+                ]
+              },
+              "breakpoints": {
+                "type": "object",
+                "properties": {
+                  "sm": {
+                    "type": "number",
+                    "title": "Sm",
+                    "minimum": 320,
+                    "maximum": 2560,
+                    "multipleOf": 1,
+                    "examples": [
+                      640
+                    ]
+                  },
+                  "md": {
+                    "type": "number",
+                    "title": "Md",
+                    "minimum": 480,
+                    "maximum": 3200,
+                    "multipleOf": 1,
+                    "examples": [
+                      768
+                    ]
+                  },
+                  "lg": {
+                    "type": "number",
+                    "title": "Lg",
+                    "minimum": 640,
+                    "maximum": 3840,
+                    "multipleOf": 1,
+                    "examples": [
+                      1024
+                    ]
+                  },
+                  "xl": {
+                    "type": "number",
+                    "title": "Xl",
+                    "minimum": 768,
+                    "maximum": 5120,
+                    "multipleOf": 1,
+                    "examples": [
+                      1280
+                    ]
+                  }
+                },
+                "title": "Breakpoints"
+              },
+              "gridColumns": {
+                "type": "number",
+                "title": "Grid Columns",
+                "minimum": 1,
+                "maximum": 24,
+                "multipleOf": 1,
+                "examples": [
+                  12
+                ]
+              },
+              "gridGutter": {
+                "type": "number",
+                "title": "Grid Gutter",
+                "minimum": 0,
+                "maximum": 8,
+                "multipleOf": 0.05,
+                "examples": [
+                  1
+                ]
+              },
+              "densityCompact": {
+                "type": "number",
+                "title": "Density Compact",
+                "minimum": 0.5,
+                "maximum": 2,
+                "multipleOf": 0.05,
+                "examples": [
+                  0.8
+                ]
+              },
+              "densityNormal": {
+                "type": "number",
+                "title": "Density Normal",
+                "minimum": 0.5,
+                "maximum": 2,
+                "multipleOf": 0.05,
+                "examples": [
+                  1
+                ]
+              },
+              "densityComfortable": {
+                "type": "number",
+                "title": "Density Comfortable",
+                "minimum": 0.5,
+                "maximum": 2,
+                "multipleOf": 0.05,
+                "examples": [
+                  1.2
+                ]
+              },
+              "buttonMinHeight": {
+                "type": "number",
+                "title": "Button Min Height",
+                "minimum": 24,
+                "maximum": 96,
+                "multipleOf": 1,
+                "examples": [
+                  44
+                ]
+              },
+              "inputMinHeight": {
+                "type": "number",
+                "title": "Input Min Height",
+                "minimum": 24,
+                "maximum": 96,
+                "multipleOf": 1,
+                "examples": [
+                  40
+                ]
+              },
+              "baseShadowOpacity": {
+                "type": "number",
+                "title": "Base Shadow Opacity",
+                "minimum": 0,
+                "maximum": 1,
+                "multipleOf": 0.01,
+                "examples": [
+                  0.1
+                ]
+              },
+              "darkMode": {
+                "type": "object",
+                "properties": {
+                  "baseShadowOpacity": {
+                    "type": "number",
+                    "title": "Base Shadow Opacity",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "multipleOf": 0.01,
+                    "examples": [
+                      0.25
+                    ]
+                  }
+                },
+                "title": "Dark Mode"
+              },
+              "utilities": {
+                "type": "object",
+                "properties": {
+                  "grid": {
+                    "type": "boolean",
+                    "title": "Grid",
+                    "examples": [
+                      true
+                    ]
+                  },
+                  "flex": {
+                    "type": "boolean",
+                    "title": "Flex",
+                    "examples": [
+                      true
+                    ]
+                  },
+                  "spacing": {
+                    "type": "boolean",
+                    "title": "Spacing",
+                    "examples": [
+                      true
+                    ]
+                  },
+                  "container": {
+                    "type": "boolean",
+                    "title": "Container",
+                    "examples": [
+                      true
+                    ]
+                  }
+                },
+                "title": "Utilities"
+              },
+              "gridSystem": {
+                "type": "object",
+                "properties": {
+                  "columns": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    }
+                  },
+                  "autoFitBreakpoints": {
+                    "type": "object",
+                    "properties": {
+                      "sm": {
+                        "type": "string",
+                        "title": "Sm",
+                        "examples": [
+                          "150px"
+                        ]
+                      },
+                      "md": {
+                        "type": "string",
+                        "title": "Md",
+                        "examples": [
+                          "250px"
+                        ]
+                      },
+                      "lg": {
+                        "type": "string",
+                        "title": "Lg",
+                        "examples": [
+                          "350px"
+                        ]
+                      },
+                      "xl": {
+                        "type": "string",
+                        "title": "Xl",
+                        "examples": [
+                          "450px"
+                        ]
+                      }
+                    },
+                    "title": "Auto Fit Breakpoints"
+                  },
+                  "enableGapUtilities": {
+                    "type": "boolean",
+                    "title": "Enable Gap Utilities",
+                    "examples": [
+                      true
+                    ]
+                  }
+                },
+                "title": "Grid System"
+              },
+              "containerMaxWidth": {
+                "type": "string",
+                "title": "Container Max Width",
+                "examples": [
+                  "1400px"
+                ]
+              }
+            },
+            "title": "Layout"
+          },
+          "layers": {
+            "type": "object",
+            "properties": {
+              "baseShadowOpacity": {
+                "type": "number",
+                "title": "Base Shadow Opacity",
+                "minimum": 0,
+                "maximum": 1,
+                "multipleOf": 0.01,
+                "examples": [
+                  0.1
+                ]
+              },
+              "shadowBlurMultiplier": {
+                "type": "number",
+                "title": "Shadow Blur Multiplier",
+                "minimum": 0,
+                "maximum": 8,
+                "multipleOf": 0.1
+              },
+              "shadowOffsetMultiplier": {
+                "type": "number",
+                "title": "Shadow Offset Multiplier",
+                "minimum": 0,
+                "maximum": 8,
+                "multipleOf": 0.1
+              },
+              "shadowDepth": {
+                "type": "string",
+                "title": "Shadow Depth",
+                "examples": [
+                  "medium"
+                ]
+              },
+              "blurLight": {
+                "type": "number",
+                "title": "Blur Light",
+                "minimum": 0,
+                "maximum": 48,
+                "multipleOf": 1,
+                "examples": [
+                  4
+                ]
+              },
+              "blurMedium": {
+                "type": "number",
+                "title": "Blur Medium",
+                "minimum": 0,
+                "maximum": 64,
+                "multipleOf": 1,
+                "examples": [
+                  8
+                ]
+              },
+              "blurHeavy": {
+                "type": "number",
+                "title": "Blur Heavy",
+                "minimum": 0,
+                "maximum": 96,
+                "multipleOf": 1,
+                "examples": [
+                  16
+                ]
+              },
+              "baseZIndex": {
+                "type": "number",
+                "title": "Base ZIndex",
+                "minimum": 0,
+                "maximum": 10000,
+                "multipleOf": 10
+              },
+              "zIndexStep": {
+                "type": "number",
+                "title": "Z Index Step",
+                "minimum": 1,
+                "maximum": 100,
+                "multipleOf": 1
+              },
+              "zIndexBase": {
+                "type": "number",
+                "title": "Z Index Base",
+                "minimum": 0,
+                "maximum": 10,
+                "multipleOf": 1,
+                "examples": [
+                  0
+                ]
+              },
+              "zIndexDropdown": {
+                "type": "number",
+                "title": "Z Index Dropdown",
+                "minimum": 0,
+                "maximum": 4000,
+                "multipleOf": 1,
+                "examples": [
+                  1000
+                ]
+              },
+              "zIndexSticky": {
+                "type": "number",
+                "title": "Z Index Sticky",
+                "minimum": 0,
+                "maximum": 4080,
+                "multipleOf": 1,
+                "examples": [
+                  1020
+                ]
+              },
+              "zIndexFixed": {
+                "type": "number",
+                "title": "Z Index Fixed",
+                "minimum": 0,
+                "maximum": 4120,
+                "multipleOf": 1,
+                "examples": [
+                  1030
+                ]
+              },
+              "zIndexModal": {
+                "type": "number",
+                "title": "Z Index Modal",
+                "minimum": 0,
+                "maximum": 4160,
+                "multipleOf": 1,
+                "examples": [
+                  1040
+                ]
+              },
+              "zIndexPopover": {
+                "type": "number",
+                "title": "Z Index Popover",
+                "minimum": 0,
+                "maximum": 4200,
+                "multipleOf": 1,
+                "examples": [
+                  1050
+                ]
+              },
+              "zIndexTooltip": {
+                "type": "number",
+                "title": "Z Index Tooltip",
+                "minimum": 0,
+                "maximum": 4240,
+                "multipleOf": 1,
+                "examples": [
+                  1060
+                ]
+              },
+              "zIndexNotification": {
+                "type": "number",
+                "title": "Z Index Notification",
+                "minimum": 0,
+                "maximum": 4280,
+                "multipleOf": 1,
+                "examples": [
+                  1070
+                ]
+              },
+              "darkMode": {
+                "type": "object",
+                "properties": {
+                  "baseShadowOpacity": {
+                    "type": "number",
+                    "title": "Base Shadow Opacity",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "multipleOf": 0.01,
+                    "examples": [
+                      0.25
+                    ]
+                  }
+                },
+                "title": "Dark Mode"
+              }
+            },
+            "title": "Layers"
+          },
+          "advanced": {
+            "type": "object",
+            "properties": {
+              "linkStyle": {
+                "type": "string",
+                "title": "Link Style",
+                "oneOf": [
+                  {
+                    "const": "inline",
+                    "title": "Inline"
+                  },
+                  {
+                    "const": "block",
+                    "title": "Block"
+                  },
+                  {
+                    "const": "button",
+                    "title": "Button"
+                  }
+                ],
+                "examples": [
+                  "inline"
+                ]
+              },
+              "colorDerivation": {
+                "type": "string",
+                "title": "Color Derivation",
+                "examples": [
+                  "hsl"
+                ]
+              }
+            },
+            "title": "Advanced"
+          },
+          "a11y": {
+            "type": "object",
+            "properties": {
+              "minTouchTarget": {
+                "type": "number",
+                "title": "Min Touch Target",
+                "oneOf": [
+                  {
+                    "const": 36,
+                    "title": "compact"
+                  },
+                  {
+                    "const": 44,
+                    "title": "standard"
+                  },
+                  {
+                    "const": 48,
+                    "title": "comfortable"
+                  },
+                  {
+                    "const": 56,
+                    "title": "spacious"
+                  }
+                ],
+                "minimum": 0,
+                "maximum": 176,
+                "multipleOf": 1,
+                "examples": [
+                  44
+                ]
+              },
+              "prefersReducedMotion": {
+                "type": "boolean",
+                "title": "Prefers Reduced Motion",
+                "examples": [
+                  true
+                ]
+              },
+              "focusStyle": {
+                "type": "string",
+                "title": "Focus Style",
+                "oneOf": [
+                  {
+                    "const": "ring",
+                    "title": "Ring"
+                  },
+                  {
+                    "const": "outline",
+                    "title": "Outline"
+                  },
+                  {
+                    "const": "border",
+                    "title": "Border"
+                  },
+                  {
+                    "const": "glow",
+                    "title": "Glow"
+                  }
+                ],
+                "examples": [
+                  "ring"
+                ]
+              }
+            },
+            "title": "A11y"
+          },
+          "icons": {
+            "type": "object",
+            "properties": {
+              "set": {
+                "type": "string",
+                "title": "Set",
+                "examples": [
+                  "phosphor"
+                ]
+              },
+              "weight": {
+                "type": "string",
+                "title": "Weight",
+                "examples": [
+                  "regular"
+                ]
+              },
+              "defaultSize": {
+                "type": "number",
+                "title": "Default Size",
+                "minimum": 8,
+                "maximum": 128,
+                "multipleOf": 1,
+                "examples": [
+                  24
+                ]
+              },
+              "sizes": {
+                "type": "object",
+                "properties": {
+                  "xs": {
+                    "type": "number",
+                    "title": "Xs",
+                    "minimum": 0,
+                    "maximum": 64,
+                    "multipleOf": 1,
+                    "examples": [
+                      16
+                    ]
+                  },
+                  "sm": {
+                    "type": "number",
+                    "title": "Sm",
+                    "minimum": 0,
+                    "maximum": 80,
+                    "multipleOf": 1,
+                    "examples": [
+                      20
+                    ]
+                  },
+                  "md": {
+                    "type": "number",
+                    "title": "Md",
+                    "minimum": 0,
+                    "maximum": 96,
+                    "multipleOf": 1,
+                    "examples": [
+                      24
+                    ]
+                  },
+                  "lg": {
+                    "type": "number",
+                    "title": "Lg",
+                    "minimum": 0,
+                    "maximum": 128,
+                    "multipleOf": 1,
+                    "examples": [
+                      32
+                    ]
+                  },
+                  "xl": {
+                    "type": "number",
+                    "title": "Xl",
+                    "minimum": 0,
+                    "maximum": 192,
+                    "multipleOf": 1,
+                    "examples": [
+                      48
+                    ]
+                  },
+                  "2xl": {
+                    "type": "number",
+                    "title": "2xl",
+                    "minimum": 0,
+                    "maximum": 256,
+                    "multipleOf": 1,
+                    "examples": [
+                      64
+                    ]
+                  }
+                },
+                "title": "Sizes"
+              },
+              "spritePath": {
+                "type": "string",
+                "title": "Sprite Path",
+                "examples": [
+                  "/assets/pds/icons/pds-icons.svg"
+                ]
+              },
+              "externalPath": {
+                "type": "string",
+                "title": "External Path",
+                "examples": [
+                  "/assets/img/icons/"
+                ]
+              },
+              "include": {
+                "type": "object",
+                "properties": {
+                  "navigation": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "examples": [
+                        "arrow-left"
+                      ]
+                    }
+                  },
+                  "actions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "examples": [
+                        "plus"
+                      ]
+                    }
+                  },
+                  "communication": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "examples": [
+                        "envelope"
+                      ]
+                    }
+                  },
+                  "content": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "examples": [
+                        "image"
+                      ]
+                    }
+                  },
+                  "status": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "examples": [
+                        "info"
+                      ]
+                    }
+                  },
+                  "time": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "examples": [
+                        "calendar"
+                      ]
+                    }
+                  },
+                  "commerce": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "examples": [
+                        "shopping-cart"
+                      ]
+                    }
+                  },
+                  "formatting": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "examples": [
+                        "text-align-left"
+                      ]
+                    }
+                  },
+                  "system": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "examples": [
+                        "cloud"
+                      ]
+                    }
+                  }
+                },
+                "title": "Include"
+              }
+            },
+            "title": "Icons"
+          },
+          "components": {
+            "type": "object",
+            "title": "Components"
+          },
+          "debug": {
+            "type": "boolean",
+            "title": "Debug",
+            "examples": [
+              false
+            ]
+          }
+        }
+      },
+      "uiSchema": {
+        "/colors": {
+          "ui:layout": "flex",
+          "ui:layoutOptions": {
+            "wrap": true,
+            "gap": "sm"
+          }
+        },
+        "/colors/darkMode": {
+          "ui:layout": "flex",
+          "ui:layoutOptions": {
+            "wrap": true,
+            "gap": "sm"
+          }
+        },
+        "/tags": {
+          "ui:placeholder": "app, featured"
+        },
+        "/themes": {
+          "ui:widget": "checkbox-group"
+        },
+        "/description": {
+          "ui:widget": "textarea",
+          "ui:placeholder": "Summarize the visual and interaction intent",
+          "ui:options": {
+            "rows": 4
+          }
+        },
+        "/options/liquidGlassEffects": {
+          "ui:widget": "toggle"
+        },
+        "/options/backgroundMesh": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 16,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 16,
+            "step": 1
+          }
+        },
+        "/form/options/enhancements/icons": {
+          "ui:widget": "toggle"
+        },
+        "/form/options/enhancements/datalists": {
+          "ui:widget": "toggle"
+        },
+        "/form/options/enhancements/rangeOutput": {
+          "ui:widget": "toggle"
+        },
+        "/form/options/validation/showErrors": {
+          "ui:widget": "toggle"
+        },
+        "/form/options/validation/validateOnChange": {
+          "ui:widget": "toggle"
+        },
+        "/colors/primary": {
+          "ui:widget": "input-color"
+        },
+        "/colors/secondary": {
+          "ui:widget": "input-color"
+        },
+        "/colors/accent": {
+          "ui:widget": "input-color"
+        },
+        "/colors/background": {
+          "ui:widget": "input-color"
+        },
+        "/colors/success": {
+          "ui:widget": "input-color"
+        },
+        "/colors/warning": {
+          "ui:widget": "input-color"
+        },
+        "/colors/danger": {
+          "ui:widget": "input-color"
+        },
+        "/colors/info": {
+          "ui:widget": "input-color"
+        },
+        "/colors/gradientStops": {
+          "ui:widget": "input-range",
+          "ui:min": 2,
+          "ui:max": 8,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 2,
+            "max": 8,
+            "step": 1
+          }
+        },
+        "/colors/elevationOpacity": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 1,
+          "ui:step": 0.01,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        },
+        "/colors/darkMode/background": {
+          "ui:widget": "input-color"
+        },
+        "/colors/darkMode/primary": {
+          "ui:widget": "input-color"
+        },
+        "/colors/darkMode/secondary": {
+          "ui:widget": "input-color"
+        },
+        "/colors/darkMode/accent": {
+          "ui:widget": "input-color"
+        },
+        "/typography/fontFamilyHeadings": {
+          "ui:widget": "font-family-omnibox",
+          "ui:icon": "text-aa",
+          "ui:placeholder": "Heading font stack"
+        },
+        "/typography/fontFamilyBody": {
+          "ui:widget": "font-family-omnibox",
+          "ui:icon": "text-aa",
+          "ui:placeholder": "Body font stack"
+        },
+        "/typography/fontFamilyMono": {
+          "ui:widget": "font-family-omnibox",
+          "ui:icon": "text-aa",
+          "ui:placeholder": "Monospace font stack"
+        },
+        "/typography/baseFontSize": {
+          "ui:widget": "input-range",
+          "ui:min": 8,
+          "ui:max": 32,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 8,
+            "max": 32,
+            "step": 1
+          }
+        },
+        "/typography/fontScale": {
+          "ui:widget": "input-range",
+          "ui:min": 1,
+          "ui:max": 2,
+          "ui:step": 0.01,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 1,
+            "max": 2,
+            "step": 0.01
+          }
+        },
+        "/typography/fontWeightLight": {
+          "ui:widget": "input-range",
+          "ui:min": 100,
+          "ui:max": 800,
+          "ui:step": 100,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 100,
+            "max": 800,
+            "step": 100
+          }
+        },
+        "/typography/fontWeightNormal": {
+          "ui:widget": "input-range",
+          "ui:min": 100,
+          "ui:max": 800,
+          "ui:step": 100,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 100,
+            "max": 800,
+            "step": 100
+          }
+        },
+        "/typography/fontWeightMedium": {
+          "ui:widget": "input-range",
+          "ui:min": 100,
+          "ui:max": 800,
+          "ui:step": 100,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 100,
+            "max": 800,
+            "step": 100
+          }
+        },
+        "/typography/fontWeightSemibold": {
+          "ui:widget": "input-range",
+          "ui:min": 100,
+          "ui:max": 800,
+          "ui:step": 100,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 100,
+            "max": 800,
+            "step": 100
+          }
+        },
+        "/typography/fontWeightBold": {
+          "ui:widget": "input-range",
+          "ui:min": 100,
+          "ui:max": 800,
+          "ui:step": 100,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 100,
+            "max": 800,
+            "step": 100
+          }
+        },
+        "/typography/lineHeightTight": {
+          "ui:widget": "input-range",
+          "ui:min": 0.75,
+          "ui:max": 3,
+          "ui:step": 0.001,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0.75,
+            "max": 3,
+            "step": 0.001
+          }
+        },
+        "/typography/lineHeightNormal": {
+          "ui:widget": "input-range",
+          "ui:min": 0.75,
+          "ui:max": 3,
+          "ui:step": 0.001,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0.75,
+            "max": 3,
+            "step": 0.001
+          }
+        },
+        "/typography/lineHeightRelaxed": {
+          "ui:widget": "input-range",
+          "ui:min": 0.75,
+          "ui:max": 3,
+          "ui:step": 0.001,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0.75,
+            "max": 3,
+            "step": 0.001
+          }
+        },
+        "/typography/letterSpacingTight": {
+          "ui:widget": "input-range",
+          "ui:min": -0.1,
+          "ui:max": 0.1,
+          "ui:step": 0.001,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": -0.1,
+            "max": 0.1,
+            "step": 0.001
+          }
+        },
+        "/typography/letterSpacingNormal": {
+          "ui:widget": "input-range",
+          "ui:min": -0.1,
+          "ui:max": 0.1,
+          "ui:step": 0.001,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": -0.1,
+            "max": 0.1,
+            "step": 0.001
+          }
+        },
+        "/typography/letterSpacingWide": {
+          "ui:widget": "input-range",
+          "ui:min": -0.1,
+          "ui:max": 0.1,
+          "ui:step": 0.001,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": -0.1,
+            "max": 0.1,
+            "step": 0.001
+          }
+        },
+        "/spatialRhythm/baseUnit": {
+          "ui:widget": "input-range",
+          "ui:min": 1,
+          "ui:max": 16,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 1,
+            "max": 16,
+            "step": 1
+          }
+        },
+        "/spatialRhythm/scaleRatio": {
+          "ui:widget": "input-range",
+          "ui:min": 1,
+          "ui:max": 2,
+          "ui:step": 0.01,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 1,
+            "max": 2,
+            "step": 0.01
+          }
+        },
+        "/spatialRhythm/maxSpacingSteps": {
+          "ui:widget": "input-range",
+          "ui:min": 4,
+          "ui:max": 64,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 4,
+            "max": 64,
+            "step": 1
+          }
+        },
+        "/spatialRhythm/containerPadding": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 8,
+          "ui:step": 0.05,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 8,
+            "step": 0.05
+          }
+        },
+        "/spatialRhythm/inputPadding": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 4,
+          "ui:step": 0.05,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 4,
+            "step": 0.05
+          }
+        },
+        "/spatialRhythm/buttonPadding": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 4,
+          "ui:step": 0.05,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 4,
+            "step": 0.05
+          }
+        },
+        "/spatialRhythm/sectionSpacing": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 8,
+          "ui:step": 0.05,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 8,
+            "step": 0.05
+          }
+        },
+        "/shape/radiusSize": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 64,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 64,
+            "step": 1
+          }
+        },
+        "/shape/customRadius": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 64,
+          "ui:step": 1,
+          "ui:options": {
+            "min": 0,
+            "max": 64,
+            "step": 1
+          }
+        },
+        "/shape/borderWidth": {
+          "ui:widget": "select",
+          "ui:min": 0,
+          "ui:max": 10,
+          "ui:step": 1,
+          "ui:options": {
+            "min": 0,
+            "max": 10,
+            "step": 1
+          }
+        },
+        "/behavior/transitionSpeed": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 1000,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 1000,
+            "step": 1
+          }
+        },
+        "/behavior/customTransitionSpeed": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 1000,
+          "ui:step": 10,
+          "ui:options": {
+            "min": 0,
+            "max": 1000,
+            "step": 10
+          }
+        },
+        "/behavior/focusRingWidth": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 8,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 8,
+            "step": 1
+          }
+        },
+        "/behavior/focusRingOpacity": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 1,
+          "ui:step": 0.01,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        },
+        "/behavior/hoverOpacity": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 1,
+          "ui:step": 0.01,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        },
+        "/layout/maxWidth": {
+          "ui:widget": "input-text",
+          "ui:placeholder": "e.g. 1200 or 1200px"
+        },
+        "/layout/maxWidths/sm": {
+          "ui:widget": "input-text",
+          "ui:placeholder": "e.g. 640 or 640px"
+        },
+        "/layout/maxWidths/md": {
+          "ui:widget": "input-text",
+          "ui:placeholder": "e.g. 768 or 768px"
+        },
+        "/layout/maxWidths/lg": {
+          "ui:widget": "input-text",
+          "ui:placeholder": "e.g. 1024 or 1024px"
+        },
+        "/layout/maxWidths/xl": {
+          "ui:widget": "input-text",
+          "ui:placeholder": "e.g. 1280 or 1280px"
+        },
+        "/layout/containerPadding": {
+          "ui:widget": "input-text",
+          "ui:placeholder": "e.g. var(--spacing-6)"
+        },
+        "/layout/breakpoints/sm": {
+          "ui:widget": "input-number",
+          "ui:min": 320,
+          "ui:max": 2560,
+          "ui:step": 1,
+          "ui:options": {
+            "min": 320,
+            "max": 2560,
+            "step": 1
+          }
+        },
+        "/layout/breakpoints/md": {
+          "ui:widget": "input-number",
+          "ui:min": 480,
+          "ui:max": 3200,
+          "ui:step": 1,
+          "ui:options": {
+            "min": 480,
+            "max": 3200,
+            "step": 1
+          }
+        },
+        "/layout/breakpoints/lg": {
+          "ui:widget": "input-number",
+          "ui:min": 640,
+          "ui:max": 3840,
+          "ui:step": 1,
+          "ui:options": {
+            "min": 640,
+            "max": 3840,
+            "step": 1
+          }
+        },
+        "/layout/breakpoints/xl": {
+          "ui:widget": "input-number",
+          "ui:min": 768,
+          "ui:max": 5120,
+          "ui:step": 1,
+          "ui:options": {
+            "min": 768,
+            "max": 5120,
+            "step": 1
+          }
+        },
+        "/layout/gridColumns": {
+          "ui:widget": "input-range",
+          "ui:min": 1,
+          "ui:max": 24,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 1,
+            "max": 24,
+            "step": 1
+          }
+        },
+        "/layout/gridGutter": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 8,
+          "ui:step": 0.05,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 8,
+            "step": 0.05
+          }
+        },
+        "/layout/densityCompact": {
+          "ui:widget": "input-range",
+          "ui:min": 0.5,
+          "ui:max": 2,
+          "ui:step": 0.05,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0.5,
+            "max": 2,
+            "step": 0.05
+          }
+        },
+        "/layout/densityNormal": {
+          "ui:widget": "input-range",
+          "ui:min": 0.5,
+          "ui:max": 2,
+          "ui:step": 0.05,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0.5,
+            "max": 2,
+            "step": 0.05
+          }
+        },
+        "/layout/densityComfortable": {
+          "ui:widget": "input-range",
+          "ui:min": 0.5,
+          "ui:max": 2,
+          "ui:step": 0.05,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0.5,
+            "max": 2,
+            "step": 0.05
+          }
+        },
+        "/layout/buttonMinHeight": {
+          "ui:widget": "input-range",
+          "ui:min": 24,
+          "ui:max": 96,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 24,
+            "max": 96,
+            "step": 1
+          }
+        },
+        "/layout/inputMinHeight": {
+          "ui:widget": "input-range",
+          "ui:min": 24,
+          "ui:max": 96,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 24,
+            "max": 96,
+            "step": 1
+          }
+        },
+        "/layout/baseShadowOpacity": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 1,
+          "ui:step": 0.01,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        },
+        "/layout/darkMode/baseShadowOpacity": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 1,
+          "ui:step": 0.01,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        },
+        "/layout/utilities/grid": {
+          "ui:widget": "toggle"
+        },
+        "/layout/utilities/flex": {
+          "ui:widget": "toggle"
+        },
+        "/layout/utilities/spacing": {
+          "ui:widget": "toggle"
+        },
+        "/layout/utilities/container": {
+          "ui:widget": "toggle"
+        },
+        "/layout/gridSystem/enableGapUtilities": {
+          "ui:widget": "toggle"
+        },
+        "/layout/containerMaxWidth": {
+          "ui:widget": "input-text",
+          "ui:placeholder": "e.g. 1400px"
+        },
+        "/layers/baseShadowOpacity": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 1,
+          "ui:step": 0.01,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        },
+        "/layers/shadowBlurMultiplier": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 8,
+          "ui:step": 0.1,
+          "ui:options": {
+            "min": 0,
+            "max": 8,
+            "step": 0.1
+          }
+        },
+        "/layers/shadowOffsetMultiplier": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 8,
+          "ui:step": 0.1,
+          "ui:options": {
+            "min": 0,
+            "max": 8,
+            "step": 0.1
+          }
+        },
+        "/layers/blurLight": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 48,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 48,
+            "step": 1
+          }
+        },
+        "/layers/blurMedium": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 64,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 64,
+            "step": 1
+          }
+        },
+        "/layers/blurHeavy": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 96,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 96,
+            "step": 1
+          }
+        },
+        "/layers/baseZIndex": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 10000,
+          "ui:step": 10,
+          "ui:options": {
+            "min": 0,
+            "max": 10000,
+            "step": 10
+          }
+        },
+        "/layers/zIndexStep": {
+          "ui:widget": "input-range",
+          "ui:min": 1,
+          "ui:max": 100,
+          "ui:step": 1,
+          "ui:options": {
+            "min": 1,
+            "max": 100,
+            "step": 1
+          }
+        },
+        "/layers/zIndexBase": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 10,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 10,
+            "step": 1
+          }
+        },
+        "/layers/zIndexDropdown": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 4000,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 4000,
+            "step": 1
+          }
+        },
+        "/layers/zIndexSticky": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 4080,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 4080,
+            "step": 1
+          }
+        },
+        "/layers/zIndexFixed": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 4120,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 4120,
+            "step": 1
+          }
+        },
+        "/layers/zIndexModal": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 4160,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 4160,
+            "step": 1
+          }
+        },
+        "/layers/zIndexPopover": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 4200,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 4200,
+            "step": 1
+          }
+        },
+        "/layers/zIndexTooltip": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 4240,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 4240,
+            "step": 1
+          }
+        },
+        "/layers/zIndexNotification": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 4280,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 4280,
+            "step": 1
+          }
+        },
+        "/layers/darkMode/baseShadowOpacity": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 1,
+          "ui:step": 0.01,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        },
+        "/a11y/minTouchTarget": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 176,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 176,
+            "step": 1
+          }
+        },
+        "/a11y/prefersReducedMotion": {
+          "ui:widget": "toggle"
+        },
+        "/icons/defaultSize": {
+          "ui:widget": "input-range",
+          "ui:icon": "sparkle",
+          "ui:min": 8,
+          "ui:max": 128,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 8,
+            "max": 128,
+            "step": 1
+          }
+        },
+        "/icons/sizes/xs": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 64,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 64,
+            "step": 1
+          }
+        },
+        "/icons/sizes/sm": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 80,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 80,
+            "step": 1
+          }
+        },
+        "/icons/sizes/md": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 96,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 96,
+            "step": 1
+          }
+        },
+        "/icons/sizes/lg": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 128,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 128,
+            "step": 1
+          }
+        },
+        "/icons/sizes/xl": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 192,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 192,
+            "step": 1
+          }
+        },
+        "/icons/sizes/2xl": {
+          "ui:widget": "input-range",
+          "ui:min": 0,
+          "ui:max": 256,
+          "ui:step": 1,
+          "ui:allowUnset": true,
+          "ui:options": {
+            "min": 0,
+            "max": 256,
+            "step": 1
+          }
+        },
+        "/icons/include/navigation": {
+          "ui:placeholder": "arrow-left, arrow-right, arrow-up, arrow-down, arrow-counter-clockwise"
+        },
+        "/icons/include/actions": {
+          "ui:placeholder": "plus, minus, check, trash, pencil"
+        },
+        "/icons/include/communication": {
+          "ui:placeholder": "envelope, bell, bell-ringing, bell-simple, chat-circle"
+        },
+        "/icons/include/content": {
+          "ui:placeholder": "image, file, file-text, file-css, file-js"
+        },
+        "/icons/include/status": {
+          "ui:placeholder": "info, warning, check-circle, x-circle, question"
+        },
+        "/icons/include/time": {
+          "ui:placeholder": "calendar, clock, timer, hourglass"
+        },
+        "/icons/include/commerce": {
+          "ui:placeholder": "shopping-cart, credit-card, currency-dollar, tag, receipt"
+        },
+        "/icons/include/formatting": {
+          "ui:placeholder": "text-align-left, text-align-center, text-align-right, text-b, text-italic"
+        },
+        "/icons/include/system": {
+          "ui:placeholder": "cloud, cloud-arrow-up, cloud-arrow-down, desktop, device-mobile"
+        },
+        "/debug": {
+          "ui:widget": "toggle"
+        }
+      },
+      "values": {
+        "id": "default",
+        "name": "Default",
+        "tags": [
+          "app",
+          "featured"
+        ],
+        "description": "Fresh and modern design system with balanced aesthetics and usability",
+        "options": {
+          "liquidGlassEffects": true,
+          "backgroundMesh": 4
+        },
+        "form": {
+          "options": {
+            "widgets": {
+              "booleans": "toggle",
+              "numbers": "input",
+              "selects": "standard"
+            },
+            "layouts": {
+              "fieldsets": "default",
+              "arrays": "default"
+            },
+            "enhancements": {
+              "icons": true,
+              "datalists": true,
+              "rangeOutput": true
+            },
+            "validation": {
+              "showErrors": true,
+              "validateOnChange": false
+            }
+          }
+        },
+        "colors": {
+          "primary": "#0e7490",
+          "secondary": "#a99b95",
+          "accent": "#e54271",
+          "background": "#e7e6de",
+          "success": null,
+          "warning": "#B38600",
+          "danger": null,
+          "info": null,
+          "gradientStops": 3,
+          "elevationOpacity": 0.05,
+          "darkMode": {
+            "background": "#16171a",
+            "primary": "#06b6d4",
+            "secondary": "#8b9199"
+          }
+        },
+        "typography": {
+          "fontFamilyHeadings": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+          "fontFamilyBody": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+          "fontFamilyMono": "ui-monospace, \"Cascadia Code\", \"Source Code Pro\", Menlo, Consolas, monospace",
+          "baseFontSize": 16,
+          "fontScale": 1.2,
+          "fontWeightLight": 300,
+          "fontWeightNormal": 400,
+          "fontWeightMedium": 500,
+          "fontWeightSemibold": 600,
+          "fontWeightBold": 700,
+          "lineHeightTight": 1.25,
+          "lineHeightNormal": 1.5,
+          "lineHeightRelaxed": 1.75,
+          "letterSpacingTight": -0.025,
+          "letterSpacingNormal": 0,
+          "letterSpacingWide": 0.025
+        },
+        "spatialRhythm": {
+          "baseUnit": 4,
+          "scaleRatio": 1.25,
+          "maxSpacingSteps": 32,
+          "containerPadding": 1,
+          "inputPadding": 0.75,
+          "buttonPadding": 1,
+          "sectionSpacing": 2
+        },
+        "shape": {
+          "radiusSize": 16,
+          "customRadius": null,
+          "borderWidth": 2
+        },
+        "behavior": {
+          "transitionSpeed": 250,
+          "animationEasing": "ease-out",
+          "customTransitionSpeed": null,
+          "customEasing": null,
+          "focusRingWidth": 3,
+          "focusRingOpacity": 0.3,
+          "hoverOpacity": 0.8
+        },
+        "layout": {
+          "containerPadding": "var(--spacing-6)",
+          "breakpoints": {
+            "sm": 640,
+            "md": 768,
+            "lg": 1024,
+            "xl": 1280
+          },
+          "gridColumns": 12,
+          "gridGutter": 1,
+          "densityCompact": 0.8,
+          "densityNormal": 1,
+          "densityComfortable": 1.2,
+          "buttonMinHeight": 44,
+          "inputMinHeight": 40,
+          "baseShadowOpacity": 0.1,
+          "darkMode": {
+            "baseShadowOpacity": 0.25
+          },
+          "utilities": {
+            "grid": true,
+            "flex": true,
+            "spacing": true,
+            "container": true
+          },
+          "gridSystem": {
+            "columns": [
+              1,
+              2,
+              3,
+              4,
+              6
+            ],
+            "autoFitBreakpoints": {
+              "sm": "150px",
+              "md": "250px",
+              "lg": "350px",
+              "xl": "450px"
+            },
+            "enableGapUtilities": true
+          },
+          "containerMaxWidth": "1400px"
+        },
+        "layers": {
+          "baseShadowOpacity": 0.1,
+          "shadowDepth": "medium",
+          "blurLight": 4,
+          "blurMedium": 8,
+          "blurHeavy": 16,
+          "zIndexBase": 0,
+          "zIndexDropdown": 1000,
+          "zIndexSticky": 1020,
+          "zIndexFixed": 1030,
+          "zIndexModal": 1040,
+          "zIndexPopover": 1050,
+          "zIndexTooltip": 1060,
+          "zIndexNotification": 1070,
+          "darkMode": {
+            "baseShadowOpacity": 0.25
+          }
+        },
+        "advanced": {
+          "linkStyle": "inline",
+          "colorDerivation": "hsl"
+        },
+        "a11y": {
+          "minTouchTarget": 44,
+          "prefersReducedMotion": true,
+          "focusStyle": "ring"
+        },
+        "icons": {
+          "set": "phosphor",
+          "weight": "regular",
+          "defaultSize": 24,
+          "sizes": {
+            "xs": 16,
+            "sm": 20,
+            "md": 24,
+            "lg": 32,
+            "xl": 48,
+            "2xl": 64
+          },
+          "spritePath": "/assets/pds/icons/pds-icons.svg",
+          "externalPath": "/assets/img/icons/",
+          "include": {
+            "navigation": [
+              "arrow-left",
+              "arrow-right",
+              "arrow-up",
+              "arrow-down",
+              "arrow-counter-clockwise",
+              "caret-left",
+              "caret-right",
+              "caret-down",
+              "caret-up",
+              "x",
+              "list",
+              "list-dashes",
+              "dots-three-vertical",
+              "dots-three",
+              "house",
+              "gear",
+              "magnifying-glass",
+              "funnel",
+              "tabs",
+              "sidebar"
+            ],
+            "actions": [
+              "plus",
+              "minus",
+              "check",
+              "trash",
+              "pencil",
+              "floppy-disk",
+              "copy",
+              "download",
+              "upload",
+              "share",
+              "link",
+              "eye",
+              "eye-slash",
+              "heart",
+              "star",
+              "bookmark",
+              "note-pencil",
+              "cursor-click",
+              "clipboard",
+              "magic-wand",
+              "sparkle"
+            ],
+            "communication": [
+              "envelope",
+              "bell",
+              "bell-ringing",
+              "bell-simple",
+              "chat-circle",
+              "phone",
+              "paper-plane-tilt",
+              "user",
+              "users",
+              "user-gear",
+              "at"
+            ],
+            "content": [
+              "image",
+              "file",
+              "file-text",
+              "file-css",
+              "file-js",
+              "folder",
+              "folder-open",
+              "book-open",
+              "camera",
+              "video-camera",
+              "play",
+              "pause",
+              "microphone",
+              "brackets-curly",
+              "code",
+              "folder-simple",
+              "grid-four",
+              "briefcase",
+              "chart-line",
+              "chart-bar",
+              "database",
+              "map-pin"
+            ],
+            "status": [
+              "info",
+              "warning",
+              "check-circle",
+              "x-circle",
+              "question",
+              "shield",
+              "shield-check",
+              "shield-warning",
+              "lock",
+              "lock-open",
+              "fingerprint",
+              "circle-notch"
+            ],
+            "time": [
+              "calendar",
+              "clock",
+              "timer",
+              "hourglass"
+            ],
+            "commerce": [
+              "shopping-cart",
+              "credit-card",
+              "currency-dollar",
+              "tag",
+              "receipt",
+              "storefront"
+            ],
+            "formatting": [
+              "text-align-left",
+              "text-align-center",
+              "text-align-right",
+              "text-b",
+              "text-italic",
+              "text-underline",
+              "list-bullets",
+              "list-numbers",
+              "text-aa"
+            ],
+            "system": [
+              "cloud",
+              "cloud-arrow-up",
+              "cloud-arrow-down",
+              "desktop",
+              "device-mobile",
+              "globe",
+              "wifi-high",
+              "battery-charging",
+              "sun",
+              "moon",
+              "moon-stars",
+              "palette",
+              "rocket",
+              "feather",
+              "square",
+              "circle",
+              "squares-four",
+              "lightning",
+              "wrench"
+            ]
+          }
+        },
+        "debug": false
+      },
+      "metadata": {
+        "id": {
+          "label": "Id"
+        },
+        "name": {
+          "label": "Name"
+        },
+        "tags": {
+          "label": "Tags"
+        },
+        "themes": {
+          "label": "Themes"
+        },
+        "description": {
+          "label": "Description",
+          "widget": "textarea",
+          "maxLength": 500,
+          "rows": 4,
+          "placeholder": "Summarize the visual and interaction intent"
+        },
+        "options.liquidGlassEffects": {
+          "label": "Liquid Glass Effects",
+          "widget": "toggle"
+        },
+        "options.backgroundMesh": {
+          "label": "Background Mesh",
+          "widget": "input-range",
+          "min": 0,
+          "max": 16,
+          "step": 1
+        },
+        "form.options.widgets.booleans": {
+          "label": "Booleans"
+        },
+        "form.options.widgets.numbers": {
+          "label": "Numbers"
+        },
+        "form.options.widgets.selects": {
+          "label": "Selects"
+        },
+        "form.options.layouts.fieldsets": {
+          "label": "Fieldsets"
+        },
+        "form.options.layouts.arrays": {
+          "label": "Arrays"
+        },
+        "form.options.enhancements.icons": {
+          "label": "Icons",
+          "widget": "toggle"
+        },
+        "form.options.enhancements.datalists": {
+          "label": "Datalists",
+          "widget": "toggle"
+        },
+        "form.options.enhancements.rangeOutput": {
+          "label": "Range Output",
+          "widget": "toggle"
+        },
+        "form.options.validation.showErrors": {
+          "label": "Show Errors",
+          "widget": "toggle"
+        },
+        "form.options.validation.validateOnChange": {
+          "label": "Validate On Change",
+          "widget": "toggle"
+        },
+        "colors.primary": {
+          "label": "Primary",
+          "widget": "input-color"
+        },
+        "colors.secondary": {
+          "label": "Secondary",
+          "widget": "input-color"
+        },
+        "colors.accent": {
+          "label": "Accent",
+          "widget": "input-color"
+        },
+        "colors.background": {
+          "label": "Background",
+          "widget": "input-color"
+        },
+        "colors.success": {
+          "label": "Success",
+          "widget": "input-color"
+        },
+        "colors.warning": {
+          "label": "Warning",
+          "widget": "input-color"
+        },
+        "colors.danger": {
+          "label": "Danger",
+          "widget": "input-color"
+        },
+        "colors.info": {
+          "label": "Info",
+          "widget": "input-color"
+        },
+        "colors.gradientStops": {
+          "label": "Gradient Stops",
+          "widget": "input-range",
+          "min": 2,
+          "max": 8,
+          "step": 1
+        },
+        "colors.elevationOpacity": {
+          "label": "Elevation Opacity",
+          "widget": "input-range",
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        "colors.darkMode.background": {
+          "label": "Background",
+          "widget": "input-color"
+        },
+        "colors.darkMode.primary": {
+          "label": "Primary",
+          "widget": "input-color"
+        },
+        "colors.darkMode.secondary": {
+          "label": "Secondary",
+          "widget": "input-color"
+        },
+        "colors.darkMode.accent": {
+          "label": "Accent",
+          "widget": "input-color"
+        },
+        "typography.fontFamilyHeadings": {
+          "label": "Font Family Headings",
+          "widget": "font-family-omnibox",
+          "icon": "text-aa",
+          "placeholder": "Heading font stack"
+        },
+        "typography.fontFamilyBody": {
+          "label": "Font Family Body",
+          "widget": "font-family-omnibox",
+          "icon": "text-aa",
+          "placeholder": "Body font stack"
+        },
+        "typography.fontFamilyMono": {
+          "label": "Font Family Mono",
+          "widget": "font-family-omnibox",
+          "icon": "text-aa",
+          "placeholder": "Monospace font stack"
+        },
+        "typography.baseFontSize": {
+          "label": "Base Font Size",
+          "widget": "input-range",
+          "min": 8,
+          "max": 32,
+          "step": 1
+        },
+        "typography.fontScale": {
+          "label": "Font Scale",
+          "widget": "input-range",
+          "min": 1,
+          "max": 2,
+          "step": 0.01
+        },
+        "typography.fontWeightLight": {
+          "label": "Font Weight Light",
+          "widget": "input-range",
+          "min": 100,
+          "max": 800,
+          "step": 100
+        },
+        "typography.fontWeightNormal": {
+          "label": "Font Weight Normal",
+          "widget": "input-range",
+          "min": 100,
+          "max": 800,
+          "step": 100
+        },
+        "typography.fontWeightMedium": {
+          "label": "Font Weight Medium",
+          "widget": "input-range",
+          "min": 100,
+          "max": 800,
+          "step": 100
+        },
+        "typography.fontWeightSemibold": {
+          "label": "Font Weight Semibold",
+          "widget": "input-range",
+          "min": 100,
+          "max": 800,
+          "step": 100
+        },
+        "typography.fontWeightBold": {
+          "label": "Font Weight Bold",
+          "widget": "input-range",
+          "min": 100,
+          "max": 800,
+          "step": 100
+        },
+        "typography.lineHeightTight": {
+          "label": "Line Height Tight",
+          "widget": "input-range",
+          "min": 0.75,
+          "max": 3,
+          "step": 0.001
+        },
+        "typography.lineHeightNormal": {
+          "label": "Line Height Normal",
+          "widget": "input-range",
+          "min": 0.75,
+          "max": 3,
+          "step": 0.001
+        },
+        "typography.lineHeightRelaxed": {
+          "label": "Line Height Relaxed",
+          "widget": "input-range",
+          "min": 0.75,
+          "max": 3,
+          "step": 0.001
+        },
+        "typography.letterSpacingTight": {
+          "label": "Letter Spacing Tight",
+          "widget": "input-range",
+          "min": -0.1,
+          "max": 0.1,
+          "step": 0.001
+        },
+        "typography.letterSpacingNormal": {
+          "label": "Letter Spacing Normal",
+          "widget": "input-range",
+          "min": -0.1,
+          "max": 0.1,
+          "step": 0.001
+        },
+        "typography.letterSpacingWide": {
+          "label": "Letter Spacing Wide",
+          "widget": "input-range",
+          "min": -0.1,
+          "max": 0.1,
+          "step": 0.001
+        },
+        "spatialRhythm.baseUnit": {
+          "label": "Base Unit",
+          "widget": "input-range",
+          "min": 1,
+          "max": 16,
+          "step": 1
+        },
+        "spatialRhythm.scaleRatio": {
+          "label": "Scale Ratio",
+          "widget": "input-range",
+          "min": 1,
+          "max": 2,
+          "step": 0.01
+        },
+        "spatialRhythm.maxSpacingSteps": {
+          "label": "Max Spacing Steps",
+          "widget": "input-range",
+          "min": 4,
+          "max": 64,
+          "step": 1
+        },
+        "spatialRhythm.containerPadding": {
+          "label": "Container Padding",
+          "widget": "input-range",
+          "min": 0,
+          "max": 8,
+          "step": 0.05
+        },
+        "spatialRhythm.inputPadding": {
+          "label": "Input Padding",
+          "widget": "input-range",
+          "min": 0,
+          "max": 4,
+          "step": 0.05
+        },
+        "spatialRhythm.buttonPadding": {
+          "label": "Button Padding",
+          "widget": "input-range",
+          "min": 0,
+          "max": 4,
+          "step": 0.05
+        },
+        "spatialRhythm.sectionSpacing": {
+          "label": "Section Spacing",
+          "widget": "input-range",
+          "min": 0,
+          "max": 8,
+          "step": 0.05
+        },
+        "shape.radiusSize": {
+          "label": "Radius Size",
+          "widget": "input-range",
+          "min": 0,
+          "max": 64,
+          "step": 1,
+          "oneOf": [
+            {
+              "const": 0,
+              "title": "none"
+            },
+            {
+              "const": 4,
+              "title": "small"
+            },
+            {
+              "const": 8,
+              "title": "medium"
+            },
+            {
+              "const": 16,
+              "title": "large"
+            },
+            {
+              "const": 24,
+              "title": "xlarge"
+            },
+            {
+              "const": 32,
+              "title": "xxlarge"
+            }
+          ]
+        },
+        "shape.customRadius": {
+          "label": "Custom Radius",
+          "min": 0,
+          "max": 64,
+          "step": 1,
+          "widget": "input-range"
+        },
+        "shape.borderWidth": {
+          "label": "Border Width",
+          "widget": "select",
+          "min": 0,
+          "max": 10,
+          "step": 1,
+          "oneOf": [
+            {
+              "const": 0.5,
+              "title": "hairline"
+            },
+            {
+              "const": 1,
+              "title": "thin"
+            },
+            {
+              "const": 2,
+              "title": "medium"
+            },
+            {
+              "const": 3,
+              "title": "thick"
+            }
+          ]
+        },
+        "behavior.transitionSpeed": {
+          "label": "Transition Speed",
+          "widget": "input-range",
+          "min": 0,
+          "max": 1000,
+          "step": 1,
+          "oneOf": [
+            {
+              "const": 150,
+              "title": "fast"
+            },
+            {
+              "const": 250,
+              "title": "normal"
+            },
+            {
+              "const": 350,
+              "title": "slow"
+            }
+          ]
+        },
+        "behavior.animationEasing": {
+          "label": "Animation Easing",
+          "enum": [
+            "linear",
+            "ease",
+            "ease-in",
+            "ease-out",
+            "ease-in-out",
+            "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+          ]
+        },
+        "behavior.customTransitionSpeed": {
+          "label": "Custom Transition Speed",
+          "widget": "input-range",
+          "min": 0,
+          "max": 1000,
+          "step": 10
+        },
+        "behavior.customEasing": {
+          "label": "Custom Easing"
+        },
+        "behavior.focusRingWidth": {
+          "label": "Focus Ring Width",
+          "widget": "input-range",
+          "min": 0,
+          "max": 8,
+          "step": 1
+        },
+        "behavior.focusRingOpacity": {
+          "label": "Focus Ring Opacity",
+          "widget": "input-range",
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        "behavior.hoverOpacity": {
+          "label": "Hover Opacity",
+          "widget": "input-range",
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        "layout.maxWidth": {
+          "label": "Max Width",
+          "widget": "input-text",
+          "placeholder": "e.g. 1200 or 1200px"
+        },
+        "layout.maxWidths.sm": {
+          "label": "Sm",
+          "widget": "input-text",
+          "placeholder": "e.g. 640 or 640px"
+        },
+        "layout.maxWidths.md": {
+          "label": "Md",
+          "widget": "input-text",
+          "placeholder": "e.g. 768 or 768px"
+        },
+        "layout.maxWidths.lg": {
+          "label": "Lg",
+          "widget": "input-text",
+          "placeholder": "e.g. 1024 or 1024px"
+        },
+        "layout.maxWidths.xl": {
+          "label": "Xl",
+          "widget": "input-text",
+          "placeholder": "e.g. 1280 or 1280px"
+        },
+        "layout.containerPadding": {
+          "label": "Container Padding",
+          "widget": "input-text",
+          "placeholder": "e.g. var(--spacing-6)"
+        },
+        "layout.breakpoints.sm": {
+          "label": "Sm",
+          "widget": "input-number",
+          "min": 320,
+          "max": 2560,
+          "step": 1
+        },
+        "layout.breakpoints.md": {
+          "label": "Md",
+          "widget": "input-number",
+          "min": 480,
+          "max": 3200,
+          "step": 1
+        },
+        "layout.breakpoints.lg": {
+          "label": "Lg",
+          "widget": "input-number",
+          "min": 640,
+          "max": 3840,
+          "step": 1
+        },
+        "layout.breakpoints.xl": {
+          "label": "Xl",
+          "widget": "input-number",
+          "min": 768,
+          "max": 5120,
+          "step": 1
+        },
+        "layout.gridColumns": {
+          "label": "Grid Columns",
+          "widget": "input-range",
+          "min": 1,
+          "max": 24,
+          "step": 1
+        },
+        "layout.gridGutter": {
+          "label": "Grid Gutter",
+          "widget": "input-range",
+          "min": 0,
+          "max": 8,
+          "step": 0.05
+        },
+        "layout.densityCompact": {
+          "label": "Density Compact",
+          "widget": "input-range",
+          "min": 0.5,
+          "max": 2,
+          "step": 0.05
+        },
+        "layout.densityNormal": {
+          "label": "Density Normal",
+          "widget": "input-range",
+          "min": 0.5,
+          "max": 2,
+          "step": 0.05
+        },
+        "layout.densityComfortable": {
+          "label": "Density Comfortable",
+          "widget": "input-range",
+          "min": 0.5,
+          "max": 2,
+          "step": 0.05
+        },
+        "layout.buttonMinHeight": {
+          "label": "Button Min Height",
+          "widget": "input-range",
+          "min": 24,
+          "max": 96,
+          "step": 1
+        },
+        "layout.inputMinHeight": {
+          "label": "Input Min Height",
+          "widget": "input-range",
+          "min": 24,
+          "max": 96,
+          "step": 1
+        },
+        "layout.baseShadowOpacity": {
+          "label": "Base Shadow Opacity",
+          "widget": "input-range",
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        "layout.darkMode.baseShadowOpacity": {
+          "label": "Base Shadow Opacity",
+          "widget": "input-range",
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        "layout.utilities.grid": {
+          "label": "Grid",
+          "widget": "toggle"
+        },
+        "layout.utilities.flex": {
+          "label": "Flex",
+          "widget": "toggle"
+        },
+        "layout.utilities.spacing": {
+          "label": "Spacing",
+          "widget": "toggle"
+        },
+        "layout.utilities.container": {
+          "label": "Container",
+          "widget": "toggle"
+        },
+        "layout.gridSystem.columns": {
+          "label": "Columns"
+        },
+        "layout.gridSystem.autoFitBreakpoints.sm": {
+          "label": "Sm"
+        },
+        "layout.gridSystem.autoFitBreakpoints.md": {
+          "label": "Md"
+        },
+        "layout.gridSystem.autoFitBreakpoints.lg": {
+          "label": "Lg"
+        },
+        "layout.gridSystem.autoFitBreakpoints.xl": {
+          "label": "Xl"
+        },
+        "layout.gridSystem.enableGapUtilities": {
+          "label": "Enable Gap Utilities",
+          "widget": "toggle"
+        },
+        "layout.containerMaxWidth": {
+          "label": "Container Max Width",
+          "widget": "input-text",
+          "placeholder": "e.g. 1400px"
+        },
+        "layers.baseShadowOpacity": {
+          "label": "Base Shadow Opacity",
+          "widget": "input-range",
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        "layers.shadowBlurMultiplier": {
+          "label": "Shadow Blur Multiplier",
+          "widget": "input-range",
+          "min": 0,
+          "max": 8,
+          "step": 0.1
+        },
+        "layers.shadowOffsetMultiplier": {
+          "label": "Shadow Offset Multiplier",
+          "widget": "input-range",
+          "min": 0,
+          "max": 8,
+          "step": 0.1
+        },
+        "layers.shadowDepth": {
+          "label": "Shadow Depth"
+        },
+        "layers.blurLight": {
+          "label": "Blur Light",
+          "widget": "input-range",
+          "min": 0,
+          "max": 48,
+          "step": 1
+        },
+        "layers.blurMedium": {
+          "label": "Blur Medium",
+          "widget": "input-range",
+          "min": 0,
+          "max": 64,
+          "step": 1
+        },
+        "layers.blurHeavy": {
+          "label": "Blur Heavy",
+          "widget": "input-range",
+          "min": 0,
+          "max": 96,
+          "step": 1
+        },
+        "layers.baseZIndex": {
+          "label": "Base ZIndex",
+          "widget": "input-range",
+          "min": 0,
+          "max": 10000,
+          "step": 10
+        },
+        "layers.zIndexStep": {
+          "label": "Z Index Step",
+          "widget": "input-range",
+          "min": 1,
+          "max": 100,
+          "step": 1
+        },
+        "layers.zIndexBase": {
+          "label": "Z Index Base",
+          "widget": "input-range",
+          "min": 0,
+          "max": 10,
+          "step": 1
+        },
+        "layers.zIndexDropdown": {
+          "label": "Z Index Dropdown",
+          "widget": "input-range",
+          "min": 0,
+          "max": 4000,
+          "step": 1
+        },
+        "layers.zIndexSticky": {
+          "label": "Z Index Sticky",
+          "widget": "input-range",
+          "min": 0,
+          "max": 4080,
+          "step": 1
+        },
+        "layers.zIndexFixed": {
+          "label": "Z Index Fixed",
+          "widget": "input-range",
+          "min": 0,
+          "max": 4120,
+          "step": 1
+        },
+        "layers.zIndexModal": {
+          "label": "Z Index Modal",
+          "widget": "input-range",
+          "min": 0,
+          "max": 4160,
+          "step": 1
+        },
+        "layers.zIndexPopover": {
+          "label": "Z Index Popover",
+          "widget": "input-range",
+          "min": 0,
+          "max": 4200,
+          "step": 1
+        },
+        "layers.zIndexTooltip": {
+          "label": "Z Index Tooltip",
+          "widget": "input-range",
+          "min": 0,
+          "max": 4240,
+          "step": 1
+        },
+        "layers.zIndexNotification": {
+          "label": "Z Index Notification",
+          "widget": "input-range",
+          "min": 0,
+          "max": 4280,
+          "step": 1
+        },
+        "layers.darkMode.baseShadowOpacity": {
+          "label": "Base Shadow Opacity",
+          "widget": "input-range",
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        "advanced.linkStyle": {
+          "label": "Link Style",
+          "enum": [
+            "inline",
+            "block",
+            "button"
+          ]
+        },
+        "advanced.colorDerivation": {
+          "label": "Color Derivation"
+        },
+        "a11y.minTouchTarget": {
+          "label": "Min Touch Target",
+          "widget": "input-range",
+          "min": 0,
+          "max": 176,
+          "step": 1,
+          "oneOf": [
+            {
+              "const": 36,
+              "title": "compact"
+            },
+            {
+              "const": 44,
+              "title": "standard"
+            },
+            {
+              "const": 48,
+              "title": "comfortable"
+            },
+            {
+              "const": 56,
+              "title": "spacious"
+            }
+          ]
+        },
+        "a11y.prefersReducedMotion": {
+          "label": "Prefers Reduced Motion",
+          "widget": "toggle"
+        },
+        "a11y.focusStyle": {
+          "label": "Focus Style",
+          "enum": [
+            "ring",
+            "outline",
+            "border",
+            "glow"
+          ]
+        },
+        "icons.set": {
+          "label": "Set"
+        },
+        "icons.weight": {
+          "label": "Weight"
+        },
+        "icons.defaultSize": {
+          "label": "Default Size",
+          "widget": "input-range",
+          "min": 8,
+          "max": 128,
+          "step": 1,
+          "icon": "sparkle"
+        },
+        "icons.sizes.xs": {
+          "label": "Xs",
+          "widget": "input-range",
+          "min": 0,
+          "max": 64,
+          "step": 1
+        },
+        "icons.sizes.sm": {
+          "label": "Sm",
+          "widget": "input-range",
+          "min": 0,
+          "max": 80,
+          "step": 1
+        },
+        "icons.sizes.md": {
+          "label": "Md",
+          "widget": "input-range",
+          "min": 0,
+          "max": 96,
+          "step": 1
+        },
+        "icons.sizes.lg": {
+          "label": "Lg",
+          "widget": "input-range",
+          "min": 0,
+          "max": 128,
+          "step": 1
+        },
+        "icons.sizes.xl": {
+          "label": "Xl",
+          "widget": "input-range",
+          "min": 0,
+          "max": 192,
+          "step": 1
+        },
+        "icons.sizes.2xl": {
+          "label": "2xl",
+          "widget": "input-range",
+          "min": 0,
+          "max": 256,
+          "step": 1
+        },
+        "icons.spritePath": {
+          "label": "Sprite Path"
+        },
+        "icons.externalPath": {
+          "label": "External Path"
+        },
+        "icons.include.navigation": {
+          "label": "Navigation"
+        },
+        "icons.include.actions": {
+          "label": "Actions"
+        },
+        "icons.include.communication": {
+          "label": "Communication"
+        },
+        "icons.include.content": {
+          "label": "Content"
+        },
+        "icons.include.status": {
+          "label": "Status"
+        },
+        "icons.include.time": {
+          "label": "Time"
+        },
+        "icons.include.commerce": {
+          "label": "Commerce"
+        },
+        "icons.include.formatting": {
+          "label": "Formatting"
+        },
+        "icons.include.system": {
+          "label": "System"
+        },
+        "components": {
+          "label": "Components"
+        },
+        "debug": {
+          "label": "Debug",
+          "widget": "toggle"
+        }
+      }
+    }
   }
 }

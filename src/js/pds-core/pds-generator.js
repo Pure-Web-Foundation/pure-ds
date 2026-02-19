@@ -805,7 +805,6 @@ export class Generator {
 
   #generateLayoutTokens(layoutConfig) {
     const {
-      maxWidth = 1200,
       containerPadding = 16,
       breakpoints = {
         sm: 640,
@@ -815,10 +814,19 @@ export class Generator {
       },
     } = layoutConfig;
 
-    const resolvedMaxWidths = this.#resolveLayoutMaxWidths(layoutConfig);
+    const hasExplicitMaxWidth =
+      this.#hasDefinedConfigValue(layoutConfig, "maxWidth");
+
+    const explicitMaxWidthValue = layoutConfig.maxWidth;
+
+    const resolvedMaxWidths = this.#resolveLayoutMaxWidths(layoutConfig, {
+      emitFallbacks: false,
+    });
 
     return {
-      maxWidth: this.#formatLength(maxWidth, "1200px"),
+      maxWidth: hasExplicitMaxWidth
+        ? this.#formatLength(explicitMaxWidthValue, "1200px")
+        : undefined,
       maxWidthSm: resolvedMaxWidths.sm,
       maxWidthMd: resolvedMaxWidths.md,
       maxWidthLg: resolvedMaxWidths.lg,
@@ -841,7 +849,8 @@ export class Generator {
     };
   }
 
-  #resolveLayoutMaxWidths(layoutConfig = {}) {
+  #resolveLayoutMaxWidths(layoutConfig = {}, options = {}) {
+    const { emitFallbacks = true } = options;
     const defaultBreakpoints = {
       sm: 640,
       md: 768,
@@ -849,15 +858,29 @@ export class Generator {
       xl: 1280,
     };
 
-    const {
-      maxWidths = {},
-      maxWidth = 1200,
-      containerPadding = 16,
-      breakpoints = defaultBreakpoints,
-    } = layoutConfig || {};
+    const { maxWidths = {}, containerPadding = 16, breakpoints = defaultBreakpoints } =
+      layoutConfig || {};
+
+    const hasExplicitMaxWidth =
+      this.#hasDefinedConfigValue(layoutConfig, "maxWidth");
+
+    const hasExplicitMaxWidths = ["sm", "md", "lg", "xl"].some((key) =>
+      this.#hasDefinedConfigValue(maxWidths, key),
+    );
+
+    if (!emitFallbacks && !hasExplicitMaxWidth && !hasExplicitMaxWidths) {
+      return {
+        sm: undefined,
+        md: undefined,
+        lg: undefined,
+        xl: undefined,
+      };
+    }
+
+    const maxWidthValue = layoutConfig?.maxWidth;
 
     const paddingValue = this.#toNumber(containerPadding, 16);
-    const baseMaxWidth = this.#toNumber(maxWidth, defaultBreakpoints.xl);
+    const baseMaxWidth = this.#toNumber(maxWidthValue, defaultBreakpoints.xl);
 
     const resolvedBreakpoints = {
       sm: this.#toNumber(breakpoints.sm, defaultBreakpoints.sm),
@@ -886,6 +909,15 @@ export class Generator {
       lg: this.#formatLength(maxWidths.lg, `${fallbackWidths.lg}px`),
       xl: this.#formatLength(maxWidths.xl, `${fallbackWidths.xl}px`),
     };
+  }
+
+  #hasDefinedConfigValue(source, key) {
+    if (!source || typeof source !== "object") return false;
+    if (!Object.prototype.hasOwnProperty.call(source, key)) return false;
+    const value = source[key];
+    if (value === undefined || value === null) return false;
+    if (typeof value === "string" && value.trim().length === 0) return false;
+    return true;
   }
 
   #formatLength(value, fallback) {
@@ -1185,6 +1217,10 @@ export class Generator {
     Object.entries(layout).forEach(([key, value]) => {
       // Convert camelCase keys to kebab-case
       const kebabKey = key.replace(/([A-Z])/g, "-$1").toLowerCase();
+
+      if (value === undefined || value === null) {
+        return;
+      }
 
       // Skip breakpoints object - it's used in JS but doesn't belong in CSS variables
       // Breakpoints are used in @media queries, not as CSS custom properties
@@ -1945,7 +1981,7 @@ html[data-theme="dark"] .liquid-glass {
   #generateFormStyles() {
     const {
       shape = {},
-      gap,
+      spatialRhythm = {},
       inputPadding,
       buttonPadding,
       focusRingWidth,
@@ -1963,13 +1999,14 @@ html[data-theme="dark"] .liquid-glass {
           ? (enums.BorderWidths[shape.borderWidth] ?? null)
           : null;
 
-    const inputPaddingValue = inputPadding || 0.75;
-    const buttonPaddingValue = buttonPadding || 1.0;
+    const inputPaddingValue = spatialRhythm.inputPadding ?? inputPadding ?? 0.75;
+    const buttonPaddingValue =
+      spatialRhythm.buttonPadding ?? buttonPadding ?? 1.0;
     const focusWidth = focusRingWidth || 3;
     const borderWidth =
       borderWidthThin || shapeBorderWidth || enums.BorderWidths.thin;
-    const gapValue = gap || 1.0;
-    const sectionSpacingValue = sectionSpacing || 2.0;
+    const sectionSpacingValue =
+      spatialRhythm.sectionSpacing ?? sectionSpacing ?? 2.0;
     const minButtonHeight = buttonMinHeight || 44;
     const minInputHeight = inputMinHeight || 40;
 
@@ -2235,21 +2272,28 @@ input[type="range"]:active::-moz-range-thumb {
 
 input[type="color"] {
   -webkit-appearance: none;
+  appearance: none;
   padding: 0;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.75rem; /* your radius */
-  overflow: hidden; /* important */
+  width: calc(var(--spacing-8) + var(--spacing-1));
+  height: calc(var(--spacing-8) + var(--spacing-1));
+  min-height: auto;
+  border-radius: var(--radius-sm);
+  border: var(--border-width-thin) solid var(--color-border);
+  overflow: hidden;
   cursor: pointer;
+  background: transparent;
 
-  /* The wrapper */
   &::-webkit-color-swatch-wrapper {
     padding: 0;
     border-radius: inherit;
   }
 
-  /* The swatch (the actual color box) */
   &::-webkit-color-swatch {
+    border: none;
+    border-radius: inherit;
+  }
+
+  &::-moz-color-swatch {
     border: none;
     border-radius: inherit;
   }
@@ -2555,6 +2599,116 @@ label[data-toggle] {
   }
 }
 
+/* Color input enhancement shell - applied by enhanceColorInput on label[data-color] */
+label[data-color] {
+  display: grid;
+  gap: var(--spacing-2);
+
+  .color-control {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    width: fit-content;
+    min-height: var(--input-min-height, 40px);
+    padding: var(--spacing-2) var(--spacing-3);
+    border: var(--border-width-thin) solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-base);
+    color: var(--color-text-primary);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .color-control .color-swatch {
+    position: relative;
+    display: inline-flex;
+    width: calc(var(--spacing-8) + var(--spacing-1));
+    height: calc(var(--spacing-8) + var(--spacing-1));
+    border-radius: var(--radius-sm);
+  }
+
+  .color-control output {
+    margin: 0;
+    min-width: 8ch;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-tight);
+    color: var(--color-text-secondary);
+    text-transform: lowercase;
+  }
+
+  .color-control[data-unset="1"] output {
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+
+  .color-control input[type="color"] {
+    width: calc(var(--spacing-8) + var(--spacing-1));
+    height: calc(var(--spacing-8) + var(--spacing-1));
+    border-radius: var(--radius-sm);
+    border: var(--border-width-thin) solid var(--color-border);
+    background: transparent;
+    padding: 0;
+  }
+
+  .color-control input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: calc(var(--radius-sm) - var(--border-width-thin));
+  }
+
+  .color-control input[type="color"]::-moz-color-swatch {
+    border: none;
+    border-radius: calc(var(--radius-sm) - var(--border-width-thin));
+  }
+
+  .color-control .color-swatch[data-unset="1"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-sm);
+    border: var(--border-width-thin) solid var(--color-border);
+    background-color: color-mix(in oklab, var(--color-surface-subtle) 78%, var(--color-text-primary) 22%);
+    background-image:
+      linear-gradient(
+        45deg,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%) 25%,
+        transparent 25%,
+        transparent 75%,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%) 75%,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%)
+      ),
+      linear-gradient(
+        45deg,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%) 25%,
+        transparent 25%,
+        transparent 75%,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%) 75%,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%)
+      );
+    background-size: calc(var(--spacing-2) * 1.25) calc(var(--spacing-2) * 1.25);
+    background-position:
+      0 0,
+      calc(var(--spacing-2) * 0.625) calc(var(--spacing-2) * 0.625);
+    pointer-events: none;
+  }
+
+  .color-control .color-swatch[data-unset="1"] input[type="color"] {
+    opacity: 0;
+  }
+
+  &:focus-within .color-control {
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
+      (focusRingOpacity || 0.3) * 100,
+    )}%, transparent);
+  }
+
+  &:has(input[type="color"]:disabled) .color-control {
+    background: var(--color-input-disabled-bg);
+    color: var(--color-input-disabled-text);
+    cursor: not-allowed;
+  }
+}
+
 input[type="file"] {
   padding: var(--spacing-2) var(--spacing-4);
   cursor: pointer;
@@ -2762,7 +2916,7 @@ a.btn-working {
   color: var(--color-text-secondary);
   padding: var(--spacing-6) var(--spacing-4);
   background-color: var(--color-surface-subtle);
-  max-width: var(--layout-max-width-md);
+  max-width: var(--layout-max-width-md, 736px);
   border-radius: var(--radius-md);
   nav {
     margin-top: var(--spacing-4);
@@ -3507,6 +3661,12 @@ dialog.dialog-full { width: calc(100vw - var(--spacing-8)); max-width: calc(100v
 @media (prefers-reduced-motion: reduce) {
   dialog, dialog::backdrop { transition-duration: 0.01s !important; }
 }
+
+html:has(dialog[open]:modal) {
+ overflow: hidden;
+ scrollbar-gutter: stable;
+}
+
 
 `;
   }

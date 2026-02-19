@@ -322,7 +322,7 @@ design: {
       formatting: ["text-align-left", "text-b", "list-bullets", ...],
       system: ["cloud", "desktop", "globe", "sun", "moon", ...]
     },
-    spritePath: "public/assets/pds/icons/pds-icons.svg"
+    spritePath: "/assets/pds/icons/pds-icons.svg"
   }
 }`;
 

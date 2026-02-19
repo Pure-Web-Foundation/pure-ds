@@ -576,6 +576,15 @@ async function main(options = {}) {
       'default';
     const runtimePresetId = slugify(runtimePresetLabel || 'default') || 'default';
     const runtimeDesign = clone(stripFunctions(generatorOptions?.design || {}));
+    const configModule = await loadPdsConfigModule();
+    const runtimeSchemaPayload =
+      typeof configModule?.buildDesignConfigFormSchema === 'function'
+        ? configModule.buildDesignConfigFormSchema(runtimeDesign)
+        : configModule?.PDS_DEFAULT_CONFIG_FORM_SCHEMA || null;
+    const runtimeEditorMetadata =
+      typeof configModule?.getDesignConfigEditorMetadata === 'function'
+        ? configModule.getDesignConfigEditorMetadata(runtimeDesign)
+        : configModule?.PDS_DEFAULT_CONFIG_EDITOR_METADATA || {};
     const runtimeConfig = {
       exportedAt: new Date().toISOString(),
       staticRoot: assetUrlRoot,
@@ -591,7 +600,13 @@ async function main(options = {}) {
         components: `${assetUrlRoot}styles/pds-components.css.js`,
         utilities: `${assetUrlRoot}styles/pds-utilities.css.js`,
         styles: `${assetUrlRoot}styles/pds-styles.css.js`,
-      }
+      },
+      metadata: {
+        configRelations: clone(configModule?.PDS_CONFIG_RELATIONS || {}),
+        configSpec: clone(configModule?.PDS_DESIGN_CONFIG_SPEC || null),
+        configEditorMetadata: clone(runtimeEditorMetadata || {}),
+        configFormSchema: clone(runtimeSchemaPayload || null),
+      },
     };
     
     const runtimeConfigPath = path.join(targetDir, 'pds-runtime-config.json');

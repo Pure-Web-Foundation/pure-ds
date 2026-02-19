@@ -10,7 +10,6 @@
  * @attr {boolean} disabled - Disable the input
  * @attr {boolean} required - Mark the input as required
  * @attr {string} autocomplete - Native autocomplete attribute (default: off)
- * @attr {string} item-grid - Grid template columns for suggestion items
  *
  * @property {Object} settings - AutoComplete settings object (required by consumer)
  */
@@ -30,7 +29,6 @@ export class PdsOmnibox extends HTMLElement {
       "required",
       "autocomplete",
       "icon",
-      "item-grid",
     ];
   }
 
@@ -165,15 +163,6 @@ export class PdsOmnibox extends HTMLElement {
     else this.setAttribute("icon", value);
   }
 
-  get itemGrid() {
-    return this.getAttribute("item-grid") || "";
-  }
-
-  set itemGrid(value) {
-    if (value == null || value === "") this.removeAttribute("item-grid");
-    else this.setAttribute("item-grid", value);
-  }
-
   formAssociatedCallback() {}
 
   formDisabledCallback(disabled) {
@@ -251,7 +240,7 @@ export class PdsOmnibox extends HTMLElement {
 					--ac-margin: var(--spacing-0);
 					--icon-size: var(--spacing-6);
 					--ac-itm-height-default: 5rem;
-					--ac-max-height-default: 300px;
+          --ac-max-height-default: 300px;
 					--ac-viewport-gap: var(--spacing-4);
 					--ac-suggest-offset: var(--spacing-1);
 				}
@@ -535,9 +524,6 @@ export class PdsOmnibox extends HTMLElement {
     if (this.required) this.#input.setAttribute("required", "");
     else this.#input.removeAttribute("required");
 
-    if (this.itemGrid) this.style.setProperty("--ac-grid", this.itemGrid);
-    else this.style.removeProperty("--ac-grid");
-
     this.#updateFormValue(this.#input.value);
   }
 
@@ -579,7 +565,8 @@ export class PdsOmnibox extends HTMLElement {
         container.style.removeProperty("--ac-color-default");
         container.style.removeProperty("--ac-accent-color");
 
-        const gridOverride = this.itemGrid;
+        const gridOverride =
+          typeof settings.itemGrid === "string" ? settings.itemGrid.trim() : "";
         if (gridOverride) {
           container.style.setProperty("--ac-grid", gridOverride);
         } else if (settings.hideCategory === true) {
@@ -732,7 +719,12 @@ export class PdsOmnibox extends HTMLElement {
 
     const available = direction === "up" ? availableUp : availableDown;
 
-    const maxHeight = Math.max(0, Math.floor(available));
+    const configuredMaxHeight =
+      this.#readSpacingToken(container, "--ac-max-height-default") || 200;
+    const maxHeight = Math.max(
+      0,
+      Math.floor(Math.min(available, configuredMaxHeight)),
+    );
     container.style.setProperty("--ac-max-height", `${maxHeight}px`);
   }
 
@@ -743,7 +735,7 @@ export class PdsOmnibox extends HTMLElement {
     const availableDown = viewportHeight - rect.bottom - gap;
     const availableUp = rect.top - gap;
     const maxDefault =
-      this.#readSpacingToken(container, "--ac-max-height-default") || 300;
+      this.#readSpacingToken(container, "--ac-max-height-default") || 200;
     const minDown = Math.min(maxDefault, 180);
 
     return availableDown >= minDown || availableDown >= availableUp

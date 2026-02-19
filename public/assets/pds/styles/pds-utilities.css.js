@@ -140,7 +140,7 @@ button, a {
 }
 
 /* Max-width utilities */
-.max-w-sm { max-width: var(--layout-max-width-sm, 608px); } .max-w-md { max-width: var(--layout-max-width-md, 736px); } .max-w-lg { max-width: var(--layout-max-width-lg, 992px); } .max-w-xl { max-width: var(--layout-max-width-xl, 1200px); }
+.max-w-sm { max-width: var(--layout-max-width-sm, 608px); } .max-w-md { max-width: var(--layout-max-width-md, 736px); } .max-w-lg { max-width: var(--layout-max-width-lg, 992px); } .max-w-xl { max-width: var(--layout-max-width-xl, 1280px); }
 
 /* Stack utilities - vertical rhythm for stacked elements */
 [class^="stack-"], [class*=" stack-"] {
@@ -851,7 +851,7 @@ button, a {
 }
 
 /* Max-width utilities */
-.max-w-sm { max-width: var(--layout-max-width-sm, 608px); } .max-w-md { max-width: var(--layout-max-width-md, 736px); } .max-w-lg { max-width: var(--layout-max-width-lg, 992px); } .max-w-xl { max-width: var(--layout-max-width-xl, 1200px); }
+.max-w-sm { max-width: var(--layout-max-width-sm, 608px); } .max-w-md { max-width: var(--layout-max-width-md, 736px); } .max-w-lg { max-width: var(--layout-max-width-lg, 992px); } .max-w-xl { max-width: var(--layout-max-width-xl, 1280px); }
 
 /* Stack utilities - vertical rhythm for stacked elements */
 [class^="stack-"], [class*=" stack-"] {

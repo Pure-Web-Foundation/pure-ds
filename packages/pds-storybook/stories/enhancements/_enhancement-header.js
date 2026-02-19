@@ -6,6 +6,7 @@ const enhancementMap = {
   accordion: defaultPDSEnhancerMetadata.find(e => e.selector === '.accordion'),
   dropdown: defaultPDSEnhancerMetadata.find(e => e.selector === 'nav[data-dropdown]'),
   toggle: defaultPDSEnhancerMetadata.find(e => e.selector === 'label[data-toggle]'),
+  colorInput: defaultPDSEnhancerMetadata.find(e => e.selector === 'label[data-color]'),
   range: defaultPDSEnhancerMetadata.find(e => e.selector === 'input[type="range"]'),
   required: defaultPDSEnhancerMetadata.find(e => e.selector === 'form[data-required]'),
   openGroup: defaultPDSEnhancerMetadata.find(e => e.selector === 'fieldset[role=group][data-open]'),

@@ -1327,15 +1327,6 @@
             },
             {
               "kind": "method",
-              "name": "_handleDocumentPointer",
-              "parameters": [
-                {
-                  "name": "event"
-                }
-              ]
-            },
-            {
-              "kind": "method",
               "name": "_handleDocumentKeydown",
               "parameters": [
                 {
@@ -1386,6 +1377,38 @@
             },
             {
               "kind": "method",
+              "name": "_addMouseMoveListener"
+            },
+            {
+              "kind": "method",
+              "name": "_removeMouseMoveListener"
+            },
+            {
+              "kind": "method",
+              "name": "_addMouseOverListener"
+            },
+            {
+              "kind": "method",
+              "name": "_removeMouseOverListener"
+            },
+            {
+              "kind": "method",
+              "name": "_watchDropdownState"
+            },
+            {
+              "kind": "method",
+              "name": "_unwatchDropdownState"
+            },
+            {
+              "kind": "method",
+              "name": "_watchDropdownState"
+            },
+            {
+              "kind": "method",
+              "name": "_unwatchDropdownState"
+            },
+            {
+              "kind": "method",
               "name": "_isPointerWithinSafeZone"
             },
             {
@@ -1414,6 +1437,9 @@
                   "name": "container"
                 },
                 {
+                  "name": "footer"
+                },
+                {
                   "name": "paths"
                 },
                 {
@@ -1421,6 +1447,12 @@
                 },
                 {
                   "name": "hints"
+                },
+                {
+                  "name": "target"
+                },
+                {
+                  "name": "quickPaths"
                 }
               ]
             },
@@ -1438,21 +1470,28 @@
             },
             {
               "kind": "method",
-              "name": "_handleValueChange",
+              "name": "_handleExport",
               "parameters": [
                 {
-                  "name": "event"
+                  "name": "format"
                 }
               ]
             },
             {
               "kind": "method",
-              "name": "_schedulePatch",
+              "name": "_handleFormSubmit",
               "parameters": [
                 {
-                  "name": "patch"
+                  "name": "event"
+                },
+                {
+                  "name": "form"
                 }
               ]
+            },
+            {
+              "kind": "method",
+              "name": "_handleUndo"
             },
             {
               "kind": "field",
@@ -1512,22 +1551,6 @@
             },
             {
               "kind": "field",
-              "name": "_pendingPatch",
-              "type": {
-                "text": "null"
-              },
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "_applyTimer",
-              "type": {
-                "text": "null"
-              },
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "_selectors",
               "type": {
                 "text": "null"
@@ -1544,10 +1567,6 @@
             },
             {
               "kind": "field",
-              "name": "_boundDocPointer"
-            },
-            {
-              "kind": "field",
               "name": "_boundDocKeydown"
             },
             {
@@ -1557,6 +1576,30 @@
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_undoStack",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "_dropdownMenuOpen",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_dropdownObserver",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
             }
           ],
           "superclass": {

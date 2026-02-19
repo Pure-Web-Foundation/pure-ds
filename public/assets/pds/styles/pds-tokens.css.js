@@ -271,11 +271,6 @@ tokens.replaceSync(`@layer tokens {
 
 
             /* Layout */
-  --layout-max-width: 1200px;
-  --layout-max-width-sm: 608px;
-  --layout-max-width-md: 736px;
-  --layout-max-width-lg: 992px;
-  --layout-max-width-xl: 1200px;
   --layout-min-height: 100vh;
   --layout-container-padding: var(--spacing-6);
   --layout-page-margin: 120px;
@@ -993,11 +988,6 @@ export const tokensCSS = `@layer tokens {
 
 
             /* Layout */
-  --layout-max-width: 1200px;
-  --layout-max-width-sm: 608px;
-  --layout-max-width-md: 736px;
-  --layout-max-width-lg: 992px;
-  --layout-max-width-xl: 1200px;
   --layout-min-height: 100vh;
   --layout-container-padding: var(--spacing-6);
   --layout-page-margin: 120px;

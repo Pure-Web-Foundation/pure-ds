@@ -271,11 +271,6 @@ styles.replaceSync(`@layer tokens {
 
 
             /* Layout */
-  --layout-max-width: 1200px;
-  --layout-max-width-sm: 608px;
-  --layout-max-width-md: 736px;
-  --layout-max-width-lg: 992px;
-  --layout-max-width-xl: 1200px;
   --layout-min-height: 100vh;
   --layout-container-padding: var(--spacing-6);
   --layout-page-margin: 120px;
@@ -1398,7 +1393,7 @@ input, textarea, select {
   width: 100%;
   min-height: 40px;
   padding: calc(var(--spacing-1) * 0.75) var(--spacing-4);
-  border: 2px solid var(--color-border);
+  border: var(--border-width-medium) solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -1569,7 +1564,7 @@ input[type="checkbox"] + label:not(fieldset label):not(label[data-toggle]) {
   justify-content: center;
   min-height: calc(44px * 0.75);
   padding: calc(var(--spacing-1) * 0.6) calc(var(--spacing-4) * 0.85);
-  border: 2px solid var(--color-border);
+  border: var(--border-width-medium) solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-sm);
@@ -1871,7 +1866,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   justify-content: center;
   min-height: 44px;
   padding: calc(var(--spacing-1) * 1) var(--spacing-6);
-  border: 2px solid transparent;
+  border: var(--border-width-medium) solid transparent;
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -2043,7 +2038,7 @@ a.btn-working {
   color: var(--color-text-secondary);
   padding: var(--spacing-6) var(--spacing-4);
   background-color: var(--color-surface-subtle);
-  max-width: var(--layout-max-width-md);
+  max-width: var(--layout-max-width-md, 736px);
   border-radius: var(--radius-md);
   nav {
     margin-top: var(--spacing-4);
@@ -2169,13 +2164,13 @@ a.btn-working {
 .array-item {
   position: relative;
   padding: var(--spacing-4);
-  border: 2px solid var(--color-border);
+  border: var(--border-width-medium) solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface-base);
   
   .array-controls {
     padding-top: var(--spacing-3);
-    border-top: 2px solid var(--color-border);
+    border-top: var(--border-width-medium) solid var(--color-border);
     margin-top: var(--spacing-4);
   }
 }
@@ -2350,10 +2345,12 @@ a.btn-working {
 /* Dialog base styles */
 dialog {
   position: fixed;
-  inset: 0;
+  left: 50%;
+  top: 50%;
+  width: min(600px, calc(100vw - var(--spacing-8)));
   max-width: min(600px, calc(100vw - var(--spacing-8)));
-  max-height: calc(100vh - var(--spacing-8));
-  margin: auto;
+  max-height: calc(100dvh - var(--spacing-8));
+  margin: 0;
   padding: 0;
   border: none;
   border-radius: var(--radius-lg);
@@ -2365,12 +2362,10 @@ dialog {
   
   /* Smooth transitions */
   opacity: 0;
-  scale: 0.95;
+  transform: translate(-50%, -50%) scale(0.95);
   transition: 
-    opacity 0.2s ease,
-    scale 0.2s ease,
-    overlay 0.2s ease allow-discrete,
-    display 0.2s ease allow-discrete;
+    opacity var(--transition-normal) ease,
+    transform var(--transition-normal) ease;
   
   
 }
@@ -2378,15 +2373,35 @@ dialog {
 /* Open state */
 dialog[open] {
   opacity: 1;
-  scale: 1;
+  transform: translate(-50%, -50%) scale(1);
+  animation: pds-dialog-enter var(--transition-normal) ease;
 }
 
-/* Starting style for smooth open animation */
-@starting-style {
-  dialog[open] {
+@keyframes pds-dialog-enter {
+  from {
     opacity: 0;
-    scale: 0.95;
+    transform: translate(-50%, -50%) scale(0.95);
   }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Safari fallback: disable scale animation to avoid dialog clipping bugs */
+dialog.dialog-no-scale-animation {
+  transform: translate(-50%, -50%);
+  transition: opacity var(--transition-normal) ease;
+}
+
+dialog.dialog-no-scale-animation[open] {
+  transform: translate(-50%, -50%);
+  animation: pds-dialog-fade-enter var(--transition-normal) ease;
+}
+
+@keyframes pds-dialog-fade-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Backdrop styling */
@@ -2394,20 +2409,17 @@ dialog::backdrop {
   background: var(--backdrop-bg);
   backdrop-filter: var(--backdrop-filter);
   opacity: 0;
-  transition: 
-    opacity 0.2s ease,
-    overlay 0.2s ease allow-discrete,
-    display 0.2s ease allow-discrete;
+  transition: opacity var(--transition-normal) ease;
 }
 
 dialog[open]::backdrop {
   opacity: var(--backdrop-opacity, 1);
+  animation: pds-dialog-backdrop-enter var(--transition-normal) ease;
 }
 
-@starting-style {
-  dialog[open]::backdrop {
-    opacity: 0;
-  }
+@keyframes pds-dialog-backdrop-enter {
+  from { opacity: 0; }
+  to { opacity: var(--backdrop-opacity, 1); }
 }
 
 /* Dialog - constrain max height to 90vh, support custom maxHeight via CSS variable */
@@ -2504,21 +2516,60 @@ dialog {
 }
 
 /* Dialog size modifiers */
-dialog.dialog-sm { max-width: min(400px, calc(100vw - var(--spacing-8))); }
-dialog.dialog-lg { max-width: min(800px, calc(100vw - var(--spacing-8))); }
-dialog.dialog-xl { max-width: min(1200px, calc(100vw - var(--spacing-8))); }
-dialog.dialog-full { max-width: calc(100vw - var(--spacing-8)); max-height: calc(100vh - var(--spacing-8)); }
+dialog.dialog-sm { width: min(400px, calc(100vw - var(--spacing-8))); max-width: min(400px, calc(100vw - var(--spacing-8))); }
+dialog.dialog-lg { width: min(800px, calc(100vw - var(--spacing-8))); max-width: min(800px, calc(100vw - var(--spacing-8))); }
+dialog.dialog-xl { width: min(1200px, calc(100vw - var(--spacing-8))); max-width: min(1200px, calc(100vw - var(--spacing-8))); }
+dialog.dialog-full { width: calc(100vw - var(--spacing-8)); max-width: calc(100vw - var(--spacing-8)); max-height: calc(100dvh - var(--spacing-8)); }
 
 /* Mobile responsiveness - maximize on mobile */
 @media (max-width: 639px) {
+  dialog,
+  dialog.dialog-no-scale-animation,
+  dialog.dialog-no-scale-animation[open] {
+    left: 0 !important;
+    top: 0 !important;
+  }
+
+  dialog.dialog-no-scale-animation,
+  dialog.dialog-no-scale-animation[open] {
+    transform: none !important;
+  }
+
+  dialog[open] {
+    left: 0 !important;
+    top: 0 !important;
+  }
+
   dialog { 
     max-width: 100vw; 
-    max-height: 100vh; 
-    --dialog-max-height: 100vh; /* Override custom maxHeight on mobile */
+    width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh; 
+    --dialog-max-height: 100dvh; /* Override custom maxHeight on mobile */
     border-radius: 0; 
-    top: 50%; 
-    transform: translateY(-50%); 
-    margin: 0; 
+    margin: 0;
+    transform: scale(0.98);
+  }
+  dialog[open] {
+    transform: scale(1);
+    animation: pds-dialog-enter-mobile var(--transition-normal) ease;
+  }
+
+  dialog.dialog-no-scale-animation {
+    transition: opacity var(--transition-normal) ease;
+  }
+  dialog.dialog-no-scale-animation[open] {
+    animation: pds-dialog-fade-enter var(--transition-normal) ease;
+  }
+  @keyframes pds-dialog-enter-mobile {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
   dialog header, dialog form > header, dialog article, dialog form > article, dialog footer, dialog form > footer { padding: var(--spacing-4); }
 }
@@ -2527,6 +2578,12 @@ dialog.dialog-full { max-width: calc(100vw - var(--spacing-8)); max-height: calc
 @media (prefers-reduced-motion: reduce) {
   dialog, dialog::backdrop { transition-duration: 0.01s !important; }
 }
+
+html:has(dialog[open]:modal) {
+ overflow: hidden;
+ scrollbar-gutter: stable;
+}
+
 
 
 
@@ -2756,9 +2813,12 @@ nav[data-dropdown] {
     }
   }
 
-  &[data-mode="auto"] > :last-child {
+  &[data-mode="auto"]:not([data-dropdown-direction]) > :last-child {
     top: 100%;
     bottom: auto;
+    margin-top: var(--spacing-2);
+    margin-bottom: 0;
+    transform-origin: top center;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -3176,7 +3236,7 @@ button, a {
 }
 
 /* Max-width utilities */
-.max-w-sm { max-width: var(--layout-max-width-sm, 608px); } .max-w-md { max-width: var(--layout-max-width-md, 736px); } .max-w-lg { max-width: var(--layout-max-width-lg, 992px); } .max-w-xl { max-width: var(--layout-max-width-xl, 1200px); }
+.max-w-sm { max-width: var(--layout-max-width-sm, 608px); } .max-w-md { max-width: var(--layout-max-width-md, 736px); } .max-w-lg { max-width: var(--layout-max-width-lg, 992px); } .max-w-xl { max-width: var(--layout-max-width-xl, 1280px); }
 
 /* Stack utilities - vertical rhythm for stacked elements */
 [class^="stack-"], [class*=" stack-"] {
@@ -4018,11 +4078,6 @@ export const stylesCSS = `@layer tokens {
 
 
             /* Layout */
-  --layout-max-width: 1200px;
-  --layout-max-width-sm: 608px;
-  --layout-max-width-md: 736px;
-  --layout-max-width-lg: 992px;
-  --layout-max-width-xl: 1200px;
   --layout-min-height: 100vh;
   --layout-container-padding: var(--spacing-6);
   --layout-page-margin: 120px;
@@ -5145,7 +5200,7 @@ input, textarea, select {
   width: 100%;
   min-height: 40px;
   padding: calc(var(--spacing-1) * 0.75) var(--spacing-4);
-  border: 2px solid var(--color-border);
+  border: var(--border-width-medium) solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -5316,7 +5371,7 @@ input[type="checkbox"] + label:not(fieldset label):not(label[data-toggle]) {
   justify-content: center;
   min-height: calc(44px * 0.75);
   padding: calc(var(--spacing-1) * 0.6) calc(var(--spacing-4) * 0.85);
-  border: 2px solid var(--color-border);
+  border: var(--border-width-medium) solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-sm);
@@ -5618,7 +5673,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   justify-content: center;
   min-height: 44px;
   padding: calc(var(--spacing-1) * 1) var(--spacing-6);
-  border: 2px solid transparent;
+  border: var(--border-width-medium) solid transparent;
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
@@ -5790,7 +5845,7 @@ a.btn-working {
   color: var(--color-text-secondary);
   padding: var(--spacing-6) var(--spacing-4);
   background-color: var(--color-surface-subtle);
-  max-width: var(--layout-max-width-md);
+  max-width: var(--layout-max-width-md, 736px);
   border-radius: var(--radius-md);
   nav {
     margin-top: var(--spacing-4);
@@ -5916,13 +5971,13 @@ a.btn-working {
 .array-item {
   position: relative;
   padding: var(--spacing-4);
-  border: 2px solid var(--color-border);
+  border: var(--border-width-medium) solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface-base);
   
   .array-controls {
     padding-top: var(--spacing-3);
-    border-top: 2px solid var(--color-border);
+    border-top: var(--border-width-medium) solid var(--color-border);
     margin-top: var(--spacing-4);
   }
 }
@@ -6097,10 +6152,12 @@ a.btn-working {
 /* Dialog base styles */
 dialog {
   position: fixed;
-  inset: 0;
+  left: 50%;
+  top: 50%;
+  width: min(600px, calc(100vw - var(--spacing-8)));
   max-width: min(600px, calc(100vw - var(--spacing-8)));
-  max-height: calc(100vh - var(--spacing-8));
-  margin: auto;
+  max-height: calc(100dvh - var(--spacing-8));
+  margin: 0;
   padding: 0;
   border: none;
   border-radius: var(--radius-lg);
@@ -6112,12 +6169,10 @@ dialog {
   
   /* Smooth transitions */
   opacity: 0;
-  scale: 0.95;
+  transform: translate(-50%, -50%) scale(0.95);
   transition: 
-    opacity 0.2s ease,
-    scale 0.2s ease,
-    overlay 0.2s ease allow-discrete,
-    display 0.2s ease allow-discrete;
+    opacity var(--transition-normal) ease,
+    transform var(--transition-normal) ease;
   
   
 }
@@ -6125,15 +6180,35 @@ dialog {
 /* Open state */
 dialog[open] {
   opacity: 1;
-  scale: 1;
+  transform: translate(-50%, -50%) scale(1);
+  animation: pds-dialog-enter var(--transition-normal) ease;
 }
 
-/* Starting style for smooth open animation */
-@starting-style {
-  dialog[open] {
+@keyframes pds-dialog-enter {
+  from {
     opacity: 0;
-    scale: 0.95;
+    transform: translate(-50%, -50%) scale(0.95);
   }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Safari fallback: disable scale animation to avoid dialog clipping bugs */
+dialog.dialog-no-scale-animation {
+  transform: translate(-50%, -50%);
+  transition: opacity var(--transition-normal) ease;
+}
+
+dialog.dialog-no-scale-animation[open] {
+  transform: translate(-50%, -50%);
+  animation: pds-dialog-fade-enter var(--transition-normal) ease;
+}
+
+@keyframes pds-dialog-fade-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Backdrop styling */
@@ -6141,20 +6216,17 @@ dialog::backdrop {
   background: var(--backdrop-bg);
   backdrop-filter: var(--backdrop-filter);
   opacity: 0;
-  transition: 
-    opacity 0.2s ease,
-    overlay 0.2s ease allow-discrete,
-    display 0.2s ease allow-discrete;
+  transition: opacity var(--transition-normal) ease;
 }
 
 dialog[open]::backdrop {
   opacity: var(--backdrop-opacity, 1);
+  animation: pds-dialog-backdrop-enter var(--transition-normal) ease;
 }
 
-@starting-style {
-  dialog[open]::backdrop {
-    opacity: 0;
-  }
+@keyframes pds-dialog-backdrop-enter {
+  from { opacity: 0; }
+  to { opacity: var(--backdrop-opacity, 1); }
 }
 
 /* Dialog - constrain max height to 90vh, support custom maxHeight via CSS variable */
@@ -6251,21 +6323,60 @@ dialog {
 }
 
 /* Dialog size modifiers */
-dialog.dialog-sm { max-width: min(400px, calc(100vw - var(--spacing-8))); }
-dialog.dialog-lg { max-width: min(800px, calc(100vw - var(--spacing-8))); }
-dialog.dialog-xl { max-width: min(1200px, calc(100vw - var(--spacing-8))); }
-dialog.dialog-full { max-width: calc(100vw - var(--spacing-8)); max-height: calc(100vh - var(--spacing-8)); }
+dialog.dialog-sm { width: min(400px, calc(100vw - var(--spacing-8))); max-width: min(400px, calc(100vw - var(--spacing-8))); }
+dialog.dialog-lg { width: min(800px, calc(100vw - var(--spacing-8))); max-width: min(800px, calc(100vw - var(--spacing-8))); }
+dialog.dialog-xl { width: min(1200px, calc(100vw - var(--spacing-8))); max-width: min(1200px, calc(100vw - var(--spacing-8))); }
+dialog.dialog-full { width: calc(100vw - var(--spacing-8)); max-width: calc(100vw - var(--spacing-8)); max-height: calc(100dvh - var(--spacing-8)); }
 
 /* Mobile responsiveness - maximize on mobile */
 @media (max-width: 639px) {
+  dialog,
+  dialog.dialog-no-scale-animation,
+  dialog.dialog-no-scale-animation[open] {
+    left: 0 !important;
+    top: 0 !important;
+  }
+
+  dialog.dialog-no-scale-animation,
+  dialog.dialog-no-scale-animation[open] {
+    transform: none !important;
+  }
+
+  dialog[open] {
+    left: 0 !important;
+    top: 0 !important;
+  }
+
   dialog { 
     max-width: 100vw; 
-    max-height: 100vh; 
-    --dialog-max-height: 100vh; /* Override custom maxHeight on mobile */
+    width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh; 
+    --dialog-max-height: 100dvh; /* Override custom maxHeight on mobile */
     border-radius: 0; 
-    top: 50%; 
-    transform: translateY(-50%); 
-    margin: 0; 
+    margin: 0;
+    transform: scale(0.98);
+  }
+  dialog[open] {
+    transform: scale(1);
+    animation: pds-dialog-enter-mobile var(--transition-normal) ease;
+  }
+
+  dialog.dialog-no-scale-animation {
+    transition: opacity var(--transition-normal) ease;
+  }
+  dialog.dialog-no-scale-animation[open] {
+    animation: pds-dialog-fade-enter var(--transition-normal) ease;
+  }
+  @keyframes pds-dialog-enter-mobile {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
   dialog header, dialog form > header, dialog article, dialog form > article, dialog footer, dialog form > footer { padding: var(--spacing-4); }
 }
@@ -6274,6 +6385,12 @@ dialog.dialog-full { max-width: calc(100vw - var(--spacing-8)); max-height: calc
 @media (prefers-reduced-motion: reduce) {
   dialog, dialog::backdrop { transition-duration: 0.01s !important; }
 }
+
+html:has(dialog[open]:modal) {
+ overflow: hidden;
+ scrollbar-gutter: stable;
+}
+
 
 
 
@@ -6503,9 +6620,12 @@ nav[data-dropdown] {
     }
   }
 
-  &[data-mode="auto"] > :last-child {
+  &[data-mode="auto"]:not([data-dropdown-direction]) > :last-child {
     top: 100%;
     bottom: auto;
+    margin-top: var(--spacing-2);
+    margin-bottom: 0;
+    transform-origin: top center;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -6923,7 +7043,7 @@ button, a {
 }
 
 /* Max-width utilities */
-.max-w-sm { max-width: var(--layout-max-width-sm, 608px); } .max-w-md { max-width: var(--layout-max-width-md, 736px); } .max-w-lg { max-width: var(--layout-max-width-lg, 992px); } .max-w-xl { max-width: var(--layout-max-width-xl, 1200px); }
+.max-w-sm { max-width: var(--layout-max-width-sm, 608px); } .max-w-md { max-width: var(--layout-max-width-md, 736px); } .max-w-lg { max-width: var(--layout-max-width-lg, 992px); } .max-w-xl { max-width: var(--layout-max-width-xl, 1280px); }
 
 /* Stack utilities - vertical rhythm for stacked elements */
 [class^="stack-"], [class*=" stack-"] {

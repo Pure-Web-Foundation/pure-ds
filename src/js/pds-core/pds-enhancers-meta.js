@@ -56,6 +56,17 @@ export const defaultPDSEnhancerMetadata = [
     `.trim(),
   },
   {
+    selector: "label[data-color]",
+    description:
+      "Wraps color inputs with a styled control shell and synced hex output while keeping the native picker.",
+    demoHtml: `
+      <label data-color>
+        <span>Brand color</span>
+        <input type="color" value="#7c3aed">
+      </label>
+    `.trim(),
+  },
+  {
     selector: 'input[type="range"]',
     description: "Enhances range inputs with an attached <output>.",
     demoHtml: `
