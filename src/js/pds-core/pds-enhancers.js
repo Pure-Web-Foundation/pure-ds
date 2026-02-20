@@ -68,6 +68,7 @@ function enhanceDropdown(elem) {
   }
 
   const isMenu = menu.tagName?.toLowerCase() === "menu";
+  const VIEWPORT_PADDING = 8;
   if (isMenu && !menu.hasAttribute("role")) {
     menu.setAttribute("role", "menu");
   }
@@ -152,6 +153,76 @@ function enhanceDropdown(elem) {
     return spaceForRightAligned > spaceForLeftAligned ? "right" : "left";
   };
 
+  const readLengthToken = (tokenName, fallback = 8) => {
+    const raw = getComputedStyle(elem).getPropertyValue(tokenName).trim();
+    if (!raw) return fallback;
+    const probe = document.createElement("span");
+    probe.style.position = "fixed";
+    probe.style.visibility = "hidden";
+    probe.style.pointerEvents = "none";
+    probe.style.height = raw;
+    document.body.appendChild(probe);
+    const parsed = Number.parseFloat(getComputedStyle(probe).height);
+    probe.remove();
+    return Number.isFinite(parsed) ? parsed : fallback;
+  };
+
+  const clearFloatingMenuPosition = () => {
+    menu.style.removeProperty("position");
+    menu.style.removeProperty("left");
+    menu.style.removeProperty("top");
+    menu.style.removeProperty("right");
+    menu.style.removeProperty("bottom");
+    menu.style.removeProperty("margin-top");
+    menu.style.removeProperty("margin-bottom");
+  };
+
+  const positionFloatingMenu = () => {
+    if (menu.getAttribute("aria-hidden") !== "false") return;
+    const anchorRect = (trigger || elem).getBoundingClientRect();
+    const { width: menuWidth, height: menuHeight } = measureMenuSize();
+    const spacing = readLengthToken("--spacing-2", 8);
+    const direction = resolveDirection();
+    const align = resolveAlign();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    elem.dataset.dropdownDirection = direction;
+    elem.dataset.dropdownAlign = align;
+
+    let left = align === "right" ? anchorRect.right - menuWidth : anchorRect.left;
+    left = Math.max(VIEWPORT_PADDING, Math.min(left, viewportWidth - menuWidth - VIEWPORT_PADDING));
+
+    let top =
+      direction === "up"
+        ? anchorRect.top - spacing - menuHeight
+        : anchorRect.bottom + spacing;
+    top = Math.max(VIEWPORT_PADDING, Math.min(top, viewportHeight - menuHeight - VIEWPORT_PADDING));
+
+    menu.style.position = "fixed";
+    menu.style.left = `${Math.round(left)}px`;
+    menu.style.top = `${Math.round(top)}px`;
+    menu.style.right = "auto";
+    menu.style.bottom = "auto";
+    menu.style.marginTop = "0";
+    menu.style.marginBottom = "0";
+  };
+
+  let repositionHandler = null;
+  const bindReposition = () => {
+    if (repositionHandler) return;
+    repositionHandler = () => positionFloatingMenu();
+    window.addEventListener("resize", repositionHandler);
+    window.addEventListener("scroll", repositionHandler, true);
+  };
+
+  const unbindReposition = () => {
+    if (!repositionHandler) return;
+    window.removeEventListener("resize", repositionHandler);
+    window.removeEventListener("scroll", repositionHandler, true);
+    repositionHandler = null;
+  };
+
   // Store click handler reference for cleanup
   let clickHandler = null;
 
@@ -160,6 +231,8 @@ function enhanceDropdown(elem) {
     elem.dataset.dropdownAlign = resolveAlign();
     menu.setAttribute("aria-hidden", "false");
     trigger?.setAttribute("aria-expanded", "true");
+    bindReposition();
+    requestAnimationFrame(positionFloatingMenu);
 
     // Add click-outside handler when opening
     if (!clickHandler) {
@@ -182,6 +255,8 @@ function enhanceDropdown(elem) {
   const closeMenu = () => {
     menu.setAttribute("aria-hidden", "true");
     trigger?.setAttribute("aria-expanded", "false");
+    unbindReposition();
+    clearFloatingMenuPosition();
 
     // Remove click-outside handler when closing
     if (clickHandler) {

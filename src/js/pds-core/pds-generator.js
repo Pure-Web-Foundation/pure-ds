@@ -1641,7 +1641,7 @@ html[data-theme="dark"] .liquid-glass {
 .border-gradient {
   border: var(--border-width-medium) solid transparent;
   background:
-    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(var(--border-gradient-fill, var(--color-surface-base)), var(--border-gradient-fill, var(--color-surface-base))) padding-box,
     linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
@@ -1652,7 +1652,7 @@ html[data-theme="dark"] .liquid-glass {
 .border-gradient-primary {
   border: var(--border-width-medium) solid transparent;
   background:
-    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(var(--border-gradient-fill, var(--color-surface-base)), var(--border-gradient-fill, var(--color-surface-base))) padding-box,
     linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-300),
       var(--color-primary-600)
@@ -1662,7 +1662,7 @@ html[data-theme="dark"] .liquid-glass {
 .border-gradient-accent {
   border: var(--border-width-medium) solid transparent;
   background:
-    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(var(--border-gradient-fill, var(--color-surface-base)), var(--border-gradient-fill, var(--color-surface-base))) padding-box,
     linear-gradient(var(--gradient-angle, 135deg),
       var(--color-accent-300),
       var(--color-accent-600)
@@ -1672,7 +1672,7 @@ html[data-theme="dark"] .liquid-glass {
 .border-gradient-secondary {
   border: var(--border-width-medium) solid transparent;
   background:
-    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(var(--border-gradient-fill, var(--color-surface-base)), var(--border-gradient-fill, var(--color-surface-base))) padding-box,
     linear-gradient(var(--gradient-angle, 135deg),
       var(--color-secondary-300),
       var(--color-secondary-600)
@@ -1683,7 +1683,7 @@ html[data-theme="dark"] .liquid-glass {
 .border-gradient-soft {
   border: var(--border-width-thin) solid transparent;
   background:
-    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(var(--border-gradient-fill, var(--color-surface-base)), var(--border-gradient-fill, var(--color-surface-base))) padding-box,
     linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
@@ -1693,7 +1693,7 @@ html[data-theme="dark"] .liquid-glass {
 .border-gradient-medium {
   border: var(--border-width-medium) solid transparent;
   background:
-    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(var(--border-gradient-fill, var(--color-surface-base)), var(--border-gradient-fill, var(--color-surface-base))) padding-box,
     linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
@@ -1703,7 +1703,7 @@ html[data-theme="dark"] .liquid-glass {
 .border-gradient-strong {
   border: var(--border-width-thick) solid transparent;
   background:
-    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(var(--border-gradient-fill, var(--color-surface-base)), var(--border-gradient-fill, var(--color-surface-base))) padding-box,
     linear-gradient(var(--gradient-angle, 135deg),
       var(--color-primary-400),
       var(--color-accent-400)
@@ -1727,7 +1727,7 @@ html[data-theme="dark"] .liquid-glass {
 .border-gradient-glow {
   border: var(--border-width-medium) solid transparent;
   background:
-    linear-gradient(var(--color-surface-base), var(--color-surface-base)) padding-box,
+    linear-gradient(var(--border-gradient-fill, var(--color-surface-base)), var(--border-gradient-fill, var(--color-surface-base))) padding-box,
     linear-gradient(135deg,
       var(--color-primary-400),
       var(--color-accent-400)
@@ -3280,12 +3280,15 @@ tbody {
   overflow: hidden;
 
   &[open] {
+    overflow: visible;
+
     & > summary::after {
       transform: rotate(45deg);
     }
 
     &::details-content {
       block-size: auto;
+      overflow: visible;
     }
   }
 
@@ -3359,6 +3362,7 @@ tbody {
 
     &[open] > :not(summary) {
       grid-template-rows: 1fr;
+      overflow: visible;
     }
   }
 }
@@ -3917,17 +3921,16 @@ nav[data-dropdown] {
     max-width: none;
     max-inline-size: none;
     opacity: 0;
-    scale: 0.95;
     visibility: hidden;
     display: none;
     pointer-events: none;
     transform-origin: top center;
     z-index: var(--z-dropdown, 1050);
     max-height: min(60vh, 24rem);
+    overflow-x: hidden;
     overflow-y: auto;
     transition:
       opacity var(--dropdown-transition-duration) ease,
-      scale var(--dropdown-transition-duration) ease,
       visibility 0s linear var(--dropdown-transition-duration),
       display 0s linear var(--dropdown-transition-duration);
     transition-behavior: allow-discrete;
@@ -3936,12 +3939,10 @@ nav[data-dropdown] {
   & > :last-child[aria-hidden="false"] {
     display: inline-block;
     opacity: 1;
-    scale: 1;
     visibility: visible;
     pointer-events: auto;
     transition:
       opacity var(--dropdown-transition-duration) ease,
-      scale var(--dropdown-transition-duration) ease,
       visibility 0s linear 0s,
       display 0s linear 0s;
   }
@@ -4039,7 +4040,6 @@ nav[data-dropdown] {
 @starting-style {
   nav[data-dropdown] > :last-child[aria-hidden="false"] {
     opacity: 0;
-    scale: 0.95;
   }
 }
 `;
@@ -4955,39 +4955,48 @@ ${this.#generateBorderGradientUtilities()}
 
 .surface {
   background-color: var(--color-surface-base);
+  --border-gradient-fill: var(--color-surface-base);
 }
 
 .surface-subtle {
   background-color: var(--color-surface-subtle);
+  --border-gradient-fill: var(--color-surface-subtle);
 }
 
 .surface-elevated {
   background-color: var(--color-surface-elevated);
+  --border-gradient-fill: var(--color-surface-elevated);
 }
 
 .surface-sunken {
   background-color: var(--color-surface-sunken);
+  --border-gradient-fill: var(--color-surface-sunken);
 }
 
 .surface-overlay {
   background-color: var(--color-surface-overlay);
+  --border-gradient-fill: var(--color-surface-overlay);
 }
 
 /* Translucent semantic variants */
 .surface-translucent {
   background-color: var(--color-surface-translucent-50);
+  --border-gradient-fill: var(--color-surface-translucent-50);
 }
 
 .surface-translucent-25 {
   background-color: var(--color-surface-translucent-25);
+  --border-gradient-fill: var(--color-surface-translucent-25);
 }
 
 .surface-translucent-50 {
   background-color: var(--color-surface-translucent-50);
+  --border-gradient-fill: var(--color-surface-translucent-50);
 }
 
 .surface-translucent-75 {
   background-color: var(--color-surface-translucent-75);
+  --border-gradient-fill: var(--color-surface-translucent-75);
 }
 
 /* Legacy utility retained for backwards compatibility (opinionated overlay) */
@@ -5013,6 +5022,7 @@ ${this.#generateBorderGradientUtilities()}
 /* Surface-inverse visual properties (shared, uses smart surface tokens) */
 .surface-inverse {
   background-color: var(--color-surface-inverse);
+  --border-gradient-fill: var(--color-surface-inverse);
   color: var(--surface-inverse-text);
 
   pds-icon {

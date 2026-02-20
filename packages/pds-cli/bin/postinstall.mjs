@@ -121,18 +121,27 @@ async function ensureBuildScript(consumerRoot) {
 
     consumerPkg.scripts = consumerPkg.scripts || {};
 
-  const desiredScriptName = 'pds:build';
-  const desiredScriptCmd = 'pds-build';
+    const requiredScripts = {
+      'pds:build': 'pds-build',
+      'pds:import': 'pds-import',
+    };
 
-    if (!consumerPkg.scripts[desiredScriptName]) {
-      consumerPkg.scripts[desiredScriptName] = desiredScriptCmd;
+    let changed = false;
+    for (const [scriptName, scriptCommand] of Object.entries(requiredScripts)) {
+      if (!consumerPkg.scripts[scriptName]) {
+        consumerPkg.scripts[scriptName] = scriptCommand;
+        console.log(`🧩 Added "${scriptName}" script to consumer package.json`);
+        changed = true;
+      } else {
+        console.log(`🔧 Script "${scriptName}" already present in consumer package.json`);
+      }
+    }
+
+    if (changed) {
       await writeFile(consumerPkgPath, JSON.stringify(consumerPkg, null, 2) + '\n');
-      console.log(`🧩 Added "${desiredScriptName}" script to consumer package.json`);
-    } else {
-      console.log(`🔧 Script "${desiredScriptName}" already present in consumer package.json`);
     }
   } catch (e) {
-    console.warn('⚠️  Could not ensure pds:build script in consumer package.json:', e.message);
+    console.warn('⚠️  Could not ensure PDS scripts in consumer package.json:', e.message);
   }
 }
 

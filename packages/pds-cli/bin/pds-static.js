@@ -466,6 +466,21 @@ async function main(options = {}) {
     log(`⚠️  Failed to copy lit.js: ${e?.message || e}`, 'yellow');
   }
 
+  // 4d) Copy template catalog and HTML files into target/templates
+  try {
+    const templateSource = path.join(repoRoot, 'public', 'assets', 'pds', 'templates');
+    if (!existsSync(templateSource)) {
+      log('⚠️  No templates source found; skipping templates copy', 'yellow');
+    } else {
+      const templatesDir = path.join(targetDir, 'templates');
+      await mkdir(templatesDir, { recursive: true });
+      await copyDirectory(templateSource, templatesDir);
+      log(`✅ Copied templates → ${path.relative(process.cwd(), templatesDir)}`, 'green');
+    }
+  } catch (e) {
+    log(`⚠️  Failed to copy templates: ${e?.message || e}`, 'yellow');
+  }
+
   // 5) Generate CSS layers into target/styles
   log('🧬 Generating styles...', 'bold');
   const { Generator } = await loadGenerator();

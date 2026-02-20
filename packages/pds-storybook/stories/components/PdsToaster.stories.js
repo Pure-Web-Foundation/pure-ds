@@ -77,6 +77,9 @@ export const Default = () => {
       <p class="text-muted">
         Toast notifications appear in the top-right corner and auto-dismiss after a few seconds. Click the buttons below to see them in action:
       </p>
+      <p>
+        <a href="/?path=/story/pds-pds-object--pds-toast" target="_top">See PDS Object/PDS.toast() utility story</a>
+      </p>
       
       <div class="flex flex-wrap gap-md">
       <button id="toast-success" class="btn-primary btn-sm">
@@ -154,6 +157,10 @@ export const ViaEvents = () => {
     
     <p class="toaster-story-description">
       Toast notifications can also be triggered via PDS events. This is useful for global notifications from anywhere in your application.
+    </p>
+
+    <p>
+      <a href="/?path=/story/pds-pds-object--pds-toast" target="_top">See PDS Object/PDS.toast() utility story</a>
     </p>
     
     <div class="flex flex-wrap gap-md">

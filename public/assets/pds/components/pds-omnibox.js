@@ -648,6 +648,8 @@ export class PdsOmnibox extends HTMLElement {
     if (!suggestion) return;
     this.#suggestionsObserver = new MutationObserver(() => {
       if (!suggestion.classList.contains("ac-active")) {
+        this.removeAttribute("data-suggestions-open");
+        this.#clearSuggestionOverlayStyles(suggestion);
         this.#resetIconToDefault();
       }
     });
@@ -682,6 +684,106 @@ export class PdsOmnibox extends HTMLElement {
     this.#autoCompleteViewportHandler = null;
   }
 
+  #clearSuggestionOverlayStyles(suggestion) {
+    if (!suggestion || !suggestion.style) return;
+    suggestion.style.removeProperty("position");
+    suggestion.style.removeProperty("left");
+    suggestion.style.removeProperty("right");
+    suggestion.style.removeProperty("top");
+    suggestion.style.removeProperty("bottom");
+    suggestion.style.removeProperty("width");
+    suggestion.style.removeProperty("max-width");
+  }
+
+  #getComposedParent(node) {
+    if (!node) return null;
+    if (node.parentElement) return node.parentElement;
+    const root = node.getRootNode?.();
+    if (root && root.host) return root.host;
+    return null;
+  }
+
+  #hasTransformedAncestor(startNode) {
+    let current = startNode;
+    let safety = 0;
+    while (current && safety < 80) {
+      if (current instanceof Element) {
+        const style = getComputedStyle(current);
+        if (
+          style.transform !== "none" ||
+          style.perspective !== "none" ||
+          style.filter !== "none" ||
+          style.backdropFilter !== "none"
+        ) {
+          return true;
+        }
+      }
+      current = this.#getComposedParent(current);
+      safety += 1;
+    }
+    return false;
+  }
+
+  #shouldUseFixedSuggestionOverlay(container) {
+    if (!container) return false;
+    if (this.closest("pds-drawer, dialog")) return false;
+    return !this.#hasTransformedAncestor(this);
+  }
+
+  #positionSuggestionInline({ container, suggestion, rect, direction, offset, maxHeight }) {
+    if (!container || !suggestion) return;
+    this.#clearSuggestionOverlayStyles(suggestion);
+    if (direction === "up") {
+      suggestion.style.top = "auto";
+      suggestion.style.bottom = `${Math.round(rect.height + offset)}px`;
+    } else {
+      suggestion.style.bottom = "auto";
+      suggestion.style.top = `${Math.round(rect.height + offset)}px`;
+    }
+    container.setAttribute("data-direction", direction);
+    suggestion.setAttribute("data-direction", direction);
+    container.style.setProperty("--ac-max-height", `${maxHeight}px`);
+  }
+
+  #positionSuggestionOverlay({
+    container,
+    suggestion,
+    rect,
+    viewportHeight,
+    viewportWidth,
+    direction,
+    maxHeight,
+    gap,
+    offset,
+  }) {
+    if (!container || !suggestion || !suggestion.style) return;
+    if (suggestion.classList.contains("full-mobile")) {
+      this.#clearSuggestionOverlayStyles(suggestion);
+      return;
+    }
+
+    const clampedLeft = Math.max(gap, Math.min(rect.left, viewportWidth - rect.width - gap));
+    const clampedWidth = Math.max(0, Math.min(rect.width, viewportWidth - gap * 2));
+
+    suggestion.style.position = "fixed";
+    suggestion.style.left = `${Math.round(clampedLeft)}px`;
+    suggestion.style.width = `${Math.round(clampedWidth)}px`;
+    suggestion.style.maxWidth = `${Math.round(Math.max(0, viewportWidth - gap * 2))}px`;
+    suggestion.style.right = "auto";
+
+    if (direction === "up") {
+      suggestion.style.top = "auto";
+      suggestion.style.bottom = `${Math.round(viewportHeight - rect.top + offset)}px`;
+    } else {
+      suggestion.style.bottom = "auto";
+      suggestion.style.top = `${Math.round(rect.bottom + offset)}px`;
+    }
+
+    container.setAttribute("data-direction", direction);
+    suggestion.setAttribute("data-direction", direction);
+    container.style.setProperty("--ac-max-height", `${maxHeight}px`);
+  }
+
   #updateSuggestionMaxHeight() {
     if (!this.#input) return;
     const container = this.#input.parentElement;
@@ -696,6 +798,7 @@ export class PdsOmnibox extends HTMLElement {
       suggestion?.getAttribute("data-direction") ||
       container.getAttribute("data-direction") ||
       "down";
+    const offset = this.#readSpacingToken(container, "--ac-suggest-offset") || 0;
 
     const availableDown = viewportHeight - rect.bottom - gap;
     const availableUp = rect.top - gap;
@@ -705,8 +808,6 @@ export class PdsOmnibox extends HTMLElement {
       container.setAttribute("data-direction", direction);
       if (suggestion) suggestion.setAttribute("data-direction", direction);
       if (suggestion) {
-        const offset =
-          this.#readSpacingToken(container, "--ac-suggest-offset") || 0;
         if (direction === "up") {
           suggestion.style.top = "auto";
           suggestion.style.bottom = `${rect.height + offset}px`;
@@ -726,6 +827,39 @@ export class PdsOmnibox extends HTMLElement {
       Math.floor(Math.min(available, configuredMaxHeight)),
     );
     container.style.setProperty("--ac-max-height", `${maxHeight}px`);
+
+    const isSuggestionActive = suggestion?.classList?.contains("ac-active");
+    this.toggleAttribute("data-suggestions-open", Boolean(isSuggestionActive));
+
+    if (!suggestion || !isSuggestionActive || suggestion.classList.contains("full-mobile")) {
+      this.#clearSuggestionOverlayStyles(suggestion);
+      return;
+    }
+
+    if (!this.#shouldUseFixedSuggestionOverlay(container)) {
+      this.#positionSuggestionInline({
+        container,
+        suggestion,
+        rect,
+        direction,
+        offset,
+        maxHeight,
+      });
+      return;
+    }
+
+    const viewportWidth = window.visualViewport?.width || window.innerWidth;
+    this.#positionSuggestionOverlay({
+      container,
+      suggestion,
+      rect,
+      viewportHeight,
+      viewportWidth,
+      direction,
+      maxHeight,
+      gap,
+      offset,
+    });
   }
 
   #resolveSuggestionDirection(container) {

@@ -1,0 +1,53 @@
+{
+  "version": "1",
+  "templates": [
+    {
+      "id": "commerce-scroll-explorer",
+      "name": "Commerce Scroll Explorer",
+      "description": "Product-focused canvas with pds-scrollrow, smart surfaces, border effects, dropdown actions, and interactive controls.",
+      "icon": "shopping-cart",
+      "file": "commerce-scroll-explorer.html",
+      "tags": ["scrollrow", "cards", "dropdown", "interactive", "border-effects", "surfaces"]
+    },
+    {
+      "id": "workspace-settings-lab",
+      "name": "Workspace Settings Lab",
+      "description": "Rich settings canvas with enhanced forms, toggles, accordion sections, and state-heavy controls for rapid theme/config evaluation.",
+      "icon": "gear",
+      "file": "workspace-settings-lab.html",
+      "tags": ["forms", "enhancements", "accordion", "states", "settings"]
+    },
+    {
+      "id": "content-brand-showcase",
+      "name": "Content & Brand Showcase",
+      "description": "Narrative layout with blockquotes, nested smart surfaces, dropdown panels, cards, and contrast-sensitive text hierarchy.",
+      "icon": "text-aa",
+      "file": "content-brand-showcase.html",
+      "tags": ["blockquote", "surfaces", "dropdown", "cards", "branding"]
+    },
+    {
+      "id": "feedback-ops-dashboard",
+      "name": "Feedback Ops Dashboard",
+      "description": "Monthly feedback operations layout with progress tracking, response coverage, theme summaries, and action-ready controls.",
+      "icon": "list",
+      "file": "feedback-ops-dashboard.html",
+      "tags": ["dashboard", "feedback", "progress", "kpi", "scrollrow", "cards"]
+    },
+    {
+      "id": "support-command-center",
+      "name": "Support Command Center",
+      "description": "Service desk dashboard with SLA progress, backlog pressure cards, throughput metrics, and escalation playbook sections.",
+      "icon": "gear",
+      "file": "support-command-center.html",
+      "tags": ["dashboard", "support", "sla", "operations", "accordion", "metrics"]
+    },
+    {
+      "id": "release-readiness-radar",
+      "name": "Release Readiness Radar",
+      "description": "Launch-readiness dashboard combining gate checks, risk pressure, deployment windows, and go/no-go action controls.",
+      "icon": "rocket",
+      "file": "release-readiness-radar.html",
+      "tags": ["dashboard", "release", "readiness", "risk", "kpi", "operations"]
+    }
+  ]
+}

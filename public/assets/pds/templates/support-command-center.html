@@ -1,0 +1,92 @@
+<section class="stack-lg" aria-label="Support Command Center">
+  <header class="card surface-elevated stack-sm border-gradient">
+    <div class="flex justify-between items-center gap-sm">
+      <div class="stack-xs">
+        <h2>Support Command Center</h2>
+        <p class="text-muted">Track SLA health, backlog pressure, and escalation actions from a single rich canvas.</p>
+      </div>
+      <button class="btn-primary">Open Escalation Queue</button>
+    </div>
+  </header>
+
+  <section class="grid grid-auto-md gap-md">
+    <article class="card surface-base stack-sm">
+      <div class="flex justify-between items-center">
+        <h3>SLA compliance</h3>
+        <span class="badge badge-success">Healthy</span>
+      </div>
+      <div class="stack-xs">
+        <div class="flex justify-between items-center">
+          <small class="text-muted">Resolved within SLA</small>
+          <strong>94%</strong>
+        </div>
+        <progress value="94" max="100"></progress>
+      </div>
+      <p class="text-muted">Current target is 90%. Trend has improved for four consecutive weeks.</p>
+    </article>
+
+    <article class="card surface-subtle stack-sm border-glow">
+      <div class="flex justify-between items-center">
+        <h3>Backlog load</h3>
+        <span class="badge badge-warning">Needs review</span>
+      </div>
+      <ul class="stack-xs">
+        <li class="card surface-overlay flex justify-between items-center"><span>P1 incidents</span><strong>3</strong></li>
+        <li class="card surface-overlay flex justify-between items-center"><span>P2 issues</span><strong>17</strong></li>
+        <li class="card surface-overlay flex justify-between items-center"><span>P3 tasks</span><strong>42</strong></li>
+      </ul>
+      <div class="flex gap-sm">
+        <button class="btn-secondary btn-sm">Rebalance</button>
+        <button class="btn-outline btn-sm">Assign owners</button>
+      </div>
+    </article>
+  </section>
+
+  <section class="card surface-base stack-sm">
+    <div class="flex justify-between items-center gap-sm">
+      <h3>Weekly ticket throughput</h3>
+      <span class="text-muted">Last 6 weeks</span>
+    </div>
+    <div class="grid grid-cols-3 gap-sm">
+      <article class="card surface-elevated stack-xs">
+        <small class="text-muted">Opened</small>
+        <strong>128</strong>
+      </article>
+      <article class="card surface-elevated stack-xs">
+        <small class="text-muted">Resolved</small>
+        <strong>141</strong>
+      </article>
+      <article class="card surface-elevated stack-xs">
+        <small class="text-muted">Reopened</small>
+        <strong>9</strong>
+      </article>
+    </div>
+    <blockquote>
+      “The healthiest weeks pair high resolve volume with stable reopen rates.”
+    </blockquote>
+  </section>
+
+  <section class="card surface-subtle stack-sm">
+    <h3>Escalation playbook</h3>
+    <section class="accordion" aria-label="Support playbook">
+      <details open>
+        <summary id="support-step-1">Step 1: Triage</summary>
+        <div role="region" aria-labelledby="support-step-1" class="stack-xs">
+          <p>Validate severity, customer impact, and required responders within first 10 minutes.</p>
+        </div>
+      </details>
+      <details>
+        <summary id="support-step-2">Step 2: Communicate</summary>
+        <div role="region" aria-labelledby="support-step-2" class="stack-xs">
+          <p>Post an internal status update and notify affected customer channels.</p>
+        </div>
+      </details>
+      <details>
+        <summary id="support-step-3">Step 3: Recover</summary>
+        <div role="region" aria-labelledby="support-step-3" class="stack-xs">
+          <p>Execute mitigation, verify service health, and log postmortem action items.</p>
+        </div>
+      </details>
+    </section>
+  </section>
+</section>

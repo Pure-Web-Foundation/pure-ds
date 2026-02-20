@@ -68,12 +68,75 @@ const PersistentToast = {
   }
 };
 
+const CustomHtmlToasts = {
+  name: 'Custom HTML toasts',
+  render: () => {
+    const showHtmlSuccess = async () => {
+      const toast = ensureToast();
+      await toast(
+        '<strong>Profile saved.</strong><br><span class="text-muted">Your preference updates are now active.</span>',
+        {
+          type: 'success',
+          html: true
+        }
+      );
+    };
+
+    const showHtmlWarning = async () => {
+      const toast = ensureToast();
+      await toast(
+        '<strong>Action needed:</strong><br><ul><li>Verify your email address</li><li>Enable two-factor authentication</li></ul>',
+        {
+          type: 'warning',
+          html: true,
+          persistent: true
+        }
+      );
+    };
+
+    const showHtmlWithAction = async () => {
+      const toast = ensureToast();
+      await toast(
+        '<strong>File archived.</strong><br><span class="text-muted">You can restore it within 30 days.</span>',
+        {
+          type: 'information',
+          html: true,
+          action: {
+            label: 'Undo',
+            icon: 'arrow-counter-clockwise',
+            onClick: async () => {
+              await toast('Archive action was undone.', { type: 'success' });
+            },
+            dismissOnClick: true
+          }
+        }
+      );
+    };
+
+    return html`
+      <section class="card stack-md max-w-sm">
+        <h3>Custom HTML toasts</h3>
+        <p class="text-muted">Render trusted rich content in toast messages with the <code>html</code> option.</p>
+        <div class="flex gap-sm">
+          <button class="btn" @click=${showHtmlSuccess}>Show HTML success</button>
+          <button class="btn btn-outline" @click=${showHtmlWarning}>Show HTML warning</button>
+          <button class="btn" @click=${showHtmlWithAction}>Show HTML + action</button>
+        </div>
+      </section>
+    `;
+  }
+};
+
 export const PDSToast = {
   name: 'PDS.toast()',
   render: () => html`
     <section class="stack-lg">
+      <p>
+        <a href="/?path=/story/components-pds-toaster--default" target="_top">See Components/Pds Toaster story</a>
+      </p>
       ${QuickToasts.render()}
       ${PersistentToast.render()}
+      ${CustomHtmlToasts.render()}
     </section>
   `
 };

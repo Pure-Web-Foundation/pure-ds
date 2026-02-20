@@ -1,0 +1,69 @@
+<section class="stack-lg" aria-label="Release Readiness Radar">
+  <header class="card surface-elevated stack-sm border-gradient border-glow">
+    <div class="flex justify-between items-center gap-sm">
+      <div class="stack-xs">
+        <h2>Release Readiness Radar</h2>
+        <p class="text-muted">Launch-focused status board with gates, risk summaries, and deployment actions.</p>
+      </div>
+      <span class="badge badge-primary">Release 24.11</span>
+    </div>
+  </header>
+
+  <section class="card surface-base stack-sm">
+    <div class="flex justify-between items-center gap-sm">
+      <h3>Overall readiness</h3>
+      <strong>76%</strong>
+    </div>
+    <progress value="76" max="100"></progress>
+    <div class="flex gap-sm flex-wrap">
+      <button class="btn-primary">Start Go/No-Go</button>
+      <button class="btn-secondary">Review blockers</button>
+      <button class="btn-outline">Share status</button>
+    </div>
+  </section>
+
+  <section class="grid grid-auto-md gap-md">
+    <article class="card surface-elevated stack-sm">
+      <h4>Gate checks</h4>
+      <ul class="stack-xs">
+        <li class="card surface-subtle flex justify-between items-center"><span>Feature complete</span><span class="badge badge-success">Pass</span></li>
+        <li class="card surface-subtle flex justify-between items-center"><span>QA regression</span><span class="badge badge-warning">At risk</span></li>
+        <li class="card surface-subtle flex justify-between items-center"><span>Security review</span><span class="badge badge-success">Pass</span></li>
+        <li class="card surface-subtle flex justify-between items-center"><span>Docs readiness</span><span class="badge badge-primary">In progress</span></li>
+      </ul>
+    </article>
+
+    <article class="card surface-subtle stack-sm border-gradient">
+      <h4>Risk pressure</h4>
+      <div class="grid grid-cols-3 gap-sm">
+        <article class="card surface-overlay stack-xs"><small class="text-muted">High</small><strong>2</strong></article>
+        <article class="card surface-overlay stack-xs"><small class="text-muted">Medium</small><strong>7</strong></article>
+        <article class="card surface-overlay stack-xs"><small class="text-muted">Low</small><strong>11</strong></article>
+      </div>
+      <blockquote>
+        “Most risk is concentrated in end-to-end checkout and notification retries.”
+      </blockquote>
+    </article>
+  </section>
+
+  <section class="grid grid-auto-sm gap-md">
+    <article class="card surface-base stack-sm">
+      <h4>Deployment windows</h4>
+      <ul class="stack-xs">
+        <li class="flex justify-between items-center"><span>Staging freeze</span><small class="text-muted">Mon 09:00</small></li>
+        <li class="flex justify-between items-center"><span>Production canary</span><small class="text-muted">Tue 11:00</small></li>
+        <li class="flex justify-between items-center"><span>Global rollout</span><small class="text-muted">Wed 14:00</small></li>
+      </ul>
+    </article>
+
+    <article class="card surface-elevated stack-sm">
+      <h4>Owners on duty</h4>
+      <div class="grid grid-cols-3 gap-sm">
+        <article class="card surface-subtle stack-xs"><small class="text-muted">Engineering</small><strong>Nina</strong></article>
+        <article class="card surface-subtle stack-xs"><small class="text-muted">QA</small><strong>Sam</strong></article>
+        <article class="card surface-subtle stack-xs"><small class="text-muted">SRE</small><strong>Lee</strong></article>
+      </div>
+      <button class="btn-outline btn-sm">Open runbook</button>
+    </article>
+  </section>
+</section>

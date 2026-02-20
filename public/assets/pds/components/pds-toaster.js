@@ -124,6 +124,14 @@ export class AppToaster extends HTMLElement {
            white-space: pre-line;
         }
 
+        aside.toast .toast-content {
+          width: 100%;
+        }
+
+        aside.toast .toast-action {
+          margin-top: var(--spacing-2);
+        }
+
         /* Mobile responsive toast positioning */
         @_media (max-width: 640px) {
           :host {
@@ -182,19 +190,23 @@ export class AppToaster extends HTMLElement {
       duration: null, // auto-calculated based on reading time
       closable: true,
       persistent: false, // if true, doesn't auto-dismiss
+      html: false,
+      action: null,
     };
 
     const config = { ...defaults, ...options };
 
     // Calculate reading time (average 200 words per minute)
-    const wordCount = message.split(/\s+/).length;
+    const messageText = String(message || "");
+    const readingText = config.html ? messageText.replace(/<[^>]*>/g, " ") : messageText;
+    const wordCount = readingText.split(/\s+/).filter(Boolean).length;
     const baseReadingTime = Math.max(2000, (wordCount / 200) * 60 * 1000); // minimum 2 seconds
 
     // Extend time for errors (people need more time to process error messages)
     const multiplier = config.type === "error" ? 1.5 : 1;
     const duration = config.duration || baseReadingTime * multiplier;
 
-    return this.#showToast(message, config, duration);
+    return this.#showToast(messageText, config, duration);
   }
 
   /*
@@ -213,7 +225,9 @@ export class AppToaster extends HTMLElement {
       config.type,
       config.closable,
       duration,
-      config.persistent
+      config.persistent,
+      config.html,
+      config.action
     );
 
     // Add to DOM
@@ -247,7 +261,7 @@ export class AppToaster extends HTMLElement {
    * @param {boolean} persistent
    * @returns {HTMLElement}
    */
-  createToastElement(id, message, type, closable, duration, persistent) {
+  createToastElement(id, message, type, closable, duration, persistent, html = false, action = null) {
     const toast = document.createElement("aside");
     toast.className = `toast callout ${this.#getAlertClass(type)}`;
     toast.setAttribute("data-toast-id", id);
@@ -260,6 +274,7 @@ export class AppToaster extends HTMLElement {
     icon.setAttribute("size", "lg");
 
     const content = document.createElement("div");
+    content.className = "toast-content";
 
     const title = document.createElement("div");
     title.className = "callout-title";
@@ -267,10 +282,40 @@ export class AppToaster extends HTMLElement {
 
     const text = document.createElement("p");
     text.style.margin = "0";
-    text.textContent = message;
+    if (html) {
+      text.innerHTML = String(message || "");
+    } else {
+      text.textContent = String(message || "");
+    }
 
     content.appendChild(title);
     content.appendChild(text);
+
+    if (action && typeof action === "object" && action.label) {
+      const actionButton = document.createElement("button");
+      actionButton.className = "btn-outline btn-sm toast-action";
+      actionButton.type = "button";
+      const actionLabel = document.createElement("span");
+      actionLabel.textContent = String(action.label);
+
+      if (action.icon) {
+        const icon = document.createElement("pds-icon");
+        icon.setAttribute("icon", String(action.icon));
+        icon.setAttribute("size", "sm");
+        actionButton.appendChild(icon);
+      }
+
+      actionButton.appendChild(actionLabel);
+      actionButton.addEventListener("click", () => {
+        if (typeof action.onClick === "function") {
+          action.onClick();
+        }
+        if (action.dismissOnClick !== false) {
+          this.dismissToast(id);
+        }
+      });
+      content.appendChild(actionButton);
+    }
 
     toast.appendChild(icon);
     toast.appendChild(content);

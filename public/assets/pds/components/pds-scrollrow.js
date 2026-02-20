@@ -11,6 +11,8 @@
  *
  * @attr {string} label - Accessible label for the scroll region; also used as fallback heading copy
  * @attr {"start"|"center"} snap - Snap alignment for tiles when scrolling (default: start)
+ * @attr {string} tile-min - Minimum tile width (CSS length, e.g. "250px")
+ * @attr {string} tile-max - Maximum tile width (CSS length, e.g. "360px")
  */
 class PdsScrollrow extends HTMLElement {
   #viewport;
@@ -19,7 +21,7 @@ class PdsScrollrow extends HTMLElement {
   #adopted = false;
 
   static get observedAttributes() {
-    return ["label", "snap"];
+    return ["label", "snap", "tile-min", "tile-max"];
   }
 
   constructor() {
@@ -129,6 +131,36 @@ class PdsScrollrow extends HTMLElement {
   }
 
   /**
+   * Minimum tile size applied to slotted content.
+   * @returns {string|null}
+   */
+  get tileMin() {
+    return this.getAttribute("tile-min");
+  }
+  /**
+   * @param {string|null} val
+   */
+  set tileMin(val) {
+    if (val == null) this.removeAttribute("tile-min");
+    else this.setAttribute("tile-min", String(val));
+  }
+
+  /**
+   * Maximum tile size applied to slotted content.
+   * @returns {string|null}
+   */
+  get tileMax() {
+    return this.getAttribute("tile-max");
+  }
+  /**
+   * @param {string|null} val
+   */
+  set tileMax(val) {
+    if (val == null) this.removeAttribute("tile-max");
+    else this.setAttribute("tile-max", String(val));
+  }
+
+  /**
    * Lifecycle hook called when the element is inserted into the document.
    */
   connectedCallback() {
@@ -187,6 +219,11 @@ class PdsScrollrow extends HTMLElement {
       }
       case "snap": {
         this.#applySnap();
+        break;
+      }
+      case "tile-min":
+      case "tile-max": {
+        this.#applyTileSizing();
         break;
       }
     }
@@ -256,6 +293,7 @@ class PdsScrollrow extends HTMLElement {
 
     // Apply initial snap alignment
     this.#applySnap();
+    this.#applyTileSizing();
 
     // Observe size changes to refresh controls
     this.#ro = new ResizeObserver(() => this.#updateControls());
@@ -271,6 +309,23 @@ class PdsScrollrow extends HTMLElement {
     const snapAlign = this.snap === "center" ? "center" : "start";
     if (this.#viewport) {
       this.#viewport.style.setProperty("--snap-align", snapAlign);
+    }
+  }
+
+  #applyTileSizing() {
+    const tileMin = this.tileMin;
+    const tileMax = this.tileMax;
+
+    if (tileMin && String(tileMin).trim()) {
+      this.style.setProperty("--tile-min", String(tileMin).trim());
+    } else {
+      this.style.removeProperty("--tile-min");
+    }
+
+    if (tileMax && String(tileMax).trim()) {
+      this.style.setProperty("--tile-max", String(tileMax).trim());
+    } else {
+      this.style.removeProperty("--tile-max");
     }
   }
 

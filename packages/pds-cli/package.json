@@ -5,7 +5,8 @@
   "bin": {
     "pds-cli": "bin/pds.js",
     "pds-sync-assets": "bin/sync-assets.js",
-    "pds-bootstrap": "bin/pds-bootstrap.js"
+    "pds-bootstrap": "bin/pds-bootstrap.js",
+    "pds-import": "bin/pds-import.js"
   },
   "dependencies": {}
 }

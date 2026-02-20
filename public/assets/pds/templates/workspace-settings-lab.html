@@ -1,0 +1,131 @@
+<section class="stack-lg" aria-label="Workspace Settings Lab">
+  <header class="card surface-elevated stack-sm">
+    <h2>Workspace Settings Lab</h2>
+    <p class="text-muted">Stress-test form controls, toggles, grouped settings, and responsive surfaces in one place.</p>
+  </header>
+
+  <section class="grid grid-auto-md gap-md">
+    <article class="card surface-base stack-sm border-gradient">
+      <h3>Profile form</h3>
+      <form data-required class="stack-sm">
+        <label>
+          <span data-label>Name</span>
+          <div class="input-icon">
+            <pds-icon icon="user"></pds-icon>
+            <input type="text" required placeholder="Alex Morgan" />
+          </div>
+        </label>
+        <label>
+          <span data-label>Email</span>
+          <div class="input-icon">
+            <pds-icon icon="envelope"></pds-icon>
+            <input type="email" required placeholder="alex@team.dev" />
+          </div>
+        </label>
+        <label>
+          <span data-label>Role</span>
+          <select>
+            <option>Designer</option>
+            <option>Developer</option>
+            <option>Product Manager</option>
+          </select>
+        </label>
+        <label>
+          <span data-label>Notes</span>
+          <textarea rows="3" placeholder="Context about this user profile..."></textarea>
+        </label>
+        <div class="flex gap-sm">
+          <button class="btn-primary" type="submit">Save</button>
+          <button class="btn-secondary" type="button">Cancel</button>
+        </div>
+      </form>
+    </article>
+
+    <article class="card surface-subtle stack-sm border-glow">
+      <h3>Notification panel (Dropdown)</h3>
+      <nav data-dropdown data-mode="auto">
+        <button class="btn-outline">Notification settings</button>
+        <div class="card surface-overlay grid grid-auto gap-sm">
+          <label data-toggle>
+            <input type="checkbox" checked />
+            <span data-label>Email alerts</span>
+          </label>
+          <label data-toggle>
+            <input type="checkbox" />
+            <span data-label>Slack alerts</span>
+          </label>
+          <label data-toggle>
+            <input type="checkbox" checked />
+            <span data-label>Weekly digest</span>
+          </label>
+          <div class="flex gap-sm">
+            <button class="btn-primary btn-sm">Apply</button>
+            <button class="btn-secondary btn-sm">Reset</button>
+          </div>
+        </div>
+      </nav>
+      <blockquote>
+        “Dropdown panels and toggle labels should remain readable under all palette combinations.”
+      </blockquote>
+    </article>
+  </section>
+
+  <section class="card surface-base stack-sm">
+    <h3>Settings sections (Accordion)</h3>
+    <section class="accordion" aria-label="Workspace settings groups">
+      <details open>
+        <summary id="settings-privacy">Privacy</summary>
+        <div role="region" aria-labelledby="settings-privacy" class="card stack-sm">
+          <label data-toggle>
+            <input type="checkbox" checked />
+            <span data-label>Require 2FA</span>
+          </label>
+          <label data-toggle>
+            <input type="checkbox" />
+            <span data-label>Mask sensitive fields</span>
+          </label>
+        </div>
+      </details>
+      <details>
+        <summary id="settings-appearance">Appearance</summary>
+        <div role="region" aria-labelledby="settings-appearance" class="card grid grid-cols-3 gap-sm">
+          <button class="btn-primary btn-sm">Primary</button>
+          <button class="btn-secondary btn-sm">Secondary</button>
+          <button class="btn-outline btn-sm">Outline</button>
+        </div>
+      </details>
+      <details>
+        <summary id="settings-audit">Audit & Activity</summary>
+        <div role="region" aria-labelledby="settings-audit" class="card stack-sm">
+          <article class="card surface-elevated stack-xs">
+            <strong>10:42</strong>
+            <small class="text-muted">Preset switched for review session.</small>
+          </article>
+          <article class="card surface-sunken stack-xs">
+            <strong>11:07</strong>
+            <small class="text-muted">Button radius and input spacing adjusted.</small>
+          </article>
+        </div>
+      </details>
+    </section>
+  </section>
+
+  <section class="grid grid-auto-sm gap-md">
+    <article class="card surface-elevated stack-sm">
+      <h4>State chip panel</h4>
+      <div class="flex gap-sm flex-wrap">
+        <span class="badge badge-primary">Primary</span>
+        <span class="badge badge-success">Success</span>
+        <span class="badge badge-warning">Warning</span>
+        <span class="badge badge-danger">Danger</span>
+      </div>
+    </article>
+    <article class="card surface-overlay stack-sm border-gradient">
+      <h4>Action states</h4>
+      <div class="flex gap-sm">
+        <button class="btn-primary btn-working" type="button">Saving</button>
+        <button class="btn-outline" type="button" disabled>Disabled</button>
+      </div>
+    </article>
+  </section>
+</section>

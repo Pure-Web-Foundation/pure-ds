@@ -31,6 +31,8 @@ async function ensureToaster() {
  * @param {number} [options.duration] - Duration in milliseconds (auto-calculated if not provided based on message length)
  * @param {boolean} [options.closable=true] - Whether the toast can be manually closed
  * @param {boolean} [options.persistent=false] - If true, toast won't auto-dismiss (requires manual close)
+ * @param {boolean} [options.html=false] - Render `message` as HTML (trusted content only)
+ * @param {{label: string, onClick?: Function, dismissOnClick?: boolean}} [options.action] - Optional action button config
  * @returns {Promise<string>} Toast ID (can be used to dismiss programmatically)
  * 
  * @example

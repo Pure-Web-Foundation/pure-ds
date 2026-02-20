@@ -1,0 +1,91 @@
+<section class="stack-lg" aria-label="Feedback Ops Dashboard">
+  <header class="card surface-elevated stack-sm border-gradient border-glow">
+    <div class="flex justify-between items-center gap-sm">
+      <div class="stack-xs">
+        <h2>Feedback Ops Dashboard</h2>
+        <p class="text-muted">Monthly pulse with submission progress, sentiment highlights, and clear action points.</p>
+      </div>
+      <nav data-dropdown data-mode="auto">
+        <button class="btn-outline btn-sm">
+          <pds-icon icon="list" size="sm"></pds-icon>
+          Actions
+        </button>
+        <menu>
+          <li><a href="#open-intake"><pds-icon icon="arrow-right" size="sm"></pds-icon>Open intake</a></li>
+          <li><a href="#share-report"><pds-icon icon="share" size="sm"></pds-icon>Share report</a></li>
+          <li><a href="#publish-summary"><pds-icon icon="rocket" size="sm"></pds-icon>Publish summary</a></li>
+        </menu>
+      </nav>
+    </div>
+  </header>
+
+  <section class="card surface-base stack-sm">
+    <div class="flex justify-between items-center gap-sm">
+      <h3>Current cycle progress</h3>
+      <span class="badge badge-primary">October 2026</span>
+    </div>
+    <div class="stack-xs">
+      <div class="flex justify-between items-center gap-sm">
+        <small class="text-muted">Feedback Submission Progress</small>
+        <strong>68% Complete</strong>
+      </div>
+      <progress value="68" max="100"></progress>
+    </div>
+    <p class="text-muted">Pending teams: Platform, Growth, and Enablement. Deadline closes in 3 days.</p>
+    <div class="flex gap-sm flex-wrap">
+      <button class="btn-primary">Submit Feedback</button>
+      <button class="btn-secondary">Send Reminder</button>
+      <button class="btn-outline">View Responses</button>
+    </div>
+  </section>
+
+  <section class="grid grid-auto-md gap-md">
+    <article class="card surface-elevated stack-sm">
+      <div class="flex justify-between items-center gap-sm">
+        <h4>Overall satisfaction</h4>
+        <span class="badge badge-success">+6%</span>
+      </div>
+      <p><strong>4.3 / 5</strong></p>
+      <div class="grid grid-cols-3 gap-sm">
+        <article class="card surface-subtle stack-xs"><small class="text-muted">People</small><strong>4.4</strong></article>
+        <article class="card surface-subtle stack-xs"><small class="text-muted">Tools</small><strong>4.1</strong></article>
+        <article class="card surface-subtle stack-xs"><small class="text-muted">Process</small><strong>4.2</strong></article>
+      </div>
+    </article>
+
+    <article class="card surface-subtle stack-sm border-gradient">
+      <div class="flex justify-between items-center gap-sm">
+        <h4>Top themes</h4>
+        <span class="badge">3 active</span>
+      </div>
+      <p class="text-muted">Most mentioned topics in this cycle:</p>
+      <ul class="stack-xs">
+        <li class="card surface-overlay flex justify-between items-center"><span>Career growth clarity</span><strong>42 mentions</strong></li>
+        <li class="card surface-overlay flex justify-between items-center"><span>Cross-team handoffs</span><strong>31 mentions</strong></li>
+        <li class="card surface-overlay flex justify-between items-center"><span>Meeting load balance</span><strong>28 mentions</strong></li>
+      </ul>
+    </article>
+  </section>
+
+  <section class="card surface-base stack-sm">
+    <h3>Team response coverage</h3>
+    <pds-scrollrow snap="start" tile-min="220px" tile-max="280px">
+      <article class="card surface-elevated stack-xs">
+        <div class="flex justify-between items-center"><strong>Design</strong><span class="badge badge-success">92%</span></div>
+        <progress value="92" max="100"></progress>
+      </article>
+      <article class="card surface-elevated stack-xs">
+        <div class="flex justify-between items-center"><strong>Engineering</strong><span class="badge badge-primary">73%</span></div>
+        <progress value="73" max="100"></progress>
+      </article>
+      <article class="card surface-elevated stack-xs">
+        <div class="flex justify-between items-center"><strong>Product</strong><span class="badge badge-warning">61%</span></div>
+        <progress value="61" max="100"></progress>
+      </article>
+      <article class="card surface-elevated stack-xs">
+        <div class="flex justify-between items-center"><strong>Customer Success</strong><span class="badge badge-primary">79%</span></div>
+        <progress value="79" max="100"></progress>
+      </article>
+    </pds-scrollrow>
+  </section>
+</section>

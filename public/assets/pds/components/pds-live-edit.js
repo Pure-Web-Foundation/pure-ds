@@ -96,9 +96,41 @@ const QUICK_STYLE_PROPERTIES = [
   "width",
 ];
 
+const LIVE_EDIT_HIGHLIGHT_BLACKLIST = [
+  {
+    id: "toaster",
+    selector: "pds-toaster",
+    includeDescendants: true,
+  },
+  {
+    id: "live-edit-toggle",
+    selector: "#pds-live-edit-toggle",
+    includeDescendants: true,
+  },
+  {
+    id: "ask-dialog",
+    selector: "dialog",
+    includeDescendants: true,
+  },
+];
+
+function isLiveEditHighlightBlacklisted(node) {
+  if (!(node instanceof Element)) return false;
+  return LIVE_EDIT_HIGHLIGHT_BLACKLIST.some((entry) => {
+    if (!entry?.selector) return false;
+    if (entry.includeDescendants) {
+      return Boolean(node.closest(entry.selector));
+    }
+    return node.matches(entry.selector);
+  });
+}
+
 const INLINE_VAR_REGEX = /var\(\s*(--[^)\s,]+)\s*/g;
 const CUSTOM_PROP_REGEX = /--.+/;
 const COLOR_VALUE_REGEX = /#(?:[0-9a-f]{3,8})\b|rgba?\([^)]*\)|hsla?\([^)]*\)/gi;
+const SHIKI_BUNDLE_URL = "https://esm.sh/shiki@1.29.2?bundle";
+
+let shikiModulePromise = null;
 
 const ENUM_FIELD_OPTIONS = {
   "shape.borderWidth": ["hairline", "thin", "medium", "thick"],
@@ -107,6 +139,47 @@ const ENUM_FIELD_OPTIONS = {
 let cachedTokenIndex = null;
 let cachedTokenIndexMeta = null;
 let colorNormalizer = null;
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+async function loadShikiModule() {
+  if (shikiModulePromise) return shikiModulePromise;
+  shikiModulePromise = import(SHIKI_BUNDLE_URL).catch(() => null);
+  return shikiModulePromise;
+}
+
+function resolveShikiTheme() {
+  const isDark =
+    PDS?.theme === "dark" ||
+    document.documentElement.getAttribute("data-theme") === "dark" ||
+    document.documentElement.classList.contains("theme-dark");
+  return isDark ? "github-dark-default" : "github-light-default";
+}
+
+async function renderHtmlWithShiki(code = "") {
+  const fallback = `<pre><code>${escapeHtml(code)}</code></pre>`;
+  const shiki = await loadShikiModule();
+
+  if (!shiki || typeof shiki.codeToHtml !== "function") {
+    return fallback;
+  }
+
+  try {
+    return shiki.codeToHtml(String(code || ""), {
+      lang: "html",
+      theme: resolveShikiTheme(),
+    });
+  } catch (error) {
+    return fallback;
+  }
+}
 
 const GLOBAL_LAYOUT_PATHS = new Set([
   "layout.maxWidth",
@@ -138,6 +211,8 @@ const DARK_MODE_PATH_MARKER = ".darkMode.";
 const QUICK_EDIT_LIMIT = 4;
 const DROPDOWN_VIEWPORT_PADDING = 8;
 const FONT_FAMILY_PATH_REGEX = /^typography\.fontFamily/i;
+const FORM_THEME_CONTEXT_FIELD = "__pdsThemeContext";
+const FORM_THEME_CONTEXT_POINTER = `/${FORM_THEME_CONTEXT_FIELD}`;
 
 function isHoverCapable() {
   if (typeof window === "undefined" || !window.matchMedia) return false;
@@ -191,7 +266,6 @@ ${EDITOR_TAG} {
   margin: 0;
   padding: 0;
   list-style: none;
-  overflow: visible;
 }
 .${DROPDOWN_CLASS} .pds-live-editor-menu {
   display: block;
@@ -199,11 +273,9 @@ ${EDITOR_TAG} {
   padding: var(--spacing-1);
   max-width: 350px;
   padding-bottom: 0;
-  overflow: visible;
 }
 .${DROPDOWN_CLASS} .pds-live-editor-form-container {
   padding-bottom: var(--spacing-2);
-  overflow: visible;
 }
 .${DROPDOWN_CLASS} .pds-live-editor-title {
   display: block;
@@ -240,6 +312,28 @@ ${EDITOR_TAG} {
   justify-content: space-between;
   bottom: 0;
   z-index: 1;
+}
+.pds-live-editor-drawer-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  padding-top: var(--spacing-3);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  border-top: var(--border-width-thin) solid var(--color-border);
+  background: var(--color-surface-base);
+}
+.pds-live-editor-drawer-footer > button {
+  width: 100%;
+  justify-content: center;
+}
+.pds-live-editor-drawer-content {
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: var(--spacing-4);
+}
+.pds-live-editor-drawer-content > .accordion {
+  min-height: 0;
 }
 `;
   document.head.appendChild(style);
@@ -1010,6 +1104,7 @@ const GENERIC_FONT_FAMILIES = new Set([
 ]);
 
 let loadGoogleFontFnPromise = null;
+let managerModulePromise = null;
 
 function normalizeFontName(fontFamily) {
   return String(fontFamily || "")
@@ -1030,6 +1125,19 @@ async function getLoadGoogleFontFn() {
   }
   if (loadGoogleFontFnPromise) return loadGoogleFontFnPromise;
   loadGoogleFontFnPromise = (async () => {
+    const manager = await getPdsManagerModule();
+    if (typeof manager?.loadGoogleFont === "function") {
+      return manager.loadGoogleFont;
+    }
+    return null;
+  })();
+  return loadGoogleFontFnPromise;
+}
+
+async function getPdsManagerModule() {
+  if (managerModulePromise) return managerModulePromise;
+
+  managerModulePromise = (async () => {
     const candidates = [
       PDS?.currentConfig?.managerURL,
       "../core/pds-manager.js",
@@ -1043,14 +1151,13 @@ async function getLoadGoogleFontFn() {
         if (attempted.has(resolved)) continue;
         attempted.add(resolved);
         const mod = await import(resolved);
-        if (typeof mod?.loadGoogleFont === "function") {
-          return mod.loadGoogleFont;
-        }
+        if (mod && typeof mod === "object") return mod;
       } catch (e) {}
     }
     return null;
   })();
-  return loadGoogleFontFnPromise;
+
+  return managerModulePromise;
 }
 
 async function loadTypographyFontsForDesign(typography) {
@@ -1696,9 +1803,11 @@ async function exportFromLiveEdit(format) {
 }
 
 function setFormSchemas(form, schema, uiSchema, design) {
-  form.jsonSchema = schema;
-  form.uiSchema = uiSchema;
-  form.values = shallowClone(design);
+  const themedSchema = withThemeConditionalSchema(schema, uiSchema);
+  const formValues = withThemeContextValues(design);
+  form.jsonSchema = themedSchema.schema;
+  form.uiSchema = themedSchema.uiSchema;
+  form.values = formValues;
 }
 
 async function waitForElementDefinition(tagName, timeoutMs = 4000) {
@@ -1970,6 +2079,106 @@ function deepClone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function withThemeContextValues(values) {
+  const nextValues = shallowClone(values || {});
+  nextValues[FORM_THEME_CONTEXT_FIELD] = getActiveTheme().value;
+  return nextValues;
+}
+
+function mergeVisibleWhenCondition(existingCondition, conditionToAdd) {
+  if (!existingCondition) return deepClone(conditionToAdd);
+  if (
+    existingCondition &&
+    typeof existingCondition === "object" &&
+    Array.isArray(existingCondition.$and)
+  ) {
+    return {
+      ...deepClone(existingCondition),
+      $and: [...existingCondition.$and.map((entry) => deepClone(entry)), deepClone(conditionToAdd)],
+    };
+  }
+  return {
+    $and: [deepClone(existingCondition), deepClone(conditionToAdd)],
+  };
+}
+
+function collectSchemaNodeMap(schemaNode, pointer = "", out = new Map()) {
+  if (!schemaNode || typeof schemaNode !== "object") return out;
+  if (pointer) {
+    out.set(pointer, schemaNode);
+  }
+  if (schemaNode.type === "object" && schemaNode.properties && typeof schemaNode.properties === "object") {
+    Object.entries(schemaNode.properties).forEach(([key, childNode]) => {
+      collectSchemaNodeMap(childNode, `${pointer}/${key}`, out);
+    });
+  }
+  return out;
+}
+
+function applyThemeVisibilityConditions(schema, uiSchema) {
+  if (!schema || typeof schema !== "object") {
+    return uiSchema && typeof uiSchema === "object" ? deepClone(uiSchema) : {};
+  }
+
+  const conditionedUi = uiSchema && typeof uiSchema === "object" ? deepClone(uiSchema) : {};
+  const schemaNodeMap = collectSchemaNodeMap(schema);
+
+  const darkCondition = { [FORM_THEME_CONTEXT_POINTER]: "dark" };
+  const lightCondition = { [FORM_THEME_CONTEXT_POINTER]: { $ne: "dark" } };
+
+  const ensureCondition = (pointer, condition) => {
+    if (!pointer || pointer === FORM_THEME_CONTEXT_POINTER) return;
+    const current = conditionedUi[pointer] && typeof conditionedUi[pointer] === "object"
+      ? conditionedUi[pointer]
+      : {};
+    conditionedUi[pointer] = {
+      ...current,
+      "ui:visibleWhen": mergeVisibleWhenCondition(current["ui:visibleWhen"], condition),
+    };
+  };
+
+  schemaNodeMap.forEach((node, pointer) => {
+    if (!pointer.includes("/darkMode") || pointer === FORM_THEME_CONTEXT_POINTER) return;
+
+    ensureCondition(pointer, darkCondition);
+
+    const isDarkLeaf = !(node?.type === "object" && node?.properties);
+    if (!isDarkLeaf) return;
+
+    const lightPointer = pointer.replace("/darkMode/", "/");
+    const lightNode = schemaNodeMap.get(lightPointer);
+    const isLightLeaf = !!lightNode && !(lightNode?.type === "object" && lightNode?.properties);
+    if (isLightLeaf) {
+      ensureCondition(lightPointer, lightCondition);
+    }
+  });
+
+  conditionedUi[FORM_THEME_CONTEXT_POINTER] = {
+    ...(conditionedUi[FORM_THEME_CONTEXT_POINTER] || {}),
+    "ui:hidden": true,
+  };
+
+  return conditionedUi;
+}
+
+function withThemeConditionalSchema(schema, uiSchema) {
+  const baseSchema = deepClone(schema || { type: "object", properties: {} });
+  if (!baseSchema.properties || typeof baseSchema.properties !== "object") {
+    baseSchema.properties = {};
+  }
+
+  baseSchema.properties[FORM_THEME_CONTEXT_FIELD] = {
+    type: "string",
+    oneOf: [
+      { const: "light", title: "Light" },
+      { const: "dark", title: "Dark" },
+    ],
+  };
+
+  const conditionedUi = applyThemeVisibilityConditions(baseSchema, uiSchema);
+  return { schema: baseSchema, uiSchema: conditionedUi };
+}
+
 function shouldKeepPathForSelection(selectedPaths, path) {
   if (!path) return true;
   return selectedPaths.some((selectedPath) => {
@@ -2233,6 +2442,10 @@ class PdsLiveEdit extends HTMLElement {
     this._undoStack = [];
     this._dropdownMenuOpen = false;
     this._dropdownObserver = null;
+    this._boundThemeChanged = this._handleThemeChanged.bind(this);
+    this._themeRefreshInFlight = null;
+    this._drawerConfigFormContainer = null;
+    this._drawerConfigFooter = null;
   }
 
   connectedCallback() {
@@ -2242,6 +2455,9 @@ class PdsLiveEdit extends HTMLElement {
     }
     PdsLiveEdit._activeInstance = this;
     this._connected = true;
+    if (PDS && typeof PDS.addEventListener === "function") {
+      PDS.addEventListener("pds:theme:changed", this._boundThemeChanged);
+    }
     if (!isHoverCapable()) return;
 
     ensureStyles();
@@ -2261,12 +2477,84 @@ class PdsLiveEdit extends HTMLElement {
       document.removeEventListener("mouseout", this._boundMouseOut, true);
       document.removeEventListener("mousemove", this._boundMouseMove, true);
     }
+    this._connected = false;
+    if (PDS && typeof PDS.removeEventListener === "function") {
+      PDS.removeEventListener("pds:theme:changed", this._boundThemeChanged);
+    }
     this._removeRepositionListeners();
     this._clearCloseTimer();
     this._removeActiveUI();
-    this._connected = false;
+    this._drawerConfigFormContainer = null;
+    this._drawerConfigFooter = null;
     if (PdsLiveEdit._activeInstance === this) {
       PdsLiveEdit._activeInstance = null;
+    }
+  }
+
+  async _handleThemeChanged() {
+    if (this._themeRefreshInFlight) return this._themeRefreshInFlight;
+    this._themeRefreshInFlight = (async () => {
+      try {
+        await this._refreshQuickFormForTheme();
+        await this._refreshDrawerConfigFormForTheme();
+      } finally {
+        this._themeRefreshInFlight = null;
+      }
+    })();
+    return this._themeRefreshInFlight;
+  }
+
+  async _refreshQuickFormForTheme() {
+    if (!this._activeDropdown || !this._activeTarget) return;
+    if (!document.contains(this._activeTarget)) return;
+
+    const formContainer = this._activeDropdown.querySelector('.pds-live-editor-form-container');
+    const footer = this._activeDropdown.querySelector('.pds-live-editor-footer');
+    if (!formContainer || !footer) return;
+
+    const currentDesign = shallowClone(PDS?.currentConfig?.design || {});
+    const quickContext = collectQuickContext(this._activeTarget);
+    const limitedPaths = quickContext.paths.slice(0, QUICK_EDIT_LIMIT);
+    const quickPaths = quickContext.paths;
+
+    await this._renderQuickForm(
+      formContainer,
+      footer,
+      limitedPaths,
+      currentDesign,
+      quickContext.hints,
+      this._activeTarget,
+      quickPaths
+    );
+  }
+
+  async _refreshDrawerConfigFormForTheme() {
+    if (!this._drawer) return;
+    if (!this._drawer.hasAttribute("open")) return;
+    if (!this._drawerConfigFormContainer || !this._drawerConfigFooter) return;
+
+    const fullDesign = shallowClone(PDS?.currentConfig?.design || {});
+    const fullConfigFormResult = await buildFullConfigForm(
+      fullDesign,
+      (event) => this._handleFormSubmit(event, fullConfigFormResult?.form),
+      () => this._handleUndo()
+    );
+
+    this._drawerConfigFormContainer.replaceChildren();
+    this._drawerConfigFooter.replaceChildren();
+
+    if (fullConfigFormResult?.form) {
+      fullConfigFormResult.form._undoBtn = fullConfigFormResult.undoBtn;
+      fullConfigFormResult.undoBtn.disabled = this._undoStack.length === 0;
+      this._drawerConfigFormContainer.appendChild(fullConfigFormResult.form);
+      this._drawerConfigFooter.appendChild(fullConfigFormResult.applyBtn);
+      this._drawerConfigFooter.appendChild(fullConfigFormResult.undoBtn);
+    } else {
+      const unavailable = document.createElement("p");
+      unavailable.className = "text-muted";
+      unavailable.textContent =
+        "Full config metadata is unavailable in this runtime.";
+      this._drawerConfigFormContainer.appendChild(unavailable);
     }
   }
 
@@ -2311,6 +2599,8 @@ class PdsLiveEdit extends HTMLElement {
       return null;
     }
     if (!this._selectors?.selector) return null;
+    if (isLiveEditHighlightBlacklisted(node)) return null;
+    if (node.closest("[data-pds-live-edit-ignore]")) return null;
     if (node.closest(EDITOR_TAG)) return null;
     if (node.closest(`.${DROPDOWN_CLASS}`)) return null;
     if (node.closest("pds-drawer")) return null;
@@ -2367,8 +2657,9 @@ class PdsLiveEdit extends HTMLElement {
     this._lastPointer = null;
     this._dropdownMenuOpen = false;
     
-    // Always re-enable mouseover when UI is removed
-    this._addMouseOverListener();
+    if (this._connected) {
+      this._addMouseOverListener();
+    }
   }
 
   _addDocumentListeners() {
@@ -2724,11 +3015,120 @@ class PdsLiveEdit extends HTMLElement {
       this._openDrawer(target, quickPaths);
       this._removeActiveUI();
     });
+
+    const quickModeNav = await this._buildQuickModeDropdown();
     
     // Add buttons to footer
     footer.appendChild(applyBtn);
     footer.appendChild(undoBtn);
+    footer.appendChild(quickModeNav);
     footer.appendChild(gearBtn);
+  }
+
+  async _buildQuickModeDropdown() {
+    const nav = document.createElement("nav");
+    nav.setAttribute("data-dropdown", "");
+    nav.setAttribute("data-mode", "auto");
+    nav.setAttribute("data-direction", "auto");
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn-outline btn-sm icon-only";
+    button.setAttribute("aria-label", "Quick theme and preset");
+
+    const icon = document.createElement("pds-icon");
+    icon.setAttribute("icon", "palette");
+    icon.setAttribute("size", "sm");
+    button.appendChild(icon);
+
+    const menu = document.createElement("menu");
+    const content = document.createElement("div");
+    content.className = "pds-live-editor-menu stack-sm";
+
+    const themeLabel = document.createElement("label");
+    themeLabel.className = "stack-xs";
+    const themeText = document.createElement("span");
+    themeText.textContent = "Theme";
+    const themeToggle = document.createElement("pds-theme");
+    themeLabel.append(themeText, themeToggle);
+    content.appendChild(themeLabel);
+
+    const presetLabel = document.createElement("label");
+    presetLabel.className = "stack-xs";
+    const presetText = document.createElement("span");
+    presetText.textContent = "Preset";
+    presetLabel.appendChild(presetText);
+
+    let presetControlRendered = false;
+    try {
+      await waitForElementDefinition("pds-omnibox");
+
+      const presetOmnibox = document.createElement("pds-omnibox");
+      presetOmnibox.setAttribute("item-grid", "0 1fr 0");
+      presetOmnibox.setAttribute("placeholder", "Search presets...");
+
+      const activePresetId = getActivePresetId();
+      const activePresetName = getPresetNameById(activePresetId);
+      if (activePresetName) {
+        presetOmnibox.value = activePresetName;
+      }
+
+      const omniboxSettingsBuilder =
+        typeof PDS?.buildPresetOmniboxSettings === "function"
+          ? PDS.buildPresetOmniboxSettings.bind(PDS)
+          : null;
+
+      if (omniboxSettingsBuilder) {
+        presetOmnibox.settings = omniboxSettingsBuilder({
+          onSelect: async ({ preset, selection }) => {
+            if (selection?.disabled) return selection?.id;
+            const presetId = preset?.id || selection?.id;
+            await applyPresetSelection(presetId);
+            return presetId;
+          },
+        });
+      }
+
+      presetOmnibox.addEventListener("result-selected", (event) => {
+        const selectedText = event?.detail?.text;
+        if (typeof selectedText === "string" && selectedText.trim()) {
+          presetOmnibox.value = selectedText;
+        }
+      });
+
+      presetLabel.appendChild(presetOmnibox);
+      presetControlRendered = true;
+    } catch (error) {
+      console.warn("[PDS Live Edit] Quick preset omnibox unavailable, falling back to select.", error);
+    }
+
+    if (!presetControlRendered) {
+      const presetSelect = document.createElement("select");
+      const presetOptions = getPresetOptions();
+      const activePreset = getActivePresetId();
+
+      presetOptions.forEach((preset) => {
+        const option = document.createElement("option");
+        option.value = preset.id;
+        option.textContent = preset.name;
+        if (String(preset.id) === String(activePreset)) {
+          option.selected = true;
+        }
+        presetSelect.appendChild(option);
+      });
+
+      presetSelect.addEventListener("change", async (event) => {
+        const nextPreset = event.target?.value;
+        await applyPresetSelection(nextPreset);
+      });
+
+      presetLabel.appendChild(presetSelect);
+    }
+
+    content.appendChild(presetLabel);
+    menu.appendChild(content);
+    nav.append(button, menu);
+    return nav;
   }
 
   async _openDrawer(target, quickPaths) {
@@ -2738,6 +3138,8 @@ class PdsLiveEdit extends HTMLElement {
       this._drawer.setAttribute("show-close", "");
       this.appendChild(this._drawer);
     }
+
+    this._drawer.style.setProperty("--drawer-width", "min(96vw, 44rem)");
 
     if (!customElements.get("pds-drawer")) {
       await customElements.whenDefined("pds-drawer");
@@ -2750,7 +3152,7 @@ class PdsLiveEdit extends HTMLElement {
 
     const content = document.createElement("div");
     content.setAttribute("slot", "drawer-content");
-    content.className = "stack-md";
+    content.className = "pds-live-editor-drawer-content";
 
     const presetCard = document.createElement("section");
     presetCard.className = "card surface-elevated stack-sm";
@@ -2864,6 +3266,8 @@ class PdsLiveEdit extends HTMLElement {
     const configFooter = document.createElement("div");
     configFooter.className = "flex gap-sm";
     configCard.appendChild(configFooter);
+    this._drawerConfigFormContainer = configFormContainer;
+    this._drawerConfigFooter = configFooter;
 
     const fullDesign = shallowClone(PDS?.currentConfig?.design || {});
     const fullConfigFormResult = await buildFullConfigForm(
@@ -2885,6 +3289,37 @@ class PdsLiveEdit extends HTMLElement {
         "Full config metadata is unavailable in this runtime.";
       configFormContainer.appendChild(unavailable);
     }
+
+    const templateCard = document.createElement("section");
+    templateCard.className = "card surface-elevated stack-sm";
+
+    const templateTitle = document.createElement("h4");
+    templateTitle.textContent = "Canvas Templates";
+    templateCard.appendChild(templateTitle);
+
+    const templateCanvas = document.createElement("pds-live-template-canvas");
+    templateCanvas.addEventListener("pds:live-template:inject", async (event) => {
+      await this._applyImportResult(event?.detail?.result, { injectTemplate: true });
+    });
+    templateCard.appendChild(templateCanvas);
+
+    const importCard = document.createElement("section");
+    importCard.className = "card surface-elevated stack-sm";
+
+    const importTitle = document.createElement("h4");
+    importTitle.textContent = "Import & Convert";
+    importCard.appendChild(importTitle);
+
+    const importer = document.createElement("pds-live-importer");
+
+    importer.addEventListener("pds:live-import:result", async (event) => {
+      const result = event?.detail?.result;
+      if (!result) return;
+      await this._applyImportResult(result, { injectTemplate: true });
+      this._endLiveEditSessionAfterImport();
+    });
+
+    importCard.append(importer);
 
     const exportCard = document.createElement("section");
     exportCard.className = "card surface-elevated stack-sm";
@@ -2945,28 +3380,63 @@ class PdsLiveEdit extends HTMLElement {
     exportNav.append(exportButton, exportMenu);
     exportCard.appendChild(exportNav);
 
-    const resetCard = document.createElement("section");
-    resetCard.className = "card surface-elevated stack-sm";
-
-    const resetTitle = document.createElement("h4");
-    resetTitle.textContent = "Reset";
-    resetCard.appendChild(resetTitle);
-
     const resetButton = document.createElement("button");
     resetButton.type = "button";
     resetButton.className = "btn-outline";
     resetButton.textContent = "Reset Config";
-    resetButton.addEventListener("click", () => {
+    resetButton.addEventListener("click", async () => {
+      const confirmed = await PDS.ask(
+        "This clears your saved local configuration and reloads the page.",
+        {
+          title: "Reset Config?",
+          type: "confirm",
+          buttons: {
+            ok: { name: "Reset", variant: "danger" },
+            cancel: { name: "Cancel", cancel: true },
+          },
+        }
+      );
+
+      if (!confirmed) return;
       window.localStorage.removeItem("pure-ds-config");
       window.location.reload();
     });
-    resetCard.appendChild(resetButton);
 
-    content.appendChild(presetCard);
-    content.appendChild(themeCard);
-    content.appendChild(configCard);
-    content.appendChild(exportCard);
-    content.appendChild(resetCard);
+    const drawerFooter = document.createElement("div");
+    drawerFooter.className = "pds-live-editor-drawer-footer";
+    drawerFooter.appendChild(resetButton);
+
+    const accordion = document.createElement("section");
+    accordion.className = "accordion";
+    accordion.setAttribute("aria-label", "Design settings groups");
+
+    const buildAccordionGroup = (title, nodes = [], open = false, sectionId = "") => {
+      const details = document.createElement("details");
+      if (open) details.open = true;
+      if (sectionId) details.dataset.section = sectionId;
+
+      const summary = document.createElement("summary");
+      summary.textContent = title;
+
+      const body = document.createElement("div");
+      body.className = "stack-md";
+      nodes.forEach((node) => {
+        if (node) body.appendChild(node);
+      });
+
+      details.append(summary, body);
+      return details;
+    };
+
+    accordion.appendChild(buildAccordionGroup("Preset & Theme", [presetCard, themeCard], true, "preset-theme"));
+    accordion.appendChild(buildAccordionGroup("Configuration", [configCard], false, "configuration"));
+    accordion.appendChild(buildAccordionGroup("Canvas", [templateCard], false, "canvas"));
+    accordion.appendChild(
+      buildAccordionGroup("Import & Export", [importCard, exportCard], false, "import-convert-export")
+    );
+
+    content.appendChild(accordion);
+    content.appendChild(drawerFooter);
 
     this._drawer.replaceChildren(header, content);
 
@@ -2979,6 +3449,108 @@ class PdsLiveEdit extends HTMLElement {
 
   async _handleExport(format) {
     await exportFromLiveEdit(format);
+  }
+
+  _ensureLiveCanvasContainer() {
+    let container = document.getElementById("pds-live-edit-canvas");
+    if (container) return container;
+
+    container = document.createElement("section");
+    container.id = "pds-live-edit-canvas";
+    container.className = "card surface-elevated stack-md";
+
+    const heading = document.createElement("h3");
+    heading.textContent = "PDS Live Canvas";
+    const description = document.createElement("p");
+    description.className = "text-muted";
+    description.textContent = "Injected templates render here to preview config changes.";
+
+    const canvas = document.createElement("div");
+    canvas.id = "pds-live-edit-canvas-content";
+    canvas.className = "stack-md";
+
+    container.append(heading, description, canvas);
+    document.body.appendChild(container);
+    return container;
+  }
+
+  _injectTemplateIntoCanvas(template) {
+    if (!template || typeof template !== "object") return;
+    const container = this._ensureLiveCanvasContainer();
+    const canvas = container.querySelector("#pds-live-edit-canvas-content");
+    if (!canvas) return;
+    canvas.innerHTML = String(template.html || "");
+  }
+
+  async openImportDetailsFromToast(options = {}) {
+    const requestedFileName = String(options?.fileName || "");
+    const requestedSourceType = String(options?.sourceType || "");
+    const target = this._activeTarget || document.body;
+    const quickPaths = this._activeTarget ? collectQuickContext(this._activeTarget).paths : [];
+
+    await this._openDrawer(target, quickPaths);
+
+    const drawer = this._drawer;
+    if (!drawer) return;
+
+    const importGroup = drawer.querySelector('details[data-section="import-convert-export"]');
+    if (importGroup) {
+      importGroup.setAttribute("open", "");
+    }
+
+    const tryOpenImporterDetails = (attempt = 0) => {
+      const importer = drawer.querySelector("pds-live-importer");
+      if (!importer) {
+        if (attempt < 12) setTimeout(() => tryOpenImporterDetails(attempt + 1), 100);
+        return;
+      }
+
+      if (typeof importer.openHistoryDetailsByMeta === "function") {
+        importer.openHistoryDetailsByMeta({
+          fileName: requestedFileName,
+          sourceType: requestedSourceType,
+        });
+      }
+    };
+
+    tryOpenImporterDetails();
+  }
+
+  _endLiveEditSessionAfterImport() {
+    this._removeActiveUI();
+
+    if (this._drawer) {
+      if (typeof this._drawer.closeDrawer === "function") {
+        this._drawer.closeDrawer();
+      } else {
+        this._drawer.removeAttribute("open");
+      }
+    }
+
+    this.dispatchEvent(
+      new CustomEvent("pds:live-edit:disable", {
+        bubbles: true,
+        composed: true,
+        detail: { reason: "import-complete" },
+      })
+    );
+  }
+
+  async _applyImportResult(result, options = {}) {
+    if (!result || typeof result !== "object") return;
+
+    const injectTemplate = options.injectTemplate !== false;
+    const patch = result.designPatch;
+    const patchKeys =
+      patch && typeof patch === "object" ? Object.keys(patch).filter(Boolean) : [];
+
+    if (patchKeys.length > 0) {
+      await applyDesignPatch(patch);
+    }
+
+    if (injectTemplate && result.template?.html) {
+      this._injectTemplateIntoCanvas(result.template);
+    }
   }
 
   async _handleFormSubmit(event, form) {
@@ -3007,8 +3579,16 @@ class PdsLiveEdit extends HTMLElement {
       : typeof form._normalizeFlatValues === "function"
         ? form._normalizeFlatValues(form.getValuesFlat())
         : form.getValuesFlat();
-    const patch = {};
+    const sanitizedFlatValues = {};
     Object.entries(flatValues || {}).forEach(([path, value]) => {
+      if (path === FORM_THEME_CONTEXT_POINTER || path === FORM_THEME_CONTEXT_FIELD) {
+        return;
+      }
+      sanitizedFlatValues[path] = value;
+    });
+
+    const patch = {};
+    Object.entries(sanitizedFlatValues).forEach(([path, value]) => {
       setValueAtJsonPath(patch, path, value);
     });
     await applyDesignPatch(patch);

@@ -39,6 +39,151 @@ import {
 let __liveApiReady = false;
 let __queryClass = null;
 
+const LIVE_EDIT_TOGGLE_ID = "pds-live-edit-toggle";
+const LIVE_EDIT_TOGGLE_STYLE_ID = "pds-live-edit-toggle-style";
+
+function whenDocumentBodyReady(callback) {
+  if (typeof document === "undefined" || typeof callback !== "function") return;
+  if (document.body) {
+    callback();
+    return;
+  }
+
+  const onReady = () => {
+    if (!document.body) return;
+    document.removeEventListener("DOMContentLoaded", onReady);
+    callback();
+  };
+
+  document.addEventListener("DOMContentLoaded", onReady, { once: true });
+}
+
+function mountLiveEdit() {
+  if (typeof document === "undefined") return;
+  whenDocumentBodyReady(() => {
+    if (!document.querySelector("pds-live-edit")) {
+      const liveEditor = document.createElement("pds-live-edit");
+      document.body.appendChild(liveEditor);
+    }
+  });
+}
+
+function unmountLiveEdit() {
+  if (typeof document === "undefined") return;
+  const editors = document.querySelectorAll("pds-live-edit");
+  editors.forEach((editor) => editor.remove());
+}
+
+function ensureLiveEditToggleStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(LIVE_EDIT_TOGGLE_STYLE_ID)) return;
+
+  const style = document.createElement("style");
+  style.id = LIVE_EDIT_TOGGLE_STYLE_ID;
+  style.textContent = /*css*/`
+    :where(#${LIVE_EDIT_TOGGLE_ID}) {
+      position: fixed;
+      top: var(--spacing-3);
+      right: var(--spacing-3);
+      z-index: var(--z-dropdown, 1050);
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function updateLiveEditToggleState(button, isEnabled) {
+  if (!button) return;
+
+  button.classList.toggle("btn-primary", isEnabled);
+  button.classList.toggle("btn-secondary", !isEnabled);
+  button.setAttribute("aria-pressed", isEnabled ? "true" : "false");
+
+  const label = isEnabled
+    ? "Disable live edit mode"
+    : "Enable live edit mode";
+  button.setAttribute("aria-label", label);
+  button.setAttribute("title", label);
+}
+
+function ensureLiveEditToggleButton() {
+  if (typeof document === "undefined") return null;
+
+  ensureLiveEditToggleStyles();
+
+  let button = document.getElementById(LIVE_EDIT_TOGGLE_ID);
+  if (!button) {
+    button = document.createElement("button");
+    button.id = LIVE_EDIT_TOGGLE_ID;
+    button.type = "button";
+    button.className = "icon-only btn-secondary";
+    button.setAttribute("data-pds-live-edit-ignore", "true");
+    button.innerHTML = '<pds-icon icon="cursor-click" size="sm"></pds-icon>';
+    whenDocumentBodyReady(() => {
+      if (!document.getElementById(LIVE_EDIT_TOGGLE_ID)) {
+        document.body.appendChild(button);
+      }
+    });
+  }
+
+  return button;
+}
+
+function teardownLiveEditToggle() {
+  if (typeof document === "undefined") return;
+  const button = document.getElementById(LIVE_EDIT_TOGGLE_ID);
+  if (button) button.remove();
+  const style = document.getElementById(LIVE_EDIT_TOGGLE_STYLE_ID);
+  if (style) style.remove();
+  unmountLiveEdit();
+}
+
+function initializeLiveEditToggle() {
+  if (typeof document === "undefined") return;
+  const toggleButton = ensureLiveEditToggleButton();
+  if (!toggleButton) return;
+
+  const setLiveEditEnabled = (enabled) => {
+    if (enabled) {
+      mountLiveEdit();
+    } else {
+      unmountLiveEdit();
+    }
+    updateLiveEditToggleState(toggleButton, enabled);
+  };
+
+  setLiveEditEnabled(false);
+
+  toggleButton.onclick = () => {
+    const isEnabled = Boolean(document.querySelector("pds-live-edit"));
+    if (isEnabled) {
+      setLiveEditEnabled(false);
+      return;
+    }
+
+    setLiveEditEnabled(true);
+  };
+
+  if (toggleButton.__pdsLiveEditDisableHandler) {
+    document.removeEventListener("pds:live-edit:disable", toggleButton.__pdsLiveEditDisableHandler);
+  }
+  if (toggleButton.__pdsLiveEditEnableHandler) {
+    document.removeEventListener("pds:live-edit:enable", toggleButton.__pdsLiveEditEnableHandler);
+  }
+
+  const disableHandler = () => {
+    setLiveEditEnabled(false);
+  };
+
+  const enableHandler = () => {
+    setLiveEditEnabled(true);
+  };
+
+  toggleButton.__pdsLiveEditDisableHandler = disableHandler;
+  document.addEventListener("pds:live-edit:disable", disableHandler);
+  toggleButton.__pdsLiveEditEnableHandler = enableHandler;
+  document.addEventListener("pds:live-edit:enable", enableHandler);
+}
+
 function getStoredLiveConfig() {
   if (typeof window === "undefined" || !window.localStorage) return null;
   try {
@@ -685,17 +830,17 @@ export async function startLive(PDS, config, { emitReady, applyResolvedTheme, se
       normalized.generatorConfig.design
     );
 
-    
-    if (config?.liveEdit && typeof document !== "undefined") {
+    if (typeof document !== "undefined") {
       try {
-        if (!document.querySelector("pds-live-edit")) {
+        if (config?.liveEdit) {
           setTimeout(() => {
-            const liveEditor = document.createElement("pds-live-edit");
-            document.body.appendChild(liveEditor);  
-          }, 1000);
+            initializeLiveEditToggle();
+          }, 0);
+        } else {
+          teardownLiveEditToggle();
         }
       } catch (error) {
-        generatorConfig?.log?.("warn", "Live editor failed to start:", error);
+        generatorConfig?.log?.("warn", "Live editor toggle failed to start:", error);
       }
     }
 
