@@ -690,8 +690,20 @@
       ]
     },
     {
+      "name": "COMPONENT_TAG",
+      "description": "PdsLiveConverter component"
+    },
+    {
       "name": "EDITOR_TAG",
       "description": "PdsLiveEdit component"
+    },
+    {
+      "name": "COMPONENT_TAG",
+      "description": "PdsLiveImporter component"
+    },
+    {
+      "name": "COMPONENT_TAG",
+      "description": "PdsLiveTemplateCanvas component"
     },
     {
       "name": "pds-omnibox",
@@ -723,10 +735,6 @@
         },
         {
           "name": "icon",
-          "description": ""
-        },
-        {
-          "name": "item-grid",
           "description": ""
         }
       ]
@@ -792,6 +800,14 @@
               "name": "center"
             }
           ]
+        },
+        {
+          "name": "tile-min",
+          "description": "Minimum tile width (CSS length, e.g. \"250px\")"
+        },
+        {
+          "name": "tile-max",
+          "description": "Maximum tile width (CSS length, e.g. \"360px\")"
         }
       ]
     },
@@ -852,6 +868,40 @@
     {
       "name": "pds-toaster",
       "description": "AppToaster component"
+    },
+    {
+      "name": "pds-treeview",
+      "description": "PdsTreeview component",
+      "attributes": [
+        {
+          "name": "name",
+          "description": ""
+        },
+        {
+          "name": "value",
+          "description": ""
+        },
+        {
+          "name": "disabled",
+          "description": ""
+        },
+        {
+          "name": "required",
+          "description": ""
+        },
+        {
+          "name": "display-only",
+          "description": ""
+        },
+        {
+          "name": "expanded-all",
+          "description": ""
+        },
+        {
+          "name": "src",
+          "description": ""
+        }
+      ]
     },
     {
       "name": "pds-upload",

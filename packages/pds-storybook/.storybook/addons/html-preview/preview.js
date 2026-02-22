@@ -242,6 +242,38 @@ function generatePdsOmniboxMarkup(omniboxElement) {
 }
 
 /**
+ * Generate realistic source code for pds-treeview elements
+ */
+function generatePdsTreeviewMarkup(treeviewElement) {
+  const attrs = [];
+
+  const stringAttrs = ['name', 'value', 'src'];
+  stringAttrs.forEach((attr) => {
+    const value = treeviewElement.getAttribute(attr);
+    if (value !== null && value !== undefined && value !== '') {
+      attrs.push(`${attr}="${value}"`);
+    }
+  });
+
+  const booleanAttrs = ['required', 'disabled', 'display-only', 'expanded-all'];
+  booleanAttrs.forEach((attr) => {
+    if (treeviewElement.hasAttribute(attr)) {
+      attrs.push(attr);
+    }
+  });
+
+  if (treeviewElement.options || treeviewElement.settings) {
+    attrs.push('.options=${options}');
+  }
+
+  const formattedAttrs = attrs.length > 0
+    ? '\n  ' + attrs.join('\n  ') + '\n'
+    : '';
+
+  return `<pds-treeview${formattedAttrs}></pds-treeview>`;
+}
+
+/**
  * Generate realistic source code for pds-fab elements
  */
 function generatePdsFabMarkup(fabElement) {
@@ -288,17 +320,19 @@ export const withHTMLExtractor = (storyFn, context) => {
     // Try to get HTML from the story container
     const container = document.querySelector('#storybook-root');
     if (container) {
-      // Check if this story has pds-form or pds-omnibox elements
+      // Check if this story has pds-form, pds-omnibox, pds-treeview, or pds-fab elements
       const pdsFormElements = Array.from(container.querySelectorAll('pds-form'));
       const pdsOmniboxElements = Array.from(container.querySelectorAll('pds-omnibox'));
+      const pdsTreeviewElements = Array.from(container.querySelectorAll('pds-treeview'));
       const pdsFabElements = Array.from(container.querySelectorAll('pds-fab'));
       const hasSpecialElements =
         pdsFormElements.length > 0 ||
         pdsOmniboxElements.length > 0 ||
+        pdsTreeviewElements.length > 0 ||
         pdsFabElements.length > 0;
 
       if (hasSpecialElements) {
-        // Generate realistic markup for pds-form / pds-omnibox stories
+        // Generate realistic markup for PDS component stories
         const alerts = Array.from(container.querySelectorAll('.callout'));
         let markup = '';
 
@@ -319,6 +353,11 @@ export const withHTMLExtractor = (storyFn, context) => {
         // Add pds-omnibox markup
         pdsOmniboxElements.forEach(omnibox => {
           markup += generatePdsOmniboxMarkup(omnibox);
+        });
+
+        // Add pds-treeview markup
+        pdsTreeviewElements.forEach(treeview => {
+          markup += generatePdsTreeviewMarkup(treeview);
         });
 
         // Add pds-fab markup
@@ -379,6 +418,30 @@ export const withHTMLExtractor = (storyFn, context) => {
         })
         .filter((entry) => entry.settings);
 
+      const treeviews = pdsTreeviewElements
+        .map((treeview, index) => {
+          const label =
+            treeview.getAttribute?.('id') ||
+            treeview.getAttribute?.('name') ||
+            (pdsTreeviewElements.length > 1 ? `Treeview ${index + 1}` : 'Treeview');
+
+          const optionsSource =
+            treeview.getAttribute?.('data-options-source') ||
+            treeview.dataset?.optionsSource ||
+            null;
+
+          const options =
+            optionsSource ||
+            serializeForDisplay(treeview.options || treeview.settings) ||
+            'const options = {};';
+
+          return {
+            id: index,
+            label,
+            options
+          };
+        });
+
       const fabs = pdsFabElements
         .map((fab, index) => {
           const label =
@@ -404,6 +467,7 @@ export const withHTMLExtractor = (storyFn, context) => {
         markup: html || '',
         forms,
         omniboxes,
+        treeviews,
         fabs
       });
     }

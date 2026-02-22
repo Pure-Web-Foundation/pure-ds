@@ -2007,7 +2007,7 @@ html[data-theme="dark"] .liquid-glass {
       borderWidthThin || shapeBorderWidth || enums.BorderWidths.thin;
     const sectionSpacingValue =
       spatialRhythm.sectionSpacing ?? sectionSpacing ?? 2.0;
-    const minButtonHeight = buttonMinHeight || 44;
+    const minButtonHeight = buttonMinHeight || 30;
     const minInputHeight = inputMinHeight || 40;
 
     return /*css*/ `/* Mobile-First Form Styles - Generated from Design Config */
@@ -3815,9 +3815,8 @@ pds-tabstrip {
   }
 
   #generateIconStyles() {
-    const { a11y = {} } = this.options.design;
-    const minTouchTarget =
-      a11y.minTouchTarget || enums.TouchTargetSizes.standard;
+    const { layout = {} } = this.options.design;
+    const iconOnlySize = layout.buttonMinHeight || 30;
 
     return /*css*/ `/* Icon System */
 
@@ -3864,12 +3863,30 @@ button, a {
 
   &.icon-only {
     padding: var(--spacing-2);
-    min-width: ${minTouchTarget}px;
-    width: ${minTouchTarget}px;
-    height: ${minTouchTarget}px;
+    min-width: ${iconOnlySize}px;
+    width: ${iconOnlySize}px;
+    height: ${iconOnlySize}px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+
+  &.btn-sm.icon-only {
+    min-width: calc(${iconOnlySize}px * 0.8);
+    width: calc(${iconOnlySize}px * 0.8);
+    height: calc(${iconOnlySize}px * 0.8);
+  }
+
+  &.btn-xs.icon-only {
+    min-width: calc(${iconOnlySize}px * 0.6);
+    width: calc(${iconOnlySize}px * 0.6);
+    height: calc(${iconOnlySize}px * 0.6);
+  }
+
+  &.btn-lg.icon-only {
+    min-width: calc(${iconOnlySize}px * 1.2);
+    width: calc(${iconOnlySize}px * 1.2);
+    height: calc(${iconOnlySize}px * 1.2);
   }
 }
 
@@ -4268,7 +4285,7 @@ nav[data-dropdown] {
 /* Touch device optimizations */
 @media (hover: none) and (pointer: coarse) {
   /* Touch devices - larger touch targets for interactive elements */
-  button, a, select, textarea,
+  button:not(.icon-only), a:not(.icon-only), select, textarea,
   input:not([type="radio"]):not([type="checkbox"]) {
     min-height: ${minTouchTarget}px;
     min-width: ${minTouchTarget}px;

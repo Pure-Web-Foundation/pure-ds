@@ -2433,7 +2433,7 @@ presets.default = {
     densityCompact: 0.8,
     densityNormal: 1.0,
     densityComfortable: 1.2,
-    buttonMinHeight: enums.TouchTargetSizes.standard,
+    buttonMinHeight: 30,
     inputMinHeight: 40,
 
     // Layout utility system

@@ -1258,6 +1258,63 @@
     },
     {
       "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-live-converter.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "COMPONENT_TAG",
+          "type": {
+            "text": "string"
+          },
+          "default": "\"pds-live-converter\""
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsLiveConverter",
+          "members": [
+            {
+              "kind": "method",
+              "name": "setResult",
+              "parameters": [
+                {
+                  "name": "result"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_render"
+            },
+            {
+              "kind": "field",
+              "name": "result",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "COMPONENT_TAG",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "COMPONENT_TAG",
+          "declaration": {
+            "name": "PdsLiveConverter",
+            "module": "public/assets/pds/components/pds-live-converter.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "public/assets/pds/components/pds-live-edit.js",
       "declarations": [
         {
@@ -1276,6 +1333,18 @@
             {
               "kind": "method",
               "name": "_teardown"
+            },
+            {
+              "kind": "method",
+              "name": "_handleThemeChanged"
+            },
+            {
+              "kind": "method",
+              "name": "_refreshQuickFormForTheme"
+            },
+            {
+              "kind": "method",
+              "name": "_refreshDrawerConfigFormForTheme"
             },
             {
               "kind": "method",
@@ -1458,6 +1527,10 @@
             },
             {
               "kind": "method",
+              "name": "_buildQuickModeDropdown"
+            },
+            {
+              "kind": "method",
               "name": "_openDrawer",
               "parameters": [
                 {
@@ -1474,6 +1547,46 @@
               "parameters": [
                 {
                   "name": "format"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_ensureLiveCanvasContainer"
+            },
+            {
+              "kind": "method",
+              "name": "_injectTemplateIntoCanvas",
+              "parameters": [
+                {
+                  "name": "template"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "openImportDetailsFromToast",
+              "parameters": [
+                {
+                  "name": "options",
+                  "default": "{}"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_endLiveEditSessionAfterImport"
+            },
+            {
+              "kind": "method",
+              "name": "_applyImportResult",
+              "parameters": [
+                {
+                  "name": "result"
+                },
+                {
+                  "name": "options",
+                  "default": "{}"
                 }
               ]
             },
@@ -1600,6 +1713,42 @@
                 "text": "null"
               },
               "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_boundThemeChanged"
+            },
+            {
+              "kind": "field",
+              "name": "_themeRefreshInFlight",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_drawerConfigFormContainer",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_drawerConfigFooter",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            }
+          ],
+          "events": [
+            {
+              "name": "pds:live-edit:disable",
+              "type": {
+                "text": "CustomEvent"
+              }
             }
           ],
           "superclass": {
@@ -1616,6 +1765,370 @@
           "declaration": {
             "name": "PdsLiveEdit",
             "module": "public/assets/pds/components/pds-live-edit.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-live-importer.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "COMPONENT_TAG",
+          "type": {
+            "text": "string"
+          },
+          "default": "\"pds-live-importer\""
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsLiveImporter",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_render"
+            },
+            {
+              "kind": "method",
+              "name": "_toast",
+              "parameters": [
+                {
+                  "name": "message"
+                },
+                {
+                  "name": "type",
+                  "default": "\"information\""
+                },
+                {
+                  "name": "options",
+                  "default": "{}"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_openLatestHistoryMetadata",
+              "parameters": [
+                {
+                  "name": "options",
+                  "default": "{}"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_ensureHistoryDialog"
+            },
+            {
+              "kind": "method",
+              "name": "_buildHistoryDetailsHtml",
+              "parameters": [
+                {
+                  "name": "entry"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_openHistoryDetailsDialog",
+              "parameters": [
+                {
+                  "name": "historyId"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_copyActiveHistoryToClipboard"
+            },
+            {
+              "kind": "method",
+              "name": "openHistoryDetailsByMeta",
+              "parameters": [
+                {
+                  "name": "options",
+                  "default": "{}"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_renderHistory"
+            },
+            {
+              "kind": "method",
+              "name": "_loadHistory"
+            },
+            {
+              "kind": "method",
+              "name": "_clearHistory"
+            },
+            {
+              "kind": "method",
+              "name": "_getHistoryEntry",
+              "parameters": [
+                {
+                  "name": "historyId"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_applyHistoryResult",
+              "parameters": [
+                {
+                  "name": "historyId"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_reimportHistoryItem",
+              "parameters": [
+                {
+                  "name": "historyId"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_persistImportHistory",
+              "parameters": [
+                {
+                  "name": "{ sourceType, result }"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_buildDiagnosticsMessage",
+              "parameters": [
+                {
+                  "name": "result"
+                },
+                {
+                  "name": "sourceType"
+                },
+                {
+                  "name": "fileName"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_buildDiagnosticsToastHtml",
+              "parameters": [
+                {
+                  "name": "result"
+                },
+                {
+                  "name": "sourceType"
+                },
+                {
+                  "name": "fileName"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_loadSources"
+            },
+            {
+              "kind": "method",
+              "name": "_setSelectedFile",
+              "parameters": [
+                {
+                  "name": "file"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_updateSelectionUI"
+            },
+            {
+              "kind": "method",
+              "name": "_runImport",
+              "parameters": [
+                {
+                  "name": "_options",
+                  "default": "{}"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "_sources",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "_selectedFile",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_selectedText",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_selectedSourceType",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_isImporting",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_history",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "_isHistoryLoading",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_historyDialog",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_activeHistoryDialogEntry",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            }
+          ],
+          "events": [
+            {
+              "name": "pds:live-import:result",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "COMPONENT_TAG",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "COMPONENT_TAG",
+          "declaration": {
+            "name": "PdsLiveImporter",
+            "module": "public/assets/pds/components/pds-live-importer.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-live-template-canvas.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "COMPONENT_TAG",
+          "type": {
+            "text": "string"
+          },
+          "default": "\"pds-live-template-canvas\""
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsLiveTemplateCanvas",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_renderShell"
+            },
+            {
+              "kind": "method",
+              "name": "_loadTemplates"
+            },
+            {
+              "kind": "method",
+              "name": "_updateDescription"
+            },
+            {
+              "kind": "method",
+              "name": "_applyTemplate"
+            },
+            {
+              "kind": "field",
+              "name": "_templates",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "_selectedTemplateId",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            }
+          ],
+          "events": [
+            {
+              "name": "pds:live-template:inject",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "COMPONENT_TAG",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "COMPONENT_TAG",
+          "declaration": {
+            "name": "PdsLiveTemplateCanvas",
+            "module": "public/assets/pds/components/pds-live-template-canvas.js"
           }
         }
       ]
@@ -1669,10 +2182,6 @@
             {
               "kind": "field",
               "name": "icon"
-            },
-            {
-              "kind": "field",
-              "name": "itemGrid"
             },
             {
               "kind": "method",
@@ -1750,9 +2259,6 @@
             },
             {
               "name": "icon"
-            },
-            {
-              "name": "item-grid"
             }
           ],
           "superclass": {
@@ -2190,6 +2696,42 @@
               ]
             },
             {
+              "kind": "field",
+              "name": "tileMin",
+              "description": "Minimum tile size applied to slotted content.",
+              "return": {
+                "type": {
+                  "text": "string|null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "val",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "tileMax",
+              "description": "Maximum tile size applied to slotted content.",
+              "return": {
+                "type": {
+                  "text": "string|null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "val",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
               "kind": "method",
               "name": "doPage",
               "parameters": [
@@ -2217,6 +2759,20 @@
                 "text": "\"start\"|\"center\""
               },
               "description": "Snap alignment for tiles when scrolling (default: start)"
+            },
+            {
+              "name": "tile-min",
+              "type": {
+                "text": "string"
+              },
+              "description": "Minimum tile width (CSS length, e.g. \"250px\")"
+            },
+            {
+              "name": "tile-max",
+              "type": {
+                "text": "string"
+              },
+              "description": "Maximum tile width (CSS length, e.g. \"360px\")"
             }
           ],
           "superclass": {
@@ -2723,6 +3279,14 @@
                   "type": {
                     "text": "boolean"
                   }
+                },
+                {
+                  "name": "html",
+                  "default": "false"
+                },
+                {
+                  "name": "action",
+                  "default": "null"
                 }
               ],
               "description": "Build a DOM node representing a single toast notification.",
@@ -2905,6 +3469,229 @@
           "declaration": {
             "name": "AppToaster",
             "module": "public/assets/pds/components/pds-toaster.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-treeview.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsTreeview",
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "settings"
+            },
+            {
+              "kind": "field",
+              "name": "options"
+            },
+            {
+              "kind": "field",
+              "name": "name"
+            },
+            {
+              "kind": "field",
+              "name": "value"
+            },
+            {
+              "kind": "field",
+              "name": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "required"
+            },
+            {
+              "kind": "field",
+              "name": "displayOnly"
+            },
+            {
+              "kind": "field",
+              "name": "expandedAll"
+            },
+            {
+              "kind": "field",
+              "name": "selectedNode",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "getSelectedNode"
+            },
+            {
+              "kind": "method",
+              "name": "refresh"
+            },
+            {
+              "kind": "method",
+              "name": "expandAll"
+            },
+            {
+              "kind": "method",
+              "name": "collapseAll"
+            },
+            {
+              "kind": "method",
+              "name": "selectById",
+              "parameters": [
+                {
+                  "name": "id"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "selectByValue",
+              "parameters": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity"
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity"
+            }
+          ],
+          "events": [
+            {
+              "name": "treeview-load",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "treeview-error",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "node-toggle",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "node-load",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "node-load-error",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "node-select",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "input",
+              "type": {
+                "text": "Event"
+              }
+            },
+            {
+              "name": "change",
+              "type": {
+                "text": "Event"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "name"
+            },
+            {
+              "name": "value"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "required"
+            },
+            {
+              "name": "display-only"
+            },
+            {
+              "name": "expanded-all"
+            },
+            {
+              "name": "src"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-treeview",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "PdsTreeview",
+          "declaration": {
+            "name": "PdsTreeview",
+            "module": "public/assets/pds/components/pds-treeview.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-treeview",
+          "declaration": {
+            "name": "PdsTreeview",
+            "module": "public/assets/pds/components/pds-treeview.js"
           }
         }
       ]

@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-02-18T13:01:52.713Z",
+  "exportedAt": "2026-02-21T10:01:05.400Z",
   "staticRoot": "/assets/pds/",
   "presetId": "default",
   "preset": "Default",
@@ -31,7 +31,8 @@
           "enhancements": {
             "icons": true,
             "datalists": true,
-            "rangeOutput": true
+            "rangeOutput": true,
+            "colorInput": true
           },
           "validation": {
             "showErrors": true,
@@ -131,7 +132,7 @@
         "densityCompact": 0.8,
         "densityNormal": 1,
         "densityComfortable": 1.2,
-        "buttonMinHeight": 44,
+        "buttonMinHeight": 30,
         "inputMinHeight": 40,
         "utilities": {
           "grid": true,
@@ -774,6 +775,9 @@
                       "type": "boolean"
                     },
                     "rangeOutput": {
+                      "type": "boolean"
+                    },
+                    "colorInput": {
                       "type": "boolean"
                     }
                   }
@@ -1798,6 +1802,10 @@
         "label": "Range Output",
         "widget": "toggle"
       },
+      "form.options.enhancements.colorInput": {
+        "label": "Color Input",
+        "widget": "toggle"
+      },
       "form.options.validation.showErrors": {
         "label": "Show Errors",
         "widget": "toggle"
@@ -2743,6 +2751,13 @@
                         "examples": [
                           true
                         ]
+                      },
+                      "colorInput": {
+                        "type": "boolean",
+                        "title": "Color Input",
+                        "examples": [
+                          true
+                        ]
                       }
                     },
                     "title": "Enhancements"
@@ -3427,7 +3442,7 @@
                 "maximum": 96,
                 "multipleOf": 1,
                 "examples": [
-                  44
+                  30
                 ]
               },
               "inputMinHeight": {
@@ -4100,6 +4115,9 @@
           "ui:widget": "toggle"
         },
         "/form/options/enhancements/rangeOutput": {
+          "ui:widget": "toggle"
+        },
+        "/form/options/enhancements/colorInput": {
           "ui:widget": "toggle"
         },
         "/form/options/validation/showErrors": {
@@ -5068,7 +5086,8 @@
             "enhancements": {
               "icons": true,
               "datalists": true,
-              "rangeOutput": true
+              "rangeOutput": true,
+              "colorInput": true
             },
             "validation": {
               "showErrors": true,
@@ -5147,7 +5166,7 @@
           "densityCompact": 0.8,
           "densityNormal": 1,
           "densityComfortable": 1.2,
-          "buttonMinHeight": 44,
+          "buttonMinHeight": 30,
           "inputMinHeight": 40,
           "baseShadowOpacity": 0.1,
           "darkMode": {
@@ -5421,6 +5440,10 @@
         },
         "form.options.enhancements.rangeOutput": {
           "label": "Range Output",
+          "widget": "toggle"
+        },
+        "form.options.enhancements.colorInput": {
+          "label": "Color Input",
           "widget": "toggle"
         },
         "form.options.validation.showErrors": {

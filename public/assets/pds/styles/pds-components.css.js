@@ -457,21 +457,28 @@ input[type="range"]:active::-moz-range-thumb {
 
 input[type="color"] {
   -webkit-appearance: none;
+  appearance: none;
   padding: 0;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.75rem; /* your radius */
-  overflow: hidden; /* important */
+  width: calc(var(--spacing-8) + var(--spacing-1));
+  height: calc(var(--spacing-8) + var(--spacing-1));
+  min-height: auto;
+  border-radius: var(--radius-sm);
+  border: var(--border-width-thin) solid var(--color-border);
+  overflow: hidden;
   cursor: pointer;
+  background: transparent;
 
-  /* The wrapper */
   &::-webkit-color-swatch-wrapper {
     padding: 0;
     border-radius: inherit;
   }
 
-  /* The swatch (the actual color box) */
   &::-webkit-color-swatch {
+    border: none;
+    border-radius: inherit;
+  }
+
+  &::-moz-color-swatch {
     border: none;
     border-radius: inherit;
   }
@@ -496,7 +503,7 @@ input[type="checkbox"] + label:not(fieldset label):not(label[data-toggle]) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(44px * 0.75);
+  min-height: calc(30px * 0.75);
   padding: calc(var(--spacing-1) * 0.6) calc(var(--spacing-4) * 0.85);
   border: var(--border-width-medium) solid var(--color-border);
   border-radius: var(--radius-md);
@@ -600,7 +607,7 @@ fieldset[role="group"].buttons {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: calc(44px * 0.75);
+    min-height: calc(30px * 0.75);
     padding: calc(var(--spacing-1) * 0.6) calc(var(--spacing-4) * 0.85);
     border: var(--border-width-medium) solid var(--color-border);
     border-radius: var(--radius-md);
@@ -769,6 +776,114 @@ label[data-toggle] {
   }
 }
 
+/* Color input enhancement shell - applied by enhanceColorInput on label[data-color] */
+label[data-color] {
+  display: grid;
+  gap: var(--spacing-2);
+
+  .color-control {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    width: fit-content;
+    min-height: var(--input-min-height, 40px);
+    padding: var(--spacing-2) var(--spacing-3);
+    border: var(--border-width-thin) solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-base);
+    color: var(--color-text-primary);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .color-control .color-swatch {
+    position: relative;
+    display: inline-flex;
+    width: calc(var(--spacing-8) + var(--spacing-1));
+    height: calc(var(--spacing-8) + var(--spacing-1));
+    border-radius: var(--radius-sm);
+  }
+
+  .color-control output {
+    margin: 0;
+    min-width: 8ch;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-tight);
+    color: var(--color-text-secondary);
+    text-transform: lowercase;
+  }
+
+  .color-control[data-unset="1"] output {
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+
+  .color-control input[type="color"] {
+    width: calc(var(--spacing-8) + var(--spacing-1));
+    height: calc(var(--spacing-8) + var(--spacing-1));
+    border-radius: var(--radius-sm);
+    border: var(--border-width-thin) solid var(--color-border);
+    background: transparent;
+    padding: 0;
+  }
+
+  .color-control input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: calc(var(--radius-sm) - var(--border-width-thin));
+  }
+
+  .color-control input[type="color"]::-moz-color-swatch {
+    border: none;
+    border-radius: calc(var(--radius-sm) - var(--border-width-thin));
+  }
+
+  .color-control .color-swatch[data-unset="1"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-sm);
+    border: var(--border-width-thin) solid var(--color-border);
+    background-color: color-mix(in oklab, var(--color-surface-subtle) 78%, var(--color-text-primary) 22%);
+    background-image:
+      linear-gradient(
+        45deg,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%) 25%,
+        transparent 25%,
+        transparent 75%,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%) 75%,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%)
+      ),
+      linear-gradient(
+        45deg,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%) 25%,
+        transparent 25%,
+        transparent 75%,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%) 75%,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%)
+      );
+    background-size: calc(var(--spacing-2) * 1.25) calc(var(--spacing-2) * 1.25);
+    background-position:
+      0 0,
+      calc(var(--spacing-2) * 0.625) calc(var(--spacing-2) * 0.625);
+    pointer-events: none;
+  }
+
+  .color-control .color-swatch[data-unset="1"] input[type="color"] {
+    opacity: 0;
+  }
+
+  &:focus-within .color-control {
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+  }
+
+  &:has(input[type="color"]:disabled) .color-control {
+    background: var(--color-input-disabled-bg);
+    color: var(--color-input-disabled-text);
+    cursor: not-allowed;
+  }
+}
+
 input[type="file"] {
   padding: var(--spacing-2) var(--spacing-4);
   cursor: pointer;
@@ -798,7 +913,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   gap: var(--spacing-1);
   align-items: center;
   justify-content: center;
-  min-height: 44px;
+  min-height: 30px;
   padding: calc(var(--spacing-1) * 1) var(--spacing-6);
   border: var(--border-width-medium) solid transparent;
   border-radius: var(--radius-md);
@@ -907,20 +1022,20 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 .btn-sm {
   padding: var(--spacing-2) var(--spacing-4);
   font-size: var(--font-size-sm);
-  min-height: calc(44px * 0.8);
+  min-height: calc(30px * 0.8);
 }
 
 .btn-xs {
   padding: var(--spacing-1) var(--spacing-2);
   font-size: var(--font-size-xs);
-  min-height: calc(44px * 0.6);
+  min-height: calc(30px * 0.6);
 }
 
 
 .btn-lg {
   padding: var(--spacing-4) var(--spacing-8);
   font-size: var(--font-size-lg);
-  min-height: calc(44px * 1.2);
+  min-height: calc(30px * 1.2);
 }
 
 /* Working/loading state for buttons */
@@ -1531,12 +1646,15 @@ html:has(dialog[open]:modal) {
   overflow: hidden;
 
   &[open] {
+    overflow: visible;
+
     & > summary::after {
       transform: rotate(45deg);
     }
 
     &::details-content {
       block-size: auto;
+      overflow: visible;
     }
   }
 
@@ -1610,6 +1728,7 @@ html:has(dialog[open]:modal) {
 
     &[open] > :not(summary) {
       grid-template-rows: 1fr;
+      overflow: visible;
     }
   }
 }
@@ -1643,17 +1762,16 @@ nav[data-dropdown] {
     max-width: none;
     max-inline-size: none;
     opacity: 0;
-    scale: 0.95;
     visibility: hidden;
     display: none;
     pointer-events: none;
     transform-origin: top center;
     z-index: var(--z-dropdown, 1050);
     max-height: min(60vh, 24rem);
+    overflow-x: hidden;
     overflow-y: auto;
     transition:
       opacity var(--dropdown-transition-duration) ease,
-      scale var(--dropdown-transition-duration) ease,
       visibility 0s linear var(--dropdown-transition-duration),
       display 0s linear var(--dropdown-transition-duration);
     transition-behavior: allow-discrete;
@@ -1662,12 +1780,10 @@ nav[data-dropdown] {
   & > :last-child[aria-hidden="false"] {
     display: inline-block;
     opacity: 1;
-    scale: 1;
     visibility: visible;
     pointer-events: auto;
     transition:
       opacity var(--dropdown-transition-duration) ease,
-      scale var(--dropdown-transition-duration) ease,
       visibility 0s linear 0s,
       display 0s linear 0s;
   }
@@ -1765,7 +1881,6 @@ nav[data-dropdown] {
 @starting-style {
   nav[data-dropdown] > :last-child[aria-hidden="false"] {
     opacity: 0;
-    scale: 0.95;
   }
 }
 
@@ -2488,21 +2603,28 @@ input[type="range"]:active::-moz-range-thumb {
 
 input[type="color"] {
   -webkit-appearance: none;
+  appearance: none;
   padding: 0;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.75rem; /* your radius */
-  overflow: hidden; /* important */
+  width: calc(var(--spacing-8) + var(--spacing-1));
+  height: calc(var(--spacing-8) + var(--spacing-1));
+  min-height: auto;
+  border-radius: var(--radius-sm);
+  border: var(--border-width-thin) solid var(--color-border);
+  overflow: hidden;
   cursor: pointer;
+  background: transparent;
 
-  /* The wrapper */
   &::-webkit-color-swatch-wrapper {
     padding: 0;
     border-radius: inherit;
   }
 
-  /* The swatch (the actual color box) */
   &::-webkit-color-swatch {
+    border: none;
+    border-radius: inherit;
+  }
+
+  &::-moz-color-swatch {
     border: none;
     border-radius: inherit;
   }
@@ -2527,7 +2649,7 @@ input[type="checkbox"] + label:not(fieldset label):not(label[data-toggle]) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(44px * 0.75);
+  min-height: calc(30px * 0.75);
   padding: calc(var(--spacing-1) * 0.6) calc(var(--spacing-4) * 0.85);
   border: var(--border-width-medium) solid var(--color-border);
   border-radius: var(--radius-md);
@@ -2631,7 +2753,7 @@ fieldset[role="group"].buttons {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: calc(44px * 0.75);
+    min-height: calc(30px * 0.75);
     padding: calc(var(--spacing-1) * 0.6) calc(var(--spacing-4) * 0.85);
     border: var(--border-width-medium) solid var(--color-border);
     border-radius: var(--radius-md);
@@ -2800,6 +2922,114 @@ label[data-toggle] {
   }
 }
 
+/* Color input enhancement shell - applied by enhanceColorInput on label[data-color] */
+label[data-color] {
+  display: grid;
+  gap: var(--spacing-2);
+
+  .color-control {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    width: fit-content;
+    min-height: var(--input-min-height, 40px);
+    padding: var(--spacing-2) var(--spacing-3);
+    border: var(--border-width-thin) solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-base);
+    color: var(--color-text-primary);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .color-control .color-swatch {
+    position: relative;
+    display: inline-flex;
+    width: calc(var(--spacing-8) + var(--spacing-1));
+    height: calc(var(--spacing-8) + var(--spacing-1));
+    border-radius: var(--radius-sm);
+  }
+
+  .color-control output {
+    margin: 0;
+    min-width: 8ch;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-tight);
+    color: var(--color-text-secondary);
+    text-transform: lowercase;
+  }
+
+  .color-control[data-unset="1"] output {
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+
+  .color-control input[type="color"] {
+    width: calc(var(--spacing-8) + var(--spacing-1));
+    height: calc(var(--spacing-8) + var(--spacing-1));
+    border-radius: var(--radius-sm);
+    border: var(--border-width-thin) solid var(--color-border);
+    background: transparent;
+    padding: 0;
+  }
+
+  .color-control input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: calc(var(--radius-sm) - var(--border-width-thin));
+  }
+
+  .color-control input[type="color"]::-moz-color-swatch {
+    border: none;
+    border-radius: calc(var(--radius-sm) - var(--border-width-thin));
+  }
+
+  .color-control .color-swatch[data-unset="1"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-sm);
+    border: var(--border-width-thin) solid var(--color-border);
+    background-color: color-mix(in oklab, var(--color-surface-subtle) 78%, var(--color-text-primary) 22%);
+    background-image:
+      linear-gradient(
+        45deg,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%) 25%,
+        transparent 25%,
+        transparent 75%,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%) 75%,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%)
+      ),
+      linear-gradient(
+        45deg,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%) 25%,
+        transparent 25%,
+        transparent 75%,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%) 75%,
+        color-mix(in oklab, var(--color-surface-base) 88%, var(--color-text-primary) 12%)
+      );
+    background-size: calc(var(--spacing-2) * 1.25) calc(var(--spacing-2) * 1.25);
+    background-position:
+      0 0,
+      calc(var(--spacing-2) * 0.625) calc(var(--spacing-2) * 0.625);
+    pointer-events: none;
+  }
+
+  .color-control .color-swatch[data-unset="1"] input[type="color"] {
+    opacity: 0;
+  }
+
+  &:focus-within .color-control {
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+  }
+
+  &:has(input[type="color"]:disabled) .color-control {
+    background: var(--color-input-disabled-bg);
+    color: var(--color-input-disabled-text);
+    cursor: not-allowed;
+  }
+}
+
 input[type="file"] {
   padding: var(--spacing-2) var(--spacing-4);
   cursor: pointer;
@@ -2829,7 +3059,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   gap: var(--spacing-1);
   align-items: center;
   justify-content: center;
-  min-height: 44px;
+  min-height: 30px;
   padding: calc(var(--spacing-1) * 1) var(--spacing-6);
   border: var(--border-width-medium) solid transparent;
   border-radius: var(--radius-md);
@@ -2938,20 +3168,20 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 .btn-sm {
   padding: var(--spacing-2) var(--spacing-4);
   font-size: var(--font-size-sm);
-  min-height: calc(44px * 0.8);
+  min-height: calc(30px * 0.8);
 }
 
 .btn-xs {
   padding: var(--spacing-1) var(--spacing-2);
   font-size: var(--font-size-xs);
-  min-height: calc(44px * 0.6);
+  min-height: calc(30px * 0.6);
 }
 
 
 .btn-lg {
   padding: var(--spacing-4) var(--spacing-8);
   font-size: var(--font-size-lg);
-  min-height: calc(44px * 1.2);
+  min-height: calc(30px * 1.2);
 }
 
 /* Working/loading state for buttons */
@@ -3562,12 +3792,15 @@ html:has(dialog[open]:modal) {
   overflow: hidden;
 
   &[open] {
+    overflow: visible;
+
     & > summary::after {
       transform: rotate(45deg);
     }
 
     &::details-content {
       block-size: auto;
+      overflow: visible;
     }
   }
 
@@ -3641,6 +3874,7 @@ html:has(dialog[open]:modal) {
 
     &[open] > :not(summary) {
       grid-template-rows: 1fr;
+      overflow: visible;
     }
   }
 }
@@ -3674,17 +3908,16 @@ nav[data-dropdown] {
     max-width: none;
     max-inline-size: none;
     opacity: 0;
-    scale: 0.95;
     visibility: hidden;
     display: none;
     pointer-events: none;
     transform-origin: top center;
     z-index: var(--z-dropdown, 1050);
     max-height: min(60vh, 24rem);
+    overflow-x: hidden;
     overflow-y: auto;
     transition:
       opacity var(--dropdown-transition-duration) ease,
-      scale var(--dropdown-transition-duration) ease,
       visibility 0s linear var(--dropdown-transition-duration),
       display 0s linear var(--dropdown-transition-duration);
     transition-behavior: allow-discrete;
@@ -3693,12 +3926,10 @@ nav[data-dropdown] {
   & > :last-child[aria-hidden="false"] {
     display: inline-block;
     opacity: 1;
-    scale: 1;
     visibility: visible;
     pointer-events: auto;
     transition:
       opacity var(--dropdown-transition-duration) ease,
-      scale var(--dropdown-transition-duration) ease,
       visibility 0s linear 0s,
       display 0s linear 0s;
   }
@@ -3796,7 +4027,6 @@ nav[data-dropdown] {
 @starting-style {
   nav[data-dropdown] > :last-child[aria-hidden="false"] {
     opacity: 0;
-    scale: 0.95;
   }
 }
 

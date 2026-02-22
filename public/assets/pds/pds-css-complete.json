@@ -2275,6 +2275,11 @@
       "category": "Data Enhancements"
     },
     {
+      "name": "data-color",
+      "description": "Enhancement: label[data-color]",
+      "category": "Data Enhancements"
+    },
+    {
       "name": "data-open",
       "description": "Enhancement: fieldset[role=group][data-open]",
       "category": "Data Enhancements"
@@ -2287,9 +2292,9 @@
   ],
   "metadata": {
     "generator": "PDS CSS Data Generator",
-    "generatedAt": "2026-02-18T13:01:52.698Z",
+    "generatedAt": "2026-02-21T10:01:05.385Z",
     "totalProperties": 169,
     "totalClasses": 169,
-    "totalAttributes": 4
+    "totalAttributes": 5
   }
 }

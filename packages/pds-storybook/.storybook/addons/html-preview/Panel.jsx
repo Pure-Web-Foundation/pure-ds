@@ -109,11 +109,12 @@ const CheckIcon = () => (
 );
 
 export const Panel = ({ active }) => {
-  const [source, setSource] = useState({ markup: '', forms: [], omniboxes: [], fabs: [] });
+  const [source, setSource] = useState({ markup: '', forms: [], omniboxes: [], treeviews: [], fabs: [] });
   const [copied, setCopied] = useState(false);
   const [highlightedMarkup, setHighlightedMarkup] = useState('');
   const [highlightedforms, setHighlightedforms] = useState([]);
   const [highlightedOmniboxes, setHighlightedOmniboxes] = useState([]);
+  const [highlightedTreeviews, setHighlightedTreeviews] = useState([]);
   const [highlightedFabs, setHighlightedFabs] = useState([]);
   const shikiRef = useRef(null);
   
@@ -267,10 +268,44 @@ export const Panel = ({ active }) => {
     processFabs();
   }, [source.fabs, shikiTheme]);
 
+  // Highlight treeview options when source or theme changes
+  useEffect(() => {
+    if (!source.treeviews || source.treeviews.length === 0) {
+      setHighlightedTreeviews([]);
+      return;
+    }
+
+    const highlightCode = async (code) => {
+      if (!code) return '';
+      const highlighter = shikiRef.current || await loadShiki();
+      if (highlighter) {
+        try {
+          return highlighter.codeToHtml(code, { lang: 'javascript', theme: shikiTheme });
+        } catch (err) {
+          return `<pre><code>${escapeHtml(code)}</code></pre>`;
+        }
+      }
+      return `<pre><code>${escapeHtml(code)}</code></pre>`;
+    };
+
+    const processTreeviews = async () => {
+      const highlighted = await Promise.all(
+        source.treeviews.map(async (treeview, index) => ({
+          id: treeview.id ?? index,
+          label: treeview.label,
+          options: await highlightCode(treeview.options)
+        }))
+      );
+      setHighlightedTreeviews(highlighted);
+    };
+
+    processTreeviews();
+  }, [source.treeviews, shikiTheme]);
+
   useChannel({
     [EVENTS.UPDATE_HTML]: (payload) => {
       if (typeof payload === 'string') {
-        setSource({ markup: payload || '', forms: [], omniboxes: [], fabs: [] });
+        setSource({ markup: payload || '', forms: [], omniboxes: [], treeviews: [], fabs: [] });
         return;
       }
 
@@ -279,18 +314,19 @@ export const Panel = ({ active }) => {
           markup: payload.markup || '',
           forms: Array.isArray(payload.forms) ? payload.forms : [],
           omniboxes: Array.isArray(payload.omniboxes) ? payload.omniboxes : [],
+          treeviews: Array.isArray(payload.treeviews) ? payload.treeviews : [],
           fabs: Array.isArray(payload.fabs) ? payload.fabs : []
         });
         return;
       }
 
-      setSource({ markup: '', forms: [], omniboxes: [], fabs: [] });
+      setSource({ markup: '', forms: [], omniboxes: [], treeviews: [], fabs: [] });
     }
   });
 
   // Request HTML update when panel becomes active
   React.useEffect(() => {
-    if (active && !source.markup && source.forms.length === 0 && source.omniboxes.length === 0 && source.fabs.length === 0) {
+    if (active && !source.markup && source.forms.length === 0 && source.omniboxes.length === 0 && source.treeviews.length === 0 && source.fabs.length === 0) {
       // Trigger a re-extraction by emitting a request event
       // The decorator will pick this up on the next render cycle
       const container = document.querySelector('#storybook-root');
@@ -302,7 +338,7 @@ export const Panel = ({ active }) => {
         }, 100);
       }
     }
-  }, [active, source.markup, source.forms.length, source.omniboxes.length, source.fabs.length]);
+  }, [active, source.markup, source.forms.length, source.omniboxes.length, source.treeviews.length, source.fabs.length]);
 
   const copyToClipboard = useCallback(async () => {
     try {
@@ -318,9 +354,10 @@ export const Panel = ({ active }) => {
   const hasMarkup = Boolean(source.markup);
   const hasforms = source.forms.length > 0;
   const hasOmniboxes = source.omniboxes.length > 0;
+  const hasTreeviews = source.treeviews.length > 0;
   const hasFabs = source.fabs.length > 0;
 
-  if (!hasMarkup && !hasforms && !hasOmniboxes && !hasFabs) {
+  if (!hasMarkup && !hasforms && !hasOmniboxes && !hasTreeviews && !hasFabs) {
     return (
       <Container>
         <EmptyState>
@@ -429,6 +466,30 @@ export const Panel = ({ active }) => {
                   $compact
                   dangerouslySetInnerHTML={{
                     __html: highlightedOmnibox?.settings || `<pre><code>${escapeHtml(sourceOmnibox.settings)}</code></pre>`
+                  }}
+                />
+              </>
+            )}
+          </SectionWrapper>
+        );
+      })}
+
+      {hasTreeviews && source.treeviews.map((sourceTreeview, index) => {
+        const key = sourceTreeview.id ?? index;
+        const highlightedTreeview = highlightedTreeviews[index];
+        const heading = source.treeviews.length > 1 ? (sourceTreeview.label || `Treeview ${index + 1}`) : 'pds-treeview';
+
+        return (
+          <SectionWrapper key={key}>
+            <SectionHeading>{heading}</SectionHeading>
+
+            {sourceTreeview.options && (
+              <>
+                <Subheading>options</Subheading>
+                <CodeBlock
+                  $compact
+                  dangerouslySetInnerHTML={{
+                    __html: highlightedTreeview?.options || `<pre><code>${escapeHtml(sourceTreeview.options)}</code></pre>`
                   }}
                 />
               </>
