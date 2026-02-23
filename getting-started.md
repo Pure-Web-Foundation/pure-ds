@@ -68,8 +68,15 @@ Explore live examples first:
   <head>
     <meta charset="UTF-8" />
     <title>PDS CDN Demo</title>
+    <script type="importmap">
+    {
+      "imports": {
+        "#pds": "https://unpkg.com/pure-ds@latest/public/assets/pds/core.js"
+      }
+    }
+    </script>
     <script type="module" defer>
-      import { PDS } from "https://unpkg.com/pure-ds@latest/public/assets/js/pds.js";
+      import { PDS } from "#pds";
 
       await PDS.start({
         mode: "live",
@@ -126,6 +133,7 @@ Most PDS features work with plain HTML + classes. For components like `pds-form`
 <script type="importmap">
 {
   "imports": {
+    "#pds": "/assets/pds/core.js",
     "#pds/lit": "/assets/pds/external/lit.js"
   }
 }

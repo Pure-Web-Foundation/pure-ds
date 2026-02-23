@@ -1,3 +1,5 @@
+import { PDS } from "#pds";
+
 /**
  * @component pds-splitpanel
  * @description A split panel component that supports horizontal and vertical layouts, resizable panels, and a responsive mobile view.
@@ -300,7 +302,7 @@ class PdsSplitpanel extends HTMLElement {
 
       // Prefer PDS layers if available
       try {
-        if (window.PDS && typeof PDS.createStylesheet === "function" && typeof PDS.adoptLayers === "function") {
+            if (typeof PDS.createStylesheet === "function" && typeof PDS.adoptLayers === "function") {
           const componentStyles = PDS.createStylesheet(cssText);
           await PDS.adoptLayers(this.shadowRoot, ["primitives", "components"], [componentStyles]);
           return;

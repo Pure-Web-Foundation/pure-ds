@@ -1,5 +1,6 @@
+import { PDS } from "#pds";
+
 const COMPONENT_TAG = "pds-live-template-canvas";
-const PDS = globalThis.PDS;
 
 let managerPromise = null;
 

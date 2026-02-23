@@ -349,7 +349,7 @@ async function loadConsumerConfig() {
         if (/PDS is not defined/i.test(msg)) {
           log('❌ Failed to evaluate pds.config.js: PDS is not defined', 'red');
           log('   This usually means your config references the browser global "PDS".', 'yellow');
-          log('   The static exporter runs in Node, so please import presets instead of using window.PDS.', 'yellow');
+          log('   The static exporter runs in Node, so please import presets instead of using a browser global PDS object.', 'yellow');
           log('   Example fix for pds.config.js:', 'yellow');
           log("     import { presets } from 'pure-ds/src/js/pds-core/pds-config.js'", 'blue');
           log('     export const config = { ...presets.default, static: { root: "public/assets/pds/" } }', 'blue');
@@ -433,6 +433,17 @@ async function main(options = {}) {
 
   // 4b) Copy live manager bundle into target/core for dynamic import fallback
   try {
+    const coreEntrySourceNew = path.join(repoRoot, 'public/assets/pds/core.js');
+    const coreEntrySourceLegacy = path.join(repoRoot, 'public/assets/js/pds.js');
+    const coreEntrySource = existsSync(coreEntrySourceNew) ? coreEntrySourceNew : coreEntrySourceLegacy;
+    if (!existsSync(coreEntrySource)) {
+      log('⚠️  core.js not found in package assets; skipping copy', 'yellow');
+    } else {
+      const coreEntryTarget = path.join(targetDir, 'core.js');
+      await copyFile(coreEntrySource, coreEntryTarget);
+      log(`✅ Copied core runtime entry → ${path.relative(process.cwd(), coreEntryTarget)}`, 'green');
+    }
+
     const managerSource = path.join(repoRoot, 'public/assets/js/pds-manager.js');
     if (!existsSync(managerSource)) {
       log('⚠️  pds-manager.js not found in package assets; skipping copy', 'yellow');

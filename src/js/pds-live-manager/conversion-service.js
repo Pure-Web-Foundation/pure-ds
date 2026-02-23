@@ -1,7 +1,6 @@
 import { createImportResult } from "./import-contract.js";
 import tailwindRulebookJson from "./tailwind-conversion-rules.json" with { type: "json" };
-
-const PDS = globalThis.PDS;
+import { PDS } from "../pds.js";
 
 const RULEBOOK_JSON_PATH = "src/js/pds-live-manager/tailwind-conversion-rules.json";
 const BREAKPOINT_ORDER = ["base", "sm", "md", "lg", "xl", "2xl"];

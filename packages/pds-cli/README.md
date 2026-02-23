@@ -14,6 +14,15 @@ Notes:
 
 This CLI is intentionally tiny and uses the repository's `pds-api` and `fs-writer` utilities.
 
+## pds-bootstrap
+
+`pds-bootstrap` scaffolds a browser-ready starter and writes `public/index.html` with an import map that includes:
+
+- `"#pds": "/assets/pds/core.js"`
+- `"#pds/lit": "/assets/pds/external/lit.js"`
+
+So component modules that import `PDS` from `#pds` and Lit-based modules from `#pds/lit` resolve without extra setup.
+
 ## pds-import
 
 `pds-import` runs the same import pipeline used by live edit and writes a JSON result file.

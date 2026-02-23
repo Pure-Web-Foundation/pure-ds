@@ -1,4 +1,3 @@
-import { config } from "../../../pds.config.js"
 import { fragmentFromTemplateLike } from "./common.js";
 
 /**
@@ -69,6 +68,10 @@ function playDialogEnterAnimation(dialog) {
   }, { once: true });
 }
 
+function shouldUseLiquidGlass(options = {}) {
+  return options?.liquidGlassEffects === true;
+}
+
 /**
  * Create a PDS-compliant dialog with proper semantic structure
  * @param {string|Node|Array} message - Message content (string or DOM nodes)
@@ -96,7 +99,7 @@ export async function ask(message, options = {}) {
       dialog.classList.add("dialog-no-scale-animation");
     }
     
-    if(config.options?.liquidGlassEffects)
+    if (shouldUseLiquidGlass(options))
       dialog.classList.add("liquid-glass");
     
     // Add optional CSS classes

@@ -28,7 +28,12 @@ Enhanced the `onError` handler in auto-define configuration to:
 ❌ PDS component <pds-form> requires Lit but #pds/lit is not in import map.
 Add this to your HTML <head>:
 <script type="importmap">
-  { "imports": { "#pds/lit": "./path/to/pds/external/lit.js" } }
+  {
+    "imports": {
+      "#pds": "./path/to/pds/core.js",
+      "#pds/lit": "./path/to/pds/external/lit.js"
+    }
+  }
 </script>
 See: https://github.com/pure-ds/core#lit-components
 ```
@@ -61,6 +66,7 @@ Added comprehensive guidance for AI code generation:
   <script type="importmap">
   {
     "imports": {
+      "#pds": "/assets/pds/core.js",
       "#pds/lit": "/assets/pds/external/lit.js"
     }
   }
@@ -70,7 +76,7 @@ Added comprehensive guidance for AI code generation:
   <pds-form></pds-form>
   
   <script type="module">
-    import { PDS } from './assets/js/pds.js';
+    import { PDS } from '#pds';
     await PDS.start();
     
     // ✅ Wait for component to be defined

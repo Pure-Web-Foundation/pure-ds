@@ -186,7 +186,11 @@ form.addEventListener('pw:submit', async (e) => {
 });
 ```
 
-**PDS.toast() is available globally via window.PDS:**
+**PDS.toast() is available from the imported `PDS` runtime:**
+
+```javascript
+import { PDS } from '#pds';
+```
 
 ```javascript
 // All toast types
@@ -362,6 +366,7 @@ This component uses `import { ... } from "#pds/lit"` and **requires** an import 
 <script type="importmap">
 {
   "imports": {
+    "#pds": "/assets/pds/core.js",
     "#pds/lit": "/assets/pds/external/lit.js"
   }
 }

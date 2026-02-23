@@ -1,9 +1,10 @@
 import { html } from '#pds/lit';
+import { PDS } from '#pds';
 import { toast as toastFallback } from '@pds-src/js/common/toast.js';
 
 const ensureToast = () => {
-  if (typeof window !== 'undefined' && window.PDS?.toast) {
-    return window.PDS.toast;
+  if (PDS?.toast) {
+    return PDS.toast;
   }
   return toastFallback;
 };

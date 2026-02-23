@@ -571,6 +571,7 @@ PDS.dispatchEvent(new CustomEvent('pds:toast', {
 <script type="importmap">
   {
     "imports": {
+      "#pds": "/assets/pds/core.js",
       "#showdown": "https://cdn.jsdelivr.net/npm/showdown@2.1.0/+esm"
     }
   }
@@ -1405,6 +1406,7 @@ await PDS.start({ design: myPreset });
   <script type="importmap">
   {
     "imports": {
+      "#pds": "https://cdn.jsdelivr.net/npm/@pure-ds/core@latest/public/assets/pds/core.js",
       "#pds/lit": "https://cdn.jsdelivr.net/npm/@pure-ds/core@latest/public/assets/pds/external/lit.js"
     }
   }
@@ -1414,7 +1416,7 @@ await PDS.start({ design: myPreset });
   <button class="btn-primary">Click me</button>
   
   <script type="module">
-    import { PDS } from 'https://cdn.jsdelivr.net/npm/@pure-ds/core@latest/public/assets/js/pds.js';
+    import { PDS } from '#pds';
     
     await PDS.start({
       mode: 'static',
@@ -1819,6 +1821,7 @@ export default {
 <script type="importmap">
 {
   "imports": {
+    "#pds": "/assets/pds/core.js",
     "#pds/lit": "/assets/pds/external/lit.js"
   }
 }

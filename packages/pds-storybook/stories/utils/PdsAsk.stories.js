@@ -1,10 +1,11 @@
 ﻿import { html } from 'lit';
+import { PDS } from '#pds';
 import { ask as askFallback } from '../../../../src/js/common/ask.js';
 import { toastFormData } from './toast-utils.js';
 
 const ensureAsk = () => {
-  if (typeof window !== 'undefined' && window.PDS?.ask) {
-    return window.PDS.ask;
+  if (PDS?.ask) {
+    return PDS.ask;
   }
   return askFallback;
 };

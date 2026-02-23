@@ -1,4 +1,5 @@
 import { html } from "#pds/lit";
+import { PDS } from "#pds";
 
 const docsParameters = {
   description: {
@@ -121,7 +122,7 @@ const buildSettings = (action) => ({
 
 const toastSettings = buildSettings((options) => {
   if (window?.PDS?.toast) {
-    window.PDS.toast(`Selected: ${options.text}`, {
+    PDS.toast(`Selected: ${options.text}`, {
       type: "information",
     });
   }
@@ -170,7 +171,7 @@ const toastSettingsSource = `const settings = {
       },
       action: (options) => {
         if (window?.PDS?.toast) {
-          window.PDS.toast(\`Selected: ${"${options.text}"}\`, { type: "information" });
+          PDS.toast(\`Selected: ${"${options.text}"}\`, { type: "information" });
         }
       },
     },
@@ -231,7 +232,7 @@ const combinedSettingsSource = `const settings = {
       },
       action: (options) => {
         if (window?.PDS?.toast) {
-          window.PDS.toast(\`Featured: ${"${options.text}"}\`, { type: "information" });
+          PDS.toast(\`Featured: ${"${options.text}"}\`, { type: "information" });
         }
       },
     },
@@ -317,7 +318,7 @@ const combinedSettings = {
       },
       action: (options) => {
         if (window?.PDS?.toast) {
-          window.PDS.toast(`Featured: ${options.text}`, {
+          PDS.toast(`Featured: ${options.text}`, {
             type: "information",
           });
         }
@@ -348,7 +349,7 @@ const combinedSettings = {
       ],
       action: (options) => {
         if (window?.PDS?.toast) {
-          window.PDS.toast(`Action: ${options.text}`, {
+          PDS.toast(`Action: ${options.text}`, {
             type: "information",
           });
         }
@@ -382,7 +383,7 @@ const combinedSettings = {
       },
       action: (options) => {
         if (window?.PDS?.toast) {
-          window.PDS.toast(`Searching ${options.description}`, {
+          PDS.toast(`Searching ${options.description}`, {
             type: "information",
           });
         }

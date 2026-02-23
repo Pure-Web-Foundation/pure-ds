@@ -15,7 +15,7 @@ Thanks for your interest in contributing! We welcome issues, discussions, and pu
 ## Project layout
 
 - Core sources: `src/js/**`
-- Public runtime bundle: `public/assets/js/pds.js`
+- Public runtime entries: `public/assets/js/pds.js` (bundled) and `public/assets/pds/core.js` (import-map `#pds` entry)
 - Static exports (for hosting): `public/pds/` (components, styles, icons)
 - CLI tools: `packages/pds-cli/bin/`
 

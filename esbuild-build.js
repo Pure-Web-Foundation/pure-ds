@@ -43,7 +43,7 @@ const outdir = path.join(process.cwd(), 'dist');
 async function run() {
   try {
     await esbuild.build({
-      entryPoints: ['src/js/lit.js', 'src/js/app.js', 'src/js/pds.js', 'src/js/pds-manager.js'],
+      entryPoints: ['src/js/lit.js', 'src/js/app.js', 'src/js/pds.js', 'src/js/pds-manager.js', 'src/js/pds-autocomplete.js', 'src/js/pds-ask.js', 'src/js/pds-toast.js', 'src/js/pds-enhancers.js', 'src/js/pds-auto-definer.js'],
       bundle: true,
       platform: 'browser',
       target: 'es2022',
@@ -59,24 +59,56 @@ async function run() {
     try {
       const coreDir = path.join(process.cwd(), 'public', 'assets', 'pds', 'core');
       await mkdir(coreDir, { recursive: true });
+      const pdsSrc = path.join(process.cwd(), 'public', 'assets', 'js', 'pds.js');
+      const pdsCoreEntryDest = path.join(process.cwd(), 'public', 'assets', 'pds', 'core.js');
+      await copyFile(pdsSrc, pdsCoreEntryDest);
+      console.log('Copied bundled pds.js to', pdsCoreEntryDest);
+
       const managerSrc = path.join(process.cwd(), 'public', 'assets', 'js', 'pds-manager.js');
       const managerDest = path.join(coreDir, 'pds-manager.js');
       await copyFile(managerSrc, managerDest);
       console.log('Copied pds-manager.js to', managerDest);
     } catch (err) {
-      console.warn('Failed to copy pds-manager.js to public/assets/pds/core:', err.message);
+      console.warn('Failed to copy core runtime bundles to public/assets/pds/core:', err.message);
     }
 
     // Copy Lit bundle to public/assets/pds/external for import-map usage
     try {
+      const coreDir = path.join(process.cwd(), 'public', 'assets', 'pds', 'core');
+      await mkdir(coreDir, { recursive: true });
       const externalDir = path.join(process.cwd(), 'public', 'assets', 'pds', 'external');
       await mkdir(externalDir, { recursive: true });
       const litSrc = path.join(process.cwd(), 'public', 'assets', 'js', 'lit.js');
       const litDest = path.join(externalDir, 'lit.js');
       await copyFile(litSrc, litDest);
       console.log('Copied lit.js to', litDest);
+
+      const autocompleteSrc = path.join(process.cwd(), 'public', 'assets', 'js', 'pds-autocomplete.js');
+      const autocompleteDest = path.join(coreDir, 'pds-autocomplete.js');
+      await copyFile(autocompleteSrc, autocompleteDest);
+      console.log('Copied pds-autocomplete.js to', autocompleteDest);
+
+      const askSrc = path.join(process.cwd(), 'public', 'assets', 'js', 'pds-ask.js');
+      const askDest = path.join(coreDir, 'pds-ask.js');
+      await copyFile(askSrc, askDest);
+      console.log('Copied pds-ask.js to', askDest);
+
+      const toastSrc = path.join(process.cwd(), 'public', 'assets', 'js', 'pds-toast.js');
+      const toastDest = path.join(coreDir, 'pds-toast.js');
+      await copyFile(toastSrc, toastDest);
+      console.log('Copied pds-toast.js to', toastDest);
+
+      const enhancersSrc = path.join(process.cwd(), 'public', 'assets', 'js', 'pds-enhancers.js');
+      const enhancersDest = path.join(coreDir, 'pds-enhancers.js');
+      await copyFile(enhancersSrc, enhancersDest);
+      console.log('Copied pds-enhancers.js to', enhancersDest);
+
+      const autoDefinerSrc = path.join(process.cwd(), 'public', 'assets', 'js', 'pds-auto-definer.js');
+      const autoDefinerDest = path.join(coreDir, 'pds-auto-definer.js');
+      await copyFile(autoDefinerSrc, autoDefinerDest);
+      console.log('Copied pds-auto-definer.js to', autoDefinerDest);
     } catch (err) {
-      console.warn('Failed to copy lit.js to public/assets/pds/external:', err.message);
+      console.warn('Failed to copy runtime bundles to public/assets/pds/core or lit.js to public/assets/pds/external:', err.message);
     }
 
     // Ensure dist/types exists and copy declaration files

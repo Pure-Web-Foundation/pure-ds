@@ -1,8 +1,8 @@
+import { PDS } from "#pds";
+
 function parseHTML(html) {
   return new DOMParser().parseFromString(html, "text/html").body.childNodes;
 }
-
-const PDS = window.PDS;
 /**
  * Simple class for efficient HTML string building
  * @private

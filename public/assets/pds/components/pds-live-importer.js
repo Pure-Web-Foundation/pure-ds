@@ -1,5 +1,6 @@
+import { PDS } from "#pds";
+
 const COMPONENT_TAG = "pds-live-importer";
-const PDS = globalThis.PDS;
 
 const IMPORT_MODES = [
   { id: "convert-only", label: "Convert to PDS HTML only" },

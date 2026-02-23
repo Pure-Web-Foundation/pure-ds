@@ -1,7 +1,8 @@
 import { html } from "#pds/lit";
+import { PDS } from "#pds";
 const ensureParse = () => {
-  if (typeof window !== 'undefined' && window.PDS?.parse) {
-    return window.PDS.parse;
+  if (PDS?.parse) {
+    return PDS.parse;
   }
   return (html) => new DOMParser().parseFromString(html, "text/html").body.childNodes;
 };

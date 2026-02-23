@@ -818,7 +818,7 @@ addons.register(ADDON_ID, (api) => {
   mutationObserver.observe(document.body, { childList: true, subtree: true });
 
   // Public API for programmatic search
-  window.pdsOntology = {
+  const pdsOntologyApi = {
     search: (query) => {
       const field = document.getElementById('storybook-explorer-searchfield');
       if (field) {
@@ -837,6 +837,10 @@ addons.register(ADDON_ID, (api) => {
       applyFilter('');
     }
   };
+
+  if (typeof globalThis !== 'undefined') {
+    globalThis.pdsOntology = pdsOntologyApi;
+  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AUTO-SELECT CODE PANEL FOR ENHANCEMENT STORIES

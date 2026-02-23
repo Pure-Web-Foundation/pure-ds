@@ -1,3 +1,5 @@
+import { PDS } from "#pds";
+
 /**
  * `<pds-theme>` exposes a zero-config theme toggle that updates `PDS.theme` and
  * keeps its UI in sync with programmatic theme changes.

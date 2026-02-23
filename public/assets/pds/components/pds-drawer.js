@@ -1,4 +1,4 @@
-const PDS = window.PDS;
+import { PDS } from "#pds";
 
 /**
  * @element pds-drawer

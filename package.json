@@ -1,7 +1,7 @@
 {
   "name": "@pure-ds/core",
   "shortname": "pds",
-  "version": "0.6.11",
+  "version": "0.7.1",
   "description": "Why develop a Design System when you can generate one?",
   "repository": {
     "type": "git",
@@ -22,8 +22,8 @@
     "a11y"
   ],
   "type": "module",
-  "main": "./public/assets/js/pds.js",
-  "module": "./public/assets/js/pds.js",
+  "main": "./public/assets/pds/core.js",
+  "module": "./public/assets/pds/core.js",
   "types": "./dist/types/pds.d.ts",
   "bin": {
     "pds-build": "packages/pds-cli/bin/pds-static.js",
@@ -37,7 +37,7 @@
   "exports": {
     ".": {
       "types": "./src/js/pds.d.ts",
-      "import": "./public/assets/js/pds.js"
+      "import": "./public/assets/pds/core.js"
     },
     "./pds-core": "./src/js/pds.js",
     "./auto-define/*": "./public/auto-define/*"
@@ -49,6 +49,8 @@
     "public/assets/js/",
     "public/assets/pds/components/",
     "public/assets/pds/templates/",
+    "public/assets/pds/core.js",
+    "public/assets/pds/core/",
     "public/assets/pds/external/",
     "public/assets/pds/vscode-custom-data.json",
     "public/assets/pds/pds.css-data.json",

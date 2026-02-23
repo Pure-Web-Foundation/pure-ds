@@ -2,11 +2,7 @@
 
 /** @typedef {import("@pure-ds/core").PDSInitConfig} PDSInitConfig */
 
-const pdsGlobal = globalThis.PDS;
-
-const standardPDSEnhancers = Array.isArray(pdsGlobal?.defaultEnhancers)
-  ? pdsGlobal.defaultEnhancers
-  : [];
+const standardPDSEnhancers = [];
 
 /** @type {PDSInitConfig} */
 export const config = {

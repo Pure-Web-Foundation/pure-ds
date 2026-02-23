@@ -1,4 +1,5 @@
 import { html, lazyProps } from "#pds/lit";
+import { PDS } from "#pds";
 
 const docsParameters = {
   description: {
@@ -217,7 +218,7 @@ const localOptions = {
   defaultExpanded: ["getting-started", "components", "forms"],
   onSelect: (node) => {
     if (window?.PDS?.toast) {
-      window.PDS.toast(`Selected: ${node.text}`, { type: "information" });
+      PDS.toast(`Selected: ${node.text}`, { type: "information" });
     }
   },
 };
@@ -419,7 +420,7 @@ const bindTreeviewForm = (selector) => {
         const data = new FormData(form);
         const value = data.get("selectedNode") || "";
         if (window?.PDS?.toast) {
-          await window.PDS.toast(`Form value: ${value}`, { type: "success" });
+          await PDS.toast(`Form value: ${value}`, { type: "success" });
         }
       });
       form.dataset.bound = "true";

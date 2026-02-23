@@ -1,4 +1,5 @@
 ﻿import { LitElement, html, nothing, ifDefined, ref, keyed } from "#pds/lit";
+import { PDS } from "#pds";
 
 function getStep(value) {
   if (typeof value === "number") {
@@ -214,17 +215,17 @@ export class SchemaForm extends LitElement {
     // Start with default options
     let merged = { ...DEFAULT_OPTIONS };
 
-    // Try to get preset options from window.PDS if available
-    if (typeof window !== "undefined" && window.PDS?.config?.form?.options) {
-      merged = window.PDS.common.deepMerge(
+    // Try to get preset options from PDS if available
+    if (PDS?.config?.form?.options) {
+      merged = PDS.common.deepMerge(
         merged,
-        window.PDS.config.form.options
+        PDS.config.form.options
       );
     }
 
     // Merge instance options
     if (this.options) {
-      merged = window.PDS.common.deepMerge(merged, this.options);
+      merged = PDS.common.deepMerge(merged, this.options);
     }
 
     this.#mergedOptions = merged;
@@ -946,7 +947,7 @@ export class SchemaForm extends LitElement {
 
       try {
         // Use PDS.ask to show dialog with form - it returns FormData when useForm: true
-        const formData = await window.PDS.ask(
+        const formData = await PDS.ask(
           html`<pds-form
             .jsonSchema=${dialogSchema}
             .values=${currentValue}

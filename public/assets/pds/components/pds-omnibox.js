@@ -13,6 +13,8 @@
  *
  * @property {Object} settings - AutoComplete settings object (required by consumer)
  */
+import { PDS } from "#pds";
+
 const LAYERS = ["tokens", "primitives", "components", "utilities"];
 const DEFAULT_PLACEHOLDER = "Search...";
 const DEFAULT_ICON = "magnifying-glass";
@@ -548,7 +550,15 @@ export class PdsOmnibox extends HTMLElement {
   async #handleAutoComplete(e) {
     if (!this.settings) return;
 
-    const AutoComplete = PDS.AutoComplete;
+    let AutoComplete = PDS.AutoComplete;
+    if ((!AutoComplete || typeof AutoComplete.connect !== "function") &&
+      typeof PDS.loadAutoComplete === "function") {
+      try {
+        AutoComplete = await PDS.loadAutoComplete();
+      } catch (error) {
+        return;
+      }
+    }
 
     if (AutoComplete && typeof AutoComplete.connect === "function") {
       const settings = {

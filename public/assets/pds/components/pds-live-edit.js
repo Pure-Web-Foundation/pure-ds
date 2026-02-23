@@ -1,4 +1,4 @@
-const PDS = globalThis.PDS;
+import { PDS } from "#pds";
 
 const EDITOR_TAG = "pds-live-edit";
 const STYLE_ID = "pds-live-editor-styles";

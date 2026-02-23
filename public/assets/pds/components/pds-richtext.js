@@ -1,3 +1,5 @@
+import { PDS } from "#pds";
+
 /**
  * Slack-style rich text field with a semantic output pipeline.
  *

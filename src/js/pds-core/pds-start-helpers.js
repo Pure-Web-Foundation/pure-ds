@@ -332,6 +332,7 @@ export async function setupAutoDefinerAndEnhancers(options, { baseEnhancers = []
     autoDefineBaseURL = "/auto-define/",
     autoDefinePreload = [],
     autoDefineMapper = null,
+    autoDefinerModuleURL = null,
     enhancers = [],
     autoDefineOverrides = null,
     autoDefinePreferModule = true,
@@ -351,7 +352,10 @@ export async function setupAutoDefinerAndEnhancers(options, { baseEnhancers = []
     // Dynamically import AutoDefiner to avoid Node/CJS interop at build time
     let AutoDefinerCtor = null;
     try {
-      const mod = await import("pure-web/auto-definer");
+      if (!autoDefinerModuleURL || typeof autoDefinerModuleURL !== "string") {
+        throw new Error("AutoDefiner module URL is not configured");
+      }
+      const mod = await import(autoDefinerModuleURL);
       AutoDefinerCtor =
         mod?.AutoDefiner || mod?.default?.AutoDefiner || mod?.default || null;
     } catch (e) {

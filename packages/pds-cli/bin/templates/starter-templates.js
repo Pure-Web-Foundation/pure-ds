@@ -1,7 +1,5 @@
 export function buildStarterPdsConfig() {
-  return `const defaultEnhancers = Array.isArray(globalThis.PDS?.defaultEnhancers)
-  ? globalThis.PDS.defaultEnhancers
-  : [];
+  return `const defaultEnhancers = [];
 
 export const config = {
   mode: "static",

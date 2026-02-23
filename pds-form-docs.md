@@ -1233,8 +1233,10 @@ The options system provides global and per-path control over form behavior.
 Options merge in this order: **Default Options** ? **Preset Options** ? **Instance Options**
 
 ```javascript
-// In PDS config (affects all forms)
-window.PDS.config = {
+import { PDS } from '#pds';
+
+// In app bootstrap (affects all forms)
+PDS.config = {
   form: {
     options: {
       widgets: {

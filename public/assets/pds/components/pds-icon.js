@@ -1,3 +1,5 @@
+import { PDS } from "#pds";
+
 /**
  * SVG Icon Web Component
  * 
@@ -71,9 +73,10 @@ export class SvgIcon extends HTMLElement {
 
     const docEl = document.documentElement;
     const hasNoSpriteFlag = Boolean(docEl && docEl.dataset && Object.prototype.hasOwnProperty.call(docEl.dataset, 'pdsNoSprite'));
+    const globalScope = typeof globalThis !== 'undefined' ? globalThis : null;
     const globalDisable = Boolean(
-      window.__PDS_DISABLE_SVG_SPRITES === true ||
-      window.PDS_DISABLE_SVG_SPRITES === true ||
+      globalScope?.__PDS_DISABLE_SVG_SPRITES === true ||
+      globalScope?.PDS_DISABLE_SVG_SPRITES === true ||
       hasNoSpriteFlag
     );
 
@@ -161,7 +164,7 @@ export class SvgIcon extends HTMLElement {
     const rotate = this.getAttribute('rotate') || '0';
     
     // Parse size - can be number (px) or named size (xs, sm, md, lg, xl, 2xl, 3xl)
-    const pdsEnums = typeof window !== 'undefined' ? window.PDS?.enums : null;
+    const pdsEnums = PDS?.enums || null;
     const pdsIconSizes = pdsEnums?.IconSizes || {};
     const numericSize = Number(sizeAttr);
     const hasNumericSize = Number.isFinite(numericSize) && sizeAttr !== '';
@@ -580,16 +583,16 @@ export class SvgIcon extends HTMLElement {
   static getExternalIconPath() {
     try {
       // Try to get from PDS.compiled.tokens.icons.externalPath (live mode)
-      if (typeof window !== 'undefined' && window.PDS?.compiled?.tokens?.icons?.externalPath) {
-        return window.PDS.compiled.tokens.icons.externalPath;
+      if (PDS?.compiled?.tokens?.icons?.externalPath) {
+        return PDS.compiled.tokens.icons.externalPath;
       }
       // Fallback: check compiled.config.design.icons.externalPath
-      if (typeof window !== 'undefined' && window.PDS?.compiled?.config?.design?.icons?.externalPath) {
-        return window.PDS.compiled.config.design.icons.externalPath;
+      if (PDS?.compiled?.config?.design?.icons?.externalPath) {
+        return PDS.compiled.config.design.icons.externalPath;
       }
       // Fallback: check currentConfig
-      if (typeof window !== 'undefined' && window.PDS?.currentConfig?.design?.icons?.externalPath) {
-        return window.PDS.currentConfig.design.icons.externalPath;
+      if (PDS?.currentConfig?.design?.icons?.externalPath) {
+        return PDS.currentConfig.design.icons.externalPath;
       }
     } catch (e) {
       // Ignore errors accessing config

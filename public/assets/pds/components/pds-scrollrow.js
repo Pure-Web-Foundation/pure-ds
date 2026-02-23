@@ -1,3 +1,5 @@
+import { PDS } from "#pds";
+
 /**
  * Horizontal scrolling row with optional heading and snap alignment controls.
  *
@@ -14,6 +16,8 @@
  * @attr {string} tile-min - Minimum tile width (CSS length, e.g. "250px")
  * @attr {string} tile-max - Maximum tile width (CSS length, e.g. "360px")
  */
+import { PDS } from "#pds";
+
 class PdsScrollrow extends HTMLElement {
   #viewport;
   #ro;
@@ -80,7 +84,7 @@ class PdsScrollrow extends HTMLElement {
   async #adopt() {
     if (this.#adopted || !this.shadowRoot) return;
     try {
-      if (window.PDS && typeof PDS.createStylesheet === 'function' && typeof PDS.adoptLayers === 'function') {
+      if (typeof PDS.createStylesheet === 'function' && typeof PDS.adoptLayers === 'function') {
         const componentSheet = PDS.createStylesheet(PdsScrollrow.#COMPONENT_CSS);
         await PDS.adoptLayers(this.shadowRoot, ['primitives','components', 'utilities'], [componentSheet]);
         this.#adopted = true;

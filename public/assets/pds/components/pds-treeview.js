@@ -1,3 +1,5 @@
+import { PDS } from "#pds";
+
 /**
  * Accessible, form-associated treeview with nested UL output.
  *

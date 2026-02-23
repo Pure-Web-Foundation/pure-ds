@@ -70,6 +70,7 @@ const config = {
     // Ensure Lit import alias is resolved to PDS bundle
     const aliases = {
       ...config.resolve.alias,
+      '#pds': resolve(pdsSrcPath, 'js/pds.js'),
       '#pds/lit': resolve(pdsSrcPath, 'js/lit.js'),
     };
 

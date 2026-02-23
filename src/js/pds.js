@@ -1,7 +1,5 @@
 /// <reference path="./pds.d.ts" />
 
-import { AutoComplete } from "pure-web/ac";
-
 /**
  * Public PDS runtime object exported to consumers.
  *
@@ -53,10 +51,7 @@ import {
 } from "./pds-core/pds-runtime.js";
 import { registry } from "./pds-core/pds-registry.js";
 import { enums } from "./pds-core/pds-enums.js";
-import { ask } from "./common/ask.js";
-import { toast } from "./common/toast.js";
 import * as common from "./common/common.js";
-import { defaultPDSEnhancers } from "./pds-core/pds-enhancers.js";
 import { resolvePublicAssetURL } from "./pds-core/pds-paths.js";
 import {
   ensureAbsoluteAssetURL,
@@ -70,6 +65,125 @@ import {
   isPresetThemeCompatible,
   resolveThemePreference,
 } from "./pds-core/pds-theme-utils.js";
+
+let __autoCompletePromise = null;
+let __askPromise = null;
+let __toastPromise = null;
+let __defaultEnhancersPromise = null;
+
+function __resolveExternalRuntimeModuleURL(filename, overrideURL) {
+  if (overrideURL && typeof overrideURL === "string") {
+    return overrideURL;
+  }
+  const assetRootURL = resolveRuntimeAssetRoot(PDS.currentConfig || {}, {
+    resolvePublicAssetURL,
+  });
+  return `${assetRootURL}core/${filename}`;
+}
+
+async function __loadDefaultEnhancers() {
+  if (Array.isArray(PDS.defaultEnhancers) && PDS.defaultEnhancers.length > 0) {
+    return PDS.defaultEnhancers;
+  }
+  if (!__defaultEnhancersPromise) {
+    const enhancersModuleURL = __resolveExternalRuntimeModuleURL(
+      "pds-enhancers.js",
+      PDS.currentConfig?.enhancersURL
+    );
+    __defaultEnhancersPromise = import(enhancersModuleURL)
+      .then((mod) => {
+        const enhancers = Array.isArray(mod?.defaultPDSEnhancers)
+          ? mod.defaultPDSEnhancers
+          : [];
+        PDS.defaultEnhancers = enhancers;
+        return enhancers;
+      })
+      .catch((error) => {
+        __defaultEnhancersPromise = null;
+        throw error;
+      });
+  }
+  return __defaultEnhancersPromise;
+}
+
+async function __loadAsk() {
+  if (typeof PDS.ask === "function" && PDS.ask !== __lazyAsk) {
+    return PDS.ask;
+  }
+  if (!__askPromise) {
+    const askModuleURL = __resolveExternalRuntimeModuleURL(
+      "pds-ask.js",
+      PDS.currentConfig?.askURL
+    );
+    __askPromise = import(askModuleURL)
+      .then((mod) => {
+        const impl = mod?.ask;
+        if (typeof impl !== "function") {
+          throw new Error("Failed to load ask helper");
+        }
+        PDS.ask = impl;
+        return impl;
+      })
+      .catch((error) => {
+        __askPromise = null;
+        throw error;
+      });
+  }
+  return __askPromise;
+}
+
+async function __loadToast() {
+  if (typeof PDS.toast === "function" && PDS.toast !== __lazyToast) {
+    return PDS.toast;
+  }
+  if (!__toastPromise) {
+    const toastModuleURL = __resolveExternalRuntimeModuleURL(
+      "pds-toast.js",
+      PDS.currentConfig?.toastURL
+    );
+    __toastPromise = import(toastModuleURL)
+      .then((mod) => {
+        const impl = mod?.toast;
+        if (typeof impl !== "function") {
+          throw new Error("Failed to load toast helper");
+        }
+        PDS.toast = impl;
+        return impl;
+      })
+      .catch((error) => {
+        __toastPromise = null;
+        throw error;
+      });
+  }
+  return __toastPromise;
+}
+
+async function __lazyAsk(...args) {
+  const askImpl = await __loadAsk();
+  return askImpl(...args);
+}
+
+async function __lazyToast(...args) {
+  const toastImpl = await __loadToast();
+  return toastImpl(...args);
+}
+
+__lazyToast.success = async (...args) => {
+  const toastImpl = await __loadToast();
+  return toastImpl.success(...args);
+};
+__lazyToast.error = async (...args) => {
+  const toastImpl = await __loadToast();
+  return toastImpl.error(...args);
+};
+__lazyToast.warning = async (...args) => {
+  const toastImpl = await __loadToast();
+  return toastImpl.warning(...args);
+};
+__lazyToast.info = async (...args) => {
+  const toastImpl = await __loadToast();
+  return toastImpl.info(...args);
+};
 
 const __defaultLog = function (level = "log", message, ...data) {
   const isStaticMode = Boolean(PDS.registry && !PDS.registry.isLive);
@@ -145,10 +259,41 @@ PDS.createStylesheet = createStylesheet;
 
 /** Return true when running inside a live/designer-backed environment */
 PDS.isLiveMode = () => registry.isLive;
-PDS.ask = ask;
-PDS.toast = toast;
+PDS.ask = __lazyAsk;
+PDS.toast = __lazyToast;
 PDS.common = common;
-PDS.AutoComplete = AutoComplete;
+PDS.AutoComplete = null;
+PDS.loadAutoComplete = async () => {
+  if (PDS.AutoComplete && typeof PDS.AutoComplete.connect === "function") {
+    return PDS.AutoComplete;
+  }
+
+  const autoCompleteModuleURL = __resolveExternalRuntimeModuleURL(
+    "pds-autocomplete.js",
+    PDS.currentConfig?.autoCompleteURL
+  );
+
+  if (!__autoCompletePromise) {
+    __autoCompletePromise = import(autoCompleteModuleURL)
+      .then((mod) => {
+        const autoCompleteCtor =
+          mod?.AutoComplete ||
+          mod?.default?.AutoComplete ||
+          mod?.default ||
+          null;
+        if (!autoCompleteCtor) {
+          throw new Error("AutoComplete export not found in module");
+        }
+        PDS.AutoComplete = autoCompleteCtor;
+        return autoCompleteCtor;
+      })
+      .catch((error) => {
+        __autoCompletePromise = null;
+        throw error;
+      });
+  }
+  return __autoCompletePromise;
+};
 
 function __emitPDSReady(detail) {
   const hasCustomEvent = typeof CustomEvent === "function";
@@ -208,11 +353,6 @@ function __emitPDSConfigChanged(detail = {}) {
       } catch (e) {}
     }
   }
-}
-
-if (typeof window !== "undefined") {
-  // @ts-ignore
-  window.PDS = PDS;
 }
 
 // ---------------------------------------------------------------------------
@@ -354,7 +494,7 @@ Object.defineProperty(PDS, "theme", {
  * enhancements that can be applied to vanilla markup. Consumers can override
  * or add to these via the `enhancers` option of PDS.start({ mode }).
  */
-PDS.defaultEnhancers = defaultPDSEnhancers;
+PDS.defaultEnhancers = [];
 
 /**
  * Initialize PDS in live mode with the given configuration (new unified shape).
@@ -535,10 +675,15 @@ async function staticInit(config) {
     let autoDefiner = null;
     let mergedEnhancers = [];
     try {
+      const defaultPDSEnhancers = await __loadDefaultEnhancers();
       const res = await setupAutoDefinerAndEnhancers({
         autoDefineBaseURL,
         autoDefinePreload,
         autoDefineMapper,
+        autoDefinerModuleURL: __resolveExternalRuntimeModuleURL(
+          "pds-auto-definer.js",
+          cfgAuto?.moduleURL || PDS.currentConfig?.autoDefinerURL
+        ),
         enhancers: userEnhancers,
         autoDefineOverrides: cfgAuto || null,
         autoDefinePreferModule: !(cfgAuto && cfgAuto.baseURL),

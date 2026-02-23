@@ -1,3 +1,5 @@
+import { PDS } from "#pds";
+
 /**
  * @element pds-toaster
  * @fires pds:toast - Global event for creating toasts

@@ -1,3 +1,5 @@
+import { PDS } from "#pds";
+
 /**
  * Drag-and-drop file uploader that participates in native forms.
  *
