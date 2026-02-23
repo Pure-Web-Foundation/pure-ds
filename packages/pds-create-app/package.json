@@ -1,6 +1,6 @@
 {
   "name": "@pure-ds/create-app",
-  "version": "0.6.10",
+  "version": "0.6.11",
   "description": "Create a new Pure Design System app",
   "type": "module",
   "bin": {
