@@ -3543,17 +3543,14 @@ class PdsLiveEdit extends HTMLElement {
     container.id = "pds-live-edit-canvas";
     container.className = "card stack-md";
 
-    const heading = document.createElement("h3");
-    heading.textContent = "PDS Live Canvas";
-    const description = document.createElement("p");
-    description.className = "text-muted";
-    description.textContent = "Injected templates render here to preview config changes.";
-
+    const heading = document.createElement("hr");
+    heading.setAttribute("data-content", "Injected HTML below");
+    
     const canvas = document.createElement("div");
     canvas.id = "pds-live-edit-canvas-content";
     canvas.className = "stack-md";
 
-    container.append(heading, description, canvas);
+    container.append(heading, canvas)
     document.body.appendChild(container);
     return container;
   }
