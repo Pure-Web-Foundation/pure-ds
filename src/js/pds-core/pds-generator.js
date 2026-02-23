@@ -689,14 +689,16 @@ export class Generator {
     const validBase = Number.isFinite(Number(baseBorderWidth))
       ? Number(baseBorderWidth)
       : enums.BorderWidths.medium;
-    const toPx = (value) => `${Math.max(0, Math.round(value * 100) / 100)}px`;
+    // Snap to whole CSS pixels to avoid subpixel border widths that can render
+    // identically across browsers/DPIs (e.g. 0.5px and 1.5px both appearing as 1px).
+    const toRenderablePx = (value) => `${Math.max(1, Math.ceil(value))}px`;
 
     // Generate a derived border width scale based on configured base width
     return {
-      hairline: toPx(validBase * 0.25),
-      thin: toPx(validBase * 0.5),
-      medium: toPx(validBase),
-      thick: toPx(validBase * 1.5),
+      hairline: toRenderablePx(validBase * 0.25),
+      thin: toRenderablePx(validBase * 0.5),
+      medium: toRenderablePx(validBase),
+      thick: toRenderablePx(validBase * 1.5),
     };
   }
 
@@ -1315,7 +1317,7 @@ export class Generator {
       smartLines.push(`\n`);
     }
 
-    const semantic = `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-400);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n`;
+    const semantic = `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-600);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n`;
 
     const backdrop = `  /* Backdrop tokens - dark mode */\n  --backdrop-bg: linear-gradient(\n      135deg,\n      rgba(0, 0, 0, 0.6),\n      rgba(0, 0, 0, 0.4)\n    );\n  --backdrop-blur: 10px;\n  --backdrop-saturate: 120%;\n  --backdrop-brightness: 0.7;\n  --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));\n  --backdrop-opacity: 1;\n  \n  /* Legacy alias for backwards compatibility */\n  --backdrop-background: var(--backdrop-bg);\n`;
 
@@ -1413,7 +1415,7 @@ export class Generator {
     const semantic = [
       `    --color-text-primary: var(--color-gray-100);\n`,
       `    --color-text-secondary: var(--color-gray-300);\n`,
-      `    --color-text-muted: var(--color-gray-400);\n`,
+      `    --color-text-muted: var(--color-gray-600);\n`,
       `    --color-border: var(--color-gray-700);\n`,
       `    --color-input-bg: var(--color-gray-800);\n`,
       `    --color-input-disabled-bg: var(--color-gray-900);\n`,
@@ -5063,7 +5065,7 @@ ${this.#generateBorderGradientUtilities()}
 html:not([data-theme="dark"]) .surface-inverse {
   --color-text-primary: var(--color-gray-100);
   --color-text-secondary: var(--color-gray-300);
-  --color-text-muted: var(--color-gray-400);
+  --color-text-muted: var(--color-gray-600);
   --color-border: var(--color-gray-700);
   --color-input-bg: var(--color-gray-800);
   --color-input-disabled-bg: var(--color-gray-900);
@@ -5513,6 +5515,8 @@ export const ${name}CSS = \`${escapedCSS}\`;
  */
 export function validateDesign(designConfig = {}, options = {}) {
   const MIN = Number(options.minContrast || 4.5);
+  const MIN_MUTED = Number(options.minMutedContrast || 3.0);
+  const EXTENDED = Boolean(options.extendedChecks);
 
   // Local helpers (keep public; no dependency on private Generator methods)
   const hexToRgb = (hex) => {
@@ -5553,9 +5557,19 @@ export function validateDesign(designConfig = {}, options = {}) {
     const light = {
       surfaceBg: c.surface?.base,
       surfaceText: c.gray?.[900] || "#000000",
+      surfaceTextSecondary: c.gray?.[700] || c.gray?.[800] || c.gray?.[900],
+      surfaceTextMuted: c.gray?.[500] || c.gray?.[600] || c.gray?.[700],
+      surfaceElevated: c.surface?.elevated || c.surface?.base,
       primaryFill: c.interactive?.light?.fill || c.primary?.[600],
       primaryText: c.interactive?.light?.text || c.primary?.[600],
+      accentFill: c.accent?.[600] || c.accent?.[500],
+      successFill: c.success?.[600] || c.success?.[500],
+      warningFill: c.warning?.[600] || c.warning?.[500],
+      dangerFill: c.danger?.[600] || c.danger?.[500],
+      infoFill: c.info?.[600] || c.info?.[500],
     };
+
+    const bestTextContrast = (bg) => Math.max(contrast(bg, "#ffffff"), contrast(bg, "#000000"));
 
     // Primary button (light): check button fill with white text
     const lightBtnRatio = contrast(light.primaryFill, "#ffffff");
@@ -5585,6 +5599,50 @@ export function validateDesign(designConfig = {}, options = {}) {
       });
     }
 
+    if (EXTENDED) {
+      // Secondary body text (light)
+      const lightSecondaryRatio = contrast(light.surfaceBg, light.surfaceTextSecondary);
+      if (lightSecondaryRatio < MIN) {
+        issues.push({
+          path: "/colors/secondary",
+          message: `Secondary text contrast on base surface (light) is too low (${lightSecondaryRatio.toFixed(
+            2,
+          )} < ${MIN}).`,
+          ratio: lightSecondaryRatio,
+          min: MIN,
+          context: "light/surface-text-secondary",
+        });
+      }
+
+      // Muted text should still be readable for helper text
+      const lightMutedRatio = contrast(light.surfaceBg, light.surfaceTextMuted);
+      if (lightMutedRatio < MIN_MUTED) {
+        issues.push({
+          path: "/colors/secondary",
+          message: `Muted text contrast on base surface (light) is too low (${lightMutedRatio.toFixed(
+            2,
+          )} < ${MIN_MUTED}).`,
+          ratio: lightMutedRatio,
+          min: MIN_MUTED,
+          context: "light/surface-text-muted",
+        });
+      }
+
+      // Elevated cards often dominate page UI; enforce readable default text
+      const elevatedTextRatio = contrast(light.surfaceElevated, light.surfaceText);
+      if (elevatedTextRatio < MIN) {
+        issues.push({
+          path: "/colors/background",
+          message: `Elevated surface text contrast (light) is too low (${elevatedTextRatio.toFixed(
+            2,
+          )} < ${MIN}).`,
+          ratio: elevatedTextRatio,
+          min: MIN,
+          context: "light/surface-elevated-text",
+        });
+      }
+    }
+
     // Primary text for outline/link: check link text on surface
     const lightOutlineRatio = contrast(light.primaryText, light.surfaceBg);
     if (lightOutlineRatio < MIN) {
@@ -5599,11 +5657,39 @@ export function validateDesign(designConfig = {}, options = {}) {
       });
     }
 
+    if (EXTENDED) {
+      // Semantic/accent fills must support readable foreground (white or black)
+      const semanticFills = [
+        { path: "/colors/accent", key: "accent", value: light.accentFill },
+        { path: "/colors/success", key: "success", value: light.successFill },
+        { path: "/colors/warning", key: "warning", value: light.warningFill },
+        { path: "/colors/danger", key: "danger", value: light.dangerFill },
+        { path: "/colors/info", key: "info", value: light.infoFill },
+      ];
+      semanticFills.forEach((entry) => {
+        if (!entry?.value) return;
+        const ratio = bestTextContrast(entry.value);
+        if (ratio < MIN) {
+          issues.push({
+            path: entry.path,
+            message: `${entry.key} fill color cannot achieve accessible text contrast (${ratio.toFixed(
+              2,
+            )} < ${MIN}) with either white or black text.`,
+            ratio,
+            min: MIN,
+            context: `light/${entry.key}-fill`,
+          });
+        }
+      });
+    }
+
     // Dark theme checks - use computed interactive tokens
     const d = c.dark;
     if (d) {
       const dark = {
         surfaceBg: d.surface?.base || c.surface?.inverse,
+        surfaceText: d.gray?.[50] || d.gray?.[100] || "#ffffff",
+        surfaceTextMuted: d.gray?.[300] || d.gray?.[400] || d.gray?.[500],
         primaryFill: c.interactive?.dark?.fill || d.primary?.[600],
         primaryText: c.interactive?.dark?.text || d.primary?.[600],
       };
@@ -5634,6 +5720,34 @@ export function validateDesign(designConfig = {}, options = {}) {
           min: MIN,
           context: "dark/outline",
         });
+      }
+
+      if (EXTENDED) {
+        const darkTextRatio = contrast(dark.surfaceBg, dark.surfaceText);
+        if (darkTextRatio < MIN) {
+          issues.push({
+            path: "/colors/darkMode/background",
+            message: `Base text contrast on surface (dark) is too low (${darkTextRatio.toFixed(
+              2,
+            )} < ${MIN}).`,
+            ratio: darkTextRatio,
+            min: MIN,
+            context: "dark/surface-text",
+          });
+        }
+
+        const darkMutedRatio = contrast(dark.surfaceBg, dark.surfaceTextMuted);
+        if (darkMutedRatio < MIN_MUTED) {
+          issues.push({
+            path: "/colors/darkMode/secondary",
+            message: `Muted text contrast on surface (dark) is too low (${darkMutedRatio.toFixed(
+              2,
+            )} < ${MIN_MUTED}).`,
+            ratio: darkMutedRatio,
+            min: MIN_MUTED,
+            context: "dark/surface-text-muted",
+          });
+        }
       }
     }
   } catch (err) {

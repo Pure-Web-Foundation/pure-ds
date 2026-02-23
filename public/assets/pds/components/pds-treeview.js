@@ -352,9 +352,8 @@ export class PdsTreeview extends HTMLElement {
 					display: grid;
 					grid-template-columns: var(--tv-toggle-size) auto 1fr;
 					align-items: center;
-					gap: var(--spacing-2);
+					gap: var(--spacing-1);
 					border-radius: var(--radius-sm);
-					padding: var(--spacing-1) var(--spacing-2);
 					cursor: default;
 					outline: none;
 				}

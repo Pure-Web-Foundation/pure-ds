@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { readFile, writeFile } from 'fs/promises';
+import { mkdir, readFile, writeFile } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { runLiveImport, listLiveTemplates, getLiveImportSources } from '../../../src/js/pds-live-manager/import-service.js';
@@ -12,21 +12,36 @@ function help() {
   console.log(`pds-import — Import and convert external design inputs for PDS
 
 Usage:
-  pds-import --type tailwind-html --source ./input.html --out ./pds-import.json
-  pds-import --type brand-guidelines --source ./brand.txt --out ./brand-import.json
+  pds-import --type tailwind-html --mode convert-only --source ./input.html --out ./pds-import.json
+  pds-import --type tailwind-html --mode adopt-design-and-convert --source ./input.html --out ./pds-import.json
+  pds-import --type brand-guidelines --mode adopt-design-and-convert --source ./brand.txt --out ./brand-import.json
   pds-import --type template --template marketing-hero --out ./template-import.json
 
 Options:
   --type <value>       Import type: tailwind-html | brand-guidelines | template
+  --mode <value>       Import mode: convert-only | adopt-design-and-convert
   --source <path>      Source file path for tailwind-html or brand-guidelines
   --text <value>       Inline input text instead of source file
   --template <id>      Template id when --type=template
   --config <path>      Optional PDS config file (.json/.js/.mjs) to govern conversion rules
   --describe-rules     Print Tailwind→PDS conversion rulebook and exit
   --out <path>         Output JSON file path (required)
+  --html-out <path>    Optional output path for converted template HTML (if present)
+  --design-out <path>  Optional output path for design patch JSON (if present)
   --list               List available sources and templates
   --help               Show this help message
 `);
+}
+
+function normalizeImportMode(value) {
+  const raw = String(value || '').trim().toLowerCase();
+  if (raw === 'adopt-design-and-convert') return raw;
+  return 'convert-only';
+}
+
+async function writeTextOutput(absPath, contents) {
+  await mkdir(path.dirname(absPath), { recursive: true });
+  await writeFile(absPath, contents, 'utf8');
 }
 
 function parseArgs(argv) {
@@ -109,6 +124,7 @@ async function main() {
 
   const type = String(args.type || '').trim();
   const outPath = String(args.out || '').trim();
+  const mode = normalizeImportMode(args.mode);
 
   if (!type || !outPath) {
     console.error('❌ Missing required arguments --type and --out');
@@ -119,6 +135,7 @@ async function main() {
 
   const request = {
     sourceType: type,
+    importMode: mode,
     templateId: args.template,
     input: await loadInput(args),
     config: await loadConfig(args),
@@ -129,11 +146,28 @@ async function main() {
   const result = await runLiveImport(request);
   const absOutPath = path.resolve(process.cwd(), outPath);
 
-  await writeFile(absOutPath, JSON.stringify(result, null, 2) + '\n', 'utf8');
+  await writeTextOutput(absOutPath, JSON.stringify(result, null, 2) + '\n');
   console.log(`✅ Wrote import result to ${absOutPath}`);
 
+  if (typeof args['html-out'] === 'string' && String(args['html-out']).trim()) {
+    const html = String(result?.template?.html || '');
+    const absHtmlOutPath = path.resolve(process.cwd(), String(args['html-out']).trim());
+    await writeTextOutput(absHtmlOutPath, html);
+    console.log(`✅ Wrote converted HTML to ${absHtmlOutPath}`);
+  }
+
+  if (typeof args['design-out'] === 'string' && String(args['design-out']).trim()) {
+    const designPatch = result?.designPatch && typeof result.designPatch === 'object'
+      ? result.designPatch
+      : {};
+    const absDesignOutPath = path.resolve(process.cwd(), String(args['design-out']).trim());
+    await writeTextOutput(absDesignOutPath, JSON.stringify(designPatch, null, 2) + '\n');
+    console.log(`✅ Wrote design patch to ${absDesignOutPath}`);
+  }
+
   const issueCount = Array.isArray(result?.issues) ? result.issues.length : 0;
-  console.log(`ℹ️ confidence=${Math.round((result?.confidence || 0) * 100)}% issues=${issueCount}`);
+  const validationBlocked = Boolean(result?.meta?.validationBlocked || result?.meta?.validation?.ok === false);
+  console.log(`ℹ️ mode=${mode} confidence=${Math.round((result?.confidence || 0) * 100)}% issues=${issueCount} blocked=${validationBlocked}`);
 }
 
 main().catch((error) => {

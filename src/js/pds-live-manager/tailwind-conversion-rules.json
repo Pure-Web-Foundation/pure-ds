@@ -125,6 +125,14 @@
       "summary": "Prevents import-* style classes on button-like elements and applies PDS button variants/sizes."
     },
     {
+      "id": "intent.component.button.layout-grow",
+      "summary": "Preserve CTA row width intent on button-like elements by mapping w-full/flex-1 to grow."
+    },
+    {
+      "id": "intent.icon.color-preserve",
+      "summary": "Preserve icon color intent by mapping Tailwind text color utilities on icon-like elements to tokenized import-* classes."
+    },
+    {
       "id": "intent.component.badge.normalize",
       "summary": "Detects Tailwind badge/pill utility clusters and normalizes them to PDS badge primitives/variants."
     },
@@ -139,6 +147,26 @@
     {
       "id": "intent.typography.link-treatment",
       "summary": "Apply minimal link treatment for hover/transition-tailwind anchors"
+    },
+    {
+      "id": "intent.typography.link-active-preserve",
+      "summary": "Preserve anchor text color intent (including active menu states) by mapping Tailwind text utilities to tokenized import-* classes."
+    },
+    {
+      "id": "intent.typography.metric-paragraph-to-div",
+      "summary": "Normalize metric display lines from paragraph tags to div tags to avoid default paragraph margins in compact stat layouts."
+    },
+    {
+      "id": "intent.typography.metric-pair-no-stack",
+      "summary": "When a compact metric container has two consecutive typography lines, remove stack-sm so spacing follows Tailwind preflight no-margin assumptions."
+    },
+    {
+      "id": "intent.typography.semantic-heading-from-scale",
+      "summary": "Map large bold typography scales (text-2xl/text-3xl/text-4xl) to semantic heading tags when possible."
+    },
+    {
+      "id": "intent.typography.bold-to-strong",
+      "summary": "Prefer semantic strong tags for bold inline text intent instead of utility-only font-weight classes."
     },
     {
       "id": "intent.preflight.tailwind-runtime-detected",
@@ -219,7 +247,12 @@
     "40": "10rem",
     "48": "12rem"
   },
+  "tailwindShadeScale": ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  "defaultTailwindShade": "500",
   "importStyleRules": {
+    "mx-auto": "margin-left:auto;margin-right:auto",
+    "ml-auto": "margin-left:auto",
+    "mr-auto": "margin-right:auto",
     "w-full": "width:100%",
     "w-auto": "width:auto",
     "h-full": "height:100%",
@@ -310,6 +343,11 @@
       "id": "fallback.import-style.bg-tokenized",
       "pattern": "^bg-([a-z]+)-(\\d{2,3})$",
       "summary": "Safeguards Tailwind background color utilities by mapping families like blue/purple/green/red to PDS semantic tokens."
+    },
+    {
+      "id": "fallback.import-style.bg-semantic",
+      "pattern": "^bg-(primary|secondary|accent)$",
+      "summary": "Safeguards semantic background utilities by mapping bg-primary/bg-secondary/bg-accent to PDS color tokens."
     },
     {
       "id": "fallback.import-style.text-tokenized",

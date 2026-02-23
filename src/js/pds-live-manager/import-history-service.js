@@ -74,6 +74,7 @@ function normalizeHistoryEntry(input = {}) {
     createdAt,
     createdAtIso,
     sourceType: sanitizeText(input.sourceType || "unknown"),
+    importMode: sanitizeText(input.importMode || "convert-only"),
     source: sanitizeText(input.source || "unknown"),
     type: sanitizeText(input.type || "unknown"),
     fileName: sanitizeText(input.fileName || ""),

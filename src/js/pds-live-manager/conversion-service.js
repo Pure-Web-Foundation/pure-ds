@@ -1,6 +1,8 @@
 import { createImportResult } from "./import-contract.js";
 import tailwindRulebookJson from "./tailwind-conversion-rules.json" with { type: "json" };
 
+const PDS = globalThis.PDS;
+
 const RULEBOOK_JSON_PATH = "src/js/pds-live-manager/tailwind-conversion-rules.json";
 const BREAKPOINT_ORDER = ["base", "sm", "md", "lg", "xl", "2xl"];
 
@@ -43,6 +45,16 @@ const TABLE_STRICT_TAGS = new Set(TAILWIND_TO_PDS_RULES.neverFallbackTags || [])
 const IMPORT_STYLE_BASE_RULES = { ...(TAILWIND_TO_PDS_RULES.importStyleRules || {}) };
 
 const TW_SIZE_SCALE = TAILWIND_TO_PDS_RULES.tailwindSizeScale || {};
+
+const TW_SHADE_SCALE = Array.isArray(TAILWIND_TO_PDS_RULES.tailwindShadeScale)
+  ? TAILWIND_TO_PDS_RULES.tailwindShadeScale.map((value) => String(value)).filter(Boolean)
+  : ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900"];
+
+const DEFAULT_TW_SHADE = TW_SHADE_SCALE.includes(String(TAILWIND_TO_PDS_RULES.defaultTailwindShade || ""))
+  ? String(TAILWIND_TO_PDS_RULES.defaultTailwindShade)
+  : "500";
+
+const DEFAULT_FONT_SCALE = 1.2;
 
 const KNOWN_TW_PREFIXES = [
   "container",
@@ -196,20 +208,16 @@ function resolveTailwindSizeValue(rawToken = "") {
 
 function resolveTwShade(shade = "") {
   const parsed = Number(shade);
-  if (!Number.isFinite(parsed)) return "500";
-  const allowed = ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900"];
+  if (!Number.isFinite(parsed)) return DEFAULT_TW_SHADE;
+
   const exact = String(parsed);
-  if (allowed.includes(exact)) return exact;
-  if (parsed <= 75) return "50";
-  if (parsed <= 150) return "100";
-  if (parsed <= 250) return "200";
-  if (parsed <= 350) return "300";
-  if (parsed <= 450) return "400";
-  if (parsed <= 550) return "500";
-  if (parsed <= 650) return "600";
-  if (parsed <= 750) return "700";
-  if (parsed <= 850) return "800";
-  return "900";
+  if (TW_SHADE_SCALE.includes(exact)) return exact;
+
+  return TW_SHADE_SCALE.reduce((closest, candidate) => {
+    const closestDistance = Math.abs(Number(closest) - parsed);
+    const candidateDistance = Math.abs(Number(candidate) - parsed);
+    return candidateDistance < closestDistance ? candidate : closest;
+  }, DEFAULT_TW_SHADE);
 }
 
 function mapTailwindColorToPdsColorVar(family = "", shade = "500") {
@@ -225,11 +233,14 @@ function mapTailwindColorToPdsColorVar(family = "", shade = "500") {
   if (["green", "emerald", "lime", "teal"].includes(twFamily)) {
     return `var(--color-success-${mappedShade})`;
   }
+  if (["yellow", "amber", "warning"].includes(twFamily)) {
+    return `var(--color-warning-${mappedShade})`;
+  }
   if (["red", "rose", "pink", "orange"].includes(twFamily)) {
     return `var(--color-danger-${mappedShade})`;
   }
   if (["slate", "gray", "zinc", "neutral", "stone"].includes(twFamily)) {
-    return `var(--color-secondary-${mappedShade})`;
+    return `var(--color-gray-${mappedShade})`;
   }
 
   return "";
@@ -241,6 +252,266 @@ function resolveArbitraryColorValue(raw = "") {
   if (/^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(value)) return value;
   if (/^(?:rgb|hsl)a?\([^)]*\)$/.test(value)) return value;
   return "";
+}
+
+function parseClassTokens(value = "") {
+  return String(value || "")
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter(Boolean);
+}
+
+function withClassInAttrs(attrs = "", className = "") {
+  if (!className) return attrs;
+  const text = String(attrs || "");
+  const classMatch = text.match(/\sclass\s*=\s*(["'])(.*?)\1/i);
+  if (!classMatch) {
+    return `${text} class="${className}"`;
+  }
+
+  const quote = classMatch[1] || '"';
+  const values = parseClassTokens(classMatch[2]);
+  if (!values.includes(className)) values.push(className);
+  const next = ` class=${quote}${values.join(" ")}${quote}`;
+  return text.replace(classMatch[0], next);
+}
+
+function hasAttribute(attrs = "", attr = "") {
+  if (!attr) return false;
+  return new RegExp(`\\s${attr}\\s*=`, "i").test(String(attrs || ""));
+}
+
+function humanizeIconName(iconName = "") {
+  const text = String(iconName || "").replace(/[-_]+/g, " ").trim();
+  if (!text) return "Icon button";
+  return text.replace(/(^|\s)([a-z])/g, (_m, pre, ch) => `${pre}${ch.toUpperCase()}`);
+}
+
+function normalizeIconOnlyButtons(sourceHtml = "", summary = null) {
+  const input = String(sourceHtml || "");
+  if (!input) return input;
+
+  return input.replace(
+    /<(button|a)([^>]*)>\s*(<pds-icon\b[^>]*><\/pds-icon>)\s*<\/\1>/gi,
+    (fullMatch, tagName, attrs, iconMarkup) => {
+      let nextAttrs = withClassInAttrs(attrs, "icon-only");
+      if (!hasAttribute(nextAttrs, "aria-label")) {
+        const iconNameMatch = String(iconMarkup).match(/\sicon\s*=\s*(["'])(.*?)\1/i);
+        const iconName = iconNameMatch ? String(iconNameMatch[2] || "") : "";
+        const label = humanizeIconName(iconName);
+        nextAttrs += ` aria-label="${label}"`;
+      }
+
+      if (summary) {
+        summary.intentHits += 1;
+        recordRule(summary, "intent.component.button.icon-only-markup");
+      }
+
+      return `<${tagName}${nextAttrs}>${iconMarkup}</${tagName}>`;
+    }
+  );
+}
+
+function normalizeMetricTextParagraphs(sourceHtml = "", summary = null) {
+  const input = String(sourceHtml || "");
+  if (!input) return input;
+
+  let convertedCount = 0;
+
+  const output = input.replace(/<p([^>]*?)>([\s\S]*?)<\/p>/gi, (fullMatch, attrs, inner) => {
+    const classMatch = String(attrs || "").match(/\sclass\s*=\s*(["'])(.*?)\1/i);
+    if (!classMatch) return fullMatch;
+
+    const classTokens = parseClassTokens(classMatch[2] || "");
+    const hasImportText = classTokens.some((token) => /^import-text-/.test(String(token || "")));
+    const isLikelyMetricLine = classTokens.includes("text-muted") || classTokens.some((token) => /^import-font-/.test(String(token || "")));
+    if (!hasImportText || !isLikelyMetricLine) return fullMatch;
+
+    convertedCount += 1;
+    return `<div${attrs}>${inner}</div>`;
+  });
+
+  if (summary && convertedCount > 0) {
+    summary.intentHits += 1;
+    recordRule(summary, "intent.typography.metric-paragraph-to-div");
+    addNote(summary, `Normalized ${convertedCount} metric text paragraph tag(s) to div.`);
+  }
+
+  return output;
+}
+
+function removeClassFromAttrs(attrs = "", className = "") {
+  if (!className) return attrs;
+  const text = String(attrs || "");
+  const classMatch = text.match(/\sclass\s*=\s*(["'])(.*?)\1/i);
+  if (!classMatch) return text;
+
+  const quote = classMatch[1] || '"';
+  const values = parseClassTokens(classMatch[2]).filter((token) => token !== className);
+  if (values.length === 0) {
+    return text.replace(classMatch[0], "");
+  }
+
+  const next = ` class=${quote}${values.join(" ")}${quote}`;
+  return text.replace(classMatch[0], next);
+}
+
+function updateClassTokensInAttrs(attrs = "", mapper = (tokens) => tokens) {
+  const text = String(attrs || "");
+  const classMatch = text.match(/\sclass\s*=\s*(["'])(.*?)\1/i);
+  if (!classMatch) return text;
+
+  const quote = classMatch[1] || '"';
+  const currentTokens = parseClassTokens(classMatch[2]);
+  const nextTokensRaw = mapper(Array.from(currentTokens));
+  const nextTokens = Array.isArray(nextTokensRaw)
+    ? nextTokensRaw.filter(Boolean)
+    : currentTokens;
+
+  if (nextTokens.length === 0) {
+    return text.replace(classMatch[0], "");
+  }
+
+  const next = ` class=${quote}${nextTokens.join(" ")}${quote}`;
+  return text.replace(classMatch[0], next);
+}
+
+function normalizeMetricPairStackContainers(sourceHtml = "", summary = null) {
+  const input = String(sourceHtml || "");
+  if (!input) return input;
+
+  let convertedCount = 0;
+
+  const output = input.replace(
+    /<(div|section|article|aside)([^>]*)>\s*<(p|div)([^>]*)>[\s\S]*?<\/\3>\s*<(p|div)([^>]*)>[\s\S]*?<\/\5>\s*<\/\1>/gi,
+    (fullMatch, tag, attrs, firstTag, firstAttrs, secondTag, secondAttrs) => {
+      const classMatch = String(attrs || "").match(/\sclass\s*=\s*(["'])(.*?)\1/i);
+      if (!classMatch) return fullMatch;
+
+      const containerClasses = parseClassTokens(classMatch[2]);
+      if (!containerClasses.includes("stack-sm")) return fullMatch;
+
+      const firstClassMatch = String(firstAttrs || "").match(/\sclass\s*=\s*(["'])(.*?)\1/i);
+      const secondClassMatch = String(secondAttrs || "").match(/\sclass\s*=\s*(["'])(.*?)\1/i);
+      if (!firstClassMatch || !secondClassMatch) return fullMatch;
+
+      const firstClasses = parseClassTokens(firstClassMatch[2]);
+      const secondClasses = parseClassTokens(secondClassMatch[2]);
+      const hasMetricTypographyPair =
+        firstClasses.some((token) => /^import-text-/.test(String(token || ""))) &&
+        secondClasses.some((token) => /^import-text-/.test(String(token || "")));
+
+      if (!hasMetricTypographyPair) return fullMatch;
+
+      const nextAttrs = removeClassFromAttrs(attrs, "stack-sm");
+      convertedCount += 1;
+      return fullMatch.replace(`<${tag}${attrs}>`, `<${tag}${nextAttrs}>`);
+    }
+  );
+
+  if (summary && convertedCount > 0) {
+    summary.intentHits += 1;
+    recordRule(summary, "intent.typography.metric-pair-no-stack");
+    addNote(summary, `Removed stack-sm from ${convertedCount} metric text pair container(s).`);
+  }
+
+  return output;
+}
+
+function resolveTypographyFromConfig(configInput = {}) {
+  if (!configInput || typeof configInput !== "object") return {};
+  const directTypography = configInput.typography;
+  if (directTypography && typeof directTypography === "object") {
+    return directTypography;
+  }
+  const nestedTypography = configInput.design?.typography;
+  if (nestedTypography && typeof nestedTypography === "object") {
+    return nestedTypography;
+  }
+  return {};
+}
+
+function resolveFontScale(configInput = {}) {
+  const typography = resolveTypographyFromConfig(configInput);
+  const parsed = Number(typography.fontScale);
+  if (!Number.isFinite(parsed)) return DEFAULT_FONT_SCALE;
+  return Math.max(1, Math.min(2, parsed));
+}
+
+function resolveSemanticHeadingTag(sizeToken = "", fontScale = DEFAULT_FONT_SCALE) {
+  const baseRankBySize = {
+    "4xl": 1,
+    "3xl": 2,
+    "2xl": 3,
+    xl: 4,
+  };
+  const baseRank = baseRankBySize[sizeToken];
+  if (!baseRank) return "";
+
+  const normalizedScale = Number.isFinite(Number(fontScale))
+    ? Math.max(1, Math.min(2, Number(fontScale)))
+    : DEFAULT_FONT_SCALE;
+  const rankShift = Math.max(-1, Math.min(1, Math.round((normalizedScale - DEFAULT_FONT_SCALE) / 0.25)));
+  const adjustedRank = baseRank - rankShift;
+  if (adjustedRank < 1) return "h1";
+  if (adjustedRank > 4) return "";
+  return `h${adjustedRank}`;
+}
+
+function normalizeSemanticTypography(sourceHtml = "", summary = null, options = {}) {
+  const input = String(sourceHtml || "");
+  if (!input) return input;
+
+  const fontScale = resolveFontScale(options.config || {});
+  let headingCount = 0;
+  let strongCount = 0;
+
+  const output = input.replace(/<(p|div|span)([^>]*)>([\s\S]*?)<\/\1>/gi, (fullMatch, tag, attrs, inner) => {
+    const classMatch = String(attrs || "").match(/\sclass\s*=\s*(["'])(.*?)\1/i);
+    if (!classMatch) return fullMatch;
+
+    const classTokens = parseClassTokens(classMatch[2]);
+    const hasImportBold = classTokens.includes("import-font-bold");
+    if (!hasImportBold) return fullMatch;
+
+    const textSizeToken = classTokens.find((token) => /^import-text-(?:4xl|3xl|2xl|xl)$/.test(String(token || ""))) || "";
+    const sizeMatch = textSizeToken.match(/^import-text-(4xl|3xl|2xl|xl)$/);
+
+    if (sizeMatch) {
+      const headingTag = resolveSemanticHeadingTag(sizeMatch[1], fontScale);
+      if (!headingTag) {
+        return fullMatch;
+      }
+      const nextAttrs = updateClassTokensInAttrs(attrs, (tokens) => (
+        tokens.filter((token) => token !== "import-font-bold" && token !== textSizeToken)
+      ));
+      headingCount += 1;
+      return `<${headingTag}${nextAttrs}>${inner}</${headingTag}>`;
+    }
+
+    const hasNestedBlock = /<\/?(?:div|p|section|article|aside|main|header|footer|ul|ol|li|table|tr|td|th|h[1-6])\b/i.test(inner);
+    const alreadyStrong = /<\/?(?:strong|b)\b/i.test(inner);
+    if (hasNestedBlock || alreadyStrong) return fullMatch;
+
+    const nextAttrs = removeClassFromAttrs(attrs, "import-font-bold");
+    strongCount += 1;
+    return `<${tag}${nextAttrs}><strong>${inner}</strong></${tag}>`;
+  });
+
+  if (summary) {
+    if (headingCount > 0) {
+      summary.intentHits += 1;
+      recordRule(summary, "intent.typography.semantic-heading-from-scale");
+      addNote(summary, `Converted ${headingCount} bold display text node(s) to semantic heading tags (fontScale=${Number(fontScale).toFixed(2)}).`);
+    }
+    if (strongCount > 0) {
+      summary.intentHits += 1;
+      recordRule(summary, "intent.typography.bold-to-strong");
+      addNote(summary, `Wrapped ${strongCount} bold text node(s) in strong tags.`);
+    }
+  }
+
+  return output;
 }
 
 function resolvePseudoVariant(variants = []) {
@@ -287,6 +558,30 @@ function resolveImportStyleToken(baseToken, breakpoint = "base", variants = []) 
         breakpoint,
         pseudo,
         ruleId: "fallback.import-style.gap-scale",
+      };
+    }
+  }
+
+  const marginMatch = String(baseToken).match(/^(mt|mb|my)-(.+)$/);
+  if (marginMatch) {
+    const axis = marginMatch[1];
+    const rawValue = marginMatch[2];
+    const value = resolveTailwindSizeValue(rawValue);
+    if (value) {
+      let marginDeclaration = "";
+      if (axis === "mt") {
+        marginDeclaration = `margin-top:${value}`;
+      } else if (axis === "mb") {
+        marginDeclaration = `margin-bottom:${value}`;
+      } else {
+        marginDeclaration = `margin-top:${value};margin-bottom:${value}`;
+      }
+
+      return {
+        declaration: marginDeclaration,
+        breakpoint,
+        pseudo,
+        ruleId: "fallback.import-style.margin-scale",
       };
     }
   }
@@ -461,7 +756,7 @@ function resolveImportStyleToken(baseToken, breakpoint = "base", variants = []) 
   if (bgBlackAlphaMatch) {
     const alpha = Math.max(0, Math.min(100, Number(bgBlackAlphaMatch[1])));
     return {
-      declaration: `background-color:color-mix(in srgb, var(--color-secondary-900) ${alpha}%, transparent)`,
+      declaration: `background-color:color-mix(in srgb, var(--color-gray-900) ${alpha}%, transparent)`,
       breakpoint,
       pseudo,
       ruleId: "fallback.import-style.overlay-alpha",
@@ -470,11 +765,29 @@ function resolveImportStyleToken(baseToken, breakpoint = "base", variants = []) 
 
   if (baseToken === "text-white") {
     return {
-      declaration: "color:var(--color-secondary-50)",
+      declaration: "color:var(--color-gray-50)",
       breakpoint,
       pseudo,
       ruleId: "fallback.import-style.text-inverse",
     };
+  }
+
+  const semanticBgMatch = String(baseToken).match(/^bg-(primary|secondary|accent)$/);
+  if (semanticBgMatch) {
+    const semanticBgVarMap = {
+      primary: "var(--color-primary-fill)",
+      secondary: "var(--color-gray-500)",
+      accent: "var(--color-accent-500)",
+    };
+    const colorVar = semanticBgVarMap[semanticBgMatch[1]];
+    if (colorVar) {
+      return {
+        declaration: `background-color:${colorVar}`,
+        breakpoint,
+        pseudo,
+        ruleId: "fallback.import-style.bg-semantic",
+      };
+    }
   }
 
   const bgColorMatch = String(baseToken).match(/^bg-([a-z]+)-(\d{2,3})$/);
@@ -872,6 +1185,35 @@ function resolveResponsiveGridUtilityClass(breakpoint = "", cols = 0) {
   return map?.[breakpoint]?.[cols] || "";
 }
 
+function mapSpaceYTokenToStackClass(token = "") {
+  const parsed = parseVariantToken(token);
+  const base = String(parsed?.base || "");
+  const sizeMatch = base.match(/^space-y-(\d+)$/);
+  if (!sizeMatch) return "stack-md";
+
+  const step = Number(sizeMatch[1]);
+  if (!Number.isFinite(step)) return "stack-md";
+  if (step <= 1) return "stack-xs";
+  if (step <= 2) return "stack-sm";
+  if (step <= 4) return "stack-md";
+  return "stack-lg";
+}
+
+function hasGapUtilityClass(mapped = new Set()) {
+  return Array.from(mapped).some((className) => {
+    const value = String(className || "");
+    return (
+      /^gap-(?:xs|sm|md|lg|xl)$/.test(value) ||
+      /^gap-[0-9]+$/.test(value) ||
+      /^import-(?:sm-|md-|lg-|xl-)?gap-/.test(value)
+    );
+  });
+}
+
+function hasStackUtilityClass(mapped = new Set()) {
+  return Array.from(mapped).some((className) => /^stack-(?:xs|sm|md|lg|xl)$/.test(String(className || "")));
+}
+
 function hasGridSizingClass(mapped = new Set()) {
   return Array.from(mapped).some((className) => {
     const value = String(className || "");
@@ -993,6 +1335,7 @@ function detectBadgeIntent(sourceTokens = [], tagName = "", buttonIntent = { sho
       variantClass: "",
       outline: false,
       sizeClass: "",
+      pastel: null,
     };
   }
 
@@ -1002,6 +1345,7 @@ function detectBadgeIntent(sourceTokens = [], tagName = "", buttonIntent = { sho
       variantClass: "",
       outline: false,
       sizeClass: "",
+      pastel: null,
     };
   }
 
@@ -1011,6 +1355,7 @@ function detectBadgeIntent(sourceTokens = [], tagName = "", buttonIntent = { sho
       variantClass: "",
       outline: false,
       sizeClass: "",
+      pastel: null,
     };
   }
 
@@ -1027,16 +1372,18 @@ function detectBadgeIntent(sourceTokens = [], tagName = "", buttonIntent = { sho
   const hasLargeText = baseTokens.includes("text-lg") || baseTokens.includes("text-xl");
 
   const bgMatch = baseTokens
-    .map((token) => token.match(/^bg-([a-z]+)-(\d{2,3})$/))
+    .map((token) => token.match(/^bg-([a-z]+)-(\d{2,3})(?:\/\d{1,3})?$/))
     .find(Boolean);
   const textMatch = baseTokens
-    .map((token) => token.match(/^text-([a-z]+)-(\d{2,3})$/))
+    .map((token) => token.match(/^text-([a-z]+)-(\d{2,3})(?:\/\d{1,3})?$/))
     .find(Boolean);
   const borderMatch = baseTokens
     .map((token) => token.match(/^border-([a-z]+)-(\d{2,3})$/))
     .find(Boolean);
 
-  const hasBgTone = Boolean(bgMatch && Number(bgMatch[2]) <= 300);
+  const bgShade = Number(bgMatch?.[2]);
+  const textShade = Number(textMatch?.[2]);
+  const hasBgTone = Boolean(bgMatch && Number.isFinite(bgShade) && bgShade <= 300);
   const hasBorder = baseTokens.some((token) => /^border(?:-|$)/.test(token));
   const hasStatusColorSignal = Boolean(bgMatch || textMatch || borderMatch);
 
@@ -1048,19 +1395,29 @@ function detectBadgeIntent(sourceTokens = [], tagName = "", buttonIntent = { sho
       variantClass: "",
       outline: false,
       sizeClass: "",
+      pastel: null,
     };
   }
 
   const family = (bgMatch && bgMatch[1]) || (textMatch && textMatch[1]) || (borderMatch && borderMatch[1]) || "";
-  const variantClass = mapBadgeVariantFromColorFamily(family);
+  const mappedVariantClass = mapBadgeVariantFromColorFamily(family);
   const outline = hasBorder && !hasBgTone;
   const sizeClass = hasSmallText ? "badge-sm" : hasLargeText ? "badge-lg" : "";
+  const pastel = hasBgTone
+    ? {
+        family,
+        bgShade: Number.isFinite(bgShade) ? bgShade : 200,
+        textShade: Number.isFinite(textShade) ? textShade : 700,
+      }
+    : null;
+  const variantClass = pastel ? "" : mappedVariantClass;
 
   return {
     shouldNormalize: true,
     variantClass,
     outline,
     sizeClass,
+    pastel,
   };
 }
 
@@ -1174,12 +1531,16 @@ function buildClassReplacement({
   const badgeIntent = detectBadgeIntent(sourceTokens, tagName, buttonIntent);
   const cardIntent = detectCardIntent(sourceTokens, tagName, buttonIntent, badgeIntent);
   const isHeadingTag = /^h[1-6]$/.test(tagName);
+  const isIconLikeElement =
+    ["i", "svg"].includes(tagName) ||
+    sourceTokens.some((token) => /^fa(?:[a-z-]+)?$/i.test(String(token || "")) || /^fa-/.test(String(token || "")));
 
   const mapped = new Set();
   const gridByBreakpoint = {};
   const flexByBreakpoint = {};
   let sawSpaceY = false;
   let firstSpaceYToken = "";
+  let firstSpaceYStackClass = "";
   let sawSpaceX = false;
   let firstSpaceXToken = "";
 
@@ -1202,6 +1563,7 @@ function buildClassReplacement({
     if (/^space-y-/.test(base)) {
       sawSpaceY = true;
       firstSpaceYToken = firstSpaceYToken || token;
+      firstSpaceYStackClass = firstSpaceYStackClass || mapSpaceYTokenToStackClass(token);
       summary.ignored += 1;
       recordRule(summary, "layout.spacing.space-y-to-stack");
       return;
@@ -1302,6 +1664,15 @@ function buildClassReplacement({
 
     if (buttonIntent.shouldNormalize && isTwToken) {
       const parsedBase = String(base || "");
+
+      if (parsed.breakpoint === "base" && ["flex-1", "grow", "flex-grow"].includes(parsedBase)) {
+        mapped.add("grow");
+        summary.mapped += 1;
+        summary.intentHits += 1;
+        recordRule(summary, "intent.component.button.layout-grow");
+        return;
+      }
+
       const buttonStyleTokenPattern =
         /^(?:bg-|text-(?!center$|left$|right$)|font-|leading-|tracking-|rounded|ring|border|shadow|outline|transition|duration|ease|delay|animate|p|px|py|pt|pb|pl|pr|m|mx|my|mt|mb|ml|mr|w-|h-|min-|max-|size-|overflow)/;
       const skipNonStructuralButtonToken =
@@ -1358,6 +1729,30 @@ function buildClassReplacement({
 
     const isTextColorToken = /^text-(?:white|black|[a-z]+-\d{2,3}|\[[^\]]+\])$/.test(base);
     if (isTextColorToken) {
+      const shouldPreserveColorUtility =
+        isIconLikeElement ||
+        (tagName === "a" && !buttonIntent.shouldNormalize);
+
+      if (shouldPreserveColorUtility) {
+        const iconColorImportStyle = resolveImportStyleToken(base, parsed.breakpoint, parsed.variants);
+        if (iconColorImportStyle) {
+          const className = registerImportStyle(
+            summary,
+            `${tagName}-color-${base}`,
+            iconColorImportStyle.declaration,
+            iconColorImportStyle.breakpoint,
+            iconColorImportStyle.pseudo
+          );
+          if (className) {
+            mapped.add(className);
+            summary.mapped += 1;
+            summary.intentHits += 1;
+            recordRule(summary, isIconLikeElement ? "intent.icon.color-preserve" : "intent.typography.link-active-preserve");
+            return;
+          }
+        }
+      }
+
       summary.ignored += 1;
       recordRule(summary, "style.color");
       return;
@@ -1408,10 +1803,10 @@ function buildClassReplacement({
   });
 
   if (sawSpaceY && allowsRule(policy, "spacing")) {
-    mapped.add("stack-md");
+    mapped.add(firstSpaceYStackClass || "stack-md");
     summary.mapped += 1;
     summary.intentHits += 1;
-    addNote(summary, `Mapped ${firstSpaceYToken} to stack-md.`);
+    addNote(summary, `Mapped ${firstSpaceYToken} to ${firstSpaceYStackClass || "stack-md"}.`);
   }
 
   if (sawSpaceX && allowsRule(policy, "spacing")) {
@@ -1475,6 +1870,17 @@ function buildClassReplacement({
     summary.intentHits += 1;
     recordRule(summary, "intent.layout.mobile-stack");
     addNote(summary, "Mapped flex-col + breakpoint flex-row to mobile-stack.");
+  }
+
+  const hasFlexLayoutClass = mapped.has("flex") || mapped.has("inline-flex");
+  if (hasFlexLayoutClass && allowsRule(policy, "spacing")) {
+    const hasExplicitSpacing = hasGapUtilityClass(mapped) || hasStackUtilityClass(mapped) || sawSpaceX || sawSpaceY;
+    if (!hasExplicitSpacing) {
+      mapped.add("gap-sm");
+      summary.intentHits += 1;
+      recordRule(summary, "layout.spacing.flex-min-gap");
+      addNote(summary, "Added gap-sm fallback for flex container without explicit spacing.");
+    }
   }
 
   const hadGridColsIntent = sourceTokens.some((token) => /^grid-cols-\d+$/.test(parseVariantToken(token).base));
@@ -1554,7 +1960,6 @@ function buildClassReplacement({
       "justify-center",
       "justify-end",
       "justify-between",
-      "grow",
       "shrink",
       "self-start",
       "self-center",
@@ -1638,6 +2043,32 @@ function buildClassReplacement({
     }
     if (badgeIntent.sizeClass) {
       mapped.add(badgeIntent.sizeClass);
+    }
+
+    if (badgeIntent.pastel && badgeIntent.pastel.family) {
+      const bgVar = mapTailwindColorToPdsColorVar(
+        badgeIntent.pastel.family,
+        String(badgeIntent.pastel.bgShade || 200)
+      );
+      const textVar = mapTailwindColorToPdsColorVar(
+        badgeIntent.pastel.family,
+        String(badgeIntent.pastel.textShade || 700)
+      );
+
+      if (bgVar && textVar) {
+        const pastelToken = `badge-pastel-${badgeIntent.pastel.family}-${badgeIntent.pastel.bgShade}-${badgeIntent.pastel.textShade}`;
+        const pastelClass = registerImportStyle(
+          summary,
+          pastelToken,
+          `background-color:${bgVar};color:${textVar}`,
+          "base"
+        );
+        if (pastelClass) {
+          mapped.add(pastelClass);
+          recordRule(summary, "intent.component.badge.pastel-preserve");
+          addNote(summary, `Preserved pastel badge tone using ${pastelClass}.`);
+        }
+      }
     }
 
     summary.intentHits += 1;
@@ -1733,7 +2164,11 @@ function buildClassReplacement({
   }
 
   const fallbackContainerTags = new Set(["div", "section", "article", "aside", "nav", "main", "header", "footer", "form", "fieldset", "ul", "ol", "li"]);
-  if (mapped.size === 0 && fallbackContainerTags.has(tagName)) {
+  const hadContainerStructuralLayoutSignal = sourceTokens.some((token) => {
+    const baseToken = parseVariantToken(token).base;
+    return /^(?:flex|grid|container|gap-|space-[xy]-|items-|justify-|content-|place-|self-|w-|h-|min-|max-)/.test(baseToken);
+  });
+  if (mapped.size === 0 && fallbackContainerTags.has(tagName) && hadContainerStructuralLayoutSignal) {
     mapped.add("stack-sm");
     addNote(summary, `Added stack-sm fallback for <${tagName}> with unmapped classes.`);
   }
@@ -1769,8 +2204,19 @@ function convertHtmlWithRules(html = "", options = {}) {
     }
   );
 
+  const postProcessedHtml = normalizeSemanticTypography(
+    normalizeMetricPairStackContainers(
+      normalizeMetricTextParagraphs(
+        normalizeIconOnlyButtons(convertedHtmlRaw, summary),
+        summary
+      ),
+      summary
+    ),
+    summary,
+    { config: options.config || {} }
+  );
   const importCss = generateImportStyleSheetText(summary, breakpoints);
-  const convertedHtml = injectImportStyleBlock(convertedHtmlRaw, importCss);
+  const convertedHtml = injectImportStyleBlock(postProcessedHtml, importCss);
   if (importCss) {
     addNote(summary, `Generated ${summary.importedStyleCount} import-* fallback style mappings.`);
   }
@@ -1875,6 +2321,744 @@ export function describeTailwindConversionRules() {
 function inferPrimaryColor(text) {
   const hex = String(text || "").match(/#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b/);
   return hex ? hex[0] : null;
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function isLikelyHtml(value) {
+  return /<\s*[a-z][^>]*>/i.test(String(value || ""));
+}
+
+function toPxNumber(value) {
+  const text = String(value || "").trim().toLowerCase();
+  if (!text) return null;
+  const numeric = Number.parseFloat(text);
+  if (!Number.isFinite(numeric)) return null;
+  if (text.endsWith("rem") || text.endsWith("em")) return numeric * 16;
+  if (text.endsWith("px") || /^[0-9.\-]+$/.test(text)) return numeric;
+  return null;
+}
+
+function normalizeCssColor(value) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  const hexMatch = text.match(/#(?:[0-9a-f]{3,8})\b/i);
+  if (hexMatch) return hexMatch[0].toLowerCase();
+  const rgbMatch = text.match(/rgba?\([^)]*\)/i);
+  if (rgbMatch) return rgbMatch[0];
+  const hslMatch = text.match(/hsla?\([^)]*\)/i);
+  if (hslMatch) return hslMatch[0];
+  return "";
+}
+
+function resolveCssVariableValue(varName = "") {
+  const name = String(varName || "").trim();
+  if (!name || typeof window === "undefined" || typeof document === "undefined") return "";
+  const root = document.documentElement;
+  if (!root) return "";
+  const computed = window.getComputedStyle(root);
+  return String(computed.getPropertyValue(name) || "").trim();
+}
+
+function resolveColorFromMaybeVar(value = "") {
+  const text = String(value || "").trim();
+  const direct = normalizeCssColor(text);
+  if (direct) return direct;
+
+  const varMatch = text.match(/var\(\s*(--[^\s,)]+)\s*(?:,[^)]+)?\)/i);
+  if (!varMatch) return "";
+  const resolved = resolveCssVariableValue(varMatch[1]);
+  return normalizeCssColor(resolved);
+}
+
+function resolveTailwindBackgroundTokenToColor(token = "") {
+  const raw = String(token || "").trim();
+  if (!raw) return "";
+  const baseToken = raw.split(":").pop() || raw;
+
+  if (baseToken === "bg-white") return "#ffffff";
+  if (baseToken === "bg-black") return "#000000";
+
+  const alphaBlack = baseToken.match(/^bg-black\/(\d{1,3})$/i);
+  if (alphaBlack) {
+    const alpha = Math.max(0, Math.min(100, Number(alphaBlack[1]))) / 100;
+    return `rgba(0,0,0,${alpha})`;
+  }
+
+  const arbitrary = baseToken.match(/^bg-\[([^\]]+)\]$/i);
+  if (arbitrary) {
+    return normalizeCssColor(arbitrary[1]);
+  }
+
+  const familyShade = baseToken.match(/^bg-([a-z]+)-(\d{2,3})$/i);
+  if (!familyShade) return "";
+
+  const colorVar = mapTailwindColorToPdsColorVar(familyShade[1], familyShade[2]);
+  if (!colorVar) return "";
+  return resolveColorFromMaybeVar(colorVar);
+}
+
+function extractTailwindBackgroundColorsFromClass(className = "") {
+  const tokens = String(className || "")
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter(Boolean);
+
+  return tokens
+    .map((token) => resolveTailwindBackgroundTokenToColor(token))
+    .filter(Boolean);
+}
+
+function parseCssRuleBlocks(cssText = "") {
+  const blocks = [];
+  const input = String(cssText || "");
+  const regex = /([^{}]+)\{([^{}]*)\}/g;
+  let match = regex.exec(input);
+  while (match) {
+    const selector = String(match[1] || "").trim();
+    const body = String(match[2] || "").trim();
+    if (selector && body) {
+      blocks.push({ selector, body });
+    }
+    match = regex.exec(input);
+  }
+  return blocks;
+}
+
+function isRootLikeSelector(selector = "") {
+  const text = String(selector || "").toLowerCase();
+  if (!text) return false;
+  return /(^|\s|,)(html|body|:root|main)(\s|,|$)|#app\b|#root\b|\.app\b|\.page\b/.test(text);
+}
+
+function parseRgbColor(value = "") {
+  const match = String(value || "")
+    .trim()
+    .match(/rgba?\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)(?:\s*,\s*([0-9.]+))?\s*\)/i);
+  if (!match) return null;
+  const r = Number.parseFloat(match[1]);
+  const g = Number.parseFloat(match[2]);
+  const b = Number.parseFloat(match[3]);
+  const a = match[4] == null ? 1 : Number.parseFloat(match[4]);
+  if (![r, g, b, a].every((num) => Number.isFinite(num))) return null;
+  return {
+    r: Math.max(0, Math.min(255, r)),
+    g: Math.max(0, Math.min(255, g)),
+    b: Math.max(0, Math.min(255, b)),
+    a: Math.max(0, Math.min(1, a)),
+  };
+}
+
+function parseHexColor(value = "") {
+  const match = String(value || "").trim().match(/^#([0-9a-f]{3,8})$/i);
+  if (!match) return null;
+  const raw = match[1].toLowerCase();
+  if (raw.length === 3) {
+    const [r, g, b] = raw.split("");
+    return {
+      r: Number.parseInt(`${r}${r}`, 16),
+      g: Number.parseInt(`${g}${g}`, 16),
+      b: Number.parseInt(`${b}${b}`, 16),
+      a: 1,
+    };
+  }
+  if (raw.length === 6 || raw.length === 8) {
+    return {
+      r: Number.parseInt(raw.slice(0, 2), 16),
+      g: Number.parseInt(raw.slice(2, 4), 16),
+      b: Number.parseInt(raw.slice(4, 6), 16),
+      a: raw.length === 8 ? Number.parseInt(raw.slice(6, 8), 16) / 255 : 1,
+    };
+  }
+  return null;
+}
+
+function colorToRgba(value = "") {
+  const normalized = normalizeCssColor(value);
+  if (!normalized) return null;
+  if (normalized.startsWith("#")) return parseHexColor(normalized);
+  if (normalized.startsWith("rgb")) return parseRgbColor(normalized);
+  return null;
+}
+
+function relativeLuminance(color) {
+  if (!color) return null;
+  const channel = (value) => {
+    const n = Number(value) / 255;
+    return n <= 0.03928 ? n / 12.92 : ((n + 0.055) / 1.055) ** 2.4;
+  };
+  const r = channel(color.r);
+  const g = channel(color.g);
+  const b = channel(color.b);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function isTransparentColor(value = "") {
+  const text = String(value || "").trim().toLowerCase();
+  if (!text) return true;
+  if (text === "transparent") return true;
+  const rgba = colorToRgba(text);
+  if (rgba && Number.isFinite(rgba.a)) return rgba.a <= 0.04;
+  return false;
+}
+
+function chooseBackgroundColor(rootCandidates = [], fallbackCandidates = []) {
+  const normalizedRoot = rootCandidates
+    .map((value) => normalizeCssColor(value))
+    .filter((value) => value && !isTransparentColor(value));
+  const rootWinner = pickMostFrequent(normalizedRoot);
+  if (rootWinner) {
+    return { color: rootWinner, source: "root" };
+  }
+
+  const normalizedFallback = fallbackCandidates
+    .map((value) => normalizeCssColor(value))
+    .filter((value) => value && !isTransparentColor(value));
+
+  const brightFallback = normalizedFallback.filter((value) => {
+    const rgba = colorToRgba(value);
+    const lum = relativeLuminance(rgba);
+    return Number.isFinite(lum) ? lum >= 0.72 : false;
+  });
+
+  const brightWinner = pickMostFrequent(brightFallback);
+  if (brightWinner) {
+    return { color: brightWinner, source: "fallback-bright" };
+  }
+
+  const fallbackWinner = pickMostFrequent(normalizedFallback);
+  if (fallbackWinner) {
+    return { color: fallbackWinner, source: "fallback" };
+  }
+
+  return { color: "", source: "none" };
+}
+
+function parseCssDeclarations(text, out = new Map()) {
+  const input = String(text || "");
+  const regex = /([a-z-]+)\s*:\s*([^;{}]+)/gi;
+  let match = regex.exec(input);
+  while (match) {
+    const prop = String(match[1] || "").trim().toLowerCase();
+    const value = String(match[2] || "").trim();
+    if (prop && value) {
+      if (!out.has(prop)) out.set(prop, []);
+      out.get(prop).push(value);
+    }
+    match = regex.exec(input);
+  }
+  return out;
+}
+
+function collectHtmlSignals(rawInput = "") {
+  const input = String(rawInput || "");
+  const declarations = new Map();
+  const colorValues = [];
+  const rootBackgroundColors = [];
+  const rootClassBackgroundColors = [];
+  const classBackgroundColors = [];
+  const buttonBackgroundColors = [];
+  const classTokens = [];
+  const textChunks = [];
+
+  const colorRegex = /#(?:[0-9a-f]{3,8})\b|rgba?\([^)]*\)|hsla?\([^)]*\)/gi;
+  const pushColors = (text) => {
+    const matches = String(text || "").match(colorRegex) || [];
+    matches.forEach((item) => {
+      const normalized = normalizeCssColor(item);
+      if (normalized) colorValues.push(normalized);
+    });
+  };
+
+  if (typeof DOMParser !== "undefined" && isLikelyHtml(input)) {
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(input, "text/html");
+      const styles = Array.from(doc.querySelectorAll("style")).map((node) => node.textContent || "");
+      styles.forEach((styleText) => {
+        parseCssDeclarations(styleText, declarations);
+        pushColors(styleText);
+        parseCssRuleBlocks(styleText).forEach((block) => {
+          if (!isRootLikeSelector(block.selector)) return;
+          const rootDeclarations = parseCssDeclarations(block.body, new Map());
+          const rootValues = getDeclarationValues(rootDeclarations, ["background", "background-color"])
+            .map((value) => normalizeCssColor(value))
+            .filter(Boolean);
+          rootBackgroundColors.push(...rootValues);
+        });
+      });
+
+      const inlineNodes = Array.from(doc.querySelectorAll("[style]"));
+      inlineNodes.forEach((node) => {
+        const inlineStyle = node.getAttribute("style") || "";
+        parseCssDeclarations(inlineStyle, declarations);
+        pushColors(inlineStyle);
+      });
+
+      const rootInlineSelectors = ["html", "body", "main", "#app", "#root", ".app", ".page"];
+      rootInlineSelectors.forEach((selector) => {
+        const rootNode = doc.querySelector(selector);
+        if (!rootNode) return;
+        const inlineStyle = rootNode.getAttribute("style") || "";
+        if (!inlineStyle) return;
+        const rootDeclarations = parseCssDeclarations(inlineStyle, new Map());
+        const rootValues = getDeclarationValues(rootDeclarations, ["background", "background-color"])
+          .map((value) => normalizeCssColor(value))
+          .filter(Boolean);
+        rootBackgroundColors.push(...rootValues);
+
+        const classColors = extractTailwindBackgroundColorsFromClass(rootNode.getAttribute("class") || "");
+        rootClassBackgroundColors.push(...classColors);
+      });
+
+      const classNodes = Array.from(doc.querySelectorAll("[class]"));
+      classNodes.forEach((node) => {
+        const tokens = parseClassTokens(node.getAttribute("class") || "");
+        classTokens.push(...tokens);
+        const classColors = extractTailwindBackgroundColorsFromClass(node.getAttribute("class") || "");
+        classBackgroundColors.push(...classColors);
+
+        const tagName = String(node.tagName || "").toLowerCase();
+        const isButtonLike = tagName === "button" || tagName === "a";
+        const hasBgSignal = tokens.some((token) => /^bg-/.test(String(parseVariantToken(token).base || "")));
+        if (isButtonLike && hasBgSignal && classColors.length) {
+          buttonBackgroundColors.push(...classColors);
+        }
+      });
+
+      const text = doc.body?.textContent || "";
+      if (text.trim()) textChunks.push(text);
+      pushColors(doc.documentElement?.outerHTML || input);
+    } catch (error) {
+      parseCssDeclarations(input, declarations);
+      pushColors(input);
+      textChunks.push(input);
+    }
+  } else {
+    parseCssDeclarations(input, declarations);
+    pushColors(input);
+    textChunks.push(input);
+  }
+
+  return {
+    declarations,
+    colorValues,
+    rootBackgroundColors,
+    rootClassBackgroundColors,
+    classBackgroundColors,
+    buttonBackgroundColors,
+    classTokens,
+    textCorpus: textChunks.join("\n"),
+  };
+}
+
+function pickMostFrequent(values = []) {
+  const counts = new Map();
+  values.forEach((value) => {
+    const key = String(value || "").trim();
+    if (!key) return;
+    counts.set(key, (counts.get(key) || 0) + 1);
+  });
+  let winner = "";
+  let winnerCount = -1;
+  counts.forEach((count, key) => {
+    if (count > winnerCount) {
+      winner = key;
+      winnerCount = count;
+    }
+  });
+  return winner;
+}
+
+function getDeclarationValues(map, propNames = []) {
+  return propNames.flatMap((name) => map.get(name) || []);
+}
+
+function getSchemaNodeByPath(schema, path) {
+  if (!schema || !path) return null;
+  const segments = String(path).split(".").filter(Boolean);
+  let node = schema;
+  for (const segment of segments) {
+    if (!node || node.type !== "object" || !node.properties || typeof node.properties !== "object") {
+      return null;
+    }
+    node = node.properties[segment];
+  }
+  return node || null;
+}
+
+function getInferenceContext(config = {}) {
+  const design = config && typeof config === "object" ? config : {};
+  const relations = PDS?.configRelations && typeof PDS.configRelations === "object"
+    ? PDS.configRelations
+    : {};
+  const allowedPaths = new Set(Object.keys(relations));
+
+  let schema = null;
+  if (typeof PDS?.buildConfigFormSchema === "function") {
+    try {
+      schema = PDS.buildConfigFormSchema(design)?.schema || null;
+    } catch (error) {
+      schema = null;
+    }
+  }
+  if (!schema && PDS?.configFormSchema?.schema) {
+    schema = PDS.configFormSchema.schema;
+  }
+
+  return { design, schema, allowedPaths };
+}
+
+function coerceValueForNode(node, value) {
+  if (!node) return value;
+
+  if (Array.isArray(node.oneOf) && node.oneOf.length) {
+    const options = node.oneOf
+      .map((item) => item?.const)
+      .filter((item) => item !== undefined && item !== null);
+    if (options.length) {
+      if (typeof value === "string") {
+        const matched = options.find(
+          (option) => String(option).toLowerCase() === value.toLowerCase()
+        );
+        if (matched !== undefined) return matched;
+      }
+      if (typeof value === "number") {
+        const numeric = options
+          .map((option) => Number(option))
+          .filter((option) => Number.isFinite(option));
+        if (numeric.length) {
+          return numeric.reduce((best, current) => (
+            Math.abs(current - value) < Math.abs(best - value) ? current : best
+          ), numeric[0]);
+        }
+      }
+      return options[0];
+    }
+  }
+
+  if (node.type === "number" || node.type === "integer") {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed)) return undefined;
+    return node.type === "integer" ? Math.round(parsed) : parsed;
+  }
+
+  if (node.type === "boolean") {
+    return Boolean(value);
+  }
+
+  if (node.type === "string") {
+    return String(value || "").trim();
+  }
+
+  return value;
+}
+
+function setPatchPath(target, path, value) {
+  const segments = String(path || "").split(".").filter(Boolean);
+  if (!segments.length) return;
+  let current = target;
+  for (let index = 0; index < segments.length; index += 1) {
+    const segment = segments[index];
+    if (index === segments.length - 1) {
+      current[segment] = value;
+      return;
+    }
+    if (!current[segment] || typeof current[segment] !== "object" || Array.isArray(current[segment])) {
+      current[segment] = {};
+    }
+    current = current[segment];
+  }
+}
+
+function maybeSetInferredValue(state, path, value) {
+  if (value === undefined || value === null || value === "") return;
+  if (state.allowedPaths.size && !state.allowedPaths.has(path)) return;
+
+  const node = getSchemaNodeByPath(state.schema, path);
+  const nextValue = coerceValueForNode(node, value);
+  if (nextValue === undefined || nextValue === null || nextValue === "") return;
+
+  setPatchPath(state.patch, path, nextValue);
+  state.inferredPaths.add(path);
+}
+
+function collectMedianPx(values = []) {
+  const nums = values
+    .map((item) => toPxNumber(item))
+    .filter((item) => Number.isFinite(item));
+  if (!nums.length) return null;
+  nums.sort((a, b) => a - b);
+  const middle = Math.floor(nums.length / 2);
+  if (nums.length % 2) return nums[middle];
+  return (nums[middle - 1] + nums[middle]) / 2;
+}
+
+function inferFontFamily(values = []) {
+  const cleaned = values
+    .map((item) => String(item || "").split(",")[0] || "")
+    .map((item) => item.trim().replace(/^['"]|['"]$/g, ""))
+    .filter(Boolean);
+  return pickMostFrequent(cleaned);
+}
+
+function inferBorderWidthKeyword(pxValue) {
+  const size = Number(pxValue);
+  if (!Number.isFinite(size)) return "thin";
+  if (size <= 0.75) return "hairline";
+  if (size <= 1.5) return "thin";
+  if (size <= 2.5) return "medium";
+  return "thick";
+}
+
+function resolveTailwindRoundedTokenPx(token = "") {
+  const baseToken = String(parseVariantToken(token).base || "").toLowerCase();
+  const match = baseToken.match(/^rounded(?:-[trbl]{1,2})?(?:-(none|xs|sm|md|lg|xl|2xl|3xl|full))?$/);
+  if (!match) return null;
+
+  const size = match[1] || "DEFAULT";
+  const map = {
+    none: 0,
+    xs: 2,
+    sm: 4,
+    DEFAULT: 6,
+    md: 8,
+    lg: 12,
+    xl: 16,
+    "2xl": 24,
+    "3xl": 32,
+  };
+
+  if (size === "full") return null;
+  return Number.isFinite(map[size]) ? map[size] : null;
+}
+
+function inferRadiusPxFromTailwindClasses(classTokens = []) {
+  const radiusValues = classTokens
+    .map((token) => resolveTailwindRoundedTokenPx(token))
+    .filter((value) => Number.isFinite(value));
+  if (!radiusValues.length) return null;
+  radiusValues.sort((a, b) => a - b);
+  const middle = Math.floor(radiusValues.length / 2);
+  if (radiusValues.length % 2) return radiusValues[middle];
+  return (radiusValues[middle - 1] + radiusValues[middle]) / 2;
+}
+
+export function inferPdsDesignFromHtml(input = {}) {
+  const html = String(input.html || "");
+  if (!html.trim()) {
+    return createImportResult({
+      source: "html-inference",
+      type: String(input.sourceType || "design-inference"),
+      confidence: 0,
+      issues: [{ severity: "warning", message: "No HTML or guideline text provided for design extraction." }],
+      designPatch: {},
+      meta: {
+        extractedPathCount: 0,
+        extractedPaths: [],
+      },
+    });
+  }
+
+  const context = getInferenceContext(input.config || {});
+  const signals = collectHtmlSignals(html);
+  const state = {
+    patch: {},
+    inferredPaths: new Set(),
+    allowedPaths: context.allowedPaths,
+    schema: context.schema,
+  };
+
+  const textColors = getDeclarationValues(signals.declarations, ["color"])
+    .map((value) => normalizeCssColor(value))
+    .filter(Boolean);
+  const backgroundColors = getDeclarationValues(signals.declarations, ["background", "background-color"])
+    .map((value) => normalizeCssColor(value))
+    .filter(Boolean);
+  const allColors = [...backgroundColors, ...textColors, ...signals.colorValues].filter(Boolean);
+  const uniqueColors = Array.from(new Set(allColors));
+  const explicitRootBackgroundCandidates = [
+    ...(signals.rootBackgroundColors || []),
+  ];
+  const rootClassBackgroundCandidates = [
+    ...(signals.rootClassBackgroundColors || []),
+  ];
+  const rootBackgroundCandidates = explicitRootBackgroundCandidates.length
+    ? explicitRootBackgroundCandidates
+    : rootClassBackgroundCandidates;
+  const fallbackBackgroundCandidates = [
+    ...backgroundColors,
+    ...(signals.classBackgroundColors || []),
+  ];
+  const backgroundPick = chooseBackgroundColor(rootBackgroundCandidates, fallbackBackgroundCandidates);
+  const inferredBackground = backgroundPick.color;
+  maybeSetInferredValue(state, "colors.background", inferredBackground || backgroundColors[0] || uniqueColors[0]);
+
+  const paletteColors = uniqueColors.filter((color) => color && color !== inferredBackground);
+  const buttonPrimary = pickMostFrequent(signals.buttonBackgroundColors || []);
+  const inferredPrimary = buttonPrimary || paletteColors[0] || uniqueColors[0];
+  const remainingPalette = paletteColors.filter((color) => color && color !== inferredPrimary);
+  maybeSetInferredValue(state, "colors.primary", inferredPrimary);
+  maybeSetInferredValue(state, "colors.secondary", remainingPalette[0] || inferredPrimary || uniqueColors[0]);
+  maybeSetInferredValue(state, "colors.accent", remainingPalette[1] || remainingPalette[0] || inferredPrimary || uniqueColors[0]);
+
+  const families = getDeclarationValues(signals.declarations, ["font-family"]);
+  const fontFamily = inferFontFamily(families);
+  maybeSetInferredValue(state, "typography.fontFamilyBody", fontFamily);
+  maybeSetInferredValue(state, "typography.fontFamilyHeadings", fontFamily);
+  maybeSetInferredValue(state, "typography.fontFamilyMono", /mono|code/i.test(signals.textCorpus) ? "JetBrains Mono" : "");
+
+  const fontSizes = getDeclarationValues(signals.declarations, ["font-size"]);
+  const medianFontSizePx = collectMedianPx(fontSizes);
+  maybeSetInferredValue(state, "typography.baseSize", medianFontSizePx);
+
+  const spacingValues = getDeclarationValues(signals.declarations, [
+    "padding",
+    "padding-top",
+    "padding-right",
+    "padding-bottom",
+    "padding-left",
+    "margin",
+    "margin-top",
+    "margin-right",
+    "margin-bottom",
+    "margin-left",
+    "gap",
+    "row-gap",
+    "column-gap",
+  ]);
+  const medianSpacing = collectMedianPx(spacingValues);
+  maybeSetInferredValue(state, "spatialRhythm.baseUnit", medianSpacing);
+  maybeSetInferredValue(state, "spatialRhythm.inputPadding", medianSpacing);
+  maybeSetInferredValue(state, "spatialRhythm.buttonPadding", medianSpacing);
+
+  const radiusValues = getDeclarationValues(signals.declarations, ["border-radius"]);
+  const borderRadius = collectMedianPx(radiusValues) || inferRadiusPxFromTailwindClasses(signals.classTokens || []);
+  maybeSetInferredValue(state, "shape.radiusSize", borderRadius);
+
+  const borderWidthValues = getDeclarationValues(signals.declarations, [
+    "border-width",
+    "border-top-width",
+    "border-right-width",
+    "border-bottom-width",
+    "border-left-width",
+  ]);
+  const borderWidth = collectMedianPx(borderWidthValues);
+  maybeSetInferredValue(state, "shape.borderWidth", inferBorderWidthKeyword(borderWidth));
+
+  const maxWidthValues = getDeclarationValues(signals.declarations, ["max-width"]);
+  const maxWidth = collectMedianPx(maxWidthValues);
+  maybeSetInferredValue(state, "layout.containerMaxWidth", maxWidth);
+  maybeSetInferredValue(state, "layout.maxWidth", maxWidth);
+
+  const minHeightValues = getDeclarationValues(signals.declarations, ["min-height", "height"]);
+  const minHeight = collectMedianPx(minHeightValues);
+  maybeSetInferredValue(state, "layout.buttonMinHeight", minHeight);
+  maybeSetInferredValue(state, "layout.inputMinHeight", minHeight);
+
+  const transitionValues = getDeclarationValues(signals.declarations, ["transition-duration"]);
+  const transitionMs = collectMedianPx(transitionValues.map((value) => {
+    const text = String(value || "").trim().toLowerCase();
+    const number = Number.parseFloat(text);
+    if (!Number.isFinite(number)) return null;
+    if (text.endsWith("ms")) return number;
+    if (text.endsWith("s")) return number * 1000;
+    return number;
+  }));
+  maybeSetInferredValue(state, "behavior.transitionSpeed", transitionMs);
+
+  const shadowValues = getDeclarationValues(signals.declarations, ["box-shadow"]);
+  const hasShadow = shadowValues.length > 0;
+  maybeSetInferredValue(state, "layers.baseShadowOpacity", hasShadow ? 0.2 : 0.08);
+
+  const extractedPaths = Array.from(state.inferredPaths);
+  const categoryCoverage = extractedPaths.reduce((acc, path) => {
+    const category = path.split(".")[0];
+    acc[category] = (acc[category] || 0) + 1;
+    return acc;
+  }, {});
+
+  const confidence = extractedPaths.length
+    ? Math.min(0.92, 0.35 + extractedPaths.length * 0.02)
+    : 0.25;
+
+  return createImportResult({
+    source: "html-inference",
+    type: String(input.sourceType || "design-inference"),
+    confidence,
+    issues: extractedPaths.length
+      ? []
+      : [{ severity: "warning", message: "Could not infer enough design signals from input." }],
+    designPatch: state.patch,
+    meta: {
+      extractedPathCount: extractedPaths.length,
+      extractedPaths,
+      categoryCoverage,
+      colorSampleSize: uniqueColors.length,
+      backgroundInference: {
+        source: backgroundPick.source,
+        candidates: {
+          root: rootBackgroundCandidates.length,
+          declaration: backgroundColors.length,
+          classBased: (signals.classBackgroundColors || []).length,
+        },
+      },
+    },
+  });
+}
+
+export function convertHtmlLikeInputToPdsTemplate(input = {}) {
+  const raw = String(input.input || "").trim();
+  const sourceType = String(input.sourceType || "unknown");
+
+  if (!raw) {
+    return createImportResult({
+      source: sourceType,
+      type: sourceType,
+      confidence: 0,
+      issues: [{ severity: "error", message: "No input provided." }],
+      meta: {
+        conversionMode: "none",
+      },
+    });
+  }
+
+  if (isLikelyHtml(raw)) {
+    const converted = convertTailwindHtmlToPds({ html: raw, config: input.config || {} });
+    return createImportResult({
+      source: sourceType,
+      type: sourceType,
+      confidence: converted.confidence,
+      issues: converted.issues,
+      template: converted.template,
+      meta: {
+        ...(converted.meta || {}),
+        conversionMode: "html-to-pds",
+      },
+    });
+  }
+
+  return createImportResult({
+    source: sourceType,
+    type: sourceType,
+    confidence: 0.48,
+    issues: [{ severity: "info", message: "Input is not HTML; generated text-based preview template." }],
+    template: {
+      id: `${sourceType}-text-import`,
+      name: "Imported Guideline Text",
+      html: `<article class="card surface-base stack-sm"><h3>Imported Guidelines</h3><pre>${escapeHtml(raw)}</pre></article>`,
+    },
+    meta: {
+      conversionMode: "text-preview",
+    },
+  });
 }
 
 export function convertTailwindHtmlToPds(input = {}) {

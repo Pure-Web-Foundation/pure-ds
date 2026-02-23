@@ -1513,6 +1513,40 @@ npm run pds:css-data    # CSS token & class autocomplete
 
 See [INTELLISENSE.md](./INTELLISENSE.md) for setup instructions.
 
+### Import External HTML / Styles (`pds-import`)
+
+Use `pds-import` to run the same import pipeline used by live edit from CLI.
+
+```bash
+# 1) Convert HTML only (no style adoption)
+node packages/pds-cli/bin/pds-import.js \
+  --type tailwind-html \
+  --mode convert-only \
+  --source ./input.html \
+  --out ./out/import-result.json \
+  --html-out ./out/import-result.html
+
+# 2) Convert HTML + adopt inferred styles
+node packages/pds-cli/bin/pds-import.js \
+  --type tailwind-html \
+  --mode adopt-design-and-convert \
+  --source ./input.html \
+  --out ./out/adopt-result.json \
+  --html-out ./out/adopt-result.html \
+  --design-out ./out/adopt-design.json
+```
+
+**Modes**
+- `convert-only`: outputs converted template HTML only (no design patch application intent)
+- `adopt-design-and-convert`: outputs converted HTML plus inferred `designPatch`
+
+**Where output goes**
+- `--out`: full import result JSON (required)
+- `--html-out`: writes `result.template.html` when present
+- `--design-out`: writes `result.designPatch` JSON
+
+All paths are resolved from your current working directory, and directories are created automatically.
+
 ### Configuration
 
 ```javascript

@@ -1,6 +1,11 @@
 const COMPONENT_TAG = "pds-live-importer";
 const PDS = globalThis.PDS;
 
+const IMPORT_MODES = [
+  { id: "convert-only", label: "Convert to PDS HTML only" },
+  { id: "adopt-design-and-convert", label: "Adopt design language + convert" },
+];
+
 let managerPromise = null;
 
 async function getManagerModule() {
@@ -75,6 +80,16 @@ function inferSourceType(file, sources = []) {
   return fallback;
 }
 
+function normalizeImportMode(value) {
+  const next = String(value || "").trim().toLowerCase();
+  return IMPORT_MODES.some((mode) => mode.id === next) ? next : "convert-only";
+}
+
+function getImportModeLabel(value) {
+  const mode = IMPORT_MODES.find((item) => item.id === normalizeImportMode(value));
+  return mode?.label || IMPORT_MODES[0].label;
+}
+
 class PdsLiveImporter extends HTMLElement {
   constructor() {
     super();
@@ -82,6 +97,7 @@ class PdsLiveImporter extends HTMLElement {
     this._selectedFile = null;
     this._selectedText = "";
     this._selectedSourceType = "";
+    this._selectedImportMode = "convert-only";
     this._isImporting = false;
     this._history = [];
     this._isHistoryLoading = false;
@@ -101,6 +117,12 @@ class PdsLiveImporter extends HTMLElement {
       <label class="stack-xs">
         <span>File</span>
         <pds-upload class="pds-live-import-upload" accept=".html,.htm,.txt,.md,.json,.css,.js,.ts,.tsx,.jsx" max-files="1"></pds-upload>
+      </label>
+      <label class="stack-xs">
+        <span>Import mode</span>
+        <select class="pds-live-import-mode">
+          ${IMPORT_MODES.map((mode) => `<option value="${mode.id}">${escapeHtml(mode.label)}</option>`).join("")}
+        </select>
       </label>
       <div class="flex gap-sm justify-end">
         <button type="button" class="btn-secondary btn-sm pds-live-import-run" disabled>Re-import</button>
@@ -124,6 +146,11 @@ class PdsLiveImporter extends HTMLElement {
 
     this.querySelector(".pds-live-import-run")?.addEventListener("click", () => {
       this._runImport();
+    });
+
+    this.querySelector(".pds-live-import-mode")?.addEventListener("change", (event) => {
+      this._selectedImportMode = normalizeImportMode(event?.currentTarget?.value);
+      this._updateSelectionUI();
     });
 
     this.querySelector(".pds-live-history-refresh")?.addEventListener("click", () => {
@@ -150,6 +177,7 @@ class PdsLiveImporter extends HTMLElement {
   _openLatestHistoryMetadata(options = {}) {
     const requestedFileName = String(options?.fileName || "");
     const requestedSourceType = String(options?.sourceType || "");
+    const requestedImportMode = normalizeImportMode(options?.importMode);
 
     document.dispatchEvent(
       new CustomEvent("pds:live-edit:enable", {
@@ -167,6 +195,7 @@ class PdsLiveImporter extends HTMLElement {
         liveEditHost.openImportDetailsFromToast({
           fileName: requestedFileName,
           sourceType: requestedSourceType,
+          importMode: requestedImportMode,
         });
         return;
       }
@@ -253,6 +282,7 @@ class PdsLiveImporter extends HTMLElement {
         <tbody>
           <tr><th scope="row">File</th><td>${escapeHtml(entry?.fileName || "(untitled import)")}</td></tr>
           <tr><th scope="row">Source</th><td>${escapeHtml(entry?.sourceType || "unknown")}</td></tr>
+          <tr><th scope="row">Mode</th><td>${escapeHtml(getImportModeLabel(entry?.importMode || entry?.meta?.importMode))}</td></tr>
           <tr><th scope="row">Date</th><td>${escapeHtml(formatDateTime(entry?.createdAt || entry?.createdAtIso))}</td></tr>
           <tr><th scope="row">Confidence</th><td>${confidence}</td></tr>
           <tr><th scope="row">Tailwind</th><td>${Number(coverage.tailwind ?? 0)}</td></tr>
@@ -334,13 +364,17 @@ class PdsLiveImporter extends HTMLElement {
   openHistoryDetailsByMeta(options = {}) {
     const requestedFileName = String(options?.fileName || "");
     const requestedSourceType = String(options?.sourceType || "");
+    const requestedImportMode = normalizeImportMode(options?.importMode);
 
     let entry = null;
     if (requestedFileName) {
       entry = this._history.find((item) => {
         const sameFile = String(item?.fileName || "") === requestedFileName;
         const sameSource = !requestedSourceType || String(item?.sourceType || "") === requestedSourceType;
-        return sameFile && sameSource;
+        const sameMode =
+          !requestedImportMode ||
+          normalizeImportMode(item?.importMode || item?.meta?.importMode) === requestedImportMode;
+        return sameFile && sameSource && sameMode;
       }) || null;
     }
 
@@ -379,11 +413,13 @@ class PdsLiveImporter extends HTMLElement {
         const totalTailwind = Number(coverage.tailwind ?? 0);
         const statusIssueText = `${failedCount} failed / ${issueCount} issues`;
         const fileLabel = `${entry?.fileName || "(untitled import)"} (${entry?.sourceType || "unknown"})`;
+        const importMode = getImportModeLabel(entry?.importMode || entry?.meta?.importMode);
         return `
           <tr data-history-id="${Number(entry?.id || 0)}" data-history-file-name="${escapeHtml(entry?.fileName || "")}" data-history-source-type="${escapeHtml(entry?.sourceType || "")}">
             <td>${escapeHtml(formatDateTime(entry?.createdAt || entry?.createdAtIso))}</td>
             <td>${escapeHtml(fileLabel)}</td>
             <td class="flex flex-wrap gap-xs items-center">
+              <span class="badge badge-outline badge-info badge-sm">${escapeHtml(importMode)}</span>
               <span class="badge badge-outline badge-success badge-sm">${escapeHtml(confidence)} success</span>
               <span class="badge badge-outline badge-warning badge-sm">${escapeHtml(statusIssueText)}</span>
               <span class="badge badge-outline badge-info badge-sm">${mappedCount} of ${totalTailwind} mapped</span>
@@ -477,6 +513,7 @@ class PdsLiveImporter extends HTMLElement {
         composed: true,
         detail: {
           sourceType: entry.sourceType || "unknown",
+          importMode: normalizeImportMode(entry.importMode || entry?.meta?.importMode),
           result: entry.resultSnapshot,
           file: {
             name: entry.fileName || "history-import",
@@ -499,11 +536,12 @@ class PdsLiveImporter extends HTMLElement {
     };
     this._selectedText = String(entry.fileContents || "");
     this._selectedSourceType = entry.sourceType || "brand-guidelines";
+    this._selectedImportMode = normalizeImportMode(entry.importMode || entry?.meta?.importMode);
     this._updateSelectionUI();
     await this._runImport({ autoTriggered: false });
   }
 
-  async _persistImportHistory({ sourceType, result }) {
+  async _persistImportHistory({ sourceType, importMode, result }) {
     const manager = await getManagerModule();
     if (typeof manager?.saveLiveImportHistory !== "function") return;
 
@@ -511,6 +549,7 @@ class PdsLiveImporter extends HTMLElement {
     await manager.saveLiveImportHistory({
       createdAt: Date.now(),
       sourceType: sourceType || "unknown",
+      importMode: normalizeImportMode(importMode || meta?.importMode),
       source: result?.source || sourceType || "unknown",
       type: result?.type || sourceType || "unknown",
       fileName: this._selectedFile?.name || "",
@@ -533,6 +572,7 @@ class PdsLiveImporter extends HTMLElement {
       resultSnapshot: {
         source: result?.source || sourceType || "unknown",
         type: result?.type || sourceType || "unknown",
+        importMode: normalizeImportMode(importMode || meta?.importMode),
         confidence: Number(result?.confidence) || 0,
         issues: Array.isArray(result?.issues) ? result.issues : [],
         template: result?.template || null,
@@ -552,6 +592,7 @@ class PdsLiveImporter extends HTMLElement {
     return [
       `Import complete: ${fileName || "(no file)"}`,
       `source=${sourceType || "unknown"}`,
+      `mode=${normalizeImportMode(result?.meta?.importMode || this._selectedImportMode)}`,
       `confidence=${confidence}`,
       `issues=${issues.length}`,
       `mapped=${coverage.mapped ?? 0}/${coverage.tailwind ?? 0}`,
@@ -559,7 +600,7 @@ class PdsLiveImporter extends HTMLElement {
     ].join("\n");
   }
 
-  _buildDiagnosticsToastHtml(result, sourceType, fileName) {
+  _buildDiagnosticsToastHtml(result, sourceType, fileName, importMode) {
     const confidencePct = typeof result?.confidence === "number"
       ? Math.round(result.confidence * 100)
       : 0;
@@ -570,11 +611,13 @@ class PdsLiveImporter extends HTMLElement {
     const mappedCount = Number(coverage.mapped ?? 0);
     const fileLabel = `${fileName || "(no file)"} (${sourceType || result?.type || "unknown"})`;
     const issueText = `${failedCount} failed / ${issues.length} issues`;
+    const modeLabel = getImportModeLabel(importMode || result?.meta?.importMode);
 
     return `
       <table class="table-bordered table-compact">
         <tbody>
           <tr><th scope="row">File</th><td>${escapeHtml(fileLabel)}</td></tr>
+          <tr><th scope="row">Mode</th><td>${escapeHtml(modeLabel)}</td></tr>
           <tr>
             <th scope="row">Status</th>
             <td class="flex gap-xs items-center">
@@ -635,6 +678,12 @@ class PdsLiveImporter extends HTMLElement {
 
   _updateSelectionUI() {
     const runButton = this.querySelector(".pds-live-import-run");
+    const importMode = this.querySelector(".pds-live-import-mode");
+
+    if (importMode) {
+      importMode.value = normalizeImportMode(this._selectedImportMode);
+      importMode.disabled = this._isImporting;
+    }
 
     if (!this._selectedFile) {
       if (runButton) runButton.disabled = true;
@@ -659,6 +708,7 @@ class PdsLiveImporter extends HTMLElement {
     this._isImporting = true;
     let result = null;
     let sourceType = this._selectedSourceType || inferSourceType(this._selectedFile, this._sources);
+    let importMode = normalizeImportMode(this._selectedImportMode);
 
     runButton?.classList.add("btn-working");
     if (runButton) runButton.disabled = true;
@@ -666,16 +716,16 @@ class PdsLiveImporter extends HTMLElement {
     try {
       const input = this._selectedText;
       const config = PDS?.currentConfig?.design || PDS?.currentConfig || null;
-      result = await manager.runLiveImport({ sourceType, input, config });
+      result = await manager.runLiveImport({ sourceType, importMode, input, config });
 
-      await this._persistImportHistory({ sourceType, result });
+      await this._persistImportHistory({ sourceType, importMode, result });
       await this._loadHistory();
 
       this.dispatchEvent(
         new CustomEvent("pds:live-import:result", {
           bubbles: true,
           composed: true,
-          detail: { sourceType, result, file: this._selectedFile },
+          detail: { sourceType, importMode, result, file: this._selectedFile },
         })
       );
     } catch (error) {
@@ -683,6 +733,7 @@ class PdsLiveImporter extends HTMLElement {
         [
           `Import failed: ${this._selectedFile?.name || "selected file"}`,
           `source=${sourceType || "unknown"}`,
+          `mode=${importMode}`,
           `error=${error?.message || "Unknown error"}`,
         ].join("\n"),
         "error"
@@ -690,9 +741,10 @@ class PdsLiveImporter extends HTMLElement {
     } finally {
       if (result) {
         const hasIssues = Array.isArray(result?.issues) && result.issues.length > 0;
-        const type = hasIssues ? "warning" : "success";
+        const validationBlocked = Boolean(result?.meta?.validationBlocked || result?.meta?.validation?.ok === false);
+        const type = validationBlocked ? "error" : hasIssues ? "warning" : "success";
         await this._toast(
-          this._buildDiagnosticsToastHtml(result, sourceType, this._selectedFile?.name),
+          this._buildDiagnosticsToastHtml(result, sourceType, this._selectedFile?.name, importMode),
           type,
           {
             html: true,
@@ -703,6 +755,7 @@ class PdsLiveImporter extends HTMLElement {
                 this._openLatestHistoryMetadata({
                   fileName: this._selectedFile?.name || "",
                   sourceType,
+                  importMode,
                 }),
               dismissOnClick: false,
             },

@@ -129,6 +129,7 @@ const INLINE_VAR_REGEX = /var\(\s*(--[^)\s,]+)\s*/g;
 const CUSTOM_PROP_REGEX = /--.+/;
 const COLOR_VALUE_REGEX = /#(?:[0-9a-f]{3,8})\b|rgba?\([^)]*\)|hsla?\([^)]*\)/gi;
 const SHIKI_BUNDLE_URL = "https://esm.sh/shiki@1.29.2?bundle";
+const SETTINGS_ONLY_ATTR = "data-pds-live-settings-only";
 
 let shikiModulePromise = null;
 
@@ -310,6 +311,7 @@ ${EDITOR_TAG} {
   background: var(--color-surface-base);
   position: sticky;
   justify-content: space-between;
+  align-items: center;
   bottom: 0;
   z-index: 1;
 }
@@ -325,6 +327,16 @@ ${EDITOR_TAG} {
 .pds-live-editor-drawer-footer > button {
   width: 100%;
   justify-content: center;
+}
+.pds-live-editor-drawer-footer .pds-live-editor-reset-btn {
+  color: var(--color-danger-700);
+  border-color: var(--color-danger-700);
+}
+.pds-live-editor-drawer-footer .pds-live-editor-reset-btn:hover,
+.pds-live-editor-drawer-footer .pds-live-editor-reset-btn:focus-visible,
+.pds-live-editor-drawer-footer .pds-live-editor-reset-btn:active {
+  color: var(--color-danger-700);
+  border-color: var(--color-danger-700);
 }
 .pds-live-editor-drawer-content {
   min-height: 100%;
@@ -411,6 +423,14 @@ function deepMerge(target = {}, source = {}) {
     }
   }
   return out;
+}
+
+function markNodeTreeAsLiveEditIgnored(node) {
+  if (!(node instanceof Element)) return;
+  node.setAttribute("data-pds-live-edit-ignore", "true");
+  node.querySelectorAll("*").forEach((element) => {
+    element.setAttribute("data-pds-live-edit-ignore", "true");
+  });
 }
 
 function titleize(value) {
@@ -2446,6 +2466,8 @@ class PdsLiveEdit extends HTMLElement {
     this._themeRefreshInFlight = null;
     this._drawerConfigFormContainer = null;
     this._drawerConfigFooter = null;
+    this._interactiveEditingEnabled = true;
+    this._interactionListenersAttached = false;
   }
 
   connectedCallback() {
@@ -2455,16 +2477,15 @@ class PdsLiveEdit extends HTMLElement {
     }
     PdsLiveEdit._activeInstance = this;
     this._connected = true;
+    if (this.hasAttribute(SETTINGS_ONLY_ATTR)) {
+      this._interactiveEditingEnabled = false;
+    }
     if (PDS && typeof PDS.addEventListener === "function") {
       PDS.addEventListener("pds:theme:changed", this._boundThemeChanged);
     }
-    if (!isHoverCapable()) return;
-
-    ensureStyles();
-    this._selectors = collectSelectors();
-    document.addEventListener("mouseover", this._boundMouseOver, true);
-    document.addEventListener("mouseout", this._boundMouseOut, true);
-    document.addEventListener("mousemove", this._boundMouseMove, true);
+    if (this._interactiveEditingEnabled) {
+      this._enableInteractiveEditing();
+    }
   }
 
   disconnectedCallback() {
@@ -2472,11 +2493,7 @@ class PdsLiveEdit extends HTMLElement {
   }
 
   _teardown() {
-    if (this._connected) {
-      document.removeEventListener("mouseover", this._boundMouseOver, true);
-      document.removeEventListener("mouseout", this._boundMouseOut, true);
-      document.removeEventListener("mousemove", this._boundMouseMove, true);
-    }
+    this._disableInteractiveEditing({ clearUI: true });
     this._connected = false;
     if (PDS && typeof PDS.removeEventListener === "function") {
       PDS.removeEventListener("pds:theme:changed", this._boundThemeChanged);
@@ -2489,6 +2506,57 @@ class PdsLiveEdit extends HTMLElement {
     if (PdsLiveEdit._activeInstance === this) {
       PdsLiveEdit._activeInstance = null;
     }
+  }
+
+  _enableInteractiveEditing() {
+    if (!isHoverCapable()) return;
+    ensureStyles();
+    this._selectors = collectSelectors();
+    if (this._interactionListenersAttached) return;
+    document.addEventListener("mouseover", this._boundMouseOver, true);
+    document.addEventListener("mouseout", this._boundMouseOut, true);
+    document.addEventListener("mousemove", this._boundMouseMove, true);
+    this._interactionListenersAttached = true;
+  }
+
+  _disableInteractiveEditing(options = {}) {
+    if (this._interactionListenersAttached) {
+      document.removeEventListener("mouseover", this._boundMouseOver, true);
+      document.removeEventListener("mouseout", this._boundMouseOut, true);
+      document.removeEventListener("mousemove", this._boundMouseMove, true);
+      this._interactionListenersAttached = false;
+    }
+
+    if (options?.clearUI !== false) {
+      this._removeActiveUI();
+    }
+  }
+
+  setInteractiveEditingEnabled(enabled = true) {
+    const next = Boolean(enabled);
+    this._interactiveEditingEnabled = next;
+
+    if (next) {
+      this.removeAttribute(SETTINGS_ONLY_ATTR);
+    } else {
+      this.setAttribute(SETTINGS_ONLY_ATTR, "true");
+    }
+
+    if (!this._connected) {
+      return next;
+    }
+
+    if (next) {
+      this._enableInteractiveEditing();
+    } else {
+      this._disableInteractiveEditing({ clearUI: true });
+    }
+
+    return next;
+  }
+
+  isInteractiveEditingEnabled() {
+    return Boolean(this._interactiveEditingEnabled);
   }
 
   async _handleThemeChanged() {
@@ -2559,6 +2627,7 @@ class PdsLiveEdit extends HTMLElement {
   }
 
   _handleMouseOver(event) {
+    if (!this._interactiveEditingEnabled) return;
     if (!event?.target || !(event.target instanceof Element)) return;
     
     // Check if we're hovering over the dropdown (including Shadow DOM elements)
@@ -2613,6 +2682,7 @@ class PdsLiveEdit extends HTMLElement {
   }
 
   _showForTarget(target) {
+    if (!this._interactiveEditingEnabled) return;
     const quickContext = collectQuickContext(target);
     const quickPaths = quickContext.paths;
     if (!quickPaths.length) return;
@@ -2657,7 +2727,11 @@ class PdsLiveEdit extends HTMLElement {
     this._lastPointer = null;
     this._dropdownMenuOpen = false;
     
-    if (this._connected) {
+    if (
+      this._connected &&
+      this._interactiveEditingEnabled &&
+      this._interactionListenersAttached
+    ) {
       this._addMouseOverListener();
     }
   }
@@ -2806,6 +2880,7 @@ class PdsLiveEdit extends HTMLElement {
 
   _addMouseOverListener() {
     if (typeof document === "undefined") return;
+    if (!this._interactiveEditingEnabled) return;
     document.addEventListener("mouseover", this._boundMouseOver, true);
   }
 
@@ -3042,6 +3117,13 @@ class PdsLiveEdit extends HTMLElement {
     button.appendChild(icon);
 
     const menu = document.createElement("menu");
+    const content = await this._buildQuickModeContent();
+    menu.appendChild(content);
+    nav.append(button, menu);
+    return nav;
+  }
+
+  async _buildQuickModeContent() {
     const content = document.createElement("div");
     content.className = "pds-live-editor-menu stack-sm";
 
@@ -3126,9 +3208,22 @@ class PdsLiveEdit extends HTMLElement {
     }
 
     content.appendChild(presetLabel);
-    menu.appendChild(content);
-    nav.append(button, menu);
-    return nav;
+    return content;
+  }
+
+  async createSharedQuickModeMenuItem() {
+    const item = document.createElement("li");
+    item.className = "pds-live-shared-quick-mode-item";
+    item.setAttribute("data-pds-live-edit-ignore", "true");
+
+    const quickModeContent = await this._buildQuickModeContent();
+    if (!quickModeContent) {
+      return item;
+    }
+
+    markNodeTreeAsLiveEditIgnored(quickModeContent);
+    item.appendChild(quickModeContent);
+    return item;
   }
 
   async _openDrawer(target, quickPaths) {
@@ -3315,7 +3410,10 @@ class PdsLiveEdit extends HTMLElement {
     importer.addEventListener("pds:live-import:result", async (event) => {
       const result = event?.detail?.result;
       if (!result) return;
-      await this._applyImportResult(result, { injectTemplate: true });
+      await this._applyImportResult(result, {
+        injectTemplate: true,
+        importMode: event?.detail?.importMode,
+      });
       this._endLiveEditSessionAfterImport();
     });
 
@@ -3382,24 +3480,10 @@ class PdsLiveEdit extends HTMLElement {
 
     const resetButton = document.createElement("button");
     resetButton.type = "button";
-    resetButton.className = "btn-outline";
+    resetButton.className = "btn-outline pds-live-editor-reset-btn";
     resetButton.textContent = "Reset Config";
     resetButton.addEventListener("click", async () => {
-      const confirmed = await PDS.ask(
-        "This clears your saved local configuration and reloads the page.",
-        {
-          title: "Reset Config?",
-          type: "confirm",
-          buttons: {
-            ok: { name: "Reset", variant: "danger" },
-            cancel: { name: "Cancel", cancel: true },
-          },
-        }
-      );
-
-      if (!confirmed) return;
-      window.localStorage.removeItem("pure-ds-config");
-      window.location.reload();
+      await this.resetConfig();
     });
 
     const drawerFooter = document.createElement("div");
@@ -3457,7 +3541,7 @@ class PdsLiveEdit extends HTMLElement {
 
     container = document.createElement("section");
     container.id = "pds-live-edit-canvas";
-    container.className = "card surface-elevated stack-md";
+    container.className = "card stack-md";
 
     const heading = document.createElement("h3");
     heading.textContent = "PDS Live Canvas";
@@ -3482,9 +3566,56 @@ class PdsLiveEdit extends HTMLElement {
     canvas.innerHTML = String(template.html || "");
   }
 
+  async openDesignSettings() {
+    const target = this._activeTarget || document.body;
+    const quickPaths = this._activeTarget ? collectQuickContext(this._activeTarget).paths : [];
+
+    await this._openDrawer(target, quickPaths);
+
+    const drawer = this._drawer;
+    if (!drawer) return;
+
+    const presetGroup = drawer.querySelector('details[data-section="preset-theme"]');
+    if (presetGroup) {
+      presetGroup.setAttribute("open", "");
+    }
+
+    const configGroup = drawer.querySelector('details[data-section="configuration"]');
+    if (configGroup) {
+      configGroup.setAttribute("open", "");
+    }
+  }
+
+  async resetConfig() {
+    let confirmed = true;
+    if (typeof PDS?.ask === "function") {
+      confirmed = await PDS.ask(
+        "This clears your saved local configuration and reloads the page.",
+        {
+          title: "Reset Config?",
+          type: "confirm",
+          buttons: {
+            ok: { name: "Reset", variant: "danger" },
+            cancel: { name: "Cancel", cancel: true },
+          },
+        }
+      );
+    }
+
+    if (!confirmed) return false;
+
+    try {
+      window.localStorage.removeItem("pure-ds-config");
+    } catch (e) {}
+
+    window.location.reload();
+    return true;
+  }
+
   async openImportDetailsFromToast(options = {}) {
     const requestedFileName = String(options?.fileName || "");
     const requestedSourceType = String(options?.sourceType || "");
+    const requestedImportMode = String(options?.importMode || "");
     const target = this._activeTarget || document.body;
     const quickPaths = this._activeTarget ? collectQuickContext(this._activeTarget).paths : [];
 
@@ -3509,6 +3640,7 @@ class PdsLiveEdit extends HTMLElement {
         importer.openHistoryDetailsByMeta({
           fileName: requestedFileName,
           sourceType: requestedSourceType,
+          importMode: requestedImportMode,
         });
       }
     };
@@ -3539,12 +3671,17 @@ class PdsLiveEdit extends HTMLElement {
   async _applyImportResult(result, options = {}) {
     if (!result || typeof result !== "object") return;
 
+    const importMode = String(options?.importMode || result?.meta?.importMode || "convert-only");
     const injectTemplate = options.injectTemplate !== false;
+    const validationBlocked = Boolean(result?.meta?.validationBlocked || result?.meta?.validation?.ok === false);
+    const shouldApplyPatch =
+      options.applyDesignPatch === true ||
+      (options.applyDesignPatch !== false && importMode !== "convert-only" && !validationBlocked);
     const patch = result.designPatch;
     const patchKeys =
       patch && typeof patch === "object" ? Object.keys(patch).filter(Boolean) : [];
 
-    if (patchKeys.length > 0) {
+    if (shouldApplyPatch && patchKeys.length > 0) {
       await applyDesignPatch(patch);
     }
 

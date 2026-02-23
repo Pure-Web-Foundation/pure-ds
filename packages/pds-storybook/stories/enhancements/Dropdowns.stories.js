@@ -119,6 +119,39 @@ export const WithIcons = () => html`
   </nav>
 `;
 
+export const WithSemanticSeparator = () => html`
+  ${enhancementHeader('dropdown', {
+    description: 'Uses a semantic separator (`<li><hr /></li>`) to split normal actions from destructive actions.'
+  })}
+  <nav data-dropdown>
+    <button class="btn-outline">
+      <pds-icon icon="list" size="sm"></pds-icon>
+      Actions
+    </button>
+    <menu>
+      <li>
+        <a href="#toggle-edit">
+          <pds-icon icon="pencil" size="sm"></pds-icon>
+          Toggle live editing
+        </a>
+      </li>
+      <li>
+        <a href="#open-settings">
+          <pds-icon icon="gear" size="sm"></pds-icon>
+          Open Design Settings
+        </a>
+      </li>
+      <li><hr /></li>
+      <li>
+        <a href="#reset-config" class="text-danger">
+          <pds-icon icon="arrow-counter-clockwise" size="sm"></pds-icon>
+          Reset Config
+        </a>
+      </li>
+    </menu>
+  </nav>
+`;
+
 export const DropUp = () => html`
   ${dropdownStoryStyles}
   ${enhancementHeader('dropdown', {

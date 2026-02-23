@@ -180,6 +180,36 @@ function __emitPDSReady(detail) {
   }
 }
 
+function __emitPDSConfigChanged(detail = {}) {
+  const hasCustomEvent = typeof CustomEvent === "function";
+  const payload = {
+    at: Date.now(),
+    ...detail,
+  };
+
+  try {
+    const changedEvent = hasCustomEvent
+      ? new CustomEvent("pds:config-changed", { detail: payload })
+      : new Event("pds:config-changed");
+    PDS.dispatchEvent(changedEvent);
+  } catch (e) {}
+
+  if (typeof document !== "undefined") {
+    if (hasCustomEvent) {
+      const eventOptions = { detail: payload, bubbles: true, composed: true };
+      try {
+        document.dispatchEvent(
+          new CustomEvent("pds:config-changed", eventOptions)
+        );
+      } catch (e) {}
+    } else {
+      try {
+        document.dispatchEvent(new Event("pds:config-changed"));
+      } catch (e) {}
+    }
+  }
+}
+
 if (typeof window !== "undefined") {
   // @ts-ignore
   window.PDS = PDS;
@@ -382,6 +412,7 @@ async function start(config) {
   const { startLive } = await import(managerUrl);
   return startLive(PDS, rest, {
     emitReady: __emitPDSReady,
+    emitConfigChanged: __emitPDSConfigChanged,
     applyResolvedTheme: __applyResolvedTheme,
     setupSystemListenerIfNeeded: __setupSystemListenerIfNeeded,
   });
@@ -490,6 +521,10 @@ async function staticInit(config) {
             (s) => s._pds !== true
           );
           document.adoptedStyleSheets = [...others, stylesSheet];
+          __emitPDSConfigChanged({
+            mode: "static",
+            source: "static:styles-applied",
+          });
         }
       } catch (e) {
         __defaultLog.call(PDS, "warn", "Failed to apply static styles:", e);

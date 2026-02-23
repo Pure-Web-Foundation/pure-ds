@@ -175,29 +175,72 @@ function enhanceDropdown(elem) {
     menu.style.removeProperty("bottom");
     menu.style.removeProperty("margin-top");
     menu.style.removeProperty("margin-bottom");
+    menu.style.removeProperty("max-width");
+    menu.style.removeProperty("max-inline-size");
+    menu.style.removeProperty("max-height");
+    menu.style.removeProperty("overflow");
+  };
+
+  const reattachFloatingMenu = () => {
+    if (menu.getAttribute("aria-hidden") !== "false") return;
+    clearFloatingMenuPosition();
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        positionFloatingMenu();
+      });
+    });
   };
 
   const positionFloatingMenu = () => {
     if (menu.getAttribute("aria-hidden") !== "false") return;
     const anchorRect = (trigger || elem).getBoundingClientRect();
+    const viewport = window.visualViewport;
+    const viewportWidth =
+      viewport?.width || document.documentElement?.clientWidth || window.innerWidth;
+    const viewportHeight =
+      viewport?.height || document.documentElement?.clientHeight || window.innerHeight;
+    const viewportOffsetLeft = viewport?.offsetLeft || 0;
+    const viewportOffsetTop = viewport?.offsetTop || 0;
+    const maxMenuWidth = Math.max(1, viewportWidth - VIEWPORT_PADDING * 2);
+    const maxMenuHeight = Math.max(1, viewportHeight - VIEWPORT_PADDING * 2);
+
+    menu.style.maxWidth = `${Math.round(maxMenuWidth)}px`;
+    menu.style.maxInlineSize = `${Math.round(maxMenuWidth)}px`;
+    menu.style.maxHeight = `${Math.round(maxMenuHeight)}px`;
+    menu.style.overflow = "auto";
+
     const { width: menuWidth, height: menuHeight } = measureMenuSize();
     const spacing = readLengthToken("--spacing-2", 8);
     const direction = resolveDirection();
     const align = resolveAlign();
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
 
     elem.dataset.dropdownDirection = direction;
     elem.dataset.dropdownAlign = align;
 
     let left = align === "right" ? anchorRect.right - menuWidth : anchorRect.left;
-    left = Math.max(VIEWPORT_PADDING, Math.min(left, viewportWidth - menuWidth - VIEWPORT_PADDING));
+    if (menuWidth >= maxMenuWidth - 1) {
+      left = viewportOffsetLeft + VIEWPORT_PADDING;
+    } else {
+      left = Math.max(
+        viewportOffsetLeft + VIEWPORT_PADDING,
+        Math.min(
+          left,
+          viewportOffsetLeft + viewportWidth - menuWidth - VIEWPORT_PADDING,
+        ),
+      );
+    }
 
     let top =
       direction === "up"
         ? anchorRect.top - spacing - menuHeight
         : anchorRect.bottom + spacing;
-    top = Math.max(VIEWPORT_PADDING, Math.min(top, viewportHeight - menuHeight - VIEWPORT_PADDING));
+    top = Math.max(
+      viewportOffsetTop + VIEWPORT_PADDING,
+      Math.min(
+        top,
+        viewportOffsetTop + viewportHeight - menuHeight - VIEWPORT_PADDING,
+      ),
+    );
 
     menu.style.position = "fixed";
     menu.style.left = `${Math.round(left)}px`;
@@ -223,6 +266,32 @@ function enhanceDropdown(elem) {
     repositionHandler = null;
   };
 
+  let configChangedHandler = null;
+  const bindConfigChanged = () => {
+    if (configChangedHandler || typeof document === "undefined") return;
+    configChangedHandler = () => {
+      if (menu.getAttribute("aria-hidden") !== "false") return;
+      elem.dataset.dropdownDirection = resolveDirection();
+      elem.dataset.dropdownAlign = resolveAlign();
+      reattachFloatingMenu();
+      setTimeout(() => {
+        if (menu.getAttribute("aria-hidden") !== "false") return;
+        reattachFloatingMenu();
+      }, 50);
+      setTimeout(() => {
+        if (menu.getAttribute("aria-hidden") !== "false") return;
+        reattachFloatingMenu();
+      }, 150);
+    };
+    document.addEventListener("pds:config-changed", configChangedHandler);
+  };
+
+  const unbindConfigChanged = () => {
+    if (!configChangedHandler || typeof document === "undefined") return;
+    document.removeEventListener("pds:config-changed", configChangedHandler);
+    configChangedHandler = null;
+  };
+
   // Store click handler reference for cleanup
   let clickHandler = null;
 
@@ -232,7 +301,8 @@ function enhanceDropdown(elem) {
     menu.setAttribute("aria-hidden", "false");
     trigger?.setAttribute("aria-expanded", "true");
     bindReposition();
-    requestAnimationFrame(positionFloatingMenu);
+    bindConfigChanged();
+    reattachFloatingMenu();
 
     // Add click-outside handler when opening
     if (!clickHandler) {
@@ -256,6 +326,7 @@ function enhanceDropdown(elem) {
     menu.setAttribute("aria-hidden", "true");
     trigger?.setAttribute("aria-expanded", "false");
     unbindReposition();
+    unbindConfigChanged();
     clearFloatingMenuPosition();
 
     // Remove click-outside handler when closing

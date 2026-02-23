@@ -58,20 +58,101 @@ function whenDocumentBodyReady(callback) {
   document.addEventListener("DOMContentLoaded", onReady, { once: true });
 }
 
-function mountLiveEdit() {
+function mountLiveEdit(options = {}) {
+  const interactive = options?.interactive !== false;
   if (typeof document === "undefined") return;
   whenDocumentBodyReady(() => {
     if (!document.querySelector("pds-live-edit")) {
       const liveEditor = document.createElement("pds-live-edit");
+      if (!interactive) {
+        liveEditor.setAttribute("data-pds-live-settings-only", "true");
+      }
       document.body.appendChild(liveEditor);
+    } else if (!interactive) {
+      const existing = document.querySelector("pds-live-edit");
+      if (existing) {
+        existing.setAttribute("data-pds-live-settings-only", "true");
+      }
     }
   });
+}
+
+function waitFor(ms = 0) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, Math.max(0, Number(ms) || 0));
+  });
+}
+
+async function ensureLiveEditInstance(options = {}) {
+  const mountIfMissing = options?.mountIfMissing !== false;
+  const interactive = options?.interactive !== false;
+  const requiredMethod =
+    typeof options?.requiredMethod === "string" && options.requiredMethod.trim()
+      ? options.requiredMethod.trim()
+      : "openDesignSettings";
+  const timeoutMs = Number.isFinite(Number(options?.timeoutMs))
+    ? Number(options.timeoutMs)
+    : 2400;
+
+  if (typeof document === "undefined") return null;
+  if (!mountIfMissing && !document.querySelector("pds-live-edit")) {
+    return null;
+  }
+  if (mountIfMissing) {
+    mountLiveEdit({ interactive });
+  }
+
+  const startedAt = Date.now();
+  while (Date.now() - startedAt < timeoutMs) {
+    const liveEditor = document.querySelector("pds-live-edit");
+    if (!liveEditor) {
+      await waitFor(40);
+      continue;
+    }
+
+    if (typeof liveEditor?.[requiredMethod] === "function") {
+      return liveEditor;
+    }
+
+    if (
+      typeof customElements !== "undefined" &&
+      typeof customElements.whenDefined === "function"
+    ) {
+      try {
+        await Promise.race([customElements.whenDefined("pds-live-edit"), waitFor(80)]);
+      } catch (error) {
+        await waitFor(40);
+      }
+      continue;
+    }
+
+    await waitFor(40);
+  }
+
+  const fallback = document.querySelector("pds-live-edit");
+  if (fallback && typeof fallback?.[requiredMethod] === "function") {
+    return fallback;
+  }
+  return null;
 }
 
 function unmountLiveEdit() {
   if (typeof document === "undefined") return;
   const editors = document.querySelectorAll("pds-live-edit");
-  editors.forEach((editor) => editor.remove());
+  editors.forEach((editor) => {
+    if (typeof editor?.setInteractiveEditingEnabled === "function") {
+      editor.setInteractiveEditingEnabled(false);
+    }
+    editor.remove();
+  });
+}
+
+function getLiveEditInteractiveState(liveEditor) {
+  if (!liveEditor) return false;
+  if (typeof liveEditor.isInteractiveEditingEnabled === "function") {
+    return Boolean(liveEditor.isInteractiveEditingEnabled());
+  }
+  return true;
 }
 
 function ensureLiveEditToggleStyles() {
@@ -81,11 +162,64 @@ function ensureLiveEditToggleStyles() {
   const style = document.createElement("style");
   style.id = LIVE_EDIT_TOGGLE_STYLE_ID;
   style.textContent = /*css*/`
-    :where(#${LIVE_EDIT_TOGGLE_ID}) {
+    :where(.pds-live-edit-toggle-nav) {
       position: fixed;
       top: var(--spacing-3);
       right: var(--spacing-3);
       z-index: var(--z-dropdown, 1050);
+    }
+
+    :where(.pds-live-edit-toggle-nav menu) {
+      min-width: 220px;
+    }
+
+    :where(.pds-live-edit-toggle-nav menu a[data-pds-live-action]) {
+      cursor: pointer;
+    }
+
+    :where(.pds-live-edit-toggle-nav menu li.pds-live-shared-quick-mode-item) {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    :where(.pds-live-edit-toggle-nav menu li.pds-live-shared-quick-mode-item .pds-live-editor-menu) {
+      display: grid;
+      gap: var(--spacing-2);
+      padding: var(--spacing-2);
+      border-bottom: var(--border-width-thin) solid var(--color-border);
+    }
+
+    :where(.pds-live-edit-toggle-nav menu li.pds-live-shared-quick-mode-item label) {
+      display: grid;
+      gap: var(--spacing-1);
+      margin: 0;
+    }
+
+    :where(.pds-live-edit-toggle-nav menu li.pds-live-shared-quick-mode-item label > span) {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+    }
+
+    :where(.pds-live-edit-toggle-nav menu li > hr) {
+      border: 0;
+      border-top: var(--border-width-thin) solid var(--color-border);
+      margin: var(--spacing-2) 0 var(--spacing-1) 0;
+    }
+
+    :where(.pds-live-edit-toggle-nav menu li:has(> hr)) {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      pointer-events: none;
+    }
+
+    :where(.pds-live-edit-toggle-nav menu a[data-pds-live-action="reset-config"]) {
+      color: var(--color-danger-700);
+    }
+
+    :where(.pds-live-edit-toggle-nav menu a[data-pds-live-action="reset-config"] pds-icon) {
+      color: var(--color-danger-700);
     }
   `;
   document.head.appendChild(style);
@@ -98,29 +232,71 @@ function updateLiveEditToggleState(button, isEnabled) {
   button.classList.toggle("btn-secondary", !isEnabled);
   button.setAttribute("aria-pressed", isEnabled ? "true" : "false");
 
-  const label = isEnabled
-    ? "Disable live edit mode"
-    : "Enable live edit mode";
+  const label = "PDS Manager";
   button.setAttribute("aria-label", label);
   button.setAttribute("title", label);
 }
 
-function ensureLiveEditToggleButton() {
+async function ensureLiveEditToggleButton() {
   if (typeof document === "undefined") return null;
 
   ensureLiveEditToggleStyles();
 
   let button = document.getElementById(LIVE_EDIT_TOGGLE_ID);
   if (!button) {
+    const nav = document.createElement("nav");
+    nav.className = "pds-live-edit-toggle-nav";
+    nav.setAttribute("data-dropdown", "");
+    nav.setAttribute("data-mode", "auto");
+    nav.setAttribute("data-pds-live-edit-ignore", "true");
+
     button = document.createElement("button");
     button.id = LIVE_EDIT_TOGGLE_ID;
     button.type = "button";
     button.className = "icon-only btn-secondary";
     button.setAttribute("data-pds-live-edit-ignore", "true");
     button.innerHTML = '<pds-icon icon="cursor-click" size="sm"></pds-icon>';
+
+    const menu = document.createElement("menu");
+    menu.setAttribute("data-pds-live-edit-ignore", "true");
+
+    const createItem = (action, label, icon) => {
+      const li = document.createElement("li");
+      const link = document.createElement("a");
+      link.href = "#";
+      link.dataset.pdsLiveAction = action;
+      link.setAttribute("data-pds-live-edit-ignore", "true");
+
+      const iconEl = document.createElement("pds-icon");
+      iconEl.setAttribute("icon", icon);
+      iconEl.setAttribute("size", "sm");
+
+      link.append(iconEl, document.createTextNode(` ${label}`));
+      li.appendChild(link);
+      return li;
+    };
+
+    const createSeparator = () => {
+      const li = document.createElement("li");
+      li.setAttribute("data-pds-live-edit-ignore", "true");
+      const hr = document.createElement("hr");
+      hr.setAttribute("aria-hidden", "true");
+      li.appendChild(hr);
+      return li;
+    };
+
+    menu.appendChild(createItem("toggle", "Toggle live editing", "pencil"));
+    menu.appendChild(createItem("open-settings", "Open Settings", "gear"));
+    menu.appendChild(createSeparator());
+    menu.appendChild(createItem("reset-config", "Reset Config", "arrow-counter-clockwise"));
+
+    await ensureSharedQuickModeToggleMenuItem(menu);
+
+    nav.append(button, menu);
+
     whenDocumentBodyReady(() => {
       if (!document.getElementById(LIVE_EDIT_TOGGLE_ID)) {
-        document.body.appendChild(button);
+        document.body.appendChild(nav);
       }
     });
   }
@@ -128,40 +304,145 @@ function ensureLiveEditToggleButton() {
   return button;
 }
 
+async function ensureSharedQuickModeToggleMenuItem(menu) {
+  if (!(menu instanceof Element)) return;
+  if (menu.__pdsLiveSharedMenuItemInFlight) {
+    return menu.__pdsLiveSharedMenuItemInFlight;
+  }
+
+  menu.__pdsLiveSharedMenuItemInFlight = (async () => {
+  menu
+    .querySelectorAll("li.pds-live-shared-quick-mode-item")
+    .forEach((node) => node.remove());
+
+  const liveEditor = await ensureLiveEditInstance({
+    mountIfMissing: true,
+    interactive: false,
+    requiredMethod: "createSharedQuickModeMenuItem",
+    timeoutMs: 7000,
+  });
+
+  if (!liveEditor || typeof liveEditor.createSharedQuickModeMenuItem !== "function") {
+    return;
+  }
+
+  const sharedItem = await liveEditor.createSharedQuickModeMenuItem();
+  if (!(sharedItem instanceof Element)) return;
+
+  sharedItem.classList.add("pds-live-shared-quick-mode-item");
+
+  const resetLink = menu.querySelector('a[data-pds-live-action="reset-config"]');
+  const resetItem = resetLink?.closest("li") || null;
+  const previousItem = resetItem?.previousElementSibling || null;
+  const separatorBeforeReset =
+    previousItem && previousItem.querySelector?.(":scope > hr") ? previousItem : null;
+
+  if (separatorBeforeReset) {
+    menu.insertBefore(sharedItem, separatorBeforeReset);
+    return;
+  }
+
+  if (resetItem) {
+    menu.insertBefore(sharedItem, resetItem);
+    return;
+  }
+
+  menu.appendChild(sharedItem);
+  })();
+
+  try {
+    await menu.__pdsLiveSharedMenuItemInFlight;
+  } finally {
+    menu.__pdsLiveSharedMenuItemInFlight = null;
+  }
+}
+
 function teardownLiveEditToggle() {
   if (typeof document === "undefined") return;
   const button = document.getElementById(LIVE_EDIT_TOGGLE_ID);
-  if (button) button.remove();
+  if (button) {
+    const nav = button.closest(".pds-live-edit-toggle-nav");
+    if (nav) {
+      nav.remove();
+    } else {
+      button.remove();
+    }
+  }
   const style = document.getElementById(LIVE_EDIT_TOGGLE_STYLE_ID);
   if (style) style.remove();
   unmountLiveEdit();
 }
 
-function initializeLiveEditToggle() {
+async function initializeLiveEditToggle() {
   if (typeof document === "undefined") return;
-  const toggleButton = ensureLiveEditToggleButton();
+  const toggleButton = await ensureLiveEditToggleButton();
   if (!toggleButton) return;
 
-  const setLiveEditEnabled = (enabled) => {
+  const setLiveEditEnabled = async (enabled) => {
     if (enabled) {
-      mountLiveEdit();
+      const liveEditor = await ensureLiveEditInstance({ mountIfMissing: true });
+      if (liveEditor && typeof liveEditor.setInteractiveEditingEnabled === "function") {
+        liveEditor.setInteractiveEditingEnabled(true);
+      }
     } else {
       unmountLiveEdit();
     }
     updateLiveEditToggleState(toggleButton, enabled);
   };
 
-  setLiveEditEnabled(false);
+  void setLiveEditEnabled(false);
 
-  toggleButton.onclick = () => {
-    const isEnabled = Boolean(document.querySelector("pds-live-edit"));
-    if (isEnabled) {
-      setLiveEditEnabled(false);
+  const actionHost = toggleButton.closest(".pds-live-edit-toggle-nav") || toggleButton;
+  if (toggleButton.__pdsLiveEditActionHandler) {
+    actionHost.removeEventListener("click", toggleButton.__pdsLiveEditActionHandler);
+  }
+
+  const actionHandler = async (event) => {
+    const actionElement = event.target?.closest?.("[data-pds-live-action]");
+    if (!actionElement) return;
+
+    event.preventDefault();
+    const action = String(actionElement.dataset.pdsLiveAction || "");
+
+    if (action === "toggle") {
+      const liveEditor = await ensureLiveEditInstance({ mountIfMissing: false });
+      const isEnabled = getLiveEditInteractiveState(liveEditor);
+      await setLiveEditEnabled(!isEnabled);
       return;
     }
 
-    setLiveEditEnabled(true);
+    if (action === "open-settings") {
+      const liveEditor = await ensureLiveEditInstance({
+        mountIfMissing: true,
+        requiredMethod: "openDesignSettings",
+        interactive: false,
+      });
+      if (liveEditor && typeof liveEditor.setInteractiveEditingEnabled === "function") {
+        liveEditor.setInteractiveEditingEnabled(false);
+      }
+      if (liveEditor && typeof liveEditor.openDesignSettings === "function") {
+        updateLiveEditToggleState(toggleButton, false);
+        await liveEditor.openDesignSettings();
+      }
+      return;
+    }
+
+    if (action === "reset-config") {
+      const liveEditor = await ensureLiveEditInstance({
+        mountIfMissing: true,
+        requiredMethod: "resetConfig",
+        interactive: false,
+      });
+      updateLiveEditToggleState(toggleButton, false);
+      if (liveEditor && typeof liveEditor.resetConfig === "function") {
+        await liveEditor.resetConfig();
+      }
+      return;
+    }
   };
+
+  toggleButton.__pdsLiveEditActionHandler = actionHandler;
+  actionHost.addEventListener("click", actionHandler);
 
   if (toggleButton.__pdsLiveEditDisableHandler) {
     document.removeEventListener("pds:live-edit:disable", toggleButton.__pdsLiveEditDisableHandler);
@@ -171,11 +452,11 @@ function initializeLiveEditToggle() {
   }
 
   const disableHandler = () => {
-    setLiveEditEnabled(false);
+    void setLiveEditEnabled(false);
   };
 
   const enableHandler = () => {
-    setLiveEditEnabled(true);
+    void setLiveEditEnabled(true);
   };
 
   toggleButton.__pdsLiveEditDisableHandler = disableHandler;
@@ -383,7 +664,7 @@ function buildPresetOmniboxSettings(PDS, options = {}) {
   };
 }
 
-async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIfNeeded }) {
+async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIfNeeded, emitConfigChanged }) {
   if (__liveApiReady) return;
 
   const [ontologyModule, enumsModule, queryModule, commonModule] =
@@ -413,7 +694,14 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
   PDS.getConfigEditorMetadata = getDesignConfigEditorMetadata;
   PDS.enhancerMetadata = defaultPDSEnhancerMetadata;
   PDS.applyStyles = function(generator) {
-    return applyStyles(generator || Generator.instance);
+    const targetGenerator = generator || Generator.instance;
+    applyStyles(targetGenerator);
+    if (typeof emitConfigChanged === "function") {
+      emitConfigChanged({
+        mode: "live",
+        source: "live:styles-applied",
+      });
+    }
   };
   PDS.adoptLayers = function(shadowRoot, layers, additionalSheets) {
     return adoptLayers(
@@ -492,7 +780,7 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
       }
     }
 
-    await applyStyles(generator);
+    PDS.applyStyles?.(generator);
 
     const presetInfo = normalized.presetInfo || { id: presetId, name: presetId };
     PDS.currentPreset = presetInfo;
@@ -602,7 +890,7 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
 }
 
 
-export async function startLive(PDS, config, { emitReady, applyResolvedTheme, setupSystemListenerIfNeeded }) {
+export async function startLive(PDS, config, { emitReady, emitConfigChanged, applyResolvedTheme, setupSystemListenerIfNeeded }) {
   if (!config || typeof config !== "object") {
     throw new Error(
       "PDS.start({ mode: 'live', ... }) requires a valid configuration object"
@@ -612,7 +900,7 @@ export async function startLive(PDS, config, { emitReady, applyResolvedTheme, se
   config = applyStoredConfigOverrides(config);
 
   // Attach live-only API surface (ontology, presets, query, etc.)
-  await __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIfNeeded });
+  await __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIfNeeded, emitConfigChanged });
   attachFoucListener(PDS);
 
   // FOUC Prevention: Use constructable stylesheet for synchronous, immediate effect
@@ -755,7 +1043,7 @@ export async function startLive(PDS, config, { emitReady, applyResolvedTheme, se
 
     // Apply styles globally if requested (default behavior)
     if (applyGlobalStyles) {
-      await applyStyles(Generator.instance);
+      PDS.applyStyles?.(Generator.instance);
 
       if (typeof window !== "undefined") {
         setTimeout(() => {
@@ -829,12 +1117,19 @@ export async function startLive(PDS, config, { emitReady, applyResolvedTheme, se
     PDS.configFormSchema = buildDesignConfigFormSchema(
       normalized.generatorConfig.design
     );
+    if (typeof emitConfigChanged === "function") {
+      emitConfigChanged({
+        mode: "live",
+        source: "live:config-applied",
+        preset: normalized.generatorConfig.preset,
+      });
+    }
 
     if (typeof document !== "undefined") {
       try {
         if (config?.liveEdit) {
           setTimeout(() => {
-            initializeLiveEditToggle();
+            void initializeLiveEditToggle();
           }, 0);
         } else {
           teardownLiveEditToggle();

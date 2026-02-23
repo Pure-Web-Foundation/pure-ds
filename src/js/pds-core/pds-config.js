@@ -1515,7 +1515,7 @@ export const presets = {
     },
     typography: {
       baseFontSize: 17,
-      fontScale: 1.5, // More dramatic scale for breathing room
+      fontScale: 1.35, // More dramatic scale for breathing room
       fontFamilyHeadings:
         'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
       fontFamilyBody:
@@ -1580,7 +1580,7 @@ export const presets = {
     },
     typography: {
       baseFontSize: 16,
-      fontScale: 1.618, // Golden ratio for futuristic feel
+      fontScale: 1.318, // Golden ratio for futuristic feel
       fontFamilyHeadings: "'Space Grotesk', system-ui, sans-serif",
       fontFamilyBody: "'Space Grotesk', system-ui, sans-serif",
     },
@@ -1652,7 +1652,7 @@ export const presets = {
     },
     typography: {
       baseFontSize: 16,
-      fontScale: 1.5,
+      fontScale: 1.3,
       fontFamilyHeadings: "'Quicksand', 'Comfortaa', sans-serif",
       fontFamilyBody: "'Quicksand', 'Comfortaa', sans-serif",
     },
@@ -1747,7 +1747,7 @@ export const presets = {
     },
     typography: {
       baseFontSize: 17,
-      fontScale: 1.5,
+      fontScale: 1.3,
       fontFamilyHeadings: "'Playfair Display', 'Georgia', serif",
       fontFamilyBody: "'Crimson Text', 'Garamond', serif",
       fontWeightNormal: 400,
@@ -1755,7 +1755,7 @@ export const presets = {
     },
     spatialRhythm: {
       baseUnit: 4,
-      scaleRatio: 1.333,
+      scaleRatio: 1.3,
     },
     shape: {
       radiusSize: enums.RadiusSizes.small, // Subtle elegance
@@ -1931,7 +1931,7 @@ export const presets = {
     },
     typography: {
       baseFontSize: 17,
-      fontScale: 1.414,
+      fontScale: 1.35,
       fontFamilyHeadings: "'Merriweather', Georgia, serif",
       fontFamilyBody: "'Noto Sans', system-ui, -apple-system, sans-serif",
     },
@@ -2292,8 +2292,8 @@ presets.default = {
   tags: ["app", "featured"],
   description: "Fresh and modern design system with balanced aesthetics and usability",
   options: {
-    liquidGlassEffects: true,
-    backgroundMesh: 4,
+    liquidGlassEffects: false,
+    backgroundMesh: 0,
   },
   
   form: {
