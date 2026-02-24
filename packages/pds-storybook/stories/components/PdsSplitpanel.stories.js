@@ -24,10 +24,10 @@ const splitpanelStoryStyles = html`
     }
     [slot="left"], [slot="right"] { padding: var(--spacing-2); }
     .story-splitpanel-console { 
-      background: #1e1e1e; 
-      color: #d4d4d4;
-      & .story-cmd { color: #4ec9b0; }
-      & .story-meta { color: #6a9955; }
+      background: var(--color-gray-900); 
+      color: var(--color-gray-200);
+      & .story-cmd { color: var(--color-primary-400); }
+      & .story-meta { color: var(--color-success-500); }
     }
     .story-splitpanel-stat { 
       font-size: 2.5rem; 

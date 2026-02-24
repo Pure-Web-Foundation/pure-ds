@@ -1,11 +1,29 @@
 #!/usr/bin/env node
 
 import { mkdir, readFile, writeFile, access } from 'fs/promises';
+import { existsSync } from 'fs';
 import path from 'path';
 
 const projectRoot = process.cwd();
 const serverCommand = 'node';
-const serverArgs = ['./node_modules/@pure-ds/core/packages/pds-cli/bin/pds-mcp-server.js'];
+
+function resolveServerScriptPath() {
+  const candidatePaths = [
+    './node_modules/@pure-ds/core/packages/pds-cli/bin/pds-mcp-server.js',
+    './packages/pds-cli/bin/pds-mcp-server.js',
+  ];
+
+  for (const relativePath of candidatePaths) {
+    const absolutePath = path.join(projectRoot, relativePath);
+    if (existsSync(absolutePath)) {
+      return relativePath;
+    }
+  }
+
+  return candidatePaths[0];
+}
+
+const serverArgs = [resolveServerScriptPath()];
 
 async function readJsonIfExists(filePath) {
   try {

@@ -461,13 +461,13 @@ export const ColoredIcons = () => html`
     </header>
     
     <article class="card stack-md">
-      <h4>Using CSS Color Values</h4>
+      <h4>Using Design Tokens (Explicit)</h4>
       <div class="flex gap-md flex-wrap items-center">
-        <pds-icon icon="heart" size="lg" color="red"></pds-icon>
-        <pds-icon icon="star" size="lg" color="gold"></pds-icon>
-        <pds-icon icon="check" size="lg" color="green"></pds-icon>
-        <pds-icon icon="x" size="lg" color="crimson"></pds-icon>
-        <pds-icon icon="info" size="lg" color="dodgerblue"></pds-icon>
+        <pds-icon icon="heart" size="lg" color="var(--color-danger-500)"></pds-icon>
+        <pds-icon icon="star" size="lg" color="var(--color-warning-500)"></pds-icon>
+        <pds-icon icon="check" size="lg" color="var(--color-success-500)"></pds-icon>
+        <pds-icon icon="x" size="lg" color="var(--color-danger-600)"></pds-icon>
+        <pds-icon icon="info" size="lg" color="var(--color-info-500)"></pds-icon>
       </div>
     </article>
 
@@ -504,8 +504,8 @@ export const ColoredIcons = () => html`
 
     <article class="card surface-elevated stack-md">
       <h4>Usage</h4>
-      <pre><code>&lt;!-- Named CSS color --&gt;
-&lt;pds-icon icon="heart" color="red"&gt;&lt;/pds-icon&gt;
+      <pre><code>&lt;!-- Design token (recommended) --&gt;
+    &lt;pds-icon icon="heart" color="var(--color-danger-500)"&gt;&lt;/pds-icon&gt;
 
 &lt;!-- Design token (recommended) --&gt;
 &lt;pds-icon icon="check" color="var(--color-success-500)"&gt;&lt;/pds-icon&gt;

@@ -1,11 +1,5 @@
 import { html } from "#pds/lit";
-import { PDS } from "#pds";
-const ensureParse = () => {
-  if (PDS?.parse) {
-    return PDS.parse;
-  }
-  return (html) => new DOMParser().parseFromString(html, "text/html").body.childNodes;
-};
+const ensureParse = () => (html) => new DOMParser().parseFromString(html, "text/html").body.childNodes;
 
 const sampleHtml = '<div class="card"><p>Hello PDS</p></div><span>World</span>';
 

@@ -54,7 +54,7 @@ const zIndexStoryStyles = html`
         border-radius: var(--radius-md);
         inset: 0;
         z-index: var(--z-modal);
-        background: rgba(0, 0, 0, 0.1);
+        background: var(--color-surface-translucent-25);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -72,7 +72,7 @@ const zIndexStoryStyles = html`
         right: 20px;
         z-index: var(--z-notification);
         background: var(--color-success);
-        color: var(--color-text-inverse, #ffffff);
+        color: var(--color-text-inverse);
         min-width: 15.625rem;
       }
     }
@@ -211,7 +211,7 @@ export const VisualDemo = {
         
       </div>
       
-      <aside class="callout callout-neutral">
+      <aside class="callout">
         <p>
           <strong>Note:</strong> In this demo, elements are positioned to overlap. 
           Notice how higher z-index values appear above lower ones, with notifications at the top.

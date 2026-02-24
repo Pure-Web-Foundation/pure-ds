@@ -3194,12 +3194,14 @@ tbody {
   border-radius: var(--radius-md);
   margin: 0 0 var(--spacing-4) 0;
   border-left: calc(var(--border-width-thick) + var(--border-width-thin)) solid;
+  border-color: var(--color-border);
   display: flex;
   align-items: flex-start;
   gap: var(--spacing-3);
   font-size: var(--font-size-sm);
   line-height: var(--font-line-height-relaxed);
-  background-color: red;
+  background-color: var(--color-surface-subtle);
+  color: var(--color-text-primary);
   
   & > *:last-child {
     margin-bottom: 0;

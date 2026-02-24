@@ -593,7 +593,7 @@ Inject custom HTML content before/after fields, create fully custom renderers, o
       <div class="flex gap-xs">
         \${[1,2,3,4,5].map(n => html\`
           <button type="button" @click=\${() => field.set(n)}>
-            \${n <= field.value ? '?' : '?'}
+            \${n <= field.value ? '★' : '☆'}
           </button>
         \`)}
       </div>
@@ -873,7 +873,7 @@ export const WithInitialData = {
         .uiSchema=${simpleUiSchema}
         .values=${initialValues}
         .options=${options}
-        @pw:value-change=${(e) => console.log("?? Value changed:", e.detail)}
+        @pw:value-change=${(e) => console.log("🔄 Value changed:", e.detail)}
         @pw:submit=${handleSubmit}
       ></pds-form>
     `;
@@ -997,7 +997,7 @@ export const WithRangeSliders = {
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
         .options=${options}
-        @pw:value-change=${(e) => console.log("??? Value changed:", e.detail)}
+        @pw:value-change=${(e) => console.log("🎚️ Value changed:", e.detail)}
         @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-form>
     `;
@@ -1024,7 +1024,7 @@ export const WithIcons = {
         password: {
           type: "string",
           title: "Password",
-          examples: ["��������"],
+          examples: ["••••••••"],
         },
         website: {
           type: "string",
@@ -1456,7 +1456,7 @@ The grid automatically creates as many columns as will fit, wrapping to new rows
 
     return html`
       <div class="callout callout-info">
-        <p><strong>?? Try resizing your browser window!</strong></p>
+        <p><strong>📱 Try resizing your browser window!</strong></p>
         <p>The grid automatically adjusts the number of columns based on available space. Fields maintain a minimum width of ~200px and wrap to new rows as needed.</p>
       </div>
       <pds-form
@@ -1622,7 +1622,7 @@ export const WithTabsLayout = {
                 password: {
                   type: "string",
                   title: "New Password",
-                  examples: ["��������"],
+                  examples: ["••••••••"],
                 },
               },
             },
@@ -2035,7 +2035,7 @@ export const WithDialogForms = {
         .uiSchema=${uiSchema}
         .values=${initialValues}
         @pw:submit=${(e) => toastFormData(e.detail)}
-        @pw:dialog-submit=${(e) => console.log("?? Dialog saved:", e.detail)}
+        @pw:dialog-submit=${(e) => console.log("📝 Dialog saved:", e.detail)}
       ></pds-form>
     `;
   },
@@ -2114,7 +2114,7 @@ This pattern is ideal for fields like "Priority", "Status", "Category", or any s
       <pds-form
         .jsonSchema=${schema}
         .values=${initialValues}
-        @pw:value-change=${(e) => console.log("?? Value changed:", e.detail)}
+        @pw:value-change=${(e) => console.log("🔄 Value changed:", e.detail)}
         @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-form>
     `;
@@ -2394,14 +2394,14 @@ export const WithArrayFields = {
           )}
         @pw:array-reorder=${(e) =>
           console.log(
-            "?? Item moved from",
+            "🔄 Item moved from",
             e.detail.from,
             "to",
             e.detail.to,
             "in:",
             e.detail.path
           )}
-        @pw:value-change=${(e) => console.log("?? Value changed:", e.detail)}
+        @pw:value-change=${(e) => console.log("🔄 Value changed:", e.detail)}
         @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-form>
     `;
@@ -2601,7 +2601,7 @@ export const ComprehensiveExample = {
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
         .options=${options}
-        @pw:value-change=${(e) => console.log("?? Changed:", e.detail)}
+        @pw:value-change=${(e) => console.log("🔄 Changed:", e.detail)}
         @pw:submit=${(e) => toastFormData(e.detail)}
       ></pds-form>
     `;
@@ -2652,14 +2652,14 @@ When \`hide-actions\` is set, the default Submit and Reset buttons are hidden, a
     const handleSaveDraft = (e) => {
       const form = e.target.closest("pds-form");
       const data = form.serialize();
-      console.log("?? Saving draft:", data.json);
+      console.log("💾 Saving draft:", data.json);
     };
 
     return html`
       <pds-form
         .jsonSchema=${schema}
         hide-actions
-        @pw:value-change=${(e) => console.log("?? Field changed:", e.detail)}
+        @pw:value-change=${(e) => console.log("🔄 Field changed:", e.detail)}
         @pw:submit=${(e) => toastFormData(e.detail)}
       >
         <div slot="actions" class="flex gap-sm items-center">
@@ -2695,7 +2695,7 @@ export const RootGridLayout = {
       description: {
         story: `Apply a grid layout to the entire form using root-level \`ui:layout\` and \`ui:layoutOptions\`.
         
-This allows you to control the form layout **without modifying your JSON Schema** � keeping data structure separate from presentation.
+This allows you to control the form layout **without modifying your JSON Schema** — keeping data structure separate from presentation.
 
 \`\`\`javascript
 const uiSchema = {
@@ -3048,10 +3048,10 @@ Both \`oneOf\` and \`anyOf\` work identically for this purpose. Each option shou
           type: "string",
           title: "Priority Level",
           oneOf: [
-            { const: "p1", title: "?? Critical" },
-            { const: "p2", title: "?? High" },
-            { const: "p3", title: "?? Medium" },
-            { const: "p4", title: "?? Low" },
+            { const: "p1", title: "🔴 Critical" },
+            { const: "p2", title: "🟠 High" },
+            { const: "p3", title: "🟡 Medium" },
+            { const: "p4", title: "🟢 Low" },
           ],
           default: "p3",
         },
@@ -3652,12 +3652,12 @@ export const CalculatedValues = {
         "ui:calculate": { $coalesce: ["/nickname", "/firstName"] },
       },
 
-      // Multiply: quantity � price
+      // Multiply: quantity × price
       "/subtotal": {
         "ui:calculate": { $multiply: ["/quantity", "/unitPrice"] },
       },
 
-      // Divide + multiply for tax: (subtotal � taxRate) / 100
+      // Divide + multiply for tax: (subtotal × taxRate) / 100
       "/taxAmount": {
         "ui:calculate": {
           $divide: [{ $multiply: ["/subtotal", "/taxRate"] }, 100],
@@ -3685,11 +3685,11 @@ export const CalculatedValues = {
             Name (using <code>$coalesce</code>)
           </li>
           <li>
-            <strong>Subtotal</strong> = Quantity � Unit Price (using
+            <strong>Subtotal</strong> = Quantity × Unit Price (using
             <code>$multiply</code>)
           </li>
           <li>
-            <strong>Tax Amount</strong> = Subtotal � Tax Rate � 100 (using
+            <strong>Tax Amount</strong> = Subtotal × Tax Rate ÷ 100 (using
             <code>$divide</code>)
           </li>
           <li>
@@ -3749,7 +3749,7 @@ The field starts with a computed value but the user can modify it. This is usefu
       "/suggestedPrice": {
         "ui:calculate": { $multiply: ["/baseCost", 1.5] },
         "ui:calculateOverride": true,
-        "ui:help": "?? Calculated as 1.5� base cost, but you can adjust it",
+        "ui:help": "💡 Calculated as 1.5× base cost, but you can adjust it",
       },
 
       // Final price: read-only calculation
@@ -3757,7 +3757,7 @@ The field starts with a computed value but the user can modify it. This is usefu
         "ui:calculate": {
           $coalesce: ["/suggestedPrice", { $multiply: ["/baseCost", 1.5] }],
         },
-        "ui:help": "?? Read-only: uses your suggested price",
+        "ui:help": "🔒 Read-only: uses your suggested price",
       },
 
       // Profit: final - base
@@ -3771,7 +3771,7 @@ The field starts with a computed value but the user can modify it. This is usefu
         <p><strong>Compare editable vs read-only calculations:</strong></p>
         <ul>
           <li>
-            <strong>Suggested Price</strong> starts at 1.5� base cost but
+            <strong>Suggested Price</strong> starts at 1.5× base cost but
             <em>you can edit it</em>
           </li>
           <li>
@@ -3973,7 +3973,7 @@ This is useful for:
           type: "string",
           title: "Personal Email Notice",
           default:
-            "?? Personal email detected. Consider using a work email for business accounts.",
+            "⚠️ Personal email detected. Consider using a work email for business accounts.",
         },
         workEmailConfirmation: {
           type: "string",
@@ -3989,12 +3989,12 @@ This is useful for:
         secureUrlBadge: {
           type: "string",
           title: "Security Status",
-          default: "?? Secure connection (HTTPS)",
+          default: "🔒 Secure connection (HTTPS)",
         },
         insecureUrlWarning: {
           type: "string",
           title: "Security Warning",
-          default: "?? Insecure connection. Consider using HTTPS.",
+          default: "⚠️ Insecure connection. Consider using HTTPS.",
         },
       },
     };
@@ -4149,22 +4149,22 @@ export const ConditionalWithLogicalOperators = {
         moderatorTools: {
           type: "string",
           title: "Moderator Tools",
-          default: "??? Moderator tools available",
+          default: "🛡️ Moderator tools available",
         },
         adminPanel: {
           type: "string",
           title: "Admin Panel",
-          default: "?? Full admin access granted",
+          default: "👑 Full admin access granted",
         },
         ageRestrictedContent: {
           type: "string",
           title: "Age-Restricted Content",
-          default: "?? Adult content unlocked",
+          default: "🔞 Adult content unlocked",
         },
         suspendedNotice: {
           type: "string",
           title: "Account Suspended",
-          default: "?? Your account is suspended. Contact support.",
+          default: "🚫 Your account is suspended. Contact support.",
         },
       },
     };
@@ -4295,17 +4295,17 @@ export const ConditionalWithComparison = {
         lowStockWarning: {
           type: "string",
           title: "Low Stock",
-          default: "?? Low quantity - ships within 24h",
+          default: "Low quantity detected — ships within 24h",
         },
         bulkOrderNotice: {
           type: "string",
           title: "Bulk Order",
-          default: "?? Bulk order! Contact sales for discount.",
+          default: "Bulk order detected — contact sales for discount.",
         },
         outOfStockError: {
           type: "string",
           title: "Out of Stock",
-          default: "? Quantity too high - only 100 in stock",
+          default: "Quantity too high — only 100 in stock.",
         },
 
         country: {
@@ -4326,22 +4326,22 @@ export const ConditionalWithComparison = {
         domesticShipping: {
           type: "string",
           title: "Domestic Shipping",
-          default: "?? Free domestic shipping (US/CA)",
+          default: "Free domestic shipping (US/CA)",
         },
         euShipping: {
           type: "string",
           title: "EU Shipping",
-          default: "???? EU shipping available - 5-7 days",
+          default: "EU shipping available — 5-7 days",
         },
         internationalShipping: {
           type: "string",
           title: "International",
-          default: "?? International shipping - 10-14 days",
+          default: "International shipping — 10-14 days",
         },
         restrictedCountry: {
           type: "string",
           title: "Restricted",
-          default: "?? Sorry, we cannot ship to this location",
+          default: "Sorry, we cannot ship to this location.",
         },
 
         couponCode: {
@@ -4352,7 +4352,7 @@ export const ConditionalWithComparison = {
         couponApplied: {
           type: "string",
           title: "Coupon Status",
-          default: "??? Coupon code detected! Will be validated at checkout.",
+          default: "Coupon code detected — it will be validated at checkout.",
         },
       },
     };
@@ -4412,23 +4412,23 @@ export const ConditionalWithComparison = {
         <p><strong>Comparison operators in action:</strong></p>
         <ul>
           <li>
-            Set <strong>Quantity</strong> to 1-3 ? Low stock warning
+            Set <strong>Quantity</strong> to 1-3 → Low stock warning
             (<code>$lte</code>)
           </li>
           <li>
-            Set <strong>Quantity</strong> to 50+ ? Bulk order notice
+            Set <strong>Quantity</strong> to 50+ → Bulk order notice
             (<code>$gte</code>)
           </li>
           <li>
-            Set <strong>Quantity</strong> over 100 ? Out of stock error
+            Set <strong>Quantity</strong> over 100 → Out of stock error
             (<code>$gt</code>)
           </li>
           <li>
-            Select <strong>Country</strong> ? Different shipping messages
+            Select <strong>Country</strong> → Different shipping messages
             (<code>$in</code>)
           </li>
           <li>
-            Enter a <strong>Coupon Code</strong> ? Confirmation appears
+            Enter a <strong>Coupon Code</strong> → Confirmation appears
             (<code>$exists</code>)
           </li>
         </ul>
@@ -4518,7 +4518,7 @@ Disabled fields remain visible but cannot be edited. Use this for:
 
         orderLocked: {
           type: "boolean",
-          title: "?? Lock order (prevent changes)",
+          title: "🔒 Lock order (prevent changes)",
           default: false,
         },
         notes: {
@@ -4751,7 +4751,7 @@ This is like using \`defineRenderer()\` but inline in the uiSchema.`,
                       aria-label="${star} star${star > 1 ? "s" : ""}"
                       aria-pressed=${star <= (field.value || 0)}
                     >
-                      ?
+                      ★
                     </button>
                   `
                 )}
@@ -4782,7 +4782,7 @@ This is like using \`defineRenderer()\` but inline in the uiSchema.`,
               style="cursor: pointer; font-size: 3rem; color: var(--color-${field.value
                 ? "success"
                 : "neutral"}-500)"
-              >${field.value ? "????" : "????"}</span
+              >${field.value ? "👍" : "👎"}</span
             >
             <div>
               <strong>${field.label}</strong>
