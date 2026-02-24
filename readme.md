@@ -221,14 +221,33 @@ Both configs point to:
 node ./node_modules/@pure-ds/core/packages/pds-cli/bin/pds-mcp-server.js
 ```
 
+Minimal copy/paste example (`.vscode/mcp.json` or `.cursor/mcp.json`):
+
+```json
+{
+  "servers": {
+    "pure-ds": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "./node_modules/@pure-ds/core/packages/pds-cli/bin/pds-mcp-server.js"
+      ]
+    }
+  }
+}
+```
+
 Restart your IDE/agent after setup.
 
 **Quality/parity check**
 
 ```bash
+npm run pds:mcp:server
 npm run pds:mcp:health
 npm run pds:mcp:eval
 ```
+
+- `pds:mcp:server` starts the JSON-RPC MCP server on stdio. It is meant to be launched by an MCP client (VS Code/Cursor/agent), not used as an interactive terminal command.
 
 ### How It Works
 
@@ -1487,13 +1506,21 @@ await PDS.start({ design: myPreset });
 
 | Script | Description |
 |--------|-------------|
-| `npm run pds:build` | Full build: styles, components, icons, and IntelliSense data |
-| `npm run pds:dx` | Generate all IntelliSense data (HTML + CSS) |
-| `npm run pds:manifest` | Generate HTML IntelliSense (Custom Elements Manifest) |
-| `npm run pds:css-data` | Generate CSS IntelliSense (tokens, classes, attributes) |
-| `npm run pds:build-icons` | Build custom icon sprite |
-| `npm run sync-assets` | Sync assets between locations |
-| `npx pds-init-config` | Create default `pds.config.js` with helpful examples |
+| `npm run pds:build` | Build distributable PDS assets from your `pds.config.js` |
+| `npm run pds:build-icons` | Rebuild the `pds-icons.svg` sprite from icon sources |
+| `npm run pds:bootstrap` | Scaffold a browser-ready starter with import map and starter files |
+| `npm run pds:manifest` | Generate `custom-elements.json` for HTML IntelliSense and docs |
+| `npm run pds:css-data` | Generate CSS IntelliSense data (`pds.css-data.json`) |
+| `npm run pds:import` | Run import/adoption pipeline and write import result JSON |
+| `npm run pds:dx` | Run all DX generators (manifest + CSS data) |
+| `npm run pds:mcp:server` | Start the local MCP server over stdio for IDE/agent integrations |
+| `npm run pds:mcp:health` | Verify MCP server handshake and required tool availability |
+| `npm run pds:mcp:eval` | Run bundled MCP parity/evaluation cases |
+
+Related direct binaries (no `pds:` npm script wrapper):
+- `npx pds-init-config` — create a starter `pds.config.js`
+- `npx pds-setup-copilot` — install PDS Copilot instructions in a consumer repo
+- `npx pds-setup-mcp` — write `.vscode/mcp.json` and `.cursor/mcp.json`
 
 ### Initialize Configuration
 

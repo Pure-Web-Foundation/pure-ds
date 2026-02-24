@@ -4,7 +4,11 @@
       "command": "node",
       "args": [
         "./packages/pds-cli/bin/pds-mcp-server.js"
-      ]
+      ],
+      "env": {
+        "PDS_MCP_DEBUG": "1",
+        "PDS_MCP_LOG_FILE": "./.pds-mcp.log"
+      }
     }
   }
 }

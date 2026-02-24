@@ -2,6 +2,8 @@
 
 > **CRITICAL**: This workspace uses **Pure Design System (PDS)**. All code generation MUST follow PDS and vanilla Web Platform patterns. Never use 3rd party framework patterns, non-PDS utility classes, inline styles, or hardcoded CSS values.
 
+> **CRITICAL — `/pds/` PATHS ARE READ-ONLY (PACKAGE-LIKE)**: Treat any file path containing `/pds/` as immutable runtime/package output (including `public/pds/**`, `public/assets/pds/**`, and `node_modules/@pure-ds/core/public/**`). Never patch these files directly. If behavior must change, edit source/config (`src/js/pds-core/**`, `pds.config.js`, component source), then rebuild.
+
 ## Philosophy
 
 PDS follows the [Pure Web Manifesto](https://pureweb.dev/manifesto): "The browser is the framework."
@@ -49,11 +51,11 @@ PDS follows the [Pure Web Manifesto](https://pureweb.dev/manifesto): "The browse
 2. Otherwise use workspace root paths (pure-ds development)
 3. Prefer reading actual files over guessing - the data is authoritative
 
-## 🔌 MCP-First Lookup Protocol (Preferred)
+## 🔌 MCP Lookup Protocol (Optional)
 
-If an MCP server named `pure-ds` is available, **use MCP tools first** before generating PDS code.
+Use MCP as an optimization, not a prerequisite. For fast, simple lookups, read local SSoT files directly first.
 
-### Required lookup order
+### When MCP is already connected
 
 1. **Tokens** → call `get_tokens`
 2. **Primitives / utilities / selectors** → call `find_utility_class`
@@ -66,9 +68,19 @@ If an MCP server named `pure-ds` is available, **use MCP tools first** before ge
 
 - Do not invent class names, tokens, attributes, events, or selectors.
 - If a value is not found in MCP results, state it is unavailable and suggest nearest matches.
-- Prefer MCP results over memory, including examples in this file.
-- If MCP is unavailable, fall back to direct SSoT file reads using the paths above.
+- Prefer MCP results over memory when MCP is already available.
+- If MCP is unavailable, slow to start, or errors, continue immediately with direct SSoT file reads using the paths above.
+- Never block or fail an answer solely because MCP is unavailable.
 - If neither MCP nor file reads are available, provide only conservative guidance and clearly mark uncertainty.
+
+## 🎯 Intent Scoping (Avoid Wrong Surface Area)
+
+Always match the implementation target to the user request before touching code.
+
+- If the request is generic layout/styling (e.g., "grid", "mobile one column", spacing, alignment), solve it with primitives/utilities/config first (`.grid`, `.grid-cols-*`, responsive utilities, `pds-ontology.js`, `pds.config.js`).
+- Do **not** inspect or modify specialized components (e.g., `pds-form`) unless the user explicitly asks for that component or the failing code is clearly inside that component.
+- Start from the smallest relevant layer: **Layer 1 (styles/utilities)** → **Layer 2 (enhancers)** → **Layer 3 (web components)** only if needed.
+- For consuming projects, prefer usage-level fixes in app markup/classes before proposing framework/core changes.
 
 ---
 

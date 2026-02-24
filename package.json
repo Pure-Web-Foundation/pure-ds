@@ -1,7 +1,7 @@
 {
   "name": "@pure-ds/core",
   "shortname": "pds",
-  "version": "0.7.6",
+  "version": "0.7.17",
   "description": "Why develop a Design System when you can generate one?",
   "repository": {
     "type": "git",
@@ -92,6 +92,7 @@
     "pds:css-data": "node packages/pds-cli/bin/generate-css-data.js",
     "pds:import": "node packages/pds-cli/bin/pds-import.js",
     "pds:dx": "node packages/pds-cli/bin/pds-dx.js",
+    "pds:mcp:server": "node packages/pds-cli/bin/pds-mcp-server.js",
     "pds:mcp:health": "node packages/pds-cli/bin/pds-mcp-health.js",
     "pds:mcp:eval": "node packages/pds-cli/bin/pds-mcp-eval.js",
     "storybook:generate": "cd packages/pds-storybook && npm run generate-stories",

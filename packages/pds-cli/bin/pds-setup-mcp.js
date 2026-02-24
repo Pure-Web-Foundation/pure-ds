@@ -6,21 +6,28 @@ import path from 'path';
 
 const projectRoot = process.cwd();
 const serverCommand = 'node';
+const args = process.argv.slice(2);
+const debugMode = args.includes('--debug');
+
+function getServerScriptCandidates() {
+  return [
+    'node_modules/@pure-ds/core/packages/pds-cli/bin/pds-mcp-server.js',
+    'node_modules/pure-ds/packages/pds-cli/bin/pds-mcp-server.js',
+    'packages/pds-cli/bin/pds-mcp-server.js',
+  ];
+}
 
 function resolveServerScriptPath() {
-  const candidatePaths = [
-    './node_modules/@pure-ds/core/packages/pds-cli/bin/pds-mcp-server.js',
-    './packages/pds-cli/bin/pds-mcp-server.js',
-  ];
+  const candidatePaths = getServerScriptCandidates();
 
-  for (const relativePath of candidatePaths) {
-    const absolutePath = path.join(projectRoot, relativePath);
+  for (const candidate of candidatePaths) {
+    const absolutePath = path.join(projectRoot, candidate);
     if (existsSync(absolutePath)) {
-      return relativePath;
+      return `./${candidate.replace(/\\/g, '/')}`;
     }
   }
 
-  return candidatePaths[0];
+  return `./${candidatePaths[0].replace(/\\/g, '/')}`;
 }
 
 const serverArgs = [resolveServerScriptPath()];
@@ -49,6 +56,14 @@ async function setupVSCodeConfig() {
     type: 'stdio',
     command: serverCommand,
     args: serverArgs,
+    ...(debugMode
+      ? {
+          env: {
+            PDS_MCP_DEBUG: '1',
+            PDS_MCP_LOG_FILE: './.pds-mcp.log',
+          },
+        }
+      : {}),
   };
 
   await writeJson(configPath, { ...current, servers });
@@ -63,6 +78,14 @@ async function setupCursorConfig() {
   mcpServers['pure-ds'] = {
     command: serverCommand,
     args: serverArgs,
+    ...(debugMode
+      ? {
+          env: {
+            PDS_MCP_DEBUG: '1',
+            PDS_MCP_LOG_FILE: './.pds-mcp.log',
+          },
+        }
+      : {}),
   };
 
   await writeJson(configPath, { ...current, mcpServers });
@@ -80,6 +103,9 @@ async function main() {
   console.log('✅ MCP configuration updated');
   console.log(`   • VS Code: ${path.relative(projectRoot, vscodePath)}`);
   console.log(`   • Cursor: ${path.relative(projectRoot, cursorPath)}`);
+  if (debugMode) {
+    console.log('   • Debug mode: enabled (logs to .pds-mcp.log)');
+  }
   console.log('');
   console.log('ℹ️  Restart your AI extension/IDE so it re-reads MCP server config.');
 }

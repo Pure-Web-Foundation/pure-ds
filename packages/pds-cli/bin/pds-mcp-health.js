@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 
 import { spawn } from 'node:child_process';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const serverScriptPath = path.resolve(__dirname, 'pds-mcp-server.js');
 
 const requiredTools = [
   'get_tokens',
@@ -50,13 +55,14 @@ function parseFrames(state, chunk, onMessage) {
 }
 
 async function runHealthCheck() {
-  const child = spawn(process.execPath, ['./packages/pds-cli/bin/pds-mcp-server.js'], {
+  const child = spawn(process.execPath, [serverScriptPath], {
     cwd: process.cwd(),
     stdio: ['pipe', 'pipe', 'pipe'],
   });
 
   const state = { buffer: Buffer.alloc(0) };
   let initialized = false;
+  let serverName = 'pure-ds';
 
   const timer = setTimeout(() => {
     console.error('❌ MCP health check timed out while waiting for server responses.');
@@ -75,6 +81,7 @@ async function runHealthCheck() {
     parseFrames(state, chunk, (message) => {
       if (message.id === 1 && message.result?.serverInfo?.name) {
         initialized = true;
+        serverName = message.result.serverInfo.name;
         child.stdin.write(frame({ jsonrpc: '2.0', id: 2, method: 'tools/list', params: {} }));
         return;
       }
@@ -92,7 +99,7 @@ async function runHealthCheck() {
         }
 
         console.log('✅ PDS MCP health check passed');
-        console.log(`   Server: ${message.result?.serverInfo?.name || 'pds-ssoT'}`);
+        console.log(`   Server: ${serverName}`);
         console.log(`   Tools: ${toolNames.sort().join(', ')}`);
         clearTimeout(timer);
         child.kill();

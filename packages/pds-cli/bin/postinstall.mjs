@@ -124,6 +124,9 @@ async function ensureBuildScript(consumerRoot) {
     const requiredScripts = {
       'pds:build': 'pds-build',
       'pds:import': 'pds-import',
+      'pds:mcp:server': 'pds-mcp-server',
+      'pds:mcp:health': 'pds-mcp-health',
+      'pds:mcp:eval': 'pds-mcp-eval',
     };
 
     let changed = false;
