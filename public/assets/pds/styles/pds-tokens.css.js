@@ -233,7 +233,7 @@ tokens.replaceSync(`@layer tokens {
 
 
             /* Border Widths */
-  --border-width-hairline: 0.5px;
+  --border-width-hairline: 1px;
   --border-width-thin: 1px;
   --border-width-medium: 2px;
   --border-width-thick: 3px;
@@ -465,7 +465,7 @@ tokens.replaceSync(`@layer tokens {
 
     --color-text-primary: var(--color-gray-100);
     --color-text-secondary: var(--color-gray-300);
-    --color-text-muted: var(--color-gray-400);
+    --color-text-muted: var(--color-gray-600);
     --color-border: var(--color-gray-700);
     --color-input-bg: var(--color-gray-800);
     --color-input-disabled-bg: var(--color-gray-900);
@@ -670,7 +670,7 @@ html[data-theme="dark"] {
 
   --color-text-primary: var(--color-gray-100);
   --color-text-secondary: var(--color-gray-300);
-  --color-text-muted: var(--color-gray-400);
+  --color-text-muted: var(--color-gray-600);
   --color-border: var(--color-gray-700);
   --color-input-bg: var(--color-gray-800);
   --color-input-disabled-bg: var(--color-gray-900);
@@ -950,7 +950,7 @@ export const tokensCSS = `@layer tokens {
 
 
             /* Border Widths */
-  --border-width-hairline: 0.5px;
+  --border-width-hairline: 1px;
   --border-width-thin: 1px;
   --border-width-medium: 2px;
   --border-width-thick: 3px;
@@ -1182,7 +1182,7 @@ export const tokensCSS = `@layer tokens {
 
     --color-text-primary: var(--color-gray-100);
     --color-text-secondary: var(--color-gray-300);
-    --color-text-muted: var(--color-gray-400);
+    --color-text-muted: var(--color-gray-600);
     --color-border: var(--color-gray-700);
     --color-input-bg: var(--color-gray-800);
     --color-input-disabled-bg: var(--color-gray-900);
@@ -1387,7 +1387,7 @@ html[data-theme="dark"] {
 
   --color-text-primary: var(--color-gray-100);
   --color-text-secondary: var(--color-gray-300);
-  --color-text-muted: var(--color-gray-400);
+  --color-text-muted: var(--color-gray-600);
   --color-border: var(--color-gray-700);
   --color-input-bg: var(--color-gray-800);
   --color-input-disabled-bg: var(--color-gray-900);

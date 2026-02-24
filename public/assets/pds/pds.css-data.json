@@ -1394,7 +1394,7 @@
       "references": [
         {
           "name": "Value",
-          "url": "data:text/plain,0.5px"
+          "url": "data:text/plain,1px"
         }
       ]
     },

@@ -212,68 +212,7 @@ button, a {
 /* Optional utilities/features controlled by config options */
 /* - Body background mesh rule (applies one of the generated mesh vars) */
 /* - Liquid glass utility class */
-/* Optional background mesh applied from config */
-body {
-  background: var(--background-mesh-04);
-  background-attachment: fixed;
-}
-/* Liquid glass utility (opt-in via options.liquidGlassEffects) */
-.liquid-glass {
-  border-radius: var(--radius-lg);
-  /* Subtle translucent fill blended with surface */
-  background: color-mix(in oklab, var(--color-surface-subtle) 45%, transparent);
 
-  background-image: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.35),
-    rgba(255,255,255,0.12)
-  );
-  /* Frosted glass blur + saturation */
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
-  backdrop-filter: blur(12px) saturate(140%);
-  /* Soft inner highlight and outer depth */
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.6),
-    inset 0 -40px 80px rgba(255,255,255,0.12),
-    0 10px 30px rgba(0,0,0,0.10);
-  /* Glossy border with slight light and dark edges */
-  border: var(--border-width-thin) solid color-mix(in oklab, var(--color-primary-500) 22%, transparent);
-  outline: 1px solid color-mix(in oklab, #ffffff 18%, transparent);
-  outline-offset: -1px;
-}
-
-html[data-theme="dark"] .liquid-glass {
-  background: color-mix(in oklab, var(--color-surface-inverse) 45%, transparent);
-  background-image: linear-gradient(
-    135deg,
-    color-mix(in oklab, var(--color-primary-300) 40%, transparent),
-    color-mix(in oklab, var(--color-surface-overlay) 48%, transparent)
-  );
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.12),
-    inset 0 -40px 80px rgba(0,0,0,0.55),
-    0 18px 38px rgba(0,0,0,0.65);
-  border: var(--border-width-thin) solid color-mix(in oklab, var(--color-primary-300) 26%, transparent);
-  outline: 1px solid color-mix(in oklab, #ffffff 16%, transparent);
-}
-
-/* Fallback when backdrop-filter isn't supported */
-@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .liquid-glass {
-    /* Strengthen fill a bit to compensate for lack of blur */
-    background: color-mix(in oklab, var(--color-surface-subtle) 70%, rgba(255,255,255,0.4));
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.6),
-      0 10px 24px rgba(0,0,0,0.08);
-  }
-
-  html[data-theme="dark"] .liquid-glass {
-    background: color-mix(in oklab, var(--color-surface-inverse) 70%, transparent);
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.1),
-      0 18px 32px rgba(0,0,0,0.58);
-  }
-}
 
 
 /* ============================================================================
@@ -498,7 +437,7 @@ html[data-theme="dark"] .liquid-glass {
 html:not([data-theme="dark"]) .surface-inverse {
   --color-text-primary: var(--color-gray-100);
   --color-text-secondary: var(--color-gray-300);
-  --color-text-muted: var(--color-gray-400);
+  --color-text-muted: var(--color-gray-600);
   --color-border: var(--color-gray-700);
   --color-input-bg: var(--color-gray-800);
   --color-input-disabled-bg: var(--color-gray-900);
@@ -951,68 +890,7 @@ button, a {
 /* Optional utilities/features controlled by config options */
 /* - Body background mesh rule (applies one of the generated mesh vars) */
 /* - Liquid glass utility class */
-/* Optional background mesh applied from config */
-body {
-  background: var(--background-mesh-04);
-  background-attachment: fixed;
-}
-/* Liquid glass utility (opt-in via options.liquidGlassEffects) */
-.liquid-glass {
-  border-radius: var(--radius-lg);
-  /* Subtle translucent fill blended with surface */
-  background: color-mix(in oklab, var(--color-surface-subtle) 45%, transparent);
 
-  background-image: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.35),
-    rgba(255,255,255,0.12)
-  );
-  /* Frosted glass blur + saturation */
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
-  backdrop-filter: blur(12px) saturate(140%);
-  /* Soft inner highlight and outer depth */
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.6),
-    inset 0 -40px 80px rgba(255,255,255,0.12),
-    0 10px 30px rgba(0,0,0,0.10);
-  /* Glossy border with slight light and dark edges */
-  border: var(--border-width-thin) solid color-mix(in oklab, var(--color-primary-500) 22%, transparent);
-  outline: 1px solid color-mix(in oklab, #ffffff 18%, transparent);
-  outline-offset: -1px;
-}
-
-html[data-theme="dark"] .liquid-glass {
-  background: color-mix(in oklab, var(--color-surface-inverse) 45%, transparent);
-  background-image: linear-gradient(
-    135deg,
-    color-mix(in oklab, var(--color-primary-300) 40%, transparent),
-    color-mix(in oklab, var(--color-surface-overlay) 48%, transparent)
-  );
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.12),
-    inset 0 -40px 80px rgba(0,0,0,0.55),
-    0 18px 38px rgba(0,0,0,0.65);
-  border: var(--border-width-thin) solid color-mix(in oklab, var(--color-primary-300) 26%, transparent);
-  outline: 1px solid color-mix(in oklab, #ffffff 16%, transparent);
-}
-
-/* Fallback when backdrop-filter isn't supported */
-@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .liquid-glass {
-    /* Strengthen fill a bit to compensate for lack of blur */
-    background: color-mix(in oklab, var(--color-surface-subtle) 70%, rgba(255,255,255,0.4));
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.6),
-      0 10px 24px rgba(0,0,0,0.08);
-  }
-
-  html[data-theme="dark"] .liquid-glass {
-    background: color-mix(in oklab, var(--color-surface-inverse) 70%, transparent);
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.1),
-      0 18px 32px rgba(0,0,0,0.58);
-  }
-}
 
 
 /* ============================================================================
@@ -1237,7 +1115,7 @@ html[data-theme="dark"] .liquid-glass {
 html:not([data-theme="dark"]) .surface-inverse {
   --color-text-primary: var(--color-gray-100);
   --color-text-secondary: var(--color-gray-300);
-  --color-text-muted: var(--color-gray-400);
+  --color-text-muted: var(--color-gray-600);
   --color-border: var(--color-gray-700);
   --color-input-bg: var(--color-gray-800);
   --color-input-disabled-bg: var(--color-gray-900);

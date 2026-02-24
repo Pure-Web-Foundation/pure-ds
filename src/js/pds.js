@@ -680,10 +680,6 @@ async function staticInit(config) {
         autoDefineBaseURL,
         autoDefinePreload,
         autoDefineMapper,
-        autoDefinerModuleURL: __resolveExternalRuntimeModuleURL(
-          "pds-auto-definer.js",
-          cfgAuto?.moduleURL || PDS.currentConfig?.autoDefinerURL
-        ),
         enhancers: userEnhancers,
         autoDefineOverrides: cfgAuto || null,
         autoDefinePreferModule: !(cfgAuto && cfgAuto.baseURL),

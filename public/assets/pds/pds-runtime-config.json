@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-02-21T10:01:05.400Z",
+  "exportedAt": "2026-02-23T17:59:14.119Z",
   "staticRoot": "/assets/pds/",
   "presetId": "default",
   "preset": "Default",
@@ -14,8 +14,8 @@
       ],
       "description": "Fresh and modern design system with balanced aesthetics and usability",
       "options": {
-        "liquidGlassEffects": true,
-        "backgroundMesh": 4
+        "liquidGlassEffects": false,
+        "backgroundMesh": 0
       },
       "form": {
         "options": {
@@ -1772,7 +1772,7 @@
         "label": "Background Mesh",
         "widget": "input-range",
         "min": 0,
-        "max": 16,
+        "max": 10,
         "step": 1
       },
       "form.options.widgets.booleans": {
@@ -2659,17 +2659,17 @@
                 "type": "boolean",
                 "title": "Liquid Glass Effects",
                 "examples": [
-                  true
+                  false
                 ]
               },
               "backgroundMesh": {
                 "type": "number",
                 "title": "Background Mesh",
                 "minimum": 0,
-                "maximum": 16,
+                "maximum": 10,
                 "multipleOf": 1,
                 "examples": [
-                  4
+                  0
                 ]
               }
             },
@@ -4099,12 +4099,12 @@
         "/options/backgroundMesh": {
           "ui:widget": "input-range",
           "ui:min": 0,
-          "ui:max": 16,
+          "ui:max": 10,
           "ui:step": 1,
           "ui:allowUnset": true,
           "ui:options": {
             "min": 0,
-            "max": 16,
+            "max": 10,
             "step": 1
           }
         },
@@ -5069,8 +5069,8 @@
         ],
         "description": "Fresh and modern design system with balanced aesthetics and usability",
         "options": {
-          "liquidGlassEffects": true,
-          "backgroundMesh": 4
+          "liquidGlassEffects": false,
+          "backgroundMesh": 0
         },
         "form": {
           "options": {
@@ -5412,7 +5412,7 @@
           "label": "Background Mesh",
           "widget": "input-range",
           "min": 0,
-          "max": 16,
+          "max": 10,
           "step": 1
         },
         "form.options.widgets.booleans": {

@@ -1129,7 +1129,7 @@
       "name": "--border-width-hairline",
       "description": "Border width hairline",
       "syntax": "<length>",
-      "value": "0.5px",
+      "value": "1px",
       "category": "Border Tokens"
     },
     {
@@ -2292,7 +2292,7 @@
   ],
   "metadata": {
     "generator": "PDS CSS Data Generator",
-    "generatedAt": "2026-02-21T10:01:05.385Z",
+    "generatedAt": "2026-02-23T17:59:14.105Z",
     "totalProperties": 169,
     "totalClasses": 169,
     "totalAttributes": 5

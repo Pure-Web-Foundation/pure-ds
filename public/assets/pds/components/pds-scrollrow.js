@@ -1,5 +1,3 @@
-import { PDS } from "#pds";
-
 /**
  * Horizontal scrolling row with optional heading and snap alignment controls.
  *
@@ -258,12 +256,12 @@ class PdsScrollrow extends HTMLElement {
             <ul class="track" role="list"><slot></slot></ul>
           </div>
           <div class="control left" aria-hidden="true">
-            <button class="btn btn-sm icon-only" part="prev" aria-label="Scroll left">
+            <button class="btn icon-only" part="prev" aria-label="Scroll left">
               <pds-icon icon="arrow-left" size="sm"></pds-icon>
             </button>
           </div>
           <div class="control right" aria-hidden="true">
-            <button class="btn btn-sm icon-only" part="next" aria-label="Scroll right">
+            <button class="btn icon-only" part="next" aria-label="Scroll right">
               <pds-icon icon="arrow-right" size="sm"></pds-icon>
             </button>
           </div>

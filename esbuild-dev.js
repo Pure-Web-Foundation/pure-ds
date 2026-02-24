@@ -1,6 +1,6 @@
 import esbuild from "esbuild";
 import path from "path";
-import { copyFile, mkdir } from "fs/promises";
+import { copyFile, mkdir, unlink } from "fs/promises";
 import rebuildNotifyPlugin from "./lib/esbuild-plugin-rebuild-notify.js";
 
 const copyManagerToCorePlugin = {
@@ -11,6 +11,10 @@ const copyManagerToCorePlugin = {
       try {
         const coreDir = path.join(process.cwd(), "public", "assets", "pds", "core");
         await mkdir(coreDir, { recursive: true });
+        await Promise.all([
+          unlink(path.join(coreDir, "pds-auto-definer.js")).catch(() => {}),
+          unlink(path.join(coreDir, "pds-auto-definer.js.map")).catch(() => {}),
+        ]);
         const pdsSrc = path.join(process.cwd(), "public", "assets", "js", "pds.js");
         const pdsCoreEntryDest = path.join(process.cwd(), "public", "assets", "pds", "core.js");
         await copyFile(pdsSrc, pdsCoreEntryDest);
@@ -40,9 +44,6 @@ const copyManagerToCorePlugin = {
         const enhancersDest = path.join(coreDir, "pds-enhancers.js");
         await copyFile(enhancersSrc, enhancersDest);
 
-        const autoDefinerSrc = path.join(process.cwd(), "public", "assets", "js", "pds-auto-definer.js");
-        const autoDefinerDest = path.join(coreDir, "pds-auto-definer.js");
-        await copyFile(autoDefinerSrc, autoDefinerDest);
       } catch (err) {
         console.warn("[pds] Failed to copy PDS runtime assets to public/assets/pds:", err.message);
       }
@@ -51,7 +52,7 @@ const copyManagerToCorePlugin = {
 };
 
 const config = {
-  entryPoints: ["src/js/lit.js", "src/js/app.js", "src/js/pds.js", "src/js/pds-manager.js", "src/js/pds-autocomplete.js", "src/js/pds-ask.js", "src/js/pds-toast.js", "src/js/pds-enhancers.js", "src/js/pds-auto-definer.js"],
+  entryPoints: ["src/js/lit.js", "src/js/app.js", "src/js/pds.js", "src/js/pds-manager.js", "src/js/pds-autocomplete.js", "src/js/pds-ask.js", "src/js/pds-toast.js", "src/js/pds-enhancers.js"],
   plugins: [rebuildNotifyPlugin(), copyManagerToCorePlugin],
   platform: "browser", 
   target: "es2022", 

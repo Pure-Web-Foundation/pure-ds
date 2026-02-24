@@ -1336,6 +1336,34 @@
             },
             {
               "kind": "method",
+              "name": "_enableInteractiveEditing"
+            },
+            {
+              "kind": "method",
+              "name": "_disableInteractiveEditing",
+              "parameters": [
+                {
+                  "name": "options",
+                  "default": "{}"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setInteractiveEditingEnabled",
+              "parameters": [
+                {
+                  "name": "enabled",
+                  "default": "true"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "isInteractiveEditingEnabled"
+            },
+            {
+              "kind": "method",
               "name": "_handleThemeChanged"
             },
             {
@@ -1531,6 +1559,14 @@
             },
             {
               "kind": "method",
+              "name": "_buildQuickModeContent"
+            },
+            {
+              "kind": "method",
+              "name": "createSharedQuickModeMenuItem"
+            },
+            {
+              "kind": "method",
               "name": "_openDrawer",
               "parameters": [
                 {
@@ -1562,6 +1598,14 @@
                   "name": "template"
                 }
               ]
+            },
+            {
+              "kind": "method",
+              "name": "openDesignSettings"
+            },
+            {
+              "kind": "method",
+              "name": "resetConfig"
             },
             {
               "kind": "method",
@@ -1741,6 +1785,22 @@
                 "text": "null"
               },
               "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_interactiveEditingEnabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "_interactionListenersAttached",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
             }
           ],
           "events": [
@@ -1897,7 +1957,7 @@
               "name": "_persistImportHistory",
               "parameters": [
                 {
-                  "name": "{ sourceType, result }"
+                  "name": "{ sourceType, importMode, result }"
                 }
               ]
             },
@@ -1928,6 +1988,9 @@
                 },
                 {
                   "name": "fileName"
+                },
+                {
+                  "name": "importMode"
                 }
               ]
             },
@@ -1989,6 +2052,14 @@
                 "text": "string"
               },
               "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_selectedImportMode",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"convert-only\""
             },
             {
               "kind": "field",
@@ -2632,32 +2703,8 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Horizontal scrolling row with optional heading and snap alignment controls.",
+          "description": "",
           "name": "PdsScrollrow",
-          "cssParts": [
-            {
-              "description": "The scrollable container element",
-              "name": "viewport"
-            },
-            {
-              "description": "The previous/left scroll navigation button",
-              "name": "prev"
-            },
-            {
-              "description": "The next/right scroll navigation button",
-              "name": "next"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Scrollable tile content",
-              "name": "default"
-            },
-            {
-              "description": "Optional heading content rendered in the component header",
-              "name": "heading"
-            }
-          ],
           "members": [
             {
               "kind": "field",
@@ -2747,32 +2794,16 @@
           ],
           "attributes": [
             {
-              "name": "label",
-              "type": {
-                "text": "string"
-              },
-              "description": "Accessible label for the scroll region; also used as fallback heading copy"
+              "name": "label"
             },
             {
-              "name": "snap",
-              "type": {
-                "text": "\"start\"|\"center\""
-              },
-              "description": "Snap alignment for tiles when scrolling (default: start)"
+              "name": "snap"
             },
             {
-              "name": "tile-min",
-              "type": {
-                "text": "string"
-              },
-              "description": "Minimum tile width (CSS length, e.g. \"250px\")"
+              "name": "tile-min"
             },
             {
-              "name": "tile-max",
-              "type": {
-                "text": "string"
-              },
-              "description": "Maximum tile width (CSS length, e.g. \"360px\")"
+              "name": "tile-max"
             }
           ],
           "superclass": {

@@ -3,6 +3,8 @@
  * Kept separate to avoid pulling live-only logic into the base runtime bundle.
  */
 
+import { AutoDefiner as CoreAutoDefiner } from "pure-web/auto-definer";
+
 const __ABSOLUTE_URL_PATTERN__ = /^[a-z][a-z0-9+\-.]*:\/\//i;
 const __MODULE_URL__ = (() => {
   try {
@@ -332,7 +334,6 @@ export async function setupAutoDefinerAndEnhancers(options, { baseEnhancers = []
     autoDefineBaseURL = "/auto-define/",
     autoDefinePreload = [],
     autoDefineMapper = null,
-    autoDefinerModuleURL = null,
     enhancers = [],
     autoDefineOverrides = null,
     autoDefinePreferModule = true,
@@ -349,18 +350,7 @@ export async function setupAutoDefinerAndEnhancers(options, { baseEnhancers = []
   // Setup AutoDefiner in browser context (it already observes shadow DOMs)
   let autoDefiner = null;
   if (typeof window !== "undefined" && typeof document !== "undefined") {
-    // Dynamically import AutoDefiner to avoid Node/CJS interop at build time
-    let AutoDefinerCtor = null;
-    try {
-      if (!autoDefinerModuleURL || typeof autoDefinerModuleURL !== "string") {
-        throw new Error("AutoDefiner module URL is not configured");
-      }
-      const mod = await import(autoDefinerModuleURL);
-      AutoDefinerCtor =
-        mod?.AutoDefiner || mod?.default?.AutoDefiner || mod?.default || null;
-    } catch (e) {
-      console.warn("AutoDefiner not available:", e?.message || e);
-    }
+    const AutoDefinerCtor = CoreAutoDefiner;
 
     const defaultMapper = (tag) => {
       switch (tag) {
@@ -372,10 +362,48 @@ export async function setupAutoDefinerAndEnhancers(options, { baseEnhancers = []
     };
 
     // Respect user overrides but never allow them to overwrite our mapper wrapper.
-    const { mapper: _overrideMapperIgnored, ...restAutoDefineOverrides } =
+    // Also merge `autoDefine.enhancers` safely instead of allowing it to clobber
+    // default enhancers (this previously caused silent loss of required/dropdown behavior).
+    const {
+      mapper: _overrideMapperIgnored,
+      enhancers: overrideEnhancers,
+      ...restAutoDefineOverrides
+    } =
       autoDefineOverrides && typeof autoDefineOverrides === "object"
         ? autoDefineOverrides
         : {};
+
+    const normalizedOverrideEnhancers = (() => {
+      if (!overrideEnhancers) return [];
+      if (Array.isArray(overrideEnhancers)) return overrideEnhancers;
+      if (typeof overrideEnhancers === "object") {
+        return Object.values(overrideEnhancers);
+      }
+      return [];
+    })();
+
+    const resolvedEnhancers = (() => {
+      const map = new Map();
+      (mergedEnhancers || []).forEach((enhancer) => {
+        if (!enhancer?.selector) return;
+        map.set(enhancer.selector, enhancer);
+      });
+
+      (normalizedOverrideEnhancers || []).forEach((enhancer) => {
+        if (!enhancer?.selector) return;
+        const existing = map.get(enhancer.selector) || null;
+        map.set(enhancer.selector, {
+          ...(existing || {}),
+          ...enhancer,
+          run:
+            typeof enhancer?.run === "function"
+              ? enhancer.run
+              : existing?.run,
+        });
+      });
+
+      return Array.from(map.values());
+    })();
 
     const normalizedBaseURL = autoDefineBaseURL
       ? ensureTrailingSlash(
@@ -392,7 +420,7 @@ export async function setupAutoDefinerAndEnhancers(options, { baseEnhancers = []
       observeShadows: true,
       patchAttachShadow: true,
       debounceMs: 16,
-      enhancers: mergedEnhancers,
+      enhancers: resolvedEnhancers,
       onError: (tag, err) => {
         if (typeof tag === "string" && tag.startsWith("pds-")) {
           const litDependentComponents = ["pds-form", "pds-drawer"];
@@ -442,18 +470,16 @@ export async function setupAutoDefinerAndEnhancers(options, { baseEnhancers = []
       },
     };
 
-    if (AutoDefinerCtor) {
-      autoDefiner = new AutoDefinerCtor(autoDefineConfig);
-      if (
-        autoDefinePreload.length > 0 &&
-        typeof AutoDefinerCtor.define === "function"
-      ) {
-        await AutoDefinerCtor.define(...autoDefinePreload, {
-          baseURL: autoDefineBaseURL,
-          mapper: autoDefineConfig.mapper,
-          onError: autoDefineConfig.onError,
-        });
-      }
+    autoDefiner = new AutoDefinerCtor(autoDefineConfig);
+    if (
+      autoDefinePreload.length > 0 &&
+      typeof AutoDefinerCtor.define === "function"
+    ) {
+      await AutoDefinerCtor.define(...autoDefinePreload, {
+        baseURL: autoDefineBaseURL,
+        mapper: autoDefineConfig.mapper,
+        onError: autoDefineConfig.onError,
+      });
     }
   }
 

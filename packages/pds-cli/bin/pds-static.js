@@ -16,7 +16,7 @@
  *   (or via npm script: npm run pds:static)
  */
 
-import { readFile, writeFile, mkdir, readdir, copyFile, stat } from 'fs/promises';
+import { readFile, writeFile, mkdir, readdir, copyFile, stat, unlink } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
@@ -431,7 +431,7 @@ async function main(options = {}) {
     await copyDirectory(componentsSource, componentsDir);
   }
 
-  // 4b) Copy live manager bundle into target/core for dynamic import fallback
+  // 4b) Copy core runtime entry and runtime modules used by lazy loaders
   try {
     const coreEntrySourceNew = path.join(repoRoot, 'public/assets/pds/core.js');
     const coreEntrySourceLegacy = path.join(repoRoot, 'public/assets/js/pds.js');
@@ -442,6 +442,19 @@ async function main(options = {}) {
       const coreEntryTarget = path.join(targetDir, 'core.js');
       await copyFile(coreEntrySource, coreEntryTarget);
       log(`✅ Copied core runtime entry → ${path.relative(process.cwd(), coreEntryTarget)}`, 'green');
+    }
+
+    const coreRuntimeSource = path.join(repoRoot, 'public/assets/pds/core');
+    if (!existsSync(coreRuntimeSource)) {
+      log('⚠️  core runtime module directory not found in package assets; skipping copy', 'yellow');
+    } else {
+      const coreDir = path.join(targetDir, 'core');
+      log(`📁 Copying core runtime modules → ${path.relative(process.cwd(), coreDir)}`,'bold');
+      await copyDirectory(coreRuntimeSource, coreDir);
+      await Promise.all([
+        unlink(path.join(coreDir, 'pds-auto-definer.js')).catch(() => {}),
+        unlink(path.join(coreDir, 'pds-auto-definer.js.map')).catch(() => {}),
+      ]);
     }
 
     const managerSource = path.join(repoRoot, 'public/assets/js/pds-manager.js');
@@ -455,7 +468,7 @@ async function main(options = {}) {
       log(`✅ Copied live manager → ${path.relative(process.cwd(), managerTarget)}`, 'green');
     }
   } catch (e) {
-    log(`⚠️  Failed to copy pds-manager.js: ${e?.message || e}`, 'yellow');
+    log(`⚠️  Failed to copy core runtime assets: ${e?.message || e}`, 'yellow');
   }
 
   // 4c) Copy Lit bundle into target/external for #pds/lit import map
@@ -647,6 +660,8 @@ async function main(options = {}) {
   log('\n────────────────────────────────────────────');
   log('✅ PDS static assets ready', 'green');
   log(`📍 Location: ${path.relative(process.cwd(), targetDir)}`);
+  log('• root runtime → core.js');
+  log('• core runtime modules → core/*.js');
   log('• components → components/*.js');
   log('• external → external/lit.js');
   log('• styles → styles/pds-*.css (+ .css.js modules)');

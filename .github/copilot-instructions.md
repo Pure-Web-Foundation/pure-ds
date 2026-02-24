@@ -436,6 +436,38 @@ form.getFormData(); // May throw error
   <span data-label>Enable feature</span>
 </label>
 
+<!-- Treeview: lazy node loading -->
+<pds-treeview id="docsTree"></pds-treeview>
+
+<script type="module">
+  const tree = document.getElementById('docsTree');
+  tree.options = {
+    // Initial payload can be shallow (e.g., 2 levels)
+    source: [
+      {
+        id: 'docs',
+        text: 'Docs',
+        hasChildren: true,
+        children: [
+          { id: 'guides', text: 'Guides', hasChildren: true },
+          { id: 'components', text: 'Components', hasChildren: true }
+        ]
+      }
+    ],
+    // Fetch children only when a node is expanded
+    getChildren: async ({ nodeId }) => {
+      const res = await fetch(`/api/tree?parent=${encodeURIComponent(nodeId)}`);
+      return res.ok ? res.json() : [];
+    }
+  };
+</script>
+
+**Treeview lazy-loading rules:**
+- Mark expandable nodes with `hasChildren: true` when children are not yet included in the initial `source`.
+- Provide `options.getChildren({ node, nodeId, host, options, settings })` for node-level fetch on first expand.
+- Prefer shallow initial payloads (root + immediate children), then fetch deeper levels as users expand.
+- Use `node-load` and `node-load-error` events for telemetry, loading UX, and retries.
+
 <form data-required>
   <label><span>Email</span><input type="email" required></label>
 </form>

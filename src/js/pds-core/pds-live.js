@@ -1089,9 +1089,6 @@ export async function startLive(PDS, config, { emitReady, emitConfigChanged, app
         autoDefineMapper:
           (cfgAuto && typeof cfgAuto.mapper === "function" && cfgAuto.mapper) ||
           null,
-        autoDefinerModuleURL:
-          (cfgAuto && cfgAuto.moduleURL) ||
-          `${assetRootURL}core/pds-auto-definer.js`,
         enhancers: userEnhancers,
         autoDefineOverrides: cfgAuto || null,
         autoDefinePreferModule: !(cfgAuto && cfgAuto.baseURL),

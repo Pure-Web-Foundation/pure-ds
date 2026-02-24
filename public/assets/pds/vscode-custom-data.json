@@ -783,31 +783,23 @@
     },
     {
       "name": "pds-scrollrow",
-      "description": "Horizontal scrolling row with optional heading and snap alignment controls.",
+      "description": "PdsScrollrow component",
       "attributes": [
         {
           "name": "label",
-          "description": "Accessible label for the scroll region; also used as fallback heading copy"
+          "description": ""
         },
         {
           "name": "snap",
-          "description": "Snap alignment for tiles when scrolling (default: start)",
-          "values": [
-            {
-              "name": "start"
-            },
-            {
-              "name": "center"
-            }
-          ]
+          "description": ""
         },
         {
           "name": "tile-min",
-          "description": "Minimum tile width (CSS length, e.g. \"250px\")"
+          "description": ""
         },
         {
           "name": "tile-max",
-          "description": "Maximum tile width (CSS length, e.g. \"360px\")"
+          "description": ""
         }
       ]
     },

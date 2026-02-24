@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
-import { readFile, writeFile, mkdir, copyFile, readdir, stat } from 'fs/promises';
+import { readFile, writeFile, mkdir, copyFile, readdir, stat, unlink } from 'fs/promises';
 import { createHash } from 'crypto';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { existsSync } from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -54,6 +55,8 @@ async function findPdsRoot() {
  * Sync PDS assets to consuming app's public directory
  * Copies:
  * - public/pds/components/* (or legacy public/auto-define/*) -> <targetDir>/components/*
+ * - public/assets/pds/core.js (or legacy public/assets/js/pds.js) -> <targetDir>/core.js
+ * - public/assets/pds/core/* -> <targetDir>/core/*
  * - (icons no longer synced; static export focuses on components and styles)
  * 
  * Usage: node node_modules/pure-ds/packages/pds-cli/bin/sync-assets.js [options]
@@ -92,6 +95,8 @@ async function syncAssets(options = {}) {
   
   // Target directories
   const autoDefineTarget = path.join(process.cwd(), targetDir, 'components');
+  const coreTargetDir = path.join(process.cwd(), targetDir, 'core');
+  const coreEntryTarget = path.join(process.cwd(), targetDir, 'core.js');
   
   // Load or create asset tracking file
   const trackingFile = path.join(process.cwd(), '.pds-assets.json');
@@ -198,6 +203,41 @@ async function syncAssets(options = {}) {
     console.log('📁 Syncing components...');
   }
   await syncDirectory(autoDefineSource, autoDefineTarget, 'components/');
+
+  // Sync core runtime entry
+  const coreEntryCandidates = [
+    path.join(pdsRoot, 'public/assets/pds/core.js'),
+    path.join(pdsRoot, 'public/assets/js/pds.js'),
+  ];
+  const coreEntrySource = coreEntryCandidates.find((candidate) => candidate && existsSync(candidate));
+
+  if (coreEntrySource) {
+    await syncFile(coreEntrySource, coreEntryTarget, 'core.js');
+  } else if (verbose) {
+    console.log('⚠️  Skipping core.js sync (source not found in package)');
+  }
+
+  // Sync core runtime modules used by lazy loaders
+  const coreSource = path.join(pdsRoot, 'public/assets/pds/core');
+  try {
+    const coreStats = await stat(coreSource);
+    if (coreStats.isDirectory()) {
+      if (verbose) {
+        console.log('📁 Syncing core runtime modules...');
+      }
+      await syncDirectory(coreSource, coreTargetDir, 'core/');
+
+      const staleCoreFiles = [
+        path.join(coreTargetDir, 'pds-auto-definer.js'),
+        path.join(coreTargetDir, 'pds-auto-definer.js.map'),
+      ];
+      await Promise.all(staleCoreFiles.map((file) => unlink(file).catch(() => {})));
+    }
+  } catch {
+    if (verbose) {
+      console.log('⚠️  Skipping core runtime modules sync (source not found in package)');
+    }
+  }
   
   // Note: icons are not synced in this flow; use pds:build if needed
   
