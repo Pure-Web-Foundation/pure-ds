@@ -186,6 +186,50 @@ Install `@pure-ds/storybook` and get a cloned PDS Storybook instance right where
 
 Install `@pure-ds/core` and get instant PDS AI Coding Instrucions at your fingertips (GitHub Copilot & Cursor support built in)
 
+#### MCP-first SSoT delegation for coding agents
+
+PDS also ships a local MCP server so agents can delegate lookups to actual SSoT files instead of relying on duplicated prompt text.
+
+**Included binaries**
+- `pds-mcp-server` — stdio MCP server
+- `pds-setup-mcp` — writes local MCP config for VS Code and Cursor
+- `pds-mcp-eval` — runs baseline parity checks against bundled cases
+
+**Tool coverage**
+- `get_tokens` → `public/assets/pds/pds.css-data.json`
+- `find_utility_class` → `src/js/pds-core/pds-ontology.js`
+- `get_component_api` → `custom-elements.json`
+- `get_enhancer_metadata` → `src/js/pds-core/pds-enhancers-meta.js`
+- `get_config_relations` → `src/js/pds-core/pds-config.js` (`PDS_CONFIG_RELATIONS`)
+- `validate_pds_snippet` → validates classes/tokens/components against SSoT indexes
+
+**Consumer project setup**
+
+Run this in any project that depends on `@pure-ds/core`:
+
+```bash
+npx pds-setup-mcp
+```
+
+This creates/updates:
+- `.vscode/mcp.json`
+- `.cursor/mcp.json`
+
+Both configs point to:
+
+```text
+node ./node_modules/@pure-ds/core/packages/pds-cli/bin/pds-mcp-server.js
+```
+
+Restart your IDE/agent after setup.
+
+**Quality/parity check**
+
+```bash
+npm run pds:mcp:health
+npm run pds:mcp:eval
+```
+
 ### How It Works
 
 It all starts with your `pds.confog.js` file in the root of the project (auto-generated when installing)

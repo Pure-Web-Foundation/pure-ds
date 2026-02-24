@@ -49,6 +49,27 @@ PDS follows the [Pure Web Manifesto](https://pureweb.dev/manifesto): "The browse
 2. Otherwise use workspace root paths (pure-ds development)
 3. Prefer reading actual files over guessing - the data is authoritative
 
+## 🔌 MCP-First Lookup Protocol (Preferred)
+
+If an MCP server named `pure-ds` is available, **use MCP tools first** before generating PDS code.
+
+### Required lookup order
+
+1. **Tokens** → call `get_tokens`
+2. **Primitives / utilities / selectors** → call `find_utility_class`
+3. **Web component API** → call `get_component_api`
+4. **Enhancer metadata + demoHtml** → call `get_enhancer_metadata`
+5. **Design config deterministic mapping** → call `get_config_relations`
+6. **Final snippet sanity check** → call `validate_pds_snippet`
+
+### Non-negotiable rules
+
+- Do not invent class names, tokens, attributes, events, or selectors.
+- If a value is not found in MCP results, state it is unavailable and suggest nearest matches.
+- Prefer MCP results over memory, including examples in this file.
+- If MCP is unavailable, fall back to direct SSoT file reads using the paths above.
+- If neither MCP nor file reads are available, provide only conservative guidance and clearly mark uncertainty.
+
 ---
 
 ## 📋 pds-form Best Practices

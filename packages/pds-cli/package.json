@@ -6,7 +6,11 @@
     "pds-cli": "bin/pds.js",
     "pds-sync-assets": "bin/sync-assets.js",
     "pds-bootstrap": "bin/pds-bootstrap.js",
-    "pds-import": "bin/pds-import.js"
+    "pds-import": "bin/pds-import.js",
+    "pds-mcp-server": "bin/pds-mcp-server.js",
+    "pds-mcp-health": "bin/pds-mcp-health.js",
+    "pds-setup-mcp": "bin/pds-setup-mcp.js",
+    "pds-mcp-eval": "bin/pds-mcp-eval.js"
   },
   "dependencies": {}
 }

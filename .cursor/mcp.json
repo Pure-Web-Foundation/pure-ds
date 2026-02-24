@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "pure-ds": {
+      "command": "node",
+      "args": [
+        "./node_modules/@pure-ds/core/packages/pds-cli/bin/pds-mcp-server.js"
+      ]
+    }
+  }
+}

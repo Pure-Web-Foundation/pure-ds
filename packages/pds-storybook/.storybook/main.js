@@ -67,12 +67,19 @@ const config = {
       process.cwd()
     ];
     
-    // Ensure Lit import alias is resolved to PDS bundle
-    const aliases = {
-      ...config.resolve.alias,
-      '#pds': resolve(pdsSrcPath, 'js/pds.js'),
-      '#pds/lit': resolve(pdsSrcPath, 'js/lit.js'),
-    };
+    config.resolve = config.resolve || {};
+
+    // Ensure virtual import aliases resolve consistently.
+    // Use exact-match regex for #pds so it does not capture #pds/lit.
+    const existingAliases = Array.isArray(config.resolve.alias)
+      ? [...config.resolve.alias]
+      : Object.entries(config.resolve.alias || {}).map(([find, replacement]) => ({ find, replacement }));
+
+    const aliases = [
+      { find: '#pds/lit', replacement: resolve(pdsSrcPath, 'js/lit.js') },
+      { find: /^#pds$/, replacement: resolve(pdsSrcPath, 'js/pds.js') },
+      ...existingAliases,
+    ];
 
      // In monorepo, map the local src folder to the monorepo root src folder
      // This eliminates the need for a copied src folder during development
@@ -80,15 +87,15 @@ const config = {
        aliases[resolve(currentDirname, '../src')] = pdsSrcPath;
      }
 
-    aliases['@pds-src'] = pdsSrcPath;
+    aliases.push({ find: '@pds-src', replacement: pdsSrcPath });
     config.resolve.alias = aliases;
 
     // Alias for relative paths to src (handles ../../../src in stories)
     // This allows stories to work in both monorepo (where ../../../src is valid)
     // and package (where it needs to be mapped to the local src folder)
     // Note: We use a regex to catch varying depths of ../
-    config.resolve.alias['../../../src'] = pdsSrcPath;
-    config.resolve.alias['../../../../src'] = pdsSrcPath;
+    config.resolve.alias.push({ find: '../../../src', replacement: pdsSrcPath });
+    config.resolve.alias.push({ find: '../../../../src', replacement: pdsSrcPath });
     
     // Also handle the case where the import is exactly 'D:\Code\pure\pure-ds\packages\src\js\common\ask.js'
     // which seems to be happening in the error log:
@@ -169,15 +176,15 @@ const config = {
     
     // I will change it back to `../../../../src`.
     
-    config.resolve.alias['../../../../src'] = pdsSrcPath;
+    config.resolve.alias.push({ find: '../../../../src', replacement: pdsSrcPath });
     
     // Try to resolve user's pds.config.js
     const userConfigPath = resolve(process.cwd(), 'pds.config.js');
     if (fs.existsSync(userConfigPath)) {
-        config.resolve.alias['@user/pds-config'] = userConfigPath;
+      config.resolve.alias.push({ find: '@user/pds-config', replacement: userConfigPath });
     } else {
         // Fallback to a default config file if user config doesn't exist
-        config.resolve.alias['@user/pds-config'] = resolve(currentDirname, '../default-pds.config.js');
+      config.resolve.alias.push({ find: '@user/pds-config', replacement: resolve(currentDirname, '../default-pds.config.js') });
     }
 
     // Support absolute path imports like: import { html } from '/assets/pds/external/lit.js';

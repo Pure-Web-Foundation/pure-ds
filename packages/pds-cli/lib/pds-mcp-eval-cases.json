@@ -1,0 +1,72 @@
+[
+  {
+    "id": "tokens-color",
+    "tool": "get_tokens",
+    "args": {
+      "prefix": "--color-primary-",
+      "limit": 5
+    },
+    "expect": {
+      "paths": [
+        "tokens",
+        "tokens.0.name"
+      ]
+    }
+  },
+  {
+    "id": "utility-flex",
+    "tool": "find_utility_class",
+    "args": {
+      "query": "flex",
+      "limit": 5
+    },
+    "expect": {
+      "paths": [
+        "matches",
+        "matches.0.selector"
+      ]
+    }
+  },
+  {
+    "id": "component-form",
+    "tool": "get_component_api",
+    "args": {
+      "tagName": "pds-form",
+      "limit": 1
+    },
+    "expect": {
+      "paths": [
+        "components",
+        "components.0.tagName"
+      ]
+    }
+  },
+  {
+    "id": "enhancer-dropdown",
+    "tool": "get_enhancer_metadata",
+    "args": {
+      "selector": "data-dropdown",
+      "limit": 1
+    },
+    "expect": {
+      "paths": [
+        "enhancers",
+        "enhancers.0.selector"
+      ]
+    }
+  },
+  {
+    "id": "relations-colors",
+    "tool": "get_config_relations",
+    "args": {
+      "pathPrefix": "colors",
+      "limit": 3
+    },
+    "expect": {
+      "paths": [
+        "relations",
+        "relations.0.path"
+      ]
+    }
+  }
+]

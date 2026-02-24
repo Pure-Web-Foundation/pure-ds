@@ -1,7 +1,7 @@
 {
   "name": "@pure-ds/core",
   "shortname": "pds",
-  "version": "0.7.4",
+  "version": "0.7.6",
   "description": "Why develop a Design System when you can generate one?",
   "repository": {
     "type": "git",
@@ -31,8 +31,12 @@
     "pds-build-icons": "packages/pds-cli/bin/pds-build-icons.js",
     "pds-import": "packages/pds-cli/bin/pds-import.js",
     "pds-setup-copilot": "packages/pds-cli/bin/pds-setup-copilot.js",
+    "pds-setup-mcp": "packages/pds-cli/bin/pds-setup-mcp.js",
     "pds-init-config": "packages/pds-cli/bin/pds-init-config.js",
-    "pds-bootstrap": "packages/pds-cli/bin/pds-bootstrap.js"
+    "pds-bootstrap": "packages/pds-cli/bin/pds-bootstrap.js",
+    "pds-mcp-server": "packages/pds-cli/bin/pds-mcp-server.js",
+    "pds-mcp-health": "packages/pds-cli/bin/pds-mcp-health.js",
+    "pds-mcp-eval": "packages/pds-cli/bin/pds-mcp-eval.js"
   },
   "exports": {
     ".": {
@@ -88,6 +92,8 @@
     "pds:css-data": "node packages/pds-cli/bin/generate-css-data.js",
     "pds:import": "node packages/pds-cli/bin/pds-import.js",
     "pds:dx": "node packages/pds-cli/bin/pds-dx.js",
+    "pds:mcp:health": "node packages/pds-cli/bin/pds-mcp-health.js",
+    "pds:mcp:eval": "node packages/pds-cli/bin/pds-mcp-eval.js",
     "storybook:generate": "cd packages/pds-storybook && npm run generate-stories",
     "storybook:dev": "cd packages/pds-storybook && npm run storybook:dev",
     "storybook:build": "cd packages/pds-storybook && npm run storybook:build"
