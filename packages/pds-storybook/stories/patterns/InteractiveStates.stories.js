@@ -494,7 +494,7 @@ export const SkeletonLoading = () => html`
     <div class="card story-product-card">
       <h3>Product Card Empty State</h3>
       <div class="max-w-md">
-        <article class="card stack-sm">
+        <article class="card">
           <div class="skeleton" data-media></div>
           <div class="stack-sm">
             <div class="skeleton"></div>

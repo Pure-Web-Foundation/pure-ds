@@ -452,7 +452,7 @@ export const MaxWidth = () => html`
       },
     ].map(
       ({ cls, token, breakpoint, use }) => html`
-        <article class="card surface-subtle stack-sm">
+        <article class="card surface-subtle">
           <div class="flex items-center justify-between gap-sm flex-wrap">
             <div>
               <code>.${cls}</code>

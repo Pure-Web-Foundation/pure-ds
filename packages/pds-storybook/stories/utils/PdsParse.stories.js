@@ -39,7 +39,7 @@ const ParseSample = {
     };
 
     return html`
-      <section class="card stack-md" data-parse-example>
+      <section class="card" data-parse-example>
         <h3>PDS.parse()</h3>
         <p class="text-muted">
           Parses HTML into element nodes. This example extracts tag names from a sample string.

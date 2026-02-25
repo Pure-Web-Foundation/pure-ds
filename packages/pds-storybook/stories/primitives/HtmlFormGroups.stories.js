@@ -10,7 +10,7 @@ const styles = html`
   </style>
 `;
 export default {
-  title: 'Primitives/HTML Form Groups',
+  title: 'Primitives/Form Elements',
   tags: ["grouping"],
   parameters: {
     pds: {
@@ -47,7 +47,7 @@ Add the \`.buttons\` class to either type for outlined button-style controls:
 
 export const RadioGroupDefault = () => html`
   ${styles}
-  <div class="card stack-md">
+  <div class="card">
     <header>
       <h3>Radio Group - Default Style</h3>
       <small class="text-muted"
@@ -76,7 +76,7 @@ RadioGroupDefault.storyName = "Radio Group - Default";
 
 export const RadioGroupButtons = () => html`
   ${styles}
-  <div class="card stack-md">
+  <div class="card">
     <header>
       <h3>Radio Group - Button Style</h3>
       <small class="text-muted"
@@ -106,7 +106,7 @@ RadioGroupButtons.storyName = "Radio Group - Buttons";
 
 export const CheckboxGroupDefault = () => html`
 ${styles}
-  <div class="card stack-md">
+  <div class="card">
     <header>
       <h3>Checkbox Group - Default Style</h3>
       <small class="text-muted"
@@ -144,7 +144,7 @@ CheckboxGroupDefault.storyName = "Checkbox Group - Default";
 
 export const CheckboxGroupButtons = () => html`
 ${styles}
-  <div class="card stack-md">
+  <div class="card">
     <header>
       <h3>Checkbox Group - Button Style</h3>
       <small class="text-muted"
@@ -184,7 +184,7 @@ CheckboxGroupButtons.storyName = "Checkbox Group - Buttons";
 export const StyleComparison = () => html`
 
 ${styles}
-  <div class="card stack-md">
+  <div class="card">
     <header>
       <h3>Side-by-Side Comparison</h3>
       <small class="text-muted"
@@ -284,7 +284,7 @@ StyleComparison.storyName = "Style Comparison";
 
 export const ToggleSwitches = () => html`
 ${styles}
-  <div class="card stack-md gap-lg">
+  <div class="card gap-lg">
     <header>
       <h3>Toggle Switches</h3>
       <small class="text-muted"
@@ -330,7 +330,7 @@ ToggleSwitches.storyName = "Toggle Switches";
 
 export const CustomLayout = () => html`
 ${styles}
-  <div class="card stack-md">
+  <div class="card">
     <h3>Custom Layout with Flex Utilities</h3>
     <div class="callout callout-info">
       Override default column layout using standard CSS flex properties
@@ -374,7 +374,7 @@ CustomLayout.storyName = "Custom Layout";
 
 export const ButtonStyleVariants = () => html`
 ${styles}
-  <div class="card stack-md">
+  <div class="card">
     <header>
       <h3>Button Style Variants</h3>
       <small class="text-muted"
@@ -455,7 +455,7 @@ export const AccessibleFormGroups = {
     };
 
     return html`
-      <div class="card stack-md">
+      <div class="card">
         <header>
           <h2>Accessibility Features</h2>
           <small class="text-muted"

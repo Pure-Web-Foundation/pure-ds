@@ -81,7 +81,7 @@ CalloutsWithIcons.storyName = 'With Icons';
 export const CalloutsWithTitles = () => html`
   <header class="card">
     <h2>Callouts with Titles</h2>
-    <p class="text-muted">Use <code>.callout-title</code> for prominent headings within Callouts.</p>
+    <p class="text-muted">Use <code>.callout-title</code> on text elements for consistent title rendering across presets.</p>
   </header>
   
   <div class="stack-md">
@@ -89,9 +89,9 @@ export const CalloutsWithTitles = () => html`
       <span class="callout-icon">
         <pds-icon icon="info" size="md"></pds-icon>
       </span>
-      <div>
-        <h4 class="callout-title">Did you know?</h4>
-        <p>You can customize your notification preferences in Settings. This helps you stay informed about what matters most.</p>
+      <div class="stack-xs">
+        <strong class="callout-title">Did you know?</strong>
+        <div>You can customize your notification preferences in Settings. This helps you stay informed about what matters most.</div>
       </div>
     </div>
     
@@ -99,9 +99,9 @@ export const CalloutsWithTitles = () => html`
       <span class="callout-icon">
         <pds-icon icon="check-circle" size="md"></pds-icon>
       </span>
-      <div>
-        <h4 class="callout-title">Payment Successful</h4>
-        <p>Your order #12345 has been confirmed. You'll receive a confirmation email shortly.</p>
+      <div class="stack-xs">
+        <strong class="callout-title">Payment Successful</strong>
+        <div>Your order #12345 has been confirmed. You&rsquo;ll receive a confirmation email shortly.</div>
       </div>
     </div>
     
@@ -109,9 +109,9 @@ export const CalloutsWithTitles = () => html`
       <span class="callout-icon">
         <pds-icon icon="warning" size="md"></pds-icon>
       </span>
-      <div>
-        <h4 class="callout-title">Action Required</h4>
-        <p>Your account verification is pending. Please verify your email address to continue.</p>
+      <div class="stack-xs">
+        <strong class="callout-title">Action Required</strong>
+        <div>Your account verification is pending. Please verify your email address to continue.</div>
       </div>
     </div>
     
@@ -119,9 +119,9 @@ export const CalloutsWithTitles = () => html`
       <span class="callout-icon">
         <pds-icon icon="x-circle" size="md"></pds-icon>
       </span>
-      <div>
-        <h4 class="callout-title">Connection Lost</h4>
-        <p>Unable to connect to the server. Check your internet connection and try again.</p>
+      <div class="stack-xs">
+        <strong class="callout-title">Connection Lost</strong>
+        <div>Unable to connect to the server. Check your internet connection and try again.</div>
       </div>
     </div>
   </div>

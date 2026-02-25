@@ -720,68 +720,6 @@ const buildSimpleOmniboxSettings = () => ({
   },
 });
 
-let countryListPromise;
-const loadCountries = async () => {
-  if (!countryListPromise) {
-    countryListPromise = fetch("https://restcountries.com/v3.1/all?fields=name,cca2")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`Failed to fetch countries: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((rows) =>
-        rows
-          .map((row) => ({
-            id: row?.cca2 || row?.name?.common || "",
-            text: row?.name?.common || "",
-            icon: "globe",
-          }))
-          .filter((row) => row.id && row.text)
-          .sort((a, b) => a.text.localeCompare(b.text))
-      );
-  }
-  return countryListPromise;
-};
-
-const countriesOmniboxSettings = {
-  hideCategory: true,
-  itemGrid: "0 1fr 0",
-  iconHandler: () => '',
-  categories: {
-    Featured: {
-      sortIndex: 2,
-      trigger: () => true,
-      getItems: async (options) => {
-        const q = (options.search || "").trim().toLowerCase();
-        const shortlist = [
-          { id: "NL", text: "Netherlands" },
-          { id: "US", text: "United States" },
-        ];
-        return q
-          ? shortlist.filter((item) => item.text.toLowerCase().includes(q))
-          : shortlist;
-      },
-      action: (item) => setActiveOmniboxValue(item?.text),
-      useIconForInput: false,
-    },
-    Countries: {
-      sortIndex: 1,
-      trigger: (options) => (options.search || "").trim().length >= 2,
-      getItems: async (options) => {
-        const q = (options.search || "").trim().toLowerCase();
-        if (!q) return [];
-        const countries = await loadCountries();
-        return countries
-          .filter((item) => item.text.toLowerCase().includes(q))
-          .slice(0, 30);
-      },
-      action: (item) => setActiveOmniboxValue(item?.text),
-      useIconForInput: false,
-    },
-  },
-};
-
 const simpleSchema = {
   type: "object",
   properties: {
@@ -1337,52 +1275,6 @@ export const WithPdsOmnibox = {
           icon: "globe",
           settings: buildSimpleOmniboxSettings(),
         },
-      },
-    };
-
-    return html`
-      <pds-form
-        data-required
-        .jsonSchema=${schema}
-        .uiSchema=${uiSchema}
-        @pw:submit=${(e) => toastFormData(e.detail)}
-      ></pds-form>
-    `;
-  },
-};
-
-export const WithPdsOmniboxCountriesApi = {
-  name: "Omnibox Countries API",
-  render: () => {
-    const schema = {
-      type: "object",
-      required: ["country"],
-      properties: {
-        country: {
-          type: "string",
-          title: "Country",
-          examples: ["Type at least 2 letters to fetch from API..."],
-        },
-        notes: {
-          type: "string",
-          title: "Notes",
-          examples: ["Optional travel notes..."],
-        },
-      },
-    };
-
-    const uiSchema = {
-      "/country": {
-        "ui:widget": "omnibox",
-        "ui:help": "Featured shows Netherlands and United States immediately; full country list loads from restcountries.com when you type 2+ letters.",
-        "ui:options": {
-          icon: "globe",
-          settings: countriesOmniboxSettings,
-        },
-      },
-      "/notes": {
-        "ui:widget": "textarea",
-        "ui:options": { rows: 3 },
       },
     };
 
@@ -2848,30 +2740,32 @@ When \`hide-actions\` is set, the default Submit and Reset buttons are hidden, a
     };
 
     return html`
-      <pds-form
-        .jsonSchema=${schema}
-        hide-actions
-        @pw:value-change=${(e) => console.log("🔄 Field changed:", e.detail)}
-        @pw:submit=${(e) => toastFormData(e.detail)}
-      >
-        <div slot="actions" class="flex gap-sm items-center">
-          <button type="submit" class="btn btn-primary">
-            <pds-icon icon="check"></pds-icon>
-            Create Account
-          </button>
-          <button type="button" class="btn" @click=${handleSaveDraft}>
-            <pds-icon icon="file"></pds-icon>
-            Save Draft
-          </button>
-          <button
-            type="button"
-            class="btn btn-secondary btn-outline grow text-right"
-            @click=${() => console.log("Registration cancelled")}
-          >
-            Cancel
-          </button>
-        </div>
-      </pds-form>
+      <div class="max-w-lg">
+        <pds-form
+          .jsonSchema=${schema}
+          hide-actions
+          @pw:value-change=${(e) => console.log("🔄 Field changed:", e.detail)}
+          @pw:submit=${(e) => toastFormData(e.detail)}
+        >
+          <div slot="actions" class="flex gap-sm items-center">
+            <button type="submit" class="btn btn-primary">
+              <pds-icon icon="check"></pds-icon>
+              Create Account
+            </button>
+            <button type="button" class="btn" @click=${handleSaveDraft}>
+              <pds-icon icon="file"></pds-icon>
+              Save Draft
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary btn-outline"
+              @click=${() => console.log("Registration cancelled")}
+            >
+              Cancel
+            </button>
+          </div>
+        </pds-form>
+      </div>
     `;
   },
 };

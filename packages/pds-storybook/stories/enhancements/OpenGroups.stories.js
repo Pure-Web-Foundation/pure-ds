@@ -16,7 +16,7 @@ export default {
 
 export const RadioGroupOpen = () => html`
   ${enhancementHeader('openGroup')}
-  <section class="card stack-md max-w-md">
+  <section class="card max-w-md">
     <header>
       <h3>Select Your Preferences</h3>
       <small class="text-muted">Choose from existing options or add your own</small>
@@ -41,7 +41,7 @@ export const RadioGroupOpen = () => html`
 
 export const CheckboxGroupOpen = () => html`
   ${enhancementHeader('openGroup')}
-  <section class="card stack-md max-w-md">
+  <section class="card max-w-md">
     <header>
       <h3>Select Features</h3>
       <small class="text-muted">Select multiple features and add custom ones</small>
@@ -115,7 +115,7 @@ export const InForm = () => html`
 
 export const PrefilledValues = () => html`
   ${enhancementHeader('openGroup')}
-  <section class="card stack-md max-w-md">
+  <section class="card max-w-md">
     
     <header>
       <h3>Tag Editor</h3>
@@ -146,7 +146,7 @@ export const PrefilledValues = () => html`
 
 export const InCard = () => html`
   ${enhancementHeader('openGroup')}
-  <article class="card stack-md max-w-md">
+  <article class="card max-w-md">
     <header>
       <h3>Customize Your Experience</h3>
       <small class="text-muted">Choose your preferences and add custom options as needed</small>

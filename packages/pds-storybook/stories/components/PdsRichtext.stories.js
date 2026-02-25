@@ -145,7 +145,7 @@ export const EmailComposer = () => {
 
   return html`
     ${richtextStoryStyles}
-    <article class="card max-w-lg stack-md">
+    <article class="card max-w-lg">
       <h3>Compose Email</h3>
       
       <form class="richtext-email-form stack-sm">

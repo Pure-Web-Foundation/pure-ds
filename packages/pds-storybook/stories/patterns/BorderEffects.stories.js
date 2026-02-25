@@ -17,11 +17,11 @@ export default {
 
 export const BorderGradient = () => html`
   <div class="grid grid-auto-sm gap-md">
-    <div class="card border-gradient stack-md">
+    <div class="card border-gradient">
       <h3>Gradient Border</h3>
       <p>Animated gradient border effect that follows the primary color scheme.</p>
     </div>
-    <div class="card border-gradient stack-md" style="--gradient-angle: 45deg;">
+    <div class="card border-gradient" style="--gradient-angle: 45deg;">
       <h3>Custom Angle</h3>
       <p>Use CSS variables to customize the gradient direction.</p>
     </div>
@@ -30,11 +30,11 @@ export const BorderGradient = () => html`
 
 export const BorderGlow = () => html`
   <div class="grid grid-auto-sm gap-md">
-    <div class="card border-glow stack-md">
+    <div class="card border-glow">
       <h3>Glowing Border</h3>
       <p>Subtle glow effect.</p>
     </div>
-    <div class="card border-glow border-gradient stack-md">
+    <div class="card border-glow border-gradient">
       <h3>Glow + Gradient</h3>
       <p>Combined glow and gradient border effects.</p>
     </div>

@@ -143,7 +143,7 @@ export const MeshUsageExamples = () => html`
       class="card radius-lg story-mesh-demo"
       style="background: var(--background-mesh-03);"
     >
-      <article class="card surface-elevated stack-sm max-w-md">
+      <article class="card surface-elevated max-w-md">
         <h4>Layered Design</h4>
         <p>
           Mesh gradients work beautifully as backgrounds with overlaid content
@@ -167,7 +167,7 @@ export const MeshUsageExamples = () => html`
         ${Array.from(
           { length: 3 },
           (_, index) => html`
-            <div class="card surface-translucent-75 stack-sm text-center">
+            <div class="card surface-translucent-75 text-center">
               <pds-icon icon="star" size="xl" class="icon-accent"></pds-icon>
               <h5>Feature ${index + 1}</h5>
               <p>

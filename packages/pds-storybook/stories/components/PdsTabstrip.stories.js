@@ -133,7 +133,7 @@ export const Default = () => html`
         <div class="grid grid-auto-sm gap-md">
           ${tabstripMetrics.map(
             (metric) => html`
-              <article class="card surface-elevated stack-sm">
+              <article class="card surface-elevated">
                 <h4>${metric.title}</h4>
                 <div class="tabstrip-stat-value ${metric.colorClass}">
                   ${metric.value}
@@ -144,7 +144,7 @@ export const Default = () => html`
           )}
         </div>
 
-        <article class="card stack-sm">
+        <article class="card">
           <h4>Recent Activity</h4>
           <div class="stack-sm">
             ${tabstripActivityItems.map(
@@ -175,7 +175,7 @@ export const Default = () => html`
           </p>
         </div>
 
-        <article class="card stack-sm">
+        <article class="card">
           <h4>Traffic Sources</h4>
           <div class="stack-sm">
             ${tabstripTrafficSources.map(
@@ -194,7 +194,7 @@ export const Default = () => html`
           </div>
         </article>
 
-        <article class="card surface-elevated stack-sm">
+        <article class="card surface-elevated">
           <h4>Top Features</h4>
           <ul class="stack-sm">
             ${tabstripFeatures.map((feature) => html`<li>${feature}</li>`)}
@@ -212,7 +212,7 @@ export const Default = () => html`
           </p>
         </div>
 
-        <article class="card stack-sm">
+        <article class="card">
           <h4>General Settings</h4>
           <div class="stack-sm">
             <label>
@@ -235,7 +235,7 @@ export const Default = () => html`
           </div>
         </article>
 
-        <article class="card surface-elevated stack-sm">
+        <article class="card surface-elevated">
           <h4>Notifications</h4>
           <fieldset role="group" class="stack-sm">
             ${tabstripNotificationOptions.map(

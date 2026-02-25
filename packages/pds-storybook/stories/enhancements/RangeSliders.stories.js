@@ -16,7 +16,7 @@ export default {
 
 export const StandardFloatingBubble = () => html`
   ${enhancementHeader('range')}
-  <section class="card stack-md max-w-sm">
+  <section class="card max-w-sm">
     <small class="text-muted">
       Default behavior: A floating bubble appears when you interact with the slider.
     </small>
@@ -81,7 +81,7 @@ export const CustomSteps = () => html`
 
 export const InlineOutputMode = () => html`
   ${enhancementHeader('range')}
-  <section class="card stack-md max-w-md">
+  <section class="card max-w-md">
     <small class="text-muted">
       Add the <code>range-output</code> class to automatically create an inline output display.
     </small>
@@ -106,7 +106,7 @@ InlineOutputMode.storyName = 'Inline Output (range-output class)';
 
 export const AudioControlsExample = () => html`
   ${enhancementHeader('range')}
-  <article class="card stack-md max-w-md">
+  <article class="card max-w-md">
     <header>
       <h3>Audio Controls</h3>
       <small class="text-muted">
@@ -139,7 +139,7 @@ AudioControlsExample.storyName = 'Real-world Example (Audio Controls)';
 export const ComparisonView = () => html`
   ${enhancementHeader('range')}
   <div class="grid grid-auto-md gap-lg max-w-3xl">
-    <article class="card stack-md">
+    <article class="card">
       <header>
         <h3>Standard Mode</h3>
         <small class="text-muted">
@@ -158,7 +158,7 @@ export const ComparisonView = () => html`
       </div>
     </article>
 
-    <article class="card stack-md">
+    <article class="card">
       <header>
         <h3>Inline Output Mode</h3>
         <small class="text-muted">

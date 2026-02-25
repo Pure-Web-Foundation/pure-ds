@@ -16,12 +16,12 @@ export default {
 };
 
 export const BasicDividers = () => html`
-  <article class="card stack-md">
-    <header class="stack-xs">
+  <article class="card">
+    <header>
       <h3>Default Divider</h3>
       <p class="text-muted">Use <code>&lt;hr&gt;</code> for a clean divider.</p>
     </header>
-    <div class="stack-sm">
+    <div>
       <p>Section one content</p>
       <hr />
       <p>Section two content</p>
@@ -30,12 +30,12 @@ export const BasicDividers = () => html`
 `;
 
 export const LabeledDivider = () => html`
-  <article class="card stack-md">
-    <header class="stack-xs">
+  <article class="card">
+    <header>
       <h3>Labeled Divider</h3>
-      <p class="text-muted">Add <code>data-content</code> to label the divider.</p>
+      <small class="text-muted">Add <code>data-content</code> to label the divider.</small>
     </header>
-    <div class="stack-sm">
+    <div>
       <p>Continue with email</p>
       <hr data-content="OR" />
       <p>Continue with SSO</p>
@@ -44,18 +44,18 @@ export const LabeledDivider = () => html`
 `;
 
 export const DividerInCard = () => html`
-  <article class="card stack-md">
-    <header class="stack-xs">
+  <article class="card">
+    <header>
       <h3>Divider in Card Layouts</h3>
       <p class="text-muted">Works inside cards and stacked content.</p>
     </header>
-    <div class="stack-sm">
-      <div class="stack-xs">
+    <div>
+      <div>
         <strong>Plan details</strong>
         <small class="text-muted">Monthly · Cancel anytime</small>
       </div>
       <hr data-content="DETAILS" />
-      <div class="stack-xs">
+      <div>
         <span>Storage: 500GB</span>
         <span>Support: Priority</span>
       </div>

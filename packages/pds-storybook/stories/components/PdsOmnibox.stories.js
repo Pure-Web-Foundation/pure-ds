@@ -201,6 +201,164 @@ const inFormSettingsSource = `const settings = {
   <button class="btn-primary" type="submit">Submit</button>
 </form>`;
 
+let countryListPromise;
+const loadCountries = async () => {
+  if (!countryListPromise) {
+    countryListPromise = fetch("https://restcountries.com/v3.1/all?fields=name,cca2")
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Failed to fetch countries: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((rows) =>
+        rows
+          .map((row) => ({
+            id: row?.cca2 || row?.name?.common || "",
+            text: row?.name?.common || "",
+            icon: "globe",
+          }))
+          .filter((row) => row.id && row.text)
+          .sort((a, b) => a.text.localeCompare(b.text)),
+      );
+  }
+  return countryListPromise;
+};
+
+const setCountriesFormOmniboxValue = (nextValue) => {
+  const active = document.activeElement;
+  let input = null;
+  if (active && active.tagName === "INPUT") {
+    input = active;
+  }
+  if (!input) {
+    input = document
+      .querySelector("form[data-countries-api] pds-omnibox")
+      ?.shadowRoot?.querySelector("input");
+  }
+  if (input && input.isConnected) {
+    input.value = nextValue || "";
+  }
+};
+
+const countriesApiSettingsSource = `const settings = {
+  hideCategory: true,
+  itemGrid: "0 1fr 0",
+  iconHandler: () => '',
+  categories: {
+    Featured: {
+      sortIndex: 2,
+      trigger: () => true,
+      getItems: async (options) => {
+        const q = (options.search || "").trim().toLowerCase();
+        const shortlist = [
+          { id: "NL", text: "Netherlands" },
+          { id: "US", text: "United States" },
+        ];
+        return q
+          ? shortlist.filter((item) => item.text.toLowerCase().includes(q))
+          : shortlist;
+      },
+      action: (item) => {
+        const active = document.activeElement;
+        let input = null;
+        if (active && active.tagName === "INPUT") {
+          input = active;
+        }
+        if (!input) {
+          input = document
+            .querySelector("form[data-countries-api] pds-omnibox")
+            ?.shadowRoot?.querySelector("input");
+        }
+        if (input && input.isConnected) {
+          input.value = item?.text || "";
+        }
+      },
+      useIconForInput: false,
+    },
+    Countries: {
+      sortIndex: 1,
+      trigger: (options) => (options.search || "").trim().length >= 2,
+      getItems: async (options) => {
+        const q = (options.search || "").trim().toLowerCase();
+        if (!q) return [];
+        const countries = await loadCountries();
+        return countries
+          .filter((item) => item.text.toLowerCase().includes(q))
+          .slice(0, 30);
+      },
+      action: (item) => {
+        const active = document.activeElement;
+        let input = null;
+        if (active && active.tagName === "INPUT") {
+          input = active;
+        }
+        if (!input) {
+          input = document
+            .querySelector("form[data-countries-api] pds-omnibox")
+            ?.shadowRoot?.querySelector("input");
+        }
+        if (input && input.isConnected) {
+          input.value = item?.text || "";
+        }
+      },
+      useIconForInput: false,
+    },
+  },
+};
+
+<form data-countries-api>
+  <pds-omnibox
+    name="country"
+    required
+    placeholder="Type at least 2 letters to fetch countries..."
+    ${"${lazyProps({ settings })}"}
+  ></pds-omnibox>
+  <button class="btn-primary" type="submit">Submit</button>
+</form>`;
+
+const countriesApiSettings = {
+  hideCategory: true,
+  itemGrid: "0 1fr 0",
+  iconHandler: () => '',
+  categories: {
+    Featured: {
+      sortIndex: 2,
+      trigger: () => true,
+      getItems: async (options) => {
+        const q = (options.search || "").trim().toLowerCase();
+        const shortlist = [
+          { id: "NL", text: "Netherlands" },
+          { id: "US", text: "United States" },
+        ];
+        return q
+          ? shortlist.filter((item) => item.text.toLowerCase().includes(q))
+          : shortlist;
+      },
+      action: (item) => {
+        setCountriesFormOmniboxValue(item?.text);
+      },
+      useIconForInput: false,
+    },
+    Countries: {
+      sortIndex: 1,
+      trigger: (options) => (options.search || "").trim().length >= 2,
+      getItems: async (options) => {
+        const q = (options.search || "").trim().toLowerCase();
+        if (!q) return [];
+        const countries = await loadCountries();
+        return countries
+          .filter((item) => item.text.toLowerCase().includes(q))
+          .slice(0, 30);
+      },
+      action: (item) => {
+        setCountriesFormOmniboxValue(item?.text);
+      },
+      useIconForInput: false,
+    },
+  },
+};
+
 const combinedSettingsSource = `const settings = {
   hideCategory: false,
   iconHandler: (item) =>
@@ -497,6 +655,34 @@ export const InForm = {
       source: {
         type: "code",
         code: inFormSettingsSource,
+      },
+    },
+  },
+};
+
+export const CountriesApi = {
+  name: "Countries API",
+  render: () => html`
+    <form
+      data-countries-api
+      class="stack-md"
+      @submit=${(e) => e.preventDefault()}
+    >
+      <pds-omnibox
+        name="country"
+        required
+        placeholder="Type at least 2 letters to fetch countries..."
+        ${lazyProps({ settings: countriesApiSettings })}
+        data-settings-source=${countriesApiSettingsSource}
+      ></pds-omnibox>
+      <button class="btn-primary" type="submit">Submit</button>
+    </form>
+  `,
+  parameters: {
+    docs: {
+      source: {
+        type: "code",
+        code: countriesApiSettingsSource,
       },
     },
   },

@@ -460,7 +460,7 @@ export const ColoredIcons = () => html`
       <small class="text-muted">Icons inherit <code>currentColor</code> by default, or can be explicitly colored using the <code>color</code> attribute.</small>
     </header>
     
-    <article class="card stack-md">
+    <article class="card">
       <h4>Using Design Tokens (Explicit)</h4>
       <div class="flex gap-md flex-wrap items-center">
         <pds-icon icon="heart" size="lg" color="var(--color-danger-500)"></pds-icon>
@@ -471,7 +471,7 @@ export const ColoredIcons = () => html`
       </div>
     </article>
 
-    <article class="card stack-md">
+    <article class="card">
       <h4>Using Design Tokens</h4>
       <p class="text-muted story-desc">Recommended approach for consistent theming.</p>
       <div class="flex gap-md flex-wrap items-center">
@@ -483,7 +483,7 @@ export const ColoredIcons = () => html`
       </div>
     </article>
 
-    <article class="card stack-md">
+    <article class="card">
       <h4>Inheriting from Parent</h4>
       <p class="text-muted story-desc">Icons use <code>currentColor</code> by default, inheriting text color.</p>
       <div class="flex gap-md flex-wrap items-center">
@@ -502,7 +502,7 @@ export const ColoredIcons = () => html`
       </div>
     </article>
 
-    <article class="card surface-elevated stack-md">
+    <article class="card surface-elevated">
       <h4>Usage</h4>
       <pre><code>&lt;!-- Design token (recommended) --&gt;
     &lt;pds-icon icon="heart" color="var(--color-danger-500)"&gt;&lt;/pds-icon&gt;
@@ -564,7 +564,7 @@ export const AllIcons = () => {
 
       ${Object.entries(iconConfig).map(
         ([category, icons]) => html`
-          <article class="card stack-lg icon-category">
+          <article class="card icon-category">
             <h3 class="flex items-baseline gap-sm flex-wrap story-cat-header">
               ${category.replace(/([A-Z])/g, ' $1').trim()}
               <span class="text-muted story-desc">(${icons.length} icons)</span>
@@ -595,7 +595,7 @@ export const AllIcons = () => {
         `
       )}
 
-      <article class="card surface-elevated stack-md">
+      <article class="card surface-elevated">
         <h4>Usage</h4>
         <pre><code>&lt;pds-icon icon="heart" size="lg"&gt;&lt;/pds-icon&gt;
 &lt;pds-icon icon="star" size="md"&gt;&lt;/pds-icon&gt;
@@ -624,10 +624,10 @@ export const ExternalIcons = () => html`
       </p>
     </header>
 
-    <article class="card stack-md">
+    <article class="card">
       <h3>How It Works</h3>
       <div class="grid grid-auto-md gap-lg">
-        <article class="card surface-elevated stack-md">
+        <article class="card surface-elevated">
           <h4 class="flex items-center gap-sm"><pds-icon icon="lightning" size="sm"></pds-icon> Sprite Icons (Fast)</h4>
           <p class="text-muted">Core icons bundled in the sprite sheet load instantly with a single HTTP request.</p>
           <div class="flex gap-lg flex-wrap items-center">
@@ -638,7 +638,7 @@ export const ExternalIcons = () => html`
           </div>
         </article>
         
-        <article class="card surface-elevated stack-md">
+        <article class="card surface-elevated">
           <h4 class="flex items-center gap-sm"><pds-icon icon="cloud-arrow-down" size="sm"></pds-icon> External Icons (On-Demand)</h4>
           <p class="text-muted">More 'exotic' icons are fetched individually, then cached for subsequent use.</p>
           <div class="flex gap-lg flex-wrap items-center">
@@ -650,7 +650,7 @@ export const ExternalIcons = () => html`
       </div>
     </article>
 
-    <article class="card stack-md">
+    <article class="card">
       <h3>External Icon Sizes</h3>
       <p class="text-muted">External icons respect all standard size tokens.</p>
       <div class="grid grid-auto-sm gap-lg">
@@ -681,55 +681,55 @@ export const ExternalIcons = () => html`
       </div>
     </article>
 
-    <article class="card stack-md">
+    <article class="card">
       <h3>Color Inheritance</h3>
       <p class="text-muted">External icons support color customization just like sprite icons.</p>
       <div class="flex gap-lg flex-wrap items-center">
-        <div class="card surface-elevated stack-sm text-center items-center story-icon-card">
+        <div class="card surface-elevated text-center items-center story-icon-card">
           <pds-icon icon="solid-anatomy-brain-1" size="xl" color="var(--color-primary-500)"></pds-icon>
           <small class="text-muted">Primary</small>
         </div>
-        <div class="card surface-elevated stack-sm text-center items-center story-icon-card">
+        <div class="card surface-elevated text-center items-center story-icon-card">
           <pds-icon icon="solid-anatomy-hand-bones" size="xl" color="var(--color-accent-500)"></pds-icon>
           <small class="text-muted">Accent</small>
         </div>
-        <div class="card surface-elevated stack-sm text-center items-center story-icon-card">
+        <div class="card surface-elevated text-center items-center story-icon-card">
           <pds-icon icon="solid-conditions-lung-condition-2" size="xl" color="var(--color-success-500)"></pds-icon>
           <small class="text-muted">Success</small>
         </div>
-        <div class="card surface-elevated stack-sm text-center items-center story-icon-card">
+        <div class="card surface-elevated text-center items-center story-icon-card">
           <pds-icon icon="solid-anatomy-brain-1" size="xl" color="var(--color-warning-500)"></pds-icon>
           <small class="text-muted">Warning</small>
         </div>
-        <div class="card surface-elevated stack-sm text-center items-center story-icon-card">
+        <div class="card surface-elevated text-center items-center story-icon-card">
           <pds-icon icon="solid-anatomy-hand-bones" size="xl" color="var(--color-error-500)"></pds-icon>
           <small class="text-muted">Error</small>
         </div>
       </div>
     </article>
 
-    <article class="card stack-md">
+    <article class="card">
       <h3>Fallback Behavior</h3>
       <p class="text-muted">
         When an icon isn't found in the sprite <em>or</em> the external path, 
         a fallback "missing" icon is shown.
       </p>
       <div class="flex gap-lg">
-        <div class="card surface-elevated stack-sm text-center items-center story-icon-card">
+        <div class="card surface-elevated text-center items-center story-icon-card">
           <pds-icon icon="this-icon-does-not-exist" size="xl"></pds-icon>
           <small class="text-muted">Missing icon</small>
         </div>
       </div>
     </article>
 
-    <article class="card stack-md">
+    <article class="card">
       <h3>Cache Inspector</h3>
       <p class="text-muted">Click the button to inspect the current external icon cache state.</p>
       <button class="btn-secondary" id="check-cache-btn">Check External Icon Cache</button>
       <pre id="cache-status" class="story-cache-status">Click the button to see cache contents...</pre>
     </article>
 
-    <article class="card surface-elevated stack-md">
+    <article class="card surface-elevated">
       <h4>Configuration</h4>
       <p class="text-muted">Configure the external icons path in <code>pds.config.js</code>:</p>
       <pre><code>export const config = {
@@ -741,7 +741,7 @@ export const ExternalIcons = () => html`
 };</code></pre>
     </article>
 
-    <article class="card surface-elevated stack-md">
+    <article class="card surface-elevated">
       <h4>Usage</h4>
       <pre><code>&lt;!-- Sprite icon (instant from cache) --&gt;
 &lt;pds-icon icon="house" size="lg"&gt;&lt;/pds-icon&gt;

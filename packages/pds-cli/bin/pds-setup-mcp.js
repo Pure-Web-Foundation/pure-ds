@@ -5,7 +5,7 @@ import { existsSync } from 'fs';
 import path from 'path';
 
 const projectRoot = process.cwd();
-const serverCommand = 'node';
+const serverCommand = process.execPath;
 const args = process.argv.slice(2);
 const debugMode = args.includes('--debug');
 
@@ -23,11 +23,11 @@ function resolveServerScriptPath() {
   for (const candidate of candidatePaths) {
     const absolutePath = path.join(projectRoot, candidate);
     if (existsSync(absolutePath)) {
-      return `./${candidate.replace(/\\/g, '/')}`;
+      return absolutePath;
     }
   }
 
-  return `./${candidatePaths[0].replace(/\\/g, '/')}`;
+  return path.join(projectRoot, candidatePaths[0]);
 }
 
 const serverArgs = [resolveServerScriptPath()];

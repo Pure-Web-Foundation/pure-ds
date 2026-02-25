@@ -63,7 +63,7 @@ export const BasicCards = () => html`
   <div class="stack-md">
     <h3>Basic Cards</h3>
     <div class="grid grid-auto-md gap-md">
-      <article class="card card-basic stack-md">
+      <article class="card card-basic">
         <header>
           <h3>Default Card</h3>
         </header>
@@ -90,7 +90,7 @@ export const BasicCards = () => html`
         </footer>
       </article>
 
-      <article class="card card-interactive stack-md">
+      <article class="card card-interactive">
         <header>
           <h3>Interactive Card</h3>
           <small>With multiple actions and rich content.</small>
@@ -160,18 +160,18 @@ export const NestedCards = () => html`
       Surface variants enable natural nesting without visual confusion
     </p>
 
-    <article class="card max-w-md stack-md">
+    <article class="card max-w-md">
       <h3>Parent Card (Default Surface)</h3>
       <p>This is the outer container using the default card surface.</p>
 
-      <article class="card surface-elevated stack-md">
+      <article class="card surface-elevated">
         <h4>Nested Card (Elevated)</h4>
         <p>
           This card is nested inside the parent and uses the elevated surface
           for clear visual separation.
         </p>
 
-        <article class="card surface-overlay stack-md">
+        <article class="card surface-overlay">
           <h5>Deeply Nested (Overlay)</h5>
           <small
             >Even deeper nesting maintains readability with the overlay
@@ -266,7 +266,7 @@ export const ComplexCards = () => html`
 ComplexCards.storyName = "Complex Cards";
 
 export const CardVariantsReference = () => html`
-  <div class="card stack-md">
+  <div class="card">
     <h2>Card Classes Reference</h2>
 
     <table class="table-bordered">

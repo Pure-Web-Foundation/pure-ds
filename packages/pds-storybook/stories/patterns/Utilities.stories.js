@@ -59,15 +59,15 @@ export const FlexUtilities = () => html`
 
 export const BorderUtilities = () => html`
   <div class="grid grid-auto-sm gap-md">
-    <div class="card stack-md">
+    <div class="card">
       <h4>Default Border</h4>
       <p>No border specified</p>
     </div>
-    <div class="card border-gradient stack-md">
+    <div class="card border-gradient">
       <h4>Gradient Border</h4>
       <p>Using .border-gradient</p>
     </div>
-    <div class="card border-glow stack-md">
+    <div class="card border-glow">
       <h4>Glowing Border</h4>
       <p>Using .border-glow</p>
     </div>

@@ -113,7 +113,7 @@ export const TogglePositions = () => html`
 
 export const InCard = () => html`
   ${enhancementHeader("toggle")}
-  <article class="card toggle-story-card stack-md max-w-sm">
+  <article class="card toggle-story-card max-w-sm">
     <div>
       <h3>Privacy Settings</h3>
       <p class="toggle-story-muted">Control your privacy preferences</p>

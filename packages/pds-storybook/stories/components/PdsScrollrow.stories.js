@@ -100,7 +100,7 @@ export const Default = () => html`
     ${Array.from(
       { length: 10 },
       (_, i) => html`
-        <article class="card story-scrollrow-card stack-sm">
+        <article class="card story-scrollrow-card">
           <h4>Card ${i + 1}</h4>
           <p>This is card content that scrolls horizontally.</p>
           <button class="btn-primary">Action</button>
@@ -134,7 +134,7 @@ export const ProductGallery = () => html`
       ${Array.from(
         { length: 8 },
         (_, i) => html`
-          <article class="card stack-sm">
+          <article class="card">
             <img
               src="https://picsum.photos/280/200?random=${100 + i}"
               alt="Product ${i + 1}"
@@ -215,7 +215,7 @@ export const CustomStyledButtons = () => html`
       ${Array.from(
         { length: 10 },
         (_, i) => html`
-          <article class="card story-scrollrow-card stack-sm">
+          <article class="card story-scrollrow-card">
             <h4>Card ${i + 1}</h4>
             <p>
               Custom styled navigation buttons with outline and transparency.
@@ -260,7 +260,7 @@ export const ExternalButtons = () => html`
       ${Array.from(
         { length: 10 },
         (_, i) => html`
-          <article class="card story-scrollrow-card stack-sm">
+          <article class="card story-scrollrow-card">
             <h4>Card ${i + 1}</h4>
             <p>Navigation buttons are below the scroll area.</p>
             <button class="btn-secondary">Details</button>

@@ -1,9 +1,9 @@
 {
   "mcpServers": {
     "pure-ds": {
-      "command": "node",
+      "command": "C:/Program Files/nodejs/node.exe",
       "args": [
-        "./packages/pds-cli/bin/pds-mcp-server.js"
+        "D:/Code/pure/pure-ds/packages/pds-cli/bin/pds-mcp-server.js"
       ],
       "env": {
         "PDS_MCP_DEBUG": "1",

@@ -1,0 +1,20 @@
+[pds-mcp-server][debug] 2026-02-25T15:26:51.719Z stdin chunk bytes=440
+[pds-mcp-server][debug] 2026-02-25T15:26:51.727Z parsed raw JSON-RPC frame (no Content-Length)
+[pds-mcp-server][debug] 2026-02-25T15:26:51.728Z request id=1 method=initialize
+[pds-mcp-server][debug] 2026-02-25T15:26:51.728Z response id=1 ok
+[pds-mcp-server][debug] 2026-02-25T15:26:51.729Z frame pending: no header boundary yet; buffered=0 preview=
+[pds-mcp-server][debug] 2026-02-25T15:26:51.730Z stdin chunk bytes=79
+[pds-mcp-server][debug] 2026-02-25T15:26:51.730Z parsed raw JSON-RPC frame (no Content-Length)
+[pds-mcp-server][debug] 2026-02-25T15:26:51.730Z request id=2 method=logging/setLevel
+[pds-mcp-server][debug] 2026-02-25T15:26:51.731Z response id=2 error code=-32601 message=Method not found: logging/setLevel
+[pds-mcp-server][debug] 2026-02-25T15:26:51.731Z frame pending: no header boundary yet; buffered=0 preview=
+[pds-mcp-server][debug] 2026-02-25T15:26:51.732Z stdin chunk bytes=175
+[pds-mcp-server][debug] 2026-02-25T15:26:51.732Z parsed raw JSON-RPC line frame (no Content-Length)
+[pds-mcp-server][debug] 2026-02-25T15:26:51.732Z request id=notification method=notifications/initialized
+[pds-mcp-server][debug] 2026-02-25T15:26:51.733Z parsed raw JSON-RPC line frame (no Content-Length)
+[pds-mcp-server][debug] 2026-02-25T15:26:51.733Z request id=3 method=prompts/list
+[pds-mcp-server][debug] 2026-02-25T15:26:51.733Z response id=3 ok
+[pds-mcp-server][debug] 2026-02-25T15:26:51.734Z parsed raw JSON-RPC frame (no Content-Length)
+[pds-mcp-server][debug] 2026-02-25T15:26:51.734Z request id=4 method=tools/list
+[pds-mcp-server][debug] 2026-02-25T15:26:51.734Z response id=4 ok
+[pds-mcp-server][debug] 2026-02-25T15:26:51.735Z frame pending: no header boundary yet; buffered=0 preview=

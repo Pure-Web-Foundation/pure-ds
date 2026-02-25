@@ -91,7 +91,7 @@ export const InputsWithIcons = {
   render: (args) => {
     return html`
       ${formsStoryStyles}
-      <div class="card stack-md">
+      <div class="card">
         <h3>Inputs with Icons</h3>
         <p>Enhance inputs with icons for better UX. Icons can be positioned at the start or end of the input.</p>
         

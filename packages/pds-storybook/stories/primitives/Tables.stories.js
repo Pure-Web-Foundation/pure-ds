@@ -16,7 +16,7 @@ export default {
 };
 
 export const DefaultTable = () => html`
-  <section class="card stack-md">
+  <section class="card">
     <table>
       <thead>
         <tr>
@@ -59,7 +59,7 @@ export const DefaultTable = () => html`
 DefaultTable.storyName = 'Default Table';
 
 export const StripedTable = () => html`
-  <section class="card stack-md">
+  <section class="card">
     <table class="table-striped">
       <thead>
         <tr>
@@ -108,7 +108,7 @@ export const StripedTable = () => html`
 StripedTable.storyName = 'Striped Table';
 
 export const BorderedCompactTable = () => html`
-  <section class="card stack-md">
+  <section class="card">
     <table class="table-bordered table-compact">
       <thead>
         <tr>
@@ -240,7 +240,7 @@ export const TableResponsiveWrapper = () => html`
 TableResponsiveWrapper.storyName = 'Responsive Wrapper';
 
 export const ResponsiveTable = () => html`
-  <section class="card stack-md">
+  <section class="card">
     <small class="text-muted">Resize the window to see horizontal scrolling on small screens</small>
     <div class="table-responsive">
       <table class="table-striped">
@@ -296,7 +296,7 @@ export const ResponsiveTable = () => html`
 ResponsiveTable.storyName = 'Responsive Table';
 
 export const TablesReference = () => html`
-  <div class="card stack-md">
+  <div class="card">
     <h2>Table Classes Reference</h2>
   
     <table class="table-bordered">

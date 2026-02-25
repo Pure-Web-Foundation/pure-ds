@@ -9,7 +9,7 @@ const formsStoryStyles = html`
 `;
 
 export default {
-  title: 'Primitives/HTML Form Elements',
+  title: 'Primitives/Form Elements',
   tags: ['buttons', 'forms'],
   parameters: {
     pds: {
@@ -42,7 +42,8 @@ These primitive form controls provide the foundation for manual form building wh
   }
 };
 
-export const Default = {
+export const HtmlElementsDefault = {
+  name: 'HTML Elements - Default',
   render: (args) => {
     // Preset changes are handled by toolbar in preview.js
     const handleSubmit = (event) => {
@@ -87,11 +88,12 @@ export const Default = {
   }
 };
 
-export const InputsWithIcons = {
+export const HtmlElementsInputsWithIcons = {
+  name: 'HTML Elements - Inputs With Icons',
   render: (args) => {
     return html`
       ${formsStoryStyles}
-      <div class="card stack-md">
+      <div class="card">
         <h3>Inputs with Icons</h3>
         <p>Enhance inputs with icons for better UX. Icons can be positioned at the start or end of the input.</p>
         

@@ -56,7 +56,7 @@ export default {
 };
 
 export const SurfaceVariants = () => html`
-  <div class="card stack-md">
+  <div class="card">
     <h2>Surface Variants</h2>
     <p class="text-muted">
       All surfaces automatically adjust text, icon, shadow, and border colors to
@@ -64,7 +64,7 @@ export const SurfaceVariants = () => html`
     </p>
 
     <div class="grid grid-auto-sm gap-md">
-      <div class="card surface-base stack-md">
+      <div class="card surface-base">
         <strong class="flex items-center gap-xs">
           <pds-icon icon="square"></pds-icon>
           Base Surface
@@ -73,7 +73,7 @@ export const SurfaceVariants = () => html`
         <button class="btn-primary">Button</button>
       </div>
 
-      <div class="card surface-subtle stack-md">
+      <div class="card surface-subtle">
         <strong class="flex items-center gap-xs">
           <pds-icon icon="square"></pds-icon>
           Subtle Surface
@@ -82,7 +82,7 @@ export const SurfaceVariants = () => html`
         <button class="btn-secondary">Button</button>
       </div>
 
-      <div class="card surface-elevated stack-md">
+      <div class="card surface-elevated">
         <strong class="flex items-center gap-xs">
           <pds-icon icon="arrow-up"></pds-icon>
           Elevated Surface
@@ -91,7 +91,7 @@ export const SurfaceVariants = () => html`
         <button class="btn-primary">Button</button>
       </div>
 
-      <div class="card surface-overlay stack-md">
+      <div class="card surface-overlay">
         <strong class="flex items-center gap-xs">
           <pds-icon icon="desktop"></pds-icon>
           Overlay Surface
@@ -114,19 +114,19 @@ export const ContextAwareShadows = () => html`
     </p>
 
     <div class="grid grid-auto-sm gap-lg">
-      <div class="card shadow-sm surface-elevated text-center stack-md">
+      <div class="card shadow-sm surface-elevated text-center">
         <pds-icon icon="feather" size="lg"></pds-icon>
         <strong>Small</strong>
         <small class="text-muted">--shadow-sm</small>
       </div>
 
-      <div class="card shadow-md surface-elevated text-center stack-md">
+      <div class="card shadow-md surface-elevated text-center">
         <pds-icon icon="grid-four" size="lg"></pds-icon>
         <strong>Medium</strong>
         <small class="text-muted">--shadow-md</small>
       </div>
 
-      <div class="card shadow-lg surface-elevated text-center stack-md">
+      <div class="card shadow-lg surface-elevated text-center">
         <pds-icon icon="rocket" size="lg"></pds-icon>
         <strong>Large</strong>
         <small class="text-muted">--shadow-lg</small>
@@ -138,14 +138,14 @@ export const ContextAwareShadows = () => html`
 ContextAwareShadows.storyName = "Context-Aware Shadows";
 
 export const NestedSurfaces = () => html`
-  <div class="card stack-md">
+  <div class="card">
     <h2>Nested Surfaces</h2>
     <p class="text-muted">
       Surfaces can be nested infinitely. Each level maintains proper contrast
       and visual hierarchy automatically.
     </p>
 
-    <div class="card surface-base stack-md">
+    <div class="card surface-base">
       <h4 class="flex items-center gap-xs">
         <pds-icon icon="circle"></pds-icon>
         Level 1: Base Surface
@@ -155,7 +155,7 @@ export const NestedSurfaces = () => html`
         readability.
       </p>
 
-      <div class="card surface-elevated stack-md">
+      <div class="card surface-elevated">
         <h5 class="flex items-center gap-xs">
           <pds-icon icon="arrow-right"></pds-icon>
           Level 2: Elevated Surface
@@ -163,7 +163,7 @@ export const NestedSurfaces = () => html`
         <p>Shadows and text colors automatically adjust</p>
 
         <div class="grid grid-cols-2 gap-md">
-          <div class="card stack-md">
+          <div class="card">
             <h6 class="flex items-center gap-xs">
               <pds-icon icon="check"></pds-icon>
               Level 3: Card
@@ -178,7 +178,7 @@ export const NestedSurfaces = () => html`
             </div>
           </div>
 
-          <div class="card stack-md">
+          <div class="card">
             <h6 class="flex items-center gap-xs">
               <pds-icon icon="star"></pds-icon>
               Another Card
@@ -198,7 +198,7 @@ export const NestedSurfaces = () => html`
 NestedSurfaces.storyName = "Nested Surfaces";
 
 export const SurfaceInversion = () => html`
-  <div class="card stack-md">
+  <div class="card">
     <h2>Surface Inversion</h2>
     <p class="text-muted">
       The smart surface system automatically inverts text and icon colors on
@@ -206,7 +206,7 @@ export const SurfaceInversion = () => html`
     </p>
 
     <div class="grid grid-auto-md gap-md">
-      <div class="card surface-inverse stack-md">
+      <div class="card surface-inverse">
         <h4 class="flex items-center gap-xs">
           <pds-icon icon="moon"></pds-icon>
           Automatic Inversion
@@ -218,7 +218,7 @@ export const SurfaceInversion = () => html`
         <button class="btn-primary">Primary Button</button>
       </div>
 
-      <div class="card surface-overlay stack-md">
+      <div class="card surface-overlay">
         <h4 class="flex items-center gap-xs">
           <pds-icon icon="palette"></pds-icon>
           Overlay Surface
@@ -233,7 +233,7 @@ export const SurfaceInversion = () => html`
 SurfaceInversion.storyName = "Surface Inversion";
 
 export const BorderGradients = () => html`
-  <div class="card stack-md">
+  <div class="card">
     <h2>Surface Border Effects</h2>
     <p class="text-muted">
       Advanced border gradient effects for standout surfaces. All gradients are
@@ -241,7 +241,7 @@ export const BorderGradients = () => html`
     </p>
 
     <div class="grid grid-auto-md gap-lg">
-      <article class="card border-gradient stack-md">
+      <article class="card border-gradient">
         <h3>Default Gradient</h3>
         <p>
           A card with a subtle animated border gradient that follows your color
@@ -250,7 +250,7 @@ export const BorderGradients = () => html`
         <code class="text-muted">.border-gradient</code>
       </article>
 
-      <article class="card border-gradient-primary stack-md">
+      <article class="card border-gradient-primary">
         <h3>Primary Gradient</h3>
         <p>
           Border gradient using the primary color scheme for brand emphasis.
@@ -258,7 +258,7 @@ export const BorderGradients = () => html`
         <code class="text-muted">.border-gradient-primary</code>
       </article>
 
-      <article class="card border-gradient-accent stack-md">
+      <article class="card border-gradient-accent">
         <h3>Accent Gradient</h3>
         <p>
           Border gradient using the accent color for highlights and attention.
@@ -266,31 +266,31 @@ export const BorderGradients = () => html`
         <code class="text-muted">.border-gradient-accent</code>
       </article>
 
-      <article class="card border-gradient-secondary stack-md">
+      <article class="card border-gradient-secondary">
         <h3>Secondary Gradient</h3>
         <p>Border gradient using the secondary color palette for variety.</p>
         <code class="text-muted">.border-gradient-secondary</code>
       </article>
 
-      <article class="card border-gradient-soft stack-md">
+      <article class="card border-gradient-soft">
         <h3>Soft Gradient</h3>
         <p>A gentle, subdued border gradient for subtle visual interest.</p>
         <code class="text-muted">.border-gradient-soft</code>
       </article>
 
-      <article class="card border-gradient-medium stack-md">
+      <article class="card border-gradient-medium">
         <h3>Medium Gradient</h3>
         <p>A balanced border gradient with moderate intensity and presence.</p>
         <code class="text-muted">.border-gradient-medium</code>
       </article>
 
-      <article class="card border-gradient-strong stack-md">
+      <article class="card border-gradient-strong">
         <h3>Strong Gradient</h3>
         <p>A bold, vibrant border gradient for maximum visual impact.</p>
         <code class="text-muted">.border-gradient-strong</code>
       </article>
 
-      <article class="card border-gradient-glow stack-md">
+      <article class="card border-gradient-glow">
         <h3>Glowing Border</h3>
         <p>
           A card with a glowing border gradient effect for emphasis and visual
@@ -306,7 +306,7 @@ BorderGradients.storyName = "Border Gradients";
 
 export const TranslucentSurfaces = () => html`
   ${smartSurfacesStoryStyles}
-  <div class="card stack-md">
+  <div class="card">
     <h2>Translucent Surfaces</h2>
     <p class="text-muted">
       Semi-transparent surfaces for glassmorphism effects and layered UI. Works
@@ -321,25 +321,25 @@ export const TranslucentSurfaces = () => html`
       />
 
       <div class="grid grid-auto-md gap-lg story-translucent-content">
-        <article class="card surface-translucent-25 stack-md backdrop-blur">
+        <article class="card surface-translucent-25 backdrop-blur">
           <h4>.surface-translucent-25</h4>
           <p>25% opacity - very subtle, mostly transparent</p>
           <code>--color-surface-translucent-25</code>
         </article>
 
-        <article class="card surface-translucent-50 stack-md backdrop-blur">
+        <article class="card surface-translucent-50 backdrop-blur">
           <h4>.surface-translucent-50</h4>
           <p>50% opacity - balanced transparency</p>
           <code>--color-surface-translucent-50</code>
         </article>
 
-        <article class="card surface-translucent-75 stack-md backdrop-blur">
+        <article class="card surface-translucent-75 backdrop-blur">
           <h4>.surface-translucent-75</h4>
           <p>75% opacity - more solid, less see-through</p>
           <code>--color-surface-translucent-75</code>
         </article>
 
-        <article class="card surface-translucent stack-md backdrop-blur">
+        <article class="card surface-translucent backdrop-blur">
           <h4>.surface-translucent</h4>
           <p>Default (50%) - alias for translucent-50</p>
           <code>Shorthand class</code>
@@ -352,7 +352,7 @@ export const TranslucentSurfaces = () => html`
 TranslucentSurfaces.storyName = "Translucent Surfaces";
 
 export const SurfaceInverseExpanded = () => html`
-  <div class="card stack-md">
+  <div class="card">
     <h2>Inverse Surface Deep Dive</h2>
     <p class="text-muted">
       The <code>.surface-inverse</code> class automatically inverts all text,
@@ -360,7 +360,7 @@ export const SurfaceInverseExpanded = () => html`
     </p>
 
     <div class="grid grid-auto-md gap-lg">
-      <article class="card surface-inverse stack-md">
+      <article class="card surface-inverse">
         <h3 class="flex items-center gap-xs">
           <pds-icon icon="moon"></pds-icon>
           Inverse Surface
@@ -373,7 +373,7 @@ export const SurfaceInverseExpanded = () => html`
         </div>
       </article>
 
-      <article class="card surface-inverse stack-md">
+      <article class="card surface-inverse">
         <h4>Code on Inverse</h4>
         <p>
           Inline <code>code elements</code> also adapt their background for
@@ -383,7 +383,7 @@ export const SurfaceInverseExpanded = () => html`
 const example = "Hello!";</code></pre>
       </article>
 
-      <article class="card surface-inverse stack-md">
+      <article class="card surface-inverse">
         <h4>Icons on Inverse</h4>
         <div class="flex gap-md flex-wrap">
           <pds-icon icon="check" size="lg"></pds-icon>
@@ -397,7 +397,7 @@ const example = "Hello!";</code></pre>
         >
       </article>
 
-      <article class="card surface-inverse stack-md">
+      <article class="card surface-inverse">
         <h4>Form Elements</h4>
         <label>
           <span data-label>Input Field</span>
@@ -409,7 +409,7 @@ const example = "Hello!";</code></pre>
       </article>
     </div>
 
-    <section class="card stack-md">
+    <section class="card">
       <h3>CSS Variables Set by .surface-inverse</h3>
       <pre><code>.surface-inverse {
   background-color: var(--color-surface-inverse);

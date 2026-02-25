@@ -16,7 +16,7 @@ export default {
 };
 
 export const ButtonVariants = () => html`
-  <div class="card stack-md">
+  <div class="card">
     <h3>Button Variants</h3>
     <div class="flex gap-sm flex-wrap">
       <button class="btn-primary">Primary</button>
@@ -30,7 +30,7 @@ export const ButtonVariants = () => html`
 ButtonVariants.storyName = 'Button Variants';
 
 export const ButtonSizes = () => html`
-  <div class="card stack-md">
+  <div class="card">
     <h3>Button Sizes</h3>
     <div class="flex gap-sm flex-wrap items-center">
       <button class="btn-primary btn-sm">Small</button>
@@ -43,7 +43,7 @@ export const ButtonSizes = () => html`
 ButtonSizes.storyName = 'Button Sizes';
 
 export const IconButtons = () => html`
-  <div class="card stack-md gap-lg">
+  <div class="card gap-lg">
     <section class="stack-md">
       <h3>Buttons with Icons</h3>
       <div class="flex gap-sm flex-wrap">
@@ -85,7 +85,7 @@ export const IconButtons = () => html`
 IconButtons.storyName = 'Buttons with Icons';
 
 export const IconOnlyButtons = () => html`
-  <div class="card stack-md gap-lg">
+  <div class="card gap-lg">
     <header>
       <h3>Icon-Only Buttons</h3>
       <small class="text-muted">Use <code>.icon-only</code> class for square icon buttons</small>
@@ -131,7 +131,7 @@ export const IconOnlyButtons = () => html`
 IconOnlyButtons.storyName = 'Icon-Only Buttons';
 
 export const ButtonGroups = () => html`
-  <div class="card stack-md gap-lg">
+  <div class="card gap-lg">
     <section class="stack-md">
       <h3>Button Groups</h3>
       <div class="flex gap-sm">
@@ -166,7 +166,7 @@ export const ButtonGroups = () => html`
 ButtonGroups.storyName = 'Button Groups';
 
 export const AllSizesCombinations = () => html`
-  <div class="card stack-md gap-lg">
+  <div class="card gap-lg">
     <section class="stack-md">
       <h3>Small Buttons</h3>
       <div class="flex gap-sm flex-wrap">

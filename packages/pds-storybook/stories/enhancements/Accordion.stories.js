@@ -46,12 +46,12 @@ BasicAccordion.storyName = 'Basic Accordion';
 
 export const AccordionWithRichContent = () => html`
   ${enhancementHeader('accordion')}
-  <div class="card stack-md max-w-xl">
+  <div class="card max-w-xl">
     <h2>Feature Documentation</h2>
     <section class="accordion" aria-label="Features">
       <details open>
         <summary id="feature1">Getting Started</summary>
-        <div class="card stack-md" role="region" aria-labelledby="feature1">
+        <div class="card" role="region" aria-labelledby="feature1">
           <h4>Welcome to Pure Design System</h4>
           <p>Pure Design System is a generative design system that creates complete design tokens from just a few base colors.</p>
           <ul>
@@ -87,11 +87,11 @@ export const AccordionWithRichContent = () => html`
           <h4>Automatic Contrast Management</h4>
           <p>Surfaces automatically adjust text, icons, and shadow colors to maintain WCAG AA contrast ratios.</p>
           <div class="grid grid-cols-2 gap-sm">
-            <div class="surface-elevated card text-center stack-md">
+            <div class="surface-elevated card text-center">
               <pds-icon icon="sun" size="lg"></pds-icon>
               <small>Elevated Surface</small>
             </div>
-            <div class="surface-overlay card text-center stack-md">
+            <div class="surface-overlay card text-center">
               <pds-icon icon="moon" size="lg"></pds-icon>
               <small>Overlay Surface</small>
             </div>
@@ -119,7 +119,7 @@ AccordionWithRichContent.storyName = 'Accordion with Rich Content';
 
 export const NestedAccordion = () => html`
   ${enhancementHeader('accordion')}
-  <div class="card stack-md max-w-lg">
+  <div class="card max-w-lg">
     <h2>Nested Accordion Example</h2>
     <section class="accordion" aria-label="Product Categories">
       <details>
@@ -203,7 +203,7 @@ NestedAccordion.storyName = 'Nested Accordion';
 
 export const SingleExpandAccordion = () => html`
   ${enhancementHeader('accordion')}
-  <div class="card stack-md max-w-lg">
+  <div class="card max-w-lg">
     <header>
       <h2>Settings</h2>
       <small class="text-muted">
@@ -217,7 +217,7 @@ export const SingleExpandAccordion = () => html`
           <pds-icon icon="user" size="sm"></pds-icon>
           <span>Profile Settings</span>
         </summary>
-        <div class="card stack-md" role="region" aria-labelledby="set1">
+        <div class="card" role="region" aria-labelledby="set1">
           <form method="post" action="#">
             <label>
               <span data-label>Display Name</span>

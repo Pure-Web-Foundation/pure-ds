@@ -195,7 +195,7 @@ export const InlineImages = () => html`
     </p>
   </div>
   
-  <div class="card stack-md">
+  <div class="card">
     <p>
       The team includes 
       <img src="https://i.pravatar.cc/60?img=1" alt="Alice" class="story-img-inline" />

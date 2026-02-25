@@ -33,7 +33,7 @@ export default {
 export const DefaultBadges = {
   render: (args) => {
     return html`
-      <div class="card stack-md">
+      <div class="card">
         <h3>Default Badges</h3>
         <div class="flex gap-md flex-wrap items-center">
           <span class="badge">Default</span>
@@ -55,7 +55,7 @@ export const DefaultBadges = {
 export const OutlinedBadges = {
   render: (args) => {
     return html`
-      <div class="card stack-md">
+      <div class="card">
         <h3>Outlined Badges</h3>
         <div class="flex gap-md flex-wrap items-center">
           <span class="badge badge-outline badge-primary">Primary</span>
@@ -76,7 +76,7 @@ export const OutlinedBadges = {
 export const BadgeSizes = {
   render: (args) => {
     return html`
-      <div class="card stack-md">
+      <div class="card">
         <h3>Badge Sizes</h3>
         <div class="flex gap-md flex-wrap items-center">
           <span class="badge badge-primary badge-sm">Small</span>
@@ -94,7 +94,7 @@ export const BadgeSizes = {
 export const Pills = {
   render: (args) => {
     return html`
-      <div class="card stack-md">
+      <div class="card">
         <h3>Pills</h3>
         <div class="flex gap-md flex-wrap items-center">
           <span class="pill badge-primary">React</span>
@@ -115,7 +115,7 @@ export const Pills = {
 export const AllVariations = {
   render: (args) => {
     return html`
-      <div class="card stack-md gap-lg">
+      <div class="card gap-lg">
         <section class="stack-md">
           <h3>Default Badges</h3>
           <div class="flex gap-md flex-wrap items-center">

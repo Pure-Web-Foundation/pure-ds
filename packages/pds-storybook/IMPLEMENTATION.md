@@ -25,7 +25,6 @@ stories/
 ├── foundations/           # Design tokens
 │   ├── Colors.stories.js
 │   ├── Typography.stories.js
-│   ├── Spacing.stories.js
 │   └── Icons.stories.js
 ├── primitives/            # Basic UI elements
 │   ├── Buttons.stories.js

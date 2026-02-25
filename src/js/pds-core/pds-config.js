@@ -2069,6 +2069,7 @@ export const presets = {
       primary: "#000000", // Uber-inspired black for trust and sophistication
       secondary: "#545454", // mid-gray for secondary elements
       accent: "#06c167", // green for success/confirmation
+      info: "#0e7490", // explicit semantic info hue so info-50 remains a subtle tint
       background: "#f6f6f6",
       darkMode: {
         background: "#0f0f0f",

@@ -16,7 +16,7 @@ export default {
 
 export const Basic = () => html`
   ${enhancementHeader("colorInput")}
-  <section class="card stack-md max-w-sm">
+  <section class="card max-w-sm">
     <label data-color>
       <span>Brand color</span>
       <input type="color" name="brandColor" value="#7c3aed" />
@@ -51,7 +51,7 @@ export const MultipleSemanticColors = () => html`
 
 export const WithinPdsForm = () => html`
   ${enhancementHeader("colorInput")}
-  <section class="card stack-md max-w-md">
+  <section class="card max-w-md">
     <small class="text-muted">
       Color widgets in pds-form are enhanced by default using <code>label[data-color]</code>.
     </small>

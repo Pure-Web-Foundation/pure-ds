@@ -30,7 +30,7 @@ const QuickToasts = {
     };
 
     return html`
-      <section class="card stack-md max-w-sm">
+      <section class="card max-w-sm">
         <h3>Quick toasts</h3>
         <p class="text-muted">Trigger basic toast types using the shared helper.</p>
         <div class="flex gap-sm">
@@ -56,7 +56,7 @@ const PersistentToast = {
     };
 
     return html`
-      <section class="card stack-md max-w-sm">
+      <section class="card max-w-sm">
         <h3>Persistent toast</h3>
         <p class="text-muted">Use persistent mode for messages that require attention.</p>
         <button class="btn btn-outline" @click=${handlePersistent}>Show persistent toast</button>
@@ -111,7 +111,7 @@ const CustomHtmlToasts = {
     };
 
     return html`
-      <section class="card stack-md max-w-sm">
+      <section class="card max-w-sm">
         <h3>Custom HTML toasts</h3>
         <p class="text-muted">Render trusted rich content in toast messages with the <code>html</code> option.</p>
         <div class="flex gap-sm">

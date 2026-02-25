@@ -195,8 +195,8 @@ export const CardPanel = () => html`
   })}
   <nav data-dropdown>
     <button class="btn-secondary">Project Actions</button>
-    <section class="card surface-overlay stack-sm">
-      <header class="stack-xs">
+    <section class="card surface-overlay">
+      <header>
         <strong>Release checklist</strong>
         <small class="text-muted">Keep the essentials visible.</small>
       </header>
@@ -246,7 +246,7 @@ export const ProfilePanel = () => html`
   })}
   <nav data-dropdown>
     <button class="btn-primary">Account</button>
-    <article class="card surface-overlay stack-sm">
+    <article class="card surface-overlay">
       <div class="flex gap-sm items-center">
         <pds-icon icon="user" size="lg"></pds-icon>
         <div class="stack-xs">
