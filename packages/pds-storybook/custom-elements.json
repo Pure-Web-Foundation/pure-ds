@@ -3566,6 +3566,10 @@
             },
             {
               "kind": "field",
+              "name": "values"
+            },
+            {
+              "kind": "field",
               "name": "disabled"
             },
             {
@@ -3582,12 +3586,25 @@
             },
             {
               "kind": "field",
+              "name": "multiselect"
+            },
+            {
+              "kind": "field",
               "name": "selectedNode",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "selectedNodes",
               "readonly": true
             },
             {
               "kind": "method",
               "name": "getSelectedNode"
+            },
+            {
+              "kind": "method",
+              "name": "getSelectedNodes"
             },
             {
               "kind": "method",
@@ -3621,11 +3638,29 @@
             },
             {
               "kind": "method",
+              "name": "selectByValues",
+              "parameters": [
+                {
+                  "name": "values"
+                }
+              ]
+            },
+            {
+              "kind": "method",
               "name": "checkValidity"
             },
             {
               "kind": "method",
               "name": "reportValidity"
+            },
+            {
+              "kind": "method",
+              "name": "focus",
+              "parameters": [
+                {
+                  "name": "options"
+                }
+              ]
             }
           ],
           "events": [
@@ -3696,6 +3731,9 @@
             },
             {
               "name": "expanded-all"
+            },
+            {
+              "name": "multiselect"
             },
             {
               "name": "src"
