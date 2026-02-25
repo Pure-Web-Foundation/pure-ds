@@ -2501,7 +2501,7 @@ fieldset[role="group"].buttons {
 /* Toggle switches - enhanced checkboxes with data-toggle attribute */
 label[data-toggle] {
   display: inline-flex;
-  align-items: normal;
+  align-items: center;
   gap: var(--spacing-3);
   cursor: pointer;
   user-select: none;
@@ -2514,6 +2514,10 @@ label[data-toggle] {
   /* Hide the original checkbox in toggle switches */
   input[type="checkbox"] {
     display: none;
+  }
+
+  span[data-label] {
+    margin-bottom: 0;
   }
 
   /* Toggle switch container */

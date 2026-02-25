@@ -348,8 +348,33 @@ class PdsScrollrow extends HTMLElement {
   #updateControls() {
     const el = this.#viewport;
     if (!el) return;
-    const atStart = el.scrollLeft <= 2;
-    const atEnd = Math.ceil(el.scrollLeft + el.clientWidth) >= el.scrollWidth - 2;
+
+    const computed = getComputedStyle(el);
+    const padStart = parseFloat(computed.paddingInlineStart) || 0;
+    const padEnd = parseFloat(computed.paddingInlineEnd) || 0;
+
+    const maxScroll = Math.max(0, el.scrollWidth - el.clientWidth);
+    const dir = computed.direction;
+    let position = el.scrollLeft;
+
+    if (dir === "rtl") {
+      position = position < 0 ? -position : maxScroll - position;
+    }
+
+    position = Math.min(maxScroll, Math.max(0, position));
+
+    const baseThreshold = 2;
+    const startThreshold = Math.max(baseThreshold, Math.ceil(padStart) + 1);
+    const endThreshold = Math.max(baseThreshold, Math.ceil(padEnd) + 1);
+
+    let atStart = position <= startThreshold;
+    let atEnd = maxScroll - position <= endThreshold;
+
+    if (maxScroll <= Math.max(startThreshold, endThreshold)) {
+      atStart = true;
+      atEnd = true;
+    }
+
     this.classList.toggle("can-scroll-left", !atStart);
     this.classList.toggle("can-scroll-right", !atEnd);
     const buttons = this.shadowRoot.querySelectorAll(".control button");
