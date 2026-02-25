@@ -132,6 +132,22 @@ export async function adoptLayers(
   additionalSheets = [],
   generator = null
 ) {
+  const safeAdditionalSheets = Array.isArray(additionalSheets)
+    ? additionalSheets.filter(Boolean)
+    : [];
+
+  // Apply component-local sheets immediately so lazy-loaded components avoid
+  // transient UA default styling while shared layers are resolving.
+  if (safeAdditionalSheets.length) {
+    const existing = Array.isArray(shadowRoot.adoptedStyleSheets)
+      ? shadowRoot.adoptedStyleSheets
+      : [];
+    const nonAdditional = existing.filter(
+      (sheet) => !safeAdditionalSheets.includes(sheet)
+    );
+    shadowRoot.adoptedStyleSheets = [...nonAdditional, ...safeAdditionalSheets];
+  }
+
   try {
     // Get all requested stylesheets
     const stylesheets = await Promise.all(
@@ -158,7 +174,7 @@ export async function adoptLayers(
     const validStylesheets = stylesheets.filter((sheet) => sheet !== null);
 
     // Adopt all layers + additional sheets
-    shadowRoot.adoptedStyleSheets = [...validStylesheets, ...additionalSheets];
+    shadowRoot.adoptedStyleSheets = [...validStylesheets, ...safeAdditionalSheets];
   } catch (error) {
     const componentName = shadowRoot.host?.tagName?.toLowerCase() || "unknown";
     console.error(
@@ -166,7 +182,7 @@ export async function adoptLayers(
       error
     );
     // Continue with just additional sheets as fallback
-    shadowRoot.adoptedStyleSheets = additionalSheets;
+    shadowRoot.adoptedStyleSheets = safeAdditionalSheets;
   }
 }
 

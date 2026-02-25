@@ -53,6 +53,9 @@ export class PdsTreeview extends HTMLElement {
 		super();
 		this.#root = this.attachShadow({ mode: "open" });
 		this.#internals = this.attachInternals();
+		if (!this.hasAttribute("tabindex")) {
+			this.tabIndex = -1;
+		}
 		this.#renderShell();
 		void this.#adoptStyles();
 	}
@@ -258,6 +261,15 @@ export class PdsTreeview extends HTMLElement {
 		return this.#internals.reportValidity();
 	}
 
+	focus(options) {
+		const targetId = this.#focusedId || this.#selectedId || this.#firstVisibleId();
+		if (targetId) {
+			this.#focusRow(targetId);
+			return;
+		}
+		super.focus(options);
+	}
+
 	#renderShell() {
 		this.#root.innerHTML = `
 			<div class="tv-host" data-state="ready">
@@ -352,12 +364,16 @@ export class PdsTreeview extends HTMLElement {
 				.tv-row {
 					min-height: var(--tv-row-height);
 					display: grid;
-					grid-template-columns: var(--tv-toggle-size) auto 1fr;
+					grid-template-columns: var(--tv-toggle-size) 1fr;
 					align-items: center;
 					gap: var(--spacing-1);
 					border-radius: var(--radius-sm);
 					cursor: default;
 					outline: none;
+				}
+
+				.tv-row.tv-row-has-prefix {
+					grid-template-columns: var(--tv-toggle-size) auto 1fr;
 				}
 
 				.tv-row[aria-selected="true"] {
@@ -439,6 +455,14 @@ export class PdsTreeview extends HTMLElement {
 				}
 			}
 		`);
+
+		const existingSheets = Array.isArray(this.#root.adoptedStyleSheets)
+			? this.#root.adoptedStyleSheets
+			: [];
+		this.#root.adoptedStyleSheets = [
+			...existingSheets.filter((sheet) => sheet !== componentStyles),
+			componentStyles,
+		];
 
 		await PDS.adoptLayers(this.#root, LAYERS, [componentStyles]);
 	}
@@ -593,12 +617,14 @@ export class PdsTreeview extends HTMLElement {
 			.map((node) => {
 				const expanded = this.#expandedIds.has(node.id);
 				const hasChildren = Boolean(node.hasChildren);
+				const hasPrefix = Boolean(node.image || node.icon);
 				const selected = this.#selectedId === node.id;
 				const toggleGlyph = node.loadingChildren ? "…" : expanded ? "−" : "+";
 				const toggle = hasChildren
 					? `<button type="button" class="tv-toggle icon-only" data-node-id="${this.#escapeAttribute(node.id)}" aria-label="${expanded ? "Collapse" : "Expand"} ${this.#escapeAttribute(node.text)}" ${node.loadingChildren ? "disabled" : ""}>${toggleGlyph}</button>`
 					: `<span class="tv-toggle-gap" aria-hidden="true"></span>`;
 				const prefix = this.#renderPrefix(node);
+				const rowClass = hasPrefix ? "tv-row tv-row-has-prefix" : "tv-row tv-row-no-prefix";
 				const label = linksEnabled && node.link
 					? `<a class="tv-label tv-label-link" href="${this.#escapeAttribute(node.link)}">${this.#escapeHtml(node.text)}</a>`
 					: `<span class="tv-label">${this.#escapeHtml(node.text)}</span>`;
@@ -610,7 +636,7 @@ export class PdsTreeview extends HTMLElement {
 				return `
 					<li class="tv-item" role="none">
 						<div
-							class="tv-row"
+							class="${rowClass}"
 							role="treeitem"
 							aria-level="${level}"
 							${hasChildren ? `aria-expanded="${expanded ? "true" : "false"}"` : ""}
@@ -641,7 +667,7 @@ export class PdsTreeview extends HTMLElement {
 		if (node.icon) {
 			return `<span class="tv-prefix"><pds-icon icon="${this.#escapeAttribute(node.icon)}"></pds-icon></span>`;
 		}
-		return `<span class="tv-prefix" aria-hidden="true"></span>`;
+		return "";
 	}
 
 	#handleKeydown(event) {
@@ -903,10 +929,14 @@ export class PdsTreeview extends HTMLElement {
 
 	#syncValidity() {
 		if (this.required && !this.displayOnly && !this.selectedNode) {
+			const focusTarget =
+				this.#root.querySelector('.tv-row[tabindex="0"]') ||
+				this.#root.querySelector(".tv-row") ||
+				this;
 			this.#internals.setValidity(
 				{ valueMissing: true },
 				"Please select a node.",
-				this,
+				focusTarget,
 			);
 			return;
 		}

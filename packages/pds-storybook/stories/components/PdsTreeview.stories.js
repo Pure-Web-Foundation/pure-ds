@@ -102,21 +102,21 @@ const localTreeData = [
             id: "pds-form",
             text: "pds-form",
             value: "pds-form",
-            link: "#/docs/components-pds-form",
+            link: "/?path=/story/components-pds-form--simple-form",
             icon: "note-pencil",
           },
           {
             id: "pds-omnibox",
             text: "pds-omnibox",
             value: "pds-omnibox",
-            link: "#/docs/components-pds-omnibox",
+            link: "/?path=/story/components-pds-omnibox--default",
             icon: "magnifying-glass",
           },
           {
             id: "pds-treeview",
             text: "pds-treeview",
             value: "pds-treeview",
-            link: "#/docs/components-pds-treeview",
+            link: "/?path=/story/components-pds-treeview--default",
             icon: "folder-simple",
           },
         ],
@@ -126,8 +126,20 @@ const localTreeData = [
         text: "Navigation",
         icon: "map-pin",
         children: [
-          { id: "pds-tabstrip", text: "pds-tabstrip", value: "pds-tabstrip", icon: "tabs" },
-          { id: "pds-drawer", text: "pds-drawer", value: "pds-drawer", icon: "sidebar" },
+          {
+            id: "pds-tabstrip",
+            text: "pds-tabstrip",
+            value: "pds-tabstrip",
+            link: "/?path=/story/components-pds-tabstrip--default",
+            icon: "tabs",
+          },
+          {
+            id: "pds-drawer",
+            text: "pds-drawer",
+            value: "pds-drawer",
+            link: "/?path=/story/components-pds-drawer--default",
+            icon: "sidebar",
+          },
         ],
       },
     ],
@@ -162,7 +174,23 @@ const stripLinksFromNodes = (nodes = []) =>
     };
   });
 
-const formTreeData = stripLinksFromNodes(localTreeData);
+const stripIconsFromNodes = (nodes = []) =>
+  nodes.map((node) => {
+    const { icon, children, ...rest } = node || {};
+    return {
+      ...rest,
+      children: Array.isArray(children) ? stripIconsFromNodes(children) : [],
+    };
+  });
+
+const stripIconsFromNodeMap = (nodeMap = {}) =>
+  Object.fromEntries(
+    Object.entries(nodeMap).map(([key, nodes]) => [key, stripIconsFromNodes(nodes)]),
+  );
+
+const localTreeDataNoIcons = stripIconsFromNodes(localTreeData);
+
+const formTreeData = stripLinksFromNodes(localTreeDataNoIcons);
 
 const localJsonData = {
   id: "root",
@@ -210,15 +238,23 @@ const apiLikeData = [
   },
 ];
 
-const encodedApiData = encodeURIComponent(JSON.stringify(apiLikeData));
+const localJsonDataNoIcons = stripIconsFromNodes([localJsonData])[0];
+const apiLikeDataNoIcons = stripIconsFromNodes(apiLikeData);
+
+const encodedApiData = encodeURIComponent(JSON.stringify(apiLikeDataNoIcons));
 const apiDataUrl = `data:application/json,${encodedApiData}`;
 
 const localOptions = {
-  source: localTreeData,
+  source: localTreeDataNoIcons,
   defaultExpanded: ["getting-started", "components", "forms"],
   onSelect: (node) => {
     PDS.toast(`Selected: ${node.text}`, { type: "information" });
   },
+};
+
+const localOptionsWithIcons = {
+  ...localOptions,
+  source: localTreeData,
 };
 
 const localOptionsSource = `const options = {
@@ -226,7 +262,6 @@ const localOptionsSource = `const options = {
     {
       id: "getting-started",
       text: "Getting Started",
-      icon: "house",
       children: [
         { id: "installation", text: "Installation", value: "installation" },
         { id: "quickstart", text: "Quickstart", value: "quickstart" },
@@ -239,15 +274,31 @@ const localOptionsSource = `const options = {
 
 <pds-treeview name="topic" ${"${lazyProps({ options })}"}></pds-treeview>`;
 
+const localOptionsWithIconsSource = `const options = {
+  source: [
+    {
+      id: "getting-started",
+      text: "Getting Started",
+      icon: "house",
+      children: [
+        { id: "installation", text: "Installation", value: "installation", icon: "download" },
+        { id: "quickstart", text: "Quickstart", value: "quickstart", icon: "rocket" },
+      ],
+    },
+  ],
+  defaultExpanded: ["getting-started"],
+};
+
+<pds-treeview name="topic" ${"${lazyProps({ options })}"}></pds-treeview>`;
+
 const localJsonOptions = {
-  source: localJsonData,
+  source: localJsonDataNoIcons,
   defaultExpanded: ["root", "design-tokens"],
 };
 
 const localJsonOptionsSource = `const localJson = {
   id: "root",
   text: "Local JSON",
-  icon: "database",
   children: [
     { id: "design-tokens", text: "Design Tokens", children: [{ id: "colors", text: "Colors" }] },
   ],
@@ -263,7 +314,7 @@ const options = {
 const asyncOptions = {
   getItems: async () => {
     await new Promise((resolve) => setTimeout(resolve, 350));
-    return apiLikeData;
+    return apiLikeDataNoIcons;
   },
   defaultExpanded: ["api-root", "endpoints"],
 };
@@ -359,7 +410,19 @@ const lazyChildrenByNodeId = {
   ],
 };
 
+const lazyRootDataNoIcons = stripIconsFromNodes(lazyRootData);
+const lazyChildrenByNodeIdNoIcons = stripIconsFromNodeMap(lazyChildrenByNodeId);
+
 const lazyNodeFetchOptions = {
+  source: lazyRootDataNoIcons,
+  defaultExpanded: ["docs", "api"],
+  getChildren: async ({ nodeId }) => {
+    await new Promise((resolve) => setTimeout(resolve, 450));
+    return lazyChildrenByNodeIdNoIcons[nodeId] || [];
+  },
+};
+
+const lazyNodeFetchOptionsWithIcons = {
   source: lazyRootData,
   defaultExpanded: ["docs", "api"],
   getChildren: async ({ nodeId }) => {
@@ -367,6 +430,24 @@ const lazyNodeFetchOptions = {
     return lazyChildrenByNodeId[nodeId] || [];
   },
 };
+
+const lazyNodeFetchOptionsWithIconsSource = `const options = {
+  source: [
+    {
+      id: "docs",
+      text: "Docs",
+      icon: "book-open",
+      hasChildren: true,
+      children: [{ id: "guides", text: "Guides", icon: "notebook", hasChildren: true }],
+    },
+  ],
+  getChildren: async ({ nodeId }) => {
+    const response = await fetch(\`/api/tree?parent=${"${encodeURIComponent(nodeId)}"}\`);
+    return response.ok ? response.json() : [];
+  },
+};
+
+<pds-treeview ${"${lazyProps({ options })}"}></pds-treeview>`;
 
 const lazyNodeFetchOptionsSource = `const options = {
   // Initial fetch returns only 2 levels (root + immediate children)
@@ -406,6 +487,10 @@ const displayOnlyOptionsSource = `const options = {
 };
 
 <pds-treeview display-only expanded-all ${"${lazyProps({ options })}"}></pds-treeview>`;
+
+const displayOnlyOptions = {
+  source: localTreeDataNoIcons,
+};
 
 const bindTreeviewForm = (selector) => {
   setTimeout(() => {
@@ -493,6 +578,24 @@ export const LocalJson = {
   },
 };
 
+export const WithIcons = {
+  render: () => html`
+    <pds-treeview
+      name="topicWithIcons"
+      ${lazyProps({ options: localOptionsWithIcons })}
+      data-options-source=${localOptionsWithIconsSource}
+    ></pds-treeview>
+  `,
+  parameters: {
+    docs: {
+      source: {
+        type: "code",
+        code: localOptionsWithIconsSource,
+      },
+    },
+  },
+};
+
 export const AsyncSource = {
   render: () => html`
     <pds-treeview
@@ -547,6 +650,24 @@ export const LazyNodeFetch = {
   },
 };
 
+export const LazyNodeFetchWithIcons = {
+  render: () => html`
+    <pds-treeview
+      name="lazyNodeWithIcons"
+      ${lazyProps({ options: lazyNodeFetchOptionsWithIcons })}
+      data-options-source=${lazyNodeFetchOptionsWithIconsSource}
+    ></pds-treeview>
+  `,
+  parameters: {
+    docs: {
+      source: {
+        type: "code",
+        code: lazyNodeFetchOptionsWithIconsSource,
+      },
+    },
+  },
+};
+
 export const InForm = {
   render: () => {
     bindTreeviewForm(".treeview-form");
@@ -578,7 +699,7 @@ export const DisplayOnly = {
     <pds-treeview
       display-only
       expanded-all
-      ${lazyProps({ options: { source: localTreeData } })}
+      ${lazyProps({ options: displayOnlyOptions })}
       data-options-source=${displayOnlyOptionsSource}
     ></pds-treeview>
   `,

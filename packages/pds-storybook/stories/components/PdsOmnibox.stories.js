@@ -1,4 +1,4 @@
-import { html } from "#pds/lit";
+import { html, lazyProps } from "#pds/lit";
 import { PDS } from "#pds";
 
 const docsParameters = {
@@ -173,7 +173,7 @@ const toastSettingsSource = `const settings = {
   },
 };
 
-<pds-omnibox name="search" placeholder="Search..." .settings=${"${settings}"}></pds-omnibox>`;
+<pds-omnibox name="search" placeholder="Search..." ${"${lazyProps({ settings })}"}></pds-omnibox>`;
 
 const inFormSettingsSource = `const settings = {
   categories: {
@@ -197,7 +197,7 @@ const inFormSettingsSource = `const settings = {
 };
 
 <form>
-  <pds-omnibox name="search" required .settings=${"${settings}"}></pds-omnibox>
+  <pds-omnibox name="search" required ${"${lazyProps({ settings })}"}></pds-omnibox>
   <button class="btn-primary" type="submit">Submit</button>
 </form>`;
 
@@ -277,7 +277,7 @@ const combinedSettingsSource = `const settings = {
   },
 };
 
-<pds-omnibox name="omnibox" placeholder="Try @alex, #design, or type 2+ chars..." .settings=${"${settings}"}></pds-omnibox>`;
+<pds-omnibox name="omnibox" placeholder="Try @alex, #design, or type 2+ chars..." ${"${lazyProps({ settings })}"}></pds-omnibox>`;
 
 const combinedSettings = {
   hideCategory: false,
@@ -458,7 +458,7 @@ export const Default = {
   render: (args) => html`
     <pds-omnibox
       name="search"
-      .settings=${toastSettings}
+      ${lazyProps({ settings: toastSettings })}
       data-settings-source=${toastSettingsSource}
       placeholder=${args.placeholder}
       ?required=${args.required}
@@ -486,7 +486,7 @@ export const InForm = {
       <pds-omnibox
         name="search"
         required
-        .settings=${inFormSettings}
+        ${lazyProps({ settings: inFormSettings })}
         data-settings-source=${inFormSettingsSource}
       ></pds-omnibox>
       <button class="btn-primary" type="submit">Submit</button>
@@ -507,7 +507,7 @@ export const CombinedCategories = {
     <pds-omnibox
       name="omnibox"
       placeholder="Try @alex, #design, or type 2+ chars..."
-      .settings=${combinedSettings}
+      ${lazyProps({ settings: combinedSettings })}
       data-settings-source=${combinedSettingsSource}
     ></pds-omnibox>
   `,
