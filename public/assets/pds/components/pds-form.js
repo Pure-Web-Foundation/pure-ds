@@ -2105,6 +2105,64 @@ export class SchemaForm extends LitElement {
       `;
     });
 
+    this.defineRenderer("treeview", ({ id, path, value, attrs, set, ui, schema }) => {
+      const treeviewOpts = ui?.["ui:options"] || {};
+      const isArraySchema = schema?.type === "array";
+      const configuredMultiselect =
+        ui?.["ui:multiselect"] ??
+        treeviewOpts.multiselect ??
+        (isArraySchema ? "auto" : "off");
+      const normalizedMultiselect =
+        configuredMultiselect === "checkboxes" || configuredMultiselect === "auto"
+          ? configuredMultiselect
+          : "off";
+      const selectedValues = isArraySchema
+        ? Array.isArray(value)
+          ? value.map((item) => String(item))
+          : []
+        : [];
+      const selectedValue = !isArraySchema && value != null ? String(value) : "";
+      const settings = {
+        source:
+          treeviewOpts.source ??
+          treeviewOpts.items ??
+          treeviewOpts.data,
+        items:
+          treeviewOpts.items,
+        data:
+          treeviewOpts.data,
+        getItems: treeviewOpts.getItems,
+        getChildren: treeviewOpts.getChildren,
+        defaultExpanded: treeviewOpts.defaultExpanded,
+        expandedAll: treeviewOpts.expandedAll,
+        transform: treeviewOpts.transform,
+        transformChildren: treeviewOpts.transformChildren,
+        fetch: treeviewOpts.fetch,
+      };
+
+      return html`
+        <pds-treeview
+          id=${id}
+          name=${path}
+          src=${ifDefined(treeviewOpts.src)}
+          multiselect=${normalizedMultiselect}
+          ?disabled=${!!attrs.disabled}
+          ?required=${!!attrs.required}
+          .options=${settings}
+          .value=${selectedValue}
+          .values=${selectedValues}
+          @change=${(event) => {
+            const treeview = event.currentTarget;
+            if (isArraySchema) {
+              set(Array.isArray(treeview.values) ? [...treeview.values] : []);
+              return;
+            }
+            set(treeview.value ?? "");
+          }}
+        ></pds-treeview>
+      `;
+    });
+
     // pds-richtext: Rich text editor
     this.defineRenderer("richtext", ({ id, value, attrs, set, ui, path }) => {
       const richtextOpts = ui?.["ui:options"] || {};
@@ -2472,7 +2530,7 @@ export class SchemaForm extends LitElement {
   }
 
   #isGroupWidget(key) {
-    return key === "radio" || key === "checkbox-group";
+    return key === "radio" || key === "checkbox-group" || key === "treeview";
   }
 
   /**

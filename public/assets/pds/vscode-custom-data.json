@@ -890,6 +890,10 @@
           "description": ""
         },
         {
+          "name": "multiselect",
+          "description": ""
+        },
+        {
           "name": "src",
           "description": ""
         }

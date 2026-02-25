@@ -12,10 +12,12 @@ import { PDS } from "#pds";
  * @attr {boolean} required - Requires a selected node for form validity.
  * @attr {boolean} display-only - Renders as browse-only tree without selection.
  * @attr {boolean} expanded-all - Expands all branch nodes on load.
+ * @attr {"off"|"checkboxes"|"auto"} multiselect - Selection mode. "off" keeps single-select behavior.
  * @attr {string} src - Optional URL source for tree JSON.
  *
  * @property {object} settings - Data and behavior settings object.
  * @property {object} options - Alias for settings.
+ * @property {string[]} values - Selected values when multiselect is enabled.
  * @property {Function} settings.getChildren - Optional async child loader invoked on first expand per node.
  *
  * @fires treeview-load Fired after root data has been loaded and indexed.
@@ -33,7 +35,7 @@ export class PdsTreeview extends HTMLElement {
 	static formAssociated = true;
 
 	static get observedAttributes() {
-		return ["name", "value", "disabled", "required", "display-only", "expanded-all", "src"];
+		return ["name", "value", "disabled", "required", "display-only", "expanded-all", "multiselect", "src"];
 	}
 
 	#root;
@@ -44,10 +46,20 @@ export class PdsTreeview extends HTMLElement {
 	#nodeById = new Map();
 	#parentById = new Map();
 	#selectedId = null;
+	#selectedIds = new Set();
 	#focusedId = null;
 	#defaultValue = "";
 	#loadToken = 0;
 	#childrenLoadPromises = new Map();
+	#multiselectAutoQuery =
+		typeof window !== "undefined" && typeof window.matchMedia === "function"
+			? window.matchMedia("(hover: none), (pointer: coarse)")
+			: null;
+	#onMultiselectAutoQueryChange = () => {
+		if (this.multiselect === "auto") {
+			this.#renderTree();
+		}
+	};
 
 	constructor() {
 		super();
@@ -62,14 +74,28 @@ export class PdsTreeview extends HTMLElement {
 
 	connectedCallback() {
 		this.#defaultValue = this.getAttribute("value") || "";
+		if (this.#multiselectAutoQuery?.addEventListener) {
+			this.#multiselectAutoQuery.addEventListener("change", this.#onMultiselectAutoQueryChange);
+		}
 		this.#syncAttributes();
 		void this.refresh();
+	}
+
+	disconnectedCallback() {
+		if (this.#multiselectAutoQuery?.removeEventListener) {
+			this.#multiselectAutoQuery.removeEventListener("change", this.#onMultiselectAutoQueryChange);
+		}
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
 		if (oldValue === newValue) return;
 		if (name === "src") {
 			void this.refresh();
+			return;
+		}
+		if (name === "multiselect") {
+			this.#syncAttributes();
+			this.#renderTree();
 			return;
 		}
 		this.#syncAttributes();
@@ -86,11 +112,26 @@ export class PdsTreeview extends HTMLElement {
 	}
 
 	formResetCallback() {
-		this.value = this.#defaultValue;
-		this.selectByValue(this.#defaultValue);
+		if (this.#isMultiSelectEnabled()) {
+			this.values = [];
+			this.value = "";
+		} else {
+			this.value = this.#defaultValue;
+			this.selectByValue(this.#defaultValue);
+		}
 	}
 
 	formStateRestoreCallback(state) {
+		if (this.#isMultiSelectEnabled()) {
+			if (Array.isArray(state)) {
+				this.values = state;
+				return;
+			}
+			if (state instanceof FormData) {
+				this.values = this.name ? state.getAll(this.name) : [];
+				return;
+			}
+		}
 		this.value = state ?? "";
 		this.selectByValue(this.value);
 	}
@@ -131,6 +172,21 @@ export class PdsTreeview extends HTMLElement {
 		else this.setAttribute("value", next);
 	}
 
+	get values() {
+		return this.selectedNodes.map((node) => String(node.value));
+	}
+
+	set values(values) {
+		if (!Array.isArray(values)) {
+			this.#selectedIds.clear();
+			this.#selectedId = null;
+			this.#syncValue();
+			this.#renderTree();
+			return;
+		}
+		this.selectByValues(values);
+	}
+
 	get disabled() {
 		return this.hasAttribute("disabled");
 	}
@@ -167,12 +223,38 @@ export class PdsTreeview extends HTMLElement {
 		else this.removeAttribute("expanded-all");
 	}
 
+	get multiselect() {
+		return this.#normalizeMultiselect(this.getAttribute("multiselect"));
+	}
+
+	set multiselect(value) {
+		const next = this.#normalizeMultiselect(value);
+		if (next === "off") {
+			this.removeAttribute("multiselect");
+		} else {
+			this.setAttribute("multiselect", next);
+		}
+	}
+
 	get selectedNode() {
-		return this.#selectedId ? this.#nodeById.get(this.#selectedId) || null : null;
+		const selectedId = this.#selectedId && this.#selectedIds.has(this.#selectedId)
+			? this.#selectedId
+			: this.#selectedIds.values().next().value || null;
+		return selectedId ? this.#nodeById.get(selectedId) || null : null;
+	}
+
+	get selectedNodes() {
+		return Array.from(this.#selectedIds)
+			.map((id) => this.#nodeById.get(id))
+			.filter(Boolean);
 	}
 
 	getSelectedNode() {
 		return this.selectedNode;
+	}
+
+	getSelectedNodes() {
+		return this.selectedNodes;
 	}
 
 	async refresh() {
@@ -202,6 +284,7 @@ export class PdsTreeview extends HTMLElement {
 			this.#parentById.clear();
 			this.#expandedIds.clear();
 			this.#selectedId = null;
+			this.#selectedIds.clear();
 			this.#focusedId = null;
 			this.#renderTree();
 			if (host) host.dataset.state = "error";
@@ -229,7 +312,7 @@ export class PdsTreeview extends HTMLElement {
 
 	selectById(id) {
 		if (!id || !this.#nodeById.has(id)) return false;
-		this.#selectNode(id, { user: false, focus: true });
+		this.#selectNode(id, { user: false, focus: true, mode: "exclusive" });
 		return true;
 	}
 
@@ -237,6 +320,7 @@ export class PdsTreeview extends HTMLElement {
 		const normalized = value == null ? "" : String(value);
 		if (!normalized) {
 			this.#selectedId = null;
+			this.#selectedIds.clear();
 			this.#syncValue();
 			this.#renderTree();
 			return true;
@@ -244,11 +328,51 @@ export class PdsTreeview extends HTMLElement {
 		for (const [id, node] of this.#nodeById.entries()) {
 			if (String(node.value) === normalized) {
 				this.#expandAncestors(id);
-				this.#selectNode(id, { user: false, focus: false });
+				this.#selectNode(id, { user: false, focus: false, mode: "exclusive" });
 				return true;
 			}
 		}
 		return false;
+	}
+
+	selectByValues(values) {
+		if (!Array.isArray(values)) return false;
+		const normalized = values
+			.map((value) => String(value))
+			.filter((value) => value.length > 0);
+		if (!normalized.length) {
+			this.#selectedIds.clear();
+			this.#selectedId = null;
+			this.#syncValue();
+			this.#renderTree();
+			return true;
+		}
+
+		const selectedIds = [];
+		for (const expected of normalized) {
+			for (const [id, node] of this.#nodeById.entries()) {
+				if (String(node.value) !== expected) continue;
+				if (!selectedIds.includes(id)) {
+					selectedIds.push(id);
+					this.#expandAncestors(id);
+				}
+				break;
+			}
+		}
+
+		if (!selectedIds.length) {
+			return false;
+		}
+
+		if (this.#isMultiSelectEnabled()) {
+			this.#selectedIds = new Set(selectedIds);
+			this.#selectedId = selectedIds[0] || null;
+			this.#renderTree();
+			this.#syncValue();
+			return true;
+		}
+
+		return this.selectById(selectedIds[0]);
 	}
 
 	checkValidity() {
@@ -262,7 +386,8 @@ export class PdsTreeview extends HTMLElement {
 	}
 
 	focus(options) {
-		const targetId = this.#focusedId || this.#selectedId || this.#firstVisibleId();
+		const targetId =
+			this.#focusedId || this.#selectedId || this.#selectedIds.values().next().value || this.#firstVisibleId();
 		if (targetId) {
 			this.#focusRow(targetId);
 			return;
@@ -293,10 +418,19 @@ export class PdsTreeview extends HTMLElement {
 			const id = row.getAttribute("data-node-id");
 			if (!id) return;
 
+			const checkbox = target.closest(".tv-checkbox-input");
+			if (checkbox) {
+				if (!this.displayOnly) {
+					this.#selectNode(id, { user: true, focus: true, mode: "toggle" });
+				}
+				return;
+			}
+
 			if (event instanceof MouseEvent && event.detail === 2) {
 				void this.#toggleNode(id, true);
 				if (!this.displayOnly) {
-					this.#selectNode(id, { user: true, focus: true });
+					const mode = this.#isMultiSelectEnabled() ? "exclusive" : "exclusive";
+					this.#selectNode(id, { user: true, focus: true, mode });
 				} else {
 					this.#focusRow(id);
 				}
@@ -304,7 +438,16 @@ export class PdsTreeview extends HTMLElement {
 			}
 
 			if (!this.displayOnly) {
-				this.#selectNode(id, { user: true, focus: true });
+				const mouseEvent = event instanceof MouseEvent ? event : null;
+				const useToggleMode =
+					this.#isCheckboxSelectionMode() ||
+					Boolean(mouseEvent?.ctrlKey || mouseEvent?.metaKey);
+				const mode = !this.#isMultiSelectEnabled()
+					? "exclusive"
+					: useToggleMode
+						? "toggle"
+						: "exclusive";
+				this.#selectNode(id, { user: true, focus: true, mode });
 			} else {
 				this.#focusRow(id);
 			}
@@ -329,6 +472,8 @@ export class PdsTreeview extends HTMLElement {
 				event.stopPropagation();
 			}
 		});
+
+		this.#syncAriaMultiselect();
 	}
 
 	async #adoptStyles() {
@@ -376,6 +521,14 @@ export class PdsTreeview extends HTMLElement {
 					grid-template-columns: var(--tv-toggle-size) auto 1fr;
 				}
 
+				.tv-row.tv-row-has-checkbox {
+					grid-template-columns: var(--tv-toggle-size) auto 1fr;
+				}
+
+				.tv-row.tv-row-has-prefix.tv-row-has-checkbox {
+					grid-template-columns: var(--tv-toggle-size) auto auto 1fr;
+				}
+
 				.tv-row[aria-selected="true"] {
 					background: var(--color-surface-hover);
 					color: var(--color-text-primary);
@@ -411,6 +564,18 @@ export class PdsTreeview extends HTMLElement {
 				.tv-toggle:hover {
 					border-color: var(--color-primary-500);
 					color: var(--color-text-primary);
+				}
+
+				.tv-check {
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					width: var(--tv-toggle-size);
+					height: var(--tv-toggle-size);
+				}
+
+				.tv-checkbox-input {
+					margin: var(--spacing-0);
 				}
 
 				:host([disabled]) .tv-row,
@@ -468,6 +633,22 @@ export class PdsTreeview extends HTMLElement {
 	}
 
 	#syncAttributes() {
+		if (!this.#isMultiSelectEnabled() && this.#selectedIds.size > 1) {
+			const keepId =
+				(this.#selectedId && this.#selectedIds.has(this.#selectedId) && this.#selectedId) ||
+				this.#selectedIds.values().next().value ||
+				null;
+			this.#selectedIds = keepId ? new Set([keepId]) : new Set();
+			this.#selectedId = keepId;
+		}
+		if (this.#selectedId && !this.#selectedIds.has(this.#selectedId)) {
+			this.#selectedIds.add(this.#selectedId);
+		}
+		if (!this.#selectedId && this.#selectedIds.size > 0) {
+			this.#selectedId = this.#selectedIds.values().next().value || null;
+		}
+
+		this.#syncAriaMultiselect();
 		this.#syncValue();
 		this.#syncTabStops();
 	}
@@ -602,9 +783,10 @@ export class PdsTreeview extends HTMLElement {
 		const tree = this.#root.querySelector(ROOT_SELECTOR);
 		if (!tree) return;
 		tree.innerHTML = this.#renderNodes(this.#nodes, 1, this.#canRenderLinks());
+		this.#syncAriaMultiselect();
 
 		if (!this.#focusedId) {
-			this.#focusedId = this.#selectedId || this.#firstVisibleId() || null;
+			this.#focusedId = this.#selectedId || this.#selectedIds.values().next().value || this.#firstVisibleId() || null;
 		}
 		this.#syncTabStops();
 		this.#syncValue();
@@ -612,19 +794,25 @@ export class PdsTreeview extends HTMLElement {
 
 	#renderNodes(nodes, level, linksEnabled) {
 		if (!nodes.length) return "";
+		const useCheckboxes = this.#isCheckboxSelectionMode();
 
 		return nodes
 			.map((node) => {
 				const expanded = this.#expandedIds.has(node.id);
 				const hasChildren = Boolean(node.hasChildren);
 				const hasPrefix = Boolean(node.image || node.icon);
-				const selected = this.#selectedId === node.id;
+				const selected = this.#selectedIds.has(node.id);
 				const toggleGlyph = node.loadingChildren ? "…" : expanded ? "−" : "+";
 				const toggle = hasChildren
 					? `<button type="button" class="tv-toggle icon-only" data-node-id="${this.#escapeAttribute(node.id)}" aria-label="${expanded ? "Collapse" : "Expand"} ${this.#escapeAttribute(node.text)}" ${node.loadingChildren ? "disabled" : ""}>${toggleGlyph}</button>`
 					: `<span class="tv-toggle-gap" aria-hidden="true"></span>`;
+				const checkbox = useCheckboxes
+					? `<span class="tv-check"><input class="tv-checkbox-input" type="checkbox" data-node-id="${this.#escapeAttribute(node.id)}" aria-label="Select ${this.#escapeAttribute(node.text)}" ${selected ? "checked" : ""} ${this.disabled ? "disabled" : ""}></span>`
+					: "";
 				const prefix = this.#renderPrefix(node);
-				const rowClass = hasPrefix ? "tv-row tv-row-has-prefix" : "tv-row tv-row-no-prefix";
+				const rowClassParts = ["tv-row", hasPrefix ? "tv-row-has-prefix" : "tv-row-no-prefix"];
+				if (useCheckboxes) rowClassParts.push("tv-row-has-checkbox");
+				const rowClass = rowClassParts.join(" ");
 				const label = linksEnabled && node.link
 					? `<a class="tv-label tv-label-link" href="${this.#escapeAttribute(node.link)}">${this.#escapeHtml(node.text)}</a>`
 					: `<span class="tv-label">${this.#escapeHtml(node.text)}</span>`;
@@ -646,6 +834,7 @@ export class PdsTreeview extends HTMLElement {
 							tabindex="-1"
 						>
 							${toggle}
+							${checkbox}
 							${prefix}
 							${label}
 						</div>
@@ -732,7 +921,15 @@ export class PdsTreeview extends HTMLElement {
 
 		if (key === "Enter" || key === " ") {
 			if (!this.displayOnly) {
-				this.#selectNode(activeId, { user: true, focus: true });
+				if (!this.#isMultiSelectEnabled()) {
+					this.#selectNode(activeId, { user: true, focus: true, mode: "exclusive" });
+				} else if (this.#isCheckboxSelectionMode()) {
+					this.#selectNode(activeId, { user: true, focus: true, mode: "toggle" });
+				} else if (key === " " && (event.ctrlKey || event.metaKey)) {
+					this.#selectNode(activeId, { user: true, focus: true, mode: "toggle" });
+				} else {
+					this.#selectNode(activeId, { user: true, focus: true, mode: "exclusive" });
+				}
 			} else if (currentNode.hasChildren) {
 				void this.#toggleNode(activeId, true);
 			}
@@ -862,19 +1059,44 @@ export class PdsTreeview extends HTMLElement {
 		return source;
 	}
 
-	#selectNode(id, { user, focus }) {
+	#selectNode(id, { user, focus, mode = "exclusive" }) {
 		const node = this.#nodeById.get(id);
 		if (!node) return;
 
-		this.#selectedId = id;
+		if (!this.#isMultiSelectEnabled()) {
+			this.#selectedId = id;
+			this.#selectedIds = new Set([id]);
+		} else if (mode === "toggle") {
+			if (this.#selectedIds.has(id)) {
+				this.#selectedIds.delete(id);
+				if (this.#selectedId === id) {
+					this.#selectedId = this.#selectedIds.values().next().value || null;
+				}
+			} else {
+				this.#selectedIds.add(id);
+				this.#selectedId = id;
+			}
+		} else {
+			this.#selectedId = id;
+			this.#selectedIds = new Set([id]);
+		}
+
 		this.#expandAncestors(id);
 		this.#renderTree();
 		if (focus) this.#focusRow(id);
 		this.#syncValue();
+		const selectedNodes = this.selectedNodes;
+		const selectedValues = selectedNodes.map((selectedNode) => String(selectedNode.value));
 
 		this.dispatchEvent(
 			new CustomEvent("node-select", {
-				detail: { node, value: node.value, user: Boolean(user) },
+				detail: {
+					node,
+					value: node.value,
+					values: selectedValues,
+					selectedNodes,
+					user: Boolean(user),
+				},
 				bubbles: true,
 				composed: true,
 			}),
@@ -892,12 +1114,19 @@ export class PdsTreeview extends HTMLElement {
 		if (preferred) {
 			if (!this.selectByValue(preferred)) {
 				this.#selectedId = null;
+				this.#selectedIds.clear();
 			}
 		} else if (this.#selectedId && this.#nodeById.has(this.#selectedId)) {
+			if (!this.#selectedIds.size) this.#selectedIds.add(this.#selectedId);
 			this.#expandAncestors(this.#selectedId);
+			this.#renderTree();
+		} else if (this.#selectedIds.size) {
+			this.#selectedIds = new Set(Array.from(this.#selectedIds).filter((id) => this.#nodeById.has(id)));
+			this.#selectedId = this.#selectedIds.values().next().value || null;
 			this.#renderTree();
 		} else {
 			this.#selectedId = null;
+			this.#selectedIds.clear();
 			this.#syncValue();
 		}
 	}
@@ -911,24 +1140,40 @@ export class PdsTreeview extends HTMLElement {
 	}
 
 	#syncValue() {
-		const selected = this.selectedNode;
-		const nextValue = this.displayOnly ? "" : selected?.value ? String(selected.value) : "";
+		if (this.displayOnly) {
+			if (this.hasAttribute("value")) this.removeAttribute("value");
+			this.#internals.setFormValue("");
+			this.#syncValidity();
+			return;
+		}
+
+		const selectedNodes = this.selectedNodes;
+		const selectedValues = selectedNodes.map((node) => String(node.value));
+		const nextValue = selectedValues[0] || "";
 
 		if (nextValue) {
 			if (this.getAttribute("value") !== nextValue) {
 				this.setAttribute("value", nextValue);
 			}
-			this.#internals.setFormValue(nextValue);
 		} else {
 			if (this.hasAttribute("value")) this.removeAttribute("value");
-			this.#internals.setFormValue("");
+		}
+
+		if (this.#isMultiSelectEnabled() && selectedValues.length > 0 && this.name) {
+			const formValue = new FormData();
+			for (const value of selectedValues) {
+				formValue.append(this.name, value);
+			}
+			this.#internals.setFormValue(formValue);
+		} else {
+			this.#internals.setFormValue(nextValue || "");
 		}
 
 		this.#syncValidity();
 	}
 
 	#syncValidity() {
-		if (this.required && !this.displayOnly && !this.selectedNode) {
+		if (this.required && !this.displayOnly && this.#selectedIds.size === 0) {
 			const focusTarget =
 				this.#root.querySelector('.tv-row[tabindex="0"]') ||
 				this.#root.querySelector(".tv-row") ||
@@ -955,7 +1200,7 @@ export class PdsTreeview extends HTMLElement {
 		const rows = this.#root.querySelectorAll(".tv-row");
 		if (!rows.length) return;
 
-		const fallbackId = this.#selectedId || this.#firstVisibleId();
+		const fallbackId = this.#selectedId || this.#selectedIds.values().next().value || this.#firstVisibleId();
 		if (!this.#focusedId || !this.#root.querySelector(`.tv-row[data-node-id="${CSS.escape(this.#focusedId)}"]`)) {
 			this.#focusedId = fallbackId || null;
 		}
@@ -996,6 +1241,28 @@ export class PdsTreeview extends HTMLElement {
 
 	#escapeAttribute(value) {
 		return this.#escapeHtml(value);
+	}
+
+	#normalizeMultiselect(value) {
+		const normalized = String(value || "off").toLowerCase();
+		if (normalized === "checkboxes" || normalized === "auto") return normalized;
+		return "off";
+	}
+
+	#isMultiSelectEnabled() {
+		return this.multiselect !== "off";
+	}
+
+	#isCheckboxSelectionMode() {
+		if (this.multiselect === "checkboxes") return true;
+		if (this.multiselect !== "auto") return false;
+		return Boolean(this.#multiselectAutoQuery?.matches);
+	}
+
+	#syncAriaMultiselect() {
+		const tree = this.#root.querySelector(ROOT_SELECTOR);
+		if (!tree) return;
+		tree.setAttribute("aria-multiselectable", this.#isMultiSelectEnabled() ? "true" : "false");
 	}
 }
 

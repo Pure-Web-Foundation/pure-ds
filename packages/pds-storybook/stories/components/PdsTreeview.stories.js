@@ -501,8 +501,10 @@ const bindTreeviewForm = (selector) => {
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
         const data = new FormData(form);
-        const value = data.get("selectedNode") || "";
-        await PDS.toast(`Form value: ${value}`, { type: "success" });
+        const singleValue = data.get("selectedNode") || "";
+        const multiValues = data.getAll("selectedNodes");
+        const summary = multiValues.length > 0 ? multiValues.join(", ") : String(singleValue || "");
+        await PDS.toast(`Form value: ${summary}`, { type: "success" });
       });
       form.dataset.bound = "true";
     });
@@ -531,6 +533,11 @@ export default {
       control: "boolean",
       description: "Browse-only mode without selection/form value",
     },
+    multiselect: {
+      control: { type: "select" },
+      options: ["off", "checkboxes", "auto"],
+      description: "Selection mode: off (single), checkboxes, or auto (checkboxes on coarse pointer).",
+    },
   },
 };
 
@@ -542,6 +549,7 @@ export const Default = {
       ?disabled=${args.disabled}
       ?required=${args.required}
       ?display-only=${args.displayOnly}
+      multiselect=${args.multiselect}
       data-options-source=${localOptionsSource}
     ></pds-treeview>
   `,
@@ -557,6 +565,7 @@ export const Default = {
     disabled: false,
     required: false,
     displayOnly: false,
+    multiselect: "off",
   },
 };
 
@@ -693,6 +702,61 @@ export const InForm = {
     `;
   },
 };
+
+export const MultiselectAuto = {
+  render: () => {
+    bindTreeviewForm(".treeview-form-multiselect-auto");
+    const formOptions = {
+      ...localOptions,
+      source: formTreeData,
+    };
+
+    return html`
+      <form class="treeview-form-multiselect-auto stack-md" @submit=${(event) => event.preventDefault()}>
+        <pds-treeview
+          name="selectedNodes"
+          required
+          multiselect="auto"
+          ${lazyProps({ options: formOptions })}
+          data-options-source=${inFormOptionsSource}
+        ></pds-treeview>
+
+        <div class="flex gap-sm">
+          <button class="btn-primary" type="submit">Submit</button>
+          <button class="btn-outline" type="reset">Reset</button>
+        </div>
+      </form>
+    `;
+  },
+};
+
+export const MultiselectCheckboxes = {
+  render: () => {
+    bindTreeviewForm(".treeview-form-multiselect-checkboxes");
+    const formOptions = {
+      ...localOptions,
+      source: formTreeData,
+    };
+
+    return html`
+      <form class="treeview-form-multiselect-checkboxes stack-md" @submit=${(event) => event.preventDefault()}>
+        <pds-treeview
+          name="selectedNodes"
+          required
+          multiselect="checkboxes"
+          ${lazyProps({ options: formOptions })}
+          data-options-source=${inFormOptionsSource}
+        ></pds-treeview>
+
+        <div class="flex gap-sm">
+          <button class="btn-primary" type="submit">Submit</button>
+          <button class="btn-outline" type="reset">Reset</button>
+        </div>
+      </form>
+    `;
+  },
+};
+
 
 export const DisplayOnly = {
   render: () => html`

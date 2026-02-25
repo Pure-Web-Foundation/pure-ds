@@ -247,7 +247,7 @@ function generatePdsOmniboxMarkup(omniboxElement) {
 function generatePdsTreeviewMarkup(treeviewElement) {
   const attrs = [];
 
-  const stringAttrs = ['name', 'value', 'src'];
+  const stringAttrs = ['name', 'value', 'src', 'multiselect'];
   stringAttrs.forEach((attr) => {
     const value = treeviewElement.getAttribute(attr);
     if (value !== null && value !== undefined && value !== '') {
