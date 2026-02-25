@@ -26,7 +26,7 @@ const renderThemeToggle = () => html`
 `;
 
 export default {
-  title: 'Components/Pds Theme',
+  title: 'Components/pds-theme',
   tags: ['autodocs', 'theme', 'appearance', 'pds-theme', 'switcher'],
   parameters: {
     pds: {

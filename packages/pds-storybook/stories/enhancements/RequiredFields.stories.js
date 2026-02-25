@@ -2,7 +2,7 @@ import { html } from 'lit';
 import { enhancementHeader } from './_enhancement-header.js';
 
 export default {
-  title: 'Enhancements/Required Fields',
+  title: 'Enhancements/form[data-required]',
   tags: ['required', 'validation', 'form', 'input', 'asterisk'],
   parameters: {
     options: {

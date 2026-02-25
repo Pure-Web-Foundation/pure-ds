@@ -69,7 +69,7 @@ const scrollrowStoryStyles = html`
 `;
 
 export default {
-  title: "Components/Pds Scrollrow",
+  title: "Components/pds-scrollrow",
   tags: [
     "autodocs",
     "scrollrow",

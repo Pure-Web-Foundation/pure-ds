@@ -17,7 +17,7 @@ if (typeof window !== 'undefined') {
 }
 
 export default {
-  title: 'Components/Pds Calendar',
+  title: 'Components/pds-calendar',
   tags: ['autodocs', 'calendar', 'date', 'datepicker', 'event', 'schedule'],
   parameters: {
     pds: {

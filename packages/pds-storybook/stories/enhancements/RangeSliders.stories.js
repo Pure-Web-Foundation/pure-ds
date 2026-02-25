@@ -2,7 +2,7 @@ import { html } from 'lit';
 import { enhancementHeader } from './_enhancement-header.js';
 
 export default {
-  title: 'Enhancements/Range Sliders',
+  title: 'Enhancements/input[type="range"]',
   tags: ['range', 'slider', 'input', 'forms', 'interaction'],
   parameters: {
     options: {

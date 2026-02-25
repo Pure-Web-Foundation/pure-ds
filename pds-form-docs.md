@@ -458,7 +458,7 @@ const uiSchema = {
 - **Color**: `input-color`
 - **Boolean**: `checkbox`, `toggle`
 - **Choice**: `select`, `radio`, `checkbox-group`
-- **PDS Components**: `upload`, `richtext`
+- **PDS Components**: `omnibox`, `upload`, `richtext`
 - **Special**: `const` (read-only)
 
 #### Widget Options
@@ -496,6 +496,23 @@ const uiSchema = {
     "ui:options": {
       toolbar: "standard",         // "minimal", "standard", "full"
       spellcheck: true
+    }
+  },
+  "/country": {
+    "ui:widget": "omnibox",
+    "ui:options": {
+      icon: "globe",
+      settings: {
+        categories: {
+          Featured: {
+            trigger: () => true,
+            getItems: async () => [
+              { id: "NL", text: "Netherlands", icon: "globe" },
+              { id: "US", text: "United States", icon: "globe" }
+            ]
+          }
+        }
+      }
     }
   }
 };
@@ -1284,6 +1301,67 @@ const options = {
 ---
 
 ## PDS Components Integration
+
+### Omnibox (pds-omnibox)
+
+```javascript
+const schema = {
+  type: "object",
+  properties: {
+    country: {
+      type: "string",
+      title: "Country",
+      examples: ["Start typing a country..."]
+    }
+  }
+};
+
+const uiSchema = {
+  "/country": {
+    "ui:widget": "omnibox",
+    "ui:options": {
+      icon: "globe",
+      settings: {
+        categories: {
+          Featured: {
+            trigger: () => true,
+            getItems: async () => [
+              { id: "NL", text: "Netherlands", icon: "globe" },
+              { id: "US", text: "United States", icon: "globe" }
+            ]
+          },
+          Countries: {
+            trigger: (options) => (options.search || "").length >= 2,
+            getItems: async (options) => {
+              const q = (options.search || "").toLowerCase();
+              const res = await fetch("https://restcountries.com/v3.1/all?fields=name,cca2");
+              const countries = await res.json();
+              return countries
+                .map((row) => ({
+                  id: row.cca2,
+                  text: row.name.common,
+                  icon: "globe"
+                }))
+                .filter((item) => item.text.toLowerCase().includes(q))
+                .slice(0, 30);
+            }
+          }
+        }
+      }
+    }
+  }
+};
+```
+
+The `pds-omnibox` widget provides:
+- Category-based suggestions
+- Async result loading (API-backed autocomplete)
+- Form-associated value submission through `pds-form`
+- Optional icon syncing with first result category rules
+
+**UI Schema Options:**
+- `icon`: input icon (defaults to `magnifying-glass`)
+- `settings`: omnibox AutoComplete settings (categories, `trigger`, `getItems`, `action`)
 
 ### File Upload (pds-upload)
 

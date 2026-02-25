@@ -2,7 +2,7 @@ import { html } from 'lit';
 import { enhancementHeader } from './_enhancement-header.js';
 
 export default {
-  title: 'Enhancements/Open Groups',
+  title: 'Enhancements/fieldset[role=group][data-open]',
   tags: ['fieldset', 'radio', 'checkbox', 'dynamic', 'custom-option'],
   parameters: {
     options: {

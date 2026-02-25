@@ -1,4 +1,5 @@
 import { html, lazyProps, ref } from "#pds/lit";
+import { PDS } from "#pds";
 
 const docsParameters = {
   description: {
@@ -46,7 +47,7 @@ if (typeof window !== "undefined") {
 }
 
 export default {
-  title: "Components/Pds Fab",
+  title: "Components/pds-fab",
   tags: ["autodocs", "fab", "floating", "action", "button", "menu"],
   parameters: {
     pds: {

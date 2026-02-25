@@ -108,7 +108,7 @@ const tabstripCategories = [
 ];
 
 export default {
-  title: "Components/Pds Tabstrip",
+  title: "Components/pds-tabstrip",
   tags: ['autodocs', 'tab', 'tabs', 'tabstrip', 'navigation', 'panels', 'grouping'],
   parameters: {
     pds: {

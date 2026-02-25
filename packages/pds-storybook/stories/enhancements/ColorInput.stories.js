@@ -2,7 +2,7 @@ import { html } from "#pds/lit";
 import { enhancementHeader } from "./_enhancement-header.js";
 
 export default {
-  title: "Enhancements/Color Input",
+  title: "Enhancements/label[data-color]",
   tags: ["color", "input", "form", "enhancement"],
   parameters: {
     options: {

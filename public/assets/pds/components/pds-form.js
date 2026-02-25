@@ -633,6 +633,8 @@ export class SchemaForm extends LitElement {
         return "upload";
       }
       switch (schema.format) {
+        case "omnibox":
+          return "omnibox";
         case "data-url":
           return "upload";
         case "upload":
@@ -2077,6 +2079,29 @@ export class SchemaForm extends LitElement {
           ?required=${!!attrs.required}
           @pw:change=${(e) => set(e.detail.files)}
         ></pds-upload>
+      `;
+    });
+
+    // pds-omnibox: Omnibox autocomplete input
+    this.defineRenderer("omnibox", ({ id, path, value, attrs, set, ui }) => {
+      const omniboxOpts = ui?.["ui:options"] || {};
+      const settings = omniboxOpts.settings;
+      const icon = omniboxOpts.icon;
+      const autocomplete = ui?.["ui:autocomplete"] ?? attrs.autocomplete;
+
+      return html`
+        <pds-omnibox
+          id=${id}
+          name=${path}
+          placeholder=${ifDefined(attrs.placeholder)}
+          .value=${value ?? ""}
+          ?disabled=${!!attrs.disabled}
+          ?required=${!!attrs.required}
+          autocomplete=${ifDefined(autocomplete)}
+          icon=${ifDefined(icon)}
+          .settings=${settings}
+          @input=${(e) => set(e.target.value ?? "")}
+        ></pds-omnibox>
       `;
     });
 

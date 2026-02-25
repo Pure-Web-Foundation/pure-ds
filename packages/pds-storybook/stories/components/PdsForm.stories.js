@@ -285,6 +285,7 @@ Override the automatically selected widget for a field.
 | \`select\` | String (enum) | Default for enums |
 | \`radio\` | String (enum) | Radio button group |
 | \`checkbox-group\` | Array (enum items) | Multi-select checkboxes |
+| \`omnibox\` | String | Search/autocomplete with categories (pds-omnibox) |
 | \`upload\` | String | File upload (pds-upload) |
 | \`richtext\` | String | Rich text editor (pds-richtext) |
 | \`const\` | Any | Read-only display |
@@ -317,6 +318,12 @@ Widget-specific configuration object.
 | \`maxSize\` | number | Max file size in bytes |
 | \`multiple\` | boolean | Allow multiple files |
 | \`label\` | string | Upload button label |
+
+#### Omnibox Options (pds-omnibox)
+| Option | Type | Description |
+|--------|------|-------------|
+| \`settings\` | object | Autocomplete settings object (categories, getItems, action) |
+| \`icon\` | string | Icon name for the input glyph (defaults to magnifying-glass) |
 
 #### Rich Text Options (pds-richtext)
 | Option | Type | Description |
@@ -670,6 +677,108 @@ export default {
       ],
     },
     docs: docsParameters,
+  },
+};
+
+const setActiveOmniboxValue = (nextValue) => {
+  const active = document.activeElement;
+  let input = null;
+  if (active && active.tagName === "INPUT") {
+    input = active;
+  }
+  if (!input) {
+    input = document
+      .querySelector("pds-omnibox")
+      ?.shadowRoot?.querySelector("input");
+  }
+  if (!input || !input.isConnected) return;
+  input.value = nextValue || "";
+};
+
+const buildSimpleOmniboxSettings = () => ({
+  hideCategory: true,
+  itemGrid: "0 1fr 0",
+  iconHandler: () => '',
+  categories: {
+    Suggestions: {
+      trigger: () => true,
+      getItems: async (options) => {
+        const q = (options.search || "").toLowerCase();
+        const items = {
+          netherlands: "Netherlands",
+          unitedStates: "United States",
+          japan: "Japan",
+          germany: "Germany",
+        };
+
+        return Object.entries(items)
+          .filter(([key, label]) => `${key} ${label}`.toLowerCase().includes(q))
+          .map(([key, label]) => ({ id: key, text: label }));
+      },
+      action: (item) => setActiveOmniboxValue(item?.text),
+    },
+  },
+});
+
+let countryListPromise;
+const loadCountries = async () => {
+  if (!countryListPromise) {
+    countryListPromise = fetch("https://restcountries.com/v3.1/all?fields=name,cca2")
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Failed to fetch countries: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((rows) =>
+        rows
+          .map((row) => ({
+            id: row?.cca2 || row?.name?.common || "",
+            text: row?.name?.common || "",
+            icon: "globe",
+          }))
+          .filter((row) => row.id && row.text)
+          .sort((a, b) => a.text.localeCompare(b.text))
+      );
+  }
+  return countryListPromise;
+};
+
+const countriesOmniboxSettings = {
+  hideCategory: true,
+  itemGrid: "0 1fr 0",
+  iconHandler: () => '',
+  categories: {
+    Featured: {
+      sortIndex: 2,
+      trigger: () => true,
+      getItems: async (options) => {
+        const q = (options.search || "").trim().toLowerCase();
+        const shortlist = [
+          { id: "NL", text: "Netherlands" },
+          { id: "US", text: "United States" },
+        ];
+        return q
+          ? shortlist.filter((item) => item.text.toLowerCase().includes(q))
+          : shortlist;
+      },
+      action: (item) => setActiveOmniboxValue(item?.text),
+      useIconForInput: false,
+    },
+    Countries: {
+      sortIndex: 1,
+      trigger: (options) => (options.search || "").trim().length >= 2,
+      getItems: async (options) => {
+        const q = (options.search || "").trim().toLowerCase();
+        if (!q) return [];
+        const countries = await loadCountries();
+        return countries
+          .filter((item) => item.text.toLowerCase().includes(q))
+          .slice(0, 30);
+      },
+      action: (item) => setActiveOmniboxValue(item?.text),
+      useIconForInput: false,
+    },
   },
 };
 
@@ -1197,6 +1306,89 @@ export const WithPdsRichtext = {
 
     return html`
       <pds-form
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-form>
+    `;
+  },
+};
+
+export const WithPdsOmnibox = {
+  name: "Omnibox (pds-omnibox)",
+  render: () => {
+    const schema = {
+      type: "object",
+      required: ["search"],
+      properties: {
+        search: {
+          type: "string",
+          title: "Find a destination",
+          examples: ["Start typing a country..."],
+        },
+      },
+    };
+
+    const uiSchema = {
+      "/search": {
+        "ui:widget": "omnibox",
+        "ui:icon": "globe",
+        "ui:options": {
+          icon: "globe",
+          settings: buildSimpleOmniboxSettings(),
+        },
+      },
+    };
+
+    return html`
+      <pds-form
+        data-required
+        .jsonSchema=${schema}
+        .uiSchema=${uiSchema}
+        @pw:submit=${(e) => toastFormData(e.detail)}
+      ></pds-form>
+    `;
+  },
+};
+
+export const WithPdsOmniboxCountriesApi = {
+  name: "Omnibox Countries API",
+  render: () => {
+    const schema = {
+      type: "object",
+      required: ["country"],
+      properties: {
+        country: {
+          type: "string",
+          title: "Country",
+          examples: ["Type at least 2 letters to fetch from API..."],
+        },
+        notes: {
+          type: "string",
+          title: "Notes",
+          examples: ["Optional travel notes..."],
+        },
+      },
+    };
+
+    const uiSchema = {
+      "/country": {
+        "ui:widget": "omnibox",
+        "ui:help": "Featured shows Netherlands and United States immediately; full country list loads from restcountries.com when you type 2+ letters.",
+        "ui:options": {
+          icon: "globe",
+          settings: countriesOmniboxSettings,
+        },
+      },
+      "/notes": {
+        "ui:widget": "textarea",
+        "ui:options": { rows: 3 },
+      },
+    };
+
+    return html`
+      <pds-form
+        data-required
         .jsonSchema=${schema}
         .uiSchema=${uiSchema}
         @pw:submit=${(e) => toastFormData(e.detail)}

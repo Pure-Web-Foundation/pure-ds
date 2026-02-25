@@ -244,7 +244,7 @@ export class PdsOmnibox extends HTMLElement {
 					--ac-itm-height-default: 5rem;
           --ac-max-height-default: 300px;
 					--ac-viewport-gap: var(--spacing-4);
-					--ac-suggest-offset: var(--spacing-1);
+          --ac-suggest-offset: var(--spacing-0);
 				}
 
 				.ac-container {
@@ -267,11 +267,11 @@ export class PdsOmnibox extends HTMLElement {
 						top: calc(100% + var(--ac-suggest-offset));
 						padding: var(--ac-margin);
 						border-radius: 0 0 var(--ac-rad) var(--ac-rad);
-						box-shadow: var(--ac-box-shadow);
-						overflow-y: auto;
+						
+						overflow-y: auto;\
 
 						&.ac-active {
-							box-shadow: var(--shadow-sm);
+              box-shadow: var(--ac-box-shadow, var(--shadow-md));
 						}
 
 						.ac-empty {
@@ -292,7 +292,8 @@ export class PdsOmnibox extends HTMLElement {
 							max-height: var(--ac-itm-height, var(--ac-itm-height-default));
 							border-radius: 0;
               padding: var(--spacing-2) var(--spacing-3);
-
+              border: 1px solid transparent;
+              
 							> pds-icon,
 							> svg-icon,
 							> img {
@@ -323,6 +324,8 @@ export class PdsOmnibox extends HTMLElement {
 								white-space: nowrap;
 							}
 
+              
+
 							img {
 								width: var(--icon-size);
 								height: var(--icon-size);
@@ -347,7 +350,7 @@ export class PdsOmnibox extends HTMLElement {
 							&:hover,
 							&.selected {
 								background-color: var(--color-surface-elevated);
-								border: 2px dotted var(--color-primary-500);
+								border: 1px dotted var(--color-primary-500);
 
 								svg-icon,
 								pds-icon {

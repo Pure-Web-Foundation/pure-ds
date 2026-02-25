@@ -217,9 +217,7 @@ const localOptions = {
   source: localTreeData,
   defaultExpanded: ["getting-started", "components", "forms"],
   onSelect: (node) => {
-    if (window?.PDS?.toast) {
-      PDS.toast(`Selected: ${node.text}`, { type: "information" });
-    }
+    PDS.toast(`Selected: ${node.text}`, { type: "information" });
   },
 };
 
@@ -419,9 +417,7 @@ const bindTreeviewForm = (selector) => {
         event.preventDefault();
         const data = new FormData(form);
         const value = data.get("selectedNode") || "";
-        if (window?.PDS?.toast) {
-          await PDS.toast(`Form value: ${value}`, { type: "success" });
-        }
+        await PDS.toast(`Form value: ${value}`, { type: "success" });
       });
       form.dataset.bound = "true";
     });
@@ -429,7 +425,7 @@ const bindTreeviewForm = (selector) => {
 };
 
 export default {
-  title: "Components/Pds Treeview",
+  title: "Components/pds-treeview",
   tags: ["autodocs", "treeview", "tree", "navigation", "forms", "pds-treeview"],
   parameters: {
     pds: {

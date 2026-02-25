@@ -3,6 +3,8 @@
  * Handles objects, FormData, and truncates large binary data
  */
 
+import { PDS } from "#pds";
+
 const MAX_STRING_LENGTH = 1000;
 const MAX_BINARY_PREVIEW = 50;
 

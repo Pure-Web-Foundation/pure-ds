@@ -2,7 +2,7 @@ import { html } from "#pds/lit";
 import { enhancementHeader } from "./_enhancement-header.js";
 
 export default {
-  title: "Enhancements/Toggles",
+  title: "Enhancements/label[data-toggle]",
   tags: ["toggle", "switch", "checkbox", "forms", "interaction"],
   parameters: {
     options: {

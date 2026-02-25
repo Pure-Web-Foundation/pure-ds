@@ -17,7 +17,7 @@ if (typeof window !== 'undefined') {
 }
 
 export default {
-  title: 'Components/Pds Drawer',
+  title: 'Components/pds-drawer',
   tags: ['autodocs', 'drawer', 'panel', 'sidebar', 'overlay', 'navigation', 'modal'],
   parameters: {
     pds: {

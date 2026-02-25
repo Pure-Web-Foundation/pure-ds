@@ -39,7 +39,7 @@ const docsParameters = {
 };
 
 export default {
-  title: 'Components/Pds Icon',
+  title: 'Components/pds-icon',
   tags: ['autodocs', 'icon', 'icons', 'svg', 'sprite', 'phosphor', 'graphic', 'symbol'],
   parameters: {
     pds: {

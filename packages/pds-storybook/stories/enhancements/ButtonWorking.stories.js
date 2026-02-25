@@ -2,7 +2,7 @@ import { html } from 'lit';
 import { enhancementHeader } from './_enhancement-header.js';
 
 export default {
-  title: "Enhancements/Button Working",
+  title: "Enhancements/button, a[class*='btn-']",
   tags: ['button', 'loading', 'working', 'spinner', 'enhancement'],
   parameters: {
     options: {

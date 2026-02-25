@@ -46,7 +46,7 @@ const dropdownStoryStyles = html`
 `;
 
 export default {
-  title: "Enhancements/Dropdowns",
+  title: "Enhancements/nav[data-dropdown]",
   tags: ['dropdown', 'menu', 'navigation', 'popover', 'forms', 'interaction'],
   parameters: {
     options: {

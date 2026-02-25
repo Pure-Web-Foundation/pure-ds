@@ -121,11 +121,9 @@ const buildSettings = (action) => ({
 });
 
 const toastSettings = buildSettings((options) => {
-  if (window?.PDS?.toast) {
-    PDS.toast(`Selected: ${options.text}`, {
-      type: "information",
-    });
-  }
+  PDS.toast(`Selected: ${options.text}`, {
+    type: "information",
+  });
 });
 
 const inFormSettings = buildSettings((options) => {
@@ -139,9 +137,8 @@ const inFormSettings = buildSettings((options) => {
       .querySelector("pds-omnibox")
       ?.shadowRoot?.querySelector("input");
   }
-  if (input) {
+  if (input && input.isConnected) {
     input.value = options.text || "";
-    input.dispatchEvent(new Event("input", { bubbles: true }));
   }
 });
 
@@ -170,9 +167,7 @@ const toastSettingsSource = `const settings = {
           }));
       },
       action: (options) => {
-        if (window?.PDS?.toast) {
-          PDS.toast(\`Selected: ${"${options.text}"}\`, { type: "information" });
-        }
+        PDS.toast(\`Selected: ${"${options.text}"}\`, { type: "information" });
       },
     },
   },
@@ -193,9 +188,8 @@ const inFormSettingsSource = `const settings = {
       },
       action: (options) => {
         const input = document.activeElement;
-        if (input && input.tagName === "INPUT") {
+        if (input && input.tagName === "INPUT" && input.isConnected) {
           input.value = options.text || "";
-          input.dispatchEvent(new Event("input", { bubbles: true }));
         }
       },
     },
@@ -231,9 +225,7 @@ const combinedSettingsSource = `const settings = {
         return [{ id: "featured-theme", text: "Featured: Theme switcher", element }];
       },
       action: (options) => {
-        if (window?.PDS?.toast) {
-          PDS.toast(\`Featured: ${"${options.text}"}\`, { type: "information" });
-        }
+        PDS.toast(\`Featured: ${"${options.text}"}\`, { type: "information" });
       },
     },
     Actions: {
@@ -244,7 +236,7 @@ const combinedSettingsSource = `const settings = {
         { id: "new-event", text: "Create event", icon: "calendar", description: "Quick action" },
         { id: "new-message", text: "Send message", icon: "envelope", description: "Quick action" },
       ],
-      action: (options) => window?.PDS?.toast?.(\`Action: ${"${options.text}"}\`, { type: "information" }),
+      action: (options) => PDS.toast(\`Action: ${"${options.text}"}\`, { type: "information" }),
     },
     Search: {
       sortIndex: 3,
@@ -254,7 +246,7 @@ const combinedSettingsSource = `const settings = {
         { id: "people", text: \`Search people for \"%search%\"\`, scope: "People", icon: "user" },
         { id: "docs", text: \`Search docs for \"%search%\"\`, scope: "Docs", icon: "book-open" },
       ].map((item) => ({ ...item, description: \`in ${"${item.scope}"}\` })),
-      action: (options) => window?.PDS?.toast?.(\`Searching ${"${options.description}"}\`, { type: "information" }),
+      action: (options) => PDS.toast(\`Searching ${"${options.description}"}\`, { type: "information" }),
     },
     People: {
       sortIndex: 2,
@@ -317,11 +309,9 @@ const combinedSettings = {
         ];
       },
       action: (options) => {
-        if (window?.PDS?.toast) {
-          PDS.toast(`Featured: ${options.text}`, {
-            type: "information",
-          });
-        }
+        PDS.toast(`Featured: ${options.text}`, {
+          type: "information",
+        });
       },
     },
     Actions: {
@@ -348,11 +338,9 @@ const combinedSettings = {
         },
       ],
       action: (options) => {
-        if (window?.PDS?.toast) {
-          PDS.toast(`Action: ${options.text}`, {
-            type: "information",
-          });
-        }
+        PDS.toast(`Action: ${options.text}`, {
+          type: "information",
+        });
       },
     },
     Search: {
@@ -382,11 +370,9 @@ const combinedSettings = {
         ].map((item) => ({ ...item, description: `in ${item.scope}` }));
       },
       action: (options) => {
-        if (window?.PDS?.toast) {
-          PDS.toast(`Searching ${options.description}`, {
-            type: "information",
-          });
-        }
+        PDS.toast(`Searching ${options.description}`, {
+          type: "information",
+        });
       },
     },
     People: {
@@ -444,7 +430,7 @@ const combinedSettings = {
 };
 
 export default {
-  title: "Components/Pds Omnibox",
+  title: "Components/pds-omnibox",
   tags: ["autodocs", "autocomplete", "search", "input", "forms", "pds-omnibox"],
   parameters: {
     pds: {

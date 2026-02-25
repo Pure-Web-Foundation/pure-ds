@@ -17,7 +17,7 @@ if (typeof window !== 'undefined') {
 }
 
 export default {
-  title: 'Components/Pds Upload',
+  title: 'Components/pds-upload',
   tags: ['autodocs', 'upload', 'file', 'dropzone', 'input', 'forms'],
   parameters: {
     pds: {

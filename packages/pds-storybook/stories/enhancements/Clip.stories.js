@@ -2,7 +2,7 @@ import { html } from "#pds/lit";
 import { enhancementHeader } from "./_enhancement-header.js";
 
 export default {
-  title: "Enhancements/Clip",
+  title: "Enhancements/[data-clip]",
   tags: ["data-clip", "clamp", "truncate", "content"],
   parameters: {
 

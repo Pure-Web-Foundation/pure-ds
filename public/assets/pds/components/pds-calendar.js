@@ -218,18 +218,23 @@ class PdsCalendar extends HTMLElement {
 .calendar-header {
   display: grid;
   grid-template-columns: auto 1fr auto;
+  align-items: center;
 
-  padding: var(--spacing-5) 0;
+  padding: var(--spacing-4) var(--spacing-4);
   border-bottom: var(--border-width-thin) solid var(--surface-border);
 
   .month-name {
     margin: 0;
     font-size: var(--font-size-lg);
   }
-}
 
-button.btn-xs {
-  min-height: 0 !important;
+  .prev {
+    justify-self: start;
+  }
+
+  .next {
+    justify-self: end;
+  }
 }
 
 .day-name {
@@ -467,7 +472,7 @@ button.btn-xs {
       // Adopt primitives (buttons), components (.callout classes), and toaster-specific styles
       await PDS.adoptLayers(
         this.shadowRoot,
-        ["primitives", "components"],
+        ["primitives", "components", "utilities"],
         [componentStyles]
       );
 
@@ -519,12 +524,12 @@ button.btn-xs {
       const calendarHtml = /*html*/ `
         <div class="calendar-container" part="calendar-container">
           <nav class="calendar-header" part="calendar-header">
-            <button class="btn-outline prev btn-xs"><pds-icon icon="arrow-left" size="xs"></pds-icon></button>
+            <button class="prev icon-only"><pds-icon icon="arrow-left" size="xs"></pds-icon></button>
             <div class="current-month">
               <h3 class="month-name">${this.#monthNames[this.month]}</h3>
               <h4 class="year">${this.year}</h4>
             </div>
-            <button class="btn-outline next btn-xs"><pds-icon icon="arrow-right" size="xs"></pds-icon></button>
+            <button class="next icon-only"><pds-icon icon="arrow-right" size="xs"></pds-icon></button>
           </nav>
 
           <div class="calendar" part="calendar">
@@ -750,12 +755,15 @@ button.btn-xs {
             month: this.month,
             fill: (data) => {
               if (!data) return;
-              let dayDivs = this.shadowRoot.querySelectorAll(`div[data-day]`);
-
               for (const day of Object.keys(data)) {
-                const dayDiv = dayDivs[parseInt(day)];
+                const dayNumber = Number.parseInt(day, 10);
+                if (!Number.isInteger(dayNumber) || dayNumber < 1) continue;
+
+                const dayDiv = this.shadowRoot.querySelector(
+                  `div[data-day="${dayNumber}"]`
+                );
                 const list = data[day];
-                if (list) {
+                if (dayDiv && Array.isArray(list)) {
                   dayDiv.classList.add("has-events");
                   for (const item of list) {
                     const html = /*html*/ `<div class="task task--${

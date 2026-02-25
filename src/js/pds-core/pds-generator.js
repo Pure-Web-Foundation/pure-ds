@@ -2741,7 +2741,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   align-items: center;
   justify-content: center;
   min-height: ${minButtonHeight}px;
-  padding: calc(var(--spacing-1) * ${buttonPaddingValue}) var(--spacing-6);
+  padding: max(calc(var(--spacing-1) * ${buttonPaddingValue}), var(--spacing-2)) var(--spacing-6);
   border: var(--border-width-medium) solid transparent;
   border-radius: var(--radius-md);
   font-family: var(--font-family-body);
@@ -2851,22 +2851,22 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .btn-sm {
-  padding: var(--spacing-2) var(--spacing-4);
+  padding: calc(max(calc(var(--spacing-1) * ${buttonPaddingValue}), var(--spacing-2)) * 0.85) calc(var(--spacing-6) * 0.8);
   font-size: var(--font-size-sm);
-  min-height: calc(${minButtonHeight}px * 0.8);
+  min-height: calc(${minButtonHeight}px * 0.85);
 }
 
 .btn-xs {
-  padding: var(--spacing-1) var(--spacing-2);
+  padding: calc(max(calc(var(--spacing-1) * ${buttonPaddingValue}), var(--spacing-2)) * 0.7) calc(var(--spacing-6) * 0.65);
   font-size: var(--font-size-xs);
-  min-height: calc(${minButtonHeight}px * 0.6);
+  min-height: calc(${minButtonHeight}px * 0.7);
 }
 
 
 .btn-lg {
-  padding: var(--spacing-4) var(--spacing-8);
+  padding: calc(max(calc(var(--spacing-1) * ${buttonPaddingValue}), var(--spacing-2)) * 1.15) calc(var(--spacing-6) * 1.35);
   font-size: var(--font-size-lg);
-  min-height: calc(${minButtonHeight}px * 1.2);
+  min-height: calc(${minButtonHeight}px * 1.15);
 }
 
 /* Working/loading state for buttons */

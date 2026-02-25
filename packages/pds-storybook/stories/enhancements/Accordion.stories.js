@@ -2,7 +2,7 @@ import { html } from 'lit';
 import { enhancementHeader } from './_enhancement-header.js';
 
 export default {
-  title: 'Enhancements/Accordion',
+  title: 'Enhancements/.accordion',
   tags: ['grouping', 'enhancement', 'accordion'],
   parameters: {
     options: {

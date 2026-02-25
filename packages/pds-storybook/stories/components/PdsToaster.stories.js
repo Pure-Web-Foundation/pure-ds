@@ -17,7 +17,7 @@ if (typeof window !== 'undefined') {
 }
 
 export default {
-  title: 'Components/Pds Toaster',
+  title: 'Components/pds-toaster',
   tags: ['autodocs', 'toast', 'toaster', 'notification', 'alert', 'message', 'feedback'],
   parameters: {
     pds: {
