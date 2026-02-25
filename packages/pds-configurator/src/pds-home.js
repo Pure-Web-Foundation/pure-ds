@@ -400,27 +400,6 @@ customElements.define(
                 icon: "folder-simple",
               })),
           },
-          Query: {
-            trigger: (options) => options.search.length >= 2,
-            action: (options) => this._handleOmniboxSelect(options),
-            getItems: async (options) => {
-              const query = (options.search || "").trim();
-              if (!query) return [];
-              try {
-                const results = await PDS.query(query);
-                return (results || []).map((result) => ({
-                  text: result.text,
-                  id: result.value,
-                  icon: result.icon || "magnifying-glass",
-                  category: result.category,
-                  code: result.code,
-                }));
-              } catch (error) {
-                console.warn("Omnibox query failed:", error);
-                return [];
-              }
-            },
-          },
         },
       };
     }
@@ -490,15 +469,6 @@ customElements.define(
 
       if (omnibox) {
         omnibox.value = text;
-      }
-    }
-
-    async _handleOmniboxSelect(options) {
-      if (options?.code && navigator.clipboard) {
-        await navigator.clipboard.writeText(options.code);
-        await PDS.toast("Copied token to clipboard", { type: "success" });
-      } else if (options?.id) {
-        this._scrollToSection(options.id);
       }
     }
 

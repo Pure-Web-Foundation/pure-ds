@@ -198,6 +198,7 @@ PDS also ships a local MCP server so agents can delegate lookups to actual SSoT 
 **Tool coverage**
 - `get_tokens` → `public/assets/pds/pds.css-data.json`
 - `find_utility_class` → `src/js/pds-core/pds-ontology.js`
+- `query_design_system` → natural-language query across ontology + token metadata
 - `get_component_api` → `custom-elements.json`
 - `get_enhancer_metadata` → `src/js/pds-core/pds-enhancers-meta.js`
 - `get_config_relations` → `src/js/pds-core/pds-config.js` (`PDS_CONFIG_RELATIONS`)
@@ -986,69 +987,30 @@ Icons are available as CSS custom properties:
 
 ---
 
-## Smart Query System
+## MCP Query Tool
 
-Ask questions about your design system using natural language.
+Ask natural-language questions about your design system through MCP.
 
 ### Usage
 
-```javascript
-// Programmatic API
-const results = await PDS.query("what is the focus border color on inputs?");
+Call `query_design_system` with a `question` string from your MCP client.
 
-results.forEach(result => {
-  console.log(result.text);        // "Focus border color: var(--color-primary-500)"
-  console.log(result.category);    // "Color Token"
-  console.log(result.cssVar);      // "var(--color-primary-500)"
-  console.log(result.code);        // Example code
-});
+### Example Questions
+
+```text
+what is the focus border color on inputs?
+what foreground color should I use on this surface?
+what are the utility classes for borders?
+how do I create an icon-only button?
 ```
-
-### Example Queries
-
-**Color Questions:**
-```javascript
-await PDS.query("what is the focus border color on inputs?")
-await PDS.query("what foreground color should I use on this surface?")
-await PDS.query("button hover color")
-await PDS.query("primary color scale")
-```
-
-**Utility Questions:**
-```javascript
-await PDS.query("what are the utility classes for borders?")
-await PDS.query("border gradient effect")
-await PDS.query("flex layout utilities")
-await PDS.query("gap between elements")
-```
-
-**Component Questions:**
-```javascript
-await PDS.query("how do I create an icon-only button?")
-await PDS.query("drawer component")
-await PDS.query("tab strip usage")
-```
-
-**Layout Questions:**
-```javascript
-await PDS.query("how can I group stuff in containers?")
-await PDS.query("grid container")
-await PDS.query("card component")
-```
-
-### AutoComplete Integration
-
-The query system integrates with `#pds-search` in the configurator. Type queries directly in the search box for instant answers.
 
 ### How It Works
 
 1. **Intent Detection** - Recognizes what you're asking about (color, spacing, component, utility)
 2. **Entity Recognition** - Identifies design elements (button, input, surface)
 3. **Context Analysis** - Detects states (hover, focus, active)
-4. **Data Querying** - Searches `PDS.compiled`, `PDS.ontology`, `PDS.currentConfig`
+4. **Data Querying** - Uses ontology metadata + token metadata from SSoT
 5. **Scoring & Ranking** - Returns top 10 most relevant results
-
-See [PDS-QUERY-SYSTEM.md](./PDS-QUERY-SYSTEM.md) for detailed documentation.
 
 ---
 
@@ -1350,15 +1312,6 @@ await PDS.start({
   preloadStyles?: boolean = false,
   criticalLayers?: string[] = ['tokens', 'primitives']
 });
-```
-
-### PDS.query(question)
-
-Smart query interface.
-
-```typescript
-const results = await PDS.query(question: string);
-// Returns array of results with text, value, icon, category, etc.
 ```
 
 ### validateDesign(config, options)
@@ -2035,7 +1988,7 @@ npm run dev
 - 🌐 **Homepage:** https://puredesignsystem.z6.web.core.windows.net/
 - 📦 **NPM:** https://www.npmjs.com/package/pure-ds
 - 🐙 **GitHub:** https://github.com/mvneerven/pure-ds
-- 📖 **Docs:** [getting-started.md](./getting-started.md) | [PDS-QUERY-SYSTEM.md](./PDS-QUERY-SYSTEM.md)
+- 📖 **Docs:** [getting-started.md](./getting-started.md)
 - 💬 **Discussions:** https://github.com/mvneerven/pure-ds/discussions
 - 🐛 **Issues:** https://github.com/mvneerven/pure-ds/issues
 

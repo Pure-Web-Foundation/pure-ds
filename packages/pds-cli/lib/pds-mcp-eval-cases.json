@@ -28,6 +28,19 @@
     }
   },
   {
+    "id": "query-focus-input",
+    "tool": "query_design_system",
+    "args": {
+      "question": "what is the focus border color on inputs?"
+    },
+    "expect": {
+      "paths": [
+        "results",
+        "results.0.value"
+      ]
+    }
+  },
+  {
     "id": "component-form",
     "tool": "get_component_api",
     "args": {

@@ -59,10 +59,11 @@ Use MCP as an optimization, not a prerequisite. For fast, simple lookups, read l
 
 1. **Tokens** → call `get_tokens`
 2. **Primitives / utilities / selectors** → call `find_utility_class`
-3. **Web component API** → call `get_component_api`
-4. **Enhancer metadata + demoHtml** → call `get_enhancer_metadata`
-5. **Design config deterministic mapping** → call `get_config_relations`
-6. **Final snippet sanity check** → call `validate_pds_snippet`
+3. **Natural-language DS search** → call `query_design_system`
+4. **Web component API** → call `get_component_api`
+5. **Enhancer metadata + demoHtml** → call `get_enhancer_metadata`
+6. **Design config deterministic mapping** → call `get_config_relations`
+7. **Final snippet sanity check** → call `validate_pds_snippet`
 
 ### Non-negotiable rules
 
@@ -534,8 +535,7 @@ await PDS.toast("Saved successfully!", { type: "success" });
 // Theme management
 PDS.theme = 'dark';  // 'light' | 'dark' | 'system'
 
-// Query the design system
-const results = await PDS.query("border gradient classes");
+// Query the design system via MCP tool: query_design_system
 ```
 
 ---

@@ -230,7 +230,6 @@ Follows design system best practices:
 - `PDS.start()` - Initialization in both modes
 - `PDS.applyDesign()` - Live config updates
 - `PDS.adoptPrimitives()` - Shadow DOM style adoption
-- `PDS.query()` - Natural language search
 - `pds:design:updated` event - Config change notifications
 - `FORCE_REMOUNT` channel - Storybook story refresh
 

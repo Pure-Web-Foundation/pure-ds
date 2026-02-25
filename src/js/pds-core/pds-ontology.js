@@ -1,6 +1,6 @@
 ﻿// Pure Design System Ontology (PDS)
 // This file is the single source-of-truth metadata for primitives, components, tokens, themes and enhancements.
-// Used by PDS.query() for searching and correlating concepts.
+// Used by MCP/query tooling for searching and correlating concepts.
 
 export const ontology = {
   meta: { 
@@ -560,7 +560,7 @@ export const ontology = {
 
   // ═══════════════════════════════════════════════════════════════════════════
   // SEARCH RELATIONS (Cross-concept mappings for intelligent search)
-  // Used by PDS.query() and Storybook ontology search to expand user queries
+  // Used by MCP tools and Storybook ontology search to expand user queries
   // ═══════════════════════════════════════════════════════════════════════════
   searchRelations: {
     // Typography & Text

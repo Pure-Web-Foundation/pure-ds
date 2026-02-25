@@ -102,6 +102,17 @@ function getToolSchema() {
       },
     },
     {
+      name: 'query_design_system',
+      description: 'Run natural-language PDS design system search against SSoT-backed data.',
+      inputSchema: {
+        type: 'object',
+        required: ['question'],
+        properties: {
+          question: { type: 'string', description: 'Natural language question, e.g. "focus border color on inputs".' },
+        },
+      },
+    },
+    {
       name: 'get_component_api',
       description: 'Lookup PDS custom element API from custom-elements.json.',
       inputSchema: {
@@ -170,6 +181,7 @@ export function createPdsMcpContext({ projectRoot = process.cwd() } = {}) {
       cssData: path.join(ssoTRoot, 'public', 'assets', 'pds', 'pds.css-data.json'),
       customElements: path.join(ssoTRoot, 'custom-elements.json'),
       ontology: path.join(ssoTRoot, 'src', 'js', 'pds-core', 'pds-ontology.js'),
+      queryEngine: path.join(ssoTRoot, 'src', 'js', 'pds-core', 'pds-query.js'),
       enhancersMeta: path.join(ssoTRoot, 'src', 'js', 'pds-core', 'pds-enhancers-meta.js'),
       config: path.join(ssoTRoot, 'src', 'js', 'pds-core', 'pds-config.js'),
     },
@@ -213,6 +225,50 @@ async function getConfigRelations(ctx) {
     ctx.cache.set('configRelations', mod.PDS_CONFIG_RELATIONS || {});
   }
   return ctx.cache.get('configRelations');
+}
+
+async function getQueryEngineClass(ctx) {
+  if (!ctx.cache.has('queryEngineClass')) {
+    const mod = await importModule(ctx.files.queryEngine);
+    const queryEngineClass = mod?.PDSQuery || mod?.default || null;
+    ctx.cache.set('queryEngineClass', queryEngineClass);
+  }
+  return ctx.cache.get('queryEngineClass');
+}
+
+function getPropertyValue(property) {
+  return decodeDataTextUrl(property?.references?.find((r) => r.name === 'Value')?.url);
+}
+
+function buildCompiledFromCssData(cssData) {
+  const compiled = {
+    tokens: {
+      colors: {},
+      spacing: {},
+      typography: {},
+    },
+  };
+
+  for (const property of cssData.properties || []) {
+    const name = String(property?.name || '');
+    const value = getPropertyValue(property);
+    if (!name) continue;
+
+    if (name.startsWith('--color-')) {
+      compiled.tokens.colors[name] = value;
+    }
+
+    if (name.startsWith('--spacing-')) {
+      const key = name.replace('--spacing-', '').trim();
+      if (key) compiled.tokens.spacing[key] = value || '';
+    }
+
+    if (name.startsWith('--font-')) {
+      compiled.tokens.typography[name] = value;
+    }
+  }
+
+  return compiled;
 }
 
 function shapeComponentDeclaration(declaration) {
@@ -260,9 +316,7 @@ async function handleGetTokens(ctx, args = {}) {
     })
     .slice(0, limit)
     .map((property) => {
-      const value = includeValues
-        ? decodeDataTextUrl(property?.references?.find((r) => r.name === 'Value')?.url)
-        : null;
+      const value = includeValues ? getPropertyValue(property) : null;
       return {
         name: property.name,
         description: property.description || '',
@@ -318,6 +372,43 @@ async function handleFindUtilityClass(ctx, args = {}) {
     totalMatches: matches.length,
     matches: matches.slice(0, limit),
     extractedClassesSample: [...classSet].slice(0, 80),
+  };
+}
+
+async function handleQueryDesignSystem(ctx, args = {}) {
+  const question = String(args.question || '').trim();
+  if (!question) {
+    throw new Error('The "question" argument is required.');
+  }
+
+  const [PDSQuery, ontology, cssData] = await Promise.all([
+    getQueryEngineClass(ctx),
+    getOntology(ctx),
+    getCssData(ctx),
+  ]);
+
+  if (!PDSQuery) {
+    throw new Error('Unable to load PDS query engine.');
+  }
+
+  const pseudoPds = {
+    ontology,
+    compiled: buildCompiledFromCssData(cssData),
+  };
+
+  const engine = new PDSQuery(pseudoPds);
+  const results = await engine.search(question);
+
+  return {
+    ssoTRoot: normalizePath(ctx.ssoTRoot),
+    source: {
+      ontology: normalizePath(path.relative(ctx.ssoTRoot, ctx.files.ontology)),
+      cssData: normalizePath(path.relative(ctx.ssoTRoot, ctx.files.cssData)),
+      queryEngine: normalizePath(path.relative(ctx.ssoTRoot, ctx.files.queryEngine)),
+    },
+    question,
+    totalMatches: results.length,
+    results,
   };
 }
 
@@ -478,6 +569,7 @@ async function handleValidateSnippet(ctx, args = {}) {
 const TOOL_HANDLERS = {
   get_tokens: handleGetTokens,
   find_utility_class: handleFindUtilityClass,
+  query_design_system: handleQueryDesignSystem,
   get_component_api: handleGetComponentApi,
   get_enhancer_metadata: handleGetEnhancerMetadata,
   get_config_relations: handleGetConfigRelations,

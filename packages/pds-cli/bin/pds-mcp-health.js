@@ -10,6 +10,7 @@ const serverScriptPath = path.resolve(__dirname, 'pds-mcp-server.js');
 const requiredTools = [
   'get_tokens',
   'find_utility_class',
+  'query_design_system',
   'get_component_api',
   'get_enhancer_metadata',
   'get_config_relations',

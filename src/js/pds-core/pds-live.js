@@ -37,7 +37,6 @@ import {
 } from "./pds-theme-utils.js";
 
 let __liveApiReady = false;
-let __queryClass = null;
 
 const LIVE_EDIT_TOGGLE_ID = "pds-live-edit-toggle";
 const LIVE_EDIT_TOGGLE_STYLE_ID = "pds-live-edit-toggle-style";
@@ -667,18 +666,16 @@ function buildPresetOmniboxSettings(PDS, options = {}) {
 async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIfNeeded, emitConfigChanged }) {
   if (__liveApiReady) return;
 
-  const [ontologyModule, enumsModule, queryModule, commonModule] =
+  const [ontologyModule, enumsModule, commonModule] =
     await Promise.all([
       import("./pds-ontology.js"),
       import("./pds-enums.js"),
-      import("./pds-query.js"),
       import("../common/common.js"),
     ]);
 
   const ontology = ontologyModule?.default || ontologyModule?.ontology;
   const findComponentForElement = ontologyModule?.findComponentForElement;
   const enums = enumsModule?.enums;
-  __queryClass = queryModule?.PDSQuery || queryModule?.default || null;
 
   // Expose live-only APIs
   PDS.ontology = ontology;
@@ -716,15 +713,6 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
   };
   PDS.getGenerator = async function() {
     return Generator;
-  };
-  PDS.query = async function(question) {
-    if (!__queryClass) {
-      const mod = await import("./pds-query.js");
-      __queryClass = mod?.PDSQuery || mod?.default || null;
-    }
-    if (!__queryClass) return [];
-    const queryEngine = new __queryClass(PDS);
-    return await queryEngine.search(question);
   };
   PDS.buildPresetOmniboxSettings = function(options = {}) {
     return buildPresetOmniboxSettings(PDS, options);
