@@ -1734,7 +1734,7 @@ export class SchemaForm extends LitElement {
               min=${min}
               max=${max}
               step=${step}
-              .value=${visualValue}
+              .value=${String(visualValue)}
               ?disabled=${!!attrs.disabled}
               @input=${(e) => set(Number(e.target.value))}
             />

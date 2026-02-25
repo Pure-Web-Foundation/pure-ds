@@ -543,14 +543,14 @@ const results = await PDS.query("border gradient classes");
 ## 📚 Additional Resources
 
 **For comprehensive pds-form documentation:**
-- Read [pds-form-docs.md](../pds-form-docs.md) for complete API reference
-- See [packages/pds-storybook/stories/components/PdsForm.stories.js](../packages/pds-storybook/stories/components/PdsForm.stories.js) for real examples
-- Check [custom-elements.json](../custom-elements.json) for component API details
+- Read [pds-form-docs.md](https://github.com/Pure-Web-Foundation/pure-ds/blob/main/pds-form-docs.md) for complete API reference
+- See [packages/pds-storybook/stories/components/PdsForm.stories.js](https://github.com/Pure-Web-Foundation/pure-ds/blob/main/packages/pds-storybook/stories/components/PdsForm.stories.js) for real examples
+- Check [custom-elements.json](https://github.com/Pure-Web-Foundation/pure-ds/blob/main/custom-elements.json) for component API details
 
 **For toast notifications:**
-- Use `PDS.toast()` method (see [src/js/common/toast.js](../src/js/common/toast.js) for implementation)
+- Use `PDS.toast()` method (see [src/js/common/toast.js](https://github.com/Pure-Web-Foundation/pure-ds/blob/main/src/js/common/toast.js) for implementation)
 - Automatically ensures pds-toaster exists and is loaded before displaying
-- See pds-toaster component API in [custom-elements.json](../custom-elements.json)
+- See pds-toaster component API in [custom-elements.json](https://github.com/Pure-Web-Foundation/pure-ds/blob/main/custom-elements.json)
 
 ---
 
