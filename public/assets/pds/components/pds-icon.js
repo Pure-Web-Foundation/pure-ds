@@ -48,9 +48,9 @@ export class SvgIcon extends HTMLElement {
   static spritePromises = new Map();
   static inlineSprites = new Map();
 
-  // Cache for externally fetched SVG icons (icon name -> { content, viewBox, loaded, error })
+  // Cache for externally fetched SVG icons (path-aware key -> { content, viewBox, loaded, error })
   static externalIconCache = new Map();
-  // Promises for in-flight external icon fetches
+  // Promises for in-flight external icon fetches (path-aware key)
   static externalIconPromises = new Map();
 
   static instances = new Set();
@@ -199,6 +199,8 @@ export class SvgIcon extends HTMLElement {
     // Determine if we should use sprite or fallback
     let useFallback = this.hasAttribute('no-sprite') || !this.spriteAvailable();
 
+    const externalIconBasePath = SvgIcon.normalizeExternalIconPath();
+
     let effectiveHref = spriteHref ? `${spriteHref}#${icon}` : `#${icon}`;
     let inlineSymbolContent = null;
     let inlineSymbolViewBox = null;
@@ -241,7 +243,8 @@ export class SvgIcon extends HTMLElement {
     // IMPORTANT: Don't try external icons while sprite is still loading
     const hasFallback = SvgIcon.#fallbackIcons.hasOwnProperty(icon);
     if (spriteIconNotFound && !hasFallback && !spriteStillLoading) {
-      const cached = SvgIcon.externalIconCache.get(icon);
+      const cacheKey = SvgIcon.getExternalIconCacheKey(icon, externalIconBasePath);
+      const cached = SvgIcon.externalIconCache.get(cacheKey);
       if (cached) {
         if (cached.loaded && cached.content) {
           useExternalIcon = true;
@@ -252,7 +255,7 @@ export class SvgIcon extends HTMLElement {
         }
       } else {
         // Trigger async fetch - will re-render when complete
-        SvgIcon.fetchExternalIcon(icon);
+        SvgIcon.fetchExternalIcon(icon, externalIconBasePath);
         useFallback = true;
       }
     }
@@ -306,7 +309,8 @@ export class SvgIcon extends HTMLElement {
 
       const hasFallbackLocal = SvgIcon.#fallbackIcons.hasOwnProperty(iconName);
       if (spriteIconNotFoundLocal && !hasFallbackLocal && !spriteStillLoadingLocal) {
-        const cached = SvgIcon.externalIconCache.get(iconName);
+        const cacheKey = SvgIcon.getExternalIconCacheKey(iconName, externalIconBasePath);
+        const cached = SvgIcon.externalIconCache.get(cacheKey);
         if (cached) {
           if (cached.loaded && cached.content) {
             useExternalIconLocal = true;
@@ -315,7 +319,7 @@ export class SvgIcon extends HTMLElement {
             useFallbackLocal = true;
           }
         } else {
-          SvgIcon.fetchExternalIcon(iconName);
+          SvgIcon.fetchExternalIcon(iconName, externalIconBasePath);
           useFallbackLocal = true;
         }
       }
@@ -602,28 +606,75 @@ export class SvgIcon extends HTMLElement {
   }
 
   /**
+   * Normalize the external icon path to make cache keys and URL joining stable.
+   * @private
+   * @param {string} [basePath]
+   * @returns {string}
+   */
+  static normalizeExternalIconPath(basePath) {
+    const rawBasePath = typeof basePath === 'string' ? basePath : SvgIcon.getExternalIconPath();
+    const trimmed = (rawBasePath || '/assets/img/icons/').trim();
+    if (!trimmed) {
+      return '/assets/img/icons/';
+    }
+    return trimmed.endsWith('/') ? trimmed : `${trimmed}/`;
+  }
+
+  /**
+   * Build a deterministic cache key for external icon content.
+   * @private
+   * @param {string} iconName
+   * @param {string} basePath
+   * @returns {string}
+   */
+  static getExternalIconCacheKey(iconName, basePath) {
+    return `${SvgIcon.normalizeExternalIconPath(basePath)}::${iconName}`;
+  }
+
+  /**
+   * Resolve an external icon URL from icon name + base path.
+   * @private
+   * @param {string} iconName
+   * @param {string} basePath
+   * @returns {string}
+   */
+  static getExternalIconURL(iconName, basePath) {
+    const normalizedBasePath = SvgIcon.normalizeExternalIconPath(basePath);
+    try {
+      if (typeof window !== 'undefined' && window.location?.href) {
+        return new URL(`${iconName}.svg`, normalizedBasePath).href;
+      }
+    } catch (error) {
+      // Ignore URL construction errors and fall back to string concatenation.
+    }
+    return `${normalizedBasePath}${iconName}.svg`;
+  }
+
+  /**
    * Fetch an external SVG icon and cache it
    * @param {string} iconName - The icon name (without .svg extension)
    * @returns {Promise<boolean>} True if successfully fetched
    */
-  static async fetchExternalIcon(iconName) {
+  static async fetchExternalIcon(iconName, basePath) {
     if (!iconName || typeof document === 'undefined') {
       return false;
     }
 
+    const normalizedBasePath = SvgIcon.normalizeExternalIconPath(basePath);
+    const cacheKey = SvgIcon.getExternalIconCacheKey(iconName, normalizedBasePath);
+
     // Check if already cached
-    const cached = SvgIcon.externalIconCache.get(iconName);
+    const cached = SvgIcon.externalIconCache.get(cacheKey);
     if (cached) {
       return cached.loaded;
     }
 
     // Check if fetch is already in progress
-    if (SvgIcon.externalIconPromises.has(iconName)) {
-      return SvgIcon.externalIconPromises.get(iconName);
+    if (SvgIcon.externalIconPromises.has(cacheKey)) {
+      return SvgIcon.externalIconPromises.get(cacheKey);
     }
 
-    const basePath = SvgIcon.getExternalIconPath();
-    const iconUrl = `${basePath}${iconName}.svg`;
+    const iconUrl = SvgIcon.getExternalIconURL(iconName, normalizedBasePath);
 
     const promise = fetch(iconUrl)
       .then(async (response) => {
@@ -649,7 +700,7 @@ export class SvgIcon extends HTMLElement {
           .map((node) => serializer.serializeToString(node))
           .join('');
 
-        SvgIcon.externalIconCache.set(iconName, {
+        SvgIcon.externalIconCache.set(cacheKey, {
           loaded: true,
           error: false,
           content,
@@ -665,7 +716,7 @@ export class SvgIcon extends HTMLElement {
         if (!error.message?.includes('404')) {
           console.debug('[pds-icon] External icon not found:', iconName, error.message);
         }
-        SvgIcon.externalIconCache.set(iconName, {
+        SvgIcon.externalIconCache.set(cacheKey, {
           loaded: false,
           error: true,
           content: null,
@@ -676,10 +727,10 @@ export class SvgIcon extends HTMLElement {
         return false;
       })
       .finally(() => {
-        SvgIcon.externalIconPromises.delete(iconName);
+        SvgIcon.externalIconPromises.delete(cacheKey);
       });
 
-    SvgIcon.externalIconPromises.set(iconName, promise);
+    SvgIcon.externalIconPromises.set(cacheKey, promise);
     return promise;
   }
 
