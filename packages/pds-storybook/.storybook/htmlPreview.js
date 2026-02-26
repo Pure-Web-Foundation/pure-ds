@@ -5,7 +5,7 @@
  */
 
 import { render as litRender } from 'lit';
-import { highlight, getCurrentTheme, escapeHtml, preloadShiki } from './shiki.js';
+import { renderCodeBlock, getCurrentTheme, preloadShiki } from './shiki.js';
 
 // Pre-load Shiki in the background
 preloadShiki();
@@ -174,15 +174,10 @@ export const withHTMLSource = (storyFn, context) => {
         html = formatHTML(extractHTML(storyContainer));
       }
       
-      const codeEl = sourceSection.querySelector('.html-source-code');
       const preEl = sourceSection.querySelector('.html-source-pre');
       if (preEl && html) {
-        // Use Shiki for syntax highlighting
         const theme = getCurrentTheme();
-        const highlighted = await highlight(html, 'html', theme);
-        
-        // Shiki returns complete <pre><code>...</code></pre>, replace the whole pre element
-        preEl.outerHTML = highlighted;
+        await renderCodeBlock(preEl, html, 'html', theme);
       }
       
       // Setup copy button

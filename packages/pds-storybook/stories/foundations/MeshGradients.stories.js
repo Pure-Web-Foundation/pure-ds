@@ -1,5 +1,5 @@
 import { html } from "#pds/lit";
-import { highlight, getCurrentTheme, preloadShiki } from "../utils/shiki.js";
+import { renderCodeBlock, getCurrentTheme, preloadShiki } from "../utils/shiki.js";
 
 // Pre-load Shiki
 preloadShiki();
@@ -224,9 +224,7 @@ export const CodeSamples = () => {
 
   const theme = getCurrentTheme();
 
-  highlight(cssCode, "css", theme).then((h) => {
-    container.querySelector(".code-css").innerHTML = h;
-  });
+  renderCodeBlock(container.querySelector(".code-css"), cssCode, "css", theme);
 
   return container;
 };

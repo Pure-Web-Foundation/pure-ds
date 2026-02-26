@@ -8,7 +8,7 @@ export const config = {
   liveEdit: true,
   preset: "default",
   autoDefine: {
-    predefine: ["pds-icon", "pds-drawer", "pds-toaster", "pds-form"]
+    predefine: ["pds-icon", "pds-drawer", "pds-toaster"]
   },
 
   log(level, message, ...data) {

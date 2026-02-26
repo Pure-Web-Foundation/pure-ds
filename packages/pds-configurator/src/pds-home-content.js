@@ -66,12 +66,12 @@ export const HOME_CONTENT = [
           },
           {
             title: "Composable layout",
-            body: "Stack, grid, and utility patterns that scale from dashboard to landing page. But without turning your project into div-soup with utility classes — [learn more](https://puredesignsystem.z6.web.core.windows.net/storybook/?path=/story/foundations-layout--layout-introduction)",
+            body: "Stack, grid, and utility patterns that scale from dashboard to landing page. But without turning your project into div-soup with utility classes — [learn more](https://storybook.pure-ds.com/?path=/story/foundations-layout--layout-introduction)",
             icon: "grid-four",
           },
           {
             title: "Enhancements",
-            body: "For a lot of functionality, there's no need for components — just sprinkle in a class name or a data-attribute and let the system handle the rest. [learn more](https://puredesignsystem.z6.web.core.windows.net/storybook/?path=/story/enhancements)",
+            body: "For a lot of functionality, there's no need for components — just sprinkle in a class name or a data-attribute and let the system handle the rest. [learn more](https://storybook.pure-ds.com/?path=/story/enhancements)",
             icon: "sparkle",
           },
           {
@@ -477,7 +477,7 @@ export const HOME_CONTENT = [
         cards: [
           {
             title: "Storybook",
-            body: "Explore components, patterns, and code in our [Storybook](https://puredesignsystem.z6.web.core.windows.net/storybook/).",
+            body: "Explore components, patterns, and code in our [Storybook](https://storybook.pure-ds.com/).",
             icon: "book-open",
           },
 

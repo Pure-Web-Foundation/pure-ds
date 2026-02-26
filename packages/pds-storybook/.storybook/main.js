@@ -78,6 +78,7 @@ const config = {
     const aliases = [
       { find: '#pds/lit', replacement: resolve(pdsSrcPath, 'js/lit.js') },
       { find: /^#pds$/, replacement: resolve(pdsSrcPath, 'js/pds.js') },
+      { find: /^#shiki$/, replacement: resolve(pdsSrcPath, 'js/external/shiki.js') },
       ...existingAliases,
     ];
 

@@ -21,7 +21,7 @@ customElements.define(
             <a target="_blank" href="https://github.com/Pure-Web-Foundation/pure-ds/blob/main/getting-started.md" class="btn btn-primary btn-lg">
               <pds-icon icon="rocket"></pds-icon> Get Started
             </a>
-            <a target="_blank" href="https://puredesignsystem.z6.web.core.windows.net/storybook/" class="btn btn-secondary btn-lg">
+            <a target="_blank" href="https://storybook.pure-ds.com/" class="btn btn-secondary btn-lg">
               <pds-icon icon="book-open"></pds-icon> Storybook
             </a>
           </nav>

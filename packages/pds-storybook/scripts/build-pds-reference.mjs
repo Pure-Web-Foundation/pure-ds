@@ -152,6 +152,11 @@ function normalizeMemberName(name = '') {
   return name.replace(/^['"]|['"]$/g, '');
 }
 
+function kebabToCamel(value = '') {
+  if (!value || typeof value !== 'string') return '';
+  return value.replace(/-([a-z0-9])/g, (_, char) => char.toUpperCase());
+}
+
 function isPrivateMemberName(name) {
   const normalized = normalizeMemberName(name);
   if (!normalized) return false;
@@ -658,6 +663,34 @@ function mapCustomElement(
           privacy: 'public'
         });
       }
+    }
+  }
+
+  const propertyByName = new Map(properties.map((property) => [property.name, property]));
+  const propertyByAttribute = new Map(
+    properties
+      .filter((property) => property.attribute)
+      .map((property) => [String(property.attribute).toLowerCase(), property]),
+  );
+
+  for (const attribute of attributes) {
+    const fieldCandidate = attribute.fieldName ? propertyByName.get(attribute.fieldName) : null;
+    const exactNameCandidate = propertyByName.get(attribute.name);
+    const camelCandidate = propertyByName.get(kebabToCamel(attribute.name));
+    const reflectedCandidate = propertyByAttribute.get(String(attribute.name || '').toLowerCase());
+    const property = fieldCandidate || reflectedCandidate || exactNameCandidate || camelCandidate || null;
+
+    if (!property) continue;
+
+    attribute.property = property.name;
+    if (!attribute.description && property.description) {
+      attribute.description = property.description;
+    }
+    if (!attribute.type && property.type) {
+      attribute.type = property.type;
+    }
+    if ((attribute.default === null || attribute.default === undefined) && property.default != null) {
+      attribute.default = property.default;
     }
   }
 

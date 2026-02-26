@@ -15,6 +15,10 @@ let shikiLoadPromise = null;
  * @returns {Promise<import('shiki').Highlighter|null>}
  */
 export async function loadShiki() {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
   if (shikiInstance) return shikiInstance;
   
   if (shikiLoading) {
@@ -24,7 +28,12 @@ export async function loadShiki() {
   shikiLoading = true;
   shikiLoadPromise = (async () => {
     try {
-      const shiki = await import('https://esm.sh/shiki@1.0.0');
+      let shiki;
+      try {
+        shiki = await import('#shiki');
+      } catch {
+        shiki = await import('https://esm.sh/shiki@1.0.0');
+      }
       shikiInstance = await shiki.getHighlighter({
         themes: ['github-dark', 'github-light'],
         langs: ['html', 'css', 'javascript', 'typescript', 'json', 'bash', 'shell']
@@ -107,4 +116,36 @@ export function escapeHtml(text) {
  */
 export function preloadShiki() {
   loadShiki();
+}
+
+/**
+ * Render code into a target using the pds-code custom element.
+ * Falls back to escaped <pre><code> output if element registration fails.
+ * @param {Element|null} target
+ * @param {string} code
+ * @param {string} lang
+ * @param {string} [theme]
+ * @returns {Promise<Element|null>}
+ */
+export async function renderCodeBlock(target, code, lang = 'html', theme = getCurrentTheme()) {
+  if (!target) return null;
+
+  let codeEl;
+  if (target.matches?.('pds-code')) {
+    codeEl = target;
+  } else {
+    codeEl = document.createElement('pds-code');
+    target.replaceChildren(codeEl);
+  }
+
+  codeEl.setAttribute('lang', lang);
+  if (theme) codeEl.setAttribute('theme', theme);
+
+  try {
+    codeEl.code = code;
+  } catch {
+    codeEl.innerHTML = `<pre><code>${escapeHtml(code)}</code></pre>`;
+  }
+
+  return codeEl;
 }

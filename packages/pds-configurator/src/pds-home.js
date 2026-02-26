@@ -965,7 +965,7 @@ customElements.define(
 
         case "storybook":
           window.open(
-            "https://puredesignsystem.z6.web.core.windows.net/storybook/",
+            "https://storybook.pure-ds.com/",
             "_blank",
           );
           break;

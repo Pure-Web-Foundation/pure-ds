@@ -107,7 +107,7 @@ export const Default = () => html`
 
         <div>
           <h4>Agenda</h4>
-          <ul class="stack-sm">
+          <ul>
             <li>Roadmap alignment and blockers</li>
             <li>Department resource updates</li>
             <li>Upcoming launch dependencies</li>
@@ -140,17 +140,17 @@ export const Default = () => html`
       </div>
     </div>
 
-    <div slot="right" class="stack-md">
-      <div class="stack-sm">
+    <article slot="right">
+      
         <h3>Discussion Topics</h3>
-        <ul class="stack-sm">
+        <ul>
           <li>Prioritize customer feedback integration for the Q4 release.</li>
           <li>Finalize facility budget for new team hires.</li>
           <li>Review outstanding action items from last sprint review.</li>
         </ul>
-      </div>
+      
 
-      <div class="stack-sm">
+      
         <h4>Notes</h4>
         <p>
           Please come prepared with your updates and any questions you might have. Looking forward to seeing everyone there!
@@ -159,8 +159,8 @@ export const Default = () => html`
           <strong>Sarah Johnson</strong>
           <span class="text-muted">Team Lead</span>
         </div>
-      </div>
-    </div>
+      
+    </article>
   </pds-splitpanel>
 `;
 
@@ -172,11 +172,11 @@ export const CodeEditorLayout = () => html`
     <div slot="left" class="stack-md">
       <h3>Code Editor</h3>
 
-      <pre class="story-code-block"><code>function greet(name) {
+      <pds-code lang="javascript">function greet(name) {
   console.log('Hello, ' + name + '!');
 }
 
-greet('World');</code></pre>
+greet('World');</pds-code>
 
       <div class="flex flex-wrap gap-sm">
         <button class="btn-primary">
@@ -364,7 +364,7 @@ export const StyledSplitter = () => html`
       <div>
         <div class="callout-title">Styling the Splitter with ::part()</div>
         <p>The splitter bar can be fully customized using the <code>::part(splitter)</code> CSS selector. This allows you to style:</p>
-        <ul class="stack-xs story-callout-list">
+        <ul class="story-callout-list">
           <li><code>background-color</code> or <code>background</code> (for gradients)</li>
           <li><code>width</code> (horizontal) or <code>height</code> (vertical)</li>
           <li><code>:hover</code> state styling</li>

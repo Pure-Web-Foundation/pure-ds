@@ -82,10 +82,22 @@ async function run() {
       await mkdir(coreDir, { recursive: true });
       const externalDir = path.join(process.cwd(), 'public', 'assets', 'pds', 'external');
       await mkdir(externalDir, { recursive: true });
+      const componentsDir = path.join(process.cwd(), 'public', 'assets', 'pds', 'components');
+      await mkdir(componentsDir, { recursive: true });
       const litSrc = path.join(process.cwd(), 'public', 'assets', 'js', 'lit.js');
       const litDest = path.join(externalDir, 'lit.js');
       await copyFile(litSrc, litDest);
       console.log('Copied lit.js to', litDest);
+
+      const shikiSrc = path.join(process.cwd(), 'src', 'js', 'external', 'shiki.js');
+      const shikiDest = path.join(externalDir, 'shiki.js');
+      await copyFile(shikiSrc, shikiDest);
+      console.log('Copied shiki.js to', shikiDest);
+
+      const pdsCodeSrc = path.join(process.cwd(), 'src', 'js', 'components', 'pds-code.js');
+      const pdsCodeDest = path.join(componentsDir, 'pds-code.js');
+      await copyFile(pdsCodeSrc, pdsCodeDest);
+      console.log('Copied pds-code.js to', pdsCodeDest);
 
       const autocompleteSrc = path.join(process.cwd(), 'public', 'assets', 'js', 'pds-autocomplete.js');
       const autocompleteDest = path.join(coreDir, 'pds-autocomplete.js');

@@ -16,6 +16,42 @@ import { toastFormData } from '../stories/utils/toast-utils.js';
 // Expose toastFormData globally for inline event handlers
 window.toastFormData = toastFormData;
 
+let pdsCodeLoadPromise = null;
+
+async function ensurePdsCodeLoaded() {
+  if (typeof customElements !== 'undefined' && customElements.get('pds-code')) {
+    return true;
+  }
+
+  if (!pdsCodeLoadPromise) {
+    pdsCodeLoadPromise = (async () => {
+      const candidates = [
+        '@pds-src/js/components/pds-code.js',
+        '/assets/pds/components/pds-code.js',
+        '/pds/components/pds-code.js',
+      ];
+
+      for (const specifier of candidates) {
+        try {
+          await import(specifier);
+          if (typeof customElements !== 'undefined' && customElements.get('pds-code')) {
+            return true;
+          }
+        } catch {
+          // try next candidate
+        }
+      }
+
+      console.warn('Failed to load pds-code component from known locations.');
+      return false;
+    })();
+  }
+
+  return pdsCodeLoadPromise;
+}
+
+void ensurePdsCodeLoaded();
+
 // Get initial preset from storage or URL or default
 const getInitialPreset = () => {
   try {
@@ -50,6 +86,36 @@ function isDocsPage() {
   } catch {
     return false;
   }
+}
+
+function inferCodeLanguage(codeEl) {
+  if (!codeEl) return 'html';
+  const className = codeEl.className || '';
+  const languageMatch = className.match(/(?:language|lang)-([a-z0-9-]+)/i);
+  if (languageMatch?.[1]) {
+    return languageMatch[1].toLowerCase();
+  }
+  return codeEl.getAttribute('data-lang') || 'html';
+}
+
+function upgradeLegacyCodeBlocks(root) {
+  if (!root) return;
+  if (typeof customElements !== 'undefined' && !customElements.get('pds-code')) return;
+
+  const blocks = root.querySelectorAll('pre > code');
+  blocks.forEach((codeEl) => {
+    const preEl = codeEl.parentElement;
+    if (!preEl || preEl.closest('pds-code')) return;
+
+    const content = codeEl.textContent || '';
+    if (!content.trim()) return;
+
+    const lang = inferCodeLanguage(codeEl);
+    const pdsCode = document.createElement('pds-code');
+    pdsCode.setAttribute('lang', lang);
+    pdsCode.code = content;
+    preEl.replaceWith(pdsCode);
+  });
 }
 
 let liveGenerator = null;
@@ -216,6 +282,8 @@ const withPDS = (story, context) => {
   const adoptAllShadowStyles = async () => {
     const container = document.querySelector('#storybook-root');
     if (!container) return;
+
+    upgradeLegacyCodeBlocks(container);
     
     const walker = document.createTreeWalker(
       container,
@@ -283,6 +351,9 @@ const withPDS = (story, context) => {
   };
   
   // Initial adoption - run multiple times to catch lazy components
+  setTimeout(() => {
+    upgradeLegacyCodeBlocks(document.querySelector('#storybook-root'));
+  }, 0);
   setTimeout(adoptAllShadowStyles, 0);
   setTimeout(adoptAllShadowStyles, 100);
   setTimeout(adoptAllShadowStyles, 300);

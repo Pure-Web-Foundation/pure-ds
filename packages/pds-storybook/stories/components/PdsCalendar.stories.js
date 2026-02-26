@@ -264,3 +264,77 @@ export const DynamicEvents = {
     `;
   }
 };
+
+export const FormParticipation = {
+  render: () => {
+    setTimeout(() => {
+      const form = document.querySelector('#calendar-form-example');
+      const calendar = document.querySelector('#form-calendar');
+      const output = document.querySelector('#calendar-form-output');
+
+      if (!form || !calendar || !output) return;
+
+      const writeOutput = (value) => {
+        output.textContent = value;
+      };
+
+      calendar.addEventListener('month-rendered', (event) => {
+        event.detail.fill({
+          4: [{ title: 'Planning', type: 'primary' }],
+          9: [{ title: 'Architecture', type: 'info' }],
+          16: [{ title: 'Review', type: 'warning' }],
+          24: [{ title: 'Deadline', type: 'danger' }],
+        });
+      });
+
+      calendar.value = '';
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        if (!form.reportValidity()) {
+          writeOutput('Form invalid: pds-calendar requires a date.');
+          return;
+        }
+
+        const formData = new FormData(form);
+        const payload = Object.fromEntries(formData.entries());
+        writeOutput(JSON.stringify(payload, null, 2));
+      });
+
+      form.addEventListener('reset', () => {
+        setTimeout(() => {
+          calendar.value = '';
+          writeOutput('Form reset complete.');
+        }, 0);
+      });
+    }, 0);
+
+    return html`
+      <section class="stack-lg card">
+        <h3>Form Participation</h3>
+        <p class="text-muted">
+          Pick a meeting date directly in <code>&lt;pds-calendar&gt;</code>. This compact mode shows only day numbers;
+          event days are color-coded and no event text is rendered.
+        </p>
+
+        <form id="calendar-form-example" class="stack-md">
+          <pds-calendar
+            id="form-calendar"
+            compact
+            required
+            name="meetingDate"
+            date=""
+          ></pds-calendar>
+
+          <div class="flex gap-sm">
+            <button type="submit" class="btn-primary">Submit Form</button>
+            <button type="reset" class="btn-secondary">Reset</button>
+          </div>
+        </form>
+
+        <pre id="calendar-form-output" class="card surface-subtle">Submit the form to inspect payload.</pre>
+      </section>
+    `;
+  }
+};

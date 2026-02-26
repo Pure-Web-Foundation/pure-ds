@@ -1,5 +1,5 @@
 import { html } from "#pds/lit";
-import { highlight, getCurrentTheme, preloadShiki } from "../utils/shiki.js";
+import { renderCodeBlock, getCurrentTheme, preloadShiki } from "../utils/shiki.js";
 
 // Pre-load Shiki
 preloadShiki();
@@ -391,13 +391,8 @@ export const LayoutIntroduction = () => {
 
   const theme = getCurrentTheme();
 
-  highlight(tailwindCode, "html", theme).then((h) => {
-    container.querySelector(".code-tailwind").innerHTML = h;
-  });
-
-  highlight(pdsCode, "html", theme).then((h) => {
-    container.querySelector(".code-pds").innerHTML = h;
-  });
+  renderCodeBlock(container.querySelector(".code-tailwind"), tailwindCode, "html", theme);
+  renderCodeBlock(container.querySelector(".code-pds"), pdsCode, "html", theme);
 
   return container;
 };

@@ -197,6 +197,7 @@ const tokens = PDS.compiled.tokens;
 
 ## Need help?
 
+- **Homepage** https://www.pure-ds.com/
 - **Docs:** https://github.com/Pure-Web-Foundation/pure-ds
-- **Storybook:** https://puredesignsystem.z6.web.core.windows.net/storybook/
+- **Storybook:** https://storybook.pure-ds.com/
 - **CodePen:** https://codepen.io/collection/rBjkOy

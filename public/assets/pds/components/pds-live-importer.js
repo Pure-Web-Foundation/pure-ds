@@ -262,12 +262,12 @@ class PdsLiveImporter extends HTMLElement {
       ? entry.unknownTailwindTokens
       : [];
     const notesHtml = notes.length
-      ? `<ul class="stack-xs">${notes
+      ? `<ul>${notes
           .map((note) => `<li>${escapeHtml(note)}</li>`)
           .join("")}</ul>`
       : "none";
     const issuesHtml = issueCount
-      ? `<ul class="stack-xs">${entry.issues
+      ? `<ul>${entry.issues
           .map(
             (issue) =>
               `<li><strong>${escapeHtml(issue?.severity || "info")}</strong>: ${escapeHtml(issue?.message || "")}</li>`

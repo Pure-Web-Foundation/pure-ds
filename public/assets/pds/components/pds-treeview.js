@@ -31,6 +31,36 @@ import { PDS } from "#pds";
 const LAYERS = ["tokens", "primitives", "components", "utilities"];
 const ROOT_SELECTOR = ".tv-tree";
 
+/**
+ * @typedef {object} PdsTreeviewNode
+ * @property {string} id
+ * @property {string} text
+ * @property {string} value
+ * @property {string|null} [link]
+ * @property {string|null} [icon]
+ * @property {string|null} [image]
+ * @property {object} [data]
+ * @property {boolean} hasChildren
+ * @property {boolean} childrenLoaded
+ * @property {boolean} loadingChildren
+ * @property {PdsTreeviewNode[]} children
+ */
+
+/**
+ * @typedef {object} PdsTreeviewOptions
+ * @property {PdsTreeviewNode[]|object|Function|string} [source] Root data source.
+ * @property {PdsTreeviewNode[]|object} [items] Alias for `source`.
+ * @property {PdsTreeviewNode[]|object} [data] Alias for `source`.
+ * @property {(context: { host: PdsTreeview, options: PdsTreeviewOptions, settings: PdsTreeviewOptions }) => Promise<any>|any} [getItems] Async/sync root loader.
+ * @property {(context: { host: PdsTreeview, node: PdsTreeviewNode, nodeId: string, options: PdsTreeviewOptions, settings: PdsTreeviewOptions }) => Promise<any>|any} [getChildren] Lazy child loader called on first expand.
+ * @property {(source: any, context: { host: PdsTreeview, options: PdsTreeviewOptions, settings: PdsTreeviewOptions }) => Promise<any>|any} [transform] Root response transformer.
+ * @property {(source: any, context: { host: PdsTreeview, node: PdsTreeviewNode, nodeId: string, options: PdsTreeviewOptions, settings: PdsTreeviewOptions }) => Promise<any>|any} [transformChildren] Child response transformer.
+ * @property {RequestInit} [fetch] Fetch options used for URL-based sources.
+ * @property {boolean} [expandedAll] Expands all branches by default.
+ * @property {string[]} [defaultExpanded] Node ids expanded on initial render.
+ * @property {(node: PdsTreeviewNode, host: PdsTreeview) => void} [onSelect] Selection callback invoked for user-driven selection.
+ */
+
 export class PdsTreeview extends HTMLElement {
 	static formAssociated = true;
 
@@ -136,46 +166,86 @@ export class PdsTreeview extends HTMLElement {
 		this.selectByValue(this.value);
 	}
 
+	/**
+	 * Current runtime settings for data loading and behavior.
+	 *
+	 * @type {PdsTreeviewOptions}
+	 */
 	get settings() {
 		return this.#settings;
 	}
 
+	/**
+	 * @param {PdsTreeviewOptions|null|undefined} value
+	 */
 	set settings(value) {
 		this.#settings = value && typeof value === "object" ? value : {};
 		void this.refresh();
 	}
 
+	/**
+	 * Alias for `settings`.
+	 *
+	 * @type {PdsTreeviewOptions}
+	 */
 	get options() {
 		return this.settings;
 	}
 
+	/**
+	 * @param {PdsTreeviewOptions|null|undefined} value
+	 */
 	set options(value) {
 		this.settings = value;
 	}
 
+	/**
+	 * Form field name used when participating in form submission.
+	 *
+	 * @type {string}
+	 */
 	get name() {
 		return this.getAttribute("name") || "";
 	}
 
+	/**
+	 * @param {string|null|undefined} value
+	 */
 	set name(value) {
 		if (value == null || value === "") this.removeAttribute("name");
 		else this.setAttribute("name", value);
 	}
 
+	/**
+	 * Selected value for single-select mode.
+	 *
+	 * @type {string}
+	 */
 	get value() {
 		return this.getAttribute("value") || "";
 	}
 
+	/**
+	 * @param {string|null|undefined} value
+	 */
 	set value(value) {
 		const next = value == null ? "" : String(value);
 		if (next === "") this.removeAttribute("value");
 		else this.setAttribute("value", next);
 	}
 
+	/**
+	 * Selected values in multiselect mode.
+	 *
+	 * @type {string[]}
+	 */
 	get values() {
 		return this.selectedNodes.map((node) => String(node.value));
 	}
 
+	/**
+	 * @param {Array<string|number>|null|undefined} values
+	 */
 	set values(values) {
 		if (!Array.isArray(values)) {
 			this.#selectedIds.clear();
@@ -187,46 +257,90 @@ export class PdsTreeview extends HTMLElement {
 		this.selectByValues(values);
 	}
 
+	/**
+	 * Disables interactions when true.
+	 *
+	 * @type {boolean}
+	 */
 	get disabled() {
 		return this.hasAttribute("disabled");
 	}
 
+	/**
+	 * @param {boolean} value
+	 */
 	set disabled(value) {
 		if (value) this.setAttribute("disabled", "");
 		else this.removeAttribute("disabled");
 	}
 
+	/**
+	 * Requires at least one selected node for form validity.
+	 *
+	 * @type {boolean}
+	 */
 	get required() {
 		return this.hasAttribute("required");
 	}
 
+	/**
+	 * @param {boolean} value
+	 */
 	set required(value) {
 		if (value) this.setAttribute("required", "");
 		else this.removeAttribute("required");
 	}
 
+	/**
+	 * Read-only presentation mode; disables selection and form value syncing.
+	 *
+	 * @type {boolean}
+	 */
 	get displayOnly() {
 		return this.hasAttribute("display-only");
 	}
 
+	/**
+	 * @param {boolean} value
+	 */
 	set displayOnly(value) {
 		if (value) this.setAttribute("display-only", "");
 		else this.removeAttribute("display-only");
 	}
 
+	/**
+	 * Expands all branch nodes after data load.
+	 *
+	 * @type {boolean}
+	 */
 	get expandedAll() {
 		return this.hasAttribute("expanded-all");
 	}
 
+	/**
+	 * @param {boolean} value
+	 */
 	set expandedAll(value) {
 		if (value) this.setAttribute("expanded-all", "");
 		else this.removeAttribute("expanded-all");
 	}
 
+	/**
+	 * Selection mode.
+	 *
+	 * - `off`: single select
+	 * - `checkboxes`: persistent multiselect with checkboxes
+	 * - `auto`: touch/coarse pointer gets checkbox mode
+	 *
+	 * @type {"off"|"checkboxes"|"auto"}
+	 */
 	get multiselect() {
 		return this.#normalizeMultiselect(this.getAttribute("multiselect"));
 	}
 
+	/**
+	 * @param {"off"|"checkboxes"|"auto"|string|null|undefined} value
+	 */
 	set multiselect(value) {
 		const next = this.#normalizeMultiselect(value);
 		if (next === "off") {
@@ -236,6 +350,11 @@ export class PdsTreeview extends HTMLElement {
 		}
 	}
 
+	/**
+	 * First selected node (or active selected node in multiselect).
+	 *
+	 * @type {PdsTreeviewNode|null}
+	 */
 	get selectedNode() {
 		const selectedId = this.#selectedId && this.#selectedIds.has(this.#selectedId)
 			? this.#selectedId
@@ -243,20 +362,40 @@ export class PdsTreeview extends HTMLElement {
 		return selectedId ? this.#nodeById.get(selectedId) || null : null;
 	}
 
+	/**
+	 * All selected nodes.
+	 *
+	 * @type {PdsTreeviewNode[]}
+	 */
 	get selectedNodes() {
 		return Array.from(this.#selectedIds)
 			.map((id) => this.#nodeById.get(id))
 			.filter(Boolean);
 	}
 
+	/**
+	 * Backward-compatible accessor for `selectedNode`.
+	 *
+	 * @returns {PdsTreeviewNode|null}
+	 */
 	getSelectedNode() {
 		return this.selectedNode;
 	}
 
+	/**
+	 * Backward-compatible accessor for `selectedNodes`.
+	 *
+	 * @returns {PdsTreeviewNode[]}
+	 */
 	getSelectedNodes() {
 		return this.selectedNodes;
 	}
 
+	/**
+	 * Reloads tree data from settings/source and re-renders the component.
+	 *
+	 * @returns {Promise<void>}
+	 */
 	async refresh() {
 		const loadToken = ++this.#loadToken;
 		const host = this.#root.querySelector(".tv-host");
@@ -298,6 +437,11 @@ export class PdsTreeview extends HTMLElement {
 		}
 	}
 
+	/**
+	 * Expands every currently indexed branch node.
+	 *
+	 * @returns {void}
+	 */
 	expandAll() {
 		for (const [id, node] of this.#nodeById.entries()) {
 			if (node.children?.length) this.#expandedIds.add(id);
@@ -305,17 +449,34 @@ export class PdsTreeview extends HTMLElement {
 		this.#renderTree();
 	}
 
+	/**
+	 * Collapses every expanded branch node.
+	 *
+	 * @returns {void}
+	 */
 	collapseAll() {
 		this.#expandedIds.clear();
 		this.#renderTree();
 	}
 
+	/**
+	 * Selects a node by node id.
+	 *
+	 * @param {string} id
+	 * @returns {boolean} True when selection succeeds.
+	 */
 	selectById(id) {
 		if (!id || !this.#nodeById.has(id)) return false;
 		this.#selectNode(id, { user: false, focus: true, mode: "exclusive" });
 		return true;
 	}
 
+	/**
+	 * Selects the first node whose `value` matches.
+	 *
+	 * @param {string|number|null|undefined} value
+	 * @returns {boolean} True when a matching node is selected or selection is cleared.
+	 */
 	selectByValue(value) {
 		const normalized = value == null ? "" : String(value);
 		if (!normalized) {
@@ -335,6 +496,14 @@ export class PdsTreeview extends HTMLElement {
 		return false;
 	}
 
+	/**
+	 * Selects multiple nodes by value.
+	 *
+	 * In single-select mode, only the first resolved value is selected.
+	 *
+	 * @param {Array<string|number>} values
+	 * @returns {boolean} True when at least one matching value is resolved or selection is cleared.
+	 */
 	selectByValues(values) {
 		if (!Array.isArray(values)) return false;
 		const normalized = values
@@ -375,16 +544,32 @@ export class PdsTreeview extends HTMLElement {
 		return this.selectById(selectedIds[0]);
 	}
 
+	/**
+	 * Runs form-associated validity checks.
+	 *
+	 * @returns {boolean}
+	 */
 	checkValidity() {
 		this.#syncValidity();
 		return this.#internals.checkValidity();
 	}
 
+	/**
+	 * Runs and reports form-associated validity checks.
+	 *
+	 * @returns {boolean}
+	 */
 	reportValidity() {
 		this.#syncValidity();
 		return this.#internals.reportValidity();
 	}
 
+	/**
+	 * Focuses the active/selected row, or first visible row as fallback.
+	 *
+	 * @param {FocusOptions} [options]
+	 * @returns {void}
+	 */
 	focus(options) {
 		const targetId =
 			this.#focusedId || this.#selectedId || this.#selectedIds.values().next().value || this.#firstVisibleId();

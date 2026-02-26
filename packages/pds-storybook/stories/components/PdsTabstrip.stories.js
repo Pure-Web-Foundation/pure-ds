@@ -196,7 +196,7 @@ export const Default = () => html`
 
         <article class="card surface-elevated">
           <h4>Top Features</h4>
-          <ul class="stack-sm">
+          <ul>
             ${tabstripFeatures.map((feature) => html`<li>${feature}</li>`)}
           </ul>
         </article>

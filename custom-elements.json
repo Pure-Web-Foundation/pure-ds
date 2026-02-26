@@ -3550,117 +3550,324 @@
             },
             {
               "kind": "field",
-              "name": "settings"
+              "name": "settings",
+              "description": "Current runtime settings for data loading and behavior.",
+              "type": {
+                "text": "PdsTreeviewOptions"
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "PdsTreeviewOptions|null|undefined"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "options"
+              "name": "options",
+              "description": "Alias for `settings`.",
+              "type": {
+                "text": "PdsTreeviewOptions"
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "PdsTreeviewOptions|null|undefined"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "name"
+              "name": "name",
+              "description": "Form field name used when participating in form submission.",
+              "type": {
+                "text": "string"
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string|null|undefined"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "value"
+              "name": "value",
+              "description": "Selected value for single-select mode.",
+              "type": {
+                "text": "string"
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string|null|undefined"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "values"
+              "name": "values",
+              "description": "Selected values in multiselect mode.",
+              "type": {
+                "text": "string[]"
+              },
+              "parameters": [
+                {
+                  "name": "values",
+                  "type": {
+                    "text": "Array<string|number>|null|undefined"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "disabled"
+              "name": "disabled",
+              "description": "Disables interactions when true.",
+              "type": {
+                "text": "boolean"
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "required"
+              "name": "required",
+              "description": "Requires at least one selected node for form validity.",
+              "type": {
+                "text": "boolean"
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "displayOnly"
+              "name": "displayOnly",
+              "description": "Read-only presentation mode; disables selection and form value syncing.",
+              "type": {
+                "text": "boolean"
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "expandedAll"
+              "name": "expandedAll",
+              "description": "Expands all branch nodes after data load.",
+              "type": {
+                "text": "boolean"
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
-              "name": "multiselect"
+              "name": "multiselect",
+              "description": "Selection mode.\r\n\r\n- `off`: single select\r\n- `checkboxes`: persistent multiselect with checkboxes\r\n- `auto`: touch/coarse pointer gets checkbox mode",
+              "type": {
+                "text": "\"off\"|\"checkboxes\"|\"auto\""
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"off\"|\"checkboxes\"|\"auto\"|string|null|undefined"
+                  }
+                }
+              ]
             },
             {
               "kind": "field",
               "name": "selectedNode",
+              "description": "First selected node (or active selected node in multiselect).",
+              "type": {
+                "text": "PdsTreeviewNode|null"
+              },
               "readonly": true
             },
             {
               "kind": "field",
               "name": "selectedNodes",
+              "description": "All selected nodes.",
+              "type": {
+                "text": "PdsTreeviewNode[]"
+              },
               "readonly": true
             },
             {
               "kind": "method",
-              "name": "getSelectedNode"
+              "name": "getSelectedNode",
+              "description": "Backward-compatible accessor for `selectedNode`.",
+              "return": {
+                "type": {
+                  "text": "PdsTreeviewNode|null"
+                }
+              }
             },
             {
               "kind": "method",
-              "name": "getSelectedNodes"
+              "name": "getSelectedNodes",
+              "description": "Backward-compatible accessor for `selectedNodes`.",
+              "return": {
+                "type": {
+                  "text": "PdsTreeviewNode[]"
+                }
+              }
             },
             {
               "kind": "method",
-              "name": "refresh"
+              "name": "refresh",
+              "description": "Reloads tree data from settings/source and re-renders the component.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
             },
             {
               "kind": "method",
-              "name": "expandAll"
+              "name": "expandAll",
+              "description": "Expands every currently indexed branch node.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             },
             {
               "kind": "method",
-              "name": "collapseAll"
+              "name": "collapseAll",
+              "description": "Collapses every expanded branch node.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             },
             {
               "kind": "method",
               "name": "selectById",
               "parameters": [
                 {
-                  "name": "id"
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
                 }
-              ]
+              ],
+              "description": "Selects a node by node id.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
             },
             {
               "kind": "method",
               "name": "selectByValue",
               "parameters": [
                 {
-                  "name": "value"
+                  "name": "value",
+                  "type": {
+                    "text": "string|number|null|undefined"
+                  }
                 }
-              ]
+              ],
+              "description": "Selects the first node whose `value` matches.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
             },
             {
               "kind": "method",
               "name": "selectByValues",
               "parameters": [
                 {
-                  "name": "values"
+                  "name": "values",
+                  "type": {
+                    "text": "Array<string|number>"
+                  }
                 }
-              ]
+              ],
+              "description": "Selects multiple nodes by value.\r\n\r\nIn single-select mode, only the first resolved value is selected.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
             },
             {
               "kind": "method",
-              "name": "checkValidity"
+              "name": "checkValidity",
+              "description": "Runs form-associated validity checks.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
             },
             {
               "kind": "method",
-              "name": "reportValidity"
+              "name": "reportValidity",
+              "description": "Runs and reports form-associated validity checks.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
             },
             {
               "kind": "method",
               "name": "focus",
               "parameters": [
                 {
-                  "name": "options"
+                  "name": "options",
+                  "optional": true,
+                  "type": {
+                    "text": "FocusOptions"
+                  }
                 }
-              ]
+              ],
+              "description": "Focuses the active/selected row, or first visible row as fallback.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             }
           ],
           "events": [

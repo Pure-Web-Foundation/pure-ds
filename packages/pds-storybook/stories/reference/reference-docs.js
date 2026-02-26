@@ -274,6 +274,7 @@ class PdsReferenceComponentDocs extends LitElement {
         ${component.stories?.length ? this.renderStories(component.stories) : nothing}
         ${this.renderTableSection('Attributes', component.attributes, [
           { key: 'name', label: 'Attribute', render: (value) => renderCode(value) },
+          { key: 'property', label: 'Property', render: (value) => renderCode(value) },
           { key: 'description', label: 'Description' },
           { key: 'type', label: 'Type', render: (value) => renderCode(value) },
           { key: 'default', label: 'Default', render: (value) => renderDefault(value) }

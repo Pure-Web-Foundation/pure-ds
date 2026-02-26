@@ -13,6 +13,8 @@ PDS follows the [Pure Web Manifesto](https://pureweb.dev/manifesto): "The browse
 3. **Progressive Enhancement**: Semantic HTML first, enhance where needed
 4. **Components as Last Resort**: Web Components only when native HTML cannot achieve it
 
+> Note: all (lazy loaded) PDS web components are rolled out to consuming projects in their [public root]/assets/pds/components/ folder, and are never provided as source that needs to be bundled. The web component scripts are copied there at npm install time (postinstall), and are ready to be used because the PDS AutoDefiner will define them when added to the DOM.
+
 ### The Four Layers
 
 **Layer 1 — Styles**: From minimal config, PDS generates complete CSS: tokens, scales, semantics, surfaces, states. Zero specificity via `:where()`.
@@ -416,6 +418,14 @@ This component uses `import { ... } from "#pds/lit"` and **requires** an import 
 await customElements.whenDefined('pds-form');
 const form = document.querySelector('pds-form');
 form.getFormData(); // Safe
+
+// In a Lit context, use the lazyProps directive (included in #pds/lit bundle)
+<pds-fab
+  id="fab-three"
+  ${lazyProps({ satellites })}
+>
+  <pds-icon icon="plus" size="lg" data-original-icon="plus"></pds-icon>
+</pds-fab>
 
 // ✅ CORRECT: Alternative pattern
 const FormClass = await customElements.get('pds-form');

@@ -1,6 +1,6 @@
 import { html } from 'lit';
 import { presets } from '../../../../src/js/pds-core/pds-config.js';
-import { highlight, getCurrentTheme, preloadShiki } from '../utils/shiki.js';
+import { renderCodeBlock, getCurrentTheme, preloadShiki } from '../utils/shiki.js';
 import { attachStoryLinkHandlers } from '../utils/navigation.js';
 
 // Pre-load Shiki
@@ -361,21 +361,11 @@ npm run pds:build
 
   const theme = getCurrentTheme();
   
-  highlight(quickstartCode, 'html', theme).then(h => {
-    container.querySelector('.code-quickstart').innerHTML = h;
-  });
-  highlight(fullConfigCode, 'javascript', theme).then(h => {
-    container.querySelector('.code-full-config').innerHTML = h;
-  });
-  highlight(customizeCode, 'javascript', theme).then(h => {
-    container.querySelector('.code-customize').innerHTML = h;
-  });
-  highlight(buildIconsCode, 'bash', theme).then(h => {
-    container.querySelector('.code-build-icons').innerHTML = h;
-  });
-  highlight(buildCode, 'bash', theme).then(h => {
-    container.querySelector('.code-build').innerHTML = h;
-  });
+  renderCodeBlock(container.querySelector('.code-quickstart'), quickstartCode, 'html', theme);
+  renderCodeBlock(container.querySelector('.code-full-config'), fullConfigCode, 'javascript', theme);
+  renderCodeBlock(container.querySelector('.code-customize'), customizeCode, 'javascript', theme);
+  renderCodeBlock(container.querySelector('.code-build-icons'), buildIconsCode, 'bash', theme);
+  renderCodeBlock(container.querySelector('.code-build'), buildCode, 'bash', theme);
 
   // Attach navigation handlers to story links
   attachStoryLinkHandlers(container);

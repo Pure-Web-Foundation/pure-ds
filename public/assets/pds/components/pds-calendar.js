@@ -139,18 +139,25 @@ class PdsCalendar extends HTMLElement {
     #date;
     #dayNames;
     #monthNames;
+    #internals;
+    #initialDate;
+
+    static formAssociated = true;
 
     static get observedAttributes() {
-      return ["date"];
+      return ["date", "required", "name", "disabled", "compact"];
     }
 
     constructor() {
       super();
       this.#date = new Date();
+      this.#initialDate = this.getAttribute("date") || "";
 
       this.dateHelper = new DateHelper();
       this.#dayNames = this.dateHelper.getDayNames();
       this.#monthNames = this.dateHelper.getMonthNames();
+
+      this.#internals = this.attachInternals?.() ?? null;
 
       this.attachShadow({ mode: "open" });
 
@@ -164,10 +171,23 @@ class PdsCalendar extends HTMLElement {
      * @param {String} newValue - New value
      */
     attributeChangedCallback(name, oldValue, newValue) {
+      if (oldValue === newValue) return;
+
       if (name === "date") {
         this.date = newValue;
         this.reRender();
+        return;
       }
+
+      if (name === "compact") {
+        this.reRender();
+      }
+
+      if (name === "disabled") {
+        this.toggleAttribute("aria-disabled", this.disabled);
+      }
+
+      this.updateFormState();
     }
 
     /**
@@ -180,6 +200,8 @@ class PdsCalendar extends HTMLElement {
           ? this.dateHelper.parseDate(value)
           : new Date(value);
 
+      this.updateFormState();
+
       if (this.isRendered) this.reRender();
     }
 
@@ -189,6 +211,66 @@ class PdsCalendar extends HTMLElement {
      */
     get date() {
       return this.#date;
+    }
+
+    get form() {
+      return this.#internals?.form ?? null;
+    }
+
+    get name() {
+      return this.getAttribute("name") || "";
+    }
+
+    set name(value) {
+      if (value == null || value === "") {
+        this.removeAttribute("name");
+        return;
+      }
+      this.setAttribute("name", value);
+    }
+
+    get type() {
+      return "pds-calendar";
+    }
+
+    get required() {
+      return this.hasAttribute("required");
+    }
+
+    set required(value) {
+      this.toggleAttribute("required", Boolean(value));
+    }
+
+    get disabled() {
+      return this.hasAttribute("disabled");
+    }
+
+    set disabled(value) {
+      this.toggleAttribute("disabled", Boolean(value));
+    }
+
+    get compact() {
+      return this.hasAttribute("compact");
+    }
+
+    set compact(value) {
+      this.toggleAttribute("compact", Boolean(value));
+    }
+
+    get value() {
+      return this.serializeDate();
+    }
+
+    set value(value) {
+      if (value == null || value === "") {
+        this.removeAttribute("date");
+        this.#date = new Date(Number.NaN);
+        this.updateFormState();
+        this.reRender();
+        return;
+      }
+
+      this.date = value;
     }
 
     async connectedCallback() {
@@ -206,6 +288,15 @@ class PdsCalendar extends HTMLElement {
   position: relative;
 }
 
+.calendar.compact {
+  width: max-content;
+  min-height: auto;
+  grid-template-columns: repeat(7, var(--calendar-compact-cell-size, 2.25rem));
+  grid-template-rows: var(--calendar-compact-cell-size, 2.25rem);
+  grid-auto-rows: var(--calendar-compact-cell-size, 2.25rem);
+  overflow: hidden;
+}
+
 .calendar-container {
   background-color: var(--surface-bg);
   margin: auto;
@@ -213,6 +304,11 @@ class PdsCalendar extends HTMLElement {
   box-shadow: var(--shadow-lg);
   border-radius: var(--radius-lg);
   position: relative;
+}
+
+.calendar-container.compact {
+  width: max-content;
+  margin: 0;
 }
 
 .calendar-header {
@@ -266,7 +362,7 @@ class PdsCalendar extends HTMLElement {
   box-sizing: border-box;
   color: var(--surface-text-secondary);
   position: relative;
-  pointer-events: none;
+  pointer-events: all;
   z-index: 1;
   overflow: hidden;
 
@@ -331,12 +427,106 @@ class PdsCalendar extends HTMLElement {
 
   &.has-events {
     cursor: pointer;
-    pointer-events: all;
     .nr {
       font-weight: var(--font-weight-bold);
       color: var(--color-primary-500);
     }
   }
+}
+
+.calendar.compact .day {
+  min-height: 0;
+  width: var(--calendar-compact-cell-size, 2.25rem);
+  height: var(--calendar-compact-cell-size, 2.25rem);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar.compact .day .nr {
+  position: static;
+  font-size: var(--font-size-xs);
+  line-height: 1;
+}
+
+.calendar.compact .day.day-radio {
+  position: relative;
+}
+
+.day.day-radio {
+  position: relative;
+}
+
+.calendar.compact .day-radio-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.day-radio-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.day.day-radio[data-day]:has(.day-radio-input:focus-visible) {
+  outline: var(--border-width-medium) solid var(--color-secondary-500);
+  outline-offset: -2px;
+}
+
+.day.day-radio[data-day]:has(.day-radio-input:focus) {
+  outline: var(--border-width-medium) solid var(--color-secondary-500);
+  outline-offset: -2px;
+}
+
+.calendar.compact .day-radio-input:checked + .nr {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent-700);
+}
+
+.calendar.compact .task {
+  display: none !important;
+}
+
+.calendar.compact .day-name {
+  width: var(--calendar-compact-cell-size, 2.25rem);
+  height: var(--calendar-compact-cell-size, 2.25rem);
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+}
+
+.day.day-selected .nr {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent-700);
+}
+
+.calendar.compact .day.has-events .nr {
+  font-weight: var(--font-weight-bold);
+}
+
+.calendar.compact .day.has-events.event-primary .nr {
+  color: var(--color-primary-500);
+}
+
+.calendar.compact .day.has-events.event-info .nr {
+  color: var(--color-info-500);
+}
+
+.calendar.compact .day.has-events.event-warning .nr {
+  color: var(--color-warning-500);
+}
+
+.calendar.compact .day.has-events.event-danger .nr {
+  color: var(--color-danger-500);
 }
 
 .day-disabled {
@@ -478,7 +668,93 @@ class PdsCalendar extends HTMLElement {
 
       queueMicrotask(() => {
         this.setupPaging();
+        this.updateFormState();
       });
+    }
+
+    formAssociatedCallback() {
+      this.updateFormState();
+    }
+
+    formDisabledCallback(disabled) {
+      this.disabled = disabled;
+      this.updateFormState();
+    }
+
+    formResetCallback() {
+      this.value = this.#initialDate || "";
+      this.updateFormState();
+      this.reRender();
+    }
+
+    formStateRestoreCallback(state) {
+      if (typeof state === "string" && state.length) {
+        this.value = state;
+      }
+      this.updateFormState();
+    }
+
+    checkValidity() {
+      if (!this.#internals) return true;
+      this.updateFormState();
+      return this.#internals.checkValidity();
+    }
+
+    reportValidity() {
+      if (!this.#internals) return true;
+      this.updateFormState();
+      return this.#internals.reportValidity();
+    }
+
+    focus(options) {
+      const focusTarget =
+        this.shadowRoot?.querySelector('.day-radio-input:checked') ||
+        this.shadowRoot?.querySelector('.day-radio-input') ||
+        this.shadowRoot?.querySelector("button.prev");
+
+      if (focusTarget) {
+        focusTarget.focus?.(options);
+      }
+    }
+
+    serializeDate() {
+      if (!(this.#date instanceof Date) || Number.isNaN(this.#date.getTime())) {
+        return "";
+      }
+
+      const year = this.#date.getFullYear();
+      const month = String(this.#date.getMonth() + 1).padStart(2, "0");
+      const day = String(this.#date.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    }
+
+    updateFormState() {
+      if (!this.#internals) return;
+
+      if (!this.name || this.disabled) {
+        this.#internals.setFormValue(null);
+        this.#internals.setValidity({});
+        return;
+      }
+
+      const value = this.serializeDate();
+      this.#internals.setFormValue(value);
+
+      if (this.required && !value) {
+        const validationAnchor =
+          this.shadowRoot?.querySelector('.day-radio-input:checked') ||
+          this.shadowRoot?.querySelector('.day-radio-input') ||
+          this.shadowRoot?.querySelector("button.prev");
+        this.#internals.setValidity(
+          { valueMissing: true },
+          "Please select a date.",
+          validationAnchor
+        );
+        return;
+      }
+
+      this.#internals.setValidity({});
     }
 
     /**
@@ -516,13 +792,19 @@ class PdsCalendar extends HTMLElement {
      * @private
      */
     render() {
-      this.month = this.date.getMonth();
-      this.year = this.date.getFullYear();
+      const hasValidDate =
+        this.#date instanceof Date && !Number.isNaN(this.#date.getTime());
+      const displayDate = hasValidDate ? this.#date : new Date();
+
+      this.month = displayDate.getMonth();
+      this.year = displayDate.getFullYear();
       this.daysInMonth = new Date(this.year, this.month + 1, 0).getDate();
       this.startDay = new Date(this.year, this.month, 0).getDay();
+      const compactMode = this.compact;
+      const calendarA11yAttrs = 'role="radiogroup" aria-label="Select a day"';
 
       const calendarHtml = /*html*/ `
-        <div class="calendar-container" part="calendar-container">
+        <div class="calendar-container ${compactMode ? "compact" : ""}" part="calendar-container">
           <nav class="calendar-header" part="calendar-header">
             <button class="prev icon-only"><pds-icon icon="arrow-left" size="xs"></pds-icon></button>
             <div class="current-month">
@@ -532,7 +814,7 @@ class PdsCalendar extends HTMLElement {
             <button class="next icon-only"><pds-icon icon="arrow-right" size="xs"></pds-icon></button>
           </nav>
 
-          <div class="calendar" part="calendar">
+          <div class="calendar ${compactMode ? "compact" : ""}" part="calendar" ${calendarA11yAttrs}>
             ${this.getDayNamesHtml()}
             ${this.getDaysHtml()}
           </div>
@@ -588,12 +870,64 @@ class PdsCalendar extends HTMLElement {
       let timeout,
         timeoutMs = -1,
         timeoutChangeMs = 2,
-        direction;
+        direction,
+        activeKeyboardDirection = 0;
+
+      const getPreferredDay = () => {
+          const checkedRadio = this.shadowRoot?.querySelector('.day-radio-input:checked[data-day]');
+          const checkedDay = Number.parseInt(checkedRadio?.dataset?.day || '', 10);
+          if (Number.isInteger(checkedDay) && checkedDay > 0) return checkedDay;
+
+          if (this.#date instanceof Date && !Number.isNaN(this.#date.getTime())) {
+            return this.#date.getDate();
+          }
+
+          return 1;
+        },
+        stopKeyboardPaging = () => {
+          if (!activeKeyboardDirection) return;
+          activeKeyboardDirection = 0;
+          stopMoveDate();
+          window.removeEventListener("keyup", handleWindowKeyup, true);
+          window.removeEventListener("blur", handleWindowBlur, true);
+        },
+        handleWindowKeyup = (event) => {
+          if (event.key !== "PageUp" && event.key !== "PageDown") return;
+          event.preventDefault();
+          stopKeyboardPaging();
+        },
+        handleWindowBlur = () => {
+          stopKeyboardPaging();
+        };
 
       const moveDate = () => {
-          this.date.setMonth(this.date.getMonth() + direction);
+          const preferredDay = getPreferredDay();
+          const currentDate =
+            this.#date instanceof Date && !Number.isNaN(this.#date.getTime())
+              ? this.#date
+              : new Date(this.year, this.month, 1);
+
+          const targetMonthDate = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth() + direction,
+            1
+          );
+          const maxTargetDay = new Date(
+            targetMonthDate.getFullYear(),
+            targetMonthDate.getMonth() + 1,
+            0
+          ).getDate();
+          const targetDay = Math.min(preferredDay, maxTargetDay);
+
+          this.#date = new Date(
+            targetMonthDate.getFullYear(),
+            targetMonthDate.getMonth(),
+            targetDay
+          );
+          this.updateFormState();
+          this.reRender();
           queueMicrotask(() => {
-            this.reRender();
+            this.focusDayRadio(targetDay);
           });
         },
         moveDateRecursive = () => {
@@ -639,6 +973,27 @@ class PdsCalendar extends HTMLElement {
           stopMoveDate();
         },
       });
+
+      this.shadowRoot.addEventListener("keydown", (event) => {
+        if (event.key !== "PageUp" && event.key !== "PageDown") return;
+
+        event.preventDefault();
+        const nextDirection = event.key === "PageUp" ? -1 : 1;
+        if (activeKeyboardDirection === nextDirection) return;
+
+        activeKeyboardDirection = nextDirection;
+        window.addEventListener("keyup", handleWindowKeyup, true);
+        window.addEventListener("blur", handleWindowBlur, true);
+        startMoveDate(nextDirection);
+      });
+
+      this.shadowRoot.addEventListener("keyup", (event) => {
+        if (event.key !== "PageUp" && event.key !== "PageDown") return;
+
+        event.preventDefault();
+        stopKeyboardPaging();
+      });
+
     }
 
     /**
@@ -659,6 +1014,9 @@ class PdsCalendar extends HTMLElement {
           this.reRender();
           return;
         }
+
+        const compactMode = this.compact;
+        if (compactMode) return;
 
         const cell = e.target.closest(".day.has-events[data-day]");
         if (!cell) return;
@@ -682,6 +1040,104 @@ class PdsCalendar extends HTMLElement {
           expandedDay = day;
         }
       });
+
+      this.shadowRoot.addEventListener('change', (event) => {
+        const radio = event.target?.closest?.('.day-radio-input[data-day]');
+        if (!radio) return;
+
+        const selectedDay = Number.parseInt(radio.dataset.day, 10);
+        if (Number.isInteger(selectedDay) && selectedDay > 0) {
+          this.selectDay(selectedDay);
+        }
+      });
+
+      this.shadowRoot.addEventListener('keydown', (event) => {
+        const radio = event.target?.closest?.('.day-radio-input[data-day]');
+        if (!radio) return;
+
+        let dayDelta = 0;
+        if (event.key === 'ArrowLeft') dayDelta = -1;
+        if (event.key === 'ArrowRight') dayDelta = 1;
+        if (event.key === 'ArrowUp') dayDelta = -7;
+        if (event.key === 'ArrowDown') dayDelta = 7;
+        if (!dayDelta) return;
+
+        event.preventDefault();
+        const currentDay = Number.parseInt(radio.dataset.day || '', 10);
+        if (!Number.isInteger(currentDay)) return;
+        this.moveSelectionByDays(currentDay, dayDelta);
+      });
+    }
+
+    /**
+     * Moves calendar selection by a relative day offset, crossing month boundaries when needed.
+     * @param {number} currentDay
+     * @param {number} dayDelta
+     * @private
+     */
+    moveSelectionByDays(currentDay, dayDelta) {
+      const targetDate = new Date(this.year, this.month, currentDay + dayDelta);
+      if (Number.isNaN(targetDate.getTime())) return;
+
+      const targetDay = targetDate.getDate();
+      const sameRenderedMonth =
+        targetDate.getMonth() === this.month && targetDate.getFullYear() === this.year;
+
+      if (sameRenderedMonth) {
+        this.selectDay(targetDay);
+        this.focusDayRadio(targetDay);
+        return;
+      }
+
+      this.#date = targetDate;
+      this.updateFormState();
+      this.reRender();
+      queueMicrotask(() => {
+        this.focusDayRadio(targetDay);
+      });
+    }
+
+    /**
+     * Selects a day inside the currently displayed month.
+     * @param {number} dayNumber
+     * @private
+     */
+    selectDay(dayNumber) {
+      const nextDate = new Date(this.year, this.month, dayNumber);
+      if (Number.isNaN(nextDate.getTime())) return;
+
+      this.#date = nextDate;
+      this.updateFormState();
+      this.syncSelectedDayState(dayNumber);
+    }
+
+    /**
+     * Updates selected classes/checked state in-place to preserve native radio keyboard flow.
+     * @param {number} dayNumber
+     * @private
+     */
+    syncSelectedDayState(dayNumber) {
+      const dayCells = this.shadowRoot?.querySelectorAll('.day[data-day]') || [];
+      dayCells.forEach((cell) => {
+        const cellDay = Number.parseInt(cell.dataset.day || '', 10);
+        const isSelected = Number.isInteger(cellDay) && cellDay === dayNumber;
+        cell.classList.toggle('day-selected', isSelected);
+
+        const radio = cell.querySelector('.day-radio-input');
+        if (radio) {
+          radio.checked = isSelected;
+        }
+      });
+    }
+
+    /**
+     * Focuses a day radio by day number in the current month view.
+     * @param {number} dayNumber
+     * @private
+     */
+    focusDayRadio(dayNumber) {
+      const target = this.shadowRoot?.querySelector(`.day-radio-input[data-day="${dayNumber}"]`);
+      target?.focus();
     }
 
     /**
@@ -760,11 +1216,18 @@ class PdsCalendar extends HTMLElement {
                 if (!Number.isInteger(dayNumber) || dayNumber < 1) continue;
 
                 const dayDiv = this.shadowRoot.querySelector(
-                  `div[data-day="${dayNumber}"]`
+                  `.day[data-day="${dayNumber}"]`
                 );
                 const list = data[day];
                 if (dayDiv && Array.isArray(list)) {
                   dayDiv.classList.add("has-events");
+                  const firstType = String(list[0]?.type || "info").toLowerCase();
+                  dayDiv.classList.add(`event-${firstType}`);
+
+                  if (this.compact) {
+                    continue;
+                  }
+
                   for (const item of list) {
                     const html = /*html*/ `<div class="task task--${
                       item.type || "info"
@@ -813,28 +1276,53 @@ class PdsCalendar extends HTMLElement {
      */
     getDaysHtml() {
       const html = new HTMLBuilder();
+      const radioGroupName = `pds-calendar-day-${this.id || 'default'}-${this.year}-${this.month}`;
       const now = new Date();
       const todayDay = now.getDate();
       const todayMonth = now.getMonth();
       const todayYear = now.getFullYear();
       const isCurrentMonth =
         this.month === todayMonth && this.year === todayYear;
+      const hasValidSelection =
+        this.#date instanceof Date && !Number.isNaN(this.#date.getTime());
+      const selectedDay = hasValidSelection ? this.#date.getDate() : -1;
+      const selectedMonth = hasValidSelection ? this.#date.getMonth() : -1;
+      const selectedYear = hasValidSelection ? this.#date.getFullYear() : -1;
+      const isSelectedMonth =
+        this.month === selectedMonth && this.year === selectedYear;
 
       for (let i = 0; i < this.startDay; i++) {
-        html.add(/*html*/ `<div class="day day-disabled" part="day"></div>`);
+        html.add(
+          /*html*/ `<label class="day day-disabled" part="day" aria-hidden="true"></label>`
+        );
       }
       for (let i = 1; i <= this.daysInMonth; i++) {
         const isTodayClass =
           isCurrentMonth && i === todayDay ? "day-today" : "";
+        const isSelectedClass =
+          isSelectedMonth && i === selectedDay ? "day-selected" : "";
+        const checked = isSelectedMonth && i === selectedDay ? 'checked' : '';
+        const radioId = `${radioGroupName}-day-${i}`;
         html.add(/*html*/ `
-        <div data-day="${i}" class="day ${isTodayClass}" part="day">
-          <span class="nr">${i}<span>
-        </div>`);
+        <label data-day="${i}" class="day day-radio ${isTodayClass} ${isSelectedClass}" part="day">
+          <input
+            id="${radioId}"
+            class="day-radio-input"
+            type="radio"
+            name="${radioGroupName}"
+            data-day="${i}"
+            aria-label="Select ${this.#monthNames[this.month]} ${i}, ${this.year}"
+            ${checked}
+          />
+          <span class="nr">${i}</span>
+        </label>`);
       }
       const endDay =
         6 - new Date(this.year, this.month, this.daysInMonth).getDay();
       for (let i = 1; i <= endDay; i++) {
-        html.add(/*html*/ `<div class="day day-disabled" part="day"></div>`);
+        html.add(
+          /*html*/ `<label class="day day-disabled" part="day" aria-hidden="true"></label>`
+        );
       }
       return html.toHTML();
     }

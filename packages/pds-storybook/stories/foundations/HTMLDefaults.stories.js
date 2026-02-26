@@ -1,5 +1,5 @@
 import { html } from 'lit';
-import { highlight, getCurrentTheme, preloadShiki } from '../utils/shiki.js';
+import { renderCodeBlock, getCurrentTheme, preloadShiki } from '../utils/shiki.js';
 import { attachStoryLinkHandlers } from '../utils/navigation.js';
 
 // Pre-load Shiki
@@ -148,15 +148,9 @@ button { all: unset; }`;
 /* Your override wins automatically (specificity: 0,1,0) */
 .my-quote { border-left-color: var(--color-accent-500); }`;
 
-    highlight(traditionalCode, 'css', getCurrentTheme()).then(h => {
-      container.querySelector('.code-traditional').innerHTML = h;
-    });
-    highlight(pdsCode, 'css', getCurrentTheme()).then(h => {
-      container.querySelector('.code-pds').innerHTML = h;
-    });
-    highlight(specificityCode, 'css', getCurrentTheme()).then(h => {
-      container.querySelector('.code-specificity').innerHTML = h;
-    });
+    renderCodeBlock(container.querySelector('.code-traditional'), traditionalCode, 'css', getCurrentTheme());
+    renderCodeBlock(container.querySelector('.code-pds'), pdsCode, 'css', getCurrentTheme());
+    renderCodeBlock(container.querySelector('.code-specificity'), specificityCode, 'css', getCurrentTheme());
     
     attachStoryLinkHandlers(container);
     return container;
@@ -222,9 +216,7 @@ export const StructuralElements = {
   <small class="text-muted">A subtitle or description</small>
 </header>`;
 
-    highlight(headerCode, 'html', getCurrentTheme()).then(h => {
-      container.querySelector('.code-header').innerHTML = h;
-    });
+    renderCodeBlock(container.querySelector('.code-header'), headerCode, 'html', getCurrentTheme());
     
     attachStoryLinkHandlers(container);
     return container;
@@ -289,12 +281,8 @@ export const TextElements = {
     const hrCode = `<hr>
 <hr data-content="OR">`;
 
-    highlight(blockquoteCode, 'html', getCurrentTheme()).then(h => {
-      container.querySelector('.code-blockquote').innerHTML = h;
-    });
-    highlight(hrCode, 'html', getCurrentTheme()).then(h => {
-      container.querySelector('.code-hr').innerHTML = h;
-    });
+    renderCodeBlock(container.querySelector('.code-blockquote'), blockquoteCode, 'html', getCurrentTheme());
+    renderCodeBlock(container.querySelector('.code-hr'), hrCode, 'html', getCurrentTheme());
     
     return container;
   }
@@ -407,9 +395,7 @@ export const DetailsAndSummary = {
   <p>Visible immediately</p>
 </details>`;
 
-    highlight(detailsCode, 'html', getCurrentTheme()).then(h => {
-      container.querySelector('.code-details').innerHTML = h;
-    });
+    renderCodeBlock(container.querySelector('.code-details'), detailsCode, 'html', getCurrentTheme());
     
     attachStoryLinkHandlers(container);
     return container;

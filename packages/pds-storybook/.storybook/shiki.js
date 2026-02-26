@@ -8,6 +8,7 @@
 export { 
   loadShiki, 
   highlight, 
+  renderCodeBlock,
   getCurrentTheme, 
   escapeHtml, 
   preloadShiki 
