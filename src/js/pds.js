@@ -37,12 +37,34 @@
  */
 class PDSBase extends EventTarget {}
 /** @type {PDSAPI & PDSBase} */
-const PDS = new PDSBase();
+const __PDS_SINGLETON_KEY__ = "__PURE_DS_PDS_SINGLETON__";
+const __globalScope__ = typeof globalThis !== "undefined" ? globalThis : window;
+const __existingPDS__ = __globalScope__?.[__PDS_SINGLETON_KEY__];
+const PDS =
+  __existingPDS__ && typeof __existingPDS__.addEventListener === "function"
+    ? __existingPDS__
+    : new PDSBase();
+
+if (__globalScope__) {
+  __globalScope__[__PDS_SINGLETON_KEY__] = PDS;
+}
 
 // State properties
-PDS.initializing = false;
-PDS.currentPreset = null;
-PDS.debug = false;
+if (typeof PDS.initializing !== "boolean") {
+  PDS.initializing = false;
+}
+if (!("currentPreset" in PDS)) {
+  PDS.currentPreset = null;
+}
+if (typeof PDS.debug !== "boolean") {
+  PDS.debug = false;
+}
+if (!("currentConfig" in PDS)) {
+  PDS.currentConfig = null;
+}
+if (!("compiled" in PDS)) {
+  PDS.compiled = null;
+}
 
 import {
   adoptLayers,
@@ -223,6 +245,31 @@ function __stripFunctionsForClone(value) {
     }
   }
   return result;
+}
+
+function __deepFreeze(value, seen = new WeakSet()) {
+  if (!value || typeof value !== "object") {
+    return value;
+  }
+  if (seen.has(value)) {
+    return value;
+  }
+  seen.add(value);
+  Object.freeze(value);
+  for (const key of Object.keys(value)) {
+    __deepFreeze(value[key], seen);
+  }
+  return value;
+}
+
+function __toReadonlyClone(value) {
+  if (value === null || value === undefined) {
+    return value;
+  }
+  if (typeof value !== "object") {
+    return value;
+  }
+  return __deepFreeze(structuredClone(__stripFunctionsForClone(value)));
 }
 
 async function __loadRuntimeConfig(assetRootURL, config = {}) {
@@ -435,56 +482,59 @@ function __setupSystemListenerIfNeeded(raw) {
   } catch (e) {}
 }
 
-Object.defineProperty(PDS, "theme", {
-  get() {
-    try {
-      if (typeof window === "undefined") return null;
-      return localStorage.getItem(__themeStorageKey) || null;
-    } catch (e) {
-      return null;
-    }
-  },
-  set(value) {
-    try {
-      if (typeof window === "undefined") return;
-      const currentPreset = PDS.currentConfig?.design || null;
-      const resolvedTheme = resolveThemePreference(value);
-      if (currentPreset && !isPresetThemeCompatible(currentPreset, resolvedTheme)) {
-        const presetName =
-          currentPreset?.name ||
-          PDS.currentPreset?.name ||
-          PDS.currentConfig?.preset ||
-          "current preset";
-        console.warn(
-          `PDS theme "${resolvedTheme}" not supported by preset "${presetName}".`
-        );
+const __themeDescriptor = Object.getOwnPropertyDescriptor(PDS, "theme");
+if (!__themeDescriptor) {
+  Object.defineProperty(PDS, "theme", {
+    get() {
+      try {
+        if (typeof window === "undefined") return null;
+        return localStorage.getItem(__themeStorageKey) || null;
+      } catch (e) {
+        return null;
+      }
+    },
+    set(value) {
+      try {
+        if (typeof window === "undefined") return;
+        const currentPreset = PDS.currentConfig?.design || null;
+        const resolvedTheme = resolveThemePreference(value);
+        if (currentPreset && !isPresetThemeCompatible(currentPreset, resolvedTheme)) {
+          const presetName =
+            currentPreset?.name ||
+            PDS.currentPreset?.name ||
+            PDS.currentConfig?.preset ||
+            "current preset";
+          console.warn(
+            `PDS theme "${resolvedTheme}" not supported by preset "${presetName}".`
+          );
+          PDS.dispatchEvent(
+            new CustomEvent("pds:theme:blocked", {
+              detail: { theme: value, resolvedTheme, preset: presetName },
+            })
+          );
+          return;
+        }
+        if (value === null || value === undefined) {
+          localStorage.removeItem(__themeStorageKey);
+        } else {
+          localStorage.setItem(__themeStorageKey, value);
+        }
+
+        // Apply resolved (light/dark) value to document
+        __applyResolvedTheme(value);
+        // Setup system change listener only when 'system' is selected
+        __setupSystemListenerIfNeeded(value);
+
+        // Emit a notification with the raw preference (value may be 'system')
         PDS.dispatchEvent(
-          new CustomEvent("pds:theme:blocked", {
-            detail: { theme: value, resolvedTheme, preset: presetName },
+          new CustomEvent("pds:theme:changed", {
+            detail: { theme: value, source: "api" },
           })
         );
-        return;
-      }
-      if (value === null || value === undefined) {
-        localStorage.removeItem(__themeStorageKey);
-      } else {
-        localStorage.setItem(__themeStorageKey, value);
-      }
-
-      // Apply resolved (light/dark) value to document
-      __applyResolvedTheme(value);
-      // Setup system change listener only when 'system' is selected
-      __setupSystemListenerIfNeeded(value);
-
-      // Emit a notification with the raw preference (value may be 'system')
-      PDS.dispatchEvent(
-        new CustomEvent("pds:theme:changed", {
-          detail: { theme: value, source: "api" },
-        })
-      );
-    } catch (e) {}
-  },
-});
+      } catch (e) {}
+    },
+  });
+}
 
 // ----------------------------------------------------------------------------
 // Default Enhancers — first-class citizens alongside AutoDefiner
@@ -538,24 +588,45 @@ PDS.defaultEnhancers = [];
  * @returns {Promise<any>} Live returns { generator, config, theme, autoDefiner }; Static returns { config, theme, autoDefiner }
  */
 async function start(config) {
-  const mode = (config && config.mode) || "live";
-  const { mode: _omit, ...rest } = config || {};
-  
-  if (mode === "static") return staticInit(rest);
-  const assetRootURL = resolveRuntimeAssetRoot(rest, { resolvePublicAssetURL });
-  const managerUrl =
-    rest?.managerURL ||
-    rest?.public?.managerURL ||
-    rest?.manager?.url ||
-    new URL("core/pds-manager.js", assetRootURL).href ||
-    new URL("./pds-manager.js", import.meta.url).href;
-  const { startLive } = await import(managerUrl);
-  return startLive(PDS, rest, {
-    emitReady: __emitPDSReady,
-    emitConfigChanged: __emitPDSConfigChanged,
-    applyResolvedTheme: __applyResolvedTheme,
-    setupSystemListenerIfNeeded: __setupSystemListenerIfNeeded,
-  });
+  PDS.initializing = true;
+  try {
+    const mode = (config && config.mode) || "live";
+    const { mode: _omit, ...rest } = config || {};
+    PDS.currentConfig = __toReadonlyClone(rest);
+
+    let startResult;
+    if (mode === "static") {
+      startResult = await staticInit(rest);
+    } else {
+      const assetRootURL = resolveRuntimeAssetRoot(rest, { resolvePublicAssetURL });
+      const managerUrl =
+        rest?.managerURL ||
+        rest?.public?.managerURL ||
+        rest?.manager?.url ||
+        new URL("core/pds-manager.js", assetRootURL).href ||
+        new URL("./pds-manager.js", import.meta.url).href;
+      const { startLive } = await import(managerUrl);
+      startResult = await startLive(PDS, rest, {
+        emitReady: __emitPDSReady,
+        emitConfigChanged: __emitPDSConfigChanged,
+        applyResolvedTheme: __applyResolvedTheme,
+        setupSystemListenerIfNeeded: __setupSystemListenerIfNeeded,
+      });
+    }
+
+    PDS.compiled = __toReadonlyClone(startResult?.config || null);
+
+    const resolvedExternalIconPath =
+      PDS?.compiled?.design?.icons?.externalPath || "/assets/img/icons/";
+
+    if (typeof console !== "undefined" && typeof console.info === "function") {
+      console.info(`[PDS] startup ready; external icon path: ${resolvedExternalIconPath}`);
+    }
+
+    return startResult;
+  } finally {
+    PDS.initializing = false;
+  }
 }
 
 /** Primary unified entry point */
@@ -695,14 +766,9 @@ async function staticInit(config) {
       );
     }
 
-    // Expose current config as frozen read-only on PDS, preserving input shape
-    // Strip functions before cloning to avoid DataCloneError
-    const cloneableConfig = __stripFunctionsForClone(config);
-    PDS.currentConfig = Object.freeze({
+    PDS.compiled = __toReadonlyClone({
       mode: "static",
-      ...structuredClone(cloneableConfig),
-      design: structuredClone(resolvedConfig.design || {}),
-      preset: resolvedConfig.preset,
+      ...resolvedConfig,
       theme: resolvedTheme,
       enhancers: mergedEnhancers,
     });

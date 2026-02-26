@@ -41,6 +41,31 @@ let __liveApiReady = false;
 const LIVE_EDIT_TOGGLE_ID = "pds-live-edit-toggle";
 const LIVE_EDIT_TOGGLE_STYLE_ID = "pds-live-edit-toggle-style";
 
+function deepFreeze(value, seen = new WeakSet()) {
+  if (!value || typeof value !== "object") {
+    return value;
+  }
+  if (seen.has(value)) {
+    return value;
+  }
+  seen.add(value);
+  Object.freeze(value);
+  for (const key of Object.keys(value)) {
+    deepFreeze(value[key], seen);
+  }
+  return value;
+}
+
+function toReadonlyClone(value) {
+  if (value === null || value === undefined) {
+    return value;
+  }
+  if (typeof value !== "object") {
+    return value;
+  }
+  return deepFreeze(structuredClone(stripFunctions(value)));
+}
+
 function whenDocumentBodyReady(callback) {
   if (typeof document === "undefined" || typeof callback !== "function") return;
   if (document.body) {
@@ -772,10 +797,10 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
 
     const presetInfo = normalized.presetInfo || { id: presetId, name: presetId };
     PDS.currentPreset = presetInfo;
-    PDS.currentConfig = Object.freeze({
+    PDS.compiled = toReadonlyClone({
       ...baseConfig,
       preset: normalized.generatorConfig.preset,
-      design: structuredClone(normalized.generatorConfig.design),
+      design: normalized.generatorConfig.design,
       theme: normalized.generatorConfig.theme || baseConfig.theme,
     });
     PDS.configEditorMetadata = getDesignConfigEditorMetadata(
@@ -810,20 +835,6 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
 
     return true;
   };
-
-  // Live-only compiled getter
-  if (!Object.getOwnPropertyDescriptor(PDS, "compiled")) {
-    Object.defineProperty(PDS, "compiled", {
-      get() {
-        if (PDS.registry?.isLive && Generator.instance) {
-          return Generator.instance.compiled;
-        }
-        return null;
-      },
-      enumerable: true,
-      configurable: false,
-    });
-  }
 
   // Live-only preload helper
   PDS.preloadCritical = function(config, options = {}) {
@@ -885,7 +896,32 @@ export async function startLive(PDS, config, { emitReady, emitConfigChanged, app
     );
   }
 
+  const explicitExternalIconPath =
+    config?.design?.icons?.externalPath ||
+    config?.icons?.externalPath ||
+    null;
+
   config = applyStoredConfigOverrides(config);
+
+  if (typeof explicitExternalIconPath === "string" && explicitExternalIconPath.trim()) {
+    const baseDesign =
+      config?.design && typeof config.design === "object" ? config.design : {};
+    const baseIcons =
+      baseDesign?.icons && typeof baseDesign.icons === "object"
+        ? baseDesign.icons
+        : {};
+
+    config = {
+      ...config,
+      design: {
+        ...baseDesign,
+        icons: {
+          ...baseIcons,
+          externalPath: explicitExternalIconPath,
+        },
+      },
+    };
+  }
 
   // Attach live-only API surface (ontology, presets, query, etc.)
   await __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIfNeeded, emitConfigChanged });
@@ -1090,12 +1126,9 @@ export async function startLive(PDS, config, { emitReady, emitConfigChanged, app
 
     const resolvedConfig = generator?.options || generatorConfig;
 
-    const cloneableConfig = stripFunctions(config);
-    PDS.currentConfig = Object.freeze({
+    PDS.compiled = toReadonlyClone({
       mode: "live",
-      ...structuredClone(cloneableConfig),
-      design: structuredClone(normalized.generatorConfig.design),
-      preset: normalized.generatorConfig.preset,
+      ...resolvedConfig,
       theme: resolvedTheme,
       enhancers: mergedEnhancers,
     });

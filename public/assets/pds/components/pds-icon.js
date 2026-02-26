@@ -23,6 +23,7 @@ import { PDS } from "#pds";
 
 export class SvgIcon extends HTMLElement {
   static observedAttributes = ['icon', 'size', 'color', 'label', 'rotate', 'morph'];
+  static #configListenersAttached = false;
   
   // Inline fallback icons for critical UI elements (when sprite fails to load)
   static #fallbackIcons = {
@@ -52,6 +53,8 @@ export class SvgIcon extends HTMLElement {
   static externalIconCache = new Map();
   // Promises for in-flight external icon fetches (path-aware key)
   static externalIconPromises = new Map();
+  // Tracks base paths already logged for debug diagnostics
+  static externalPathDebugLogged = new Set();
 
   static instances = new Set();
 
@@ -124,6 +127,7 @@ export class SvgIcon extends HTMLElement {
   }
   
   connectedCallback() {
+    SvgIcon.ensureConfigListeners();
     SvgIcon.instances.add(this);
     this.render();
   }
@@ -586,23 +590,47 @@ export class SvgIcon extends HTMLElement {
    */
   static getExternalIconPath() {
     try {
-      // Try to get from PDS.compiled.tokens.icons.externalPath (live mode)
-      if (PDS?.compiled?.tokens?.icons?.externalPath) {
-        return PDS.compiled.tokens.icons.externalPath;
-      }
-      // Fallback: check compiled.config.design.icons.externalPath
-      if (PDS?.compiled?.config?.design?.icons?.externalPath) {
-        return PDS.compiled.config.design.icons.externalPath;
-      }
-      // Fallback: check currentConfig
-      if (PDS?.currentConfig?.design?.icons?.externalPath) {
-        return PDS.currentConfig.design.icons.externalPath;
+      const value = PDS?.compiled?.design?.icons?.externalPath;
+      if (typeof value === 'string' && value.trim()) {
+        return value;
       }
     } catch (e) {
       // Ignore errors accessing config
     }
     // Default path
     return '/assets/img/icons/';
+  }
+
+  /**
+   * Returns true when externalPath is explicitly present in runtime config.
+   * @private
+   * @returns {boolean}
+   */
+  static hasConfiguredExternalIconPath() {
+    try {
+      const value = PDS?.compiled?.design?.icons?.externalPath;
+      return typeof value === 'string' && value.trim().length > 0;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Ensures one-time config lifecycle listeners so icons re-render when config becomes available.
+   * @private
+   */
+  static ensureConfigListeners() {
+    if (SvgIcon.#configListenersAttached || typeof document === 'undefined') {
+      return;
+    }
+
+    const rerender = () => {
+      SvgIcon.notifyInstances();
+    };
+
+    document.addEventListener('pds:ready', rerender);
+    document.addEventListener('pds:config-changed', rerender);
+    SvgIcon.#configListenersAttached = true;
   }
 
   /**
@@ -651,12 +679,30 @@ export class SvgIcon extends HTMLElement {
   }
 
   /**
+   * Whether verbose icon diagnostics should be logged.
+   * @private
+   * @returns {boolean}
+   */
+  static isDebugLoggingEnabled() {
+    return Boolean(
+      PDS?.debug === true ||
+      PDS?.compiled?.config?.design?.debug === true ||
+      PDS?.compiled?.options?.design?.debug === true ||
+      PDS?.currentConfig?.design?.debug === true
+    );
+  }
+
+  /**
    * Fetch an external SVG icon and cache it
    * @param {string} iconName - The icon name (without .svg extension)
    * @returns {Promise<boolean>} True if successfully fetched
    */
   static async fetchExternalIcon(iconName, basePath) {
     if (!iconName || typeof document === 'undefined') {
+      return false;
+    }
+
+    if (PDS?.initializing === true && !SvgIcon.hasConfiguredExternalIconPath()) {
       return false;
     }
 
@@ -676,6 +722,11 @@ export class SvgIcon extends HTMLElement {
 
     const iconUrl = SvgIcon.getExternalIconURL(iconName, normalizedBasePath);
 
+    if (SvgIcon.isDebugLoggingEnabled() && !SvgIcon.externalPathDebugLogged.has(normalizedBasePath)) {
+      SvgIcon.externalPathDebugLogged.add(normalizedBasePath);
+      console.debug('[pds-icon] Resolved external icon base path:', normalizedBasePath, 'example URL:', iconUrl);
+    }
+
     const promise = fetch(iconUrl)
       .then(async (response) => {
         if (!response.ok) {
@@ -683,22 +734,46 @@ export class SvgIcon extends HTMLElement {
         }
         const svgText = await response.text();
         const parser = new DOMParser();
-        const doc = parser.parseFromString(svgText, 'image/svg+xml');
-        const svg = doc.querySelector('svg');
+        const xmlDoc = parser.parseFromString(svgText, 'image/svg+xml');
+        const htmlDoc = parser.parseFromString(svgText, 'text/html');
 
+        let svg = xmlDoc.querySelector('svg') || htmlDoc.querySelector('svg');
+        let symbol = null;
         if (!svg) {
-          throw new Error('Invalid SVG: no <svg> element found');
+          symbol = xmlDoc.querySelector('symbol') || htmlDoc.querySelector('symbol');
         }
 
-        // Extract viewBox and content
-        const viewBox = svg.getAttribute('viewBox') || '0 0 24 24';
-        const preserveAspectRatio = svg.getAttribute('preserveAspectRatio');
-        
-        // Serialize the inner content
         const serializer = new XMLSerializer();
-        const content = Array.from(svg.childNodes)
-          .map((node) => serializer.serializeToString(node))
-          .join('');
+        let viewBox = '0 0 24 24';
+        let preserveAspectRatio = null;
+        let content = '';
+
+        if (svg) {
+          viewBox = svg.getAttribute('viewBox') || '0 0 24 24';
+          preserveAspectRatio = svg.getAttribute('preserveAspectRatio');
+          content = Array.from(svg.childNodes)
+            .map((node) => serializer.serializeToString(node))
+            .join('');
+        } else if (symbol) {
+          viewBox = symbol.getAttribute('viewBox') || '0 0 24 24';
+          preserveAspectRatio = symbol.getAttribute('preserveAspectRatio');
+          content = Array.from(symbol.childNodes)
+            .map((node) => serializer.serializeToString(node))
+            .join('');
+        } else {
+          const trimmed = svgText.trim();
+          const appearsToBeSvgMarkup = /^<(path|g|defs|circle|ellipse|line|polyline|polygon|rect|use|mask|clipPath|linearGradient|radialGradient)\b/i.test(trimmed);
+          if (appearsToBeSvgMarkup) {
+            content = trimmed;
+          } else {
+            const preview = trimmed.slice(0, 120).replace(/\s+/g, ' ');
+            throw new Error(`Invalid SVG payload from ${iconUrl}: no <svg>/<symbol> found (preview: ${preview})`);
+          }
+        }
+
+        if (!content) {
+          throw new Error(`Invalid SVG payload from ${iconUrl}: empty icon markup`);
+        }
 
         SvgIcon.externalIconCache.set(cacheKey, {
           loaded: true,
@@ -714,7 +789,7 @@ export class SvgIcon extends HTMLElement {
       .catch((error) => {
         // Only log if not a 404 (expected for non-existent icons)
         if (!error.message?.includes('404')) {
-          console.debug('[pds-icon] External icon not found:', iconName, error.message);
+          console.debug('[pds-icon] External icon not found:', iconName, iconUrl, error.message);
         }
         SvgIcon.externalIconCache.set(cacheKey, {
           loaded: false,

@@ -2,6 +2,7 @@ import { html } from 'lit';
 import { presets } from '../../../../src/js/pds-core/pds-config.js';
 import { renderCodeBlock, getCurrentTheme, preloadShiki } from '../utils/shiki.js';
 import { attachStoryLinkHandlers } from '../utils/navigation.js';
+import { PDS } from "#pds";
 
 // Pre-load Shiki
 preloadShiki();
