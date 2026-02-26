@@ -126,21 +126,7 @@ const toastSettings = buildSettings((options) => {
   });
 });
 
-const inFormSettings = buildSettings((options) => {
-  const active = document.activeElement;
-  let input = null;
-  if (active && active.tagName === "INPUT") {
-    input = active;
-  }
-  if (!input) {
-    input = document
-      .querySelector("pds-omnibox")
-      ?.shadowRoot?.querySelector("input");
-  }
-  if (input && input.isConnected) {
-    input.value = options.text || "";
-  }
-});
+const inFormSettings = buildSettings();
 
 const toastSettingsSource = `const settings = {
   categories: {
@@ -186,12 +172,6 @@ const inFormSettingsSource = `const settings = {
           .filter(([key, label]) => \`${"${key}"} ${"${label}"}\`.toLowerCase().includes(q))
           .map(([key, label]) => ({ text: label, id: key }));
       },
-      action: (options) => {
-        const input = document.activeElement;
-        if (input && input.tagName === "INPUT" && input.isConnected) {
-          input.value = options.text || "";
-        }
-      },
     },
   },
 };
@@ -225,22 +205,6 @@ const loadCountries = async () => {
   return countryListPromise;
 };
 
-const setCountriesFormOmniboxValue = (nextValue) => {
-  const active = document.activeElement;
-  let input = null;
-  if (active && active.tagName === "INPUT") {
-    input = active;
-  }
-  if (!input) {
-    input = document
-      .querySelector("form[data-countries-api] pds-omnibox")
-      ?.shadowRoot?.querySelector("input");
-  }
-  if (input && input.isConnected) {
-    input.value = nextValue || "";
-  }
-};
-
 const countriesApiSettingsSource = `const settings = {
   hideCategory: true,
   itemGrid: "0 1fr 0",
@@ -259,21 +223,6 @@ const countriesApiSettingsSource = `const settings = {
           ? shortlist.filter((item) => item.text.toLowerCase().includes(q))
           : shortlist;
       },
-      action: (item) => {
-        const active = document.activeElement;
-        let input = null;
-        if (active && active.tagName === "INPUT") {
-          input = active;
-        }
-        if (!input) {
-          input = document
-            .querySelector("form[data-countries-api] pds-omnibox")
-            ?.shadowRoot?.querySelector("input");
-        }
-        if (input && input.isConnected) {
-          input.value = item?.text || "";
-        }
-      },
       useIconForInput: false,
     },
     Countries: {
@@ -286,21 +235,6 @@ const countriesApiSettingsSource = `const settings = {
         return countries
           .filter((item) => item.text.toLowerCase().includes(q))
           .slice(0, 30);
-      },
-      action: (item) => {
-        const active = document.activeElement;
-        let input = null;
-        if (active && active.tagName === "INPUT") {
-          input = active;
-        }
-        if (!input) {
-          input = document
-            .querySelector("form[data-countries-api] pds-omnibox")
-            ?.shadowRoot?.querySelector("input");
-        }
-        if (input && input.isConnected) {
-          input.value = item?.text || "";
-        }
       },
       useIconForInput: false,
     },
@@ -335,9 +269,6 @@ const countriesApiSettings = {
           ? shortlist.filter((item) => item.text.toLowerCase().includes(q))
           : shortlist;
       },
-      action: (item) => {
-        setCountriesFormOmniboxValue(item?.text);
-      },
       useIconForInput: false,
     },
     Countries: {
@@ -350,9 +281,6 @@ const countriesApiSettings = {
         return countries
           .filter((item) => item.text.toLowerCase().includes(q))
           .slice(0, 30);
-      },
-      action: (item) => {
-        setCountriesFormOmniboxValue(item?.text);
       },
       useIconForInput: false,
     },

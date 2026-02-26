@@ -564,12 +564,15 @@ export class PdsOmnibox extends HTMLElement {
     }
 
     if (AutoComplete && typeof AutoComplete.connect === "function") {
+      const settingsWithDefaultActions = this.#normalizeSettings(
+        this.settings,
+      );
       const settings = {
         //debug: true,
         iconHandler: (item) => {
           return item.icon ? `<pds-icon icon="${item.icon}"></pds-icon>` : null;
         },
-        ...this.settings,
+        ...settingsWithDefaultActions,
       };
 
       const container = this.#input?.parentElement;
@@ -605,6 +608,39 @@ export class PdsOmnibox extends HTMLElement {
         this.#setupSuggestionsObserver();
       }, 100);
     }
+  }
+
+  #normalizeSettings(settings) {
+    if (!settings || typeof settings !== "object") return settings;
+    const categories = settings.categories;
+    if (!categories || typeof categories !== "object") return settings;
+
+    const normalizedCategories = Object.fromEntries(
+      Object.entries(categories).map(([categoryName, categoryConfig]) => {
+        if (!categoryConfig || typeof categoryConfig !== "object") {
+          return [categoryName, categoryConfig];
+        }
+        if (typeof categoryConfig.action === "function") {
+          return [categoryName, categoryConfig];
+        }
+        return [
+          categoryName,
+          {
+            ...categoryConfig,
+            action: (options = {}) => {
+              const nextValue = options?.text ?? options?.value ?? options?.id ?? "";
+              this.value = nextValue == null ? "" : String(nextValue);
+              return nextValue;
+            },
+          },
+        ];
+      }),
+    );
+
+    return {
+      ...settings,
+      categories: normalizedCategories,
+    };
   }
 
   #wrapAutoCompleteResultsHandler(autoComplete) {

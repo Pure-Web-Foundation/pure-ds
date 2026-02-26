@@ -420,10 +420,6 @@ customElements.define(
                 id: role,
                 icon: "",
               })),
-            action: (options) => {
-              this._applyOmniboxSelection(options);
-              return options?.id;
-            },
           },
           Search: {
             trigger: (options) => options.search.length > 0,
@@ -438,38 +434,9 @@ customElements.define(
                 icon: "",
               }));
             },
-            action: (options) => {
-              this._applyOmniboxSelection(options);
-              return options?.id;
-            },
           },
         },
       };
-    }
-
-    _applyOmniboxSelection(options) {
-      const text = options?.text || options?.id || "";
-      if (!text) return;
-
-      const active = document.activeElement;
-      let omnibox = null;
-
-      if (active?.tagName === "PDS-OMNIBOX") {
-        omnibox = active;
-      } else if (active?.tagName === "INPUT") {
-        const host = active.getRootNode?.().host;
-        if (host?.tagName === "PDS-OMNIBOX") {
-          omnibox = host;
-        }
-      }
-
-      if (!omnibox) {
-        omnibox = this.querySelector("#pds-home-form pds-omnibox");
-      }
-
-      if (omnibox) {
-        omnibox.value = text;
-      }
     }
 
     _scrollToSection(sectionId) {

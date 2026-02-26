@@ -1321,12 +1321,6 @@ function buildFontFamilyOmniboxSettings() {
 
           return items;
         },
-        action: (options) => {
-          const input = document.querySelector("pds-omnibox");
-          if (input) {
-            input.value = options.text;
-          }
-        },
       },
     },
   };
@@ -1891,6 +1885,8 @@ async function createConfiguredForm({
   form.defineRenderer(
     "font-family-omnibox",
     ({ id, path, value, attrs, set }) => {
+      const omnibox = document.createElement("pds-omnibox");
+
       const resolveSelectedValue = (options, actionResult, selectionEvent) => {
         if (typeof actionResult === "string" && actionResult.trim()) {
           return actionResult;
@@ -1956,6 +1952,7 @@ async function createConfiguredForm({
                   );
                   if (selected) {
                     set(selected);
+                    omnibox.value = selected;
                   }
 
                   return actionResult;
@@ -1965,8 +1962,6 @@ async function createConfiguredForm({
           }
         )
       );
-
-      const omnibox = document.createElement("pds-omnibox");
       omnibox.id = id;
       omnibox.setAttribute("name", path);
       omnibox.setAttribute("item-grid", "0 1fr 0");

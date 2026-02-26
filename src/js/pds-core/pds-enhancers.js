@@ -181,6 +181,41 @@ function enhanceDropdown(elem) {
     menu.style.removeProperty("overflow");
   };
 
+  const getContainingAncestor = (node) => {
+    if (!node) return null;
+    if (node.parentElement) return node.parentElement;
+    const root = node.getRootNode?.();
+    return root instanceof ShadowRoot ? root.host : null;
+  };
+
+  const hasNonViewportFixedContainingBlock = () => {
+    let current = getContainingAncestor(menu);
+    while (current && current !== document.documentElement) {
+      const style = getComputedStyle(current);
+      const contain = style.contain || "";
+      const willChange = style.willChange || "";
+      const createsContainingBlock =
+        style.transform !== "none" ||
+        style.perspective !== "none" ||
+        style.filter !== "none" ||
+        style.backdropFilter !== "none" ||
+        contain.includes("paint") ||
+        contain.includes("layout") ||
+        contain.includes("strict") ||
+        contain.includes("content") ||
+        willChange.includes("transform") ||
+        willChange.includes("perspective") ||
+        willChange.includes("filter");
+
+      if (createsContainingBlock) {
+        return true;
+      }
+
+      current = getContainingAncestor(current);
+    }
+    return false;
+  };
+
   const reattachFloatingMenu = () => {
     if (menu.getAttribute("aria-hidden") !== "false") return;
     clearFloatingMenuPosition();
@@ -193,6 +228,10 @@ function enhanceDropdown(elem) {
 
   const positionFloatingMenu = () => {
     if (menu.getAttribute("aria-hidden") !== "false") return;
+    if (hasNonViewportFixedContainingBlock()) {
+      clearFloatingMenuPosition();
+      return;
+    }
     const anchorRect = (trigger || elem).getBoundingClientRect();
     const viewport = window.visualViewport;
     const viewportWidth =
@@ -267,21 +306,22 @@ function enhanceDropdown(elem) {
   };
 
   let configChangedHandler = null;
+  let configRepositionFrame = null;
   const bindConfigChanged = () => {
     if (configChangedHandler || typeof document === "undefined") return;
     configChangedHandler = () => {
       if (menu.getAttribute("aria-hidden") !== "false") return;
       elem.dataset.dropdownDirection = resolveDirection();
       elem.dataset.dropdownAlign = resolveAlign();
-      reattachFloatingMenu();
-      setTimeout(() => {
+
+      if (configRepositionFrame !== null) {
+        cancelAnimationFrame(configRepositionFrame);
+      }
+      configRepositionFrame = requestAnimationFrame(() => {
+        configRepositionFrame = null;
         if (menu.getAttribute("aria-hidden") !== "false") return;
-        reattachFloatingMenu();
-      }, 50);
-      setTimeout(() => {
-        if (menu.getAttribute("aria-hidden") !== "false") return;
-        reattachFloatingMenu();
-      }, 150);
+        positionFloatingMenu();
+      });
     };
     document.addEventListener("pds:config-changed", configChangedHandler);
   };
@@ -290,6 +330,10 @@ function enhanceDropdown(elem) {
     if (!configChangedHandler || typeof document === "undefined") return;
     document.removeEventListener("pds:config-changed", configChangedHandler);
     configChangedHandler = null;
+    if (configRepositionFrame !== null) {
+      cancelAnimationFrame(configRepositionFrame);
+      configRepositionFrame = null;
+    }
   };
 
   // Store click handler reference for cleanup
@@ -401,6 +445,7 @@ function enhanceToggle(elem) {
     if (checkbox.disabled) return;
     checkbox.checked = !checkbox.checked;
     updateAria();
+    checkbox.dispatchEvent(new Event("input", { bubbles: true }));
     checkbox.dispatchEvent(new Event("change", { bubbles: true }));
   };
 

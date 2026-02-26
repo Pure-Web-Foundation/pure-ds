@@ -680,21 +680,6 @@ export default {
   },
 };
 
-const setActiveOmniboxValue = (nextValue) => {
-  const active = document.activeElement;
-  let input = null;
-  if (active && active.tagName === "INPUT") {
-    input = active;
-  }
-  if (!input) {
-    input = document
-      .querySelector("pds-omnibox")
-      ?.shadowRoot?.querySelector("input");
-  }
-  if (!input || !input.isConnected) return;
-  input.value = nextValue || "";
-};
-
 const buildSimpleOmniboxSettings = () => ({
   hideCategory: true,
   itemGrid: "0 1fr 0",
@@ -715,7 +700,6 @@ const buildSimpleOmniboxSettings = () => ({
           .filter(([key, label]) => `${key} ${label}`.toLowerCase().includes(q))
           .map(([key, label]) => ({ id: key, text: label }));
       },
-      action: (item) => setActiveOmniboxValue(item?.text),
     },
   },
 });
