@@ -24,6 +24,9 @@ export class AppToaster extends HTMLElement {
   constructor() {
     super();
     this.toasts = [];
+    this.activeToastKeys = new Set();
+    this.activeToastIdsByKey = new Map();
+    this.activeToastKeysById = new Map();
   }
 
   /**
@@ -197,9 +200,16 @@ export class AppToaster extends HTMLElement {
     };
 
     const config = { ...defaults, ...options };
+    config.type = this.#normalizeToastType(config.type);
 
     // Calculate reading time (average 200 words per minute)
     const messageText = String(message || "");
+    const dedupeKey = this.#createActiveToastKey(messageText, config.type);
+    const activeToastId = this.activeToastIdsByKey.get(dedupeKey);
+    if (activeToastId) {
+      return activeToastId;
+    }
+
     const readingText = config.html ? messageText.replace(/<[^>]*>/g, " ") : messageText;
     const wordCount = readingText.split(/\s+/).filter(Boolean).length;
     const baseReadingTime = Math.max(2000, (wordCount / 200) * 60 * 1000); // minimum 2 seconds
@@ -208,7 +218,11 @@ export class AppToaster extends HTMLElement {
     const multiplier = config.type === "error" ? 1.5 : 1;
     const duration = config.duration || baseReadingTime * multiplier;
 
-    return this.#showToast(messageText, config, duration);
+    const toastId = this.#showToast(messageText, config, duration);
+    this.activeToastKeys.add(dedupeKey);
+    this.activeToastIdsByKey.set(dedupeKey, toastId);
+    this.activeToastKeysById.set(toastId, dedupeKey);
+    return toastId;
   }
 
   /*
@@ -363,6 +377,13 @@ export class AppToaster extends HTMLElement {
       if (toastElement.parentNode === this.shadowRoot) {
         this.shadowRoot.removeChild(toastElement);
       }
+
+      const toastKey = this.activeToastKeysById.get(toastId);
+      if (toastKey) {
+        this.activeToastKeysById.delete(toastId);
+        this.activeToastIdsByKey.delete(toastKey);
+        this.activeToastKeys.delete(toastKey);
+      }
     }, 300);
   }
 
@@ -381,7 +402,20 @@ export class AppToaster extends HTMLElement {
       while (this.shadowRoot.firstChild) {
         this.shadowRoot.removeChild(this.shadowRoot.firstChild);
       }
+      this.activeToastKeys.clear();
+      this.activeToastIdsByKey.clear();
+      this.activeToastKeysById.clear();
     }, 300);
+  }
+
+  #normalizeToastType(type) {
+    if (type === "info") return "information";
+    if (type === "danger") return "error";
+    return type || "information";
+  }
+
+  #createActiveToastKey(message, type) {
+    return `${String(type || "information").trim().toLowerCase()}::${String(message || "").trim()}`;
   }
 
   /*

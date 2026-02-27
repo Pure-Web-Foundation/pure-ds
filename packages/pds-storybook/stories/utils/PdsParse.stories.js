@@ -1,5 +1,12 @@
 import { renderCodeBlock, getCurrentTheme, preloadShiki } from './shiki.js';
-const ensureParse = () => (html) => new DOMParser().parseFromString(html, "text/html").body.childNodes;
+import { PDS } from '#pds';
+
+const ensureParse = () => {
+  if (typeof PDS?.parse === 'function') {
+    return PDS.parse;
+  }
+  return (html) => new DOMParser().parseFromString(html, 'text/html').body.childNodes;
+};
 
 preloadShiki();
 
@@ -28,10 +35,12 @@ const ParseSample = {
     container.className = 'card stack-md';
     container.dataset.parseExample = '';
     container.innerHTML = `
-      <h3>PDS.parse()</h3>
-      <p class="text-muted">
-        Parses HTML into element nodes. This example extracts tag names from a sample string.
-      </p>
+      <header>
+        <h3>PDS.parse()</h3>
+        <small class="text-muted">
+          Parses HTML into element nodes. This example extracts tag names from a sample string.
+        </small>
+      </header>
       <div>
         <strong>Sample HTML</strong>
         <div class="code-sample" data-parse-code>Loading highlighted sample…</div>

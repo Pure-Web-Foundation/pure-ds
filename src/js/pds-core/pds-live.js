@@ -715,6 +715,11 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
   PDS.buildConfigFormSchema = buildDesignConfigFormSchema;
   PDS.getConfigEditorMetadata = getDesignConfigEditorMetadata;
   PDS.enhancerMetadata = defaultPDSEnhancerMetadata;
+  if (!Array.isArray(PDS.defaultEnhancers) || PDS.defaultEnhancers.length === 0) {
+    PDS.defaultEnhancers = Array.isArray(defaultPDSEnhancers)
+      ? defaultPDSEnhancers
+      : [];
+  }
   PDS.applyStyles = function(generator) {
     const targetGenerator = generator || Generator.instance;
     applyStyles(targetGenerator);

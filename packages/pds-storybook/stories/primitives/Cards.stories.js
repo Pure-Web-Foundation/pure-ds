@@ -120,9 +120,11 @@ export const BasicCards = () => html`
 BasicCards.storyName = "Basic Cards";
 
 export const SurfaceVariants = () => html`
-  <div class="stack-md">
-    <h3>Surface Variants</h3>
-    <p class="text-muted">Different surface levels create visual hierarchy</p>
+  <div>
+    <header>
+      <h3>Surface Variants</h3>
+      <small class="text-muted">Different surface levels create visual hierarchy</small>
+    </header>
 
     <div class="grid grid-auto-md gap-md">
       <article class="card">
@@ -154,12 +156,14 @@ export const SurfaceVariants = () => html`
 SurfaceVariants.storyName = "Surface Variants";
 
 export const NestedCards = () => html`
-  <div class="stack-md">
-    <h3>Nested Cards</h3>
-    <p class="text-muted">
-      Surface variants enable natural nesting without visual confusion
-    </p>
-
+  <div>
+    <header>
+      <h3>Nested Cards</h3>
+      <small class="text-muted">
+        Surface variants enable natural nesting without visual confusion
+      </small>
+    </header>
+    
     <article class="card max-w-md">
       <h3>Parent Card (Default Surface)</h3>
       <p>This is the outer container using the default card surface.</p>

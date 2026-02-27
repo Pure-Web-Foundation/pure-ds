@@ -106,12 +106,14 @@ export const SurfaceVariants = () => html`
 SurfaceVariants.storyName = "Surface Variants";
 
 export const ContextAwareShadows = () => html`
-  <div class="stack-md">
-    <h2>Context-Aware Shadows</h2>
-    <p class="text-muted">
-      Shadows automatically invert in dark mode: dark shadows on light surfaces,
-      light shadows on dark surfaces.
-    </p>
+  <div>
+    <header>
+      <h2>Context-Aware Shadows</h2>
+      <small class="text-muted">
+        Shadows automatically invert in dark mode: dark shadows on light surfaces,
+        light shadows on dark surfaces.
+      </small>
+    </header>
 
     <div class="grid grid-auto-sm gap-lg">
       <div class="card shadow-sm surface-elevated text-center">

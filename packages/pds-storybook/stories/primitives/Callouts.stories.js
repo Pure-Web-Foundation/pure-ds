@@ -18,7 +18,7 @@ export default {
 export const Default = () => html`
   <header class="card">
     <h2>Basic Callouts</h2>
-    <p class="text-muted">Simple callout messages with semantic color variants.</p>
+    <small class="text-muted">Simple callout messages with semantic color variants.</small>
   </header>
   
   <div class="stack-md">
@@ -34,7 +34,7 @@ Default.storyName = 'Basic Callouts';
 export const CalloutsWithIcons = () => html`
   <header class="card">
     <h2>Callouts with Icons</h2>
-    <p class="text-muted">Use <code>.callout-icon</code> to add visual context with icons.</p>
+    <small class="text-muted">Use <code>.callout-icon</code> to add visual context with icons.</small>
   </header>
   
   <div class="stack-md">
@@ -81,7 +81,7 @@ CalloutsWithIcons.storyName = 'With Icons';
 export const CalloutsWithTitles = () => html`
   <header class="card">
     <h2>Callouts with Titles</h2>
-    <p class="text-muted">Use <code>.callout-title</code> on text elements for consistent title rendering across presets.</p>
+    <small class="text-muted">Use <code>.callout-title</code> on text elements for consistent title rendering across presets.</small>
   </header>
   
   <div class="stack-md">
@@ -132,10 +132,10 @@ CalloutsWithTitles.storyName = 'With Titles';
 export const DismissibleCallouts = () => html`
   <header class="card">
     <h2>Dismissible Callouts</h2>
-    <p class="text-muted">
+    <small class="text-muted">
       Add <code>.callout-dismissible</code> and <code>.callout-close</code> for closeable Callouts.
       Click the × to dismiss (demo only, JS required for actual dismissal).
-    </p>
+    </small>
   </header>
   
   <div class="stack-md">

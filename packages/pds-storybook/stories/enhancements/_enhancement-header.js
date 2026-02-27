@@ -28,7 +28,7 @@ export const enhancementHeader = (key, extraInfo = {}) => {
   return html`
     <header>
       <h2>${selector}</h2>
-      <p class="text-muted">${info.description} ${extraInfo.description || ''}</p>
+      <small class="text-muted">${info.description} ${extraInfo.description || ''}</small>
     </header>
   `;
 };

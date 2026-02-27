@@ -1,6 +1,7 @@
 import { addons } from '@storybook/preview-api';
 import { SELECT_STORY, UPDATE_GLOBALS } from '@storybook/core-events';
 import React from 'react';
+import { html } from 'lit';
 import { Title, Subtitle, Description as DocsDescription, Controls } from '@storybook/blocks';
 import { PDS } from '@pds-src/js/pds.js';
 import { presets } from '@pds-src/js/pds-core/pds-config.js';
@@ -1424,6 +1425,26 @@ const withRelatedStories = (story, context) => {
   return result;
 };
 
+const withComponentStoryHeader = (story, context) => {
+  if (context.viewMode !== 'story') return story();
+
+  const titlePath = context.title || '';
+  if (!titlePath.startsWith('Components/')) return story();
+
+  const tagName = titlePath.split('/').pop() || 'component';
+  const storyTitle = context.name || 'Story';
+
+  return html`
+    <div class="stack-md">
+      <header>
+        <h2>${tagName}</h2>
+        <small class="text-muted">${storyTitle}</small>
+      </header>
+      ${story()}
+    </div>
+  `;
+};
+
 const DocsPage = () => React.createElement(
   React.Fragment,
   null,
@@ -1435,7 +1456,7 @@ const DocsPage = () => React.createElement(
 
 /** @type { import('@storybook/web-components').Preview } */
 const preview = {
-  decorators: [withGlobalsHandler, withPDS, withHTMLExtractor, withDescription, withRelatedStories],
+  decorators: [withGlobalsHandler, withPDS, withHTMLExtractor, withDescription, withComponentStoryHeader, withRelatedStories],
   parameters: {
     controls: {
       matchers: {

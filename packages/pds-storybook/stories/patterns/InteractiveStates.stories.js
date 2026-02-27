@@ -663,7 +663,7 @@ export const CombinedStates = () => html`
     <div>
       <header>
         <h3>Hover State</h3>
-        <p class="text-muted"><small>Hover over buttons to see effect</small></p>
+        <small class="text-muted">Hover over buttons to see effect</small>
       </header>
       <div class="flex flex-wrap gap-sm">
         <button class="btn-primary">Primary</button>
@@ -675,7 +675,7 @@ export const CombinedStates = () => html`
     <div>
       <header>
         <h3>Active State</h3>
-        <p class="text-muted"><small>Click and hold to see effect</small></p>
+        <small class="text-muted">Click and hold to see effect</small>
       </header>
       <div class="flex flex-wrap gap-sm">
         <button class="btn-primary">Primary</button>
@@ -687,7 +687,7 @@ export const CombinedStates = () => html`
     <div>
       <header>
         <h3>Focus State</h3>
-        <p class="text-muted"><small>Tab to focus on buttons</small></p>
+        <small class="text-muted">Tab to focus on buttons</small>
       </header>
       <div class="flex flex-wrap gap-sm">
         <button class="btn-primary">Primary</button>

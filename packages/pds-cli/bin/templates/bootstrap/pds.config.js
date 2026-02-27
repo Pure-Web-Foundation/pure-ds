@@ -1,8 +1,14 @@
 // @ts-check
 
+// @ts-ignore - template import is resolved in consuming projects
+import { PDS } from "@pure-ds/core";
+
+// @ts-ignore - template type import is resolved in consuming projects
 /** @typedef {import("@pure-ds/core").PDSInitConfig} PDSInitConfig */
 
-const standardPDSEnhancers = [];
+const defaultEnhancers = Array.isArray(PDS?.defaultEnhancers)
+  ? PDS.defaultEnhancers
+  : [];
 
 /** @type {PDSInitConfig} */
 export const config = {
@@ -13,18 +19,22 @@ export const config = {
     predefine: ["pds-icon", "pds-drawer", "pds-toaster"],
 
     // Custom component paths
-    mapper: (tag) => {
+    mapper: (
+      /** @type {string} */ tag
+    ) => {
       if (tag.startsWith("my-")) return `/assets/my/${tag}.js`;
 
       // Return nothing to use PDS default mapping
     },
 
     enhancers: [
-      ...standardPDSEnhancers,
+      ...defaultEnhancers,
       {
         selector: ".hero",
         description: "Make PDS border-gradient rotate slowly",
-        run: (element) => {
+        run: (
+          /** @type {HTMLElement} */ element
+        ) => {
           let angle = 135;
           const speed = 0.5; // degrees per frame (~30 degrees/second at 60fps)
 

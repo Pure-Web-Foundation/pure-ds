@@ -608,11 +608,11 @@ export const ExternalIcons = () => html`
   <section class="stack-lg story-section">
     <header>
       <h2>External Icons (On-Demand Loading)</h2>
-      <p class="text-muted">
+      <small class="text-muted">
         Icons not in the sprite sheet are automatically fetched from an external path.
         This provides the best of both worlds: core icons load instantly from the cached 
         sprite, while more 'exotic' icons are fetched on-demand and cached in memory.
-      </p>
+      </small>
     </header>
 
     <article class="card">
@@ -620,7 +620,7 @@ export const ExternalIcons = () => html`
       <div class="grid grid-auto-md gap-lg">
         <article class="card surface-elevated">
           <h4 class="flex items-center gap-sm"><pds-icon icon="lightning" size="sm"></pds-icon> Sprite Icons (Fast)</h4>
-          <p class="text-muted">Core icons bundled in the sprite sheet load instantly with a single HTTP request.</p>
+          <small class="text-muted">Core icons bundled in the sprite sheet load instantly with a single HTTP request.</small>
           <div class="flex gap-lg flex-wrap items-center">
             <pds-icon icon="house" size="lg"></pds-icon>
             <pds-icon icon="gear" size="lg"></pds-icon>
@@ -631,7 +631,7 @@ export const ExternalIcons = () => html`
         
         <article class="card surface-elevated">
           <h4 class="flex items-center gap-sm"><pds-icon icon="cloud-arrow-down" size="sm"></pds-icon> External Icons (On-Demand)</h4>
-          <p class="text-muted">More 'exotic' icons are fetched individually, then cached for subsequent use.</p>
+          <small class="text-muted">More 'exotic' icons are fetched individually, then cached for subsequent use.</small>
           <div class="flex gap-lg flex-wrap items-center">
             <pds-icon icon="solid-anatomy-brain-1" size="lg" color="var(--color-primary-500)"></pds-icon>
             <pds-icon icon="solid-anatomy-hand-bones" size="lg" color="var(--color-accent-500)"></pds-icon>
@@ -643,7 +643,7 @@ export const ExternalIcons = () => html`
 
     <article class="card">
       <h3>External Icon Sizes</h3>
-      <p class="text-muted">External icons respect all standard size tokens.</p>
+      <small class="text-muted">External icons respect all standard size tokens.</small>
       <div class="grid grid-auto-sm gap-lg">
         <div class="stack-sm text-center items-center">
           <pds-icon icon="solid-anatomy-brain-1" size="xs"></pds-icon>
@@ -674,7 +674,7 @@ export const ExternalIcons = () => html`
 
     <article class="card">
       <h3>Color Inheritance</h3>
-      <p class="text-muted">External icons support color customization just like sprite icons.</p>
+      <small class="text-muted">External icons support color customization just like sprite icons.</small>
       <div class="flex gap-lg flex-wrap items-center">
         <div class="card surface-elevated text-center items-center story-icon-card">
           <pds-icon icon="solid-anatomy-brain-1" size="xl" color="var(--color-primary-500)"></pds-icon>
@@ -701,10 +701,10 @@ export const ExternalIcons = () => html`
 
     <article class="card">
       <h3>Fallback Behavior</h3>
-      <p class="text-muted">
+      <small class="text-muted">
         When an icon isn't found in the sprite <em>or</em> the external path, 
         a fallback "missing" icon is shown.
-      </p>
+      </small>
       <div class="flex gap-lg">
         <div class="card surface-elevated text-center items-center story-icon-card">
           <pds-icon icon="this-icon-does-not-exist" size="xl"></pds-icon>
@@ -715,14 +715,14 @@ export const ExternalIcons = () => html`
 
     <article class="card">
       <h3>Cache Inspector</h3>
-      <p class="text-muted">Click the button to inspect the current external icon cache state.</p>
+      <small class="text-muted">Click the button to inspect the current external icon cache state.</small>
       <button class="btn-secondary" id="check-cache-btn">Check External Icon Cache</button>
       <pre id="cache-status" class="story-cache-status">Click the button to see cache contents...</pre>
     </article>
 
     <article class="card surface-elevated">
       <h4>Configuration</h4>
-      <p class="text-muted">Configure the external icons path in <code>pds.config.js</code>:</p>
+      <small class="text-muted">Configure the external icons path in <code>pds.config.js</code>:</small>
       <pre><code>export const config = {
   design: {
     icons: {

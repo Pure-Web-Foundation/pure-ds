@@ -22,11 +22,11 @@ export const Overview = {
     container.innerHTML = `
       <header >
         <h1>HTML Defaults</h1>
-        <p class="text-muted">
+        <small class="text-muted">
           PDS applies an opinionated reset to semantic HTML elements using low-specificity 
           <code>:where()</code> selectors. This means you get a polished, modern look out of the box, 
           while retaining full ability to override styles without specificity battles.
-        </p>
+        </small>
       </header>
 
       <article class="card">
@@ -418,32 +418,32 @@ export const RelatedDocumentation = () => {
     <div class="grid grid-auto-md gap-md">
       <a data-story-link="foundations-typography--heading-scale" class="card card-interactive">
         <h3>Typography</h3>
-        <p class="text-muted">Headings, paragraphs, text utilities, and font scales</p>
+        <small class="text-muted">Headings, paragraphs, text utilities, and font scales</small>
       </a>
       
       <a data-story-link="primitives-forms--default" class="card card-interactive">
         <h3>Forms</h3>
-        <p class="text-muted">Inputs, labels, validation, and form layout patterns</p>
+        <small class="text-muted">Inputs, labels, validation, and form layout patterns</small>
       </a>
       
       <a data-story-link="primitives-buttons--button-variants" class="card card-interactive">
         <h3>Buttons</h3>
-        <p class="text-muted">Button variants, states, and icon buttons</p>
+        <small class="text-muted">Button variants, states, and icon buttons</small>
       </a>
       
       <a data-story-link="primitives-tables--default-table" class="card card-interactive">
         <h3>Tables</h3>
-        <p class="text-muted">Table styling, variants, and responsive patterns</p>
+        <small class="text-muted">Table styling, variants, and responsive patterns</small>
       </a>
       
       <a data-story-link="enhancements-accordion--basic-accordion" class="card card-interactive">
         <h3>Accordion</h3>
-        <p class="text-muted">Grouped collapsible sections with single-expand behavior</p>
+        <small class="text-muted">Grouped collapsible sections with single-expand behavior</small>
       </a>
       
       <a data-story-link="enhancements-dropdowns--basic-dropdown" class="card card-interactive">
         <h3>Dropdown Menus</h3>
-        <p class="text-muted">Navigation dropdowns using semantic HTML</p>
+        <small class="text-muted">Navigation dropdowns using semantic HTML</small>
       </a>
     </div>
   `;

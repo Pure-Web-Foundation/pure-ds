@@ -19,7 +19,7 @@ export const BasicDividers = () => html`
   <article class="card">
     <header>
       <h3>Default Divider</h3>
-      <p class="text-muted">Use <code>&lt;hr&gt;</code> for a clean divider.</p>
+      <small class="text-muted">Use <code>&lt;hr&gt;</code> for a clean divider.</small>
     </header>
     <div>
       <p>Section one content</p>
@@ -47,7 +47,7 @@ export const DividerInCard = () => html`
   <article class="card">
     <header>
       <h3>Divider in Card Layouts</h3>
-      <p class="text-muted">Works inside cards and stacked content.</p>
+      <small class="text-muted">Works inside cards and stacked content.</small>
     </header>
     <div>
       <div>

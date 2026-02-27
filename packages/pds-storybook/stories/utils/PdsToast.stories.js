@@ -31,8 +31,10 @@ const QuickToasts = {
 
     return html`
       <section class="card max-w-sm">
-        <h3>Quick toasts</h3>
-        <p class="text-muted">Trigger basic toast types using the shared helper.</p>
+        <header>
+          <h3>Quick toasts</h3>
+          <small class="text-muted">Trigger basic toast types using the shared helper.</small>
+        </header>
         <div class="flex gap-sm">
           <button class="btn" @click=${handleToast('information')}>Info</button>
           <button class="btn" @click=${handleToast('success')}>Success</button>
@@ -57,8 +59,10 @@ const PersistentToast = {
 
     return html`
       <section class="card max-w-sm">
-        <h3>Persistent toast</h3>
-        <p class="text-muted">Use persistent mode for messages that require attention.</p>
+        <header>
+          <h3>Persistent toast</h3>
+          <small class="text-muted">Use persistent mode for messages that require attention.</small>
+        </header>
         <button class="btn btn-outline" @click=${handlePersistent}>Show persistent toast</button>
       </section>
     `;
@@ -112,8 +116,10 @@ const CustomHtmlToasts = {
 
     return html`
       <section class="card max-w-sm">
-        <h3>Custom HTML toasts</h3>
-        <p class="text-muted">Render trusted rich content in toast messages with the <code>html</code> option.</p>
+        <header>
+          <h3>Custom HTML toasts</h3>
+          <small class="text-muted">Render trusted rich content in toast messages with the <code>html</code> option.</small>
+        </header>
         <div class="flex gap-sm">
           <button class="btn" @click=${showHtmlSuccess}>Show HTML success</button>
           <button class="btn btn-outline" @click=${showHtmlWarning}>Show HTML warning</button>
@@ -128,12 +134,20 @@ export const PDSToast = {
   name: 'PDS.toast()',
   render: () => html`
     <section class="stack-lg">
-      <p>
-        <a href="/?path=/story/components-pds-toaster--default" target="_top">See Components/Pds Toaster story</a>
-      </p>
       ${QuickToasts.render()}
       ${PersistentToast.render()}
       ${CustomHtmlToasts.render()}
+      <div class="callout callout-info">
+        <span class="callout-icon">
+          <pds-icon icon="info" size="md"></pds-icon>
+        </span>
+        <div class="stack-xs">
+          <strong class="callout-title">More info on PDS toasters</strong>
+          <div>
+            <a href="/?path=/story/components-pds-toaster--default" target="_top">See Components/Pds Toaster story</a>
+          </div>
+        </div>
+      </div>
     </section>
   `
 };

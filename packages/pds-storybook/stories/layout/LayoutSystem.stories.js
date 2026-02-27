@@ -86,7 +86,7 @@ export const GridFixed = () => html`
   ${layoutSystemStyles}
   <header>
     <h2>Fixed Column Grids</h2>
-    <p class="text-muted">Explicit column counts for predictable layouts.</p>
+    <small class="text-muted">Explicit column counts for predictable layouts.</small>
   </header>
 
   <div class="stack-md">
@@ -143,10 +143,10 @@ export const GridAuto = () => html`
   ${layoutSystemStyles}
   <header class="card">
     <h2>Auto-Fit Responsive Grids</h2>
-    <p class="text-muted">
+    <small class="text-muted">
       Automatically adjust columns based on available space. Resize the browser
       to see the effect.
-    </p>
+    </small>
   </header>
 
   <div class="card">
@@ -207,9 +207,9 @@ export const FlexBasics = () => html`
   ${layoutSystemStyles}
   <header class="card">
     <h2>Flexbox Utilities</h2>
-    <p class="text-muted">
+    <small class="text-muted">
       Compose layouts with <code>.flex</code> + modifiers.
-    </p>
+    </small>
   </header>
 
   <div class="card">
@@ -258,9 +258,9 @@ export const FlexAlignment = () => html`
   ${layoutSystemStyles}
   <header class="card">
     <h2>Alignment Utilities</h2>
-    <p class="text-muted">
+    <small class="text-muted">
       Cross-axis: <code>.items-*</code> | Main-axis: <code>.justify-*</code>
-    </p>
+    </small>
   </header>
 
   <div class="card">
@@ -319,10 +319,10 @@ export const Stack = () => html`
   ${layoutSystemStyles}
   <header>
     <h2>Stack Utilities</h2>
-    <p class="text-muted">
+    <small class="text-muted">
       Vertical layouts with consistent spacing.
       <code>.stack-*</code> = <code>.flex .flex-col .gap-*</code> in one class.
-    </p>
+    </small>
   </header>
 
   <div class="stack-md">
@@ -375,7 +375,7 @@ export const Gap = () => html`
   ${layoutSystemStyles}
   <header>
     <h2>Gap Utilities</h2>
-    <p class="text-muted">Control spacing between flex/grid children.</p>
+    <small class="text-muted">Control spacing between flex/grid children.</small>
   </header>
 
   <div class="stack-md">
@@ -416,12 +416,12 @@ export const MaxWidth = () => html`
   ${layoutSystemStyles}
   <header class="card stack-sm">
     <h2>Max-Width Utilities</h2>
-    <p class="text-muted">
+    <small class="text-muted">
       Each utility maps to a <code>--layout-max-width-*</code> token that is paired with the
       matching breakpoint token (for example <code>--breakpoint-sm</code>). Updating
       <code>layout.maxWidths</code> or <code>layout.breakpoints</code> in config keeps the
       clamp width and responsive snap point aligned.
-    </p>
+    </small>
   </header>
 
   <div class="stack-lg">
@@ -488,7 +488,7 @@ export const Section = () => html`
   ${layoutSystemStyles}
   <header>
     <h2>Section Spacing</h2>
-    <p class="text-muted">Vertical padding for major content blocks.</p>
+    <small class="text-muted">Vertical padding for major content blocks.</small>
   </header>
 
   <div
