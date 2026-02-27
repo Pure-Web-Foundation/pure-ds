@@ -84,11 +84,13 @@ export default {
 
 export const FocusStates = () => html`
   <div class="card">
-    <h2>Focus States</h2>
-    <p>
+    <header>
+      <h3>Focus States</h3>
+      <small class="text-muted">
       Press <kbd>Tab</kbd> to navigate and see focus rings on interactive
       elements
-    </p>
+      </small>
+    </header>
 
     <div class="flex flex-wrap gap-sm align-center">
       <button class="btn-primary">Button 1</button>
@@ -148,8 +150,10 @@ FocusStates.storyName = "Focus States";
 
 export const HoverStates = () => html`
   <div class="card">
-    <h2>Hover States</h2>
-    <p>Hover over elements to see smooth transitions and state changes</p>
+    <header>
+      <h3>Hover States</h3>
+      <small class="text-muted">Hover over elements to see smooth transitions and state changes.</small>
+    </header>
 
     <h3>Buttons</h3>
     <div class="flex flex-wrap gap-sm">
@@ -210,8 +214,10 @@ HoverStates.storyName = "Hover States";
 
 export const ActiveStates = () => html`
   <div class="card">
-    <h2>Active States</h2>
-    <p>Click and hold to see active/pressed states</p>
+    <header>
+      <h3>Active States</h3>
+      <small class="text-muted">Click and hold to see active or pressed states.</small>
+    </header>
 
     <h3>Buttons</h3>
     <div class="flex flex-wrap gap-sm">
@@ -260,11 +266,13 @@ export const TransitionSpeeds = () => {
 
   return html`
     <div class="card">
-      <h2>Transition Speeds</h2>
-      <p>
+      <header>
+        <h3>Transition Speeds</h3>
+        <small class="text-muted">
         The design system provides three transition speed tokens that can be
         configured globally.
-      </p>
+        </small>
+      </header>
 
       <div class="grid gap-lg">
         ${["fast", "normal", "slow"].map(
@@ -325,12 +333,12 @@ export const WorkingStates = () => {
   };
 
   return html`
-    <h2>Working/Loading States</h2>
-    <p>
-      Click buttons to see the <code>.btn-working</code> state with automatic
-      spinner animation. The PDS enhancer automatically swaps existing icons to
-      spinners or adds a spinner if none exists.
-    </p>
+    <header>
+      <h3>Working/Loading States</h3>
+      <small class="text-muted">
+        Click buttons to see the <code>.btn-working</code> state with automatic spinner animation.
+      </small>
+    </header>
 
     <div class="stack-lg">
       <header>
@@ -483,11 +491,13 @@ WorkingStates.storyName = "Working States";
 export const SkeletonLoading = () => html`
   ${interactiveSkeletonStoryStyles}
   <div class="card">
-    <h2>Skeleton Loading</h2>
-    <p>
+    <header>
+      <h3>Skeleton Loading</h3>
+      <small class="text-muted">
       Use the <code>.skeleton</code> class for content placeholders while
       loading
-    </p>
+      </small>
+    </header>
 
     <h3>Card Skeleton</h3>
 
@@ -538,7 +548,10 @@ SkeletonLoading.storyName = "Skeleton Loading";
 
 export const EmptyState = () => html`
   <div class="card">
-    <h2>Empty State</h2>
+    <header>
+      <h3>Empty State</h3>
+      <small class="text-muted">Empty-state pattern for onboarding and first-use workflows.</small>
+    </header>
     <section class="empty-state">
       <header>
         <h2>Feature X isn’t set up yet</h2>
@@ -565,8 +578,10 @@ EmptyState.storyName = "Empty State";
 
 export const DisabledStates = () => html`
   <div class="card">
-    <h2>Disabled States</h2>
-    <p>Disabled elements have reduced opacity and no pointer events</p>
+    <header>
+      <h3>Disabled States</h3>
+      <small class="text-muted">Disabled elements have reduced opacity and no pointer events.</small>
+    </header>
 
     <h3>Buttons</h3>
     <div class="flex flex-wrap gap-sm">
@@ -644,8 +659,8 @@ DisabledStates.storyName = "Disabled States";
 
 export const CombinedStates = () => html`
   <header>
-    <h2>Combined State Examples</h2>
-    <small
+    <h3>Combined State Examples</h3>
+    <small class="text-muted"
       >Comprehensive examples showing all interactive states together</small
     >
   </header>

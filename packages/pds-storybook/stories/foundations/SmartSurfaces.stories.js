@@ -57,11 +57,13 @@ export default {
 
 export const SurfaceVariants = () => html`
   <div class="card">
-    <h2>Surface Variants</h2>
-    <p class="text-muted">
-      All surfaces automatically adjust text, icon, shadow, and border colors to
-      maintain proper contrast.
-    </p>
+    <header>
+      <h3>Surface Variants</h3>
+      <small class="text-muted">
+        All surfaces automatically adjust text, icon, shadow, and border colors
+        to maintain proper contrast.
+      </small>
+    </header>
 
     <div class="grid grid-auto-sm gap-md">
       <div class="card surface-base">
@@ -108,7 +110,7 @@ SurfaceVariants.storyName = "Surface Variants";
 export const ContextAwareShadows = () => html`
   <div>
     <header>
-      <h2>Context-Aware Shadows</h2>
+      <h3>Context-Aware Shadows</h3>
       <small class="text-muted">
         Shadows automatically invert in dark mode: dark shadows on light surfaces,
         light shadows on dark surfaces.
@@ -141,11 +143,13 @@ ContextAwareShadows.storyName = "Context-Aware Shadows";
 
 export const NestedSurfaces = () => html`
   <div class="card">
-    <h2>Nested Surfaces</h2>
-    <p class="text-muted">
-      Surfaces can be nested infinitely. Each level maintains proper contrast
-      and visual hierarchy automatically.
-    </p>
+    <header>
+      <h3>Nested Surfaces</h3>
+      <small class="text-muted">
+        Surfaces can be nested infinitely. Each level maintains proper contrast
+        and visual hierarchy automatically.
+      </small>
+    </header>
 
     <div class="card surface-base">
       <h4 class="flex items-center gap-xs">
@@ -201,11 +205,13 @@ NestedSurfaces.storyName = "Nested Surfaces";
 
 export const SurfaceInversion = () => html`
   <div class="card">
-    <h2>Surface Inversion</h2>
-    <p class="text-muted">
-      The smart surface system automatically inverts text and icon colors on
-      contrasting backgrounds. Toggle dark mode to see the magic!
-    </p>
+    <header>
+      <h3>Surface Inversion</h3>
+      <small class="text-muted">
+        The smart surface system automatically inverts text and icon colors on
+        contrasting backgrounds. Toggle dark mode to see the magic!
+      </small>
+    </header>
 
     <div class="grid grid-auto-md gap-md">
       <div class="card surface-inverse">
@@ -236,11 +242,13 @@ SurfaceInversion.storyName = "Surface Inversion";
 
 export const BorderGradients = () => html`
   <div class="card">
-    <h2>Surface Border Effects</h2>
-    <p class="text-muted">
-      Advanced border gradient effects for standout surfaces. All gradients are
-      animated and adapt to your theme.
-    </p>
+    <header>
+      <h3>Surface Border Effects</h3>
+      <small class="text-muted">
+        Advanced border gradient effects for standout surfaces. All gradients
+        are animated and adapt to your theme.
+      </small>
+    </header>
 
     <div class="grid grid-auto-md gap-lg">
       <article class="card border-gradient">
@@ -309,11 +317,13 @@ BorderGradients.storyName = "Border Gradients";
 export const TranslucentSurfaces = () => html`
   ${smartSurfacesStoryStyles}
   <div class="card">
-    <h2>Translucent Surfaces</h2>
-    <p class="text-muted">
-      Semi-transparent surfaces for glassmorphism effects and layered UI. Works
-      beautifully over images and gradients.
-    </p>
+    <header>
+      <h3>Translucent Surfaces</h3>
+      <small class="text-muted">
+        Semi-transparent surfaces for glassmorphism effects and layered UI.
+        Works beautifully over images and gradients.
+      </small>
+    </header>
 
     <div class="story-translucent-container">
       <img
@@ -355,11 +365,13 @@ TranslucentSurfaces.storyName = "Translucent Surfaces";
 
 export const SurfaceInverseExpanded = () => html`
   <div class="card">
-    <h2>Inverse Surface Deep Dive</h2>
-    <p class="text-muted">
-      The <code>.surface-inverse</code> class automatically inverts all text,
-      icon, and border colors for perfect contrast on dark backgrounds.
-    </p>
+    <header>
+      <h3>Inverse Surface Deep Dive</h3>
+      <small class="text-muted">
+        The <code>.surface-inverse</code> class automatically inverts all text,
+        icon, and border colors for perfect contrast on dark backgrounds.
+      </small>
+    </header>
 
     <div class="grid grid-auto-md gap-lg">
       <article class="card surface-inverse">

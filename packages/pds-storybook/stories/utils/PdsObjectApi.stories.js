@@ -187,22 +187,33 @@ const makeCard = ({
   code,
   outputLabel = 'Runtime output',
   initialOutput,
+  outputVariant = 'pre',
   buttonLabel,
   onRun,
   maxWidth = 'max-w-2xl'
 }) => {
   const section = document.createElement('section');
   section.className = `card stack-md ${maxWidth}`;
+  const outputTemplate = outputVariant === 'callout'
+    ? `
+      <div class="callout callout-info">
+        <strong class="callout-title">${outputLabel}</strong>
+        <div class="text-sm" data-output>${initialOutput || 'Click to inspect.'}</div>
+      </div>
+    `
+    : `
+      <div class="stack-sm">
+        <strong>${outputLabel}</strong>
+        <pre class="text-sm" data-output>${initialOutput || 'Click to inspect.'}</pre>
+      </div>
+    `;
   section.innerHTML = `
     ${renderCardHeader(title, description)}
     <div>
       <strong>Example</strong>
       <div data-code-host>Loading code sample…</div>
     </div>
-    <div class="stack-sm">
-      <strong>${outputLabel}</strong>
-      <pre class="text-sm" data-output>${initialOutput || 'Click to inspect.'}</pre>
-    </div>
+    ${outputTemplate}
     ${buttonLabel ? `<button class="btn btn-outline" type="button" data-run>${buttonLabel}</button>` : ''}
   `;
 
@@ -536,6 +547,7 @@ export const PDSAdoptLayers = {
       description: 'Adopt selected shared PDS layers plus local constructable stylesheets in one call.',
       code: adoptLayersCode,
       outputLabel: 'Notes',
+      outputVariant: 'callout',
       initialOutput: 'Use this pattern in custom elements that need tokens/primitives/utilities inside Shadow DOM.',
       maxWidth: 'max-w-3xl'
     });

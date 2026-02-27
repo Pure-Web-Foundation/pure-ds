@@ -31,7 +31,12 @@ export default {
 export const HeadingScale = {
   name: "Heading Scale",
   render: () => html`
-    
+    <header>
+      <h3>Heading Scale</h3>
+      <small class="text-muted">
+        Compare semantic heading levels and their default tokenized sizes.
+      </small>
+    </header>
     <div class="stack-sm story-heading-container">
       <h1>Heading Level 1</h1>
       <p class="text-muted story-heading-description">
@@ -69,7 +74,12 @@ export const HeadingScale = {
 export const TextStyles = {
   name: "Text Styles & Weights",
   render: () => html`
-    
+    <header>
+      <h3>Text Styles & Weights</h3>
+      <small class="text-muted">
+        Review font-weight and inline text semantics for UI copy.
+      </small>
+    </header>
     <div class="stack-sm">
       <h2>Font Weights</h2>
       <div class="stack-sm story-weights-section">
@@ -102,7 +112,12 @@ export const TextStyles = {
 export const LineHeights = {
   name: "Line Heights & Readability",
   render: () => html`
-    
+    <header>
+      <h3>Line Heights & Readability</h3>
+      <small class="text-muted">
+        See how leading affects scanning and long-form readability.
+      </small>
+    </header>
     <div class="stack-lg story-line-height-container">
       <h2>Tight Line Height (1.25)</h2>
       <p class="story-leading-tight story-line-height-example">
@@ -143,113 +158,15 @@ export const LineHeights = {
   `,
 };
 
-export const ArticleLayout = {
-  name: "Article Layout",
-  render: () => html`
-    <article>
-      <header>
-        <div class="text-muted story-article-meta">Design Systems</div>
-        <h1>Building Scalable Design Systems for Modern Web Applications</h1>
-        <small class="text-muted"
-          >By Sarah Chen • November 17, 2025 • 8 min read</small
-        >
-      </header>
-
-      <p>
-        <strong>
-        A design system is more than a component library—it's a shared language
-        that bridges design and development, ensuring consistency and quality
-        across your entire product ecosystem.
-        </strong>
-      </p>
-
-      <p>
-        In today's fast-paced development environment, maintaining visual and
-        functional consistency across multiple products and teams is
-        increasingly challenging. Design systems have emerged as the solution,
-        providing a single source of truth for design decisions, component
-        patterns, and implementation guidelines.
-      </p>
-
-      <section>
-        <h2>Key Components of a Design System</h2>
-
-        <p>
-          A comprehensive design system consists of several interconnected
-          layers, each serving a specific purpose in the overall architecture:
-        </p>
-
-        <ul>
-          <li>
-            <strong>Design Tokens:</strong> The foundational layer defining
-            colors, typography, spacing, and other atomic values
-          </li>
-          <li>
-            <strong>Component Library:</strong> Reusable UI components built
-            with consistent patterns
-          </li>
-          <li>
-            <strong>Documentation:</strong> Clear guidelines on when and how to
-            use each component
-          </li>
-          <li>
-            <strong>Tools & Resources:</strong> Figma libraries, code templates,
-            and development tools
-          </li>
-        </ul>
-
-        <blockquote>
-          <p>
-            A design system isn't a project. It's a product serving products.
-          </p>
-          <cite>Nathan Curtis, Design Systems Expert</cite>
-        </blockquote>
-      </section>
-
-      <h3>Getting Started with Design Tokens</h3>
-
-      <p>
-        Design tokens are the DNA of your design system. These named values
-        represent design decisions that can be shared across platforms and
-        technologies. For example, instead of hardcoding
-        <code>#0066cc</code>, you define <code>--color-primary</code> which can
-        be updated globally.
-      </p>
-
-      <section>
-        <h4 class="story-impl-heading">Implementation Example</h4>
-        <pre
-          class="surface-base story-code-block"
-        ><code>/* Design tokens in CSS */
-:root {
-  --color-primary: #0066cc;
-  --spacing-unit: 4px;
-  --font-family-base: system-ui, sans-serif;
-  --border-radius-md: 8px;
-}</code></pre>
-
-        <p>
-          By adopting this approach, you create a flexible foundation that can
-          evolve with your product needs while maintaining consistency across
-          all touchpoints.
-        </p>
-      </section>
-
-      <footer>
-        <div class="flex gap-md flex-wrap">
-          <span class="badge badge-outline badge-primary">Design Systems</span>
-          <span class="badge badge-outline badge-primary">Web Components</span>
-          <span class="badge badge-outline badge-primary">CSS Architecture</span>
-        </div>
-      </footer>
-    </article>
-  `,
-};
-
 export const UIComponents = {
   name: "UI Component Text",
   render: () => html`
-    
+    <header>
+      <h3>UI Component Text</h3>
+      <small class="text-muted">
+        Typical microcopy patterns for forms, labels, and status messaging.
+      </small>
+    </header>
     <div class="stack-sm">
       <h2>Form Labels & Help Text</h2>
       <div class="story-form-wrapper">
@@ -325,7 +242,12 @@ export const UIComponents = {
 export const DataDisplay = {
   name: "Data Display & Lists",
   render: () => html`
-    
+    <header>
+      <h3>Data Display & Lists</h3>
+      <small class="text-muted">
+        Text hierarchy patterns for lists, metrics, and timeline content.
+      </small>
+    </header>
     <div class="stack-lg">
       <h2>User List with Metadata</h2>
       <div class="card">

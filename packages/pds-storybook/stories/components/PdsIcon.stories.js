@@ -83,13 +83,23 @@ export const Default = {
   },
   render: (args) => html`
     <div class="stack-lg">
-      <a href="/?path=/story/foundations-icons--overview" @click=${storyLinkHandler('foundations-icons--overview')} class="card card-interactive">
-        <h3 class="flex items-center gap-sm">
-          <pds-icon icon="book-open" size="md"></pds-icon>
-          PDS Icon System
-        </h3>
-        <p class="text-muted">Complete icon system documentation: available icons, sizes, colors, configuration, and more.</p>
-      </a>
+      <div class="callout callout-info">
+        <span class="callout-icon">
+          <pds-icon icon="info" size="md"></pds-icon>
+        </span>
+        <div class="stack-xs">
+          <strong class="callout-title">
+            <a href="/?path=/story/foundations-icons" @click=${storyLinkHandler('foundations-icons--overview')}>
+              Icon System
+            </a>
+          </strong>
+          <div>
+            <a href="/?path=/story/foundations-icons" @click=${storyLinkHandler('foundations-icons--overview')}>
+              Complete icon system documentation: available icons, sizes, colors, configuration, and more.
+            </a>
+          </div>
+        </div>
+      </div>
       
       <pds-icon 
         icon="${args.icon}" 

@@ -21,7 +21,7 @@ export const Overview = {
     const container = document.createElement('div');
     container.innerHTML = `
       <header >
-        <h1>HTML Defaults</h1>
+        <h3>HTML Defaults</h3>
         <small class="text-muted">
           PDS applies an opinionated reset to semantic HTML elements using low-specificity 
           <code>:where()</code> selectors. This means you get a polished, modern look out of the box, 
@@ -164,7 +164,7 @@ export const StructuralElements = {
     const container = document.createElement('div');
     container.innerHTML = `
       <header class="card">
-        <h2>Structural Elements</h2>
+        <h3>Structural Elements</h3>
         <small class="text-muted">
           Semantic containers that organize page content
         </small>
@@ -230,7 +230,7 @@ export const TextElements = {
     const container = document.createElement('div');
     container.innerHTML = `
       <header class="card">
-        <h2>Text & Quotation Elements</h2>
+        <h3>Text & Quotation Elements</h3>
         <small class="text-muted">
           Semantic text elements with automatic styling
         </small>
@@ -292,7 +292,7 @@ TextElements.storyName = 'Text Elements';
 
 export const InlineElements = () => html`
   <header class="card">
-    <h2>Inline Elements</h2>
+    <h3>Inline Elements</h3>
     <small class="text-muted">
       Small semantic elements for inline content
     </small>
@@ -347,7 +347,7 @@ export const DetailsAndSummary = {
     const container = document.createElement('div');
     container.innerHTML = `
       <header class="card">
-        <h2>Details & Summary</h2>
+        <h3>Details & Summary</h3>
         <small class="text-muted">
           Native collapsible content without JavaScript
         </small>
@@ -409,7 +409,7 @@ export const RelatedDocumentation = () => {
   container.className = 'stack gap-md';
   container.innerHTML = `
     <header class="card">
-      <h2>Related Documentation</h2>
+      <h3>Related Documentation</h3>
       <small class="text-muted">
         Detailed coverage of specific element categories
       </small>

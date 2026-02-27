@@ -549,6 +549,8 @@ class PdsCalendar extends HTMLElement {
     border: var(--border-width-thick) solid var(--color-primary-500) !important;
   }
 
+
+  
 .task {
   border-left-width: var(--border-width-thick);
   padding: var(--spacing-1) var(--spacing-2);
@@ -558,6 +560,10 @@ class PdsCalendar extends HTMLElement {
   margin-bottom: var(--spacing-1);
   background: var(--surface-hover);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+label {
+  cursor: pointer;
 }
 
 .task--warning {
@@ -641,6 +647,7 @@ class PdsCalendar extends HTMLElement {
   .nr {
     font-size: var(--font-size-2xl) !important;
     font-weight: var(--font-weight-bold) !important;
+    pointer-events: none;
   }
   
   .task {

@@ -271,7 +271,10 @@ ComplexCards.storyName = "Complex Cards";
 
 export const CardVariantsReference = () => html`
   <div class="card">
-    <h2>Card Classes Reference</h2>
+    <header>
+      <h3>Card Classes Reference</h3>
+      <small class="text-muted">Reference for card primitives and common composition patterns.</small>
+    </header>
 
     <table class="table-bordered">
       <thead>

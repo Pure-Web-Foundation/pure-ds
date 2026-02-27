@@ -38,6 +38,10 @@ export default {
 
 export const Container = () => html`
   ${layoutSystemStyles}
+  <header class="card">
+    <h3>Container</h3>
+    <small class="text-muted">Center content with consistent horizontal padding and max-width constraints.</small>
+  </header>
   <div class="card surface-subtle story-demo-area-sm">
     <p class="text-muted text-center">
       Gray background shows viewport width. Container centers content with
@@ -85,7 +89,7 @@ Container.storyName = "Container";
 export const GridFixed = () => html`
   ${layoutSystemStyles}
   <header>
-    <h2>Fixed Column Grids</h2>
+    <h3>Fixed Column Grids</h3>
     <small class="text-muted">Explicit column counts for predictable layouts.</small>
   </header>
 
@@ -142,7 +146,7 @@ GridFixed.storyName = "Grid: Fixed Columns";
 export const GridAuto = () => html`
   ${layoutSystemStyles}
   <header class="card">
-    <h2>Auto-Fit Responsive Grids</h2>
+    <h3>Auto-Fit Responsive Grids</h3>
     <small class="text-muted">
       Automatically adjust columns based on available space. Resize the browser
       to see the effect.
@@ -206,7 +210,7 @@ GridAuto.storyName = "Grid: Auto-Fit";
 export const FlexBasics = () => html`
   ${layoutSystemStyles}
   <header class="card">
-    <h2>Flexbox Utilities</h2>
+    <h3>Flexbox Utilities</h3>
     <small class="text-muted">
       Compose layouts with <code>.flex</code> + modifiers.
     </small>
@@ -257,7 +261,7 @@ FlexBasics.storyName = "Flex: Basics";
 export const FlexAlignment = () => html`
   ${layoutSystemStyles}
   <header class="card">
-    <h2>Alignment Utilities</h2>
+    <h3>Alignment Utilities</h3>
     <small class="text-muted">
       Cross-axis: <code>.items-*</code> | Main-axis: <code>.justify-*</code>
     </small>
@@ -318,7 +322,7 @@ FlexAlignment.storyName = "Flex: Alignment";
 export const Stack = () => html`
   ${layoutSystemStyles}
   <header>
-    <h2>Stack Utilities</h2>
+    <h3>Stack Utilities</h3>
     <small class="text-muted">
       Vertical layouts with consistent spacing.
       <code>.stack-*</code> = <code>.flex .flex-col .gap-*</code> in one class.
@@ -374,7 +378,7 @@ Stack.storyName = "Stack";
 export const Gap = () => html`
   ${layoutSystemStyles}
   <header>
-    <h2>Gap Utilities</h2>
+    <h3>Gap Utilities</h3>
     <small class="text-muted">Control spacing between flex/grid children.</small>
   </header>
 
@@ -415,7 +419,7 @@ Gap.storyName = "Gap";
 export const MaxWidth = () => html`
   ${layoutSystemStyles}
   <header class="card stack-sm">
-    <h2>Max-Width Utilities</h2>
+    <h3>Max-Width Utilities</h3>
     <small class="text-muted">
       Each utility maps to a <code>--layout-max-width-*</code> token that is paired with the
       matching breakpoint token (for example <code>--breakpoint-sm</code>). Updating
@@ -487,7 +491,7 @@ MaxWidth.storyName = "Max-Width";
 export const Section = () => html`
   ${layoutSystemStyles}
   <header>
-    <h2>Section Spacing</h2>
+    <h3>Section Spacing</h3>
     <small class="text-muted">Vertical padding for major content blocks.</small>
   </header>
 
@@ -514,9 +518,10 @@ Section.storyName = "Section";
 
 export const Responsive = () => html`
   ${layoutSystemStyles}
-  <div class="card">
-    <h2>Responsive Utilities</h2>
-  </div>
+  <header class="card">
+    <h3>Responsive Utilities</h3>
+    <small class="text-muted">Responsive helpers that adapt layout behavior across breakpoints.</small>
+  </header>
 
   <div class="card">
     <h3>.mobile-stack</h3>
@@ -560,9 +565,10 @@ Responsive.storyName = "Responsive";
 
 export const TextUtilities = () => html`
   ${layoutSystemStyles}
-  <div class="card">
-    <h2>Text Utilities</h2>
-  </div>
+  <header class="card">
+    <h3>Text Utilities</h3>
+    <small class="text-muted">Helpers for alignment and overflow handling in content layouts.</small>
+  </header>
 
   <div class="card">
     <h3>Text Alignment</h3>
@@ -603,10 +609,10 @@ TextUtilities.storyName = "Text";
 
 export const Reference = () => html`
   ${layoutSystemStyles}
-  <div class="card">
-    <h2>Complete Layout Reference</h2>
-    <p class="text-muted">All layout utilities in PDS.</p>
-  </div>
+  <header class="card">
+    <h3>Complete Layout Reference</h3>
+    <small class="text-muted">All layout utilities in PDS.</small>
+  </header>
 
   <table class="table-bordered table-compact">
     <thead>

@@ -267,7 +267,12 @@ export const Default = {
     return html`
       ${colorScaleStoryStyles}
       <div class="story-container color-scale-story-container">
-        <h2>Color Scales</h2>
+        <header>
+          <h3>Color Scales</h3>
+          <small class="text-muted">
+            Explore the full tokenized scales for brand and semantic colors.
+          </small>
+        </header>
         ${renderColorScale('primary')}
         ${renderColorScale('secondary')}
         ${renderColorScale('accent')}

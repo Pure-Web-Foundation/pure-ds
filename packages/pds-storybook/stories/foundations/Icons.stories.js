@@ -78,8 +78,8 @@ export const Overview = () => {
   
   container.innerHTML = /*html*/`
     <header>
-      <h2>PDS Icon System</h2>
-      <p class="story-intro">PDS ships a simple, sprite-based icon solution and a lightweight <code>&lt;pds-icon&gt;</code> web component.</p>
+      <h3>PDS Icon System</h3>
+      <small class="text-muted story-intro">PDS ships a simple, sprite-based icon solution and a lightweight <code>&lt;pds-icon&gt;</code> web component.</small>
     </header>
 
     <section class="card">
@@ -518,7 +518,7 @@ export const AllIcons = () => {
     ${iconGridStyles}
     <section class="stack-lg story-section">
       <header>
-        <h2>All Available Icons</h2>
+        <h3>All Available Icons</h3>
         <small class="text-muted">Complete icon set from Phosphor Icons, organized by category. Click any icon name to copy it to clipboard.</small>
       </header>
 
@@ -607,7 +607,7 @@ AllIcons.storyName = 'All Icons';
 export const ExternalIcons = () => html`
   <section class="stack-lg story-section">
     <header>
-      <h2>External Icons (On-Demand Loading)</h2>
+      <h3>External Icons (On-Demand Loading)</h3>
       <small class="text-muted">
         Icons not in the sprite sheet are automatically fetched from an external path.
         This provides the best of both worlds: core icons load instantly from the cached 

@@ -54,6 +54,10 @@ export const HtmlElementsDefault = {
     return html`
       ${formsStoryStyles}
       <div class="card">
+        <header>
+          <h3>Form Elements</h3>
+          <small class="text-muted">Core HTML controls styled with PDS primitives for manual form composition.</small>
+        </header>
         <form class="story-form-max" @submit=${handleSubmit}>
           <label>
             <span data-label>Text Input</span>
@@ -94,8 +98,10 @@ export const HtmlElementsInputsWithIcons = {
     return html`
       ${formsStoryStyles}
       <div class="card">
-        <h3>Inputs with Icons</h3>
-        <p>Enhance inputs with icons for better UX. Icons can be positioned at the start or end of the input.</p>
+        <header>
+          <h3>Inputs with Icons</h3>
+          <small class="text-muted">Enhance inputs with icons positioned at the start or end for better context.</small>
+        </header>
         
         <div class="stack-lg story-form-max">
           <label>

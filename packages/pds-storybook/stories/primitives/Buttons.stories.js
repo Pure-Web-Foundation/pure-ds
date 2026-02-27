@@ -17,7 +17,10 @@ export default {
 
 export const ButtonVariants = () => html`
   <div class="card">
-    <h3>Button Variants</h3>
+    <header>
+      <h3>Button Variants</h3>
+      <small class="text-muted">Core button styles for primary, secondary, and outline actions.</small>
+    </header>
     <div class="flex gap-sm flex-wrap">
       <button class="btn-primary">Primary</button>
       <button class="btn-secondary">Secondary</button>
@@ -31,7 +34,10 @@ ButtonVariants.storyName = 'Button Variants';
 
 export const ButtonSizes = () => html`
   <div class="card">
-    <h3>Button Sizes</h3>
+    <header>
+      <h3>Button Sizes</h3>
+      <small class="text-muted">Scale actions with <code>.btn-sm</code> and <code>.btn-lg</code> size utilities.</small>
+    </header>
     <div class="flex gap-sm flex-wrap items-center">
       <button class="btn-primary btn-sm">Small</button>
       <button class="btn-primary">Default</button>
@@ -44,8 +50,12 @@ ButtonSizes.storyName = 'Button Sizes';
 
 export const IconButtons = () => html`
   <div class="card gap-lg">
-    <section class="stack-md">
+    <header>
       <h3>Buttons with Icons</h3>
+      <small class="text-muted">Combine labels and icons to improve clarity and scanability.</small>
+    </header>
+    <section class="stack-md">
+      <h4>Buttons with Icons</h4>
       <div class="flex gap-sm flex-wrap">
         <button class="btn-primary">
           <pds-icon icon="download"></pds-icon>
@@ -67,7 +77,7 @@ export const IconButtons = () => html`
     </section>
 
     <section class="stack-md">
-      <h3>Icon on Right</h3>
+      <h4>Icon on Right</h4>
       <div class="flex gap-sm flex-wrap">
         <button class="btn-primary">
           <span>Next</span>
@@ -132,8 +142,12 @@ IconOnlyButtons.storyName = 'Icon-Only Buttons';
 
 export const ButtonGroups = () => html`
   <div class="card gap-lg">
-    <section class="stack-md">
+    <header>
       <h3>Button Groups</h3>
+      <small class="text-muted">Cluster related actions for faster decision-making.</small>
+    </header>
+    <section class="stack-md">
+      <h4>Button Groups</h4>
       <div class="flex gap-sm">
         <button class="btn-primary">
           <pds-icon icon="download"></pds-icon>
@@ -147,7 +161,7 @@ export const ButtonGroups = () => html`
     </section>
 
     <section class="stack-md">
-      <h3>Icon-Only Group</h3>
+      <h4>Icon-Only Group</h4>
       <div class="flex gap-sm">
         <button class="icon-only btn-outline">
           <pds-icon icon="text-align-left" label="Align left"></pds-icon>
@@ -167,8 +181,12 @@ ButtonGroups.storyName = 'Button Groups';
 
 export const AllSizesCombinations = () => html`
   <div class="card gap-lg">
+    <header>
+      <h3>All Sizes & Combinations</h3>
+      <small class="text-muted">Compare all button variants across small, default, and large sizes.</small>
+    </header>
     <section class="stack-md">
-      <h3>Small Buttons</h3>
+      <h4>Small Buttons</h4>
       <div class="flex gap-sm flex-wrap">
         <button class="btn-primary btn-sm">Primary</button>
         <button class="btn-secondary btn-sm">Secondary</button>
@@ -184,7 +202,7 @@ export const AllSizesCombinations = () => html`
     </section>
 
     <section class="stack-md">
-      <h3>Default Buttons</h3>
+      <h4>Default Buttons</h4>
       <div class="flex gap-sm flex-wrap">
         <button class="btn-primary">Primary</button>
         <button class="btn-secondary">Secondary</button>
@@ -200,7 +218,7 @@ export const AllSizesCombinations = () => html`
     </section>
 
     <section class="stack-md">
-      <h3>Large Buttons</h3>
+      <h4>Large Buttons</h4>
       <div class="flex gap-sm flex-wrap">
         <button class="btn-primary btn-lg">Primary</button>
         <button class="btn-secondary btn-lg">Secondary</button>

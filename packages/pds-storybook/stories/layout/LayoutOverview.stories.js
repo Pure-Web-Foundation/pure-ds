@@ -100,10 +100,10 @@ export const LayoutIntroduction = () => {
     </style>
     ${layoutOverviewStyles.strings[0]}
     <header>
-      <h1>Layout in PDS</h1>
-      <h4 class="text-muted">
+      <h3>Layout in PDS</h3>
+      <small class="text-muted">
         Power through composition of high-level concepts, not atomic control.
-      </h4>
+      </small>
     </header>
 
     <article class="card surface-translucent-75">

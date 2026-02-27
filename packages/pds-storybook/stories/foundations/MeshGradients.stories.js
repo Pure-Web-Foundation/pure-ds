@@ -77,7 +77,7 @@ export const AllMeshGradients = () => html`
   ${meshGradientsStoryStyles}
   <section class="stack gap-lg">
     <header>
-      <h2>Mesh Gradient Backgrounds</h2>
+      <h3>Mesh Gradient Backgrounds</h3>
       <small class="text-muted">
         Subtle, beautiful mesh gradient backgrounds using
         <code>--background-mesh-01</code> through
@@ -123,7 +123,12 @@ AllMeshGradients.storyName = "All Mesh Gradients";
 export const MeshUsageExamples = () => html`
   ${meshGradientsStoryStyles}
   <section class="stack gap-lg">
-    <h2>Usage Examples</h2>
+    <header>
+      <h3>Usage Examples</h3>
+      <small class="text-muted">
+        Practical composition patterns that use mesh tokens in real UI blocks.
+      </small>
+    </header>
 
     <h3>Hero Section</h3>
     <div
@@ -211,7 +216,12 @@ export const CodeSamples = () => {
 
   container.innerHTML = /*html*/ `
     ${meshGradientsStoryStyles.strings[0]}
-    <h2>Code Samples</h2>
+    <header>
+      <h3>Code Samples</h3>
+      <small class="text-muted">
+        Copy-ready snippets and available mesh custom properties.
+      </small>
+    </header>
 
     <h3>Apply as Background</h3>
     <div class="code-css"></div>

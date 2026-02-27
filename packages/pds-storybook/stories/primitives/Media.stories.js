@@ -36,6 +36,10 @@ const mediaStoryStyles = html`
 export const ResponsiveImages = () => html`
   ${mediaStoryStyles}
   <div class="stack-md">
+    <header>
+      <h3>Responsive Images</h3>
+      <small class="text-muted">Semantic figures with responsive images and descriptive captions.</small>
+    </header>
     <div class="grid grid-auto-md gap-lg">
       <figure class="media-figure">
         <img
@@ -69,7 +73,10 @@ ResponsiveImages.storyName = 'Responsive Images';
 export const ImageGallery = () => html`
   ${mediaStoryStyles}
   <div class="stack-md">
-    <h3>Image Gallery Grid</h3>
+    <header>
+      <h3>Image Gallery Grid</h3>
+      <small class="text-muted">Uniform thumbnail gallery layout using PDS media utilities.</small>
+    </header>
     <div class="grid grid-auto-sm gap-sm">
       ${Array.from({ length: 8 }, (_, i) => html`
         <img
@@ -110,10 +117,10 @@ export const ScrollRowGallery = () => html`
 ScrollRowGallery.storyName = 'Horizontal Scroll Row';
 
 export const ImageRoundedUtilities = () => html`
-  <div class="card">
-    <h2>Image Rounded Utilities</h2>
-    <p class="text-muted">Apply consistent border-radius to images with <code>.img-rounded-*</code> classes.</p>
-  </div>
+  <header class="card">
+    <h3>Image Rounded Utilities</h3>
+    <small class="text-muted">Apply consistent border-radius to images with <code>.img-rounded-*</code> classes.</small>
+  </header>
   
   <div class="grid grid-auto-sm gap-lg">
     <figure>
@@ -166,13 +173,13 @@ export const ImageRoundedUtilities = () => html`
 ImageRoundedUtilities.storyName = 'Rounded Utilities';
 
 export const ImageGalleryClass = () => html`
-  <div class="card">
-    <h2>.img-gallery Utility</h2>
-    <p class="text-muted">
+  <header class="card">
+    <h3>.img-gallery Utility</h3>
+    <small class="text-muted">
       The <code>.img-gallery</code> class creates square, cropped thumbnails perfect for grid galleries.
       Images are set to <code>aspect-ratio: 1</code> and <code>object-fit: cover</code>.
-    </p>
-  </div>
+    </small>
+  </header>
   
   <div class="grid grid-auto-sm gap-md">
     ${Array.from({ length: 8 }, (_, i) => html`
@@ -188,12 +195,12 @@ export const ImageGalleryClass = () => html`
 ImageGalleryClass.storyName = '.img-gallery';
 
 export const InlineImages = () => html`
-  <div class="card">
-    <h2>Inline Images</h2>
-    <p class="text-muted">
+  <header class="card">
+    <h3>Inline Images</h3>
+    <small class="text-muted">
       Use <code>.img-inline</code> for small images within text flow, like avatars or icons.
-    </p>
-  </div>
+    </small>
+  </header>
   
   <div class="card">
     <p>
@@ -231,12 +238,12 @@ export const InlineImages = () => html`
 InlineImages.storyName = 'Inline Images';
 
 export const VideoResponsive = () => html`
-  <div class="card">
-    <h2>.video-responsive Utility</h2>
-    <p class="text-muted">
+  <header class="card">
+    <h3>.video-responsive Utility</h3>
+    <small class="text-muted">
       The <code>.video-responsive</code> class constrains video width and applies consistent styling.
-    </p>
-  </div>
+    </small>
+  </header>
   
   <video 
     class="story-video-responsive" 
@@ -264,12 +271,12 @@ export const VideoResponsive = () => html`
 VideoResponsive.storyName = '.video-responsive';
 
 export const FigureResponsive = () => html`
-  <div class="card">
-    <h2>.figure-responsive Utility</h2>
-    <p class="text-muted">
+  <header class="card">
+    <h3>.figure-responsive Utility</h3>
+    <small class="text-muted">
       Apply <code>.figure-responsive</code> to figures for full-width responsive images with captions.
-    </p>
-  </div>
+    </small>
+  </header>
   
   <figure class="figure-responsive">
     <img 
@@ -287,7 +294,10 @@ FigureResponsive.storyName = '.figure-responsive';
 export const VideoElement = () => html`
   ${mediaStoryStyles}
   <div class="stack-md media-video-shell">
-    <h3>Video Element with Controls</h3>
+    <header>
+      <h3>Video Element with Controls</h3>
+      <small class="text-muted">Native video playback with responsive styling and semantic caption support.</small>
+    </header>
     <figure class="video-container">
       <video
         class="video-responsive shadow-md"
@@ -312,7 +322,10 @@ VideoElement.storyName = 'Video Element';
 export const MixedMedia = () => html`
   ${mediaStoryStyles}
   <div class="stack-md">
-    <h2>Mixed Media Layout</h2>
+    <header>
+      <h3>Mixed Media Layout</h3>
+      <small class="text-muted">Combine featured media and supporting thumbnails in a balanced content layout.</small>
+    </header>
     
     <div class="grid grid-cols-2 gap-lg">
       <div>
@@ -350,9 +363,10 @@ export const MixedMedia = () => html`
 MixedMedia.storyName = 'Mixed Media Layout';
 
 export const MediaReference = () => html`
-  <div class="card">
-    <h2>Media Utilities Reference</h2>
-  </div>
+  <header class="card">
+    <h3>Media Utilities Reference</h3>
+    <small class="text-muted">Reference table for image, figure, and video utility classes.</small>
+  </header>
   
   <table class="table-bordered">
     <thead>

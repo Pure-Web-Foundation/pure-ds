@@ -331,7 +331,10 @@ ToggleSwitches.storyName = "Toggle Switches";
 export const CustomLayout = () => html`
 ${styles}
   <div class="card">
-    <h3>Custom Layout with Flex Utilities</h3>
+    <header>
+      <h3>Custom Layout with Flex Utilities</h3>
+      <small class="text-muted">Override default group flow with flex utilities for horizontal and wrapped layouts.</small>
+    </header>
     <div class="callout callout-info">
       Override default column layout using standard CSS flex properties
     </div>
@@ -457,7 +460,7 @@ export const AccessibleFormGroups = {
     return html`
       <div class="card">
         <header>
-          <h2>Accessibility Features</h2>
+          <h3>Accessibility Features</h3>
           <small class="text-muted"
             >Form groups include proper ARIA attributes, semantic HTML, and
             keyboard navigation support.</small

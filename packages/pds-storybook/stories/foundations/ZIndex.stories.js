@@ -85,7 +85,7 @@ export const ZIndexScale = {
     ${zIndexStoryStyles}
     <section class="stack-lg max-w-5xl">
       <header>
-        <h2>Z-Index Token Scale</h2>
+        <h3>Z-Index Token Scale</h3>
         <small class="text-muted">
           Tokens are organized from lowest to highest z-index values, ensuring proper stacking of UI layers.
         </small>
@@ -161,7 +161,7 @@ export const VisualDemo = {
     ${zIndexStoryStyles}
     <section class="stack-lg max-w-5xl">
       <header>
-        <h2>Interactive Stacking Example</h2>
+        <h3>Interactive Stacking Example</h3>
         <small class="text-muted">
           This demo shows how different z-index tokens create proper layering. 
           Lower elements appear behind higher ones.
@@ -227,7 +227,7 @@ export const UsageExamples = {
     ${zIndexStoryStyles}
     <section class="stack-lg max-w-5xl">
       <header>
-        <h2>Code Examples</h2>
+        <h3>Code Examples</h3>
         <small class="text-muted">
           How to use z-index tokens in your components and styles.
         </small>

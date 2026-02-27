@@ -17,6 +17,10 @@ export default {
 
 export const DefaultTable = () => html`
   <section class="card">
+    <header>
+      <h3>Default Table</h3>
+      <small class="text-muted">Baseline semantic table styling for common data presentation.</small>
+    </header>
     <table>
       <thead>
         <tr>
@@ -60,6 +64,10 @@ DefaultTable.storyName = 'Default Table';
 
 export const StripedTable = () => html`
   <section class="card">
+    <header>
+      <h3>Striped Table</h3>
+      <small class="text-muted">Use <code>.table-striped</code> for alternating row backgrounds.</small>
+    </header>
     <table class="table-striped">
       <thead>
         <tr>
@@ -109,6 +117,10 @@ StripedTable.storyName = 'Striped Table';
 
 export const BorderedCompactTable = () => html`
   <section class="card">
+    <header>
+      <h3>Bordered Compact Table</h3>
+      <small class="text-muted">Dense data table using <code>.table-bordered</code> and <code>.table-compact</code>.</small>
+    </header>
     <table class="table-bordered table-compact">
       <thead>
         <tr>
@@ -157,13 +169,13 @@ export const BorderedCompactTable = () => html`
 BorderedCompactTable.storyName = 'Bordered Compact Table';
 
 export const TableResponsiveWrapper = () => html`
-  <div class="card">
-    <h2>Responsive Table Wrapper</h2>
-    <p class="text-muted">
+  <header class="card">
+    <h3>Responsive Table Wrapper</h3>
+    <small class="text-muted">
       Wrap tables in <code>.table-responsive</code> for horizontal scrolling on mobile.
       This is the recommended approach for wide data tables.
-    </p>
-  </div>
+    </small>
+  </header>
   
   <div class="table-responsive">
     <table class="table-striped">
@@ -241,7 +253,10 @@ TableResponsiveWrapper.storyName = 'Responsive Wrapper';
 
 export const ResponsiveTable = () => html`
   <section class="card">
-    <small class="text-muted">Resize the window to see horizontal scrolling on small screens</small>
+    <header>
+      <h3>Responsive Table</h3>
+      <small class="text-muted">Resize the window to see horizontal scrolling on small screens.</small>
+    </header>
     <div class="table-responsive">
       <table class="table-striped">
         <thead>
@@ -297,7 +312,10 @@ ResponsiveTable.storyName = 'Responsive Table';
 
 export const TablesReference = () => html`
   <div class="card">
-    <h2>Table Classes Reference</h2>
+    <header>
+      <h3>Table Classes Reference</h3>
+      <small class="text-muted">Quick reference for table primitives and responsive wrappers.</small>
+    </header>
   
     <table class="table-bordered">
     <thead>
