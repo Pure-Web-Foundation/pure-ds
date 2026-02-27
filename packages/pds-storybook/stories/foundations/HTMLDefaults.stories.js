@@ -380,7 +380,7 @@ export const DetailsAndSummary = {
         
         <div class="callout callout-info">
           <strong>Note:</strong> For grouped accordion behavior (animated, and where only one item opens at a time), 
-          see the <a data-story-link="primitives-accordion--basic-accordion">Accordion primitive</a>.
+          see the <a data-story-link="enhancements-accordion--basic-accordion">Accordion primitive</a>.
         </div>
       </article>
     `;
@@ -436,7 +436,7 @@ export const RelatedDocumentation = () => {
         <p class="text-muted">Table styling, variants, and responsive patterns</p>
       </a>
       
-      <a data-story-link="primitives-accordion--basic-accordion" class="card card-interactive">
+      <a data-story-link="enhancements-accordion--basic-accordion" class="card card-interactive">
         <h3>Accordion</h3>
         <p class="text-muted">Grouped collapsible sections with single-expand behavior</p>
       </a>

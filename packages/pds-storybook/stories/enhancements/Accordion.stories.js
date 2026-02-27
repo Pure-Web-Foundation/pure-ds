@@ -69,7 +69,7 @@ export const AccordionWithRichContent = () => html`
 
       <details>
         <summary id="feature2">Color System</summary>
-        <div class="stack-md" role="region" aria-labelledby="feature2">
+        <div role="region" aria-labelledby="feature2">
           <p>The color system automatically generates semantic colors and full scales from your base palette.</p>
           <div class="flex gap-xs flex-wrap">
             <span class="badge badge-primary">Primary</span>
@@ -83,7 +83,7 @@ export const AccordionWithRichContent = () => html`
 
       <details>
         <summary id="feature3">Smart Surfaces</summary>
-        <div class="stack-md" role="region" aria-labelledby="feature3">
+        <div role="region" aria-labelledby="feature3">
           <h4>Automatic Contrast Management</h4>
           <p>Surfaces automatically adjust text, icons, and shadow colors to maintain WCAG AA contrast ratios.</p>
           <div class="grid grid-cols-2 gap-sm">
@@ -101,7 +101,7 @@ export const AccordionWithRichContent = () => html`
 
       <details>
         <summary id="feature4">Grid System</summary>
-        <div class="stack-md" role="region" aria-labelledby="feature4">
+        <div role="region" aria-labelledby="feature4">
           <p>Modern CSS Grid-based layout system with fixed and auto-fit responsive options.</p>
           <pre><code>/* Fixed columns */
 .grid-cols-3 { ... }
@@ -124,13 +124,13 @@ export const NestedAccordion = () => html`
     <section class="accordion" aria-label="Product Categories">
       <details>
         <summary id="cat1">Electronics</summary>
-        <div class="stack-md" role="region" aria-labelledby="cat1">
+        <div role="region" aria-labelledby="cat1">
           <p>Browse our electronics collection:</p>
           
           <section class="accordion" aria-label="Electronics Subcategories">
             <details>
               <summary id="cat1-1">Computers</summary>
-              <div role="region" aria-labelledby="cat1-1">
+              <div role="region" aria-labelledby="cat1-1" class="card">
                 <ul>
                   <li>Laptops</li>
                   <li>Desktops</li>
@@ -141,7 +141,7 @@ export const NestedAccordion = () => html`
             
             <details>
               <summary id="cat1-2">Phones</summary>
-              <div role="region" aria-labelledby="cat1-2">
+              <div role="region" aria-labelledby="cat1-2" class="card">
                 <ul>
                   <li>Smartphones</li>
                   <li>Feature Phones</li>
@@ -155,13 +155,13 @@ export const NestedAccordion = () => html`
 
       <details>
         <summary id="cat2">Clothing</summary>
-        <div class="stack-md" role="region" aria-labelledby="cat2">
+        <div role="region" aria-labelledby="cat2">
           <p>Shop our clothing lines:</p>
           
           <section class="accordion" aria-label="Clothing Subcategories">
             <details>
               <summary id="cat2-1">Men's</summary>
-              <div role="region" aria-labelledby="cat2-1">
+              <div role="region" aria-labelledby="cat2-1" class="card">
                 <ul>
                   <li>Shirts</li>
                   <li>Pants</li>
@@ -172,7 +172,7 @@ export const NestedAccordion = () => html`
             
             <details>
               <summary id="cat2-2">Women's</summary>
-              <div role="region" aria-labelledby="cat2-2">
+              <div role="region" aria-labelledby="cat2-2" class="card">
                 <ul>
                   <li>Dresses</li>
                   <li>Tops</li>
@@ -186,7 +186,7 @@ export const NestedAccordion = () => html`
 
       <details>
         <summary id="cat3">Home & Garden</summary>
-        <div role="region" aria-labelledby="cat3">
+        <div role="region" aria-labelledby="cat3" class="card">
           <ul>
             <li>Furniture</li>
             <li>Decor</li>
@@ -219,17 +219,20 @@ export const SingleExpandAccordion = () => html`
         </summary>
         <div class="card" role="region" aria-labelledby="set1">
           <form method="post" action="#">
-            <label>
-              <span data-label>Display Name</span>
-              <input type="text" value="John Doe" placeholder="Enter your display name" />
-            </label>
-            <label>
-              <span data-label>Email</span>
-              <div class="input-icon">
-                <pds-icon icon="envelope"></pds-icon>
-                <input type="email" value="john@example.com" placeholder="your.email@example.com" />
-              </div>
-            </label>
+            <div class="card flex gap-sm">
+            
+              <label>
+                <span data-label>Display Name</span>
+                <input type="text" value="John Doe" placeholder="Enter your display name" />
+              </label>
+              <label>
+                <span data-label>Email</span>
+                <div class="input-icon">
+                  <pds-icon icon="envelope"></pds-icon>
+                  <input type="email" value="john@example.com" placeholder="your.email@example.com" />
+                </div>
+              </label>
+            </div>
             <button type="submit" class="btn-primary btn-sm">
               Save Changes
             </button>
@@ -242,7 +245,7 @@ export const SingleExpandAccordion = () => html`
           <pds-icon icon="bell" size="sm"></pds-icon>
           <span>Notifications</span>
         </summary>
-        <div class="stack-md" role="region" aria-labelledby="set2">
+        <div role="region" aria-labelledby="set2" class="card">
           <label data-toggle>
             <input type="checkbox" checked />
             <span>Email notifications</span>
@@ -263,8 +266,9 @@ export const SingleExpandAccordion = () => html`
           <pds-icon icon="lock" size="sm"></pds-icon>
           <span>Privacy & Security</span>
         </summary>
-        <div class="stack-md" role="region" aria-labelledby="set3">
+        <div role="region" aria-labelledby="set3" class="card">
           <p>Manage your privacy and security settings.</p>
+          <div class="card">
           <label data-toggle>
             <input type="checkbox" checked />
             <span>Two-factor authentication</span>
@@ -273,6 +277,7 @@ export const SingleExpandAccordion = () => html`
             <input type="checkbox" />
             <span>Login alerts</span>
           </label>
+          </div>
           <button class="btn-secondary btn-sm">
             Change Password
           </button>
@@ -284,22 +289,12 @@ export const SingleExpandAccordion = () => html`
           <pds-icon icon="palette" size="sm"></pds-icon>
           <span>Appearance</span>
         </summary>
-        <div role="region" aria-labelledby="set4">
-          <fieldset role="radiogroup">
-            <legend>Theme</legend>
-            <label>
-              <input type="radio" name="theme" value="light" />
-              <span>Light</span>
-            </label>
-            <label>
-              <input type="radio" name="theme" value="dark" checked />
-              <span>Dark</span>
-            </label>
-            <label>
-              <input type="radio" name="theme" value="auto" />
-              <span>Auto</span>
-            </label>
-          </fieldset>
+        <div role="region" aria-labelledby="set4" class="card">
+          <label>
+            <span data-label>Theme</span>
+            <pds-theme></pds-theme>
+          </label>
+          
         </div>
       </details>
     </section>

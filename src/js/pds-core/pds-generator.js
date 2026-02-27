@@ -3313,7 +3313,7 @@ tbody {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
-  border-radius: inherit;
+  border-radius: var(--radius-md);
   transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
 
   &::-webkit-details-marker {

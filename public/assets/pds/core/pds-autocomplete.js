@@ -1,7 +1,590 @@
-function m(o){return new DOMParser().parseFromString(o,"text/html").body.childNodes}function y(o,t=100){let e;return function(...i){let r=()=>{clearTimeout(e),o(...i)};clearTimeout(e),e=setTimeout(r,t)}}function p(o){setTimeout(o,0)}function b(o){try{if(typeof o!="string"||o.indexOf(`
-`)!==-1||o.indexOf(" ")!==-1||o.startsWith("#/"))return!1;let t=new URL(o,window.location.origin);return t.protocol==="http:"||t.protocol==="https:"}catch{return!1}}function x(o,t,e){let s=window.screen.width/2-t/2,i=window.screen.height/2-e/2;return window.open(o,"",`toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=${t}, height=${e}, top=${i}, left=${s}`)}var g={result:"ac-suggestion",item:"ac-itm"},f=class o extends EventTarget{constructor(t,e,s){super(),this.settings={emptyResultsText:"",...s},this.container=t,this.input=e,this.input.setAttribute("autocomplete","off"),this.categories=s.categories||{},this.caches=new Map,p(this.attach.bind(this))}static connect(t,e){let s=t.target;if(!s._autoComplete){if(!e?.categories)throw Error("Missing autocomplete settings");s._autoComplete=new o(s.parentNode,s,e),t.type==="focus"&&setTimeout(()=>{s._autoComplete.focusHandler(t)},100)}return s._autoComplete}on(t,e){return this.input.addEventListener(t,e),this}attach(){this.resultsDiv=document.createElement("div"),this.resultsDiv.title="",this.resultsDiv.classList.add(g.result),this.container.offsetWidth>100&&(this.resultsDiv.style.width=this.container.offsetWidth),this.resultsDiv.addEventListener("mousedown",this.resultClick.bind(this)),this.container.classList.add("ac-container"),this.input.classList.add("ac-input");let t=getComputedStyle(this.input);this.container.style.setProperty("--ac-bg-default",t.backgroundColor),this.container.style.setProperty("--ac-color-default",t.color);let e=getComputedStyle(this.input).accentColor;e!=="auto"&&this.container.style.setProperty("--ac-accent-color",e),(this.container?.shadowRoot??this.container).appendChild(this.resultsDiv),this.controller().clear("attach"),this.on("input",y(this.inputHandler.bind(this),this.settings.throttleInputMs??300)).on("focus",this.focusHandler.bind(this)).on("focusout",this.blurHandler.bind(this)).on("keyup",this.keyUpHandler.bind(this)).on("keydown",this.keyDownHandler.bind(this))}controller(){let t=this.internalController();return typeof this.settings.controller=="function"&&(t=this.settings.controller(this)??t),t}internalController(){return{show:this.show.bind(this),hide:this.hide.bind(this),clear:this.clear.bind(this),empty:()=>{}}}moveResult(t){this.controller().show();let e=this.acItems.length;this.rowIndex=this.rowIndex+t,this.rowIndex<=0?this.rowIndex=0:this.rowIndex>e-1&&(this.rowIndex=0);for(let i of this.acItems)i.classList.remove("selected");let s=this.getSelectedDiv();s?(s.classList.add("selected"),s.scrollIntoView({behavior:"smooth",block:"end",inline:"nearest"})):this.focusHandler({target:this.input})}getSelectedDiv(){return this.resultsDiv.querySelector(`div:nth-child(${this.rowIndex+1})`)}selectResult(t){if(t=t||this.getSelectedDiv(),t){let e=parseInt(t.getAttribute("data-index"));this.resultClicked=!0;let s=this.results[e],i=this.categories[s.category]??{};i.action=i.action??this.setText.bind(this),i.newTab&&(this.tabWindow=x("about:blank"));let r={...s,search:this.input.value};t.classList.add("ac-active"),setTimeout(()=>{this.controller().hide("result-selected"),r.action?r.action(r):(i.action(r),i.newTab&&(r.url?this.tabWindow.location.href=r.url:this.tabWindow.close()));var n=new Event("change",{bubbles:!0});this.input.dispatchEvent(n),this.controller().clear("result-selected");let u=new Event("result-selected");u.detail=r,this.input.dispatchEvent(u)},0)}}setText(t){let e=!1;this.input?(this.input.value=t.text,e=!0):this.container?.autoCompleteInput?(this.container.autoCompleteInput.value=t.text,e=!0):"value"in this.container&&(this.container.value=t.text,e=!0),e&&this.input&&this.input.dispatchEvent(new Event("input",{bubbles:!0})),this.controller().hide("settext")}resultClick(t){this.selectResult(t.target.closest(`.${g.item}`))}blurHandler(){setTimeout(()=>{this.resultClicked||this.controller().clear("blurred"),this.resultClicked=!1},100)}clear(){this.settings.debug||this.resultsDiv&&(this.resultsDiv.innerHTML="",this.controller().hide("clear"),this.cacheTmr&&clearTimeout(this.cacheTmr),this.cacheTmr=setTimeout(()=>{this.caches.clear()},60*1e3*5))}show(){if(!this.resultsDiv.classList.contains("ac-active")){let t=this.getViewBounds();this.resultsDiv.style.position="absolute",t.rect.width>100&&(this.resultsDiv.style.width=`${t.rect.width}px`),this.settings.direction=this.settings.direction??t.suggestedDirection,this.resultsDiv.setAttribute("data-direction",this.settings.direction),this.settings.direction==="up"?(this.resultsDiv.style.top="unset",this.resultsDiv.style.bottom=`${t.rect.height+20}px`,this.rowIndex=this.acItems.length):(this.resultsDiv.style.bottom="unset",this.resultsDiv.style.top=`${t.rect.height}px`,this.rowIndex=-1),this.resultsDiv.style.maxWidth="unset",this.resultsDiv.classList.toggle("ac-active",!0)}}getViewBounds(){let t=this.input.getBoundingClientRect();return{rect:t,suggestedDirection:t.top+t.height+500>window.innerHeight?"up":"down"}}hide(){this.resultsDiv.classList.toggle("ac-active",!1)}empty(){this.resultsDiv.innerHTML=`<div class="ac-empty">${this.settings.emptyResultsText}</div>`,this.controller().show()}inputHandler(t){this.cacheTmr&&clearTimeout(this.cacheTmr);let e={search:t.target.value,categories:this.categories};this.container.classList.add("search-running"),this.getItems(e,t).then(s=>{this.controller().clear("new-results"),this.resultsHandler(s,e),this.container.classList.remove("search-running")})}keyDownHandler(t){switch(t.key){case"Enter":t.stopPropagation(),t.preventDefault();break;case"ArrowDown":p(this.moveResult(1));break;case"ArrowUp":p(this.moveResult(-1));break}}keyUpHandler(t){switch(t.key){case"Escape":this.controller().hide("escape");break;case"Enter":this.getSelectedDiv()&&(this.container.preventEnter=!0,t.stopPropagation(),t.preventDefault(),this.selectResult(),setTimeout(()=>{this.container.preventEnter=!1},10));break;default:break}}focusHandler(t){this.controller().clear("focus");let e=t.target.value;this.suggest(e,t)}suggest(t,e){this.input.focus();let s={suggest:!0,search:t||"",categories:this.categories};this.getItems(s,e).then(i=>{this.input.dispatchEvent(new CustomEvent("show-results",{detail:{results:i}})),this.resultsHandler(i,s)})}sort(t,e){return t.sort((s,i)=>{let r=e.categories[s.category],n=e.categories[i.category],u=typeof r.sortIndex=="function"?r.sortIndex(e):r.sortIndex??0;return(typeof n.sortIndex=="function"?n.sortIndex(e):n.sortIndex??0)>u?1:-1})}resultsHandler(t,e){this.results=t,this.rowIndex=-1;let s=0,i=(r,n)=>`
-      <div title="${n.tooltip||""}" data-index="${s}" class="${`${g.item} cat-${n.category} ${n.class??""}`.trim()}"${n.style?` style="${n.style}"`:""}>
-        ${this.handleImageOrIcon(n)}
-        <span class="text">${this.formatResultItem(n,e,r)}</span>
-        ${this.settings.hideCategory?"":`<span class="category">${n.category||""}</span>`}
-      </div>`;t.forEach(r=>{let n=e.categories[r.category]||{};r.element?this.resultsDiv.appendChild(r.element):(r=typeof r=="string"?{text:r}:r,this.resultsDiv.appendChild(m(i(n,r))[0])),s++}),t.length?(this.acItems=this.resultsDiv.querySelectorAll(".ac-itm"),this.controller().show()):e.search.length&&this.controller().empty()}handleImageOrIcon(t){return t.image?`<img src="${t.image}"/>`:typeof this.settings.iconHandler=="function"?this.settings.iconHandler(t):`<svg-icon icon="${t.icon}"></svg-icon>`}formatResultItem(t,e,s){let i=typeof t=="string"?{text:t}:t,r=i.text;return e.search&&(r=r.replace("%search%",e.search),i.description=i.description?.replace("%search%",e.search)),r=this.highlight(r,e.search),i.description&&(r=`<div>${r}</div><small>${i.description}</small>`),s.format&&(r=s.format({item:i,result:r,options:e})),r}highlight(t,e){var s=new RegExp("("+e+")","gi");return t.replace(s,'<span class="txt-hl">$1</span>')}async getItems(t,e){this.aborter&&this.aborter.abort();let s=this.caches.get(t.search);if(s)return s;let i=this.settings.map,r=a=>(typeof a=="string"&&(a={text:a}),a),n=a=>i?a.map(h=>({text:h[i]})):a.map(h=>r(h)),u=a=>(this.settings.max&&this.settings.max>0&&(a.length=this.settings.max),a);return this.aborter=new AbortController,this.aborterSignal=this.aborter.signal,new Promise(a=>{let h=l=>{l=this.sort(l,t),this.settings.cache!==!1&&this.caches.set(t.search,l),a(l)};if(b(this.items)){if(this.settings.minlength>0&&(!t.search||t.search.length<this.settings.minlength)){h([]);return}let l=this.formatSearch(this.items,t);fetch(l).then(c=>{if(c.status===200){c.json().then(d=>{d=n(d),h(u(d.filter(w=>this.isMatch(t,w))))});return}throw Error(`HTTP error ${c.status} - ${l}`)})}else if(Array.isArray(this.items)){let l=!0;this.items=this.items.map(c=>typeof c=="string"?{text:c}:(l=!1,c)),l&&this.container.classList.add("simple"),h(u(n(this.items)))}else if(typeof this.items=="function")t.control=this.container,Promise.resolve(this.items(t,e)).then(c=>{c=c.map(d=>r(d)),c=n(c),h(c)});else return h(Promise.resolve(this.items.apply(this,t)))})}async items(t){let e=[];t.results=[],t.signal=this.aborterSignal;for(var s in t.categories){let i=t.categories[s];if(i.trigger=i.trigger??(()=>!0),t.results=e,i.trigger(t)){let r=[];try{r=await i.getItems(t)}catch(n){console.warn(`Error loading items for omniBox category '${s}'.`,n)}e=e.concat(r.map(n=>(n.category=s,n)))}}return e}formatSearch(t,e){return t.indexOf("%search%")?t.replace("%search%",e.search||""):t+"?"+this.createQueryParam(e)}createQueryParam(t){let e=t.suggest?"&suggest=true":"";return`q=${t.text}${e}`}isMatch(t,e){return e.text?.indexOf("%search%")>=0?!0:t.search?e.text?.toLowerCase().indexOf(t.search.toLowerCase())>=0:t.suggest}static textFilter(t,e){return function(s){if(!t.search)return!0;if(s.hidden)return!1;let r=(e?s[e]:s).match(new RegExp(t.search,"gi"));if(r)return r;if(s.config?.tags)return s.config.tags.some(n=>n.match(new RegExp(t.search,"gi")))}}};export{f as AutoComplete};
+// node_modules/pure-web/src/js/common.js
+function parseHTML(html) {
+  return new DOMParser().parseFromString(html, "text/html").body.childNodes;
+}
+function throttle(fn, timeoutMs = 100) {
+  let handle;
+  return function executedFunction(...args) {
+    const fire = () => {
+      clearTimeout(handle);
+      fn(...args);
+    };
+    clearTimeout(handle);
+    handle = setTimeout(fire, timeoutMs);
+  };
+}
+function enQueue(fn) {
+  setTimeout(fn, 0);
+}
+function isUrl(str) {
+  try {
+    if (typeof str !== "string")
+      return false;
+    if (str.indexOf("\n") !== -1 || str.indexOf(" ") !== -1)
+      return false;
+    if (str.startsWith("#/"))
+      return false;
+    const newUrl = new URL(str, window.location.origin);
+    return newUrl.protocol === "http:" || newUrl.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+function openCenteredWindow(url, width, height) {
+  const left = window.screen.width / 2 - width / 2;
+  const top = window.screen.height / 2 - height / 2;
+  return window.open(
+    url,
+    "",
+    `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=${width}, height=${height}, top=${top}, left=${left}`
+  );
+}
+
+// node_modules/pure-web/src/js/autocomplete.js
+var cssClasses = {
+  result: "ac-suggestion",
+  item: "ac-itm"
+};
+var AutoComplete = class _AutoComplete extends EventTarget {
+  constructor(parent, textInput, settings) {
+    super();
+    this.settings = {
+      emptyResultsText: "",
+      ...settings
+    };
+    this.container = parent;
+    this.input = textInput;
+    this.input.setAttribute("autocomplete", "off");
+    this.categories = settings.categories || {};
+    this.caches = /* @__PURE__ */ new Map();
+    enQueue(this.attach.bind(this));
+  }
+  /**
+   * Connector logic to call on @focus events.
+   * Lit example:
+   * <input type="search" @focus=${(e) => {AutoComplete.connect(e, this.autoComplete); }} />
+   *
+   * @param {*} event focus event
+   * @param {*} options AutoComplete options
+   */
+  static connect(event, options) {
+    const input = event.target;
+    if (!input._autoComplete) {
+      if (!options?.categories)
+        throw Error("Missing autocomplete settings");
+      input._autoComplete = new _AutoComplete(input.parentNode, input, options);
+      if (event.type === "focus") {
+        setTimeout(() => {
+          input._autoComplete.focusHandler(event);
+        }, 100);
+      }
+    }
+    return input._autoComplete;
+  }
+  on(a, b) {
+    this.input.addEventListener(a, b);
+    return this;
+  }
+  attach() {
+    this.resultsDiv = document.createElement("div");
+    this.resultsDiv.title = "";
+    this.resultsDiv.classList.add(cssClasses.result);
+    if (this.container.offsetWidth > 100)
+      this.resultsDiv.style.width = this.container.offsetWidth;
+    this.resultsDiv.addEventListener("mousedown", this.resultClick.bind(this));
+    this.container.classList.add("ac-container");
+    this.input.classList.add("ac-input");
+    const inputStyle = getComputedStyle(this.input);
+    this.container.style.setProperty(
+      "--ac-bg-default",
+      inputStyle.backgroundColor
+    );
+    this.container.style.setProperty("--ac-color-default", inputStyle.color);
+    const acc = getComputedStyle(this.input).accentColor;
+    if (acc !== "auto")
+      this.container.style.setProperty("--ac-accent-color", acc);
+    (this.container?.shadowRoot ?? this.container).appendChild(this.resultsDiv);
+    this.controller().clear("attach");
+    this.on(
+      "input",
+      throttle(
+        this.inputHandler.bind(this),
+        this.settings.throttleInputMs ?? 300
+      )
+    ).on("focus", this.focusHandler.bind(this)).on("focusout", this.blurHandler.bind(this)).on("keyup", this.keyUpHandler.bind(this)).on("keydown", this.keyDownHandler.bind(this));
+  }
+  controller() {
+    let c = this.internalController();
+    if (typeof this.settings.controller === "function")
+      c = this.settings.controller(this) ?? c;
+    return c;
+  }
+  internalController() {
+    return {
+      show: this.show.bind(this),
+      hide: this.hide.bind(this),
+      clear: this.clear.bind(this),
+      empty: () => {
+      }
+    };
+  }
+  moveResult(add) {
+    this.controller().show();
+    let length = this.acItems.length;
+    this.rowIndex = this.rowIndex + add;
+    if (this.rowIndex <= 0) {
+      this.rowIndex = 0;
+    } else if (this.rowIndex > length - 1) {
+      this.rowIndex = 0;
+    }
+    for (const r of this.acItems) {
+      r.classList.remove("selected");
+    }
+    let div = this.getSelectedDiv();
+    if (div) {
+      div.classList.add("selected");
+      div.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+        inline: "nearest"
+      });
+    } else {
+      this.focusHandler({
+        target: this.input
+      });
+    }
+  }
+  getSelectedDiv() {
+    return this.resultsDiv.querySelector(`div:nth-child(${this.rowIndex + 1})`);
+  }
+  // execute action
+  selectResult(div) {
+    div = div || this.getSelectedDiv();
+    if (div) {
+      let index = parseInt(div.getAttribute("data-index"));
+      this.resultClicked = true;
+      let result = this.results[index];
+      let handlingCategory = this.categories[result.category] ?? {};
+      handlingCategory.action = handlingCategory.action ?? this.setText.bind(this);
+      if (handlingCategory.newTab) {
+        this.tabWindow = openCenteredWindow("about:blank");
+      }
+      let options = {
+        ...result,
+        search: this.input.value
+      };
+      div.classList.add("ac-active");
+      setTimeout(() => {
+        this.controller().hide("result-selected");
+        if (options.action) {
+          options.action(options);
+        } else {
+          handlingCategory.action(options);
+          if (handlingCategory.newTab) {
+            if (options.url) {
+              this.tabWindow.location.href = options.url;
+            } else {
+              this.tabWindow.close();
+            }
+          }
+        }
+        var event = new Event("change", { bubbles: true });
+        this.input.dispatchEvent(event);
+        this.controller().clear("result-selected");
+        const ev = new Event("result-selected");
+        ev.detail = options;
+        this.input.dispatchEvent(ev);
+      }, 0);
+    }
+  }
+  setText(options) {
+    let valueSet = false;
+    if (this.input) {
+      this.input.value = options.text;
+      valueSet = true;
+    } else if (this.container?.autoCompleteInput) {
+      this.container.autoCompleteInput.value = options.text;
+      valueSet = true;
+    } else if ("value" in this.container) {
+      this.container.value = options.text;
+      valueSet = true;
+    }
+    if (valueSet && this.input) {
+      this.input.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+    this.controller().hide("settext");
+  }
+  resultClick(event) {
+    this.selectResult(event.target.closest(`.${cssClasses.item}`));
+  }
+  blurHandler() {
+    setTimeout(() => {
+      if (!this.resultClicked)
+        this.controller().clear("blurred");
+      this.resultClicked = false;
+    }, 100);
+  }
+  clear() {
+    if (this.settings.debug)
+      return;
+    if (!this.resultsDiv)
+      return;
+    this.resultsDiv.innerHTML = "";
+    this.controller().hide("clear");
+    if (this.cacheTmr)
+      clearTimeout(this.cacheTmr);
+    this.cacheTmr = setTimeout(() => {
+      this.caches.clear();
+    }, 60 * 1e3 * 5);
+  }
+  show() {
+    if (!this.resultsDiv.classList.contains("ac-active")) {
+      const viewBounds = this.getViewBounds();
+      this.resultsDiv.style.position = "absolute";
+      if (viewBounds.rect.width > 100)
+        this.resultsDiv.style.width = `${viewBounds.rect.width}px`;
+      this.settings.direction = this.settings.direction ?? viewBounds.suggestedDirection;
+      this.resultsDiv.setAttribute("data-direction", this.settings.direction);
+      if (this.settings.direction === "up") {
+        this.resultsDiv.style.top = "unset";
+        this.resultsDiv.style.bottom = `${viewBounds.rect.height + 20}px`;
+        this.rowIndex = this.acItems.length;
+      } else {
+        this.resultsDiv.style.bottom = "unset";
+        this.resultsDiv.style.top = `${viewBounds.rect.height}px`;
+        this.rowIndex = -1;
+      }
+      this.resultsDiv.style.maxWidth = "unset";
+      this.resultsDiv.classList.toggle("ac-active", true);
+    }
+  }
+  getViewBounds() {
+    const rect = this.input.getBoundingClientRect();
+    return {
+      rect,
+      suggestedDirection: rect.top + rect.height + 500 > window.innerHeight ? "up" : "down"
+    };
+  }
+  hide() {
+    this.resultsDiv.classList.toggle("ac-active", false);
+  }
+  empty() {
+    this.resultsDiv.innerHTML = `<div class="ac-empty">${this.settings.emptyResultsText}</div>`;
+    this.controller().show();
+  }
+  inputHandler(e) {
+    if (this.cacheTmr)
+      clearTimeout(this.cacheTmr);
+    let options = {
+      search: e.target.value,
+      categories: this.categories
+    };
+    this.container.classList.add("search-running");
+    this.getItems(options, e).then((r) => {
+      this.controller().clear("new-results");
+      this.resultsHandler(r, options);
+      this.container.classList.remove("search-running");
+    });
+  }
+  keyDownHandler(e) {
+    switch (e.key) {
+      case "Enter":
+        e.stopPropagation();
+        e.preventDefault();
+        break;
+      case "ArrowDown":
+        enQueue(this.moveResult(1));
+        break;
+      case "ArrowUp":
+        enQueue(this.moveResult(-1));
+        break;
+    }
+  }
+  keyUpHandler(e) {
+    switch (e.key) {
+      case "Escape":
+        this.controller().hide("escape");
+        break;
+      case "Enter":
+        if (this.getSelectedDiv()) {
+          this.container.preventEnter = true;
+          e.stopPropagation();
+          e.preventDefault();
+          this.selectResult();
+          setTimeout(() => {
+            this.container.preventEnter = false;
+          }, 10);
+        }
+        break;
+      default:
+        break;
+    }
+  }
+  focusHandler(e) {
+    this.controller().clear("focus");
+    let value = e.target.value;
+    this.suggest(value, e);
+  }
+  /**
+   * Shows suggestion box
+   * @param {string} value - String to suggest results for
+   */
+  suggest(value, e) {
+    this.input.focus();
+    const options = {
+      suggest: true,
+      search: value || "",
+      categories: this.categories
+    };
+    this.getItems(options, e).then((r) => {
+      this.input.dispatchEvent(
+        new CustomEvent("show-results", {
+          detail: {
+            results: r
+          }
+        })
+      );
+      this.resultsHandler(r, options);
+    });
+  }
+  // Sort results based on static (integer) or dynamic (function) sortIndex in category.
+  sort(r, options) {
+    return r.sort((a, b) => {
+      const aCat = options.categories[a.category];
+      const bCat = options.categories[b.category];
+      const aIndex = typeof aCat.sortIndex === "function" ? aCat.sortIndex(options) : aCat.sortIndex ?? 0;
+      const bIndex = typeof bCat.sortIndex === "function" ? bCat.sortIndex(options) : bCat.sortIndex ?? 0;
+      return bIndex > aIndex ? 1 : -1;
+    });
+  }
+  resultsHandler(r, options) {
+    this.results = r;
+    this.rowIndex = -1;
+    let index = 0;
+    const singleItemTemplate = (catHandler, i) => {
+      return (
+        /*html*/
+        `
+      <div title="${i.tooltip || ""}" data-index="${index}" class="${`${cssClasses.item} cat-${i.category} ${i.class ?? ""}`.trim()}"${i.style ? ` style="${i.style}"` : ""}>
+        ${this.handleImageOrIcon(i)}
+        <span class="text">${this.formatResultItem(
+          i,
+          options,
+          catHandler
+        )}</span>
+        ${!this.settings.hideCategory ? `<span class="category">${i.category || ""}</span>` : ""}
+      </div>`
+      );
+    };
+    r.forEach((i) => {
+      let catHandler = options.categories[i.category] || {};
+      if (i.element) {
+        this.resultsDiv.appendChild(i.element);
+      } else {
+        i = typeof i === "string" ? { text: i } : i;
+        this.resultsDiv.appendChild(
+          parseHTML(singleItemTemplate(catHandler, i))[0]
+        );
+      }
+      index++;
+    });
+    if (r.length) {
+      this.acItems = this.resultsDiv.querySelectorAll(".ac-itm");
+      this.controller().show();
+    } else if (options.search.length)
+      this.controller().empty();
+  }
+  handleImageOrIcon(i) {
+    if (i.image) {
+      return (
+        /*html*/
+        `<img src="${i.image}"/>`
+      );
+    }
+    if (typeof this.settings.iconHandler === "function")
+      return this.settings.iconHandler(i);
+    return (
+      /*html*/
+      `<svg-icon icon="${i.icon}"></svg-icon>`
+    );
+  }
+  formatResultItem(item, options, catHandler) {
+    const i = typeof item === "string" ? { text: item } : item;
+    let result = i.text;
+    if (options.search) {
+      result = result.replace("%search%", options.search);
+      i.description = i.description?.replace("%search%", options.search);
+    }
+    result = this.highlight(result, options.search);
+    if (i.description) {
+      result = `<div>${result}</div><small>${i.description}</small>`;
+    }
+    if (catHandler.format) {
+      result = catHandler.format({
+        item: i,
+        result,
+        options
+      });
+    }
+    return result;
+  }
+  highlight(str, find) {
+    var reg = new RegExp("(" + find + ")", "gi");
+    return str.replace(reg, '<span class="txt-hl">$1</span>');
+  }
+  async getItems(options, e) {
+    if (this.aborter) {
+      this.aborter.abort();
+    }
+    let cache = this.caches.get(options.search);
+    if (cache)
+      return cache;
+    const prop = this.settings.map;
+    const normalizeItem = (i) => {
+      if (typeof i === "string")
+        i = { text: i };
+      return i;
+    };
+    const map = (list) => {
+      if (!prop) {
+        return list.map((i) => {
+          return normalizeItem(i);
+        });
+      }
+      return list.map((i) => {
+        return { text: i[prop] };
+      });
+    };
+    const max = (list) => {
+      if (this.settings.max && this.settings.max > 0) {
+        list.length = this.settings.max;
+      }
+      return list;
+    };
+    this.aborter = new AbortController();
+    this.aborterSignal = this.aborter.signal;
+    return new Promise((resolve) => {
+      const internalResolve = (data) => {
+        data = this.sort(data, options);
+        if (this.settings.cache !== false)
+          this.caches.set(options.search, data);
+        resolve(data);
+      };
+      if (isUrl(this.items)) {
+        if (this.settings.minlength > 0) {
+          if (!options.search || options.search.length < this.settings.minlength) {
+            internalResolve([]);
+            return;
+          }
+        }
+        let url = this.formatSearch(this.items, options);
+        fetch(url).then((x) => {
+          if (x.status === 200) {
+            x.json().then((items) => {
+              items = map(items);
+              internalResolve(
+                max(
+                  items.filter((i) => {
+                    return this.isMatch(options, i);
+                  })
+                )
+              );
+            });
+            return;
+          }
+          throw Error(`HTTP error ${x.status} - ${url}`);
+        });
+      } else if (Array.isArray(this.items)) {
+        let simple = true;
+        this.items = this.items.map((i) => {
+          if (typeof i === "string") {
+            return { text: i };
+          }
+          simple = false;
+          return i;
+        });
+        if (simple) {
+          this.container.classList.add("simple");
+        }
+        internalResolve(max(map(this.items)));
+      } else if (typeof this.items === "function") {
+        options.control = this.container;
+        let ar = Promise.resolve(this.items(options, e));
+        ar.then((ar2) => {
+          ar2 = ar2.map((i) => {
+            return normalizeItem(i);
+          });
+          ar2 = map(ar2);
+          internalResolve(ar2);
+        });
+      } else {
+        return internalResolve(
+          Promise.resolve(this.items.apply(this, options))
+        );
+      }
+    });
+  }
+  async items(options) {
+    let arr = [];
+    options.results = [];
+    options.signal = this.aborterSignal;
+    for (var c in options.categories) {
+      let catHandler = options.categories[c];
+      catHandler.trigger = catHandler.trigger ?? (() => {
+        return true;
+      });
+      options.results = arr;
+      if (catHandler.trigger(options)) {
+        let catResults = [];
+        try {
+          catResults = await catHandler.getItems(options);
+        } catch (ex) {
+          console.warn(`Error loading items for omniBox category '${c}'.`, ex);
+        }
+        arr = arr.concat(
+          catResults.map((i) => {
+            i.category = c;
+            return i;
+          })
+        );
+      }
+    }
+    return arr;
+  }
+  formatSearch(url, options) {
+    if (url.indexOf("%search%")) {
+      return url.replace("%search%", options.search || "");
+    }
+    return url + "?" + this.createQueryParam(options);
+  }
+  createQueryParam(options) {
+    let suggest = options.suggest ? "&suggest=true" : "";
+    return `q=${options.text}${suggest}`;
+  }
+  isMatch(options, i) {
+    if (i.text?.indexOf("%search%") >= 0)
+      return true;
+    return options.search ? i.text?.toLowerCase().indexOf(options.search.toLowerCase()) >= 0 : options.suggest;
+  }
+  static textFilter(options, propertyName) {
+    return function(i) {
+      if (!options.search)
+        return true;
+      if (i.hidden)
+        return false;
+      const prop = propertyName ? i[propertyName] : i;
+      const isMatch = prop.match(new RegExp(options.search, "gi"));
+      if (isMatch)
+        return isMatch;
+      if (i.config?.tags) {
+        return i.config.tags.some((tag) => {
+          return tag.match(new RegExp(options.search, "gi"));
+        });
+      }
+    };
+  }
+};
+export {
+  AutoComplete
+};
+//# sourceMappingURL=pds-autocomplete.js.map

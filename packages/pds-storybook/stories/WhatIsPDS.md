@@ -39,7 +39,7 @@ You can stop here and already have something most teams never achieve: **A coher
 
 ## Layer 2 — The Pulse: Progressive Enhancement
 
-PDS can add simple **behavior** to semantic HTML structures in the form of Progressive Enhancements. These enhancers are automatically triggered by CSS selector ¹. For instance, if you use `class="accordion"` on a `section` or other HTML element, you make a group of `<details>` elements into an [accordion](https://storybook.pure-ds.com/?path=/story/primitives-accordion--basic-accordion) without the need to resort to a component.
+PDS can add simple **behavior** to semantic HTML structures in the form of Progressive Enhancements. These enhancers are automatically triggered by CSS selector ¹. For instance, if you use `class="accordion"` on a `section` or other HTML element, you make a group of `<details>` elements into an [accordion](https://storybook.pure-ds.com/?path=/story/enhancements-accordion--basic-accordion) without the need to resort to a component.
 
 
 ¹ PDS comes with a lightweight DOM observer that is smart enough to monitor the DOM (including Shadow DOMs) and activate enhancers when they're needed.

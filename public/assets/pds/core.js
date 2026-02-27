@@ -1,2 +1,1506 @@
-var Ue=Object.defineProperty;var Ce=(e,t)=>{for(var n in t)Ue(e,n,{get:t[n],enumerable:!0})};var X=class{constructor(){this._mode="static",this._staticPaths={tokens:"/assets/pds/styles/pds-tokens.css.js",primitives:"/assets/pds/styles/pds-primitives.css.js",components:"/assets/pds/styles/pds-components.css.js",utilities:"/assets/pds/styles/pds-utilities.css.js",styles:"/assets/pds/styles/pds-styles.css.js"}}setLiveMode(){this._mode="live"}setStaticMode(t={}){this._mode="static",this._staticPaths={...this._staticPaths,...t}}async getStylesheet(t){if(this._mode==="live")return null;try{return(await import(this._staticPaths[t]))[t]}catch(n){console.error(`[PDS Registry] Failed to load static ${t}:`,n),console.error(`[PDS Registry] Looking for: ${this._staticPaths[t]}`),console.error("[PDS Registry] Make sure you've run 'npm run pds:build' and configured PDS.start() with the correct static.root path");let r=new CSSStyleSheet;return r.replaceSync("/* Failed to load "+t+" */"),r}}get mode(){return this._mode}get isLive(){return this._mode==="live"}},M=new X;async function fe(e,t=[],n=null){try{let r=n?.primitivesStylesheet?n.primitivesStylesheet:await M.getStylesheet("primitives");e.adoptedStyleSheets=[r,...t]}catch(r){let a=e.host?.tagName?.toLowerCase()||"unknown";console.error(`[PDS Adopter] <${a}> failed to adopt primitives:`,r),e.adoptedStyleSheets=t}}async function me(e,t=["primitives"],n=[],r=null){let a=Array.isArray(n)?n.filter(Boolean):[];if(a.length){let l=(Array.isArray(e.adoptedStyleSheets)?e.adoptedStyleSheets:[]).filter(y=>!a.includes(y));e.adoptedStyleSheets=[...l,...a]}try{let l=(await Promise.all(t.map(async y=>{if(r)switch(y){case"tokens":return r.tokensStylesheet;case"primitives":return r.primitivesStylesheet;case"components":return r.componentsStylesheet;case"utilities":return r.utilitiesStylesheet;default:break}return M.getStylesheet(y)}))).filter(y=>y!==null);e.adoptedStyleSheets=[...l,...a]}catch(o){let l=e.host?.tagName?.toLowerCase()||"unknown";console.error(`[PDS Adopter] <${l}> failed to adopt layers:`,o),e.adoptedStyleSheets=a}}function he(e){let t=new CSSStyleSheet;return t.replaceSync(e),t}var ye={FontWeights:{light:300,normal:400,medium:500,semibold:600,bold:700},LineHeights:{tight:1.25,normal:1.5,relaxed:1.75},BorderWidths:{hairline:.5,thin:1,medium:2,thick:3},RadiusSizes:{none:0,small:4,medium:8,large:16,xlarge:24,xxlarge:32},ShadowDepths:{none:"none",light:"0 1px 2px 0 rgba(0, 0, 0, 0.05)",medium:"0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",deep:"0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",extreme:"0 25px 50px -12px rgba(0, 0, 0, 0.25)"},TransitionSpeeds:{fast:150,normal:250,slow:350},AnimationEasings:{linear:"linear",ease:"ease","ease-in":"ease-in","ease-out":"ease-out","ease-in-out":"ease-in-out",bounce:"cubic-bezier(0.68, -0.55, 0.265, 1.55)"},TouchTargetSizes:{compact:36,standard:44,comfortable:48,spacious:56},LinkStyles:{inline:"inline",block:"block",button:"button"},FocusStyles:{ring:"ring",outline:"outline",border:"border",glow:"glow"},TabSizes:{compact:2,standard:4,wide:8},SelectIcons:{chevron:"chevron",arrow:"arrow",caret:"caret",none:"none"},IconSizes:{xs:16,sm:20,md:24,lg:32,xl:48,"2xl":64,"3xl":96}};var ee={};Ce(ee,{deepMerge:()=>we,fragmentFromTemplateLike:()=>je,isObject:()=>I,parseHTML:()=>Z});function I(e){return e&&typeof e=="object"&&!Array.isArray(e)}function we(e,t){let n={...e};return I(e)&&I(t)&&Object.keys(t).forEach(r=>{I(t[r])?r in e?n[r]=we(e[r],t[r]):Object.assign(n,{[r]:t[r]}):Object.assign(n,{[r]:t[r]})}),n}function je(e){let t=Array.isArray(e?.strings)?e.strings:[],n=Array.isArray(e?.values)?e.values:[],r=new Set,a=[],o=/(\s)(\.[\w-]+)=\s*$/;for(let i=0;i<t.length;i+=1){let S=t[i]??"",f=S.match(o);if(f&&i<n.length){let g=f[2].slice(1),L=`pds-val-${i}`;S=S.replace(o,`$1data-pds-prop="${g}:${L}"`),r.add(i)}a.push(S),i<n.length&&!r.has(i)&&a.push(`<!--pds-val-${i}-->`)}let l=document.createElement("template");l.innerHTML=a.join("");let y=(i,S)=>{let f=i.parentNode;if(!f)return;if(S==null){f.removeChild(i);return}let b=g=>{if(g!=null){if(g instanceof Node){f.insertBefore(g,i);return}if(Array.isArray(g)){g.forEach(L=>b(L));return}f.insertBefore(document.createTextNode(String(g)),i)}};b(S),f.removeChild(i)},E=document.createTreeWalker(l.content,NodeFilter.SHOW_COMMENT),h=[];for(;E.nextNode();){let i=E.currentNode;i?.nodeValue?.startsWith("pds-val-")&&h.push(i)}return h.forEach(i=>{let S=Number(i.nodeValue.replace("pds-val-",""));y(i,n[S])}),l.content.querySelectorAll("*").forEach(i=>{let S=i.getAttribute("data-pds-prop");if(!S)return;let[f,b]=S.split(":"),g=Number(String(b).replace("pds-val-",""));f&&Number.isInteger(g)&&(i[f]=n[g]),i.removeAttribute("data-pds-prop")}),l.content}function Z(e){return new DOMParser().parseFromString(e,"text/html").body.childNodes}var ge="pds",$e=/^([a-z][a-z0-9+\-.]*:)?\/\//i,Se=/^[a-z]:/i;function U(e=""){return e.endsWith("/")?e:`${e}/`}function Oe(e="",t=ge){let n=e.replace(/\/+$/,"");return new RegExp(`(?:^|/)${t}$`,"i").test(n)?n:`${n}/${t}`}function Ie(e){return e.replace(/^\.\/+/,"")}function Ne(e){return Se.test(e)?e.replace(Se,"").replace(/^\/+/,""):e}function ze(e){return e.startsWith("public/")?e.substring(7):e}function N(e,t={}){let n=t.segment||ge,r=t.defaultRoot||`/assets/${n}/`,a=e?.public&&e.public?.root||e?.static&&e.static?.root||null;if(!a||typeof a!="string")return U(r);let o=a.trim();return o?(o=o.replace(/\\/g,"/"),o=Oe(o,n),o=U(o),$e.test(o)?o:(o=Ie(o),o=Ne(o),o.startsWith("/")||(o=ze(o),o.startsWith("/")||(o=`/${o}`),o=o.replace(/\/+/g,(l,y)=>y===0?l:"/")),U(o))):U(r)}async function Fe(...e){let t={};e.length&&typeof e[e.length-1]=="object"&&(t=e.pop()||{});let n=e,{baseURL:r,mapper:a=h=>`${h}.js`,onError:o=(h,c)=>console.error(`[defineWebComponents] ${h}:`,c)}=t,l=r?new URL(r,typeof location<"u"?location.href:import.meta.url):new URL("./",import.meta.url),y=h=>h.toLowerCase().replace(/(^|-)([a-z])/g,(c,i,S)=>S.toUpperCase()),E=async h=>{try{if(customElements.get(h))return{tag:h,status:"already-defined"};let c=a(h),S=await import(c instanceof URL?c.href:new URL(c,l).href),f=S?.default??S?.[y(h)];if(!f){if(customElements.get(h))return{tag:h,status:"self-defined"};throw new Error(`No export found for ${h}. Expected default export or named export "${y(h)}".`)}return customElements.get(h)?{tag:h,status:"race-already-defined"}:(customElements.define(h,f),{tag:h,status:"defined"})}catch(c){throw o(h,c),c}};return Promise.all(n.map(E))}var z=class{constructor(t={}){let{baseURL:n,mapper:r,onError:a,predicate:o=()=>!0,attributeModule:l="data-module",root:y=document,scanExisting:E=!0,debounceMs:h=16,observeShadows:c=!0,enhancers:i=[],patchAttachShadow:S=!0}=t,f=new Set,b=new Set,g=new Set,L=new Map,x=new WeakMap,_=new WeakMap,m=0,w=!1,v=null,O=d=>{if(!d||!i.length)return;let p=_.get(d);p||(p=new Set,_.set(d,p));for(let u of i)if(!(!u.selector||!u.run)&&!p.has(u.selector))try{d.matches&&d.matches(u.selector)&&(u.run(d),p.add(u.selector))}catch(A){console.warn(`[AutoDefiner] Error applying enhancer for selector "${u.selector}":`,A)}},k=(d,p)=>{if(!w&&!(!d||!d.includes("-"))&&!customElements.get(d)&&!b.has(d)&&!g.has(d)){if(p&&p.getAttribute){let u=p.getAttribute(l);u&&!L.has(d)&&L.set(d,u)}f.add(d),ke()}},ke=()=>{m||(m=setTimeout(de,h))},D=d=>{if(d){if(d.nodeType===1){let p=d,u=p.tagName?.toLowerCase();u&&u.includes("-")&&!customElements.get(u)&&o(u,p)&&k(u,p),O(p),c&&p.shadowRoot&&J(p.shadowRoot)}d.querySelectorAll&&d.querySelectorAll("*").forEach(p=>{let u=p.tagName?.toLowerCase();u&&u.includes("-")&&!customElements.get(u)&&o(u,p)&&k(u,p),O(p),c&&p.shadowRoot&&J(p.shadowRoot)})}},J=d=>{if(!d||x.has(d))return;D(d);let p=new MutationObserver(u=>{for(let A of u)A.addedNodes?.forEach(P=>{D(P)}),A.type==="attributes"&&A.target&&D(A.target)});p.observe(d,{childList:!0,subtree:!0,attributes:!0,attributeFilter:[l,...i.map(u=>u.selector).filter(u=>u.startsWith("data-"))]}),x.set(d,p)};async function de(){if(clearTimeout(m),m=0,!f.size)return;let d=Array.from(f);f.clear(),d.forEach(p=>b.add(p));try{let p=u=>L.get(u)??(r?r(u):`${u}.js`);await Fe(...d,{baseURL:n,mapper:p,onError:(u,A)=>{g.add(u),a?.(u,A)}})}catch{}finally{d.forEach(p=>b.delete(p))}}let ue=y===document?document.documentElement:y,pe=new MutationObserver(d=>{for(let p of d)p.addedNodes?.forEach(u=>{D(u)}),p.type==="attributes"&&p.target&&D(p.target)});if(pe.observe(ue,{childList:!0,subtree:!0,attributes:!0,attributeFilter:[l,...i.map(d=>d.selector).filter(d=>d.startsWith("data-"))]}),c&&S&&Element.prototype.attachShadow){let d=Element.prototype.attachShadow;Element.prototype.attachShadow=function(u){let A=d.call(this,u);if(u&&u.mode==="open"){J(A);let P=this.tagName?.toLowerCase();P&&P.includes("-")&&!customElements.get(P)&&k(P,this)}return A},v=()=>Element.prototype.attachShadow=d}return E&&D(ue),{stop(){w=!0,pe.disconnect(),v&&v(),m&&(clearTimeout(m),m=0),x.forEach(d=>d.disconnect())},flush:de}}static async define(...t){let n={};t.length&&typeof t[t.length-1]=="object"&&(n=t.pop()||{});let r=t,{baseURL:a,mapper:o=c=>`${c}.js`,onError:l=(c,i)=>console.error(`[defineWebComponents] ${c}:`,i)}=n,y=a?new URL(a,typeof location<"u"?location.href:import.meta.url):new URL("./",import.meta.url),E=c=>c.toLowerCase().replace(/(^|-)([a-z])/g,(i,S,f)=>f.toUpperCase()),h=async c=>{try{if(customElements.get(c))return{tag:c,status:"already-defined"};let i=o(c),f=await import(i instanceof URL?i.href:new URL(i,y).href),b=f?.default??f?.[E(c)];if(!b){if(customElements.get(c))return{tag:c,status:"self-defined"};throw new Error(`No export found for ${c}. Expected default export or named export "${E(c)}".`)}return customElements.get(c)?{tag:c,status:"race-already-defined"}:(customElements.define(c,b),{tag:c,status:"defined"})}catch(i){throw l(c,i),i}};return Promise.all(r.map(h))}};var We=/^[a-z][a-z0-9+\-.]*:\/\//i,C=(()=>{try{return import.meta.url}catch{return}})(),F=e=>typeof e=="string"&&e.length&&!e.endsWith("/")?`${e}/`:e;function W(e,t={}){if(!e||We.test(e))return e;let{preferModule:n=!0}=t,r=()=>{if(!C)return null;try{return new URL(e,C).href}catch{return null}},a=()=>{if(typeof window>"u"||!window.location?.origin)return null;try{return new URL(e,window.location.origin).href}catch{return null}};return(n?r()||a():a()||r())||e}var Ee=(()=>{if(C)try{let e=new URL(C);if(/\/public\/assets\/js\//.test(e.pathname))return new URL("../pds/",C).href}catch{return}})(),be=!1;function _e(e){be||typeof document>"u"||(be=!0,e.addEventListener("pds:ready",t=>{let n=t.detail?.mode;n&&document.documentElement.classList.add(`pds-${n}`,"pds-ready")}))}function Le({manageTheme:e,themeStorageKey:t,applyResolvedTheme:n,setupSystemListenerIfNeeded:r}){let a="light",o=null;if(e&&typeof window<"u"){try{o=localStorage.getItem(t)||null}catch{o=null}try{n?.(o),r?.(o)}catch{}o?o==="system"?a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light":a=o:a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}return{resolvedTheme:a,storedTheme:o}}function B(e,{resolvePublicAssetURL:t}){let n=!!(e?.public?.root||e?.static?.root),r=t(e);return!n&&Ee&&(r=Ee),F(W(r))}async function Ae(e,{baseEnhancers:t=[]}={}){let{autoDefineBaseURL:n="/auto-define/",autoDefinePreload:r=[],autoDefineMapper:a=null,enhancers:o=[],autoDefineOverrides:l=null,autoDefinePreferModule:y=!0}=e,E=(()=>{let c=new Map;return(t||[]).forEach(i=>c.set(i.selector,i)),(o||[]).forEach(i=>c.set(i.selector,i)),Array.from(c.values())})(),h=null;if(typeof window<"u"&&typeof document<"u"){let c=z,i=m=>{switch(m){case"pds-tabpanel":return"pds-tabstrip.js";default:return`${m}.js`}},{mapper:S,enhancers:f,...b}=l&&typeof l=="object"?l:{},g=f?Array.isArray(f)?f:typeof f=="object"?Object.values(f):[]:[],L=(()=>{let m=new Map;return(E||[]).forEach(w=>{w?.selector&&m.set(w.selector,w)}),(g||[]).forEach(w=>{if(!w?.selector)return;let v=m.get(w.selector)||null;m.set(w.selector,{...v||{},...w,run:typeof w?.run=="function"?w.run:v?.run})}),Array.from(m.values())})(),_={baseURL:n&&F(W(n,{preferModule:y})),predefine:r,scanExisting:!0,observeShadows:!0,patchAttachShadow:!0,debounceMs:16,enhancers:L,onError:(m,w)=>{if(typeof m=="string"&&m.startsWith("pds-")){let O=["pds-form","pds-drawer"].includes(m),k=w?.message?.includes("#pds/lit")||w?.message?.includes("Failed to resolve module specifier");O&&k?console.error(`\u274C PDS component <${m}> requires Lit but #pds/lit is not in import map.
-              See: https://github.com/Pure-Web-Foundation/pure-ds/blob/main/readme.md#lit-components-not-working`):console.warn(`\u26A0\uFE0F PDS component <${m}> not found. Assets may not be installed.`)}else console.error(`\u274C Auto-define error for <${m}>:`,w)},...b,mapper:m=>{if(customElements.get(m))return null;if(typeof a=="function")try{let w=a(m);return w===void 0?i(m):w}catch(w){return console.warn("Custom autoDefine.mapper error; falling back to default:",w?.message||w),i(m)}return i(m)}};h=new c(_),r.length>0&&typeof c.define=="function"&&await c.define(...r,{baseURL:n,mapper:_.mapper,onError:_.onError})}return{autoDefiner:h,mergedEnhancers:E}}var te=["light","dark"],ne=new Set(te);function Be(e){let n=(Array.isArray(e?.themes)?e.themes.map(r=>String(r).toLowerCase()):te).filter(r=>ne.has(r));return n.length?n:te}function re(e,{preferDocument:t=!0}={}){let n=String(e||"").toLowerCase();if(ne.has(n))return n;if(t&&typeof document<"u"){let r=document.documentElement?.getAttribute("data-theme");if(ne.has(r))return r}return typeof window<"u"&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}function xe(e,t){let n=re(t);return Be(e).includes(n)}var ie=class extends EventTarget{},Re="__PURE_DS_PDS_SINGLETON__",ae=typeof globalThis<"u"?globalThis:window,se=ae?.[Re],s=se&&typeof se.addEventListener=="function"?se:new ie;ae&&(ae[Re]=s);typeof s.initializing!="boolean"&&(s.initializing=!1);"currentPreset"in s||(s.currentPreset=null);typeof s.debug!="boolean"&&(s.debug=!1);"currentConfig"in s||(s.currentConfig=null);"compiled"in s||(s.compiled=null);var q=null,V=null,H=null,G=null;function K(e,t){return t&&typeof t=="string"?t:`${B(s.currentConfig||{},{resolvePublicAssetURL:N})}core/${e}`}async function qe(){return Array.isArray(s.defaultEnhancers)&&s.defaultEnhancers.length>0?s.defaultEnhancers:(G||(G=import(K("pds-enhancers.js",s.currentConfig?.enhancersURL)).then(t=>{let n=Array.isArray(t?.defaultPDSEnhancers)?t.defaultPDSEnhancers:[];return s.defaultEnhancers=n,n}).catch(t=>{throw G=null,t})),G)}async function Ve(){return typeof s.ask=="function"&&s.ask!==De?s.ask:(V||(V=import(K("pds-ask.js",s.currentConfig?.askURL)).then(t=>{let n=t?.ask;if(typeof n!="function")throw new Error("Failed to load ask helper");return s.ask=n,n}).catch(t=>{throw V=null,t})),V)}async function $(){return typeof s.toast=="function"&&s.toast!==T?s.toast:(H||(H=import(K("pds-toast.js",s.currentConfig?.toastURL)).then(t=>{let n=t?.toast;if(typeof n!="function")throw new Error("Failed to load toast helper");return s.toast=n,n}).catch(t=>{throw H=null,t})),H)}async function De(...e){return(await Ve())(...e)}async function T(...e){return(await $())(...e)}T.success=async(...e)=>(await $()).success(...e);T.error=async(...e)=>(await $()).error(...e);T.warning=async(...e)=>(await $()).warning(...e);T.info=async(...e)=>(await $()).info(...e);var ve=function(e="log",t,...n){let r=!!(s.registry&&!s.registry.isLive),a=(this?.debug||this?.design?.debug||s.debug||!1)===!0;if(r){if(!s.debug)return}else if(!a&&e!=="error"&&e!=="warn")return;let o=console[e]||console.log;n.length>0?o(t,...n):o(t)};function ce(e){if(e==null)return e;if(typeof e=="function")return;if(typeof e!="object")return e;if(Array.isArray(e))return e.map(n=>ce(n)).filter(n=>n!==void 0);let t={};for(let[n,r]of Object.entries(e)){let a=ce(r);a!==void 0&&(t[n]=a)}return t}function Pe(e,t=new WeakSet){if(!e||typeof e!="object"||t.has(e))return e;t.add(e),Object.freeze(e);for(let n of Object.keys(e))Pe(e[n],t);return e}function le(e){return e==null||typeof e!="object"?e:Pe(structuredClone(ce(e)))}async function He(e,t={}){if(t?.runtimeConfig===!1||typeof fetch!="function")return null;let n=t?.runtimeConfigURL||`${e}pds-runtime-config.json`;try{let r=await fetch(n,{cache:"no-store"});return r.ok?await r.json():null}catch{return null}}s.registry=M;s.enums=ye;s.adoptLayers=me;s.adoptPrimitives=fe;s.parse=Z;s.createStylesheet=he;s.isLiveMode=()=>M.isLive;s.ask=De;s.toast=T;s.common=ee;s.AutoComplete=null;s.loadAutoComplete=async()=>{if(s.AutoComplete&&typeof s.AutoComplete.connect=="function")return s.AutoComplete;let e=K("pds-autocomplete.js",s.currentConfig?.autoCompleteURL);return q||(q=import(e).then(t=>{let n=t?.AutoComplete||t?.default?.AutoComplete||t?.default||null;if(!n)throw new Error("AutoComplete export not found in module");return s.AutoComplete=n,n}).catch(t=>{throw q=null,t})),q};function Me(e){let t=typeof CustomEvent=="function";try{let n=t?new CustomEvent("pds:ready",{detail:e}):new Event("pds:ready");s.dispatchEvent(n)}catch{}if(typeof document<"u")if(t){let n={detail:e,bubbles:!0,composed:!0};try{document.dispatchEvent(new CustomEvent("pds:ready",n))}catch{}try{document.dispatchEvent(new CustomEvent("pds-ready",n))}catch{}}else{try{document.dispatchEvent(new Event("pds:ready"))}catch{}try{document.dispatchEvent(new Event("pds-ready"))}catch{}}}function Te(e={}){let t=typeof CustomEvent=="function",n={at:Date.now(),...e};try{let r=t?new CustomEvent("pds:config-changed",{detail:n}):new Event("pds:config-changed");s.dispatchEvent(r)}catch{}if(typeof document<"u")if(t){let r={detail:n,bubbles:!0,composed:!0};try{document.dispatchEvent(new CustomEvent("pds:config-changed",r))}catch{}}else try{document.dispatchEvent(new Event("pds:config-changed"))}catch{}}var oe="pure-ds-theme",R=null,j=null;function Q(e){try{if(typeof document>"u")return;let t="light";e?e==="system"?t=typeof window<"u"&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light":t=e:t=typeof window<"u"&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light",document.documentElement.setAttribute("data-theme",t)}catch{}}function Y(e){try{if(R&&j){try{typeof R.removeEventListener=="function"?R.removeEventListener("change",j):typeof R.removeListener=="function"&&R.removeListener(j)}catch{}R=null,j=null}if(e==="system"&&typeof window<"u"&&window.matchMedia){let t=window.matchMedia("(prefers-color-scheme: dark)"),n=r=>{let a=r?.matches===void 0?t.matches:r.matches;try{let o=a?"dark":"light";document.documentElement.setAttribute("data-theme",o),s.dispatchEvent(new CustomEvent("pds:theme:changed",{detail:{theme:o,source:"system"}}))}catch{}};R=t,j=n,typeof t.addEventListener=="function"?t.addEventListener("change",n):typeof t.addListener=="function"&&t.addListener(n)}}catch{}}var Ge=Object.getOwnPropertyDescriptor(s,"theme");Ge||Object.defineProperty(s,"theme",{get(){try{return typeof window>"u"?null:localStorage.getItem(oe)||null}catch{return null}},set(e){try{if(typeof window>"u")return;let t=s.currentConfig?.design||null,n=re(e);if(t&&!xe(t,n)){let r=t?.name||s.currentPreset?.name||s.currentConfig?.preset||"current preset";console.warn(`PDS theme "${n}" not supported by preset "${r}".`),s.dispatchEvent(new CustomEvent("pds:theme:blocked",{detail:{theme:e,resolvedTheme:n,preset:r}}));return}e==null?localStorage.removeItem(oe):localStorage.setItem(oe,e),Q(e),Y(e),s.dispatchEvent(new CustomEvent("pds:theme:changed",{detail:{theme:e,source:"api"}}))}catch{}}});s.defaultEnhancers=[];async function Ke(e){s.initializing=!0;try{let t=e&&e.mode||"live",{mode:n,...r}=e||{};s.currentConfig=le(r);let a;if(t==="static")a=await Qe(r);else{let l=B(r,{resolvePublicAssetURL:N}),y=r?.managerURL||r?.public?.managerURL||r?.manager?.url||new URL("core/pds-manager.js",l).href||new URL("./pds-manager.js",import.meta.url).href,{startLive:E}=await import(y);a=await E(s,r,{emitReady:Me,emitConfigChanged:Te,applyResolvedTheme:Q,setupSystemListenerIfNeeded:Y})}s.compiled=le(a?.config||null);let o=s?.compiled?.design?.icons?.externalPath||"/assets/img/icons/";return typeof console<"u"&&typeof console.info=="function"&&console.info(`[PDS] startup ready; external icon path: ${o}`),a}finally{s.initializing=!1}}s.start=Ke;async function Qe(e){if(!e||typeof e!="object")throw new Error("PDS.start({ mode: 'static', ... }) requires a valid configuration object");let t=e.applyGlobalStyles??!0,n=e.manageTheme??!0,r=e.themeStorageKey??"pure-ds-theme",a=e.staticPaths??{},o=B(e,{resolvePublicAssetURL:N}),l=e&&e.autoDefine||null,y;l&&l.baseURL?y=F(W(l.baseURL,{preferModule:!1})):y=`${o}components/`;let E=l&&Array.isArray(l.predefine)&&l.predefine||[],h=l&&typeof l.mapper=="function"&&l.mapper||null;try{_e(s);let{resolvedTheme:c}=Le({manageTheme:n,themeStorageKey:r,applyResolvedTheme:Q,setupSystemListenerIfNeeded:Y}),i=await He(o,e),S=Array.isArray(e?.enhancers)?e.enhancers:e?.enhancers&&typeof e.enhancers=="object"?Object.values(e.enhancers):[],f=i?.config?{...i.config,...e,design:e?.design||i.config.design,preset:e?.preset||i.config.preset}:{...e},b={tokens:`${o}styles/pds-tokens.css.js`,primitives:`${o}styles/pds-primitives.css.js`,components:`${o}styles/pds-components.css.js`,utilities:`${o}styles/pds-utilities.css.js`,styles:`${o}styles/pds-styles.css.js`},g=i?.paths||{};if(a={...b,...g,...a},s.registry.setStaticMode(a),t&&typeof document<"u")try{let _=await s.registry.getStylesheet("styles");if(_){_._pds=!0;let m=(document.adoptedStyleSheets||[]).filter(w=>w._pds!==!0);document.adoptedStyleSheets=[...m,_],Te({mode:"static",source:"static:styles-applied"})}}catch(_){ve.call(s,"warn","Failed to apply static styles:",_)}let L=null,x=[];try{let _=await qe(),m=await Ae({autoDefineBaseURL:y,autoDefinePreload:E,autoDefineMapper:h,enhancers:S,autoDefineOverrides:l||null,autoDefinePreferModule:!(l&&l.baseURL)},{baseEnhancers:_});L=m.autoDefiner,x=m.mergedEnhancers||[]}catch(_){ve.call(s,"error","\u274C Failed to initialize AutoDefiner/Enhancers (static):",_)}return s.compiled=le({mode:"static",...f,theme:c,enhancers:x}),Me({mode:"static",config:f,theme:c,autoDefiner:L}),{config:f,theme:c,autoDefiner:L}}catch(c){throw s.dispatchEvent(new CustomEvent("pds:error",{detail:{error:c}})),c}}var pt=Q,ft=Y;export{s as PDS,pt as applyResolvedTheme,ft as setupSystemListenerIfNeeded};
+var __defProp = Object.defineProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+
+// src/js/pds-core/pds-registry.js
+var PDSRegistry = class {
+  constructor() {
+    this._mode = "static";
+    this._staticPaths = {
+      tokens: "/assets/pds/styles/pds-tokens.css.js",
+      primitives: "/assets/pds/styles/pds-primitives.css.js",
+      components: "/assets/pds/styles/pds-components.css.js",
+      utilities: "/assets/pds/styles/pds-utilities.css.js",
+      styles: "/assets/pds/styles/pds-styles.css.js"
+    };
+  }
+  /**
+   * Switch to live mode
+   */
+  setLiveMode() {
+    this._mode = "live";
+  }
+  /**
+   * Switch to static mode with custom paths
+   * Called by consumers who want to use static CSS files
+   */
+  setStaticMode(paths = {}) {
+    this._mode = "static";
+    this._staticPaths = { ...this._staticPaths, ...paths };
+  }
+  /**
+   * Get stylesheet for adoption in shadow DOM
+   * Returns CSSStyleSheet object (constructable stylesheet)
+   */
+  async getStylesheet(layer) {
+    if (this._mode === "live") {
+      return null;
+    } else {
+      try {
+        const module = await import(
+          /* @vite-ignore */
+          this._staticPaths[layer]
+        );
+        return module[layer];
+      } catch (error) {
+        console.error(`[PDS Registry] Failed to load static ${layer}:`, error);
+        console.error(`[PDS Registry] Looking for: ${this._staticPaths[layer]}`);
+        console.error(`[PDS Registry] Make sure you've run 'npm run pds:build' and configured PDS.start() with the correct static.root path`);
+        const fallback = new CSSStyleSheet();
+        fallback.replaceSync("/* Failed to load " + layer + " */");
+        return fallback;
+      }
+    }
+  }
+  /**
+   * Get current mode
+   */
+  get mode() {
+    return this._mode;
+  }
+  /**
+   * Check if in live mode
+   */
+  get isLive() {
+    return this._mode === "live";
+  }
+};
+var registry = new PDSRegistry();
+
+// src/js/pds-core/pds-runtime.js
+async function adoptPrimitives(shadowRoot, additionalSheets = [], generator = null) {
+  try {
+    const primitives = generator?.primitivesStylesheet ? generator.primitivesStylesheet : await registry.getStylesheet("primitives");
+    shadowRoot.adoptedStyleSheets = [primitives, ...additionalSheets];
+  } catch (error) {
+    const componentName = shadowRoot.host?.tagName?.toLowerCase() || "unknown";
+    console.error(
+      `[PDS Adopter] <${componentName}> failed to adopt primitives:`,
+      error
+    );
+    shadowRoot.adoptedStyleSheets = additionalSheets;
+  }
+}
+async function adoptLayers(shadowRoot, layers = ["primitives"], additionalSheets = [], generator = null) {
+  const safeAdditionalSheets = Array.isArray(additionalSheets) ? additionalSheets.filter(Boolean) : [];
+  if (safeAdditionalSheets.length) {
+    const existing = Array.isArray(shadowRoot.adoptedStyleSheets) ? shadowRoot.adoptedStyleSheets : [];
+    const nonAdditional = existing.filter(
+      (sheet) => !safeAdditionalSheets.includes(sheet)
+    );
+    shadowRoot.adoptedStyleSheets = [...nonAdditional, ...safeAdditionalSheets];
+  }
+  try {
+    const stylesheets = await Promise.all(
+      layers.map(async (layer) => {
+        if (generator) {
+          switch (layer) {
+            case "tokens":
+              return generator.tokensStylesheet;
+            case "primitives":
+              return generator.primitivesStylesheet;
+            case "components":
+              return generator.componentsStylesheet;
+            case "utilities":
+              return generator.utilitiesStylesheet;
+            default:
+              break;
+          }
+        }
+        return registry.getStylesheet(layer);
+      })
+    );
+    const validStylesheets = stylesheets.filter((sheet) => sheet !== null);
+    shadowRoot.adoptedStyleSheets = [...validStylesheets, ...safeAdditionalSheets];
+  } catch (error) {
+    const componentName = shadowRoot.host?.tagName?.toLowerCase() || "unknown";
+    console.error(
+      `[PDS Adopter] <${componentName}> failed to adopt layers:`,
+      error
+    );
+    shadowRoot.adoptedStyleSheets = safeAdditionalSheets;
+  }
+}
+function createStylesheet(css) {
+  const sheet = new CSSStyleSheet();
+  sheet.replaceSync(css);
+  return sheet;
+}
+
+// src/js/pds-core/pds-enums.js
+var enums = {
+  FontWeights: {
+    light: 300,
+    normal: 400,
+    medium: 500,
+    semibold: 600,
+    bold: 700
+  },
+  LineHeights: {
+    tight: 1.25,
+    normal: 1.5,
+    relaxed: 1.75
+  },
+  BorderWidths: {
+    hairline: 0.5,
+    thin: 1,
+    medium: 2,
+    thick: 3
+  },
+  RadiusSizes: {
+    none: 0,
+    small: 4,
+    medium: 8,
+    large: 16,
+    xlarge: 24,
+    xxlarge: 32
+  },
+  ShadowDepths: {
+    none: "none",
+    light: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+    medium: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+    deep: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+    extreme: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+  },
+  TransitionSpeeds: {
+    fast: 150,
+    normal: 250,
+    slow: 350
+  },
+  AnimationEasings: {
+    linear: "linear",
+    ease: "ease",
+    "ease-in": "ease-in",
+    "ease-out": "ease-out",
+    "ease-in-out": "ease-in-out",
+    bounce: "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+  },
+  TouchTargetSizes: {
+    compact: 36,
+    standard: 44,
+    // iOS/Android accessibility standard
+    comfortable: 48,
+    spacious: 56
+  },
+  LinkStyles: {
+    inline: "inline",
+    // Normal inline text links
+    block: "block",
+    // Block-level links
+    button: "button"
+    // Button-like links (flex with touch target)
+  },
+  FocusStyles: {
+    ring: "ring",
+    // Box-shadow ring (default)
+    outline: "outline",
+    // Browser outline
+    border: "border",
+    // Border change
+    glow: "glow"
+    // Subtle glow effect
+  },
+  TabSizes: {
+    compact: 2,
+    standard: 4,
+    wide: 8
+  },
+  SelectIcons: {
+    chevron: "chevron",
+    // Standard chevron down
+    arrow: "arrow",
+    // Simple arrow
+    caret: "caret",
+    // Triangle caret
+    none: "none"
+    // No icon
+  },
+  IconSizes: {
+    xs: 16,
+    sm: 20,
+    md: 24,
+    lg: 32,
+    xl: 48,
+    "2xl": 64,
+    "3xl": 96
+  }
+};
+
+// src/js/common/common.js
+var common_exports = {};
+__export(common_exports, {
+  deepMerge: () => deepMerge,
+  fragmentFromTemplateLike: () => fragmentFromTemplateLike,
+  isObject: () => isObject,
+  parseHTML: () => parseHTML
+});
+function isObject(item) {
+  return item && typeof item === "object" && !Array.isArray(item);
+}
+function deepMerge(target, source) {
+  const output = { ...target };
+  if (isObject(target) && isObject(source)) {
+    Object.keys(source).forEach((key) => {
+      if (isObject(source[key])) {
+        if (!(key in target))
+          Object.assign(output, { [key]: source[key] });
+        else
+          output[key] = deepMerge(target[key], source[key]);
+      } else {
+        Object.assign(output, { [key]: source[key] });
+      }
+    });
+  }
+  return output;
+}
+function fragmentFromTemplateLike(templateLike) {
+  const strings = Array.isArray(templateLike?.strings) ? templateLike.strings : [];
+  const values = Array.isArray(templateLike?.values) ? templateLike.values : [];
+  const consumedValues = /* @__PURE__ */ new Set();
+  const htmlParts = [];
+  const propBindingPattern = /(\s)(\.[\w-]+)=\s*$/;
+  for (let i = 0; i < strings.length; i += 1) {
+    let chunk = strings[i] ?? "";
+    const match = chunk.match(propBindingPattern);
+    if (match && i < values.length) {
+      const propToken = match[2];
+      const propName = propToken.slice(1);
+      const marker = `pds-val-${i}`;
+      chunk = chunk.replace(
+        propBindingPattern,
+        `$1data-pds-prop="${propName}:${marker}"`
+      );
+      consumedValues.add(i);
+    }
+    htmlParts.push(chunk);
+    if (i < values.length && !consumedValues.has(i)) {
+      htmlParts.push(`<!--pds-val-${i}-->`);
+    }
+  }
+  const tpl = document.createElement("template");
+  tpl.innerHTML = htmlParts.join("");
+  const replaceValueAtMarker = (markerNode, value) => {
+    const parent = markerNode.parentNode;
+    if (!parent)
+      return;
+    if (value == null) {
+      parent.removeChild(markerNode);
+      return;
+    }
+    const insertValue = (val) => {
+      if (val == null)
+        return;
+      if (val instanceof Node) {
+        parent.insertBefore(val, markerNode);
+        return;
+      }
+      if (Array.isArray(val)) {
+        val.forEach((item) => insertValue(item));
+        return;
+      }
+      parent.insertBefore(document.createTextNode(String(val)), markerNode);
+    };
+    insertValue(value);
+    parent.removeChild(markerNode);
+  };
+  const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_COMMENT);
+  const markers = [];
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    if (node?.nodeValue?.startsWith("pds-val-")) {
+      markers.push(node);
+    }
+  }
+  markers.forEach((node) => {
+    const index = Number(node.nodeValue.replace("pds-val-", ""));
+    replaceValueAtMarker(node, values[index]);
+  });
+  const elements = tpl.content.querySelectorAll("*");
+  elements.forEach((el) => {
+    const propAttr = el.getAttribute("data-pds-prop");
+    if (!propAttr)
+      return;
+    const [propName, markerValue] = propAttr.split(":");
+    const index = Number(String(markerValue).replace("pds-val-", ""));
+    if (propName && Number.isInteger(index)) {
+      el[propName] = values[index];
+    }
+    el.removeAttribute("data-pds-prop");
+  });
+  return tpl.content;
+}
+function parseHTML(html) {
+  return new DOMParser().parseFromString(html, "text/html").body.childNodes;
+}
+
+// src/js/pds-core/pds-paths.js
+var DEFAULT_SEGMENT = "pds";
+var URL_PATTERN = /^([a-z][a-z0-9+\-.]*:)?\/\//i;
+var DRIVE_PATTERN = /^[a-z]:/i;
+function ensureTrailingSlash(value = "") {
+  return value.endsWith("/") ? value : `${value}/`;
+}
+function appendSegmentIfMissing(input = "", segment = DEFAULT_SEGMENT) {
+  const trimmed = input.replace(/\/+$/, "");
+  const regex = new RegExp(`(?:^|/)${segment}$`, "i");
+  if (regex.test(trimmed)) {
+    return trimmed;
+  }
+  return `${trimmed}/${segment}`;
+}
+function stripLeadingDotSlash(value) {
+  return value.replace(/^\.\/+/, "");
+}
+function stripDriveLetter(value) {
+  if (DRIVE_PATTERN.test(value)) {
+    return value.replace(DRIVE_PATTERN, "").replace(/^\/+/, "");
+  }
+  return value;
+}
+function stripPublicPrefix(value) {
+  if (value.startsWith("public/")) {
+    return value.substring("public/".length);
+  }
+  return value;
+}
+function resolvePublicAssetURL(config, options = {}) {
+  const segment = options.segment || DEFAULT_SEGMENT;
+  const defaultRoot = options.defaultRoot || `/assets/${segment}/`;
+  const candidate = config?.public && config.public?.root || config?.static && config.static?.root || null;
+  if (!candidate || typeof candidate !== "string") {
+    return ensureTrailingSlash(defaultRoot);
+  }
+  let normalized = candidate.trim();
+  if (!normalized) {
+    return ensureTrailingSlash(defaultRoot);
+  }
+  normalized = normalized.replace(/\\/g, "/");
+  normalized = appendSegmentIfMissing(normalized, segment);
+  normalized = ensureTrailingSlash(normalized);
+  if (URL_PATTERN.test(normalized)) {
+    return normalized;
+  }
+  normalized = stripLeadingDotSlash(normalized);
+  normalized = stripDriveLetter(normalized);
+  if (normalized.startsWith("/")) {
+    return ensureTrailingSlash(normalized);
+  }
+  normalized = stripPublicPrefix(normalized);
+  if (!normalized.startsWith("/")) {
+    normalized = `/${normalized}`;
+  }
+  normalized = normalized.replace(
+    /\/+/g,
+    (match, offset) => offset === 0 ? match : "/"
+  );
+  return ensureTrailingSlash(normalized);
+}
+
+// node_modules/pure-web/src/js/auto-definer.js
+async function defineWebComponents(...args) {
+  let opts = {};
+  if (args.length && typeof args[args.length - 1] === "object") {
+    opts = args.pop() || {};
+  }
+  const tags = args;
+  const {
+    baseURL,
+    mapper = (tag) => `${tag}.js`,
+    onError = (tag, err) => console.error(`[defineWebComponents] ${tag}:`, err)
+  } = opts;
+  const base = baseURL ? new URL(
+    baseURL,
+    typeof location !== "undefined" ? location.href : import.meta.url
+  ) : new URL("./", import.meta.url);
+  const toPascal = (tag) => tag.toLowerCase().replace(/(^|-)([a-z])/g, (_, __, c) => c.toUpperCase());
+  const loadOne = async (tag) => {
+    try {
+      if (customElements.get(tag))
+        return { tag, status: "already-defined" };
+      const spec = mapper(tag);
+      const href = spec instanceof URL ? spec.href : new URL(spec, base).href;
+      const mod = await import(href);
+      const Named = mod?.default ?? mod?.[toPascal(tag)];
+      if (!Named) {
+        if (customElements.get(tag))
+          return { tag, status: "self-defined" };
+        throw new Error(
+          `No export found for ${tag}. Expected default export or named export "${toPascal(
+            tag
+          )}".`
+        );
+      }
+      if (!customElements.get(tag)) {
+        customElements.define(tag, Named);
+        return { tag, status: "defined" };
+      }
+      return { tag, status: "race-already-defined" };
+    } catch (err) {
+      onError(tag, err);
+      throw err;
+    }
+  };
+  return Promise.all(tags.map(loadOne));
+}
+var AutoDefiner = class {
+  constructor(options = {}) {
+    const {
+      baseURL,
+      mapper,
+      onError,
+      predicate = () => true,
+      attributeModule = "data-module",
+      root = document,
+      scanExisting = true,
+      debounceMs = 16,
+      observeShadows = true,
+      enhancers = [],
+      // [{String selector, Function run(elem)}]
+      patchAttachShadow = true
+    } = options;
+    const pending = /* @__PURE__ */ new Set();
+    const inFlight = /* @__PURE__ */ new Set();
+    const knownMissing = /* @__PURE__ */ new Set();
+    const perTagModulePath = /* @__PURE__ */ new Map();
+    const shadowObservers = /* @__PURE__ */ new WeakMap();
+    const enhancerApplied = /* @__PURE__ */ new WeakMap();
+    let timer = 0;
+    let stopped = false;
+    let restoreAttachShadow = null;
+    const applyEnhancers = (element) => {
+      if (!element || !enhancers.length)
+        return;
+      let appliedEnhancers = enhancerApplied.get(element);
+      if (!appliedEnhancers) {
+        appliedEnhancers = /* @__PURE__ */ new Set();
+        enhancerApplied.set(element, appliedEnhancers);
+      }
+      for (const enhancer of enhancers) {
+        if (!enhancer.selector || !enhancer.run)
+          continue;
+        if (appliedEnhancers.has(enhancer.selector))
+          continue;
+        try {
+          if (element.matches && element.matches(enhancer.selector)) {
+            enhancer.run(element);
+            appliedEnhancers.add(enhancer.selector);
+          }
+        } catch (err) {
+          console.warn(
+            `[AutoDefiner] Error applying enhancer for selector "${enhancer.selector}":`,
+            err
+          );
+        }
+      }
+    };
+    const queueTag = (tag, el) => {
+      if (stopped)
+        return;
+      if (!tag || !tag.includes("-"))
+        return;
+      if (customElements.get(tag))
+        return;
+      if (inFlight.has(tag))
+        return;
+      if (knownMissing.has(tag))
+        return;
+      if (el && el.getAttribute) {
+        const override = el.getAttribute(attributeModule);
+        if (override && !perTagModulePath.has(tag)) {
+          perTagModulePath.set(tag, override);
+        }
+      }
+      pending.add(tag);
+      schedule();
+    };
+    const schedule = () => {
+      if (timer)
+        return;
+      timer = setTimeout(flush, debounceMs);
+    };
+    const crawlTree = (rootNode) => {
+      if (!rootNode)
+        return;
+      if (rootNode.nodeType === 1) {
+        const el = (
+          /** @type {Element} */
+          rootNode
+        );
+        const tag = el.tagName?.toLowerCase();
+        if (tag && tag.includes("-") && !customElements.get(tag) && predicate(tag, el)) {
+          queueTag(tag, el);
+        }
+        applyEnhancers(el);
+        if (observeShadows && el.shadowRoot) {
+          observeShadowRoot(el.shadowRoot);
+        }
+      }
+      if (rootNode.querySelectorAll) {
+        rootNode.querySelectorAll("*").forEach((e) => {
+          const t = e.tagName?.toLowerCase();
+          if (t && t.includes("-") && !customElements.get(t) && predicate(t, e)) {
+            queueTag(t, e);
+          }
+          applyEnhancers(e);
+          if (observeShadows && e.shadowRoot) {
+            observeShadowRoot(e.shadowRoot);
+          }
+        });
+      }
+    };
+    const observeShadowRoot = (sr) => {
+      if (!sr || shadowObservers.has(sr))
+        return;
+      crawlTree(sr);
+      const mo = new MutationObserver((mutations) => {
+        for (const m of mutations) {
+          m.addedNodes?.forEach((n) => {
+            crawlTree(n);
+          });
+          if (m.type === "attributes" && m.target) {
+            crawlTree(m.target);
+          }
+        }
+      });
+      mo.observe(sr, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: [
+          attributeModule,
+          ...enhancers.map((e) => e.selector).filter((s) => s.startsWith("data-"))
+        ]
+      });
+      shadowObservers.set(sr, mo);
+    };
+    async function flush() {
+      clearTimeout(timer);
+      timer = 0;
+      if (!pending.size)
+        return;
+      const tags = Array.from(pending);
+      pending.clear();
+      tags.forEach((t) => inFlight.add(t));
+      try {
+        const effectiveMapper = (tag) => perTagModulePath.get(tag) ?? (mapper ? mapper(tag) : `${tag}.js`);
+        await defineWebComponents(...tags, {
+          baseURL,
+          mapper: effectiveMapper,
+          onError: (tag, err) => {
+            knownMissing.add(tag);
+            onError?.(tag, err);
+          }
+        });
+      } catch {
+      } finally {
+        tags.forEach((t) => inFlight.delete(t));
+      }
+    }
+    const mountNode = root === document ? document.documentElement : root;
+    const obs = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        m.addedNodes?.forEach((n) => {
+          crawlTree(n);
+        });
+        if (m.type === "attributes" && m.target) {
+          crawlTree(m.target);
+        }
+      }
+    });
+    obs.observe(mountNode, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: [
+        attributeModule,
+        ...enhancers.map((e) => e.selector).filter((s) => s.startsWith("data-"))
+      ]
+    });
+    if (observeShadows && patchAttachShadow && Element.prototype.attachShadow) {
+      const orig = Element.prototype.attachShadow;
+      Element.prototype.attachShadow = function patchedAttachShadow(init) {
+        const sr = orig.call(this, init);
+        if (init && init.mode === "open") {
+          observeShadowRoot(sr);
+          const tag = this.tagName?.toLowerCase();
+          if (tag && tag.includes("-") && !customElements.get(tag)) {
+            queueTag(tag, this);
+          }
+        }
+        return sr;
+      };
+      restoreAttachShadow = () => Element.prototype.attachShadow = orig;
+    }
+    if (scanExisting) {
+      crawlTree(mountNode);
+    }
+    return {
+      stop() {
+        stopped = true;
+        obs.disconnect();
+        if (restoreAttachShadow)
+          restoreAttachShadow();
+        if (timer) {
+          clearTimeout(timer);
+          timer = 0;
+        }
+        shadowObservers.forEach((mo) => mo.disconnect());
+      },
+      flush
+    };
+  }
+  /**
+   * Dynamically load and (idempotently) define a set of web components by tag name.
+   */
+  static async define(...args) {
+    let opts = {};
+    if (args.length && typeof args[args.length - 1] === "object") {
+      opts = args.pop() || {};
+    }
+    const tags = args;
+    const {
+      baseURL,
+      mapper = (tag) => `${tag}.js`,
+      onError = (tag, err) => console.error(`[defineWebComponents] ${tag}:`, err)
+    } = opts;
+    const base = baseURL ? new URL(
+      baseURL,
+      typeof location !== "undefined" ? location.href : import.meta.url
+    ) : new URL("./", import.meta.url);
+    const toPascal = (tag) => tag.toLowerCase().replace(/(^|-)([a-z])/g, (_, __, c) => c.toUpperCase());
+    const loadOne = async (tag) => {
+      try {
+        if (customElements.get(tag))
+          return { tag, status: "already-defined" };
+        const spec = mapper(tag);
+        const href = spec instanceof URL ? spec.href : new URL(spec, base).href;
+        const mod = await import(href);
+        const Named = mod?.default ?? mod?.[toPascal(tag)];
+        if (!Named) {
+          if (customElements.get(tag))
+            return { tag, status: "self-defined" };
+          throw new Error(
+            `No export found for ${tag}. Expected default export or named export "${toPascal(
+              tag
+            )}".`
+          );
+        }
+        if (!customElements.get(tag)) {
+          customElements.define(tag, Named);
+          return { tag, status: "defined" };
+        }
+        return { tag, status: "race-already-defined" };
+      } catch (err) {
+        onError(tag, err);
+        throw err;
+      }
+    };
+    return Promise.all(tags.map(loadOne));
+  }
+};
+
+// src/js/pds-core/pds-start-helpers.js
+var __ABSOLUTE_URL_PATTERN__ = /^[a-z][a-z0-9+\-.]*:\/\//i;
+var __MODULE_URL__ = (() => {
+  try {
+    return import.meta.url;
+  } catch (e) {
+    return void 0;
+  }
+})();
+var ensureTrailingSlash2 = (value) => typeof value === "string" && value.length && !value.endsWith("/") ? `${value}/` : value;
+function ensureAbsoluteAssetURL(value, options = {}) {
+  if (!value || __ABSOLUTE_URL_PATTERN__.test(value)) {
+    return value;
+  }
+  const { preferModule = true } = options;
+  const tryModule = () => {
+    if (!__MODULE_URL__)
+      return null;
+    try {
+      return new URL(value, __MODULE_URL__).href;
+    } catch (e) {
+      return null;
+    }
+  };
+  const tryWindow = () => {
+    if (typeof window === "undefined" || !window.location?.origin) {
+      return null;
+    }
+    try {
+      return new URL(value, window.location.origin).href;
+    } catch (e) {
+      return null;
+    }
+  };
+  const resolved = preferModule ? tryModule() || tryWindow() : tryWindow() || tryModule();
+  return resolved || value;
+}
+var __MODULE_DEFAULT_ASSET_ROOT__ = (() => {
+  if (!__MODULE_URL__)
+    return void 0;
+  try {
+    const parsed = new URL(__MODULE_URL__);
+    if (/\/public\/assets\/js\//.test(parsed.pathname)) {
+      return new URL("../pds/", __MODULE_URL__).href;
+    }
+  } catch (e) {
+    return void 0;
+  }
+  return void 0;
+})();
+var __foucListenerAttached = false;
+function attachFoucListener(PDS2) {
+  if (__foucListenerAttached || typeof document === "undefined")
+    return;
+  __foucListenerAttached = true;
+  PDS2.addEventListener("pds:ready", (event) => {
+    const mode = event.detail?.mode;
+    if (mode) {
+      document.documentElement.classList.add(`pds-${mode}`, "pds-ready");
+    }
+  });
+}
+function resolveThemeAndApply({ manageTheme, themeStorageKey, applyResolvedTheme: applyResolvedTheme2, setupSystemListenerIfNeeded: setupSystemListenerIfNeeded2 }) {
+  let resolvedTheme = "light";
+  let storedTheme = null;
+  if (manageTheme && typeof window !== "undefined") {
+    try {
+      storedTheme = localStorage.getItem(themeStorageKey) || null;
+    } catch (e) {
+      storedTheme = null;
+    }
+    try {
+      applyResolvedTheme2?.(storedTheme);
+      setupSystemListenerIfNeeded2?.(storedTheme);
+    } catch (e) {
+    }
+    if (storedTheme) {
+      if (storedTheme === "system") {
+        const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        resolvedTheme = prefersDark ? "dark" : "light";
+      } else {
+        resolvedTheme = storedTheme;
+      }
+    } else {
+      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      resolvedTheme = prefersDark ? "dark" : "light";
+    }
+  }
+  return { resolvedTheme, storedTheme };
+}
+function resolveRuntimeAssetRoot(config, { resolvePublicAssetURL: resolvePublicAssetURL2 }) {
+  const hasCustomRoot = Boolean(config?.public?.root || config?.static?.root);
+  let candidate = resolvePublicAssetURL2(config);
+  if (!hasCustomRoot && __MODULE_DEFAULT_ASSET_ROOT__) {
+    candidate = __MODULE_DEFAULT_ASSET_ROOT__;
+  }
+  return ensureTrailingSlash2(ensureAbsoluteAssetURL(candidate));
+}
+async function setupAutoDefinerAndEnhancers(options, { baseEnhancers = [] } = {}) {
+  const {
+    autoDefineBaseURL = "/auto-define/",
+    autoDefinePreload = [],
+    autoDefineMapper = null,
+    enhancers = [],
+    autoDefineOverrides = null,
+    autoDefinePreferModule = true
+  } = options;
+  const mergedEnhancers = (() => {
+    const map = /* @__PURE__ */ new Map();
+    (baseEnhancers || []).forEach((e) => map.set(e.selector, e));
+    (enhancers || []).forEach((e) => map.set(e.selector, e));
+    return Array.from(map.values());
+  })();
+  let autoDefiner = null;
+  if (typeof window !== "undefined" && typeof document !== "undefined") {
+    const AutoDefinerCtor = AutoDefiner;
+    const defaultMapper = (tag) => {
+      switch (tag) {
+        case "pds-tabpanel":
+          return "pds-tabstrip.js";
+        default:
+          return `${tag}.js`;
+      }
+    };
+    const {
+      mapper: _overrideMapperIgnored,
+      enhancers: overrideEnhancers,
+      ...restAutoDefineOverrides
+    } = autoDefineOverrides && typeof autoDefineOverrides === "object" ? autoDefineOverrides : {};
+    const normalizedOverrideEnhancers = (() => {
+      if (!overrideEnhancers)
+        return [];
+      if (Array.isArray(overrideEnhancers))
+        return overrideEnhancers;
+      if (typeof overrideEnhancers === "object") {
+        return Object.values(overrideEnhancers);
+      }
+      return [];
+    })();
+    const resolvedEnhancers = (() => {
+      const map = /* @__PURE__ */ new Map();
+      (mergedEnhancers || []).forEach((enhancer) => {
+        if (!enhancer?.selector)
+          return;
+        map.set(enhancer.selector, enhancer);
+      });
+      (normalizedOverrideEnhancers || []).forEach((enhancer) => {
+        if (!enhancer?.selector)
+          return;
+        const existing = map.get(enhancer.selector) || null;
+        map.set(enhancer.selector, {
+          ...existing || {},
+          ...enhancer,
+          run: typeof enhancer?.run === "function" ? enhancer.run : existing?.run
+        });
+      });
+      return Array.from(map.values());
+    })();
+    const normalizedBaseURL = autoDefineBaseURL ? ensureTrailingSlash2(
+      ensureAbsoluteAssetURL(autoDefineBaseURL, {
+        preferModule: autoDefinePreferModule
+      })
+    ) : autoDefineBaseURL;
+    const autoDefineConfig = {
+      baseURL: normalizedBaseURL,
+      predefine: autoDefinePreload,
+      scanExisting: true,
+      observeShadows: true,
+      patchAttachShadow: true,
+      debounceMs: 16,
+      enhancers: resolvedEnhancers,
+      onError: (tag, err) => {
+        if (typeof tag === "string" && tag.startsWith("pds-")) {
+          const litDependentComponents = ["pds-form", "pds-drawer"];
+          const isLitComponent = litDependentComponents.includes(tag);
+          const isMissingLitError = err?.message?.includes("#pds/lit") || err?.message?.includes("Failed to resolve module specifier");
+          if (isLitComponent && isMissingLitError) {
+            console.error(
+              `\u274C PDS component <${tag}> requires Lit but #pds/lit is not in import map.
+              See: https://github.com/Pure-Web-Foundation/pure-ds/blob/main/readme.md#lit-components-not-working`
+            );
+          } else {
+            console.warn(
+              `\u26A0\uFE0F PDS component <${tag}> not found. Assets may not be installed.`
+            );
+          }
+        } else {
+          console.error(`\u274C Auto-define error for <${tag}>:`, err);
+        }
+      },
+      // Apply all user overrides except mapper so we can still wrap it
+      ...restAutoDefineOverrides,
+      mapper: (tag) => {
+        if (customElements.get(tag))
+          return null;
+        if (typeof autoDefineMapper === "function") {
+          try {
+            const mapped = autoDefineMapper(tag);
+            if (mapped === void 0) {
+              return defaultMapper(tag);
+            }
+            return mapped;
+          } catch (e) {
+            console.warn(
+              "Custom autoDefine.mapper error; falling back to default:",
+              e?.message || e
+            );
+            return defaultMapper(tag);
+          }
+        }
+        return defaultMapper(tag);
+      }
+    };
+    autoDefiner = new AutoDefinerCtor(autoDefineConfig);
+    if (autoDefinePreload.length > 0 && typeof AutoDefinerCtor.define === "function") {
+      await AutoDefinerCtor.define(...autoDefinePreload, {
+        baseURL: autoDefineBaseURL,
+        mapper: autoDefineConfig.mapper,
+        onError: autoDefineConfig.onError
+      });
+    }
+  }
+  return { autoDefiner, mergedEnhancers };
+}
+
+// src/js/pds-core/pds-theme-utils.js
+var DEFAULT_THEMES = ["light", "dark"];
+var VALID_THEMES = new Set(DEFAULT_THEMES);
+function normalizePresetThemes(preset) {
+  const themes = Array.isArray(preset?.themes) ? preset.themes.map((theme) => String(theme).toLowerCase()) : DEFAULT_THEMES;
+  const normalized = themes.filter((theme) => VALID_THEMES.has(theme));
+  return normalized.length ? normalized : DEFAULT_THEMES;
+}
+function resolveThemePreference(preference, { preferDocument = true } = {}) {
+  const normalized = String(preference || "").toLowerCase();
+  if (VALID_THEMES.has(normalized))
+    return normalized;
+  if (preferDocument && typeof document !== "undefined") {
+    const applied = document.documentElement?.getAttribute("data-theme");
+    if (VALID_THEMES.has(applied))
+      return applied;
+  }
+  if (typeof window !== "undefined" && window.matchMedia) {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return prefersDark ? "dark" : "light";
+  }
+  return "light";
+}
+function isPresetThemeCompatible(preset, themePreference) {
+  const resolvedTheme = resolveThemePreference(themePreference);
+  const themes = normalizePresetThemes(preset);
+  return themes.includes(resolvedTheme);
+}
+
+// src/js/pds.js
+var PDSBase = class extends EventTarget {
+};
+var __PDS_SINGLETON_KEY__ = "__PURE_DS_PDS_SINGLETON__";
+var __globalScope__ = typeof globalThis !== "undefined" ? globalThis : window;
+var __existingPDS__ = __globalScope__?.[__PDS_SINGLETON_KEY__];
+var PDS = __existingPDS__ && typeof __existingPDS__.addEventListener === "function" ? __existingPDS__ : new PDSBase();
+if (__globalScope__) {
+  __globalScope__[__PDS_SINGLETON_KEY__] = PDS;
+}
+if (typeof PDS.initializing !== "boolean") {
+  PDS.initializing = false;
+}
+if (!("currentPreset" in PDS)) {
+  PDS.currentPreset = null;
+}
+if (typeof PDS.debug !== "boolean") {
+  PDS.debug = false;
+}
+if (!("currentConfig" in PDS)) {
+  PDS.currentConfig = null;
+}
+if (!("compiled" in PDS)) {
+  PDS.compiled = null;
+}
+var __autoCompletePromise = null;
+var __askPromise = null;
+var __toastPromise = null;
+var __defaultEnhancersPromise = null;
+function __resolveExternalRuntimeModuleURL(filename, overrideURL) {
+  if (overrideURL && typeof overrideURL === "string") {
+    return overrideURL;
+  }
+  const assetRootURL = resolveRuntimeAssetRoot(PDS.currentConfig || {}, {
+    resolvePublicAssetURL
+  });
+  return `${assetRootURL}core/${filename}`;
+}
+async function __loadDefaultEnhancers() {
+  if (Array.isArray(PDS.defaultEnhancers) && PDS.defaultEnhancers.length > 0) {
+    return PDS.defaultEnhancers;
+  }
+  if (!__defaultEnhancersPromise) {
+    const enhancersModuleURL = __resolveExternalRuntimeModuleURL(
+      "pds-enhancers.js",
+      PDS.currentConfig?.enhancersURL
+    );
+    __defaultEnhancersPromise = import(enhancersModuleURL).then((mod) => {
+      const enhancers = Array.isArray(mod?.defaultPDSEnhancers) ? mod.defaultPDSEnhancers : [];
+      PDS.defaultEnhancers = enhancers;
+      return enhancers;
+    }).catch((error) => {
+      __defaultEnhancersPromise = null;
+      throw error;
+    });
+  }
+  return __defaultEnhancersPromise;
+}
+async function __loadAsk() {
+  if (typeof PDS.ask === "function" && PDS.ask !== __lazyAsk) {
+    return PDS.ask;
+  }
+  if (!__askPromise) {
+    const askModuleURL = __resolveExternalRuntimeModuleURL(
+      "pds-ask.js",
+      PDS.currentConfig?.askURL
+    );
+    __askPromise = import(askModuleURL).then((mod) => {
+      const impl = mod?.ask;
+      if (typeof impl !== "function") {
+        throw new Error("Failed to load ask helper");
+      }
+      PDS.ask = impl;
+      return impl;
+    }).catch((error) => {
+      __askPromise = null;
+      throw error;
+    });
+  }
+  return __askPromise;
+}
+async function __loadToast() {
+  if (typeof PDS.toast === "function" && PDS.toast !== __lazyToast) {
+    return PDS.toast;
+  }
+  if (!__toastPromise) {
+    const toastModuleURL = __resolveExternalRuntimeModuleURL(
+      "pds-toast.js",
+      PDS.currentConfig?.toastURL
+    );
+    __toastPromise = import(toastModuleURL).then((mod) => {
+      const impl = mod?.toast;
+      if (typeof impl !== "function") {
+        throw new Error("Failed to load toast helper");
+      }
+      PDS.toast = impl;
+      return impl;
+    }).catch((error) => {
+      __toastPromise = null;
+      throw error;
+    });
+  }
+  return __toastPromise;
+}
+async function __lazyAsk(...args) {
+  const askImpl = await __loadAsk();
+  return askImpl(...args);
+}
+async function __lazyToast(...args) {
+  const toastImpl = await __loadToast();
+  return toastImpl(...args);
+}
+__lazyToast.success = async (...args) => {
+  const toastImpl = await __loadToast();
+  return toastImpl.success(...args);
+};
+__lazyToast.error = async (...args) => {
+  const toastImpl = await __loadToast();
+  return toastImpl.error(...args);
+};
+__lazyToast.warning = async (...args) => {
+  const toastImpl = await __loadToast();
+  return toastImpl.warning(...args);
+};
+__lazyToast.info = async (...args) => {
+  const toastImpl = await __loadToast();
+  return toastImpl.info(...args);
+};
+var __defaultLog = function(level = "log", message, ...data) {
+  const isStaticMode = Boolean(PDS.registry && !PDS.registry.isLive);
+  const debug = (this?.debug || this?.design?.debug || PDS.debug || false) === true;
+  if (isStaticMode) {
+    if (!PDS.debug)
+      return;
+  } else if (!debug && level !== "error" && level !== "warn") {
+    return;
+  }
+  const method = console[level] || console.log;
+  if (data.length > 0) {
+    method(message, ...data);
+  } else {
+    method(message);
+  }
+};
+function __stripFunctionsForClone(value) {
+  if (value === null || value === void 0)
+    return value;
+  if (typeof value === "function")
+    return void 0;
+  if (typeof value !== "object")
+    return value;
+  if (Array.isArray(value)) {
+    return value.map((item) => __stripFunctionsForClone(item)).filter((item) => item !== void 0);
+  }
+  const result = {};
+  for (const [key, entry] of Object.entries(value)) {
+    const stripped = __stripFunctionsForClone(entry);
+    if (stripped !== void 0) {
+      result[key] = stripped;
+    }
+  }
+  return result;
+}
+function __deepFreeze(value, seen = /* @__PURE__ */ new WeakSet()) {
+  if (!value || typeof value !== "object") {
+    return value;
+  }
+  if (seen.has(value)) {
+    return value;
+  }
+  seen.add(value);
+  Object.freeze(value);
+  for (const key of Object.keys(value)) {
+    __deepFreeze(value[key], seen);
+  }
+  return value;
+}
+function __toReadonlyClone(value) {
+  if (value === null || value === void 0) {
+    return value;
+  }
+  if (typeof value !== "object") {
+    return value;
+  }
+  return __deepFreeze(structuredClone(__stripFunctionsForClone(value)));
+}
+async function __loadRuntimeConfig(assetRootURL, config = {}) {
+  if (config?.runtimeConfig === false)
+    return null;
+  if (typeof fetch !== "function")
+    return null;
+  const runtimeUrl = config?.runtimeConfigURL || `${assetRootURL}pds-runtime-config.json`;
+  try {
+    const res = await fetch(runtimeUrl, { cache: "no-store" });
+    if (!res.ok)
+      return null;
+    return await res.json();
+  } catch (e) {
+    return null;
+  }
+}
+PDS.registry = registry;
+PDS.enums = enums;
+PDS.adoptLayers = adoptLayers;
+PDS.adoptPrimitives = adoptPrimitives;
+PDS.parse = parseHTML;
+PDS.createStylesheet = createStylesheet;
+PDS.isLiveMode = () => registry.isLive;
+PDS.ask = __lazyAsk;
+PDS.toast = __lazyToast;
+PDS.common = common_exports;
+PDS.AutoComplete = null;
+PDS.loadAutoComplete = async () => {
+  if (PDS.AutoComplete && typeof PDS.AutoComplete.connect === "function") {
+    return PDS.AutoComplete;
+  }
+  const autoCompleteModuleURL = __resolveExternalRuntimeModuleURL(
+    "pds-autocomplete.js",
+    PDS.currentConfig?.autoCompleteURL
+  );
+  if (!__autoCompletePromise) {
+    __autoCompletePromise = import(autoCompleteModuleURL).then((mod) => {
+      const autoCompleteCtor = mod?.AutoComplete || mod?.default?.AutoComplete || mod?.default || null;
+      if (!autoCompleteCtor) {
+        throw new Error("AutoComplete export not found in module");
+      }
+      PDS.AutoComplete = autoCompleteCtor;
+      return autoCompleteCtor;
+    }).catch((error) => {
+      __autoCompletePromise = null;
+      throw error;
+    });
+  }
+  return __autoCompletePromise;
+};
+function __emitPDSReady(detail) {
+  const hasCustomEvent = typeof CustomEvent === "function";
+  try {
+    const readyEvent = hasCustomEvent ? new CustomEvent("pds:ready", { detail }) : new Event("pds:ready");
+    PDS.dispatchEvent(readyEvent);
+  } catch (e) {
+  }
+  if (typeof document !== "undefined") {
+    if (hasCustomEvent) {
+      const eventOptions = { detail, bubbles: true, composed: true };
+      try {
+        document.dispatchEvent(new CustomEvent("pds:ready", eventOptions));
+      } catch (e) {
+      }
+      try {
+        document.dispatchEvent(new CustomEvent("pds-ready", eventOptions));
+      } catch (e) {
+      }
+    } else {
+      try {
+        document.dispatchEvent(new Event("pds:ready"));
+      } catch (e) {
+      }
+      try {
+        document.dispatchEvent(new Event("pds-ready"));
+      } catch (e) {
+      }
+    }
+  }
+}
+function __emitPDSConfigChanged(detail = {}) {
+  const hasCustomEvent = typeof CustomEvent === "function";
+  const payload = {
+    at: Date.now(),
+    ...detail
+  };
+  try {
+    const changedEvent = hasCustomEvent ? new CustomEvent("pds:config-changed", { detail: payload }) : new Event("pds:config-changed");
+    PDS.dispatchEvent(changedEvent);
+  } catch (e) {
+  }
+  if (typeof document !== "undefined") {
+    if (hasCustomEvent) {
+      const eventOptions = { detail: payload, bubbles: true, composed: true };
+      try {
+        document.dispatchEvent(
+          new CustomEvent("pds:config-changed", eventOptions)
+        );
+      } catch (e) {
+      }
+    } else {
+      try {
+        document.dispatchEvent(new Event("pds:config-changed"));
+      } catch (e) {
+      }
+    }
+  }
+}
+var __themeStorageKey = "pure-ds-theme";
+var __themeMQ = null;
+var __themeMQListener = null;
+function __applyResolvedTheme(raw) {
+  try {
+    if (typeof document === "undefined")
+      return;
+    let resolved = "light";
+    if (!raw) {
+      const prefersDark = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      resolved = prefersDark ? "dark" : "light";
+    } else if (raw === "system") {
+      const prefersDark = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      resolved = prefersDark ? "dark" : "light";
+    } else {
+      resolved = raw;
+    }
+    document.documentElement.setAttribute("data-theme", resolved);
+  } catch (e) {
+  }
+}
+function __setupSystemListenerIfNeeded(raw) {
+  try {
+    if (__themeMQ && __themeMQListener) {
+      try {
+        if (typeof __themeMQ.removeEventListener === "function")
+          __themeMQ.removeEventListener("change", __themeMQListener);
+        else if (typeof __themeMQ.removeListener === "function")
+          __themeMQ.removeListener(__themeMQListener);
+      } catch (e) {
+      }
+      __themeMQ = null;
+      __themeMQListener = null;
+    }
+    if (raw === "system" && typeof window !== "undefined" && window.matchMedia) {
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      const listener = (e) => {
+        const isDark = e?.matches === void 0 ? mq.matches : e.matches;
+        try {
+          const newTheme = isDark ? "dark" : "light";
+          document.documentElement.setAttribute("data-theme", newTheme);
+          PDS.dispatchEvent(
+            new CustomEvent("pds:theme:changed", {
+              detail: { theme: newTheme, source: "system" }
+            })
+          );
+        } catch (ex) {
+        }
+      };
+      __themeMQ = mq;
+      __themeMQListener = listener;
+      if (typeof mq.addEventListener === "function")
+        mq.addEventListener("change", listener);
+      else if (typeof mq.addListener === "function")
+        mq.addListener(listener);
+    }
+  } catch (e) {
+  }
+}
+var __themeDescriptor = Object.getOwnPropertyDescriptor(PDS, "theme");
+if (!__themeDescriptor) {
+  Object.defineProperty(PDS, "theme", {
+    get() {
+      try {
+        if (typeof window === "undefined")
+          return null;
+        return localStorage.getItem(__themeStorageKey) || null;
+      } catch (e) {
+        return null;
+      }
+    },
+    set(value) {
+      try {
+        if (typeof window === "undefined")
+          return;
+        const currentPreset = PDS.currentConfig?.design || null;
+        const resolvedTheme = resolveThemePreference(value);
+        if (currentPreset && !isPresetThemeCompatible(currentPreset, resolvedTheme)) {
+          const presetName = currentPreset?.name || PDS.currentPreset?.name || PDS.currentConfig?.preset || "current preset";
+          console.warn(
+            `PDS theme "${resolvedTheme}" not supported by preset "${presetName}".`
+          );
+          PDS.dispatchEvent(
+            new CustomEvent("pds:theme:blocked", {
+              detail: { theme: value, resolvedTheme, preset: presetName }
+            })
+          );
+          return;
+        }
+        if (value === null || value === void 0) {
+          localStorage.removeItem(__themeStorageKey);
+        } else {
+          localStorage.setItem(__themeStorageKey, value);
+        }
+        __applyResolvedTheme(value);
+        __setupSystemListenerIfNeeded(value);
+        PDS.dispatchEvent(
+          new CustomEvent("pds:theme:changed", {
+            detail: { theme: value, source: "api" }
+          })
+        );
+      } catch (e) {
+      }
+    }
+  });
+}
+PDS.defaultEnhancers = [];
+async function start(config) {
+  PDS.initializing = true;
+  try {
+    const mode = config && config.mode || "live";
+    const { mode: _omit, ...rest } = config || {};
+    PDS.currentConfig = __toReadonlyClone(rest);
+    let startResult;
+    if (mode === "static") {
+      startResult = await staticInit(rest);
+    } else {
+      const assetRootURL = resolveRuntimeAssetRoot(rest, { resolvePublicAssetURL });
+      const managerUrl = rest?.managerURL || rest?.public?.managerURL || rest?.manager?.url || new URL("core/pds-manager.js", assetRootURL).href || new URL("./pds-manager.js", import.meta.url).href;
+      const { startLive } = await import(managerUrl);
+      startResult = await startLive(PDS, rest, {
+        emitReady: __emitPDSReady,
+        emitConfigChanged: __emitPDSConfigChanged,
+        applyResolvedTheme: __applyResolvedTheme,
+        setupSystemListenerIfNeeded: __setupSystemListenerIfNeeded
+      });
+    }
+    PDS.compiled = __toReadonlyClone(startResult?.config || null);
+    const resolvedExternalIconPath = PDS?.compiled?.design?.icons?.externalPath || "/assets/img/icons/";
+    if (typeof console !== "undefined" && typeof console.info === "function") {
+      console.info(`[PDS] startup ready; external icon path: ${resolvedExternalIconPath}`);
+    }
+    return startResult;
+  } finally {
+    PDS.initializing = false;
+  }
+}
+PDS.start = start;
+async function staticInit(config) {
+  if (!config || typeof config !== "object") {
+    throw new Error(
+      "PDS.start({ mode: 'static', ... }) requires a valid configuration object"
+    );
+  }
+  const applyGlobalStyles = config.applyGlobalStyles ?? true;
+  const manageTheme = config.manageTheme ?? true;
+  const themeStorageKey = config.themeStorageKey ?? "pure-ds-theme";
+  let staticPaths = config.staticPaths ?? {};
+  const assetRootURL = resolveRuntimeAssetRoot(config, { resolvePublicAssetURL });
+  const cfgAuto = config && config.autoDefine || null;
+  let autoDefineBaseURL;
+  if (cfgAuto && cfgAuto.baseURL) {
+    autoDefineBaseURL = ensureTrailingSlash2(
+      ensureAbsoluteAssetURL(cfgAuto.baseURL, { preferModule: false })
+    );
+  } else {
+    autoDefineBaseURL = `${assetRootURL}components/`;
+  }
+  const autoDefinePreload = cfgAuto && Array.isArray(cfgAuto.predefine) && cfgAuto.predefine || [];
+  const autoDefineMapper = cfgAuto && typeof cfgAuto.mapper === "function" && cfgAuto.mapper || null;
+  try {
+    attachFoucListener(PDS);
+    const { resolvedTheme } = resolveThemeAndApply({
+      manageTheme,
+      themeStorageKey,
+      applyResolvedTheme: __applyResolvedTheme,
+      setupSystemListenerIfNeeded: __setupSystemListenerIfNeeded
+    });
+    const runtimeConfig = await __loadRuntimeConfig(assetRootURL, config);
+    const userEnhancers = Array.isArray(config?.enhancers) ? config.enhancers : config?.enhancers && typeof config.enhancers === "object" ? Object.values(config.enhancers) : [];
+    const resolvedConfig = runtimeConfig?.config ? {
+      ...runtimeConfig.config,
+      ...config,
+      design: config?.design || runtimeConfig.config.design,
+      preset: config?.preset || runtimeConfig.config.preset
+    } : { ...config };
+    const baseStaticPaths = {
+      tokens: `${assetRootURL}styles/pds-tokens.css.js`,
+      primitives: `${assetRootURL}styles/pds-primitives.css.js`,
+      components: `${assetRootURL}styles/pds-components.css.js`,
+      utilities: `${assetRootURL}styles/pds-utilities.css.js`,
+      styles: `${assetRootURL}styles/pds-styles.css.js`
+    };
+    const runtimePaths = runtimeConfig?.paths || {};
+    staticPaths = { ...baseStaticPaths, ...runtimePaths, ...staticPaths };
+    PDS.registry.setStaticMode(staticPaths);
+    if (applyGlobalStyles && typeof document !== "undefined") {
+      try {
+        const stylesSheet = await PDS.registry.getStylesheet("styles");
+        if (stylesSheet) {
+          stylesSheet._pds = true;
+          const others = (document.adoptedStyleSheets || []).filter(
+            (s) => s._pds !== true
+          );
+          document.adoptedStyleSheets = [...others, stylesSheet];
+          __emitPDSConfigChanged({
+            mode: "static",
+            source: "static:styles-applied"
+          });
+        }
+      } catch (e) {
+        __defaultLog.call(PDS, "warn", "Failed to apply static styles:", e);
+      }
+    }
+    let autoDefiner = null;
+    let mergedEnhancers = [];
+    try {
+      const defaultPDSEnhancers = await __loadDefaultEnhancers();
+      const res = await setupAutoDefinerAndEnhancers({
+        autoDefineBaseURL,
+        autoDefinePreload,
+        autoDefineMapper,
+        enhancers: userEnhancers,
+        autoDefineOverrides: cfgAuto || null,
+        autoDefinePreferModule: !(cfgAuto && cfgAuto.baseURL)
+      }, { baseEnhancers: defaultPDSEnhancers });
+      autoDefiner = res.autoDefiner;
+      mergedEnhancers = res.mergedEnhancers || [];
+    } catch (error) {
+      __defaultLog.call(
+        PDS,
+        "error",
+        "\u274C Failed to initialize AutoDefiner/Enhancers (static):",
+        error
+      );
+    }
+    PDS.compiled = __toReadonlyClone({
+      mode: "static",
+      ...resolvedConfig,
+      theme: resolvedTheme,
+      enhancers: mergedEnhancers
+    });
+    __emitPDSReady({
+      mode: "static",
+      config: resolvedConfig,
+      theme: resolvedTheme,
+      autoDefiner
+    });
+    return {
+      config: resolvedConfig,
+      theme: resolvedTheme,
+      autoDefiner
+    };
+  } catch (error) {
+    PDS.dispatchEvent(new CustomEvent("pds:error", { detail: { error } }));
+    throw error;
+  }
+}
+var applyResolvedTheme = __applyResolvedTheme;
+var setupSystemListenerIfNeeded = __setupSystemListenerIfNeeded;
+export {
+  PDS,
+  applyResolvedTheme,
+  setupSystemListenerIfNeeded
+};
+//# sourceMappingURL=pds.js.map
