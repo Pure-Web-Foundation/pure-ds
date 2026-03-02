@@ -52,6 +52,14 @@ class DateHelper {
   }
 
   parseDate(dateString) {
+    if (typeof dateString === "string") {
+      const trimmed = dateString.trim();
+      const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+      if (dateOnly) {
+        const [, year, month, day] = dateOnly;
+        return new Date(Number(year), Number(month) - 1, Number(day));
+      }
+    }
     const timestamp = Date.parse(dateString);
     return new Date(timestamp);
   }
@@ -151,7 +159,7 @@ class PdsCalendar extends HTMLElement {
     constructor() {
       super();
       this.#date = new Date();
-      this.#initialDate = this.getAttribute("date") || "";
+      this.#initialDate = "";
 
       this.dateHelper = new DateHelper();
       this.#dayNames = this.dateHelper.getDayNames();
@@ -195,6 +203,13 @@ class PdsCalendar extends HTMLElement {
      * @param {String|Date} value - Date string or Date object
      */
     set date(value) {
+      if (value == null || value === "") {
+        this.#date = new Date(Number.NaN);
+        this.updateFormState();
+        if (this.isRendered) this.reRender();
+        return;
+      }
+
       this.#date =
         typeof value === "string"
           ? this.dateHelper.parseDate(value)
@@ -263,7 +278,6 @@ class PdsCalendar extends HTMLElement {
 
     set value(value) {
       if (value == null || value === "") {
-        this.removeAttribute("date");
         this.#date = new Date(Number.NaN);
         this.updateFormState();
         this.reRender();
@@ -674,6 +688,23 @@ label {
       );
 
       queueMicrotask(() => {
+        const initialAttrDate = this.getAttribute("date");
+        if (initialAttrDate != null) {
+          const parsedInitialDate = this.dateHelper.parseDate(initialAttrDate);
+          if (
+            parsedInitialDate instanceof Date
+            && !Number.isNaN(parsedInitialDate.getTime())
+          ) {
+            const year = parsedInitialDate.getFullYear();
+            const month = String(parsedInitialDate.getMonth() + 1).padStart(2, "0");
+            const day = String(parsedInitialDate.getDate()).padStart(2, "0");
+            this.#initialDate = `${year}-${month}-${day}`;
+          } else {
+            this.#initialDate = "";
+          }
+        } else if (!this.#initialDate) {
+          this.#initialDate = this.serializeDate();
+        }
         this.setupPaging();
         this.updateFormState();
       });
@@ -689,16 +720,26 @@ label {
     }
 
     formResetCallback() {
-      this.value = this.#initialDate || "";
+      const defaultDate = this.getAttribute("date");
+      if (defaultDate != null && defaultDate !== "") {
+        this.date = defaultDate;
+      } else if (this.#initialDate) {
+        this.date = this.#initialDate;
+      } else {
+        this.#date = new Date(Number.NaN);
+      }
       this.updateFormState();
       this.reRender();
     }
 
     formStateRestoreCallback(state) {
-      if (typeof state === "string" && state.length) {
+      if (typeof state === "string") {
         this.value = state;
+      } else if (state == null) {
+        this.value = "";
       }
       this.updateFormState();
+      this.reRender();
     }
 
     checkValidity() {

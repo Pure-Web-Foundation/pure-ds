@@ -8,6 +8,40 @@
         {
           "name": "date",
           "description": "The date to display (defaults to current date). Accepts any valid date string"
+        },
+        {
+          "name": "required",
+          "description": ""
+        },
+        {
+          "name": "name",
+          "description": ""
+        },
+        {
+          "name": "disabled",
+          "description": ""
+        },
+        {
+          "name": "compact",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "pds-code",
+      "description": "PDSCode component",
+      "attributes": [
+        {
+          "name": "code",
+          "description": ""
+        },
+        {
+          "name": "lang",
+          "description": ""
+        },
+        {
+          "name": "theme",
+          "description": ""
         }
       ]
     },
@@ -736,6 +770,43 @@
         {
           "name": "icon",
           "description": ""
+        }
+      ]
+    },
+    {
+      "name": "pds-rating",
+      "description": "Star-based rating input that participates in native HTML forms.",
+      "attributes": [
+        {
+          "name": "max",
+          "description": "Maximum rating value and rendered star count (minimum 1, default 5)"
+        },
+        {
+          "name": "value",
+          "description": "Current rating value (snapped to 0.5 increments)"
+        },
+        {
+          "name": "disabled",
+          "description": "Disables keyboard/pointer interaction and form submission value",
+          "valueSet": "v"
+        },
+        {
+          "name": "required",
+          "description": "Marks the rating as required for form validation",
+          "valueSet": "v"
+        },
+        {
+          "name": "readonly",
+          "description": "Makes the rating non-editable while still focusable",
+          "valueSet": "v"
+        },
+        {
+          "name": "name",
+          "description": "Form field name used when submitting the rating"
+        },
+        {
+          "name": "color",
+          "description": "Optional active star color (CSS color value)"
         }
       ]
     },

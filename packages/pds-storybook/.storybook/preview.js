@@ -1478,6 +1478,7 @@ const preview = {
     },
     options: {
       storySort: {
+        method: 'alphabetical',
         order: [
           'About PDS',
           ['What Is PDS', 'Getting Started'],
@@ -1498,7 +1499,7 @@ const preview = {
             'Enhancements',
             ['Mesh Gradients', 'Interactive States', 'Toggles', 'Dropdowns', 'Range Sliders', 'Required Fields'],
             'Components',
-            ['pds-form', 'Pds Icon', 'Pds Drawer', 'Pds Toaster', 'Pds Tabstrip', 'Pds Splitpanel', 'Pds Scrollrow', 'Pds Richtext', 'Pds Upload'],
+            ['*'],
             'Reference'
           ],
           'About PDS',
@@ -1516,7 +1517,7 @@ const preview = {
           'Enhancements',
           ['Mesh Gradients', 'Interactive States', 'Toggles', 'Dropdowns', 'Range Sliders', 'Required Fields'],
           'Components',
-          ['pds-form', 'Pds Icon', 'Pds Drawer', 'Pds Toaster', 'Pds Tabstrip', 'Pds Splitpanel', 'Pds Scrollrow', 'Pds Richtext', 'Pds Upload'],
+          ['*'],
           'Reference',
           '*'
         ]

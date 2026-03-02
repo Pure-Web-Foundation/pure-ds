@@ -18,3 +18,26 @@
 [pds-mcp-server][debug] 2026-02-25T15:26:51.734Z request id=4 method=tools/list
 [pds-mcp-server][debug] 2026-02-25T15:26:51.734Z response id=4 ok
 [pds-mcp-server][debug] 2026-02-25T15:26:51.735Z frame pending: no header boundary yet; buffered=0 preview=
+[pds-mcp-server][debug] 2026-02-28T13:20:55.293Z stdin chunk bytes=440
+[pds-mcp-server][debug] 2026-02-28T13:20:55.296Z parsed raw JSON-RPC frame (no Content-Length)
+[pds-mcp-server][debug] 2026-02-28T13:20:55.297Z request id=1 method=initialize
+[pds-mcp-server][debug] 2026-02-28T13:20:55.297Z response id=1 ok
+[pds-mcp-server][debug] 2026-02-28T13:20:55.298Z frame pending: no header boundary yet; buffered=0 preview=
+[pds-mcp-server][debug] 2026-02-28T13:20:55.299Z stdin chunk bytes=79
+[pds-mcp-server][debug] 2026-02-28T13:20:55.299Z parsed raw JSON-RPC frame (no Content-Length)
+[pds-mcp-server][debug] 2026-02-28T13:20:55.299Z request id=2 method=logging/setLevel
+[pds-mcp-server][debug] 2026-02-28T13:20:55.300Z response id=2 error code=-32601 message=Method not found: logging/setLevel
+[pds-mcp-server][debug] 2026-02-28T13:20:55.301Z frame pending: no header boundary yet; buffered=0 preview=
+[pds-mcp-server][debug] 2026-02-28T13:20:55.301Z stdin chunk bytes=506
+[pds-mcp-server][debug] 2026-02-28T13:20:55.302Z parsed raw JSON-RPC line frame (no Content-Length)
+[pds-mcp-server][debug] 2026-02-28T13:20:55.302Z request id=notification method=notifications/initialized
+[pds-mcp-server][debug] 2026-02-28T13:20:55.302Z parsed raw JSON-RPC line frame (no Content-Length)
+[pds-mcp-server][debug] 2026-02-28T13:20:55.303Z request id=3 method=prompts/list
+[pds-mcp-server][debug] 2026-02-28T13:20:55.303Z response id=3 ok
+[pds-mcp-server][debug] 2026-02-28T13:20:55.303Z parsed raw JSON-RPC line frame (no Content-Length)
+[pds-mcp-server][debug] 2026-02-28T13:20:55.303Z request id=4 method=tools/list
+[pds-mcp-server][debug] 2026-02-28T13:20:55.304Z response id=4 ok
+[pds-mcp-server][debug] 2026-02-28T13:20:55.304Z parsed raw JSON-RPC frame (no Content-Length)
+[pds-mcp-server][debug] 2026-02-28T13:20:55.304Z request id=5 method=tools/call
+[pds-mcp-server][debug] 2026-02-28T13:20:55.305Z frame pending: no header boundary yet; buffered=0 preview=
+[pds-mcp-server][debug] 2026-02-28T13:20:55.307Z response id=5 ok
