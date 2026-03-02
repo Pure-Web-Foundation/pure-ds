@@ -634,3 +634,16 @@ export const CombinedCategories = {
     },
   },
 };
+
+export const SuffixIcon = {
+  render: () => html`
+    <div>
+      <pds-omnibox
+        name="suffix1"
+      >
+        <pds-icon icon="star" slot="suffix"></pds-icon>
+      </pds-omnibox>
+    </div>
+  `,
+};
+

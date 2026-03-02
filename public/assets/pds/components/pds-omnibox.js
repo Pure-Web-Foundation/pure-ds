@@ -49,6 +49,7 @@ export class PdsOmnibox extends HTMLElement {
 
   constructor() {
     super();
+
     this.#root = this.attachShadow({ mode: "open" });
     this.#internals = this.attachInternals();
     this.#renderStructure();
@@ -67,6 +68,10 @@ export class PdsOmnibox extends HTMLElement {
         "suggestions-updated",
         this.#suggestionsUpdatedHandler,
       );
+    }
+
+    if (this.#hasSuffix) {
+      this.#input?.parentElement.classList.add('has-suffix');
     }
   }
 
@@ -191,6 +196,7 @@ export class PdsOmnibox extends HTMLElement {
   #renderStructure() {
     this.#root.innerHTML = `
 			<div class="ac-container input-icon">
+				<slot name="suffix"></slot>
 				<pds-icon morph icon="${DEFAULT_ICON}"></pds-icon>
 				<input class="ac-input" type="search" placeholder="${DEFAULT_PLACEHOLDER}" autocomplete="off" />
 			</div>
@@ -250,6 +256,12 @@ export class PdsOmnibox extends HTMLElement {
 				.ac-container {
 					position: relative;
 					width: 100%;
+
+					&.has-suffix {
+						.ac-input {
+							padding-right: calc(var(--icon-size-md) + var(--spacing-6));
+						}
+					}
 
 					.ac-input {
 						width: 100%;
@@ -332,7 +344,6 @@ export class PdsOmnibox extends HTMLElement {
 							}
 
 							.category {
-								
 								color: var(--ac-color, var(--ac-color-muted));
 							}
 
@@ -370,6 +381,11 @@ export class PdsOmnibox extends HTMLElement {
 							white-space: unset;
 							height: auto !important;
 						}
+					}
+
+					slot[name="suffix"]::slotted(*) {
+						position: absolute;
+						right: var(--spacing-3);
 					}
 
 					&.ac-active[data-direction="down"] {
@@ -972,6 +988,10 @@ export class PdsOmnibox extends HTMLElement {
 
   #resetIconToDefault() {
     this.#icon?.setAttribute("icon", this.icon);
+  }
+
+  get #hasSuffix() {
+    return !!this.#root.querySelector('slot[name="suffix"]')?.assignedElements?.()?.length;
   }
 }
 
