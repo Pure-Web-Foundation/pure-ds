@@ -83,9 +83,10 @@ class DateHelper {
 
 /**
  * @component pds-calendar
- * @description A fully featured calendar component with month navigation, event display, and expandable day views
+ * @description A fully featured calendar component with month navigation, event display, and keyboard-friendly date selection
  *
  * @fires pds-calendar#month-rendered - Dispatched after the calendar month is rendered with event fill capability
+ * @fires pds-calendar#month-change - Dispatched when the visible month/year changes
  *
  * @attr {String} date - The date to display (defaults to current date). Accepts any valid date string
  *
@@ -183,7 +184,6 @@ class PdsCalendar extends HTMLElement {
 
       if (name === "date") {
         this.date = newValue;
-        this.reRender();
         return;
       }
 
@@ -315,7 +315,7 @@ class PdsCalendar extends HTMLElement {
   background-color: var(--surface-bg);
   margin: auto;
   overflow: visible;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow, var(--shadow-lg));
   border-radius: var(--radius-lg);
   position: relative;
 }
@@ -622,61 +622,6 @@ label {
   }
 }
 
-/* Day expansion styles */
-.calendar.day-expanded {
-  .day-name {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-  }
-  
-  .day:not(.expanded-cell) {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-  }
-}
-
-.day.has-events {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.expanded-cell {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: auto !important;
-  height: auto !important;
-  grid-column: unset !important;
-  grid-row: unset !important;
-  z-index: 1000 !important;
-  background: var(--surface-bg) !important;
-  padding: 2rem !important;
-  overflow-y: auto !important;
-  border: none !important;
-  cursor: pointer !important;
-  
-  .nr {
-    font-size: var(--font-size-2xl) !important;
-    font-weight: var(--font-weight-bold) !important;
-    pointer-events: none;
-  }
-  
-  .task {
-    font-size: var(--font-size-base) !important;
-    padding: var(--spacing-4) !important;
-    margin-bottom: var(--spacing-3) !important;
-    
-    h3 {
-      font-size: var(--font-size-lg) !important;
-    }
-  }
-}
-
-
-
       `
       );
 
@@ -891,9 +836,35 @@ label {
      * @private
      */
     reRender() {
+      const previousMonth = Number.isInteger(this.month) ? this.month : null;
+      const previousYear = Number.isInteger(this.year) ? this.year : null;
+
       this.shadowRoot.innerHTML = this.render();
+      this.isRendered = true;
+
+      const monthChanged =
+        Number.isInteger(previousMonth)
+        && Number.isInteger(previousYear)
+        && (previousMonth !== this.month || previousYear !== this.year);
+
+      if (monthChanged) {
+        this.dispatchEvent(
+          new CustomEvent("month-change", {
+            detail: {
+              date: this.date,
+              year: this.year,
+              month: this.month,
+              previousYear,
+              previousMonth,
+            },
+            bubbles: true,
+            composed: true,
+          })
+        );
+      }
+
       queueMicrotask(() => {
-        this.setupDayExpansion();
+        this.setupInteractions();
       });
     }
 
@@ -1045,48 +1016,18 @@ label {
     }
 
     /**
-     * Sets up day expansion functionality for viewing events
+     * Sets up day interactions and keyboard support
      * @private
      */
-    setupDayExpansion() {
-      if (this.expansionSetup) return; // Prevent multiple setups
-      this.expansionSetup = true;
+    setupInteractions() {
+      if (this.interactionSetup) return;
+      this.interactionSetup = true;
 
-      let expandedDay = null;
-
-      // Use direct event delegation on shadowRoot
-      this.shadowRoot.addEventListener("click", async (e) => {
-        const month = e.target.closest(".current-month");
-        if (month) {
-          this.date = Date.now();
-          this.reRender();
-          return;
-        }
-
-        const compactMode = this.compact;
-        if (compactMode) return;
-
-        const cell = e.target.closest(".day.has-events[data-day]");
-        if (!cell) return;
-
-        const day = cell.dataset.day;
-        const calendar = this.shadowRoot.querySelector(".calendar");
-
-        // Toggle if clicking same day
-        if (expandedDay === day) {
-          await this.collapseDay(calendar, cell);
-          expandedDay = null;
-        } else {
-          // Collapse previous day if exists
-          if (expandedDay) {
-            const prevCell = this.shadowRoot.querySelector(
-              `[data-day="${expandedDay}"]`
-            );
-            await this.collapseDay(calendar, prevCell);
-          }
-          await this.expandDay(calendar, cell);
-          expandedDay = day;
-        }
+      this.shadowRoot.addEventListener("click", (event) => {
+        const month = event.target.closest(".current-month");
+        if (!month) return;
+        this.date = Date.now();
+        this.reRender();
       });
 
       this.shadowRoot.addEventListener('change', (event) => {
@@ -1186,63 +1127,6 @@ label {
     focusDayRadio(dayNumber) {
       const target = this.shadowRoot?.querySelector(`.day-radio-input[data-day="${dayNumber}"]`);
       target?.focus();
-    }
-
-    /**
-     * Expands a day cell to full view
-     * @param {HTMLElement} calendar - The calendar container element
-     * @param {HTMLElement} cell - The day cell to expand
-     * @private
-     */
-    async expandDay(calendar, cell) {
-      // Capture the cell's current position and size
-      const calendarRect = calendar.getBoundingClientRect();
-      const cellRect = cell.getBoundingClientRect();
-
-      const relativeTop = cellRect.top - calendarRect.top;
-      const relativeLeft = cellRect.left - calendarRect.left;
-
-      // Set initial absolute position to match grid position
-      cell.style.position = "absolute";
-      cell.style.top = `${relativeTop}px`;
-      cell.style.left = `${relativeLeft}px`;
-      cell.style.width = `${cellRect.width}px`;
-      cell.style.height = `${cellRect.height}px`;
-      cell.style.gridColumn = "unset";
-      cell.style.gridRow = "unset";
-
-      // Force a reflow
-      cell.offsetHeight;
-
-      // Now add classes to trigger transition to expanded state
-      calendar.classList.add("day-expanded");
-      cell.classList.add("expanded-cell");
-    }
-
-    /**
-     * Collapses an expanded day cell back to grid view
-     * @param {HTMLElement} calendar - The calendar container element
-     * @param {HTMLElement} cell - The day cell to collapse
-     * @private
-     */
-    async collapseDay(calendar, cell) {
-      if (!cell) return;
-
-      // Remove expanded classes
-      calendar.classList.remove("day-expanded");
-      cell.classList.remove("expanded-cell");
-
-      // Wait for transition to complete
-      await new Promise((resolve) => setTimeout(resolve, 400));
-
-      // Reset to grid positioning
-      cell.style.position = "";
-      cell.style.top = "";
-      cell.style.left = "";
-      cell.style.width = "";
-      cell.style.height = "";
-      cell.style.gridColumn = "";
-      cell.style.gridRow = "";
     }
 
     /**

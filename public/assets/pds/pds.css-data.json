@@ -2002,6 +2002,10 @@
       "description": "Button primitive component"
     },
     {
+      "name": "btn-danger",
+      "description": "Button primitive component"
+    },
+    {
       "name": "btn-sm",
       "description": "Button primitive component"
     },
@@ -2191,10 +2195,6 @@
     },
     {
       "name": "stack-md",
-      "description": "Vertical flex layout with predefined gaps"
-    },
-    {
-      "name": "stack-lg",
       "description": "Vertical flex layout with predefined gaps"
     }
   ],

@@ -19,12 +19,14 @@ export const ButtonVariants = () => html`
   <div class="card">
     <header>
       <h3>Button Variants</h3>
-      <small class="text-muted">Core button styles for primary, secondary, and outline actions.</small>
+      <small class="text-muted">Core button styles for primary, secondary, outline, and semantic actions.</small>
     </header>
     <div class="flex gap-sm flex-wrap">
       <button class="btn-primary">Primary</button>
       <button class="btn-secondary">Secondary</button>
       <button class="btn-outline">Outline</button>
+      <button class="btn-danger">Danger</button>
+      <button class="btn-danger btn-outline">Danger Outline</button>
       <button class="btn-primary" disabled>Disabled</button>
     </div>
   </div>

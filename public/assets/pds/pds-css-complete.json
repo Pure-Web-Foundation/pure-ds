@@ -1673,6 +1673,11 @@
       "category": "Primitives"
     },
     {
+      "name": "btn-danger",
+      "description": "Button primitive component",
+      "category": "Primitives"
+    },
+    {
       "name": "btn-sm",
       "description": "Button primitive component",
       "category": "Primitives"
@@ -2292,9 +2297,9 @@
   ],
   "metadata": {
     "generator": "PDS CSS Data Generator",
-    "generatedAt": "2026-02-26T07:33:17.462Z",
+    "generatedAt": "2026-03-03T08:40:38.831Z",
     "totalProperties": 169,
-    "totalClasses": 169,
+    "totalClasses": 170,
     "totalAttributes": 5
   }
 }

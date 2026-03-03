@@ -453,13 +453,30 @@ const uiSchema = {
 #### Available Widgets
 
 - **Text**: `input-text`, `textarea`, `password`, `input-email`, `input-url`
-- **Date/Time**: `input-date`, `input-time`, `input-datetime`
+- **Date/Time**: `input-date`, `input-time`, `input-datetime`, `input-iso-interval`
 - **Numbers**: `input-number`, `input-range`
 - **Color**: `input-color`
 - **Boolean**: `checkbox`, `toggle`
 - **Choice**: `select`, `radio`, `checkbox-group`
 - **PDS Components**: `omnibox`, `upload`, `richtext`
 - **Special**: `const` (read-only)
+
+#### Format-Driven Date Range (`format: "iso-interval"`)
+
+When a string field uses `format: "iso-interval"`, `pds-form` automatically renders a `pds-daterange` control and stores a single string value in `YYYY-MM-DD/YYYY-MM-DD` format.
+
+```javascript
+const schema = {
+  type: "object",
+  properties: {
+    period: {
+      type: "string",
+      format: "iso-interval",
+      title: "Project Timeline"
+    }
+  }
+};
+```
 
 #### Widget Options
 

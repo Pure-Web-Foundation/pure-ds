@@ -70,7 +70,7 @@ export const Default = () => {
         <pds-icon icon="info" size="sm"></pds-icon>
         Info
       </button>
-      <button id="toast-warning" class="btn-warning btn-sm">
+      <button id="toast-warning" class="btn-outline btn-sm">
         <pds-icon icon="warning" size="sm"></pds-icon>
         Warning
       </button>

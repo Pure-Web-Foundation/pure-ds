@@ -75,7 +75,7 @@ const formDataToObject = (formData) => {
 };
 
 export default {
-  title: 'Utilities/PDS ask',
+  title: 'PDS/PDS Object',
   tags: ['interaction', 'dialogs', 'forms', 'modal', 'dialog', 'alert', 'confirm', 'prompt', 'popup', 'overlay'],
   parameters: {
     pds: {
@@ -90,7 +90,7 @@ Use it to collect quick confirmations or to stage entire forms before committing
   }
 };
 
-export const BareConfirm = {
+const AreYouSure = {
   name: 'Are you sure?',
   render: () => {
     const handleClick = async (event) => {
@@ -129,7 +129,7 @@ export const BareConfirm = {
   }
 };
 
-export const MiniForm = {
+const MiniFormSubmission = {
   name: 'Mini form submission',
   render: () => {
     const handleClick = async (event) => {
@@ -202,7 +202,7 @@ export const MiniForm = {
   }
 };
 
-export const QuickConfirm = {
+const BooleanConfirmFlow = {
   name: 'Boolean confirm flow',
   render: () => {
     const handleClick = async (event) => {
@@ -264,7 +264,7 @@ export const QuickConfirm = {
   }
 };
 
-export const formSubdialog = {
+const EmbedPdsFormSubform = {
   name: 'Embed a pds-form subform',
   render: () => {
     const handleClick = async (event) => {
@@ -376,4 +376,16 @@ export const formSubdialog = {
       </section>
     `;
   }
+};
+
+export const PDSAsk = {
+  name: 'PDS.ask()',
+  render: () => html`
+    <section class="stack-lg">
+      ${AreYouSure.render()}
+      ${MiniFormSubmission.render()}
+      ${BooleanConfirmFlow.render()}
+      ${EmbedPdsFormSubform.render()}
+    </section>
+  `
 };

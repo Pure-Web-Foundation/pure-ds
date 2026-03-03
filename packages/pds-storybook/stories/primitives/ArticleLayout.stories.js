@@ -24,7 +24,8 @@ export const ArticleLayout = {
         <div class="text-muted story-article-meta">Design Systems</div>
         <h1>Building Scalable Design Systems for Modern Web Applications</h1>
         <small class="text-muted"
-          >By Sarah Chen • November 17, 2025 • 8 min read</small
+          >By Sarah Chen • <time datetime="2025-11-17">November 17, 2025</time>
+          • 8 min read</small
         >
       </header>
 
@@ -36,6 +37,18 @@ export const ArticleLayout = {
         </strong>
       </p>
 
+      <figure class="flex flex-col items-center gap-sm">
+        <img
+          src="/assets/img/og.webp"
+          alt="Pure Design System logo"
+          loading="lazy"
+        />
+        <figcaption class="text-muted">
+          Keep brand assets semantic and documented alongside implementation
+          guidance.
+        </figcaption>
+      </figure>
+
       <p>
         In today's fast-paced development environment, maintaining visual and
         functional consistency across multiple products and teams is
@@ -44,7 +57,16 @@ export const ArticleLayout = {
         patterns, and implementation guidelines.
       </p>
 
-      <section>
+      <nav aria-label="Article sections">
+        <h2 class="h4">In this article</h2>
+        <ol>
+          <li><a href="#components">Key components</a></li>
+          <li><a href="#tokens">Design tokens</a></li>
+          <li><a href="#rollout">Rollout checklist</a></li>
+        </ol>
+      </nav>
+
+      <section id="components">
         <h2>Key Components of a Design System</h2>
 
         <p>
@@ -79,41 +101,75 @@ export const ArticleLayout = {
         </blockquote>
       </section>
 
-      <h3>Getting Started with Design Tokens</h3>
-
-      <p>
-        Design tokens are the DNA of your design system. These named values
-        represent design decisions that can be shared across platforms and
-        technologies. For example, instead of hardcoding
-        <code>#0066cc</code>, you define <code>--color-primary</code> which can
-        be updated globally.
-      </p>
-
-      <section>
-        <h4 class="story-impl-heading">Implementation Example</h4>
-        <pre
-          class="surface-base story-code-block"
-        ><code>/* Design tokens in CSS */
-:root {
-  --color-primary: #0066cc;
-  --spacing-unit: 4px;
-  --font-family-base: system-ui, sans-serif;
-  --border-radius-md: 8px;
-}</code></pre>
+      <section id="tokens">
+        <h3>Getting Started with Design Tokens</h3>
 
         <p>
-          By adopting this approach, you create a flexible foundation that can
-          evolve with your product needs while maintaining consistency across
-          all touchpoints.
+          Design tokens are the DNA of your design system. These named values
+          represent design decisions that can be shared across platforms and
+          technologies. Instead of repeating one-off values in many places, you
+          define reusable variables like <code>--color-primary</code> that can be
+          updated globally.
         </p>
+
+        <figure>
+          <pre
+            class="surface-base story-code-block"
+          ><code>/* Design tokens in CSS */
+:root {
+  --color-primary: var(--color-brand-500);
+  --spacing-unit: var(--spacing-1x);
+  --font-family-base: var(--font-family-sans);
+  --border-radius-md: var(--radius-md);
+}</code></pre>
+          <figcaption class="text-muted">
+            Token-first foundation: define semantic aliases once and consume them
+            throughout components and layouts.
+          </figcaption>
+        </figure>
       </section>
 
+      <aside class="callout callout-info" aria-label="Editorial note">
+        <h4>Editorial note</h4>
+        <p>
+          Teams that publish token naming conventions early usually reduce
+          handoff friction. Keep terminology consistent between design files and
+          code.
+        </p>
+      </aside>
+
+      
+      
+        <h4 class="story-impl-heading">Rollout Checklist</h4>
+        <ul>
+          <li>Document token categories and ownership</li>
+          <li>Ship a pilot component set with usage guidance</li>
+          <li>Track adoption with a lightweight release cadence</li>
+        </ul>
+      
+  
+          <p>
+            By adopting this approach, you create a flexible foundation that can
+            evolve with your product needs while maintaining consistency across
+            all touchpoints.
+          </p>
+  
+      </section>
+      
+
       <footer>
-        <div class="flex gap-md flex-wrap">
+
+        <div class="flex gap-sm flex-wrap">
           <span class="badge badge-outline badge-primary">Design Systems</span>
           <span class="badge badge-outline badge-primary">Web Components</span>
           <span class="badge badge-outline badge-primary">CSS Architecture</span>
         </div>
+
+        <hr/>
+        
+        <address class="text-muted">
+          <small>Written for the PDS documentation team.</small>
+        </address>
       </footer>
     </article>
   `,

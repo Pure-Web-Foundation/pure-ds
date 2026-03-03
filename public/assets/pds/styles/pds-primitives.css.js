@@ -323,10 +323,13 @@ primitives.replaceSync(`@layer primitives {
   }
 
   /* Media primitives */
-  :where(img, video) {
-    max-width: 100%;
-    height: auto;
+  :where(img, video) {    
     border-radius: var(--radius-sm);
+  }
+
+  :where(img:not([height]):not([width]), video:not([height]):not([width])) {
+    height: auto;
+    max-width: 100%;   
   }
 
   :where(figure) {
@@ -669,10 +672,13 @@ export const primitivesCSS = `@layer primitives {
   }
 
   /* Media primitives */
-  :where(img, video) {
-    max-width: 100%;
-    height: auto;
+  :where(img, video) {    
     border-radius: var(--radius-sm);
+  }
+
+  :where(img:not([height]):not([width]), video:not([height]):not([width])) {
+    height: auto;
+    max-width: 100%;   
   }
 
   :where(figure) {

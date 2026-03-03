@@ -95,6 +95,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "field",
               "name": "date",
               "description": "Gets or sets the current date being displayed",
               "parameters": [
@@ -116,6 +125,87 @@
               }
             },
             {
+              "kind": "field",
+              "name": "form",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "name"
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "required"
+            },
+            {
+              "kind": "field",
+              "name": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "compact"
+            },
+            {
+              "kind": "field",
+              "name": "value"
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity"
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity"
+            },
+            {
+              "kind": "method",
+              "name": "focus",
+              "parameters": [
+                {
+                  "name": "options"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "serializeDate"
+            },
+            {
+              "kind": "method",
+              "name": "updateFormState"
+            },
+            {
               "kind": "method",
               "name": "refresh",
               "description": "Refreshes the calendar display",
@@ -129,6 +219,12 @@
           ],
           "events": [
             {
+              "name": "month-change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
               "name": "month-rendered",
               "type": {
                 "text": "CustomEvent"
@@ -137,6 +233,10 @@
             {
               "description": "Dispatched after the calendar month is rendered with event fill capability",
               "name": "pds-calendar#month-rendered"
+            },
+            {
+              "description": "Dispatched when the visible month/year changes",
+              "name": "pds-calendar#month-change"
             }
           ],
           "attributes": [
@@ -146,6 +246,18 @@
                 "text": "String"
               },
               "description": "The date to display (defaults to current date). Accepts any valid date string"
+            },
+            {
+              "name": "required"
+            },
+            {
+              "name": "name"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "compact"
             }
           ],
           "superclass": {
@@ -170,6 +282,493 @@
           "declaration": {
             "name": "PdsCalendar",
             "module": "public/assets/pds/components/pds-calendar.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-code.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PDSCode",
+          "members": [
+            {
+              "kind": "field",
+              "name": "code"
+            },
+            {
+              "kind": "method",
+              "name": "setCode",
+              "parameters": [
+                {
+                  "name": "value"
+                },
+                {
+                  "name": "{ lang, theme }",
+                  "default": "{}"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "captureInitialText"
+            },
+            {
+              "kind": "method",
+              "name": "ensureCodeFromContent"
+            },
+            {
+              "kind": "method",
+              "name": "startTextObserver"
+            },
+            {
+              "kind": "method",
+              "name": "stopTextObserver"
+            },
+            {
+              "kind": "field",
+              "name": "_code",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_capturedInitialText",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_renderToken",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "_textObserver",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "code"
+            },
+            {
+              "name": "lang"
+            },
+            {
+              "name": "theme"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-code",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "PDSCode",
+          "declaration": {
+            "name": "PDSCode",
+            "module": "public/assets/pds/components/pds-code.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-code",
+          "declaration": {
+            "name": "PDSCode",
+            "module": "public/assets/pds/components/pds-code.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-daterange.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsDateRange",
+          "cssParts": [
+            {
+              "description": "The button used to open/close the date range panel.",
+              "name": "trigger"
+            },
+            {
+              "description": "The dropdown panel containing calendars and actions.",
+              "name": "panel"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "method",
+              "name": "ensureCalendarsReady"
+            },
+            {
+              "kind": "method",
+              "name": "setCalendarDate",
+              "parameters": [
+                {
+                  "name": "calendar"
+                },
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "String"
+              },
+              "description": "Form field name."
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "Boolean"
+              },
+              "description": "Whether the field is required."
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "Boolean"
+              },
+              "description": "Whether the control is disabled."
+            },
+            {
+              "kind": "field",
+              "name": "displayFormat",
+              "type": {
+                "text": "String"
+              },
+              "description": "Button date text format."
+            },
+            {
+              "kind": "field",
+              "name": "startDate",
+              "type": {
+                "text": "Date|null"
+              },
+              "description": "Start date value."
+            },
+            {
+              "kind": "field",
+              "name": "endDate",
+              "type": {
+                "text": "Date|null"
+              },
+              "description": "End date value."
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "String"
+              },
+              "description": "Serialized range value as ISO interval: `YYYY-MM-DD/YYYY-MM-DD`."
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity"
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity"
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "bindEvents"
+            },
+            {
+              "kind": "method",
+              "name": "bindCalendar",
+              "parameters": [
+                {
+                  "name": "calendar"
+                },
+                {
+                  "name": "side"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "handleOutsideClick",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "togglePanel"
+            },
+            {
+              "kind": "method",
+              "name": "openPanel"
+            },
+            {
+              "kind": "method",
+              "name": "closePanel"
+            },
+            {
+              "kind": "method",
+              "name": "isOpen"
+            },
+            {
+              "kind": "method",
+              "name": "toDayStart",
+              "parameters": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "toMonthStart",
+              "parameters": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "addMonths",
+              "parameters": [
+                {
+                  "name": "value"
+                },
+                {
+                  "name": "monthDelta"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "parseDate",
+              "parameters": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "serializeDate",
+              "parameters": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "parseRangeValue",
+              "parameters": [
+                {
+                  "name": "rawValue"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "isRangeComplete"
+            },
+            {
+              "kind": "method",
+              "name": "formatDisplayDate",
+              "parameters": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "buildRangeEventsForMonth",
+              "parameters": [
+                {
+                  "name": "year"
+                },
+                {
+                  "name": "month"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "applyRangeSelection",
+              "parameters": [
+                {
+                  "name": "pickedDate"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "enforceMinimumGap"
+            },
+            {
+              "kind": "method",
+              "name": "positionCalendars"
+            },
+            {
+              "kind": "method",
+              "name": "refreshHighlights"
+            },
+            {
+              "kind": "method",
+              "name": "syncUI"
+            },
+            {
+              "kind": "method",
+              "name": "reflectValueAttribute"
+            },
+            {
+              "kind": "method",
+              "name": "applyDisabledState"
+            },
+            {
+              "kind": "method",
+              "name": "updateFormState"
+            },
+            {
+              "kind": "method",
+              "name": "dispatchRangeChange"
+            }
+          ],
+          "events": [
+            {
+              "name": "range-change",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Fired whenever range selection changes."
+            },
+            {
+              "name": "change",
+              "type": {
+                "text": "Event"
+              },
+              "description": "Native-like change event fired alongside `range-change`."
+            }
+          ],
+          "attributes": [
+            {
+              "name": "name",
+              "type": {
+                "text": "String"
+              },
+              "description": "Form field name used during form submission."
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "Boolean"
+              },
+              "description": "Requires both start and end dates to be selected."
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "Boolean"
+              },
+              "description": "Disables interaction and closes the panel when active."
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "String"
+              },
+              "description": "Serialized range value as ISO interval: `YYYY-MM-DD/YYYY-MM-DD`."
+            },
+            {
+              "name": "display-format",
+              "type": {
+                "text": "String"
+              },
+              "description": "Button date text format. Default is `d MMM yy`."
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-daterange",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-daterange",
+          "declaration": {
+            "name": "PdsDateRange",
+            "module": "public/assets/pds/components/pds-daterange.js"
           }
         }
       ]
@@ -1041,6 +1640,12 @@
             },
             {
               "kind": "field",
+              "name": "externalPathDebugLogged",
+              "static": true,
+              "default": "new Set()"
+            },
+            {
+              "kind": "field",
               "name": "instances",
               "static": true,
               "default": "new Set()"
@@ -1067,6 +1672,9 @@
                   "type": {
                     "text": "string"
                   }
+                },
+                {
+                  "name": "basePath"
                 }
               ],
               "description": "Fetch an external SVG icon and cache it",
@@ -2360,6 +2968,408 @@
     },
     {
       "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-rating.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Star-based rating input that participates in native HTML forms.",
+          "name": "PdsRating",
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "min",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "readonly": true,
+              "type": {
+                "text": "number"
+              },
+              "description": "Minimum rating value (always 0)"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "number|string"
+                  }
+                }
+              ],
+              "type": {
+                "text": "number"
+              },
+              "description": "Maximum rating value and rendered star count"
+            },
+            {
+              "kind": "field",
+              "name": "step",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "readonly": true,
+              "type": {
+                "text": "number"
+              },
+              "description": "Step size used for keyboard and pointer input (always 0.5)"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "number|string"
+                  }
+                }
+              ],
+              "type": {
+                "text": "number"
+              },
+              "description": "Current rating value"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "string|null|undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name"
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "return": {
+                "type": {
+                  "text": "HTMLFormElement|null"
+                }
+              },
+              "readonly": true,
+              "type": {
+                "text": "HTMLFormElement|null"
+              },
+              "description": "Associated form element"
+            },
+            {
+              "kind": "field",
+              "name": "color",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "string|null|undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string"
+              },
+              "description": "Active star color override"
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "readonly": true,
+              "type": {
+                "text": "string"
+              },
+              "description": "Form control type (`range`)"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "return": {
+                "type": {
+                  "text": "ValidityState"
+                }
+              },
+              "readonly": true,
+              "type": {
+                "text": "ValidityState"
+              },
+              "description": "Current validity state"
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "readonly": true,
+              "type": {
+                "text": "string"
+              },
+              "description": "Current validation message"
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "readonly": true,
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Whether the element is eligible for validation"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disabled state"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Required state"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Read-only state"
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
+              "description": "Runs constraint validation.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity",
+              "description": "Runs constraint validation and reports the result to the user agent.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback",
+              "description": "Restores default value during parent form reset.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "string|File|FormData|null"
+                  }
+                }
+              ],
+              "description": "Restores state from browser session history/form restore.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "innerHTML",
+              "default": "`\r\n      <style>\r\n        :host {\r\n          --rating-star-size: var(--spacing-lg);\r\n          --rating-star-gap: var(--spacing-2xs);\r\n          --rating-star-off: var(--color-text-muted);\r\n          --rating-star-on: var(--color-warning-500);\r\n          --rating-focus: var(--color-primary-500);\r\n          --rating-fill-pct: 0%;\r\n          display: inline-block;\r\n          inline-size: fit-content;\r\n          max-inline-size: 100%;\r\n          touch-action: none;\r\n        }\r\n\r\n        ::slotted(input[type=\"range\"]) {\r\n          position: absolute !important;\r\n          inset-inline-start: 0 !important;\r\n          inset-block-start: 0 !important;\r\n          inline-size: 1px !important;\r\n          block-size: 1px !important;\r\n          min-inline-size: 1px !important;\r\n          min-block-size: 1px !important;\r\n          margin: -1px !important;\r\n          border: 0 !important;\r\n          padding: 0 !important;\r\n          opacity: 0 !important;\r\n          overflow: hidden !important;\r\n          clip: rect(0 0 0 0) !important;\r\n          clip-path: inset(50%) !important;\r\n          white-space: nowrap !important;\r\n          appearance: none !important;\r\n          -webkit-appearance: none !important;\r\n          pointer-events: none !important;\r\n        }\r\n\r\n        .wrap {\r\n          position: relative;\r\n          display: inline-grid;\r\n          gap: var(--spacing-2xs);\r\n          align-items: center;\r\n          justify-items: start;\r\n          min-block-size: calc(var(--rating-star-size) + var(--spacing-xs));\r\n        }\r\n\r\n        .interactive {\r\n          display: inline-grid;\r\n          place-items: center start;\r\n          inline-size: 100%;\r\n          cursor: pointer;\r\n          user-select: none;\r\n          -webkit-tap-highlight-color: transparent;\r\n          touch-action: pan-x;\r\n        }\r\n\r\n        :host([disabled]) .interactive,\r\n        :host([readonly]) .interactive {\r\n          cursor: default;\r\n        }\r\n\r\n        :host([disabled]) {\r\n          opacity: 0.5;\r\n        }\r\n\r\n        .stars {\r\n          display: block;\r\n          inline-size: auto;\r\n          block-size: var(--rating-star-size);\r\n          overflow: visible;\r\n          transition: transform 220ms ease, opacity 220ms ease;\r\n        }\r\n\r\n        :host([data-in-view=\"false\"]) .stars {\r\n          opacity: 0;\r\n          transform: translateY(var(--spacing-xs)) scale(0.98);\r\n        }\r\n\r\n        :host([data-in-view=\"true\"]) .stars {\r\n          opacity: 1;\r\n          transform: translateY(0) scale(1);\r\n        }\r\n\r\n        input[type=\"range\"] {\r\n          position: absolute !important;\r\n          inset-inline-start: 0 !important;\r\n          inset-block-start: 0 !important;\r\n          inline-size: 1px !important;\r\n          block-size: 1px !important;\r\n          min-inline-size: 1px !important;\r\n          min-block-size: 1px !important;\r\n          margin: -1px !important;\r\n          border: 0 !important;\r\n          padding: 0 !important;\r\n          opacity: 0 !important;\r\n          overflow: hidden !important;\r\n          clip: rect(0 0 0 0) !important;\r\n          clip-path: inset(50%) !important;\r\n          white-space: nowrap !important;\r\n          appearance: none !important;\r\n          -webkit-appearance: none !important;\r\n          pointer-events: none !important;\r\n        }\r\n\r\n        :host(:focus-within) .interactive {\r\n          outline: 2px solid var(--rating-focus);\r\n          outline-offset: var(--spacing-3xs);\r\n          border-radius: var(--radius-sm);\r\n        }\r\n\r\n        @media (prefers-reduced-motion: reduce) {\r\n          .stars {\r\n            transition: none;\r\n          }\r\n        }\r\n      </style>\r\n\r\n      <div class=\"wrap\" part=\"control\">\r\n        <div class=\"interactive\" part=\"interactive\" aria-hidden=\"true\">\r\n          <svg class=\"stars\" part=\"stars\" focusable=\"false\" aria-hidden=\"true\"></svg>\r\n        </div>\r\n        <slot></slot>\r\n      </div>\r\n    `"
+            }
+          ],
+          "events": [
+            {
+              "name": "input",
+              "type": {
+                "text": "Event"
+              },
+              "description": "Fired when the value changes via pointer or keyboard interaction"
+            },
+            {
+              "name": "change",
+              "type": {
+                "text": "Event"
+              },
+              "description": "Fired after input when the value commit completes"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "description": "Maximum rating value and rendered star count (minimum 1, default 5)"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "description": "Current rating value (snapped to 0.5 increments)"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables keyboard/pointer interaction and form submission value"
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Marks the rating as required for form validation"
+            },
+            {
+              "name": "readonly",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Makes the rating non-editable while still focusable"
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name used when submitting the rating"
+            },
+            {
+              "name": "color",
+              "type": {
+                "text": "string"
+              },
+              "description": "Optional active star color (CSS color value)"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-rating",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-rating",
+          "declaration": {
+            "name": "PdsRating",
+            "module": "public/assets/pds/components/pds-rating.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "public/assets/pds/components/pds-richtext.js",
       "declarations": [
         {
@@ -3470,6 +4480,21 @@
                 "text": "array"
               },
               "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "activeToastKeys",
+              "default": "new Set()"
+            },
+            {
+              "kind": "field",
+              "name": "activeToastIdsByKey",
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "activeToastKeysById",
+              "default": "new Map()"
             }
           ],
           "events": [

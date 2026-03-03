@@ -926,7 +926,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   border-color: var(--color-border);
   
   /* Only apply generic hover to non-variant buttons */
-  &:hover:not(.btn-primary):not(.btn-secondary):not(.btn-outline) {
+  &:hover:not(.btn-primary):not(.btn-secondary):not(.btn-outline):not(.btn-danger) {
     background-color: var(--color-surface-elevated);
   }
   
@@ -1007,6 +1007,56 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
     }
   }
   
+  &:disabled {
+    background-color: transparent;
+    color: var(--color-input-disabled-text);
+    border-color: var(--color-input-disabled-bg);
+  }
+}
+
+.btn-danger {
+  background-color: var(--color-danger-600);
+  color: white;
+  border-color: var(--color-danger-600);
+
+  &:hover {
+    background-color: color-mix(in oklab, var(--color-danger-600) 90%, black 10%);
+    border-color: color-mix(in oklab, var(--color-danger-600) 90%, black 10%);
+    color: white;
+  }
+
+  &:active {
+    background-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
+    border-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
+    color: white;
+  }
+}
+
+.btn-danger.btn-outline {
+  background-color: transparent;
+  color: var(--color-danger-600);
+  border-color: var(--color-danger-600);
+
+  &:hover {
+    background-color: var(--color-danger-600);
+    border-color: var(--color-danger-600);
+    color: white;
+
+    pds-icon {
+      color: white;
+    }
+  }
+
+  &:active {
+    background-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
+    border-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
+    color: white;
+
+    pds-icon {
+      color: white;
+    }
+  }
+
   &:disabled {
     background-color: transparent;
     color: var(--color-input-disabled-text);
@@ -1476,6 +1526,17 @@ dialog {
   overflow: hidden; /* Prevent dialog itself from scrolling - let .dialog-body handle it */
 }
 
+/*
+ * Overlay safety valve:
+ * Some controls (e.g. pds-daterange panel, data-dropdown menus) need to escape
+ * the dialog bounds. Scope overflow visibility to custom dialogs that contain
+ * those controls instead of enabling it for all dialogs.
+ */
+dialog.dialog-custom:has(pds-daterange),
+dialog.dialog-custom:has([data-dropdown]) {
+  overflow: visible;
+}
+
 /* Form structure - use flexbox instead of contents */
 dialog form {
   display: flex;
@@ -1483,11 +1544,6 @@ dialog form {
   flex: 1;
   min-height: 0; /* Allow flex child to shrink */
   margin: 0;
-}
-
-/* Dialog fields - to open pds-form subforms */
-.dialog-field {
-    margin-top: var(--spacing-3);
 }
 
 /* Dialog header */
@@ -1544,7 +1600,20 @@ dialog {
     min-height: 0; /* Critical: allow flex child to shrink and scroll */
     padding: var(--spacing-3) var(--spacing-6);
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: visible;
+  }
+
+  /* Allow overlay menus (e.g. data-dropdown) to escape dialog-body clipping while open */
+  article:has([data-dropdown] > :last-child[aria-hidden="false"]),
+  form > article:has([data-dropdown] > :last-child[aria-hidden="false"]),
+  .dialog-body:has([data-dropdown] > :last-child[aria-hidden="false"]) {
+    overflow: visible;
+  }
+
+  article:has(pds-daterange),
+  form > article:has(pds-daterange),
+  .dialog-body:has(pds-daterange) {
+    overflow: visible;
   }
 
   /* Dialog footer - actions */
@@ -1570,23 +1639,14 @@ dialog.dialog-full { width: calc(100vw - var(--spacing-8)); max-width: calc(100v
 /* Mobile responsiveness - maximize on mobile */
 @media (max-width: 639px) {
   dialog,
+  dialog.dialog-sm,
+  dialog.dialog-lg,
+  dialog.dialog-xl,
+  dialog.dialog-full,
   dialog.dialog-no-scale-animation,
   dialog.dialog-no-scale-animation[open] {
-    left: 0 !important;
-    top: 0 !important;
-  }
-
-  dialog.dialog-no-scale-animation,
-  dialog.dialog-no-scale-animation[open] {
-    transform: none !important;
-  }
-
-  dialog[open] {
-    left: 0 !important;
-    top: 0 !important;
-  }
-
-  dialog { 
+    left: 0;
+    top: 0;
     max-width: 100vw; 
     width: 100vw;
     height: 100dvh;
@@ -1594,9 +1654,21 @@ dialog.dialog-full { width: calc(100vw - var(--spacing-8)); max-width: calc(100v
     --dialog-max-height: 100dvh; /* Override custom maxHeight on mobile */
     border-radius: 0; 
     margin: 0;
+  }
+
+  dialog,
+  dialog.dialog-sm,
+  dialog.dialog-lg,
+  dialog.dialog-xl,
+  dialog.dialog-full {
     transform: scale(0.98);
   }
-  dialog[open] {
+
+  dialog[open],
+  dialog.dialog-sm[open],
+  dialog.dialog-lg[open],
+  dialog.dialog-xl[open],
+  dialog.dialog-full[open] {
     transform: scale(1);
     animation: pds-dialog-enter-mobile var(--transition-normal) ease;
   }
@@ -1677,7 +1749,7 @@ html:has(dialog[open]:modal) {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
-  border-radius: inherit;
+  border-radius: var(--radius-md);
   transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
 
   &::-webkit-details-marker {
@@ -3069,7 +3141,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   border-color: var(--color-border);
   
   /* Only apply generic hover to non-variant buttons */
-  &:hover:not(.btn-primary):not(.btn-secondary):not(.btn-outline) {
+  &:hover:not(.btn-primary):not(.btn-secondary):not(.btn-outline):not(.btn-danger) {
     background-color: var(--color-surface-elevated);
   }
   
@@ -3150,6 +3222,56 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
     }
   }
   
+  &:disabled {
+    background-color: transparent;
+    color: var(--color-input-disabled-text);
+    border-color: var(--color-input-disabled-bg);
+  }
+}
+
+.btn-danger {
+  background-color: var(--color-danger-600);
+  color: white;
+  border-color: var(--color-danger-600);
+
+  &:hover {
+    background-color: color-mix(in oklab, var(--color-danger-600) 90%, black 10%);
+    border-color: color-mix(in oklab, var(--color-danger-600) 90%, black 10%);
+    color: white;
+  }
+
+  &:active {
+    background-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
+    border-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
+    color: white;
+  }
+}
+
+.btn-danger.btn-outline {
+  background-color: transparent;
+  color: var(--color-danger-600);
+  border-color: var(--color-danger-600);
+
+  &:hover {
+    background-color: var(--color-danger-600);
+    border-color: var(--color-danger-600);
+    color: white;
+
+    pds-icon {
+      color: white;
+    }
+  }
+
+  &:active {
+    background-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
+    border-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
+    color: white;
+
+    pds-icon {
+      color: white;
+    }
+  }
+
   &:disabled {
     background-color: transparent;
     color: var(--color-input-disabled-text);
@@ -3619,6 +3741,17 @@ dialog {
   overflow: hidden; /* Prevent dialog itself from scrolling - let .dialog-body handle it */
 }
 
+/*
+ * Overlay safety valve:
+ * Some controls (e.g. pds-daterange panel, data-dropdown menus) need to escape
+ * the dialog bounds. Scope overflow visibility to custom dialogs that contain
+ * those controls instead of enabling it for all dialogs.
+ */
+dialog.dialog-custom:has(pds-daterange),
+dialog.dialog-custom:has([data-dropdown]) {
+  overflow: visible;
+}
+
 /* Form structure - use flexbox instead of contents */
 dialog form {
   display: flex;
@@ -3626,11 +3759,6 @@ dialog form {
   flex: 1;
   min-height: 0; /* Allow flex child to shrink */
   margin: 0;
-}
-
-/* Dialog fields - to open pds-form subforms */
-.dialog-field {
-    margin-top: var(--spacing-3);
 }
 
 /* Dialog header */
@@ -3687,7 +3815,20 @@ dialog {
     min-height: 0; /* Critical: allow flex child to shrink and scroll */
     padding: var(--spacing-3) var(--spacing-6);
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: visible;
+  }
+
+  /* Allow overlay menus (e.g. data-dropdown) to escape dialog-body clipping while open */
+  article:has([data-dropdown] > :last-child[aria-hidden="false"]),
+  form > article:has([data-dropdown] > :last-child[aria-hidden="false"]),
+  .dialog-body:has([data-dropdown] > :last-child[aria-hidden="false"]) {
+    overflow: visible;
+  }
+
+  article:has(pds-daterange),
+  form > article:has(pds-daterange),
+  .dialog-body:has(pds-daterange) {
+    overflow: visible;
   }
 
   /* Dialog footer - actions */
@@ -3713,23 +3854,14 @@ dialog.dialog-full { width: calc(100vw - var(--spacing-8)); max-width: calc(100v
 /* Mobile responsiveness - maximize on mobile */
 @media (max-width: 639px) {
   dialog,
+  dialog.dialog-sm,
+  dialog.dialog-lg,
+  dialog.dialog-xl,
+  dialog.dialog-full,
   dialog.dialog-no-scale-animation,
   dialog.dialog-no-scale-animation[open] {
-    left: 0 !important;
-    top: 0 !important;
-  }
-
-  dialog.dialog-no-scale-animation,
-  dialog.dialog-no-scale-animation[open] {
-    transform: none !important;
-  }
-
-  dialog[open] {
-    left: 0 !important;
-    top: 0 !important;
-  }
-
-  dialog { 
+    left: 0;
+    top: 0;
     max-width: 100vw; 
     width: 100vw;
     height: 100dvh;
@@ -3737,9 +3869,21 @@ dialog.dialog-full { width: calc(100vw - var(--spacing-8)); max-width: calc(100v
     --dialog-max-height: 100dvh; /* Override custom maxHeight on mobile */
     border-radius: 0; 
     margin: 0;
+  }
+
+  dialog,
+  dialog.dialog-sm,
+  dialog.dialog-lg,
+  dialog.dialog-xl,
+  dialog.dialog-full {
     transform: scale(0.98);
   }
-  dialog[open] {
+
+  dialog[open],
+  dialog.dialog-sm[open],
+  dialog.dialog-lg[open],
+  dialog.dialog-xl[open],
+  dialog.dialog-full[open] {
     transform: scale(1);
     animation: pds-dialog-enter-mobile var(--transition-normal) ease;
   }
@@ -3820,7 +3964,7 @@ html:has(dialog[open]:modal) {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
-  border-radius: inherit;
+  border-radius: var(--radius-md);
   transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
 
   &::-webkit-details-marker {

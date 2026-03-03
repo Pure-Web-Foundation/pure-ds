@@ -445,7 +445,7 @@ html:not([data-theme="dark"]) .surface-inverse {
   --color-code-bg: var(--color-gray-800);
   --color-surface-muted: rgba(255, 255, 255, 0.08);
   
-  & button:not(.btn-primary):not(.btn-outline):not(.btn-danger):not(.btn-success):not(.btn-warning),
+  & button:not(.btn-primary):not(.btn-outline):not(.btn-danger),
   & .btn-secondary {
     background-color: rgba(255, 255, 255, 0.12);
     color: var(--surface-inverse-text);
@@ -477,7 +477,7 @@ html[data-theme="dark"] .surface-inverse {
   --color-code-bg: var(--color-gray-100);
   --color-surface-muted: var(--color-gray-100);
   
-  & button:not(.btn-primary):not(.btn-outline):not(.btn-danger):not(.btn-success):not(.btn-warning),
+  & button:not(.btn-primary):not(.btn-outline):not(.btn-danger),
   & .btn-secondary {
     background-color: rgba(0, 0, 0, 0.06);
     color: var(--surface-inverse-text);
@@ -1123,7 +1123,7 @@ html:not([data-theme="dark"]) .surface-inverse {
   --color-code-bg: var(--color-gray-800);
   --color-surface-muted: rgba(255, 255, 255, 0.08);
   
-  & button:not(.btn-primary):not(.btn-outline):not(.btn-danger):not(.btn-success):not(.btn-warning),
+  & button:not(.btn-primary):not(.btn-outline):not(.btn-danger),
   & .btn-secondary {
     background-color: rgba(255, 255, 255, 0.12);
     color: var(--surface-inverse-text);
@@ -1155,7 +1155,7 @@ html[data-theme="dark"] .surface-inverse {
   --color-code-bg: var(--color-gray-100);
   --color-surface-muted: var(--color-gray-100);
   
-  & button:not(.btn-primary):not(.btn-outline):not(.btn-danger):not(.btn-success):not(.btn-warning),
+  & button:not(.btn-primary):not(.btn-outline):not(.btn-danger),
   & .btn-secondary {
     background-color: rgba(0, 0, 0, 0.06);
     color: var(--surface-inverse-text);

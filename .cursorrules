@@ -2,7 +2,9 @@
 
 > **CRITICAL**: This workspace uses **Pure Design System (PDS)**. All code generation MUST follow PDS and vanilla Web Platform patterns. Never use 3rd party framework patterns, non-PDS utility classes, inline styles, or hardcoded CSS values.
 
-> **CRITICAL — `/pds/` PATHS ARE READ-ONLY (PACKAGE-LIKE)**: Treat any file path containing `/pds/` as immutable runtime/package output (including `public/pds/**`, `public/assets/pds/**`, and `node_modules/@pure-ds/core/public/**`). Never patch these files directly. If behavior must change, edit source/config (`src/js/pds-core/**`, `pds.config.js`, component source), then rebuild.
+> **CRITICAL — Unless we are in the pure-ds (@pure-ds/core origin) project itself, `/pds/` PATHS ARE READ-ONLY (PACKAGE-LIKE)**: Treat any file path containing `/pds/` as immutable runtime/package output (including `public/pds/**`, `public/assets/pds/**`, and `node_modules/@pure-ds/core/public/**`). Never patch these files directly. If behavior must change, edit source/config (`src/js/pds-core/**`, `pds.config.js`, component source), then rebuild.
+
+> **Note: in the pure-ds (@pure-ds/core origin) project itself**, pds-* web components ARE not compiled from source. The pds-* components in pds/components/ ARE their own source code!
 
 ## Philosophy
 
@@ -525,6 +527,14 @@ form.getFormData(); // May throw error
     <p>Content for Tab 2</p>
   </pds-tabpanel>
 </pds-tabstrip>
+
+<!-- Details: wrap post-summary content in a padded primitive -->
+<details>
+  <summary>Section title</summary>
+  <div class="card">
+    <p>Use a padded container after summary to avoid edge-to-edge content.</p>
+  </div>
+</details>
 ```
 
 ### Empty State Pattern
@@ -599,3 +609,4 @@ Before generating code:
 13. ✅ **Use `examples` in JSON schema** — First example becomes placeholder
 14. ✅ **Add smart icons** — Infer icons based on field names (email→envelope, phone→phone)
 15. ✅ **Wrap in `form[data-required]`** — For asterisk enhancement on required fields
+16. ✅ **Pad details content** — After `<summary>`, wrap content in a padded container (usually `.card`)

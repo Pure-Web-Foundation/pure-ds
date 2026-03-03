@@ -40,6 +40,78 @@ function appendMessageContent(container, message) {
   container.appendChild(document.createTextNode(text));
 }
 
+/**
+ * Validate host form plus nested shadow-root forms (e.g. inside custom elements like pds-form).
+ * @param {HTMLFormElement} form
+ * @returns {boolean}
+ */
+function validateDialogFormTree(form) {
+  if (!form) return true;
+
+  let valid = true;
+
+  const describeElement = (el) => {
+    if (!el || typeof el !== "object") return "<unknown>";
+    const tag = el.tagName ? String(el.tagName).toLowerCase() : "node";
+    const id = el.id ? `#${el.id}` : "";
+    const name = typeof el.getAttribute === "function" ? el.getAttribute("name") : null;
+    const namePart = name ? `[name="${name}"]` : "";
+    return `${tag}${id}${namePart}`;
+  };
+
+  const reportInvalidControls = (root, scopeLabel) => {
+    if (!root || typeof root.querySelectorAll !== "function") return;
+    const invalidControls = Array.from(root.querySelectorAll(":invalid"));
+    if (!invalidControls.length) return;
+    const list = invalidControls.map((el) => {
+      const message = typeof el.validationMessage === "string" ? el.validationMessage : "";
+      return `${describeElement(el)}${message ? ` — ${message}` : ""}`;
+    });
+    console.warn(`ask.validateDialogFormTree: invalid controls in ${scopeLabel}:`, list);
+  };
+
+  const runValidity = (target, scopeLabel) => {
+    try {
+      const targetValid = typeof target.reportValidity === "function"
+        ? target.reportValidity()
+        : target.checkValidity?.() ?? true;
+      if (!targetValid) {
+        reportInvalidControls(target, scopeLabel);
+      }
+      return targetValid;
+    } catch (error) {
+      console.error(`ask.validateDialogFormTree: validation threw in ${scopeLabel}`, error);
+      return false;
+    }
+  };
+
+  valid = runValidity(form, "host dialog form") && valid;
+
+  const nestedLightDomForms = Array.from(form.querySelectorAll("form"));
+  for (const nestedForm of nestedLightDomForms) {
+    if (nestedForm === form) continue;
+    const nestedValid = runValidity(nestedForm, `nested light DOM form ${describeElement(nestedForm)}`);
+    valid = nestedValid && valid;
+  }
+
+  const descendants = Array.from(form.querySelectorAll("*"));
+  for (const host of descendants) {
+    const root = host?.shadowRoot;
+    if (!root) continue;
+
+    const nestedForms = Array.from(root.querySelectorAll("form"));
+    for (const nestedForm of nestedForms) {
+      const nestedValid = runValidity(
+        nestedForm,
+        `shadow form under ${describeElement(host)}`
+      );
+      valid = nestedValid && valid;
+    }
+  }
+
+  return valid;
+}
+
 function isSafariBrowser() {
   const userAgent = navigator.userAgent;
   const isSafariEngine = /Safari/i.test(userAgent);
@@ -92,6 +164,14 @@ export async function ask(message, options = {}) {
   options = { ...defaults, ...options };
   
   return new Promise((resolve) => {
+    let settled = false;
+    const settle = (value, dialog) => {
+      if (settled) return;
+      settled = true;
+      dialog.close();
+      resolve(value);
+    };
+
     // Create native dialog element
     const dialog = document.createElement("dialog");
 
@@ -126,7 +206,8 @@ export async function ask(message, options = {}) {
     const buttons = Object.entries(options.buttons).map(([code, obj]) => {
       const btnClass = obj.primary ? "btn-primary btn-sm" : "btn-outline btn-sm";
       const btnType = obj.cancel ? "button" : "submit";
-      return `<button type="${btnType}" class="${btnClass}" value="${code}">${obj.name}</button>`;
+      const formNoValidate = obj.formNoValidate ? " formnovalidate" : "";
+      return `<button type="${btnType}" class="${btnClass}" value="${code}"${formNoValidate}>${obj.name}</button>`;
     });
 
     // Create PDS-compliant dialog structure
@@ -197,10 +278,26 @@ export async function ask(message, options = {}) {
 
     // Handle cancel button clicks
     dialog.addEventListener("click", (e) => {
+      const okBtn = e.target.closest('button[value="ok"]');
+      if (okBtn && options.useForm) {
+        e.preventDefault();
+        const form = dialog.querySelector("form");
+        if (!form) return;
+
+        const bypassValidation = Boolean(okBtn.hasAttribute("formnovalidate"));
+        if (!bypassValidation) {
+          const valid = validateDialogFormTree(form);
+          if (!valid) return;
+        }
+
+        const result = new FormData(form);
+        settle(result, dialog);
+        return;
+      }
+
       const btn = e.target.closest('button[value="cancel"]');
       if (btn) {
-        dialog.close();
-        resolve(false);
+        settle(false, dialog);
       }
     });
 
@@ -208,29 +305,39 @@ export async function ask(message, options = {}) {
     const setupFormListener = () => {
       const form = dialog.querySelector("form");
       if (form) {
+        if (form.dataset.askSubmitBound === "true") {
+          return;
+        }
+        form.dataset.askSubmitBound = "true";
+
         form.addEventListener("submit", (event) => {
           event.preventDefault();
+
+          const submitValue = event.submitter?.value ?? (options.useForm ? "ok" : undefined);
+          const bypassValidation = Boolean(event.submitter?.hasAttribute("formnovalidate"));
+
+          if (options.useForm && submitValue === "ok" && !bypassValidation) {
+            const valid = validateDialogFormTree(form);
+
+            if (!valid) {
+              return;
+            }
+          }
           
           let result;
-          if (options.useForm && event.submitter.value === "ok") {
-            console.log("Found form:", form);
-            console.log("Form elements:", form ? Array.from(form.elements) : "no form");
+          if (options.useForm && submitValue === "ok") {
             result = new FormData(form);
-            console.log("FormData entries:", Array.from(result.entries()));
           } else {
-            result = (event.submitter.value === "ok");
+            result = (submitValue === "ok");
           }
 
-          dialog.close();
-          resolve(result);
+          settle(result, dialog);
         });
       } else {
         // Form doesn't exist yet, wait and try again
         requestAnimationFrame(setupFormListener);
       }
     };
-    
-    setupFormListener();
 
     // Handle dialog close event
     dialog.addEventListener("close", () => {
@@ -240,6 +347,9 @@ export async function ask(message, options = {}) {
 
     // Append to body and show
     document.body.appendChild(dialog);
+
+    // Bind submit behavior after element is connected so lazy-rendered forms are discoverable
+    requestAnimationFrame(setupFormListener);
 
     // Call optional rendered callback
     if (typeof options.rendered === "function") {

@@ -1,6 +1,7 @@
 import { html, nothing } from "#pds/lit";
 import { createComponentDocsPage } from "../reference/reference-docs.js";
 import showdown from "showdown";
+import { countriesApiSettings } from "./omnibox-countries-api-settings.js";
 
 const markdownConverter = new showdown.Converter({ 
   tables: true,
@@ -275,8 +276,10 @@ Override the automatically selected widget for a field.
 | \`input-email\` | String | Email with validation |
 | \`input-url\` | String | URL with validation |
 | \`input-number\` | Number | Default for numbers |
+| \`pds-rating\` (or \`rating\`) | Number | Star rating input (pds-rating) |
 | \`input-range\` | Number | Slider control |
 | \`input-date\` | String | Date picker |
+| \`input-iso-interval\` | String | Date range picker (pds-daterange) |
 | \`input-time\` | String | Time picker |
 | \`input-datetime\` | String | Date + time picker |
 | \`input-color\` | String | Color picker |
@@ -664,6 +667,7 @@ See the examples below to get started, or check the [primitive forms](/story/pri
 
 export default {
   title: "Components/pds-form",
+  includeStories: [],
   tags: ["autodocs", "forms", "json-schema", "validation", "input"],
   parameters: {
     pds: {
@@ -679,30 +683,6 @@ export default {
     docs: docsParameters,
   },
 };
-
-const buildSimpleOmniboxSettings = () => ({
-  hideCategory: true,
-  itemGrid: "0 1fr 0",
-  iconHandler: () => '',
-  categories: {
-    Suggestions: {
-      trigger: () => true,
-      getItems: async (options) => {
-        const q = (options.search || "").toLowerCase();
-        const items = {
-          netherlands: "Netherlands",
-          unitedStates: "United States",
-          japan: "Japan",
-          germany: "Germany",
-        };
-
-        return Object.entries(items)
-          .filter(([key, label]) => `${key} ${label}`.toLowerCase().includes(q))
-          .map(([key, label]) => ({ id: key, text: label }));
-      },
-    },
-  },
-});
 
 const simpleSchema = {
   type: "object",
@@ -829,14 +809,6 @@ const complexUiSchema = {
   },
   "/personalInfo/dateOfBirth": {
     "ui:icon": "calendar",
-    "ui:iconPosition": "start",
-  },
-  "/address/street": {
-    "ui:icon": "map-pin",
-    "ui:iconPosition": "start",
-  },
-  "/address/city": {
-    "ui:icon": "building",
     "ui:iconPosition": "start",
   },
   "address/country": {
@@ -1257,7 +1229,7 @@ export const WithPdsOmnibox = {
         "ui:icon": "globe",
         "ui:options": {
           icon: "globe",
-          settings: buildSimpleOmniboxSettings(),
+          settings: countriesApiSettings,
         },
       },
     };
@@ -1693,6 +1665,7 @@ export const WithTabsLayout = {
                   examples: ["••••••••"],
                 },
               },
+              required: ["username", "email", "password"],
             },
             profile: {
               type: "object",
@@ -1731,7 +1704,8 @@ export const WithTabsLayout = {
                 searchable: { type: "boolean", title: "Searchable" },
               },
             },
-          },
+          }
+          
         },
       },
     };
@@ -1937,83 +1911,89 @@ export const WithDialogForms = {
           title: "Project Name",
           examples: ["Digital Transformation Initiative"],
         },
-        teamLead: {
+        elements: {
           type: "object",
-          title: "Team Lead",
+          title: "Elements",
           properties: {
-            name: {
-              type: "string",
-              title: "Full Name",
-              examples: ["Sarah Johnson"],
+            teamlead: {
+              type: "object",
+              title: "Team Lead",
+              properties: {
+                name: {
+                  type: "string",
+                  title: "Full Name",
+                  examples: ["Sarah Johnson"],
+                },
+                email: {
+                  type: "string",
+                  format: "email",
+                  title: "Email Address",
+                  examples: ["sarah.johnson@company.com"],
+                },
+                phone: {
+                  type: "string",
+                  title: "Phone Number",
+                  examples: ["+1-555-0123"],
+                },
+                department: {
+                  type: "string",
+                  title: "Department",
+                  examples: ["Engineering"],
+                },
+                location: {
+                  type: "string",
+                  title: "Office Location",
+                  examples: ["New York Office"],
+                },
+              },
             },
-            email: {
-              type: "string",
-              format: "email",
-              title: "Email Address",
-              examples: ["sarah.johnson@company.com"],
+            budget: {
+              type: "object",
+              title: "Budget Details",
+              properties: {
+                amount: {
+                  type: "number",
+                  title: "Budget Amount",
+                  examples: [250000],
+                },
+                currency: {
+                  type: "string",
+                  title: "Currency",
+                  enum: ["USD", "EUR", "GBP", "JPY", "AUD"],
+                },
+                fiscalYear: {
+                  type: "string",
+                  title: "Fiscal Year",
+                  examples: ["2025"],
+                },
+                department: {
+                  type: "string",
+                  title: "Cost Center",
+                  examples: ["IT-001"],
+                },
+                approved: { type: "boolean", title: "Budget Approved" },
+              },
             },
-            phone: {
-              type: "string",
-              title: "Phone Number",
-              examples: ["+1-555-0123"],
-            },
-            department: {
-              type: "string",
-              title: "Department",
-              examples: ["Engineering"],
-            },
-            location: {
-              type: "string",
-              title: "Office Location",
-              examples: ["New York Office"],
-            },
-          },
-        },
-        budget: {
-          type: "object",
-          title: "Budget Details",
-          properties: {
-            amount: {
-              type: "number",
-              title: "Budget Amount",
-              examples: [250000],
-            },
-            currency: {
-              type: "string",
-              title: "Currency",
-              enum: ["USD", "EUR", "GBP", "JPY", "AUD"],
-            },
-            fiscalYear: {
-              type: "string",
-              title: "Fiscal Year",
-              examples: ["2025"],
-            },
-            department: {
-              type: "string",
-              title: "Cost Center",
-              examples: ["IT-001"],
-            },
-            approved: { type: "boolean", title: "Budget Approved" },
-          },
-        },
-        timeline: {
-          type: "object",
-          title: "Project Timeline",
-          properties: {
-            startDate: { type: "string", format: "date", title: "Start Date" },
-            endDate: { type: "string", format: "date", title: "End Date" },
-            milestones: {
-              type: "integer",
-              title: "Number of Milestones",
-              minimum: 1,
-              maximum: 20,
-              examples: [8],
-            },
-            status: {
-              type: "string",
-              title: "Status",
-              enum: ["Planning", "In Progress", "On Hold", "Completed"],
-              default: "Planning",
+            timeline: {
+              type: "object",
+              title: "Project Timeline",
+              required: ["period"],
+              properties: {
+                period: { type: "string", format: "iso-interval", title: "Project Timeline" },
+                milestones: {
+                  type: "integer",
+                  title: "Number of Milestones",
+                  minimum: 1,
+                  maximum: 20,
+                  examples: [8],
+                },
+                status: {
+                  type: "string",
+                  title: "Status",
+                  enum: ["Planning", "In Progress", "On Hold", "Completed"],
+                  default: "Planning",
+                },
+              },
             },
           },
         },
@@ -2023,25 +2003,26 @@ export const WithDialogForms = {
     // Initial values to test state persistence
     const initialValues = {
       projectName: "Digital Transformation Initiative",
-      teamLead: {
-        name: "Sarah Johnson",
-        email: "sarah.johnson@company.com",
-        phone: "+1-555-0123",
-        department: "Engineering",
-        location: "New York Office",
-      },
-      budget: {
-        amount: 250000,
-        currency: "USD",
-        fiscalYear: "2025",
-        department: "IT-001",
-        approved: true,
-      },
-      timeline: {
-        startDate: "2025-01-15",
-        endDate: "2025-12-31",
-        milestones: 8,
-        status: "In Progress",
+      elements: {
+        teamlead: {
+          name: "Sarah Johnson",
+          email: "sarah.johnson@company.com",
+          phone: "+1-555-0123",
+          department: "Engineering",
+          location: "New York Office",
+        },
+        budget: {
+          amount: 250000,
+          currency: "USD",
+          fiscalYear: "2025",
+          department: "IT-001",
+          approved: true,
+        },
+        timeline: {
+          period: "2025-01-15/2025-12-31",
+          milestones: 8,
+          status: "In Progress",
+        },
       },
     };
 
@@ -2050,61 +2031,68 @@ export const WithDialogForms = {
         "ui:icon": "folder",
         "ui:iconPosition": "start",
       },
-      teamLead: {
-        "ui:dialog": true,
-        "ui:dialogOptions": {
-          buttonLabel: "Edit Team Lead",
-          dialogTitle: "Team Lead Information",
-          icon: "user-gear",
+      elements: {
+        "ui:layout": "grid",
+        "ui:layoutOptions": {
+          columns: 3,
+          gap: "md",
         },
-        name: { "ui:icon": "user", "ui:iconPosition": "start" },
-        email: { "ui:icon": "envelope", "ui:iconPosition": "start" },
-        phone: { "ui:icon": "phone", "ui:iconPosition": "start" },
-        department: { "ui:icon": "building", "ui:iconPosition": "start" },
-        location: { "ui:icon": "map-pin", "ui:iconPosition": "start" },
-      },
-      budget: {
-        "ui:dialog": true,
-        "ui:dialogOptions": {
-          buttonLabel: "Edit Budget",
-          dialogTitle: "Budget Details",
-          icon: "currency-dollar",
+        teamlead: {
+          "ui:dialog": true,
+          "ui:dialogOptions": {
+            buttonLabel: "Edit Team Lead",
+            dialogTitle: "Team Lead Information",
+            icon: "user-gear",
+          },
+          name: { "ui:icon": "user", "ui:iconPosition": "start" },
+          email: { "ui:icon": "at", "ui:iconPosition": "start" },
+          phone: { "ui:icon": "phone", "ui:iconPosition": "start" },
+          department: { "ui:icon": "receipt", "ui:iconPosition": "start" },
+          location: { "ui:icon": "map-pin", "ui:iconPosition": "start" },
         },
-        amount: { "ui:icon": "dollar-sign", "ui:iconPosition": "start" },
-        currency: { "ui:icon": "coins", "ui:iconPosition": "start" },
-        fiscalYear: { "ui:icon": "calendar", "ui:iconPosition": "start" },
-        department: { "ui:icon": "building", "ui:iconPosition": "start" },
+        budget: {
+          "ui:dialog": true,
+          "ui:dialogOptions": {
+            buttonLabel: "Edit Budget",
+            dialogTitle: "Budget Details",
+            icon: "currency-dollar",
+          },
+          amount: { "ui:icon": "currency-dollar", "ui:iconPosition": "start" },
+          currency: { "ui:icon": "coins", "ui:iconPosition": "start" },
+          fiscalYear: { "ui:icon": "calendar", "ui:iconPosition": "start" },
+          department: { "ui:icon": "receipt", "ui:iconPosition": "start" },
+        },
+        timeline: {
+          "ui:dialog": true,
+          "ui:dialogOptions": {
+            buttonLabel: "Edit Timeline",
+            dialogTitle: "Project Timeline",
+            icon: "calendar",
+          },
+          period: {},
+          milestones: { "ui:icon": "check", "ui:iconPosition": "start" },
+          status: { "ui:icon": "list-check", "ui:iconPosition": "start" },
+        },
       },
       // Flat path for dialog inner form - currency field inside budget dialog
       "/currency": { "ui:widget": "select" },
       // Flat path for dialog inner form - status field inside timeline dialog
       "/status": { "ui:class": "buttons" },
-      // Flat path for dialog inner form - email field inside teamLead dialog
+      // Flat path for dialog inner form - email field inside teamlead dialog
       "/email": { "ui:icon": "at", "ui:iconPosition": "start" },
-      // Flat path for dialog inner form - phone field inside teamLead dialog
+      // Flat path for dialog inner form - phone field inside teamlead dialog
       "/phone": { "ui:icon": "phone", "ui:iconPosition": "start" },
-      timeline: {
-        "ui:dialog": true,
-        "ui:dialogOptions": {
-          buttonLabel: "Edit Timeline",
-          dialogTitle: "Project Timeline",
-          icon: "calendar",
-        },
-        startDate: { "ui:icon": "calendar-check", "ui:iconPosition": "start" },
-        endDate: { "ui:icon": "calendar-xmark", "ui:iconPosition": "start" },
-        milestones: { "ui:icon": "flag", "ui:iconPosition": "start" },
-        status: { "ui:icon": "list-check", "ui:iconPosition": "start" },
-      },
     };
 
     return html`
-      <pds-form
-        .jsonSchema=${schema}
-        .uiSchema=${uiSchema}
-        .values=${initialValues}
-        @pw:submit=${(e) => toastFormData(e.detail)}
-        @pw:dialog-submit=${(e) => console.log("📝 Dialog saved:", e.detail)}
-      ></pds-form>
+      <div class="flex flex-col gap-md">
+        <pds-form
+          .jsonSchema=${schema}
+          .uiSchema=${uiSchema}
+          .values=${initialValues}
+          @pw:submit=${(e) => toastFormData(e.detail)}
+        ></pds-form>
+      </div>
     `;
   },
 };
@@ -4792,55 +4780,22 @@ This is like using \`defineRenderer()\` but inline in the uiSchema.`,
           maximum: 5,
           default: 4,
         },
-        review: { type: "string", title: "Review" },
+        review: { type: "string", title: "Review", examples: ["Great sound quality and battery life!"] },
         recommend: { type: "boolean", title: "Would recommend", default: true },
       },
     };
 
     const uiSchema = {
-      // Custom star rating widget
+      // Built-in rating widget
       "/rating": {
-        "ui:render": (field) => {
-          const stars = [1, 2, 3, 4, 5];
-          return html`
-            <fieldset data-path=${field.path}>
-              <legend>${field.label}</legend>
-              <div
-                class="flex gap-xs"
-                role="radiogroup"
-                aria-label="${field.label}"
-              >
-                ${stars.map(
-                  (star) => html`
-                    <button
-                      type="button"
-                      class="btn btn-sm ${star <= (field.value || 0)
-                        ? "btn-primary"
-                        : "btn-outline"}"
-                      @click=${() => field.set(star)}
-                      aria-label="${star} star${star > 1 ? "s" : ""}"
-                      aria-pressed=${star <= (field.value || 0)}
-                    >
-                      ★
-                    </button>
-                  `
-                )}
-              </div>
-              <input
-                type="hidden"
-                name=${field.path}
-                .value=${String(field.value || "")}
-              />
-            </fieldset>
-          `;
-        },
+        "ui:widget": "rating",
       },
 
       // Custom toggle card for recommendation
       "/recommend": {
         "ui:render": (field) => html`
           <div
-            class="card surface-elevated p-md cursor-pointer flex items-center gap-md"
+            class="flex items-center gap-sm"
             @click=${() => field.set(!field.value)}
             role="checkbox"
             aria-checked=${!!field.value}
@@ -4849,19 +4804,19 @@ This is like using \`defineRenderer()\` but inline in the uiSchema.`,
               e.key === " " && (e.preventDefault(), field.set(!field.value))}
           >
             <span
-              style="cursor: pointer; font-size: 3rem; color: var(--color-${field.value
+              style="cursor: pointer; font-size: 2rem; color: var(--color-${field.value
                 ? "success"
-                : "neutral"}-500)"
+                : "gray"}-500)"
               >${field.value ? "👍" : "👎"}</span
             >
-            <div>
-              <strong>${field.label}</strong>
-              <p class="text-sm text-muted">
-                ${field.value
+            
+              <h4>
+              ${field.value
                   ? "Yes, I would recommend this!"
                   : "No, I would not recommend this"}
-              </p>
-            </div>
+              </h4>
+              
+            
             <input
               type="hidden"
               name=${field.path}
@@ -4879,11 +4834,16 @@ This is like using \`defineRenderer()\` but inline in the uiSchema.`,
 
     return html`
       <div class="callout callout-info">
-        <p><strong>Custom rendered fields:</strong></p>
-        <ul>
-          <li><strong>Rating</strong> uses a custom star button widget</li>
-          <li><strong>Would recommend</strong> uses a custom toggle card</li>
-        </ul>
+        <span class="callout-icon">
+          <pds-icon icon="sparkle" size="md"></pds-icon>
+        </span>
+        <div>
+          <strong class="callout-title">Custom rendered fields</strong>
+          <ul>
+            <li><strong>Rating</strong> uses built-in <code>ui:widget: "rating"</code></li>
+            <li><strong>Would recommend</strong> uses a custom toggle card</li>
+          </ul>
+        </div>
       </div>
       <pds-form
         .jsonSchema=${schema}

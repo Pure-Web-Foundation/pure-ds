@@ -622,8 +622,14 @@ export class SchemaForm extends LitElement {
       widget: null,
     });
     if (picked?.widget) return picked.widget;
-    // Honor explicit uiSchema widget hints
-    if (ui?.["ui:widget"]) return ui["ui:widget"];
+    // Honor explicit uiSchema widget hints (with aliases)
+    if (ui?.["ui:widget"]) {
+      const explicitWidget = ui["ui:widget"];
+      if (explicitWidget === "rating" || explicitWidget === "pds-rating") {
+        return "pds-rating";
+      }
+      return explicitWidget;
+    }
     const { values } = this.#extractEnumOptions(schema);
     if (values.length > 0) return values.length <= 5 ? "radio" : "select";
     if (schema.const !== undefined) return "const";
@@ -650,6 +656,8 @@ export class SchemaForm extends LitElement {
           return "input-url";
         case "date":
           return "input-date";
+        case "iso-interval":
+          return "input-iso-interval";
         case "time":
           return "input-time";
         case "datetime-local":
@@ -932,11 +940,56 @@ export class SchemaForm extends LitElement {
 
     const openDialog = async () => {
       // Read current value from this.#data on each open (not captured at render time)
-      const currentValue = this.#getByPath(this.#data, path) || {};
+      const currentValueFromData = this.#getByPath(this.#data, path);
+      const currentValueFromInitial = this.values
+        ? this.#getByPath(this.values, path)
+        : undefined;
+      const currentValue =
+        currentValueFromData ?? currentValueFromInitial ?? {};
 
-      console.log("Opening dialog for path:", path);
-      console.log("Current this.#data:", this.#data);
-      console.log("Current value at path:", currentValue);
+      const dialogUiSchema = {};
+
+      // Preserve root-level ui:* options for dialog form behavior
+      if (this.uiSchema && typeof this.uiSchema === "object") {
+        for (const [key, value] of Object.entries(this.uiSchema)) {
+          if (key.startsWith("ui:")) {
+            dialogUiSchema[key] = value;
+          }
+        }
+      }
+
+      // Include nested UI config defined directly under the dialog field
+      if (ui && typeof ui === "object") {
+        for (const [key, value] of Object.entries(ui)) {
+          if (
+            key === "ui:dialog" ||
+            key === "ui:dialogOptions" ||
+            key === "ui:dialogButton" ||
+            key === "ui:dialogSize"
+          ) {
+            continue;
+          }
+          if (!key.startsWith("ui:")) {
+            dialogUiSchema[key] = value;
+          }
+        }
+      }
+
+      // Include any flat path entries (e.g. '/email') relevant to this dialog schema
+      const dialogProps = Object.keys(node?.schema?.properties || {});
+      for (const prop of dialogProps) {
+        const pointer = `/${this.#escapeJsonPointer(prop)}`;
+        if (this.uiSchema?.[pointer] !== undefined) {
+          dialogUiSchema[pointer] = this.uiSchema[pointer];
+        } else if (this.uiSchema?.[prop] !== undefined) {
+          dialogUiSchema[prop] = this.uiSchema[prop];
+        }
+      }
+
+      const dialogValues =
+        currentValue && typeof currentValue === "object"
+          ? structuredClone(currentValue)
+          : currentValue;
 
       this.#emit("pw:dialog-open", {
         path,
@@ -952,8 +1005,8 @@ export class SchemaForm extends LitElement {
         const formData = await PDS.ask(
           html`<pds-form
             .jsonSchema=${dialogSchema}
-            .values=${currentValue}
-            .uiSchema=${this.uiSchema}
+            .values=${dialogValues}
+            .uiSchema=${dialogUiSchema}
             .options=${this.options}
             hide-actions
             hide-legend
@@ -962,6 +1015,23 @@ export class SchemaForm extends LitElement {
             title: dialogTitle,
             type: "custom",
             useForm: true,
+            rendered: (dialogEl) => {
+              try {
+                const dialogForm = dialogEl?.querySelector("pds-form");
+                if (!dialogForm) return;
+
+                // Defensive re-assignment: some template transport paths drop object props
+                dialogForm.jsonSchema = dialogSchema;
+                dialogForm.values = dialogValues;
+                dialogForm.uiSchema = dialogUiSchema;
+                dialogForm.options = this.options;
+              } catch (error) {
+                console.error("pds-form dialog rendered hook failed", {
+                  path,
+                  error,
+                });
+              }
+            },
             size: dialogOpts.size || "lg",
             buttons: {
               ok: { name: dialogOpts.submitLabel || "Save", primary: true },
@@ -984,20 +1054,8 @@ export class SchemaForm extends LitElement {
             dialogSchema
           );
 
-          console.log("Updating path:", path, "with value:", updatedValue);
-          console.log(
-            "Before update - this.#data:",
-            structuredClone(this.#data)
-          );
-
           // Update the data at the dialog's path
           this.#setByPath(this.#data, path, updatedValue);
-
-          console.log(
-            "After update - this.#data:",
-            structuredClone(this.#data)
-          );
-          console.log("Verify read back:", this.#getByPath(this.#data, path));
 
           this.requestUpdate();
           this.#emit("pw:dialog-submit", { path, value: updatedValue });
@@ -1493,7 +1551,11 @@ export class SchemaForm extends LitElement {
           : node.widgetKey === "checkbox-group"
           ? "group"
           : undefined;
-      const fieldsetClass = ui?.["ui:class"] ?? "stack-sm";
+      const defaultGroupClass =
+        node.widgetKey === "radio" || node.widgetKey === "checkbox-group"
+          ? "buttons"
+          : "stack-sm";
+      const fieldsetClass = ui?.["ui:class"] ?? defaultGroupClass;
       return html`
         <fieldset
           data-path=${path}
@@ -1700,6 +1762,32 @@ export class SchemaForm extends LitElement {
       }
     );
 
+    const ratingRenderer = ({ id, path, value, attrs, set, ui }) => {
+      const ratingOpts = ui?.["ui:options"] || {};
+      const max = ratingOpts.max ?? attrs.max ?? 5;
+      const ratingValue = Number(value ?? 0);
+
+      return html`
+        <pds-rating
+          id=${id}
+          name=${path}
+          max=${max}
+          .value=${Number.isFinite(ratingValue) ? ratingValue : 0}
+          ?disabled=${!!attrs.disabled}
+          ?required=${!!attrs.required}
+          ?readonly=${!!attrs.readOnly}
+          @change=${(e) => {
+            const nextValue = Number(e.currentTarget?.value ?? 0);
+            set(Number.isFinite(nextValue) ? nextValue : 0);
+          }}
+        ></pds-rating>
+      `;
+    };
+
+    // pds-rating: first-class rating widget (supports "pds-rating" and "rating")
+    this.defineRenderer("pds-rating", ratingRenderer);
+    this.defineRenderer("rating", ratingRenderer);
+
     // Range input renderer for ui:widget = 'input-range'
     this.defineRenderer(
       "input-range",
@@ -1838,6 +1926,20 @@ export class SchemaForm extends LitElement {
           ?required=${!!attrs.required}
           @input=${(e) => set(e.target.value)}
         />
+      `
+    );
+
+    this.defineRenderer(
+      "input-iso-interval",
+      ({ id, path, value, attrs, set }) => html`
+        <pds-daterange
+          id=${id}
+          name=${path}
+          value=${ifDefined(value ?? undefined)}
+          ?required=${!!attrs.required}
+          ?disabled=${!!attrs.disabled || !!attrs.readOnly}
+          @range-change=${(e) => set(e.target.value ?? "")}
+        ></pds-daterange>
       `
     );
 

@@ -46,6 +46,32 @@
       ]
     },
     {
+      "name": "pds-daterange",
+      "description": "PdsDateRange component",
+      "attributes": [
+        {
+          "name": "name",
+          "description": "Form field name used during form submission."
+        },
+        {
+          "name": "required",
+          "description": "Requires both start and end dates to be selected."
+        },
+        {
+          "name": "disabled",
+          "description": "Disables interaction and closes the panel when active."
+        },
+        {
+          "name": "value",
+          "description": "Serialized range value as ISO interval: `YYYY-MM-DD/YYYY-MM-DD`."
+        },
+        {
+          "name": "display-format",
+          "description": "Button date text format. Default is `d MMM yy`."
+        }
+      ]
+    },
+    {
       "name": "pds-drawer",
       "description": "PdsDrawer component",
       "attributes": [

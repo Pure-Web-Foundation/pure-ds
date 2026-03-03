@@ -141,27 +141,6 @@ class PdsRating extends HTMLElement {
           touch-action: none;
         }
 
-        ::slotted(input[type="range"]) {
-          position: absolute !important;
-          inset-inline-start: 0 !important;
-          inset-block-start: 0 !important;
-          inline-size: 1px !important;
-          block-size: 1px !important;
-          min-inline-size: 1px !important;
-          min-block-size: 1px !important;
-          margin: -1px !important;
-          border: 0 !important;
-          padding: 0 !important;
-          opacity: 0 !important;
-          overflow: hidden !important;
-          clip: rect(0 0 0 0) !important;
-          clip-path: inset(50%) !important;
-          white-space: nowrap !important;
-          appearance: none !important;
-          -webkit-appearance: none !important;
-          pointer-events: none !important;
-        }
-
         .wrap {
           position: relative;
           display: inline-grid;
@@ -246,7 +225,7 @@ class PdsRating extends HTMLElement {
         <div class="interactive" part="interactive" aria-hidden="true">
           <svg class="stars" part="stars" focusable="false" aria-hidden="true"></svg>
         </div>
-        <slot></slot>
+        <input class="native-input" type="range" />
       </div>
     `;
 
@@ -501,13 +480,8 @@ class PdsRating extends HTMLElement {
   }
 
   #wireInput() {
-    const existing = this.querySelector('input[type="range"]');
-    this.#input = existing ?? document.createElement("input");
-
-    if (!existing) {
-      this.#input.type = "range";
-      this.append(this.#input);
-    }
+    this.#input = this.shadowRoot?.querySelector(".native-input");
+    if (!this.#input) return;
 
     this.#input.type = "range";
     this.#input.min = "0";
@@ -516,19 +490,12 @@ class PdsRating extends HTMLElement {
     this.#input.setAttribute("data-enhanced-range", "1");
     this.#input.tabIndex = -1;
 
-    if (!this.hasAttribute("value") && this.#input.value) {
-      this.setAttribute("value", this.#input.value);
-    }
-
     this.#input.value = String(this.value);
 
     if (this.disabled) this.#input.disabled = true;
     if (this.required) this.#input.required = true;
     if (this.readOnly) this.#input.readOnly = true;
 
-    if (!this.hasAttribute("name") && this.#input.name) {
-      this.name = this.#input.name;
-    }
     this.#input.name = this.name;
 
     if (!this.#input.hasAttribute("aria-label") && !this.#input.hasAttribute("aria-labelledby")) {

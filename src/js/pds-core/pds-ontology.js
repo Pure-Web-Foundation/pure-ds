@@ -116,7 +116,7 @@ export const ontology = {
       id: "button", 
       name: "Button", 
       description: "Interactive button element with variants",
-      selectors: ["button", ".btn-primary", ".btn-secondary", ".btn-outline", ".btn-sm", ".btn-xs", ".btn-lg", ".btn-working", ".icon-only"],
+      selectors: ["button", ".btn-primary", ".btn-secondary", ".btn-outline", ".btn-danger", ".btn-sm", ".btn-xs", ".btn-lg", ".btn-working", ".icon-only"],
       tags: ["interactive", "action", "cta", "form"],
       category: "action"
     },
@@ -582,7 +582,7 @@ export const ontology = {
     form: ["input", "field", "label", "button", "fieldset", "pds-form", "pds-upload", "pds-richtext", "pds-calendar", "required", "validation", "submit"],
     input: ["form", "field", "text", "label", "required", "validation"],
     field: ["form", "input", "label", "required"],
-    button: ["btn", "interactive", "action", "submit", "form", "btn-primary", "btn-secondary", "btn-working", "pds-fab", "floating"],
+    button: ["btn", "interactive", "action", "submit", "form", "btn-primary", "btn-secondary", "btn-danger", "btn-working", "pds-fab", "floating"],
     btn: ["button", "interactive", "action", "pds-fab"],
     fab: ["pds-fab", "floating", "button", "action", "menu"],
     floating: ["fab", "pds-fab", "button", "action"],
