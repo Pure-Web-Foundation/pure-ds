@@ -1315,18 +1315,23 @@ select {
 
 /* Button styling */
 button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
+  --btn-pad-y: max(calc(var(--spacing-1) * ${g}), var(--spacing-2));
+  --btn-target-h: max(${h}px, calc(var(--font-size-base) + (var(--btn-pad-y) * 2) + (var(--border-width-medium) * 2)));
   display: inline-flex;
   gap: var(--spacing-1);
   align-items: center;
   justify-content: center;
-  min-height: ${h}px;
-  padding: max(calc(var(--spacing-1) * ${g}), var(--spacing-2)) var(--spacing-6);
+  min-height: var(--btn-target-h);
+  height: var(--btn-target-h);
+  padding: var(--btn-pad-y) var(--spacing-6);
   border: var(--border-width-medium) solid transparent;
   border-radius: var(--radius-md);
+  box-sizing: border-box;
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   line-height: 1;
+  white-space: nowrap;
   cursor: pointer;
   transition: all var(--transition-fast);
   text-decoration: none;
@@ -1476,22 +1481,31 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .btn-sm {
-  padding: calc(max(calc(var(--spacing-1) * ${g}), var(--spacing-2)) * 0.85) calc(var(--spacing-6) * 0.8);
+  --btn-pad-y: calc(max(calc(var(--spacing-1) * ${g}), var(--spacing-2)) * 0.85);
+  --btn-target-h: max(calc(${h}px * 0.85), calc(var(--font-size-sm) + (var(--btn-pad-y) * 2) + (var(--border-width-medium) * 2)));
+  padding: var(--btn-pad-y) calc(var(--spacing-6) * 0.8);
   font-size: var(--font-size-sm);
-  min-height: calc(${h}px * 0.85);
+  min-height: var(--btn-target-h);
+  height: var(--btn-target-h);
 }
 
 .btn-xs {
-  padding: calc(max(calc(var(--spacing-1) * ${g}), var(--spacing-2)) * 0.7) calc(var(--spacing-6) * 0.65);
+  --btn-pad-y: calc(max(calc(var(--spacing-1) * ${g}), var(--spacing-2)) * 0.7);
+  --btn-target-h: max(calc(${h}px * 0.7), calc(var(--font-size-xs) + (var(--btn-pad-y) * 2) + (var(--border-width-medium) * 2)));
+  padding: var(--btn-pad-y) calc(var(--spacing-6) * 0.65);
   font-size: var(--font-size-xs);
-  min-height: calc(${h}px * 0.7);
+  min-height: var(--btn-target-h);
+  height: var(--btn-target-h);
 }
 
 
 .btn-lg {
-  padding: calc(max(calc(var(--spacing-1) * ${g}), var(--spacing-2)) * 1.15) calc(var(--spacing-6) * 1.35);
+  --btn-pad-y: calc(max(calc(var(--spacing-1) * ${g}), var(--spacing-2)) * 1.15);
+  --btn-target-h: max(calc(${h}px * 1.15), calc(var(--font-size-lg) + (var(--btn-pad-y) * 2) + (var(--border-width-medium) * 2)));
+  padding: var(--btn-pad-y) calc(var(--spacing-6) * 1.35);
   font-size: var(--font-size-lg);
-  min-height: calc(${h}px * 1.15);
+  min-height: var(--btn-target-h);
+  height: var(--btn-target-h);
 }
 
 /* Working/loading state for buttons */
@@ -2847,9 +2861,9 @@ nav[data-dropdown] {
 }
 
 /* Touch device optimizations */
-@media (hover: none) and (pointer: coarse) {
+@media (pointer: coarse) {
   /* Touch devices - larger touch targets for interactive elements */
-  button, a, select, textarea,
+  select, textarea,
   input:not([type="radio"]):not([type="checkbox"]) {
     min-height: ${o}px;
     min-width: ${o}px;
