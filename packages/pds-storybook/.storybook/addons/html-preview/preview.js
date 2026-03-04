@@ -157,6 +157,48 @@ function serializeForDisplay(value) {
   }
 }
 
+function collectPdsApiCalls(container) {
+  if (!container) return [];
+
+  const nodes = Array.from(container.querySelectorAll('*'));
+
+  return nodes
+    .map((element, index) => {
+      const source =
+        element.pdsCodeSource ||
+        element.pdsSource ||
+        element.dataset?.pdsCodeSource ||
+        element.getAttribute?.('data-pds-code-source') ||
+        '';
+
+      if (!source || typeof source !== 'string' || !source.trim()) {
+        return null;
+      }
+
+      const heading =
+        element.pdsCodeHeading ||
+        element.pdsHeading ||
+        element.dataset?.pdsCodeHeading ||
+        element.getAttribute?.('data-pds-code-heading') ||
+        'PDS API';
+
+      const label =
+        element.pdsCodeLabel ||
+        element.pdsLabel ||
+        element.dataset?.pdsCodeLabel ||
+        element.getAttribute?.('data-pds-code-label') ||
+        null;
+
+      return {
+        id: index,
+        heading,
+        label,
+        code: source,
+      };
+    })
+    .filter(Boolean);
+}
+
 /**
  * Generate realistic source code for pds-form elements
  */
@@ -463,12 +505,15 @@ export const withHTMLExtractor = (storyFn, context) => {
         })
         .filter((entry) => entry.satellites);
 
+      const pdsApiCalls = collectPdsApiCalls(container);
+
       channel.emit(EVENTS.UPDATE_HTML, {
         markup: html || '',
         forms,
         omniboxes,
         treeviews,
-        fabs
+        fabs,
+        pdsApiCalls
       });
     }
   };

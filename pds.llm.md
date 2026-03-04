@@ -550,6 +550,21 @@ const confirmed = await PDS.ask("Delete this item?", {
   buttons: { ok: { name: "Delete", variant: "danger" } }
 });
 
+const result = await PDS.ask("Publish this change?", {
+  title: "Final approval",
+  buttons: {
+    ok: { name: "Publish", primary: true },
+    cancel: { name: "Cancel", cancel: true }
+  },
+  beforeClose: async ({ actionKind }) => {
+    if (actionKind !== "ok") return true;
+    const response = await fetch("/api/publish/can-close", { method: "POST" });
+    if (!response.ok) return { allow: false };
+    const payload = await response.json();
+    return { allow: payload?.ok === true };
+  }
+});
+
 await PDS.toast("Saved successfully!", { type: "success" });
 
 // Theme management

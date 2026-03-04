@@ -5,6 +5,31 @@ const ensureToast = () => {
   return toastFallback;
 };
 
+const toastQuickSource = `await PDS.toast('This is a success toast.', {
+  type: 'success'
+});`;
+
+const toastPersistentSource = `await PDS.toast('Heads up! This toast stays until dismissed.', {
+  type: 'warning',
+  persistent: true
+});`;
+
+const toastHtmlActionSource = `await PDS.toast(
+  '<strong>File archived.</strong><br><span class="text-muted">You can restore it within 30 days.</span>',
+  {
+    type: 'information',
+    html: true,
+    action: {
+      label: 'Undo',
+      icon: 'arrow-counter-clockwise',
+      onClick: async () => {
+        await PDS.toast('Archive action was undone.', { type: 'success' });
+      },
+      dismissOnClick: true
+    }
+  }
+);`;
+
 export default {
   title: 'PDS/PDS Object',
   tags: ['notifications', 'toast', 'utilities', 'feedback'],
@@ -30,7 +55,12 @@ const QuickToasts = {
     };
 
     return html`
-      <section class="card max-w-sm">
+      <section
+        class="card max-w-sm"
+        .pdsCodeHeading=${'PDS.toast()'}
+        .pdsCodeLabel=${'Quick toasts'}
+        .pdsCodeSource=${toastQuickSource}
+      >
         <header>
           <h3>Quick toasts</h3>
           <small class="text-muted">Trigger basic toast types using the shared helper.</small>
@@ -58,7 +88,12 @@ const PersistentToast = {
     };
 
     return html`
-      <section class="card max-w-sm">
+      <section
+        class="card max-w-sm"
+        .pdsCodeHeading=${'PDS.toast()'}
+        .pdsCodeLabel=${'Persistent toast'}
+        .pdsCodeSource=${toastPersistentSource}
+      >
         <header>
           <h3>Persistent toast</h3>
           <small class="text-muted">Use persistent mode for messages that require attention.</small>
@@ -115,7 +150,12 @@ const CustomHtmlToasts = {
     };
 
     return html`
-      <section class="card max-w-sm">
+      <section
+        class="card max-w-sm"
+        .pdsCodeHeading=${'PDS.toast()'}
+        .pdsCodeLabel=${'Custom HTML toasts'}
+        .pdsCodeSource=${toastHtmlActionSource}
+      >
         <header>
           <h3>Custom HTML toasts</h3>
           <small class="text-muted">Render trusted rich content in toast messages with the <code>html</code> option.</small>

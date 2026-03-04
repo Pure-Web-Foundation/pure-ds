@@ -21,14 +21,14 @@
   "include": [
     "types/**/*.d.ts",
     "src/**/*.js",
-    "public/assets/js/**/*.js",
+    "public/assets/pds/components/js/**/*.js",
     "public/assets/pds/components/**/*.js",
     "public/auto-define/**/*.js"
   ],
   "exclude": [
     "dist",
     "node_modules",
-    "public/assets/js/lit.js",
+    "public/assets/pds/components/js/lit.js",
     "packages/**",
     "**/*.stories.js"
   ]

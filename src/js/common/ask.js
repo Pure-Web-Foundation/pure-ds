@@ -162,14 +162,150 @@ export async function ask(message, options = {}) {
   };
   
   options = { ...defaults, ...options };
+
+  const buttonConfigs = options.buttons && typeof options.buttons === "object"
+    ? options.buttons
+    : defaults.buttons;
+
+  const resolveActionMeta = (actionCode) => {
+    if (actionCode == null) {
+      return {
+        actionCode: "dismiss",
+        actionKind: "dismiss",
+        button: null,
+      };
+    }
+
+    const button = buttonConfigs?.[actionCode] ?? null;
+    const actionKind = actionCode === "ok"
+      ? "ok"
+      : actionCode === "dismiss"
+        ? "dismiss"
+        : (button?.cancel || actionCode === "cancel")
+          ? "cancel"
+          : "custom";
+
+    return {
+      actionCode,
+      actionKind,
+      button,
+    };
+  };
+
+  const normalizeBeforeCloseResult = (result) => {
+    if (typeof result === "undefined" || result === null || result === true) {
+      return { allow: true };
+    }
+
+    if (result === false) {
+      return { allow: false };
+    }
+
+    if (typeof result === "object") {
+      const hasResult = Object.prototype.hasOwnProperty.call(result, "result")
+        || Object.prototype.hasOwnProperty.call(result, "value");
+
+      return {
+        allow: result.allow !== false,
+        hasResult,
+        result: Object.prototype.hasOwnProperty.call(result, "result")
+          ? result.result
+          : result.value,
+      };
+    }
+
+    return { allow: Boolean(result) };
+  };
   
   return new Promise((resolve) => {
     let settled = false;
-    const settle = (value, dialog) => {
+    const settle = (value, dialog, { shouldClose = true } = {}) => {
       if (settled) return;
       settled = true;
-      dialog.close();
       resolve(value);
+
+      if (!shouldClose || !dialog?.open) {
+        return;
+      }
+
+      try {
+        dialog.close();
+      } catch (error) {
+        console.warn("ask: dialog.close() failed", error);
+      }
+    };
+
+    const runBeforeClose = async (context) => {
+      if (context.actionKind !== "ok" || typeof options.beforeClose !== "function") {
+        return { allow: true };
+      }
+
+      try {
+        const beforeCloseResult = await options.beforeClose(context);
+        return normalizeBeforeCloseResult(beforeCloseResult);
+      } catch (error) {
+        console.error("ask.beforeClose: validation failed", error);
+        return { allow: false };
+      }
+    };
+
+    const resolveDefaultResult = ({ actionKind, form }) => {
+      if (actionKind === "ok") {
+        if (options.useForm && form) {
+          return new FormData(form);
+        }
+        return true;
+      }
+
+      return false;
+    };
+
+    const attemptResolve = async ({
+      actionCode,
+      form,
+      submitter,
+      originalEvent,
+      bypassValidation = false,
+      shouldClose = true,
+    }) => {
+      if (settled) return;
+
+      const { actionKind, button } = resolveActionMeta(actionCode);
+      const activeForm = form || dialog.querySelector("form") || null;
+
+      if (options.useForm && actionKind === "ok" && activeForm && !bypassValidation) {
+        const valid = validateDialogFormTree(activeForm);
+        if (!valid) {
+          return;
+        }
+      }
+
+      const defaultResult = resolveDefaultResult({
+        actionKind,
+        form: activeForm,
+      });
+
+      const guard = await runBeforeClose({
+        actionCode,
+        actionKind,
+        dialog,
+        form: activeForm,
+        formData: options.useForm && actionKind === "ok" && activeForm
+          ? defaultResult
+          : null,
+        submitter,
+        originalEvent,
+        options,
+        button,
+        defaultResult,
+      });
+
+      if (!guard.allow) {
+        return;
+      }
+
+      const result = guard.hasResult ? guard.result : defaultResult;
+      settle(result, dialog, { shouldClose });
     };
 
     // Create native dialog element
@@ -203,7 +339,7 @@ export async function ask(message, options = {}) {
     }
 
     // Build button elements
-    const buttons = Object.entries(options.buttons).map(([code, obj]) => {
+    const buttons = Object.entries(buttonConfigs).map(([code, obj]) => {
       const btnClass = obj.primary ? "btn-primary btn-sm" : "btn-outline btn-sm";
       const btnType = obj.cancel ? "button" : "submit";
       const formNoValidate = obj.formNoValidate ? " formnovalidate" : "";
@@ -278,26 +414,14 @@ export async function ask(message, options = {}) {
 
     // Handle cancel button clicks
     dialog.addEventListener("click", (e) => {
-      const okBtn = e.target.closest('button[value="ok"]');
-      if (okBtn && options.useForm) {
-        e.preventDefault();
-        const form = dialog.querySelector("form");
-        if (!form) return;
-
-        const bypassValidation = Boolean(okBtn.hasAttribute("formnovalidate"));
-        if (!bypassValidation) {
-          const valid = validateDialogFormTree(form);
-          if (!valid) return;
-        }
-
-        const result = new FormData(form);
-        settle(result, dialog);
-        return;
-      }
-
       const btn = e.target.closest('button[value="cancel"]');
       if (btn) {
-        settle(false, dialog);
+        attemptResolve({
+          actionCode: "cancel",
+          form: dialog.querySelector("form"),
+          submitter: btn,
+          originalEvent: e,
+        });
       }
     });
 
@@ -316,22 +440,13 @@ export async function ask(message, options = {}) {
           const submitValue = event.submitter?.value ?? (options.useForm ? "ok" : undefined);
           const bypassValidation = Boolean(event.submitter?.hasAttribute("formnovalidate"));
 
-          if (options.useForm && submitValue === "ok" && !bypassValidation) {
-            const valid = validateDialogFormTree(form);
-
-            if (!valid) {
-              return;
-            }
-          }
-          
-          let result;
-          if (options.useForm && submitValue === "ok") {
-            result = new FormData(form);
-          } else {
-            result = (submitValue === "ok");
-          }
-
-          settle(result, dialog);
+          attemptResolve({
+            actionCode: submitValue,
+            form,
+            submitter: event.submitter,
+            originalEvent: event,
+            bypassValidation,
+          });
         });
       } else {
         // Form doesn't exist yet, wait and try again
@@ -339,8 +454,21 @@ export async function ask(message, options = {}) {
       }
     };
 
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      attemptResolve({
+        actionCode: "dismiss",
+        form: dialog.querySelector("form"),
+        originalEvent: event,
+      });
+    });
+
     // Handle dialog close event
     dialog.addEventListener("close", () => {
+      if (!settled) {
+        settle(false, dialog, { shouldClose: false });
+      }
+
       // Small delay to allow exit animation
       setTimeout(() => dialog.remove(), 200);
     });

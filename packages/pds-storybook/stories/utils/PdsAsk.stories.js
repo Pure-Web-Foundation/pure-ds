@@ -74,6 +74,76 @@ const formDataToObject = (formData) => {
   return entries;
 };
 
+const askDefaultConfirmSource = `const confirmed = await PDS.ask('This uses the default buttons and styling.');`;
+
+const askMiniFormSource = `const result = await PDS.ask(
+  html\`
+    <form method="dialog" class="min-w-xs">
+      <label class="gap-xs">
+        <span>Name</span>
+        <input name="name" required placeholder="Alex Rivera" />
+      </label>
+      <label class="gap-xs">
+        <span>Email</span>
+        <input type="email" name="email" required placeholder="alex@example.com" />
+      </label>
+    </form>
+  \`,
+  {
+    title: 'Share your details',
+    useForm: true,
+    buttons: {
+      ok: { name: 'Submit', primary: true },
+      cancel: { name: 'Cancel', cancel: true }
+    }
+  }
+);`;
+
+const askBooleanConfirmSource = `const decision = await PDS.ask('Archive analytics project?', {
+  buttons: {
+    ok: { name: 'Archive project', primary: true },
+    cancel: { name: 'Keep active', cancel: true }
+  }
+});`;
+
+const askBeforeCloseSource = `const dialogResult = await PDS.ask(formTemplate, {
+  title: 'Publish release update?',
+  useForm: true,
+  buttons: {
+    ok: { name: 'Publish', primary: true },
+    cancel: { name: 'Cancel', cancel: true }
+  },
+  beforeClose: async ({ actionKind }) => {
+    if (actionKind !== 'ok') return true;
+    const response = await fetch('/api/releases/validate-close', { method: 'POST' });
+    if (!response.ok) return { allow: false };
+    const payload = await response.json();
+    return { allow: payload.ok === true };
+  }
+});`;
+
+const askPdsFormSource = `const dialogResult = await PDS.ask(
+  html\`
+    <form method="dialog" class="min-w-sm">
+      <pds-form
+        .jsonSchema=
+        .uiSchema=
+        .values=
+        hide-actions
+      ></pds-form>
+      <input type="hidden" name="spotlight" value="" />
+    </form>
+  \`,
+  {
+    title: 'Marketing spotlight',
+    useForm: true,
+    buttons: {
+      ok: { name: 'Save changes', primary: true },
+      cancel: { name: 'Cancel', cancel: true }
+    }
+  }
+);`;
+
 export default {
   title: 'PDS/PDS Object',
   tags: ['interaction', 'dialogs', 'forms', 'modal', 'dialog', 'alert', 'confirm', 'prompt', 'popup', 'overlay'],
@@ -116,7 +186,10 @@ const AreYouSure = {
     return html`
       <section
         data-ask-example
-        class="card stack-md max-w-sm"
+        class="card max-w-sm"
+        .pdsCodeHeading=${'PDS.ask()'}
+        .pdsCodeLabel=${'Default confirm dialog'}
+        .pdsCodeSource=${askDefaultConfirmSource}
       >
         <h3>Default confirm dialog</h3>
         <p>
@@ -143,16 +216,16 @@ const MiniFormSubmission = {
 
       const result = await ask(
         html`
-          <form method="dialog" class="stack-md min-w-xs">
-            <label class="stack-md gap-xs">
+          <form method="dialog" class="min-w-xs">
+            <label class="gap-xs">
               <span>Name</span>
               <input name="name" required placeholder="Alex Rivera" />
             </label>
-            <label class="stack-md gap-xs">
+            <label class="gap-xs">
               <span>Email</span>
               <input type="email" name="email" required placeholder="alex@example.com" />
             </label>
-            <label class="stack-md gap-xs">
+            <label class="gap-xs">
               <span>Team size</span>
               <select class="select" name="teamSize">
                 <option value="1-5">1-5</option>
@@ -189,7 +262,10 @@ const MiniFormSubmission = {
     return html`
       <section
         data-ask-example
-        class="card stack-md max-w-md"
+        class="card max-w-sm"
+        .pdsCodeHeading=${'PDS.ask()'}
+        .pdsCodeLabel=${'Mini form submission'}
+        .pdsCodeSource=${askMiniFormSource}
       >
         <h3>Collect a few fields</h3>
         <p>
@@ -250,7 +326,10 @@ const BooleanConfirmFlow = {
     return html`
       <section
         data-ask-example
-        class="card stack-md max-w-md"
+        class="card max-w-sm"
+        .pdsCodeHeading=${'PDS.ask()'}
+        .pdsCodeLabel=${'Boolean confirm flow'}
+        .pdsCodeSource=${askBooleanConfirmSource}
       >
         <h3>Lightweight confirmations</h3>
         <p>
@@ -259,6 +338,115 @@ const BooleanConfirmFlow = {
         </p>
         <button class="btn btn-primary" @click=${handleClick}>Archive project</button>
         <small data-status class="text-muted">No dialog shown yet.</small>
+      </section>
+    `;
+  }
+};
+
+const AsyncServerValidationGate = {
+  name: 'Async server validation gate',
+  render: () => {
+    const handleClick = async (event) => {
+      const ask = ensureAsk();
+      const container = event.currentTarget.closest('[data-ask-example]');
+      const status = container?.querySelector('[data-status]');
+      let validationAttempts = 0;
+
+      if (status) {
+        status.textContent = 'Opening publish gate…';
+      }
+
+      const dialogResult = await ask(
+        html`
+          <form method="dialog" class="min-w-sm">
+            <label>
+              <span>Release title</span>
+              <input name="releaseTitle" required placeholder="Q2 Launch Readiness" />
+            </label>
+            <p data-server-feedback class="text-muted">
+              The first submit is rejected to simulate server-side validation.
+            </p>
+          </form>
+        `,
+        {
+          title: 'Publish release update?',
+          useForm: true,
+          buttons: {
+            ok: { name: 'Publish', primary: true },
+            cancel: { name: 'Cancel', cancel: true }
+          },
+          beforeClose: async ({ actionKind, dialog }) => {
+            if (actionKind !== 'ok') {
+              return true;
+            }
+
+            const submitBtn = dialog.querySelector('button[value="ok"]');
+            const feedback = dialog.querySelector('[data-server-feedback]');
+            submitBtn?.classList.add('btn-working');
+
+            try {
+              if (feedback) {
+                feedback.textContent = 'Validating with server…';
+              }
+
+              await new Promise((resolve) => setTimeout(resolve, 900));
+              validationAttempts += 1;
+
+              if (validationAttempts === 1) {
+                if (feedback) {
+                  feedback.textContent = 'Server rejected this attempt. Click Publish again to pass.';
+                }
+
+                return {
+                  allow: false,
+                  reason: 'simulated-server-reject'
+                };
+              }
+
+              if (feedback) {
+                feedback.textContent = 'Server validation passed. Closing…';
+              }
+
+              return { allow: true };
+            } finally {
+              submitBtn?.classList.remove('btn-working');
+            }
+          }
+        }
+      );
+
+      if (dialogResult instanceof FormData) {
+        const payload = formDataToObject(dialogResult);
+        if (status) {
+          status.textContent = `✅ Published: ${payload.releaseTitle || 'Untitled release'}`;
+        }
+        await toastFormData({
+          ...payload,
+          scenario: 'before-close-server-gate'
+        });
+      } else {
+        if (status) {
+          status.textContent = 'Publish flow cancelled';
+        }
+        await toastFormData({ cancelled: true, scenario: 'before-close-server-gate' });
+      }
+    };
+
+    return html`
+      <section
+        data-ask-example
+        class="card max-w-sm"
+        .pdsCodeHeading=${'PDS.ask()'}
+        .pdsCodeLabel=${'Server-side close validation'}
+        .pdsCodeSource=${askBeforeCloseSource}
+      >
+        <h3>Server-side close validation</h3>
+        <p>
+          This scenario uses <code>beforeClose</code> to run an async check before the dialog can close.
+          The first publish attempt is rejected and keeps the dialog open; the second attempt passes.
+        </p>
+        <button class="btn btn-primary" @click=${handleClick}>Open validation gate</button>
+        <small data-status class="text-muted">No validation run yet.</small>
       </section>
     `;
   }
@@ -278,7 +466,7 @@ const EmbedPdsFormSubform = {
 
       const dialogResult = await ask(
         html`
-          <form method="dialog" class="stack-md min-w-sm">
+          <form method="dialog">
             <pds-form
               id="spotlight-form"
               .jsonSchema=${marketingSchema}
@@ -364,7 +552,10 @@ const EmbedPdsFormSubform = {
     return html`
       <section
         data-ask-example
-        class="card stack-md max-w-lg"
+        class="card max-w-sm"
+        .pdsCodeHeading=${'PDS.ask()'}
+        .pdsCodeLabel=${'Embed a pds-form subform'}
+        .pdsCodeSource=${askPdsFormSource}
       >
         <h3>Deep editing workflows</h3>
         <p>
@@ -385,6 +576,7 @@ export const PDSAsk = {
       ${AreYouSure.render()}
       ${MiniFormSubmission.render()}
       ${BooleanConfirmFlow.render()}
+      ${AsyncServerValidationGate.render()}
       ${EmbedPdsFormSubform.render()}
     </section>
   `
