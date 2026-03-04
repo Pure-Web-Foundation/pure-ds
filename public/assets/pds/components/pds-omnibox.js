@@ -1,4 +1,22 @@
 /**
+ * @typedef {Object} PdsOmniboxCategoryOptions
+ * @property {(options?: Object) => boolean} [trigger] - Determines whether the category is active for the current query
+ * @property {(options?: Object) => Promise<Array<Object>>|Array<Object>} [getItems] - Returns result items for this category
+ * @property {(item?: Object) => any} [action] - Called when a result item is selected
+ * @property {boolean} [useIconForInput] - Uses first result icon in the input field when enabled
+ * @property {number} [sortIndex] - Category ordering hint (higher values appear first)
+ */
+
+/**
+ * @typedef {Object} PdsOmniboxSettings
+ * @property {boolean} [hideCategory] - Hides category labels in suggestions
+ * @property {string} [itemGrid] - CSS grid-template-columns used for result rows
+ * @property {(item?: Object) => (string|null)} [iconHandler] - Custom renderer for item icons
+ * @property {boolean} [useIconForInput] - Global fallback for using an item icon in the input
+ * @property {Object<string, PdsOmniboxCategoryOptions>} categories - Category map keyed by category name
+ */
+
+/**
  * Omnibox search input with PDS styling and form-associated behavior.
  *
  * @element pds-omnibox
@@ -11,7 +29,7 @@
  * @attr {boolean} required - Mark the input as required
  * @attr {string} autocomplete - Native autocomplete attribute (default: off)
  *
- * @property {Object} settings - AutoComplete settings object (required by consumer)
+ * @property {PdsOmniboxSettings} settings - AutoComplete settings object (required by consumer)
  */
 import { PDS } from "#pds";
 
@@ -43,6 +61,7 @@ export class PdsOmnibox extends HTMLElement {
   #autoCompleteResizeHandler;
   #autoCompleteScrollHandler;
   #autoCompleteViewportHandler;
+  #autoCompleteFocusTimer;
   #lengthProbe;
   #suggestionsUpdatedHandler;
   #suggestionsObserver;
@@ -71,6 +90,10 @@ export class PdsOmnibox extends HTMLElement {
   }
 
   disconnectedCallback() {
+    if (this.#autoCompleteFocusTimer) {
+      clearTimeout(this.#autoCompleteFocusTimer);
+      this.#autoCompleteFocusTimer = null;
+    }
     this.#teardownAutoCompleteSizing();
     this.#teardownSuggestionsObserver();
     const autoComplete = this.#input?._autoComplete;
@@ -601,8 +624,19 @@ export class PdsOmnibox extends HTMLElement {
       }
 
       this.#wrapAutoCompleteResultsHandler(this.#input._autoComplete);
-      setTimeout(() => {
-        this.#input._autoComplete.focusHandler(e);
+      this.#wrapAutoCompleteController(this.#input._autoComplete);
+      if (this.#autoCompleteFocusTimer) {
+        clearTimeout(this.#autoCompleteFocusTimer);
+      }
+      const input = this.#input;
+      this.#autoCompleteFocusTimer = setTimeout(() => {
+        this.#autoCompleteFocusTimer = null;
+        if (!this.isConnected || !input || this.#input !== input) return;
+        const autoComplete = input._autoComplete;
+        if (!autoComplete || typeof autoComplete.focusHandler !== "function") {
+          return;
+        }
+        autoComplete.focusHandler({ target: input });
         this.#setupAutoCompleteSizing();
         this.#updateSuggestionMaxHeight();
         this.#setupSuggestionsObserver();
@@ -667,6 +701,39 @@ export class PdsOmnibox extends HTMLElement {
       this.#updateSuggestionMaxHeight();
       return res;
     };
+  }
+
+  #wrapAutoCompleteController(autoComplete) {
+    if (!autoComplete || autoComplete.__pdsControllerWrapped) return;
+    const originalController = autoComplete.controller?.bind(autoComplete);
+    if (typeof originalController !== "function") return;
+
+    autoComplete.__pdsControllerWrapped = true;
+    autoComplete.controller = () => {
+      const controller = originalController();
+      if (!controller || typeof controller !== "object") return controller;
+
+      return {
+        ...controller,
+        clear: (reason, ...args) => {
+          const reasonText = String(reason ?? "").toLowerCase();
+          if (reasonText === "blurred" && this.#isInputFocused()) {
+            return;
+          }
+          if (typeof controller.clear === "function") {
+            return controller.clear.call(controller, reason, ...args);
+          }
+          return undefined;
+        },
+      };
+    };
+  }
+
+  #isInputFocused() {
+    if (!this.#input) return false;
+    const activeInShadow = this.#root?.activeElement === this.#input;
+    const activeInDocument = document.activeElement === this.#input;
+    return activeInShadow || activeInDocument;
   }
 
   #setupAutoCompleteSizing() {

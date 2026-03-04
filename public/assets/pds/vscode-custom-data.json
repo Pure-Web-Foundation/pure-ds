@@ -951,6 +951,38 @@
       ]
     },
     {
+      "name": "pds-tags",
+      "description": "Form-associated multi-select tags control built on top of `pds-omnibox`.\r\n\r\nUsers select suggestions from the omnibox and each selection is rendered as a removable\r\nchip. The component keeps selection state synchronized across:\r\n- the `value` attribute (comma-separated ids)\r\n- the `value` property (`string[]`)\r\n- form value via ElementInternals\r\n\r\nThe `options` object uses the same structure as `pds-omnibox.settings`.\r\nSee `pds-omnibox` JSDoc for the full options schema.\r\nBefore applying it, the component deep-merges internal defaults:\r\n- `hideCategory: true`\r\n- `itemGrid: \"0 1fr 0\"`\r\n- `iconHandler: () => \"\"`\r\n\r\nWhen `required` is set, at least one selected value is required for validity.",
+      "attributes": [
+        {
+          "name": "name",
+          "description": "Form field name; selected values are submitted under this name"
+        },
+        {
+          "name": "placeholder",
+          "description": "Placeholder shown in omnibox input (default: \"Search tags...\")"
+        },
+        {
+          "name": "value",
+          "description": "Comma-separated selected item ids"
+        },
+        {
+          "name": "options",
+          "description": "JSON object with the same shape as `pds-omnibox.settings`"
+        },
+        {
+          "name": "disabled",
+          "description": "Disables omnibox interaction and chip remove actions",
+          "valueSet": "v"
+        },
+        {
+          "name": "required",
+          "description": "Requires at least one selected value for validity",
+          "valueSet": "v"
+        }
+      ]
+    },
+    {
       "name": "pds-theme",
       "description": "PdsTheme component"
     },

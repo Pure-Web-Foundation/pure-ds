@@ -3280,7 +3280,7 @@
             {
               "kind": "field",
               "name": "innerHTML",
-              "default": "`\r\n      <style>\r\n        :host {\r\n          --rating-star-size: var(--spacing-lg);\r\n          --rating-star-gap: var(--spacing-2xs);\r\n          --rating-star-off: var(--color-text-muted);\r\n          --rating-star-on: var(--color-warning-500);\r\n          --rating-focus: var(--color-primary-500);\r\n          --rating-fill-pct: 0%;\r\n          display: inline-block;\r\n          inline-size: fit-content;\r\n          max-inline-size: 100%;\r\n          touch-action: none;\r\n        }\r\n\r\n        ::slotted(input[type=\"range\"]) {\r\n          position: absolute !important;\r\n          inset-inline-start: 0 !important;\r\n          inset-block-start: 0 !important;\r\n          inline-size: 1px !important;\r\n          block-size: 1px !important;\r\n          min-inline-size: 1px !important;\r\n          min-block-size: 1px !important;\r\n          margin: -1px !important;\r\n          border: 0 !important;\r\n          padding: 0 !important;\r\n          opacity: 0 !important;\r\n          overflow: hidden !important;\r\n          clip: rect(0 0 0 0) !important;\r\n          clip-path: inset(50%) !important;\r\n          white-space: nowrap !important;\r\n          appearance: none !important;\r\n          -webkit-appearance: none !important;\r\n          pointer-events: none !important;\r\n        }\r\n\r\n        .wrap {\r\n          position: relative;\r\n          display: inline-grid;\r\n          gap: var(--spacing-2xs);\r\n          align-items: center;\r\n          justify-items: start;\r\n          min-block-size: calc(var(--rating-star-size) + var(--spacing-xs));\r\n        }\r\n\r\n        .interactive {\r\n          display: inline-grid;\r\n          place-items: center start;\r\n          inline-size: 100%;\r\n          cursor: pointer;\r\n          user-select: none;\r\n          -webkit-tap-highlight-color: transparent;\r\n          touch-action: pan-x;\r\n        }\r\n\r\n        :host([disabled]) .interactive,\r\n        :host([readonly]) .interactive {\r\n          cursor: default;\r\n        }\r\n\r\n        :host([disabled]) {\r\n          opacity: 0.5;\r\n        }\r\n\r\n        .stars {\r\n          display: block;\r\n          inline-size: auto;\r\n          block-size: var(--rating-star-size);\r\n          overflow: visible;\r\n          transition: transform 220ms ease, opacity 220ms ease;\r\n        }\r\n\r\n        :host([data-in-view=\"false\"]) .stars {\r\n          opacity: 0;\r\n          transform: translateY(var(--spacing-xs)) scale(0.98);\r\n        }\r\n\r\n        :host([data-in-view=\"true\"]) .stars {\r\n          opacity: 1;\r\n          transform: translateY(0) scale(1);\r\n        }\r\n\r\n        input[type=\"range\"] {\r\n          position: absolute !important;\r\n          inset-inline-start: 0 !important;\r\n          inset-block-start: 0 !important;\r\n          inline-size: 1px !important;\r\n          block-size: 1px !important;\r\n          min-inline-size: 1px !important;\r\n          min-block-size: 1px !important;\r\n          margin: -1px !important;\r\n          border: 0 !important;\r\n          padding: 0 !important;\r\n          opacity: 0 !important;\r\n          overflow: hidden !important;\r\n          clip: rect(0 0 0 0) !important;\r\n          clip-path: inset(50%) !important;\r\n          white-space: nowrap !important;\r\n          appearance: none !important;\r\n          -webkit-appearance: none !important;\r\n          pointer-events: none !important;\r\n        }\r\n\r\n        :host(:focus-within) .interactive {\r\n          outline: 2px solid var(--rating-focus);\r\n          outline-offset: var(--spacing-3xs);\r\n          border-radius: var(--radius-sm);\r\n        }\r\n\r\n        @media (prefers-reduced-motion: reduce) {\r\n          .stars {\r\n            transition: none;\r\n          }\r\n        }\r\n      </style>\r\n\r\n      <div class=\"wrap\" part=\"control\">\r\n        <div class=\"interactive\" part=\"interactive\" aria-hidden=\"true\">\r\n          <svg class=\"stars\" part=\"stars\" focusable=\"false\" aria-hidden=\"true\"></svg>\r\n        </div>\r\n        <slot></slot>\r\n      </div>\r\n    `"
+              "default": "`\r\n      <style>\r\n        :host {\r\n          --rating-star-size: var(--spacing-lg);\r\n          --rating-star-gap: var(--spacing-2xs);\r\n          --rating-star-off: var(--color-text-muted);\r\n          --rating-star-on: var(--color-warning-500);\r\n          --rating-focus: var(--color-primary-500);\r\n          --rating-fill-pct: 0%;\r\n          display: inline-block;\r\n          inline-size: fit-content;\r\n          max-inline-size: 100%;\r\n          touch-action: none;\r\n        }\r\n\r\n        .wrap {\r\n          position: relative;\r\n          display: inline-grid;\r\n          gap: var(--spacing-2xs);\r\n          align-items: center;\r\n          justify-items: start;\r\n          min-block-size: calc(var(--rating-star-size) + var(--spacing-xs));\r\n        }\r\n\r\n        .interactive {\r\n          display: inline-grid;\r\n          place-items: center start;\r\n          inline-size: 100%;\r\n          cursor: pointer;\r\n          user-select: none;\r\n          -webkit-tap-highlight-color: transparent;\r\n          touch-action: pan-x;\r\n        }\r\n\r\n        :host([disabled]) .interactive,\r\n        :host([readonly]) .interactive {\r\n          cursor: default;\r\n        }\r\n\r\n        :host([disabled]) {\r\n          opacity: 0.5;\r\n        }\r\n\r\n        .stars {\r\n          display: block;\r\n          inline-size: auto;\r\n          block-size: var(--rating-star-size);\r\n          overflow: visible;\r\n          transition: transform 220ms ease, opacity 220ms ease;\r\n        }\r\n\r\n        :host([data-in-view=\"false\"]) .stars {\r\n          opacity: 0;\r\n          transform: translateY(var(--spacing-xs)) scale(0.98);\r\n        }\r\n\r\n        :host([data-in-view=\"true\"]) .stars {\r\n          opacity: 1;\r\n          transform: translateY(0) scale(1);\r\n        }\r\n\r\n        input[type=\"range\"] {\r\n          position: absolute !important;\r\n          inset-inline-start: 0 !important;\r\n          inset-block-start: 0 !important;\r\n          inline-size: 1px !important;\r\n          block-size: 1px !important;\r\n          min-inline-size: 1px !important;\r\n          min-block-size: 1px !important;\r\n          margin: -1px !important;\r\n          border: 0 !important;\r\n          padding: 0 !important;\r\n          opacity: 0 !important;\r\n          overflow: hidden !important;\r\n          clip: rect(0 0 0 0) !important;\r\n          clip-path: inset(50%) !important;\r\n          white-space: nowrap !important;\r\n          appearance: none !important;\r\n          -webkit-appearance: none !important;\r\n          pointer-events: none !important;\r\n        }\r\n\r\n        :host(:focus-within) .interactive {\r\n          outline: 2px solid var(--rating-focus);\r\n          outline-offset: var(--spacing-3xs);\r\n          border-radius: var(--radius-sm);\r\n        }\r\n\r\n        @media (prefers-reduced-motion: reduce) {\r\n          .stars {\r\n            transition: none;\r\n          }\r\n        }\r\n      </style>\r\n\r\n      <div class=\"wrap\" part=\"control\">\r\n        <div class=\"interactive\" part=\"interactive\" aria-hidden=\"true\">\r\n          <svg class=\"stars\" part=\"stars\" focusable=\"false\" aria-hidden=\"true\"></svg>\r\n        </div>\r\n        <input class=\"native-input\" type=\"range\" />\r\n      </div>\r\n    `"
             }
           ],
           "events": [
@@ -4196,6 +4196,180 @@
           "declaration": {
             "name": "TabStrip",
             "module": "public/assets/pds/components/pds-tabstrip.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-tags.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Form-associated multi-select tags control built on top of `pds-omnibox`.\r\n\r\nUsers select suggestions from the omnibox and each selection is rendered as a removable\r\nchip. The component keeps selection state synchronized across:\r\n- the `value` attribute (comma-separated ids)\r\n- the `value` property (`string[]`)\r\n- form value via ElementInternals\r\n\r\nIf `settings` is not provided, the component derives omnibox categories from `options`.\r\nWhen `required` is set, at least one selected value is required for validity.",
+          "name": "PdsTags",
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "name"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "options",
+              "type": {
+                "text": "Array<string|Object>"
+              },
+              "description": "Option source used to build omnibox suggestions"
+            },
+            {
+              "kind": "field",
+              "name": "settings",
+              "type": {
+                "text": "Object|null"
+              },
+              "description": "Omnibox-compatible settings source"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Selected option ids (array form)"
+            },
+            {
+              "kind": "field",
+              "name": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "required"
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity"
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity"
+            }
+          ],
+          "events": [
+            {
+              "name": "input",
+              "type": {
+                "text": "Event"
+              },
+              "description": "Fired whenever selection changes"
+            },
+            {
+              "name": "change",
+              "type": {
+                "text": "Event"
+              },
+              "description": "Fired whenever selection changes"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name; selected values are submitted under this name"
+            },
+            {
+              "name": "placeholder",
+              "type": {
+                "text": "string"
+              },
+              "description": "Placeholder shown in omnibox input (default: \"Search tags...\")"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Comma-separated selected item ids"
+            },
+            {
+              "name": "options",
+              "type": {
+                "text": "string"
+              },
+              "description": "JSON array of options (`string[]` or object[] with id/text metadata)"
+            },
+            {
+              "name": "settings",
+              "type": {
+                "text": "string"
+              },
+              "description": "JSON omnibox settings; takes precedence over derived options settings"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables omnibox interaction and chip remove actions"
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Requires at least one selected value for validity"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-tags",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-tags",
+          "declaration": {
+            "name": "PdsTags",
+            "module": "public/assets/pds/components/pds-tags.js"
           }
         }
       ]

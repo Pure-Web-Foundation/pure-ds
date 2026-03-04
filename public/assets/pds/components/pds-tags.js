@@ -1,22 +1,45 @@
 import { PDS } from "#pds";
+import "./pds-omnibox.js";
+
+const DEFAULT_OMNIBOX_OPTIONS = {
+	hideCategory: true,
+	itemGrid: "0 1fr 0",
+	iconHandler: () => "",
+};
 
 /**
- * Multi-select tags control built on top of pds-omnibox.
+ * Form-associated multi-select tags control built on top of `pds-omnibox`.
+ *
+ * Users select suggestions from the omnibox and each selection is rendered as a removable
+ * chip. The component keeps selection state synchronized across:
+ * - the `value` attribute (comma-separated ids)
+ * - the `value` property (`string[]`)
+ * - form value via ElementInternals
+ *
+ * The `options` object uses the same structure as `pds-omnibox.settings`.
+ * See `pds-omnibox` JSDoc for the full options schema.
+ * Before applying it, the component deep-merges internal defaults:
+ * - `hideCategory: true`
+ * - `itemGrid: "0 1fr 0"`
+ * - `iconHandler: () => ""`
+ *
+ * When `required` is set, at least one selected value is required for validity.
  *
  * @element pds-tags
  * @formAssociated
  *
- * @attr {string} name - Form field name used for submitted values
- * @attr {string} placeholder - Search placeholder for the omnibox
+ * @attr {string} name - Form field name; selected values are submitted under this name
+ * @attr {string} placeholder - Placeholder shown in omnibox input (default: "Search tags...")
  * @attr {string} value - Comma-separated selected item ids
- * @attr {string} options - JSON array of options (string[] or object[])
- * @attr {string} settings - JSON omnibox settings (optional)
- * @attr {boolean} disabled - Disables interaction
- * @attr {boolean} required - Requires at least one selected value
+ * @attr {string} options - JSON object with the same shape as `pds-omnibox.settings`
+ * @attr {boolean} disabled - Disables omnibox interaction and chip remove actions
+ * @attr {boolean} required - Requires at least one selected value for validity
  *
- * @property {Array<string|Object>} options - Option source for omnibox suggestions
- * @property {Object} settings - Omnibox-compatible settings source
- * @property {string[]} value - Selected option ids
+ * @property {PdsOmniboxSettings|null} options - Omnibox options object (see `pds-omnibox.js` typedef)
+ * @property {string[]} value - Selected option ids (array form)
+ *
+ * @fires {Event} input - Fired whenever selection changes
+ * @fires {Event} change - Fired whenever selection changes
  */
 class PdsTags extends HTMLElement {
 	static formAssociated = true;
@@ -26,7 +49,6 @@ class PdsTags extends HTMLElement {
 		"placeholder",
 		"value",
 		"options",
-		"settings",
 		"disabled",
 		"required",
 	];
@@ -63,7 +85,6 @@ class PdsTags extends HTMLElement {
 		this.#upgradeProperty("value");
 		this.#upgradeProperty("name");
 		this.#upgradeProperty("placeholder");
-		this.#upgradeProperty("settings");
 		this.#upgradeProperty("disabled");
 		this.#upgradeProperty("required");
 
@@ -135,26 +156,21 @@ class PdsTags extends HTMLElement {
 		if (name === "value") {
 			if (this.#syncingValueAttribute) return;
 			this.#selectedIds = new Set(this.#parseValueList(newValue));
+			this.#reconcileSelection();
 			this.#renderChips();
+			void this.#hydrateSelectedItemsFromSource();
 			this.#syncFormValue();
 			return;
 		}
 
 		if (name === "options") {
-			this.#items = this.#normalizeItems(this.#parseOptionsAttribute(newValue));
-			this.#syncSelectedItemsFromItems();
+			this.#sourceSettings = this.#parseOptionsAttribute(newValue);
 			this.#reconcileSelection();
 			this.#renderChips();
-			if (!this.#sourceSettings) this.#settingsInitialized = false;
-			this.#applyOmniboxSettings();
-			this.#syncFormValue();
-			return;
-		}
-
-		if (name === "settings") {
-			this.#sourceSettings = this.#parseSettingsAttribute(newValue);
+			void this.#hydrateSelectedItemsFromSource();
 			this.#settingsInitialized = false;
 			this.#applyOmniboxSettings();
+			this.#syncFormValue();
 			return;
 		}
 
@@ -184,38 +200,23 @@ class PdsTags extends HTMLElement {
 	}
 
 	get options() {
-		return this.#items.slice();
+		return this.#sourceSettings;
 	}
 
 	set options(value) {
 		this.#debug("set options", {
 			receivedType: value == null ? String(value) : Array.isArray(value) ? "array" : typeof value,
-			receivedLength: Array.isArray(value) ? value.length : undefined,
-		});
-		if (value == null) return;
-		const nextItems = this.#normalizeItems(Array.isArray(value) ? value : []);
-		this.#items = nextItems;
-		this.#syncSelectedItemsFromItems();
-		this.#debug("set options:normalized", { itemsCount: this.#items.length });
-		this.#reconcileSelection();
-		this.#renderChips();
-		if (!this.#sourceSettings) this.#settingsInitialized = false;
-		this.#applyOmniboxSettings();
-		this.#syncFormValue();
-	}
-
-	get settings() {
-		return this.#sourceSettings;
-	}
-
-	set settings(value) {
-		this.#debug("set settings", {
-			receivedType: value == null ? String(value) : typeof value,
 			hasCategories: Boolean(value?.categories),
 		});
-		this.#sourceSettings = value && typeof value === "object" ? value : null;
+		this.#sourceSettings = value && typeof value === "object" && !Array.isArray(value)
+			? value
+			: null;
+		this.#reconcileSelection();
+		this.#renderChips();
+		void this.#hydrateSelectedItemsFromSource();
 		this.#settingsInitialized = false;
 		this.#applyOmniboxSettings();
+		this.#syncFormValue();
 	}
 
 	get value() {
@@ -228,10 +229,10 @@ class PdsTags extends HTMLElement {
 			? value.map((item) => String(item))
 			: this.#parseValueList(String(value ?? ""));
 		this.#selectedIds = new Set(incoming);
-		this.#syncSelectedItemsFromItems();
 		this.#debug("set value:parsed", { selected: Array.from(this.#selectedIds) });
 		this.#reconcileSelection();
 		this.#renderChips();
+		void this.#hydrateSelectedItemsFromSource();
 		this.#applyOmniboxSettings();
 		this.#syncFormValue();
 	}
@@ -297,6 +298,7 @@ class PdsTags extends HTMLElement {
 
 		this.#syncAttributes();
 		this.#applyOmniboxSettings();
+		await this.#hydrateSelectedItemsFromSource();
 		this.#renderChips();
 		this.#syncFormValue();
 		this.#debug("ensureOmnibox:end", {
@@ -326,17 +328,10 @@ class PdsTags extends HTMLElement {
 			hasValueAttr: this.hasAttribute("value"),
 		});
 		if (this.hasAttribute("options")) {
-			this.#items = this.#normalizeItems(
-				this.#parseOptionsAttribute(this.getAttribute("options")),
-			);
-			this.#syncSelectedItemsFromItems();
-			this.#debug("hydrateFromAttributes:options", { itemsCount: this.#items.length });
-		}
-
-		if (this.hasAttribute("settings")) {
-			this.#sourceSettings = this.#parseSettingsAttribute(this.getAttribute("settings"));
-			this.#debug("hydrateFromAttributes:settings", {
-				hasSettings: Boolean(this.#sourceSettings),
+			this.#sourceSettings = this.#parseOptionsAttribute(this.getAttribute("options"));
+			this.#items = [];
+			this.#debug("hydrateFromAttributes:options", {
+				hasOptions: Boolean(this.#sourceSettings),
 				hasCategories: Boolean(this.#sourceSettings?.categories),
 			});
 		}
@@ -348,11 +343,68 @@ class PdsTags extends HTMLElement {
 
 		this.#reconcileSelection();
 		this.#syncAttributes();
-		this.#renderChips();
+		if (!this.#selectedIds.size || !this.#sourceSettings?.categories) {
+			this.#renderChips();
+		}
 		this.#syncFormValue();
 		this.#debug("hydrateFromAttributes:end", {
-			itemsCount: this.#items.length,
+			knownItemsCount: this.#items.length,
 			selected: Array.from(this.#selectedIds),
+		});
+	}
+
+	async #hydrateSelectedItemsFromSource() {
+		if (!this.#selectedIds.size) return;
+		const sourceCategories = this.#sourceSettings?.categories;
+		if (!sourceCategories || typeof sourceCategories !== "object") return;
+
+		const knownIds = new Set(this.#items.map((item) => item.id));
+		const unresolved = new Set(
+			Array.from(this.#selectedIds).filter((id) => !this.#selectedItems.has(id) && !knownIds.has(id)),
+		);
+		if (!unresolved.size) return;
+
+		this.#debug("hydrateSelectedItemsFromSource:start", {
+			selected: Array.from(this.#selectedIds),
+			unresolved: Array.from(unresolved),
+			categoryCount: Object.keys(sourceCategories).length,
+		});
+
+		for (const [categoryName, categoryConfig] of Object.entries(sourceCategories)) {
+			if (!unresolved.size) break;
+			const sourceGetItems = categoryConfig?.getItems;
+			if (typeof sourceGetItems !== "function") continue;
+
+			try {
+				const incoming = await sourceGetItems({ search: "" });
+				const normalized = this.#normalizeResultItems(incoming);
+				if (!normalized.length) continue;
+
+				this.#rememberKnownItems(normalized);
+				for (const item of normalized) {
+					if (!unresolved.has(item.id)) continue;
+					this.#selectedItems.set(item.id, item);
+					unresolved.delete(item.id);
+				}
+
+				this.#debug("hydrateSelectedItemsFromSource:category", {
+					categoryName,
+					resolvedCount: normalized.length,
+					remaining: Array.from(unresolved),
+				});
+			} catch (error) {
+				this.#debug("hydrateSelectedItemsFromSource:error", {
+					categoryName,
+					error: String(error),
+				});
+			}
+		}
+
+		this.#reconcileSelection();
+		if (this.#selectedIds.size) this.#renderChips();
+		this.#debug("hydrateSelectedItemsFromSource:end", {
+			remaining: Array.from(unresolved),
+			selectedItemsCount: this.#selectedItems.size,
 		});
 	}
 
@@ -427,6 +479,7 @@ class PdsTags extends HTMLElement {
 						: [];
 
 					const normalized = this.#normalizeResultItems(incoming);
+					this.#rememberKnownItems(normalized);
 					for (const item of normalized) {
 						this.#selectedItems.set(item.id, item);
 					}
@@ -462,14 +515,12 @@ class PdsTags extends HTMLElement {
 		});
 
 		const { categories: _ignoredCategories, ...sourceSettingsWithoutCategories } = sourceSettings;
-
-		return {
+		const normalizedSettings = {
 			...sourceSettingsWithoutCategories,
 			categories,
-			hideCategory: true,
-			itemGrid: "0 1fr 0",
-			iconHandler: () => "",
 		};
+
+		return this.#deepMergeOptions(DEFAULT_OMNIBOX_OPTIONS, normalizedSettings);
 	}
 
 	#matchesQuery(item, query) {
@@ -601,30 +652,19 @@ class PdsTags extends HTMLElement {
 
 	#parseOptionsAttribute(value) {
 		this.#debug("parseOptionsAttribute:start", { hasValue: Boolean(value), rawType: typeof value });
-		if (!value) return [];
-		try {
-			const parsed = JSON.parse(value);
-			this.#debug("parseOptionsAttribute:parsed", { isArray: Array.isArray(parsed), length: Array.isArray(parsed) ? parsed.length : undefined });
-			return Array.isArray(parsed) ? parsed : [];
-		} catch {
-			this.#debug("parseOptionsAttribute:error", { value });
-			return [];
-		}
-	}
-
-	#parseSettingsAttribute(value) {
-		this.#debug("parseSettingsAttribute:start", { hasValue: Boolean(value), rawType: typeof value });
 		if (!value) return null;
 		try {
 			const parsed = JSON.parse(value);
-			const valid = parsed && typeof parsed === "object" ? parsed : null;
-			this.#debug("parseSettingsAttribute:parsed", {
+			const valid = parsed && typeof parsed === "object" && !Array.isArray(parsed)
+				? parsed
+				: null;
+			this.#debug("parseOptionsAttribute:parsed", {
 				valid: Boolean(valid),
 				hasCategories: Boolean(valid?.categories),
 			});
 			return valid;
 		} catch {
-			this.#debug("parseSettingsAttribute:error", { value });
+			this.#debug("parseOptionsAttribute:error", { value });
 			return null;
 		}
 	}
@@ -709,11 +749,12 @@ class PdsTags extends HTMLElement {
 
 	#reconcileSelection() {
 		this.#debug("reconcileSelection:start", { selectedBefore: Array.from(this.#selectedIds) });
-		if (!this.#selectedIds.size) return;
-		const available = new Set(this.#items.map((item) => item.id));
-		this.#selectedIds = new Set(
-			Array.from(this.#selectedIds).filter((id) => available.has(id)),
-		);
+		if (!this.#selectedIds.size) {
+			for (const id of Array.from(this.#selectedItems.keys())) {
+				this.#selectedItems.delete(id);
+			}
+			return;
+		}
 		for (const id of Array.from(this.#selectedItems.keys())) {
 			if (!this.#selectedIds.has(id)) this.#selectedItems.delete(id);
 		}
@@ -721,52 +762,49 @@ class PdsTags extends HTMLElement {
 	}
 
 	#resolveSourceSettings() {
-		if (this.#sourceSettings) return this.#sourceSettings;
-		if (!Array.isArray(this.#items) || this.#items.length === 0) return null;
-		return this.#buildOptionsSettings();
+		if (this.#sourceSettings && typeof this.#sourceSettings === "object") {
+			return this.#sourceSettings;
+		}
+		return null;
 	}
 
-	#buildOptionsSettings() {
-		const categoryMap = new Map();
-		for (const item of this.#items) {
-			const categoryName = this.#normalizeCategory(item.category);
-			if (!categoryMap.has(categoryName)) categoryMap.set(categoryName, []);
-			categoryMap.get(categoryName).push(item);
+	#rememberKnownItems(items = []) {
+		if (!Array.isArray(items) || items.length === 0) return;
+		const byId = new Map(this.#items.map((item) => [item.id, item]));
+		for (const item of items) {
+			if (!item?.id) continue;
+			byId.set(item.id, item);
 		}
-
-		const categories = {};
-		for (const [categoryName, entries] of categoryMap.entries()) {
-			categories[categoryName] = {
-				trigger: () => true,
-				getItems: async (options) => {
-					const query = String(options?.search || "").trim().toLowerCase();
-					return entries
-						.filter((item) => this.#matchesQuery(item, query))
-						.map((item) => ({
-							id: item.id,
-							text: item.text,
-							icon: item.icon,
-							description: item.description,
-						}));
-				},
-			};
-		}
-
-		return {
-			hideCategory: true,
-			itemGrid: "0 1fr 0",
-			iconHandler: () => "",
-			categories,
-		};
+		this.#items = Array.from(byId.values());
 	}
 
-	#syncSelectedItemsFromItems() {
-		if (!this.#selectedIds.size || !this.#items.length) return;
-		for (const item of this.#items) {
-			if (this.#selectedIds.has(item.id)) {
-				this.#selectedItems.set(item.id, item);
+	#deepMergeOptions(base = {}, override = {}) {
+		const output = this.#clonePlainObject(base);
+		for (const [key, value] of Object.entries(override || {})) {
+			if (
+				this.#isPlainObject(value)
+				&& this.#isPlainObject(output[key])
+			) {
+				output[key] = this.#deepMergeOptions(output[key], value);
+				continue;
 			}
+			output[key] = value;
 		}
+		return output;
+	}
+
+	#clonePlainObject(value) {
+		if (!this.#isPlainObject(value)) return value;
+		return Object.fromEntries(
+			Object.entries(value).map(([key, entry]) => [
+				key,
+				this.#isPlainObject(entry) ? this.#clonePlainObject(entry) : entry,
+			]),
+		);
+	}
+
+	#isPlainObject(value) {
+		return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 	}
 
 	#resetOmniboxSearchState(reason = "unknown") {

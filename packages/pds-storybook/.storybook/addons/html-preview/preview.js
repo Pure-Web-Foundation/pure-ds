@@ -316,6 +316,39 @@ function generatePdsTreeviewMarkup(treeviewElement) {
 }
 
 /**
+ * Generate realistic source code for pds-tags elements
+ */
+function generatePdsTagsMarkup(tagsElement) {
+  const attrs = [];
+
+  const stringAttrs = ['name', 'placeholder', 'value'];
+  stringAttrs.forEach((attr) => {
+    const value = tagsElement.getAttribute(attr);
+    if (value !== null && value !== undefined && value !== '') {
+      attrs.push(`${attr}="${value}"`);
+    }
+  });
+
+  if (tagsElement.hasAttribute('required')) {
+    attrs.push('required');
+  }
+
+  if (tagsElement.hasAttribute('disabled')) {
+    attrs.push('disabled');
+  }
+
+  if (tagsElement.options || tagsElement.settings) {
+    attrs.push('.options=${options}');
+  }
+
+  const formattedAttrs = attrs.length > 0
+    ? '\n  ' + attrs.join('\n  ') + '\n'
+    : '';
+
+  return `<pds-tags${formattedAttrs}></pds-tags>`;
+}
+
+/**
  * Generate realistic source code for pds-fab elements
  */
 function generatePdsFabMarkup(fabElement) {
@@ -362,15 +395,17 @@ export const withHTMLExtractor = (storyFn, context) => {
     // Try to get HTML from the story container
     const container = document.querySelector('#storybook-root');
     if (container) {
-      // Check if this story has pds-form, pds-omnibox, pds-treeview, or pds-fab elements
+      // Check if this story has pds-form, pds-omnibox, pds-treeview, pds-tags, or pds-fab elements
       const pdsFormElements = Array.from(container.querySelectorAll('pds-form'));
       const pdsOmniboxElements = Array.from(container.querySelectorAll('pds-omnibox'));
       const pdsTreeviewElements = Array.from(container.querySelectorAll('pds-treeview'));
+      const pdsTagsElements = Array.from(container.querySelectorAll('pds-tags'));
       const pdsFabElements = Array.from(container.querySelectorAll('pds-fab'));
       const hasSpecialElements =
         pdsFormElements.length > 0 ||
         pdsOmniboxElements.length > 0 ||
         pdsTreeviewElements.length > 0 ||
+        pdsTagsElements.length > 0 ||
         pdsFabElements.length > 0;
 
       if (hasSpecialElements) {
@@ -400,6 +435,11 @@ export const withHTMLExtractor = (storyFn, context) => {
         // Add pds-treeview markup
         pdsTreeviewElements.forEach(treeview => {
           markup += generatePdsTreeviewMarkup(treeview);
+        });
+
+        // Add pds-tags markup
+        pdsTagsElements.forEach(tags => {
+          markup += generatePdsTagsMarkup(tags);
         });
 
         // Add pds-fab markup
@@ -484,6 +524,30 @@ export const withHTMLExtractor = (storyFn, context) => {
           };
         });
 
+      const tags = pdsTagsElements
+        .map((tagElement, index) => {
+          const label =
+            tagElement.getAttribute?.('id') ||
+            tagElement.getAttribute?.('name') ||
+            (pdsTagsElements.length > 1 ? `Tags ${index + 1}` : 'Tags');
+
+          const optionsSource =
+            tagElement.getAttribute?.('data-options-source') ||
+            tagElement.dataset?.optionsSource ||
+            null;
+
+          const options =
+            optionsSource ||
+            serializeForDisplay(tagElement.options || tagElement.settings) ||
+            'const options = [];';
+
+          return {
+            id: index,
+            label,
+            options
+          };
+        });
+
       const fabs = pdsFabElements
         .map((fab, index) => {
           const label =
@@ -512,6 +576,7 @@ export const withHTMLExtractor = (storyFn, context) => {
         forms,
         omniboxes,
         treeviews,
+        tags,
         fabs,
         pdsApiCalls
       });

@@ -109,12 +109,13 @@ const CheckIcon = () => (
 );
 
 export const Panel = ({ active }) => {
-  const [source, setSource] = useState({ markup: '', forms: [], omniboxes: [], treeviews: [], fabs: [], pdsApiCalls: [] });
+  const [source, setSource] = useState({ markup: '', forms: [], omniboxes: [], treeviews: [], tags: [], fabs: [], pdsApiCalls: [] });
   const [copied, setCopied] = useState(false);
   const [highlightedMarkup, setHighlightedMarkup] = useState('');
   const [highlightedforms, setHighlightedforms] = useState([]);
   const [highlightedOmniboxes, setHighlightedOmniboxes] = useState([]);
   const [highlightedTreeviews, setHighlightedTreeviews] = useState([]);
+  const [highlightedTags, setHighlightedTags] = useState([]);
   const [highlightedFabs, setHighlightedFabs] = useState([]);
   const [highlightedPdsApiCalls, setHighlightedPdsApiCalls] = useState([]);
   const shikiRef = useRef(null);
@@ -303,6 +304,40 @@ export const Panel = ({ active }) => {
     processTreeviews();
   }, [source.treeviews, shikiTheme]);
 
+  // Highlight tags options when source or theme changes
+  useEffect(() => {
+    if (!source.tags || source.tags.length === 0) {
+      setHighlightedTags([]);
+      return;
+    }
+
+    const highlightCode = async (code) => {
+      if (!code) return '';
+      const highlighter = shikiRef.current || await loadShiki();
+      if (highlighter) {
+        try {
+          return highlighter.codeToHtml(code, { lang: 'javascript', theme: shikiTheme });
+        } catch (err) {
+          return `<pre><code>${escapeHtml(code)}</code></pre>`;
+        }
+      }
+      return `<pre><code>${escapeHtml(code)}</code></pre>`;
+    };
+
+    const processTags = async () => {
+      const highlighted = await Promise.all(
+        source.tags.map(async (tagEntry, index) => ({
+          id: tagEntry.id ?? index,
+          label: tagEntry.label,
+          options: await highlightCode(tagEntry.options)
+        }))
+      );
+      setHighlightedTags(highlighted);
+    };
+
+    processTags();
+  }, [source.tags, shikiTheme]);
+
   // Highlight PDS API snippets when source or theme changes
   useEffect(() => {
     if (!source.pdsApiCalls || source.pdsApiCalls.length === 0) {
@@ -341,7 +376,7 @@ export const Panel = ({ active }) => {
   useChannel({
     [EVENTS.UPDATE_HTML]: (payload) => {
       if (typeof payload === 'string') {
-        setSource({ markup: payload || '', forms: [], omniboxes: [], treeviews: [], fabs: [], pdsApiCalls: [] });
+        setSource({ markup: payload || '', forms: [], omniboxes: [], treeviews: [], tags: [], fabs: [], pdsApiCalls: [] });
         return;
       }
 
@@ -351,19 +386,20 @@ export const Panel = ({ active }) => {
           forms: Array.isArray(payload.forms) ? payload.forms : [],
           omniboxes: Array.isArray(payload.omniboxes) ? payload.omniboxes : [],
           treeviews: Array.isArray(payload.treeviews) ? payload.treeviews : [],
+          tags: Array.isArray(payload.tags) ? payload.tags : [],
           fabs: Array.isArray(payload.fabs) ? payload.fabs : [],
           pdsApiCalls: Array.isArray(payload.pdsApiCalls) ? payload.pdsApiCalls : []
         });
         return;
       }
 
-      setSource({ markup: '', forms: [], omniboxes: [], treeviews: [], fabs: [], pdsApiCalls: [] });
+      setSource({ markup: '', forms: [], omniboxes: [], treeviews: [], tags: [], fabs: [], pdsApiCalls: [] });
     }
   });
 
   // Request HTML update when panel becomes active
   React.useEffect(() => {
-    if (active && !source.markup && source.forms.length === 0 && source.omniboxes.length === 0 && source.treeviews.length === 0 && source.fabs.length === 0 && source.pdsApiCalls.length === 0) {
+    if (active && !source.markup && source.forms.length === 0 && source.omniboxes.length === 0 && source.treeviews.length === 0 && source.tags.length === 0 && source.fabs.length === 0 && source.pdsApiCalls.length === 0) {
       // Trigger a re-extraction by emitting a request event
       // The decorator will pick this up on the next render cycle
       const container = document.querySelector('#storybook-root');
@@ -375,7 +411,7 @@ export const Panel = ({ active }) => {
         }, 100);
       }
     }
-  }, [active, source.markup, source.forms.length, source.omniboxes.length, source.treeviews.length, source.fabs.length, source.pdsApiCalls.length]);
+  }, [active, source.markup, source.forms.length, source.omniboxes.length, source.treeviews.length, source.tags.length, source.fabs.length, source.pdsApiCalls.length]);
 
   const copyToClipboard = useCallback(async () => {
     try {
@@ -392,10 +428,11 @@ export const Panel = ({ active }) => {
   const hasforms = source.forms.length > 0;
   const hasOmniboxes = source.omniboxes.length > 0;
   const hasTreeviews = source.treeviews.length > 0;
+  const hasTags = source.tags.length > 0;
   const hasFabs = source.fabs.length > 0;
   const hasPdsApiCalls = source.pdsApiCalls.length > 0;
 
-  if (!hasMarkup && !hasforms && !hasOmniboxes && !hasTreeviews && !hasFabs && !hasPdsApiCalls) {
+  if (!hasMarkup && !hasforms && !hasOmniboxes && !hasTreeviews && !hasTags && !hasFabs && !hasPdsApiCalls) {
     return (
       <Container>
         <EmptyState>
@@ -528,6 +565,30 @@ export const Panel = ({ active }) => {
                   $compact
                   dangerouslySetInnerHTML={{
                     __html: highlightedTreeview?.options || `<pre><code>${escapeHtml(sourceTreeview.options)}</code></pre>`
+                  }}
+                />
+              </>
+            )}
+          </SectionWrapper>
+        );
+      })}
+
+      {hasTags && source.tags.map((sourceTags, index) => {
+        const key = sourceTags.id ?? index;
+        const highlightedTag = highlightedTags[index];
+        const heading = source.tags.length > 1 ? (sourceTags.label || `Tags ${index + 1}`) : 'pds-tags';
+
+        return (
+          <SectionWrapper key={key}>
+            <SectionHeading>{heading}</SectionHeading>
+
+            {sourceTags.options && (
+              <>
+                <Subheading>options</Subheading>
+                <CodeBlock
+                  $compact
+                  dangerouslySetInnerHTML={{
+                    __html: highlightedTag?.options || `<pre><code>${escapeHtml(sourceTags.options)}</code></pre>`
                   }}
                 />
               </>
