@@ -1,7 +1,7 @@
 {
   "name": "@pure-ds/core",
   "shortname": "pds",
-  "version": "0.7.26",
+  "version": "0.7.27",
   "description": "Why develop a Design System when you can generate one?",
   "repository": {
     "type": "git",
@@ -115,7 +115,7 @@
     "@types/node": "^22.10.2"
   },
   "dependencies": {
-    "lit": "^3.3.4",
+    "lit": "^3.3.2",
     "pure-web": "1.1.32"
   },
   "customElements": "custom-elements.json"

@@ -38,9 +38,10 @@ export const ButtonSizes = () => html`
   <div class="card">
     <header>
       <h3>Button Sizes</h3>
-      <small class="text-muted">Scale actions with <code>.btn-sm</code> and <code>.btn-lg</code> size utilities.</small>
+      <small class="text-muted">Scale actions with <code>.btn-xs</code>, <code>.btn-sm</code>, and <code>.btn-lg</code> size utilities.</small>
     </header>
     <div class="flex gap-sm flex-wrap items-center">
+      <button class="btn-primary btn-xs">Extra Small</button>
       <button class="btn-primary btn-sm">Small</button>
       <button class="btn-primary">Default</button>
       <button class="btn-primary btn-lg">Large</button>
@@ -126,6 +127,9 @@ export const IconOnlyButtons = () => html`
     <section class="stack-md">
       <h3>Icon-Only Sizes</h3>
       <div class="flex gap-sm flex-wrap items-center">
+        <button class="icon-only btn-primary btn-xs">
+          <pds-icon icon="plus" size="xs" label="Add"></pds-icon>
+        </button>
         <button class="icon-only btn-primary btn-sm">
           <pds-icon icon="plus" size="sm" label="Add"></pds-icon>
         </button>
@@ -185,11 +189,26 @@ export const AllSizesCombinations = () => html`
   <div class="card gap-lg">
     <header>
       <h3>All Sizes & Combinations</h3>
-      <small class="text-muted">Compare all button variants across small, default, and large sizes.</small>
+      <small class="text-muted">Compare all button variants across extra-small, small, default, and large sizes.</small>
     </header>
     <section class="stack-md">
+      <h4>Extra Small Buttons</h4>
+      <div class="flex gap-sm flex-wrap items-center">
+        <button class="btn-primary btn-xs">Primary</button>
+        <button class="btn-secondary btn-xs">Secondary</button>
+        <button class="btn-outline btn-xs">Outline</button>
+        <button class="btn-primary btn-xs">
+          <pds-icon icon="heart" size="xs"></pds-icon>
+          With Icon
+        </button>
+        <button class="icon-only btn-primary btn-xs">
+          <pds-icon icon="gear" size="xs" label="Settings"></pds-icon>
+        </button>
+      </div>
+    </section>
+    <section class="stack-md">
       <h4>Small Buttons</h4>
-      <div class="flex gap-sm flex-wrap">
+      <div class="flex gap-sm flex-wrap items-center">
         <button class="btn-primary btn-sm">Primary</button>
         <button class="btn-secondary btn-sm">Secondary</button>
         <button class="btn-outline btn-sm">Outline</button>
@@ -205,7 +224,7 @@ export const AllSizesCombinations = () => html`
 
     <section class="stack-md">
       <h4>Default Buttons</h4>
-      <div class="flex gap-sm flex-wrap">
+      <div class="flex gap-sm flex-wrap items-center">
         <button class="btn-primary">Primary</button>
         <button class="btn-secondary">Secondary</button>
         <button class="btn-outline">Outline</button>
@@ -221,7 +240,7 @@ export const AllSizesCombinations = () => html`
 
     <section class="stack-md">
       <h4>Large Buttons</h4>
-      <div class="flex gap-sm flex-wrap">
+      <div class="flex gap-sm flex-wrap items-center">
         <button class="btn-primary btn-lg">Primary</button>
         <button class="btn-secondary btn-lg">Secondary</button>
         <button class="btn-outline btn-lg">Outline</button>

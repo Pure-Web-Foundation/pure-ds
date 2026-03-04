@@ -3887,7 +3887,25 @@ pds-tabstrip {
 
   #generateIconStyles() {
     const { layout = {} } = this.options.design;
-    const iconOnlySize = layout.buttonMinHeight || 30;
+    const minButtonHeight = layout.buttonMinHeight || 30;
+    const buttonPaddingValue = layout.buttonPadding || 1.0;
+    const buttonPaddingDefault = `max(calc(var(--spacing-1) * ${buttonPaddingValue}), var(--spacing-2))`;
+    const buttonPaddingSm = `calc(max(calc(var(--spacing-1) * ${buttonPaddingValue}), var(--spacing-2)) * 0.85)`;
+    const buttonPaddingXs = `calc(max(calc(var(--spacing-1) * ${buttonPaddingValue}), var(--spacing-2)) * 0.7)`;
+    const buttonPaddingLg = `calc(max(calc(var(--spacing-1) * ${buttonPaddingValue}), var(--spacing-2)) * 1.15)`;
+    const iconOnlyPaddingScale = 0.72;
+    const iconOnlyPaddingDefault = `calc(${buttonPaddingDefault} * ${iconOnlyPaddingScale})`;
+    const iconOnlyPaddingSm = `calc(${buttonPaddingSm} * ${iconOnlyPaddingScale})`;
+    const iconOnlyPaddingXs = `calc(${buttonPaddingXs} * ${iconOnlyPaddingScale})`;
+    const iconOnlyPaddingLg = `calc(${buttonPaddingLg} * ${iconOnlyPaddingScale})`;
+    const iconOnlyMinDefault = `${minButtonHeight}px`;
+    const iconOnlyMinSm = `calc(${minButtonHeight}px * 0.85)`;
+    const iconOnlyMinXs = `calc(${minButtonHeight}px * 0.7)`;
+    const iconOnlyMinLg = `calc(${minButtonHeight}px * 1.15)`;
+    const iconOnlySizeDefault = `max(${iconOnlyMinDefault}, calc(var(--font-size-base) + (${buttonPaddingDefault} * 2) + (var(--border-width-medium) * 2)))`;
+    const iconOnlySizeSm = `max(${iconOnlyMinSm}, calc(var(--font-size-sm) + (${buttonPaddingSm} * 2) + (var(--border-width-medium) * 2)))`;
+    const iconOnlySizeXs = `max(${iconOnlyMinXs}, calc(var(--font-size-xs) + (${buttonPaddingXs} * 2) + (var(--border-width-medium) * 2)))`;
+    const iconOnlySizeLg = `max(${iconOnlyMinLg}, calc(var(--font-size-lg) + (${buttonPaddingLg} * 2) + (var(--border-width-medium) * 2)))`;
 
     return /*css*/ `/* Icon System */
 
@@ -3927,37 +3945,77 @@ pds-icon {
 .icon-text-end { flex-direction: row-reverse; }
 
 /* Button icon utilities */
-button, a {
-  pds-icon {
+button,
+a.btn,
+a.btn-primary,
+a.btn-secondary,
+a.btn-outline,
+a.btn-danger,
+a.icon-only {
+  pds-icon,
+  pds-icon[size] {
     flex-shrink: 0;
+    width: 1em;
+    height: 1em;
   }
 
   &.icon-only {
-    padding: var(--spacing-2);
-    min-width: ${iconOnlySize}px;
-    width: ${iconOnlySize}px;
-    height: ${iconOnlySize}px;
+    padding: ${iconOnlyPaddingDefault};
+    min-width: ${iconOnlySizeDefault};
+    min-height: ${iconOnlySizeDefault};
+    width: ${iconOnlySizeDefault};
+    height: ${iconOnlySizeDefault};
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
+    pds-icon,
+    pds-icon[size] {
+      width: 1.2em;
+      height: 1.2em;
+    }
   }
 
   &.btn-sm.icon-only {
-    min-width: calc(${iconOnlySize}px * 0.8);
-    width: calc(${iconOnlySize}px * 0.8);
-    height: calc(${iconOnlySize}px * 0.8);
+    padding: ${iconOnlyPaddingSm};
+    min-width: ${iconOnlySizeSm};
+    min-height: ${iconOnlySizeSm};
+    width: ${iconOnlySizeSm};
+    height: ${iconOnlySizeSm};
+
+    pds-icon,
+    pds-icon[size] {
+      width: 1.15em;
+      height: 1.15em;
+    }
   }
 
   &.btn-xs.icon-only {
-    min-width: calc(${iconOnlySize}px * 0.6);
-    width: calc(${iconOnlySize}px * 0.6);
-    height: calc(${iconOnlySize}px * 0.6);
+    padding: ${iconOnlyPaddingXs};
+    min-width: ${iconOnlySizeXs};
+    min-height: ${iconOnlySizeXs};
+    width: ${iconOnlySizeXs};
+    height: ${iconOnlySizeXs};
+
+    pds-icon,
+    pds-icon[size] {
+      width: 1.1em;
+      height: 1.1em;
+    }
   }
 
   &.btn-lg.icon-only {
-    min-width: calc(${iconOnlySize}px * 1.2);
-    width: calc(${iconOnlySize}px * 1.2);
-    height: calc(${iconOnlySize}px * 1.2);
+    padding: ${iconOnlyPaddingLg};
+    min-width: ${iconOnlySizeLg};
+    min-height: ${iconOnlySizeLg};
+    width: ${iconOnlySizeLg};
+    height: ${iconOnlySizeLg};
+
+    pds-icon,
+    pds-icon[size] {
+      width: 1.25em;
+      height: 1.25em;
+    }
   }
 }
 
@@ -4356,7 +4414,7 @@ nav[data-dropdown] {
 /* Touch device optimizations */
 @media (hover: none) and (pointer: coarse) {
   /* Touch devices - larger touch targets for interactive elements */
-  button:not(.icon-only), a:not(.icon-only), select, textarea,
+  button, a, select, textarea,
   input:not([type="radio"]):not([type="checkbox"]) {
     min-height: ${minTouchTarget}px;
     min-width: ${minTouchTarget}px;
