@@ -109,10 +109,15 @@ module.exports = {
 ```
 
 ### What `#pds/lit` includes
-The PDS bundle re-exports official Lit APIs and adds PDS-specific helpers:
+The PDS bundle re-exports official Lit APIs and adds one PDS-specific helper:
 - `lazyProps` (defers object prop setting until the element is defined)
-- `msg()` (PDS localization helper)
-- `loadLocale()` (loads translation strings)
+
+Localization helpers are exported from `#pds`:
+- `msg()`
+- `str`
+- `setLocale()` / `loadLocale()`
+
+For full localization behavior (contextual `lang` scopes, provider contract, and lazy loading), see [LOCALIZATION.md](LOCALIZATION.md).
 
 ### Prefer your own Lit bundle?
 If you don’t want the convenience bundle, create a local module (e.g., `pds-lit.js`) that re-exports Lit and defines `lazyProps`. Then map `#pds/lit` to it in your bundler or import map. Reference implementation is in [src/js/lit.js](src/js/lit.js).

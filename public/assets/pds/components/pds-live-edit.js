@@ -1631,6 +1631,444 @@ function setStoredConfig(nextConfig) {
   } catch (e) {}
 }
 
+function normalizeLocaleTag(locale) {
+  return String(locale || "").trim().toLowerCase();
+}
+
+let __startupLocalizationLocales = null;
+let __startupLocalizationLocalesPromise = null;
+
+const LOCALE_PROBE_CANDIDATES = [
+  "en", "nl", "de", "fr", "es", "it", "pt", "sv", "no", "da", "fi",
+  "pl", "cs", "sk", "sl", "hu", "ro", "bg", "hr", "sr", "ru", "uk",
+  "tr", "el", "he", "ar", "fa", "hi", "ja", "ko", "zh", "zh-cn", "zh-tw",
+];
+
+function toBaseLocale(locale) {
+  const normalized = normalizeLocaleTag(locale);
+  if (!normalized) return "";
+  return normalized.split("-")[0] || normalized;
+}
+
+function isLocalizationActive() {
+  const configLocalization =
+    PDS?.currentConfig?.localization && typeof PDS.currentConfig.localization === "object"
+      ? PDS.currentConfig.localization
+      : null;
+
+  const runtimeState =
+    typeof PDS?.getLocalizationState === "function"
+      ? PDS.getLocalizationState()
+      : null;
+
+  const hasRuntimeProvider = Boolean(runtimeState?.hasProvider);
+
+  const hasConfigProvider = Boolean(
+    configLocalization?.provider ||
+      typeof configLocalization?.translate === "function" ||
+      typeof configLocalization?.loadLocale === "function" ||
+      typeof configLocalization?.setLocale === "function"
+  );
+
+  const hasConfigMessages = Boolean(
+    configLocalization?.messages &&
+      typeof configLocalization.messages === "object" &&
+      Object.keys(configLocalization.messages).length > 0
+  );
+
+  const hasRuntimeMessages = Boolean(
+    runtimeState?.messages &&
+      typeof runtimeState.messages === "object" &&
+      Object.keys(runtimeState.messages).length > 0
+  );
+
+  return hasRuntimeProvider || hasConfigProvider || hasConfigMessages || hasRuntimeMessages;
+}
+
+function isLocaleBundle(bundle) {
+  if (!bundle || typeof bundle !== "object" || Array.isArray(bundle)) {
+    return false;
+  }
+
+  return Object.values(bundle).some((value) => {
+    if (typeof value === "string") return true;
+    return Boolean(value && typeof value === "object" && typeof value.content === "string");
+  });
+}
+
+function normalizeMessageBundle(bundle) {
+  if (!bundle || typeof bundle !== "object" || Array.isArray(bundle)) {
+    return {};
+  }
+
+  const normalized = {};
+  Object.entries(bundle).forEach(([key, value]) => {
+    if (typeof value === "string") {
+      normalized[key] = value;
+      return;
+    }
+
+    if (value && typeof value === "object" && typeof value.content === "string") {
+      normalized[key] = value.content;
+    }
+  });
+
+  return normalized;
+}
+
+function getLocalizationProviderLoader(configLocalization) {
+  if (!configLocalization || typeof configLocalization !== "object") return null;
+
+  return (
+    (typeof configLocalization?.loadLocale === "function"
+      ? configLocalization.loadLocale
+      : null) ||
+    (typeof configLocalization?.provider?.loadLocale === "function"
+      ? configLocalization.provider.loadLocale
+      : null) ||
+    (typeof configLocalization?.setLocale === "function"
+      ? configLocalization.setLocale
+      : null) ||
+    (typeof configLocalization?.provider?.setLocale === "function"
+      ? configLocalization.provider.setLocale
+      : null)
+  );
+}
+
+function buildLocaleProbeList({ defaultLocale, runtimeState, knownLocales }) {
+  const candidates = new Set();
+
+  const normalizedDefault = normalizeLocaleTag(defaultLocale);
+  if (normalizedDefault) {
+    candidates.add(normalizedDefault);
+  }
+
+  if (Array.isArray(runtimeState?.loadedLocales)) {
+    runtimeState.loadedLocales.forEach((locale) => {
+      const normalized = normalizeLocaleTag(locale);
+      if (normalized) {
+        candidates.add(normalized);
+        candidates.add(toBaseLocale(normalized));
+      }
+    });
+  }
+
+  if (Array.isArray(knownLocales)) {
+    knownLocales.forEach((locale) => {
+      const normalized = normalizeLocaleTag(locale);
+      if (normalized) {
+        candidates.add(normalized);
+        candidates.add(toBaseLocale(normalized));
+      }
+    });
+  }
+
+  if (typeof navigator !== "undefined" && Array.isArray(navigator.languages)) {
+    navigator.languages.forEach((locale) => {
+      const normalized = normalizeLocaleTag(locale);
+      if (normalized) {
+        candidates.add(normalized);
+        candidates.add(toBaseLocale(normalized));
+      }
+    });
+  }
+
+  LOCALE_PROBE_CANDIDATES.forEach((locale) => {
+    const normalized = normalizeLocaleTag(locale);
+    if (normalized) {
+      candidates.add(normalized);
+      candidates.add(toBaseLocale(normalized));
+    }
+  });
+
+  candidates.delete("");
+  return Array.from(candidates).sort((a, b) => a.localeCompare(b));
+}
+
+function bundlesDifferFromOrigin(originBundle, candidateBundle) {
+  const originEntries = normalizeMessageBundle(originBundle);
+  const candidateEntries = normalizeMessageBundle(candidateBundle);
+
+  const originKeys = Object.keys(originEntries);
+  const candidateKeys = Object.keys(candidateEntries);
+  if (!originKeys.length || !candidateKeys.length) {
+    return false;
+  }
+
+  return originKeys.some((key) => {
+    if (!Object.prototype.hasOwnProperty.call(candidateEntries, key)) return false;
+    return String(candidateEntries[key]) !== String(originEntries[key]);
+  });
+}
+
+function collectLocalesFromMessageRows(source, locales) {
+  if (!source || typeof source !== "object" || Array.isArray(source)) return;
+
+  Object.values(source).forEach((row) => {
+    if (!row || typeof row !== "object" || Array.isArray(row)) return;
+    if (typeof row.content === "string") return;
+
+    Object.entries(row).forEach(([localeKey, translatedValue]) => {
+      const normalized = normalizeLocaleTag(localeKey);
+      if (!normalized) return;
+
+      const hasValue =
+        typeof translatedValue === "string" ||
+        Boolean(
+          translatedValue &&
+            typeof translatedValue === "object" &&
+            typeof translatedValue.content === "string"
+        );
+
+      if (hasValue) {
+        locales.add(normalized);
+      }
+    });
+  });
+}
+
+function collectLocalesFromLocaleBundles(source, locales) {
+  if (!source || typeof source !== "object" || Array.isArray(source)) return;
+
+  Object.entries(source).forEach(([localeKey, bundle]) => {
+    const normalized = normalizeLocaleTag(localeKey);
+    if (!normalized) return;
+    if (!isLocaleBundle(bundle)) return;
+    locales.add(normalized);
+  });
+}
+
+async function detectStartupLocalizationLocales() {
+  const locales = new Set();
+
+  const configLocalization =
+    PDS?.currentConfig?.localization && typeof PDS.currentConfig.localization === "object"
+      ? PDS.currentConfig.localization
+      : null;
+
+  const defaultLocale = normalizeLocaleTag(configLocalization?.locale);
+  if (defaultLocale) {
+    locales.add(defaultLocale);
+  }
+
+  const runtimeState =
+    typeof PDS?.getLocalizationState === "function"
+      ? PDS.getLocalizationState()
+      : null;
+  const runtimeDefaultLocale = normalizeLocaleTag(runtimeState?.locale);
+  if (runtimeDefaultLocale) {
+    locales.add(runtimeDefaultLocale);
+  }
+
+  const messageSources = [
+    configLocalization?.messages,
+    configLocalization?.messagesByLocale,
+    configLocalization?.i18n,
+    configLocalization?.translations,
+    configLocalization?.provider?.messages,
+    configLocalization?.provider?.messagesByLocale,
+    configLocalization?.provider?.i18n,
+    configLocalization?.provider?.translations,
+  ];
+
+  messageSources.forEach((source) => {
+    collectLocalesFromMessageRows(source, locales);
+    collectLocalesFromLocaleBundles(source, locales);
+  });
+
+  const localeListFromRows = Array.from(locales).sort((a, b) => a.localeCompare(b));
+  if (localeListFromRows.length >= 2) {
+    return localeListFromRows;
+  }
+
+  const providerLoader = getLocalizationProviderLoader(configLocalization);
+  const runtimeLoadLocale =
+    typeof PDS?.loadLocale === "function" ? PDS.loadLocale.bind(PDS) : null;
+
+  if (typeof providerLoader !== "function" && typeof runtimeLoadLocale !== "function") {
+    return localeListFromRows;
+  }
+
+  const originLocale =
+    normalizeLocaleTag(configLocalization?.locale) ||
+    normalizeLocaleTag(runtimeState?.locale) ||
+    "en";
+
+  locales.add(originLocale);
+
+  let originBundle = normalizeMessageBundle(runtimeState?.messages || configLocalization?.messages);
+  if (!Object.keys(originBundle).length) {
+    try {
+      let loadedOrigin = null;
+
+      if (typeof runtimeLoadLocale === "function") {
+        loadedOrigin = await Promise.resolve(runtimeLoadLocale(originLocale));
+      } else {
+        loadedOrigin = await Promise.resolve(
+          providerLoader({
+            locale: originLocale,
+            defaultLocale: originLocale,
+            reason: "startup-locale-detect-origin",
+            loadedLocales: Array.from(locales),
+            messages: {},
+            load: true,
+          })
+        );
+      }
+
+      originBundle = normalizeMessageBundle(loadedOrigin);
+    } catch (error) {}
+  }
+
+  const probeLocales = buildLocaleProbeList({
+    defaultLocale: originLocale,
+    runtimeState,
+    knownLocales: Array.from(locales),
+  });
+
+  for (const candidateLocale of probeLocales) {
+    if (!candidateLocale || candidateLocale === originLocale) {
+      continue;
+    }
+
+    try {
+      let candidateBundle = null;
+
+      if (typeof runtimeLoadLocale === "function") {
+        candidateBundle = await Promise.resolve(runtimeLoadLocale(candidateLocale));
+      } else {
+        candidateBundle = await Promise.resolve(
+          providerLoader({
+            locale: candidateLocale,
+            defaultLocale: originLocale,
+            reason: "startup-locale-detect-probe",
+            loadedLocales: Array.from(locales),
+            messages: {},
+            load: true,
+          })
+        );
+      }
+
+      if (bundlesDifferFromOrigin(originBundle, candidateBundle)) {
+        locales.add(candidateLocale);
+        if (locales.size >= 2) {
+          break;
+        }
+      }
+    } catch (error) {}
+  }
+
+  return Array.from(locales).sort((a, b) => a.localeCompare(b));
+}
+
+async function getStartupLocalizationLocales() {
+  if (Array.isArray(__startupLocalizationLocales)) {
+    return [...__startupLocalizationLocales];
+  }
+
+  if (__startupLocalizationLocalesPromise) {
+    const inFlight = await __startupLocalizationLocalesPromise;
+    return [...inFlight];
+  }
+
+  __startupLocalizationLocalesPromise = detectStartupLocalizationLocales()
+    .then((locales) => {
+      __startupLocalizationLocales = Array.isArray(locales) ? locales : [];
+      return __startupLocalizationLocales;
+    })
+    .catch(() => {
+      __startupLocalizationLocales = [];
+      return __startupLocalizationLocales;
+    })
+    .finally(() => {
+      __startupLocalizationLocalesPromise = null;
+    });
+
+  const resolved = await __startupLocalizationLocalesPromise;
+  return [...resolved];
+}
+
+function localeOptionLabel(locale) {
+  const normalized = normalizeLocaleTag(locale);
+  if (!normalized) return "";
+
+  try {
+    const currentDocLang =
+      normalizeLocaleTag(document.documentElement?.getAttribute?.("lang")) || "en";
+    const displayNames = new Intl.DisplayNames([currentDocLang], {
+      type: "language",
+    });
+    const named = displayNames.of(normalized);
+    if (named && String(named).trim()) {
+      return named;
+    }
+  } catch (error) {}
+
+  return normalized;
+}
+
+function localeMatches(selectedLocale, activeLocale) {
+  const selected = normalizeLocaleTag(selectedLocale);
+  const active = normalizeLocaleTag(activeLocale);
+  if (!selected || !active) return false;
+  return selected === active || toBaseLocale(selected) === toBaseLocale(active);
+}
+
+async function buildQuickLanguageSelector() {
+  if (typeof document === "undefined") return null;
+  if (!isLocalizationActive()) return null;
+
+  const detectedLocales = await getStartupLocalizationLocales();
+  if (detectedLocales.length < 2) return null;
+
+  const languageGroup = document.createElement("div");
+  languageGroup.className = "stack-xs";
+
+  const languageText = document.createElement("span");
+  languageText.setAttribute("data-label", "");
+  languageText.textContent = "Language";
+
+  const languageFieldset = document.createElement("fieldset");
+  languageFieldset.setAttribute("role", "radiogroup");
+  languageFieldset.className = "buttons";
+
+  const activeDocumentLang =
+    normalizeLocaleTag(document.documentElement?.getAttribute?.("lang")) ||
+    detectedLocales[0];
+
+  const radioName = `pds-live-language-${Date.now()}`;
+
+  detectedLocales.forEach((locale) => {
+    const optionLabel = document.createElement("label");
+
+    const optionInput = document.createElement("input");
+    optionInput.type = "radio";
+    optionInput.name = radioName;
+    optionInput.value = locale;
+    optionInput.checked = localeMatches(locale, activeDocumentLang);
+
+    const optionText = document.createElement("span");
+
+    optionText.textContent = localeOptionLabel(locale);
+
+    optionLabel.append(optionInput, optionText);
+    languageFieldset.appendChild(optionLabel);
+  });
+
+  languageFieldset.addEventListener("change", (event) => {
+    const selected = event.target;
+    if (!(selected instanceof HTMLInputElement)) return;
+    if (selected.type !== "radio") return;
+
+    const nextLocale = normalizeLocaleTag(selected.value);
+    if (!nextLocale) return;
+    document.documentElement.setAttribute("lang", nextLocale);
+  });
+
+  languageGroup.append(languageText, languageFieldset);
+  return languageGroup;
+}
+
 function getPresetOptions() {
   const presets = PDS?.presets || {};
   return Object.values(presets)
@@ -3104,7 +3542,7 @@ class PdsLiveEdit extends HTMLElement {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "btn-outline btn-sm icon-only";
-    button.setAttribute("aria-label", "Quick theme and preset");
+    button.setAttribute("aria-label", "Quick theme, preset and language");
 
     const icon = document.createElement("pds-icon");
     icon.setAttribute("icon", "palette");
@@ -3129,6 +3567,11 @@ class PdsLiveEdit extends HTMLElement {
     const themeToggle = document.createElement("pds-theme");
     themeLabel.append(themeText, themeToggle);
     content.appendChild(themeLabel);
+
+    const languageSelector = await buildQuickLanguageSelector();
+    if (languageSelector) {
+      content.appendChild(languageSelector);
+    }
 
     const presetLabel = document.createElement("label");
     presetLabel.className = "stack-xs";

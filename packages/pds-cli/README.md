@@ -23,6 +23,8 @@ This CLI is intentionally tiny and uses the repository's `pds-api` and `fs-write
 
 So component modules that import `PDS` from `#pds` and Lit-based modules from `#pds/lit` resolve without extra setup.
 
+Localization helpers (`msg`, `str`, `setLocale`, `loadLocale`) are runtime-level exports from `#pds`, not `#pds/lit`.
+
 ## pds-import
 
 `pds-import` runs the same import pipeline used by live edit and writes a JSON result file.

@@ -238,6 +238,7 @@ export function normalizeInitConfig(
       mode, autoDefine, applyGlobalStyles, manageTheme,
       themeStorageKey, preloadStyles, criticalLayers,
       managerURL, manager,
+      localization,
       preset: _preset, design: _design, enhancers: _enhancers,
       log: userLog,
       ...otherProps

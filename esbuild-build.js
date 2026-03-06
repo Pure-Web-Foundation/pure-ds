@@ -43,7 +43,7 @@ const outdir = path.join(process.cwd(), 'dist');
 async function run() {
   try {
     await esbuild.build({
-      entryPoints: ['src/js/lit.js', 'src/js/app.js', 'src/js/pds.js', 'src/js/pds-manager.js', 'src/js/pds-autocomplete.js', 'src/js/pds-ask.js', 'src/js/pds-toast.js', 'src/js/pds-enhancers.js'],
+      entryPoints: ['src/js/lit.js', 'src/js/app.js', 'src/js/pds.js', 'src/js/pds-manager.js', 'src/js/pds-autocomplete.js', 'src/js/pds-ask.js', 'src/js/pds-toast.js', 'src/js/pds-enhancers.js', 'src/js/pds-localization.js'],
       bundle: true,
       platform: 'browser',
       target: 'es2022',
@@ -118,6 +118,11 @@ async function run() {
       const enhancersDest = path.join(coreDir, 'pds-enhancers.js');
       await copyFile(enhancersSrc, enhancersDest);
       console.log('Copied pds-enhancers.js to', enhancersDest);
+
+      const localizationSrc = path.join(process.cwd(), 'public', 'assets', 'js', 'pds-localization.js');
+      const localizationDest = path.join(coreDir, 'pds-localization.js');
+      await copyFile(localizationSrc, localizationDest);
+      console.log('Copied pds-localization.js to', localizationDest);
 
     } catch (err) {
       console.warn('Failed to copy runtime bundles to public/assets/pds/core or lit.js to public/assets/pds/external:', err.message);

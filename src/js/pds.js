@@ -92,6 +92,200 @@ let __autoCompletePromise = null;
 let __askPromise = null;
 let __toastPromise = null;
 let __defaultEnhancersPromise = null;
+let __localizationPromise = null;
+let __localizationRuntime = null;
+
+const __fallbackLocalizationState = {
+  locale: "en",
+  messages: {},
+  hasProvider: false,
+};
+
+function __isStrTagged(template) {
+  return (
+    Boolean(template) &&
+    typeof template !== "string" &&
+    typeof template === "object" &&
+    "strTag" in template
+  );
+}
+
+function __collateStrings(strings = []) {
+  let result = "";
+  for (let index = 0; index <= strings.length - 1; index += 1) {
+    result += strings[index];
+    if (index < strings.length - 1) {
+      result += `{${index}}`;
+    }
+  }
+  return result;
+}
+
+function __replacePlaceholders(input, callback) {
+  return String(input).replace(/\{(\d+)\}/g, (_match, index) =>
+    callback(Number(index))
+  );
+}
+
+function __normalizeMessages(messages) {
+  if (!messages || typeof messages !== "object") {
+    return {};
+  }
+
+  const normalized = {};
+  for (const [key, value] of Object.entries(messages)) {
+    if (typeof value === "string") {
+      normalized[key] = value;
+      continue;
+    }
+
+    if (value && typeof value === "object" && typeof value.content === "string") {
+      normalized[key] = value.content;
+    }
+  }
+  return normalized;
+}
+
+function __fallbackStr(strings, ...values) {
+  return {
+    strTag: true,
+    strings: Array.from(strings || []),
+    values,
+    raw: Array.from(strings?.raw || []),
+  };
+}
+
+function __fallbackMsg(template) {
+  if (!template) {
+    return "";
+  }
+
+  if (__isStrTagged(template)) {
+    const key = __collateStrings(template.strings || []);
+    const translated = __fallbackLocalizationState.messages[key] || key;
+    return __replacePlaceholders(translated, (index) => template.values?.[index]);
+  }
+
+  const key = String(template);
+  return __fallbackLocalizationState.messages[key] || key;
+}
+
+async function __loadLocalizationRuntime() {
+  if (__localizationRuntime) {
+    return __localizationRuntime;
+  }
+
+  if (!__localizationPromise) {
+    const localizationModuleURL = __resolveExternalRuntimeModuleURL(
+      "pds-localization.js"
+    );
+
+    __localizationPromise = import(localizationModuleURL)
+      .then((mod) => {
+        if (
+          typeof mod?.msg !== "function" ||
+          typeof mod?.str !== "function" ||
+          typeof mod?.configureLocalization !== "function" ||
+          typeof mod?.loadLocale !== "function" ||
+          typeof mod?.setLocale !== "function" ||
+          typeof mod?.getLocalizationState !== "function"
+        ) {
+          throw new Error("Failed to load localization runtime exports");
+        }
+
+        __localizationRuntime = mod;
+        return mod;
+      })
+      .catch((error) => {
+        __localizationPromise = null;
+        throw error;
+      });
+  }
+
+  return __localizationPromise;
+}
+
+const msg = (template, options = {}) => {
+  if (typeof __localizationRuntime?.msg === "function") {
+    return __localizationRuntime.msg(template, options);
+  }
+  return __fallbackMsg(template, options);
+};
+
+const str = (strings, ...values) => {
+  if (typeof __localizationRuntime?.str === "function") {
+    return __localizationRuntime.str(strings, ...values);
+  }
+  return __fallbackStr(strings, ...values);
+};
+
+const configureLocalization = (config = null) => {
+  if (typeof __localizationRuntime?.configureLocalization === "function") {
+    return __localizationRuntime.configureLocalization(config);
+  }
+
+  if (!config || typeof config !== "object") {
+    __fallbackLocalizationState.locale = "en";
+    __fallbackLocalizationState.messages = {};
+    __fallbackLocalizationState.hasProvider = false;
+    return {
+      locale: __fallbackLocalizationState.locale,
+      messages: { ...__fallbackLocalizationState.messages },
+      hasProvider: __fallbackLocalizationState.hasProvider,
+    };
+  }
+
+  if (typeof config.locale === "string" && config.locale.trim()) {
+    __fallbackLocalizationState.locale = config.locale.trim();
+  }
+
+  if (Object.prototype.hasOwnProperty.call(config, "messages")) {
+    __fallbackLocalizationState.messages = __normalizeMessages(config.messages);
+  }
+
+  const hasProvider = Boolean(
+    config.provider ||
+      config.translate ||
+      config.loadLocale ||
+      config.setLocale
+  );
+  __fallbackLocalizationState.hasProvider = hasProvider;
+
+  if (hasProvider) {
+    __loadLocalizationRuntime()
+      .then((runtime) => {
+        runtime.configureLocalization(config);
+      })
+      .catch(() => {});
+  }
+
+  return {
+    locale: __fallbackLocalizationState.locale,
+    messages: { ...__fallbackLocalizationState.messages },
+    hasProvider: __fallbackLocalizationState.hasProvider,
+  };
+};
+
+const loadLocale = async (locale) => {
+  const runtime = await __loadLocalizationRuntime();
+  return runtime.loadLocale(locale);
+};
+
+const setLocale = async (locale, options = {}) => {
+  const runtime = await __loadLocalizationRuntime();
+  return runtime.setLocale(locale, options);
+};
+
+const getLocalizationState = () => {
+  if (typeof __localizationRuntime?.getLocalizationState === "function") {
+    return __localizationRuntime.getLocalizationState();
+  }
+  return {
+    locale: __fallbackLocalizationState.locale,
+    messages: { ...__fallbackLocalizationState.messages },
+    hasProvider: __fallbackLocalizationState.hasProvider,
+  };
+};
 
 function __resolveExternalRuntimeModuleURL(filename, overrideURL) {
   if (overrideURL && typeof overrideURL === "string") {
@@ -309,6 +503,20 @@ PDS.isLiveMode = () => registry.isLive;
 PDS.ask = __lazyAsk;
 PDS.toast = __lazyToast;
 PDS.common = common;
+PDS.msg = msg;
+PDS.str = str;
+PDS.configureLocalization = configureLocalization;
+PDS.loadLocale = loadLocale;
+PDS.setLocale = setLocale;
+PDS.getLocalizationState = getLocalizationState;
+PDS.i18n = {
+  msg,
+  str,
+  configure: configureLocalization,
+  loadLocale,
+  setLocale,
+  getState: getLocalizationState,
+};
 PDS.AutoComplete = null;
 PDS.loadAutoComplete = async () => {
   if (PDS.AutoComplete && typeof PDS.AutoComplete.connect === "function") {
@@ -592,7 +800,20 @@ async function start(config) {
   try {
     const mode = (config && config.mode) || "live";
     const { mode: _omit, ...rest } = config || {};
+
     PDS.currentConfig = __toReadonlyClone(rest);
+
+    const localizationConfig =
+      rest && typeof rest.localization === "object" && rest.localization
+        ? rest.localization
+        : null;
+
+    if (localizationConfig) {
+      await __loadLocalizationRuntime();
+      configureLocalization(localizationConfig);
+    } else {
+      configureLocalization(null);
+    }
 
     let startResult;
     if (mode === "static") {
@@ -798,4 +1019,12 @@ async function staticInit(config) {
 
 export const applyResolvedTheme = __applyResolvedTheme;
 export const setupSystemListenerIfNeeded = __setupSystemListenerIfNeeded;
-export { PDS };
+export {
+  PDS,
+  msg,
+  str,
+  configureLocalization,
+  loadLocale,
+  setLocale,
+  getLocalizationState,
+};

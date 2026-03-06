@@ -411,7 +411,7 @@ This component uses `import { ... } from "#pds/lit"` and **requires** an import 
 </script>
 ```
 
-**Note:** `#pds/lit` is a convenience bundle that re-exports Lit and adds PDS helpers (`lazyProps`, `msg()`, `loadLocale()`). If a project prefers its own Lit bundle, it must provide equivalents and map `#pds/lit` accordingly.
+**Note:** `#pds/lit` is a convenience bundle that re-exports Lit and adds `lazyProps`. Localization helpers (`msg()`, `str`, `setLocale()`, `loadLocale()`) come from `#pds`, not `#pds/lit`.
 
 **When generating code with lazy-loaded components, ALWAYS wait for definition:**
 
@@ -615,7 +615,7 @@ Before generating code:
 7. ✅ **Components as last resort** — Only when native HTML can't achieve it
 8. ✅ **Prefer primitives** — `.card`, `.badge`, `.callout` over custom components
 9. ✅ **Wait for lazy components** — Use `await customElements.whenDefined()` before accessing APIs
-10. ✅ **Include import map** — When using `pds-form` or `pds-drawer`, ensure `#pds/lit` is mapped
+10. ✅ **Include import map** — When using Lit-dependent components (such as `pds-form`), ensure `#pds/lit` is mapped
 
 **For pds-form specifically:**
 

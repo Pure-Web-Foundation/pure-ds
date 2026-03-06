@@ -140,6 +140,8 @@ Most PDS features work with plain HTML + classes. For components like `pds-form`
 </script>
 ```
 
+Localization is runtime-level and comes from `#pds` root exports (`msg`, `str`, `setLocale`, `loadLocale`), not `#pds/lit`. See [LOCALIZATION.md](LOCALIZATION.md).
+
 Example:
 
 ```html

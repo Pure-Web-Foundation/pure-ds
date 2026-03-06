@@ -119,6 +119,7 @@ PDS follows the [Pure Web Manifesto](https://pureweb.dev/manifesto)—sustainabl
 - [The Three Layers](#the-three-layers)
 - [Who is it For?](#who-is-it-for)
 - [Getting Started](#getting-started)
+- [Localization](#localization)
 - [Core Architecture](#core-architecture)
 - [Styling Layers](#styling-layers)
 - [Shadow DOM Adoption](#shadow-dom-adoption)
@@ -320,6 +321,19 @@ It all starts with your `pds.confog.js` file in the root of the project (auto-ge
 See the full step-by-step guide in [getting-started.md](getting-started.md).
 
 This covers the project starter, existing-project setup, CDN usage, Storybook, and core conventions.
+
+---
+
+## Localization
+
+PDS localization is framework-independent and context-aware via DOM `lang` scope.
+
+- Use `msg()` directly in markup in both root UI and nested language islands.
+- Configure a provider in `pds.config.js` to load locale bundles dynamically.
+- `localization.locale` is the default fallback locale, not a forced global language.
+- In live edit quick settings, Language appears when startup localization strings infer at least 2 locales.
+
+See the full guide in [LOCALIZATION.md](LOCALIZATION.md).
 
 ---
 
@@ -1852,10 +1866,12 @@ export default {
 </script>
 ```
 
-**About the bundle:** `#pds/lit` is a convenience bundle that re-exports official Lit APIs and adds PDS helpers:
-- `lazyProps` (waits for custom element definition before applying object props)
-- `msg()` (PDS localization helper)
-- `loadLocale()` (loads translation strings)
+**About the bundle:** `#pds/lit` is a convenience bundle that re-exports official Lit APIs and includes `lazyProps` (waits for custom element definition before applying object props).
+
+**Localization is runtime-level:** import localization helpers from `#pds`, not `#pds/lit`.
+- `msg()` (localized message lookup)
+- `str` (tagged template helper compatible with `msg(str\`...\`)`)
+- `setLocale()` / `loadLocale()` (provider-driven locale switching/loading)
 
 **Prefer not to use the bundle?** Create your own module and alias `#pds/lit` to it:
 
@@ -1871,8 +1887,8 @@ export { until } from "lit/directives/until.js";
 export { unsafeHTML } from "lit/directives/unsafe-html.js";
 export { unsafeSVG } from "lit/directives/unsafe-svg.js";
 
-// Optional: use PDS localization helper
-// export { msg } from "@pure-ds/core/src/js/common/msg.js";
+// Localization comes from #pds root exports
+// import { msg, str, setLocale, loadLocale } from "#pds";
 
 // Minimal lazyProps implementation (see src/js/lit.js)
 import { Directive, directive } from "lit/directive.js";

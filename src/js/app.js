@@ -1,9 +1,11 @@
-import { PDS } from "./pds";
+import { PDS, msg } from "./pds";
 import { config } from "../../pds.config.js";
 import pkg from "../../package.json";
 
 // Initialize PDS once at app startup using the new unified shape
 await PDS.start(config);
+
+document.documentElement.lang = "en";
 
 const rawRepoUrl =
   typeof pkg.repository === "string" ? pkg.repository : pkg.repository?.url;
@@ -17,10 +19,10 @@ document.body.innerHTML = /*html*/ `
   <pds-toaster id="global-toaster"></pds-toaster>
 	
 		<div class="container text-center">
-				<img src="/assets/img/pds-logo.svg" alt="PDS Logo" width="64" height="64" />
-				<header class="container section">
-					<h1>${pkg.name} ${pkg.version}</h1>
-					<small class="text-muted">${pkg.description}</small>
-				</header>
-			</div>
+			<img src="/assets/img/pds-logo.svg" alt="PDS Logo" width="64" height="64" />
+			<header class="container section">
+				<h1>${pkg.name} ${pkg.version}</h1>
+				<small class="text-muted">${msg(pkg.description)}</small>				
+			</header>
+		</div>
 `;

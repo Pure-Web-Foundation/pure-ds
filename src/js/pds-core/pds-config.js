@@ -248,6 +248,23 @@ import { enums } from "./pds-enums.js";
  */
 
 /**
+ * @typedef {Object} PDSLocalizationProvider
+ * @property {(context: { key: string, values: any[], options?: Record<string, any>, locale: string, defaultLocale: string, messages: Record<string, string>, messagesByLocale?: Record<string, Record<string, string>>, template?: { strings: string[], values: any[] } | null }) => (string | undefined | null)} [translate]
+ * @property {(context: { locale: string, defaultLocale: string, reason?: string, loadedLocales?: string[], messages?: Record<string, string>, load?: boolean }) => (Promise<Record<string, string | { content?: string }>> | Record<string, string | { content?: string }> | void)} [loadLocale]
+ * @property {(context: { locale: string, defaultLocale: string, reason?: string, loadedLocales?: string[], messages?: Record<string, string>, load?: boolean }) => (Promise<Record<string, string | { content?: string }>> | Record<string, string | { content?: string }> | void)} [setLocale]
+ */
+
+/**
+ * @typedef {Object} PDSLocalizationConfig
+ * @property {string} [locale]
+ * @property {Record<string, string | { content?: string }>} [messages]
+ * @property {PDSLocalizationProvider} [provider]
+ * @property {PDSLocalizationProvider["translate"]} [translate]
+ * @property {PDSLocalizationProvider["loadLocale"]} [loadLocale]
+ * @property {PDSLocalizationProvider["setLocale"]} [setLocale]
+ */
+
+/**
  * @typedef {Object} PDSInitConfig
  * @property {string} [mode]
  * @property {string} [preset]
@@ -262,6 +279,7 @@ import { enums } from "./pds-enums.js";
  * @property {string} [managerURL]
  * @property {any} [manager]
  * @property {boolean} [liveEdit]
+ * @property {PDSLocalizationConfig} [localization]
  * @property {any} [log]
  */
 
@@ -794,6 +812,18 @@ const __INIT_CONFIG_SPEC__ = {
     managerURL: { type: "string" },
     manager: { type: __ANY_TYPE__ },
     liveEdit: { type: "boolean" },
+    localization: {
+      type: "object",
+      allowUnknown: false,
+      properties: {
+        locale: { type: "string" },
+        messages: { type: "object", allowUnknown: true },
+        provider: { type: __ANY_TYPE__ },
+        translate: { type: __ANY_TYPE__ },
+        loadLocale: { type: __ANY_TYPE__ },
+        setLocale: { type: __ANY_TYPE__ },
+      },
+    },
     log: { type: __ANY_TYPE__ },
   },
 };

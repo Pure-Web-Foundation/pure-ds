@@ -231,6 +231,8 @@ Check browser console for errors. Common issues:
 - Assets not in `public/assets/pds/`
 - Preview.js not loading PDS
 
+If translations are not resolving, make sure localization APIs are imported from `#pds` (not `#pds/lit`) and verify your provider setup against [../../LOCALIZATION.md](../../LOCALIZATION.md).
+
 ### CLI Fails to Detect Environment
 
 Ensure your `.storybook/main.js` has:

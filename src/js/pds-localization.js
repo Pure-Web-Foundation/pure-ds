@@ -1,9 +1,8 @@
 export {
   msg,
   str,
-  joinStringsAndValues,
   configureLocalization,
   loadLocale,
   setLocale,
   getLocalizationState,
-} from "./localization.js";
+} from "./common/localization.js";
