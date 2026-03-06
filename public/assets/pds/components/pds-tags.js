@@ -1,4 +1,4 @@
-import { PDS } from "#pds";
+import { PDS, msg, str } from "#pds";
 import "./pds-omnibox.js";
 
 const DEFAULT_OMNIBOX_OPTIONS = {
@@ -190,7 +190,7 @@ class PdsTags extends HTMLElement {
 	}
 
 	get placeholder() {
-		return this.getAttribute("placeholder") || "Search tags...";
+		return this.getAttribute("placeholder") || msg("Search tags...");
 	}
 
 	set placeholder(value) {
@@ -312,7 +312,7 @@ class PdsTags extends HTMLElement {
 		this.#root.innerHTML = /* html */ `
 			<div class="stack-sm" part="wrap">
 				<div class="chips" part="chips" aria-live="polite"></div>
-				<span class="empty" part="empty">No tags selected.</span>
+				<span class="empty" part="empty">${msg("No tags selected.")}</span>
 				<pds-omnibox part="omnibox"></pds-omnibox>
 			</div>
 		`;
@@ -583,7 +583,7 @@ class PdsTags extends HTMLElement {
 			chip.dataset.tagId = item.id;
 			chip.innerHTML = /* html */ `${item.text} <pds-icon icon="x" size="xs" aria-hidden="true"></pds-icon>`;
 			chip.disabled = this.disabled;
-			chip.setAttribute("aria-label", `Remove ${item.text}`);
+			chip.setAttribute("aria-label", msg(str`Remove ${item.text}`));
 			chip.addEventListener("click", () => {
 				this.#toggleSelection(item.id);
 			});
@@ -640,7 +640,7 @@ class PdsTags extends HTMLElement {
 			this.#debug("syncFormValue:invalid", { reason: "valueMissing" });
 			this.#internals.setValidity(
 				{ valueMissing: true },
-				"Please select at least one option.",
+				msg("Please select at least one option."),
 				this.#omnibox || this,
 			);
 			return;

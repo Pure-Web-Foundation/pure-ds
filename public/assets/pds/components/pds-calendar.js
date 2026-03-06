@@ -1,4 +1,4 @@
-import { PDS } from "#pds";
+import { PDS, msg, str } from "#pds";
 
 function parseHTML(html) {
   return new DOMParser().parseFromString(html, "text/html").body.childNodes;
@@ -741,7 +741,7 @@ label {
           this.shadowRoot?.querySelector("button.prev");
         this.#internals.setValidity(
           { valueMissing: true },
-          "Please select a date.",
+          msg("Please select a date."),
           validationAnchor
         );
         return;
@@ -794,7 +794,7 @@ label {
       this.daysInMonth = new Date(this.year, this.month + 1, 0).getDate();
       this.startDay = new Date(this.year, this.month, 0).getDay();
       const compactMode = this.compact;
-      const calendarA11yAttrs = 'role="radiogroup" aria-label="Select a day"';
+      const calendarA11yAttrs = `role="radiogroup" aria-label="${msg("Select a day")}"`;
 
       const calendarHtml = /*html*/ `
         <div class="calendar-container ${compactMode ? "compact" : ""}" part="calendar-container">
@@ -1243,7 +1243,7 @@ label {
             type="radio"
             name="${radioGroupName}"
             data-day="${i}"
-            aria-label="Select ${this.#monthNames[this.month]} ${i}, ${this.year}"
+            aria-label="${msg(str`Select ${this.#monthNames[this.month]} ${i}, ${this.year}`)}"
             ${checked}
           />
           <span class="nr">${i}</span>

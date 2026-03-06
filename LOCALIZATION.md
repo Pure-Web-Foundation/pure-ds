@@ -1,6 +1,6 @@
 # PDS Localization
 
-PDS localization is framework-independent and does not rely on `lit-localize`.
+PDS localization is a framework-independent localization layer, inspired by, and largely compatible with `lit-localize`.
 
 Use localization from `#pds` root exports:
 - `msg()`
@@ -21,41 +21,40 @@ Use localization from `#pds` root exports:
 ## 1) Configure localization in `pds.config.js`
 
 ```javascript
-const DEFAULT_LOCALE = "en";
-const SUPPORTED_LOCALES = ["en", "nl"];
+import { PDS } from "@pure-ds/core";
 
-const i18nRows = {
-  "Why develop a Design System when you can generate one?": {
-    nl: "Waarom een Design System ontwikkelen als je er één kunt genereren?",
+const localization = PDS.createJSONLocalization({
+  locale: "en",
+  locales: ["en", "nl"],
+  aliases: {
+    en: ["en", "en-US"],
+    nl: ["nl", "nl-NL"],
   },
-};
-
-function getLocaleOrDefault(locale) {
-  return SUPPORTED_LOCALES.includes(locale) ? locale : DEFAULT_LOCALE;
-}
-
-function buildMessagesForLocale(locale) {
-  const effectiveLocale = getLocaleOrDefault(locale);
-  return Object.fromEntries(
-    Object.entries(i18nRows).map(([english, translations]) => [
-      english,
-      translations?.[effectiveLocale] || english,
-    ])
-  );
-}
+  basePath: "/assets/locales",
+});
 
 export const config = {
   mode: "live",
   preset: "default",
-  localization: {
-    locale: "en",
-    provider: {
-      loadLocale({ locale }) {
-        return buildMessagesForLocale(locale);
-      },
-    },
-  },
+  localization,
 };
+```
+
+`PDS.createJSONLocalization(...)` is lazy: it returns a config object immediately, and only loads localization helper code when locale bundles are actually requested.
+
+Example locale resource format:
+
+`public/assets/locales/nl-NL.json`
+
+```json
+{
+  "Loading": {
+    "content": "Loading"
+  }
+  "You have {0} points... ({1})": {
+    "content": "Je hebt {0} punten... ({1})"
+  }
+}
 ```
 
 `localization.locale` is the default locale fallback, not the forced UI language.
@@ -109,9 +108,10 @@ In live mode (`liveEdit: true`), quick settings can show a **Language** selector
 
 Visibility rules:
 - Localization must be active.
-- At least two locales must be inferred from localization string data at startup.
+- At least two locales must be detected.
 
 Locale inference rules:
+- If `localization.locales` is provided, that list is used first.
 - `localization.locale` is treated as the origin/default language.
 - If explicit locale maps/rows are present, locales are read from those keys.
 - If locale rows are not explicit, PDS probes locale bundles via runtime loading and compares against origin strings.
@@ -122,12 +122,27 @@ Example:
 ```javascript
 localization: {
   locale: "en",
+  locales: ["en", "nl"],
   provider: {
-    loadLocale({ locale }) {
-      return buildMessagesForLocale(locale);
+    async loadLocale({ locale }) {
+      const response = await fetch(`/assets/locales/${locale}.json`);
+      return response.ok ? response.json() : {};
     },
   },
 }
+```
+
+Or use the optional helper subpath directly:
+
+```javascript
+import { createJSONLocalization } from "@pure-ds/core/localization";
+
+localization: createJSONLocalization({
+  locale: "en",
+  locales: ["en", "nl"],
+  aliases: { nl: ["nl", "nl-NL"] },
+  basePath: "/assets/locales",
+});
 ```
 
 With rows like `{ "Some key": { nl: "..." } }`, available locales are inferred as `"en"` + `"nl"`, so the selector is shown.
@@ -173,3 +188,10 @@ From `#pds` root:
 - `msg()` is synchronous by design.
 - On first encounter of a new locale, text may briefly render fallback content, then update once the locale bundle loads.
 - For immediate guarantees, preload with `loadLocale("xx")` before rendering that locale scope.
+
+## Missing Translation Warnings
+
+- PDS warns when a key is missing in a non-default target locale and fallback content is used.
+- Warnings are deduplicated and emitted once per `locale::key` pair.
+- Warnings reset when localization is reconfigured.
+- No warning is emitted for normal default-locale usage.

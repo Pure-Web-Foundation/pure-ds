@@ -1,3 +1,5 @@
+import { msg } from "../common/localization.js";
+
 /**
  * PDS Enhancers - Single Source of Truth
  *
@@ -502,7 +504,7 @@ function enhanceColorInput(elem) {
 
     if (isUnset) {
       output.value = "";
-      output.textContent = "not set";
+      output.textContent = msg("not set");
       control.dataset.value = "";
       control.dataset.unset = "1";
       swatch.dataset.unset = "1";
@@ -686,7 +688,7 @@ function enhanceRequired(elem) {
     if (form && !form.querySelector(".required-legend")) {
       const legend = document.createElement("small");
       legend.classList.add("required-legend");
-      legend.textContent = "* Required fields";
+      legend.textContent = msg("* Required fields");
       form.insertBefore(
         legend,
         form.querySelector(".form-actions") || form.lastElementChild,
@@ -707,7 +709,7 @@ function enhanceOpenGroup(elem) {
 
   const addInput = document.createElement("input");
   addInput.type = "text";
-  addInput.placeholder = "Add item...";
+  addInput.placeholder = msg("Add item...");
   addInput.classList.add("input-text", "input-sm");
   addInput.style.width = "auto";
 

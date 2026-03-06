@@ -2,9 +2,24 @@
 
 PDS now supports customizable logging through the config object's `log()` method. This allows consumers to control how and when logging occurs throughout the design system.
 
+## `PDS.log()` as the Canonical API
+
+Use `PDS.log()` as the single logging API from app/runtime code.
+
+- Internal runtime logging uses `PDS.log()`
+- Custom behavior is provided by `config.log(level, message, ...data)`
+- In `static` mode, fallback console logging is suppressed unless debug is enabled
+
+```javascript
+import { PDS } from '#pds';
+
+PDS.log('info', 'Design system initialized');
+PDS.log('warn', 'A non-blocking issue occurred', { feature: 'theme' });
+```
+
 ## Default Behavior
 
-By default, the `log()` method:
+By default, the `PDS.log()` pathway:
 - Always logs `error` and `warn` messages
 - Only logs `log`, `debug`, and `info` messages when `debug: true` in the config
 - Uses standard `console` methods
@@ -111,7 +126,7 @@ await PDS.start({
 
 ## Log Levels
 
-The `log()` method receives these log levels:
+`PDS.log()` and `config.log()` receive these log levels:
 - `'error'` - Critical errors (always logged by default)
 - `'warn'` - Warnings about potential issues (always logged by default)
 - `'log'` - General informational messages (only when debug: true)
@@ -126,7 +141,7 @@ The custom `log()` method is used throughout:
 - `pds.js` - Main PDS runtime and initialization
 - Core system components and utilities
 
-**Note:** Some utility functions (like `font-loader.js`, `msg.js`) still use direct `console` calls as they don't have access to the config object and are meant for developer tooling/debugging.
+**Note:** Runtime and utility logs route through the same logger pathway, so a root-level `log()` override applies consistently. When no custom logger is provided, fallback console logging is suppressed in `static` mode unless debug is explicitly enabled.
 
 ## TypeScript Support
 

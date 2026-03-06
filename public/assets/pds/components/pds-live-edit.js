@@ -1,4 +1,4 @@
-import { PDS } from "#pds";
+import { PDS, msg } from "#pds";
 
 const EDITOR_TAG = "pds-live-edit";
 const STYLE_ID = "pds-live-editor-styles";
@@ -1838,6 +1838,17 @@ function collectLocalesFromLocaleBundles(source, locales) {
   });
 }
 
+function collectLocalesFromConfiguredList(source, locales) {
+  if (!Array.isArray(source)) return;
+
+  source.forEach((localeValue) => {
+    const normalized = normalizeLocaleTag(localeValue);
+    if (normalized) {
+      locales.add(normalized);
+    }
+  });
+}
+
 async function detectStartupLocalizationLocales() {
   const locales = new Set();
 
@@ -1849,6 +1860,13 @@ async function detectStartupLocalizationLocales() {
   const defaultLocale = normalizeLocaleTag(configLocalization?.locale);
   if (defaultLocale) {
     locales.add(defaultLocale);
+  }
+
+  collectLocalesFromConfiguredList(configLocalization?.locales, locales);
+  collectLocalesFromConfiguredList(configLocalization?.provider?.locales, locales);
+
+  if (locales.size >= 2) {
+    return Array.from(locales).sort((a, b) => a.localeCompare(b));
   }
 
   const runtimeState =
@@ -2026,7 +2044,7 @@ async function buildQuickLanguageSelector() {
 
   const languageText = document.createElement("span");
   languageText.setAttribute("data-label", "");
-  languageText.textContent = "Language";
+  languageText.textContent = msg("Language");
 
   const languageFieldset = document.createElement("fieldset");
   languageFieldset.setAttribute("role", "radiogroup");
@@ -2230,7 +2248,7 @@ async function exportFromLiveEdit(format) {
       const config = getLiveEditExportConfig();
       const content = buildConfigModuleContent(config);
       downloadTextFile(content, "pds.config.js", "text/javascript");
-      await PDS?.toast?.("Exported config file", { type: "success" });
+      await PDS?.toast?.(msg("Exported config file"), { type: "success" });
       return;
     }
 
@@ -2245,12 +2263,12 @@ async function exportFromLiveEdit(format) {
       const figmaTokens = figmafyTokens(rawTokens);
       const content = JSON.stringify(figmaTokens, null, 2);
       downloadTextFile(content, "design-tokens.figma.json", "application/json");
-      await PDS?.toast?.("Exported Figma tokens", { type: "success" });
+      await PDS?.toast?.(msg("Exported Figma tokens"), { type: "success" });
       return;
     }
   } catch (error) {
     console.warn("[pds-live-edit] Export failed", error);
-    await PDS?.toast?.("Export failed", { type: "error" });
+    await PDS?.toast?.(msg("Export failed"), { type: "error" });
   }
 }
 
@@ -2437,7 +2455,7 @@ async function createConfiguredForm({
   const applyBtn = document.createElement("button");
   applyBtn.className = "btn-primary btn-sm";
   applyBtn.type = "button";
-  applyBtn.textContent = "Apply";
+  applyBtn.textContent = msg("Apply");
   applyBtn.addEventListener("click", async () => {
     if (typeof form.getValuesFlat === "function") {
       if (!customElements.get("pds-form")) {
@@ -2465,8 +2483,8 @@ async function createConfiguredForm({
   const undoBtn = document.createElement("button");
   undoBtn.className = "btn-secondary btn-sm icon-only";
   undoBtn.type = "button";
-  undoBtn.setAttribute("aria-label", "Undo");
-  undoBtn.setAttribute("title", "Undo");
+  undoBtn.setAttribute("aria-label", msg("Undo"));
+  undoBtn.setAttribute("title", msg("Undo"));
   const undoIcon = document.createElement("pds-icon");
   undoIcon.setAttribute("icon", "arrow-counter-clockwise");
   undoIcon.setAttribute("size", "sm");
@@ -2623,8 +2641,8 @@ function withThemeConditionalSchema(schema, uiSchema) {
   baseSchema.properties[FORM_THEME_CONTEXT_FIELD] = {
     type: "string",
     oneOf: [
-      { const: "light", title: "Light" },
-      { const: "dark", title: "Dark" },
+      { const: "light", title: msg("Light") },
+      { const: "dark", title: msg("Dark") },
     ],
   };
 
@@ -2780,7 +2798,7 @@ function buildGroupedFullConfigPayload(payload, design) {
       ...Object.fromEntries(scalarKeys.map((key) => [key, rootProperties[key]])),
       [FULL_CONFIG_GROUPS_KEY]: {
         type: "object",
-        title: "Design Groups",
+        title: msg("Design Groups"),
         properties: Object.fromEntries(
           groupedKeys.map((key) => [key, rootProperties[key]])
         ),
@@ -3422,7 +3440,7 @@ class PdsLiveEdit extends HTMLElement {
     button.className = `context-edit btn-primary btn-xs icon-only ${MARKER_CLASS}`;
     button.setAttribute("type", "button");
     button.setAttribute("data-direction", "auto");
-    button.setAttribute("aria-label", "Edit design settings");
+    button.setAttribute("aria-label", msg("Edit design settings"));
 
     const icon = document.createElement("pds-icon");
     icon.setAttribute("icon", "pencil");
@@ -3438,7 +3456,7 @@ class PdsLiveEdit extends HTMLElement {
 
     const title = document.createElement("span");
     title.className = "pds-live-editor-title";
-    title.textContent = "Quick edit";
+    title.textContent = msg("Quick edit");
     header.appendChild(title);
 
     quickItem.appendChild(header);
@@ -3493,7 +3511,7 @@ class PdsLiveEdit extends HTMLElement {
     } catch (error) {
       const fallback = document.createElement("p");
       fallback.className = "text-muted";
-      fallback.textContent = "Editor form unavailable. Lazy component definition did not complete in time.";
+      fallback.textContent = msg("Editor form unavailable. Lazy component definition did not complete in time.");
       container.appendChild(fallback);
       console.warn("[PDS Live Edit] Failed to render quick form:", error);
       return;
@@ -3512,7 +3530,7 @@ class PdsLiveEdit extends HTMLElement {
     const gearBtn = document.createElement("button");
     gearBtn.className = "btn-outline btn-sm icon-only";
     gearBtn.type = "button";
-    gearBtn.setAttribute("aria-label", "More settings");
+    gearBtn.setAttribute("aria-label", msg("More settings"));
     const gearIcon = document.createElement("pds-icon");
     gearIcon.setAttribute("icon", "caret-right");
     gearIcon.setAttribute("size", "sm");
@@ -3542,7 +3560,7 @@ class PdsLiveEdit extends HTMLElement {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "btn-outline btn-sm icon-only";
-    button.setAttribute("aria-label", "Quick theme, preset and language");
+    button.setAttribute("aria-label", msg("Quick theme, preset and language"));
 
     const icon = document.createElement("pds-icon");
     icon.setAttribute("icon", "palette");
@@ -3563,7 +3581,7 @@ class PdsLiveEdit extends HTMLElement {
     const themeLabel = document.createElement("label");
     themeLabel.className = "stack-xs";
     const themeText = document.createElement("span");
-    themeText.textContent = "Theme";
+    themeText.textContent = msg("Theme");
     const themeToggle = document.createElement("pds-theme");
     themeLabel.append(themeText, themeToggle);
     content.appendChild(themeLabel);
@@ -3576,7 +3594,7 @@ class PdsLiveEdit extends HTMLElement {
     const presetLabel = document.createElement("label");
     presetLabel.className = "stack-xs";
     const presetText = document.createElement("span");
-    presetText.textContent = "Preset";
+    presetText.textContent = msg("Preset");
     presetLabel.appendChild(presetText);
 
     let presetControlRendered = false;
@@ -3585,7 +3603,7 @@ class PdsLiveEdit extends HTMLElement {
 
       const presetOmnibox = document.createElement("pds-omnibox");
       presetOmnibox.setAttribute("item-grid", "0 1fr 0");
-      presetOmnibox.setAttribute("placeholder", "Search presets...");
+      presetOmnibox.setAttribute("placeholder", msg("Search presets..."));
 
       const activePresetId = getActivePresetId();
       const activePresetName = getPresetNameById(activePresetId);
@@ -3681,7 +3699,7 @@ class PdsLiveEdit extends HTMLElement {
     const header = document.createElement("div");
     header.setAttribute("slot", "drawer-header");
     header.className = "flex items-center justify-between";
-    header.textContent = "Design settings";
+    header.textContent = msg("Design settings");
 
     const content = document.createElement("div");
     content.setAttribute("slot", "drawer-content");
@@ -3691,14 +3709,14 @@ class PdsLiveEdit extends HTMLElement {
     presetCard.className = "card surface-elevated stack-sm";
 
     const presetTitle = document.createElement("h4");
-    presetTitle.textContent = "Preset";
+    presetTitle.textContent = msg("Preset");
     presetCard.appendChild(presetTitle);
 
     const presetLabel = document.createElement("label");
     presetLabel.className = "stack-xs";
 
     const presetText = document.createElement("span");
-    presetText.textContent = "Choose a base style";
+    presetText.textContent = msg("Choose a base style");
     presetLabel.appendChild(presetText);
 
     let presetControlRendered = false;
@@ -3707,7 +3725,7 @@ class PdsLiveEdit extends HTMLElement {
 
       const presetOmnibox = document.createElement("pds-omnibox");
       presetOmnibox.setAttribute("item-grid", "0 1fr 0");
-      presetOmnibox.setAttribute("placeholder", "Search presets...");
+      presetOmnibox.setAttribute("placeholder", msg("Search presets..."));
 
       const activePresetId = getActivePresetId();
       const activePresetName = getPresetNameById(activePresetId);
@@ -3773,7 +3791,7 @@ class PdsLiveEdit extends HTMLElement {
     themeCard.className = "card surface-elevated stack-sm";
 
     const themeTitle = document.createElement("h4");
-    themeTitle.textContent = "Theme";
+    themeTitle.textContent = msg("Theme");
     themeCard.appendChild(themeTitle);
 
     const themeToggle = document.createElement("pds-theme");
@@ -3783,13 +3801,13 @@ class PdsLiveEdit extends HTMLElement {
     configCard.className = "card surface-elevated stack-sm";
 
     const configTitle = document.createElement("h4");
-    configTitle.textContent = "Configuration";
+    configTitle.textContent = msg("Configuration");
     configCard.appendChild(configTitle);
 
     const configDescription = document.createElement("p");
     configDescription.className = "text-muted";
     configDescription.textContent =
-      "Edit the full design config generated from PDS metadata.";
+      msg("Edit the full design config generated from PDS metadata.");
     configCard.appendChild(configDescription);
 
     const configFormContainer = document.createElement("div");
@@ -3819,7 +3837,7 @@ class PdsLiveEdit extends HTMLElement {
       const unavailable = document.createElement("p");
       unavailable.className = "text-muted";
       unavailable.textContent =
-        "Full config metadata is unavailable in this runtime.";
+        msg("Full config metadata is unavailable in this runtime.");
       configFormContainer.appendChild(unavailable);
     }
 
@@ -3827,7 +3845,7 @@ class PdsLiveEdit extends HTMLElement {
     templateCard.className = "card surface-elevated stack-sm";
 
     const templateTitle = document.createElement("h4");
-    templateTitle.textContent = "Canvas Templates";
+    templateTitle.textContent = msg("Canvas Templates");
     templateCard.appendChild(templateTitle);
 
     const templateCanvas = document.createElement("pds-live-template-canvas");
@@ -3840,7 +3858,7 @@ class PdsLiveEdit extends HTMLElement {
     importCard.className = "card surface-elevated stack-sm";
 
     const importTitle = document.createElement("h4");
-    importTitle.textContent = "Import & Convert";
+    importTitle.textContent = msg("Import & Convert");
     importCard.appendChild(importTitle);
 
     const importer = document.createElement("pds-live-importer");
@@ -3861,7 +3879,7 @@ class PdsLiveEdit extends HTMLElement {
     exportCard.className = "card surface-elevated stack-sm";
 
     const exportTitle = document.createElement("h4");
-    exportTitle.textContent = "Export";
+    exportTitle.textContent = msg("Export");
     exportCard.appendChild(exportTitle);
 
     const exportNav = document.createElement("nav");
@@ -3874,7 +3892,7 @@ class PdsLiveEdit extends HTMLElement {
     exportIcon.setAttribute("icon", "download");
     exportIcon.setAttribute("size", "sm");
     const exportLabel = document.createElement("span");
-    exportLabel.textContent = "Download";
+    exportLabel.textContent = msg("Download");
     const exportCaret = document.createElement("pds-icon");
     exportCaret.setAttribute("icon", "caret-down");
     exportCaret.setAttribute("size", "sm");
@@ -3893,7 +3911,7 @@ class PdsLiveEdit extends HTMLElement {
     configIcon.setAttribute("icon", "file-js");
     configIcon.setAttribute("size", "sm");
     const configLabel = document.createElement("span");
-    configLabel.textContent = "Config File";
+    configLabel.textContent = msg("Config File");
     configLink.append(configIcon, configLabel);
     configItem.appendChild(configLink);
 
@@ -3908,7 +3926,7 @@ class PdsLiveEdit extends HTMLElement {
     figmaIcon.setAttribute("icon", "brackets-curly");
     figmaIcon.setAttribute("size", "sm");
     const figmaLabel = document.createElement("span");
-    figmaLabel.textContent = "Figma Tokens (JSON)";
+    figmaLabel.textContent = msg("Figma Tokens (JSON)");
     figmaLink.append(figmaIcon, figmaLabel);
     figmaItem.appendChild(figmaLink);
 
@@ -3919,7 +3937,7 @@ class PdsLiveEdit extends HTMLElement {
     const resetButton = document.createElement("button");
     resetButton.type = "button";
     resetButton.className = "btn-outline pds-live-editor-reset-btn";
-    resetButton.textContent = "Reset Config";
+    resetButton.textContent = msg("Reset Config");
     resetButton.addEventListener("click", async () => {
       await this.resetConfig();
     });
@@ -3930,7 +3948,7 @@ class PdsLiveEdit extends HTMLElement {
 
     const accordion = document.createElement("section");
     accordion.className = "accordion";
-    accordion.setAttribute("aria-label", "Design settings groups");
+    accordion.setAttribute("aria-label", msg("Design settings groups"));
 
     const buildAccordionGroup = (title, nodes = [], open = false, sectionId = "") => {
       const details = document.createElement("details");
@@ -3950,11 +3968,11 @@ class PdsLiveEdit extends HTMLElement {
       return details;
     };
 
-    accordion.appendChild(buildAccordionGroup("Preset & Theme", [presetCard, themeCard], true, "preset-theme"));
-    accordion.appendChild(buildAccordionGroup("Configuration", [configCard], false, "configuration"));
-    accordion.appendChild(buildAccordionGroup("Canvas", [templateCard], false, "canvas"));
+    accordion.appendChild(buildAccordionGroup(msg("Preset & Theme"), [presetCard, themeCard], true, "preset-theme"));
+    accordion.appendChild(buildAccordionGroup(msg("Configuration"), [configCard], false, "configuration"));
+    accordion.appendChild(buildAccordionGroup(msg("Canvas"), [templateCard], false, "canvas"));
     accordion.appendChild(
-      buildAccordionGroup("Import & Export", [importCard, exportCard], false, "import-convert-export")
+      buildAccordionGroup(msg("Import & Export"), [importCard, exportCard], false, "import-convert-export")
     );
 
     content.appendChild(accordion);
@@ -4025,13 +4043,13 @@ class PdsLiveEdit extends HTMLElement {
     let confirmed = true;
     if (typeof PDS?.ask === "function") {
       confirmed = await PDS.ask(
-        "This clears your saved local configuration and reloads the page.",
+        msg("This clears your saved local configuration and reloads the page."),
         {
-          title: "Reset Config?",
+          title: msg("Reset Config?"),
           type: "confirm",
           buttons: {
-            ok: { name: "Reset", variant: "danger" },
-            cancel: { name: "Cancel", cancel: true },
+            ok: { name: msg("Reset"), variant: "danger" },
+            cancel: { name: msg("Cancel"), cancel: true },
           },
         }
       );

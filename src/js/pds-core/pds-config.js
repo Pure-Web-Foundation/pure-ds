@@ -1,4 +1,5 @@
 import { enums } from "./pds-enums.js";
+import { PDS } from "../pds-singleton.js";
 
 /**
  * Design config types (SSoT) - mirror generator input and document output impact.
@@ -257,6 +258,7 @@ import { enums } from "./pds-enums.js";
 /**
  * @typedef {Object} PDSLocalizationConfig
  * @property {string} [locale]
+ * @property {string[]} [locales]
  * @property {Record<string, string | { content?: string }>} [messages]
  * @property {PDSLocalizationProvider} [provider]
  * @property {PDSLocalizationProvider["translate"]} [translate]
@@ -817,6 +819,7 @@ const __INIT_CONFIG_SPEC__ = {
       allowUnknown: false,
       properties: {
         locale: { type: "string" },
+        locales: { type: "array", items: { type: "string" } },
         messages: { type: "object", allowUnknown: true },
         provider: { type: __ANY_TYPE__ },
         translate: { type: __ANY_TYPE__ },
@@ -2671,15 +2674,5 @@ export const PDS_DEFAULT_CONFIG_FORM_SCHEMA = buildDesignConfigFormSchema(
  * @param {...any} data - additional data to log
  */
 export function defaultLog(level = "log", message, ...data) {
-  // Access debug from 'this' context when called as method, or check for common locations
-  const debug = this?.debug || this?.design?.debug || false;
-  
-  if (debug || level === "error" || level === "warn") {
-    const method = console[level] || console.log;
-    if (data.length > 0) {
-      method(message, ...data);
-    } else {
-      method(message);
-    }
-  }
+  PDS.log(level, message, ...data);
 }

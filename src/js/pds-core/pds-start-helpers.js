@@ -4,6 +4,7 @@
  */
 
 import { AutoDefiner as CoreAutoDefiner } from "pure-web/auto-definer";
+import { PDS } from "../pds-singleton.js";
 
 const __ABSOLUTE_URL_PATTERN__ = /^[a-z][a-z0-9+\-.]*:\/\//i;
 const __MODULE_URL__ = (() => {
@@ -430,17 +431,19 @@ export async function setupAutoDefinerAndEnhancers(options, { baseEnhancers = []
                                      err?.message?.includes("Failed to resolve module specifier");
 
           if (isLitComponent && isMissingLitError) {
-            console.error(
+            PDS.log(
+              "error",
               `❌ PDS component <${tag}> requires Lit but #pds/lit is not in import map.
               See: https://github.com/Pure-Web-Foundation/pure-ds/blob/main/readme.md#lit-components-not-working`
             );
           } else {
-            console.warn(
+            PDS.log(
+              "warn",
               `⚠️ PDS component <${tag}> not found. Assets may not be installed.`
             );
           }
         } else {
-          console.error(`❌ Auto-define error for <${tag}>:`, err);
+          PDS.log("error", `❌ Auto-define error for <${tag}>:`, err);
         }
       },
       // Apply all user overrides except mapper so we can still wrap it
@@ -458,7 +461,8 @@ export async function setupAutoDefinerAndEnhancers(options, { baseEnhancers = []
             }
             return mapped;
           } catch (e) {
-            console.warn(
+            PDS.log(
+              "warn",
               "Custom autoDefine.mapper error; falling back to default:",
               e?.message || e
             );

@@ -1,4 +1,4 @@
-import { PDS } from "#pds";
+import { PDS, msg } from "#pds";
 
 const COMPONENT_TAG = "pds-live-template-canvas";
 
@@ -46,7 +46,7 @@ class PdsLiveTemplateCanvas extends HTMLElement {
     this.className = "stack-sm";
     this.innerHTML = `
       <label class="stack-xs">
-        <span>Template</span>
+        <span>${msg("Template")}</span>
         <div class="pds-live-template-omnibox"></div>
       </label>
       <p class="text-muted pds-live-template-description"></p>
@@ -68,7 +68,7 @@ class PdsLiveTemplateCanvas extends HTMLElement {
     try {
       const omnibox = document.createElement("pds-omnibox");
       omnibox.setAttribute("item-grid", "45px 1fr 0");
-      omnibox.setAttribute("placeholder", "Search canvas templates...");
+      omnibox.setAttribute("placeholder", msg("Search canvas templates..."));
       omnibox.value = "";
 
       const templates = this._templates;

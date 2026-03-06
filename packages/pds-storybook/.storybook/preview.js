@@ -3,7 +3,7 @@ import { SELECT_STORY, UPDATE_GLOBALS } from '@storybook/core-events';
 import React from 'react';
 import { html } from 'lit';
 import { Title, Subtitle, Description as DocsDescription, Controls } from '@storybook/blocks';
-import { PDS } from '@pds-src/js/pds.js';
+import { PDS } from '#pds';
 import { presets } from '@pds-src/js/pds-core/pds-config.js';
 import { Generator } from '@pds-src/js/pds-core/pds-generator.js';
 import { applyStyles } from '@pds-src/js/pds-core/pds-runtime.js';
@@ -75,8 +75,119 @@ const getInitialPreset = () => {
   return 'default'; // Default preset
 };
 
+const STORYBOOK_LOCALE_STORAGE_KEY = 'storybook-pds-locale';
+
+const normalizeLocale = (value) => String(value || '').trim().toLowerCase();
+
+const getConfiguredLocales = () => {
+  const configuredLocales = userConfig?.localization?.locales;
+  const providerLocales = userConfig?.localization?.provider?.locales;
+  const sourceLocales = Array.isArray(configuredLocales) && configuredLocales.length
+    ? configuredLocales
+    : Array.isArray(providerLocales) && providerLocales.length
+      ? providerLocales
+      : ['en'];
+
+  const seen = new Set();
+  return sourceLocales.reduce((result, locale) => {
+    const normalized = normalizeLocale(locale);
+    if (!normalized || seen.has(normalized)) return result;
+    seen.add(normalized);
+    result.push(normalized);
+    return result;
+  }, []);
+};
+
+const resolveSupportedLocale = (value, supportedLocales = [], fallbackLocale = 'en') => {
+  const normalizedValue = normalizeLocale(value);
+  const normalizedFallback = normalizeLocale(fallbackLocale) || 'en';
+  const normalizedSupported = Array.isArray(supportedLocales)
+    ? supportedLocales.map((locale) => normalizeLocale(locale)).filter(Boolean)
+    : [];
+
+  if (!normalizedSupported.length) return normalizedFallback;
+
+  const exactMatch = normalizedSupported.find((locale) => locale === normalizedValue);
+  if (exactMatch) return exactMatch;
+
+  const requestedBase = normalizedValue.split('-')[0];
+  const baseMatch = normalizedSupported.find((locale) => locale.split('-')[0] === requestedBase);
+  if (baseMatch) return baseMatch;
+
+  const fallbackMatch = normalizedSupported.find((locale) => locale === normalizedFallback);
+  if (fallbackMatch) return fallbackMatch;
+
+  return normalizedSupported[0];
+};
+
+const getInitialLocale = (supportedLocales, fallbackLocale) => {
+  try {
+    const sessionLocale = sessionStorage.getItem(STORYBOOK_LOCALE_STORAGE_KEY);
+    if (sessionLocale) {
+      return resolveSupportedLocale(sessionLocale, supportedLocales, fallbackLocale);
+    }
+
+    const storedLocale = localStorage.getItem(STORYBOOK_LOCALE_STORAGE_KEY);
+    if (storedLocale) {
+      return resolveSupportedLocale(storedLocale, supportedLocales, fallbackLocale);
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlLocale = urlParams.get('locale');
+    if (urlLocale) {
+      return resolveSupportedLocale(urlLocale, supportedLocales, fallbackLocale);
+    }
+  } catch (error) {
+    console.warn('Failed to read locale from storage:', error);
+  }
+
+  return resolveSupportedLocale(fallbackLocale, supportedLocales, fallbackLocale);
+};
+
+const formatLocaleTitle = (locale) => {
+  const normalized = normalizeLocale(locale);
+  if (!normalized) return locale;
+
+  const [languageCode, regionCode] = normalized.split('-');
+  let languageLabel = languageCode.toUpperCase();
+
+  try {
+    if (typeof Intl !== 'undefined' && typeof Intl.DisplayNames === 'function') {
+      const displayNames = new Intl.DisplayNames(['en'], { type: 'language' });
+      languageLabel = displayNames.of(languageCode) || languageLabel;
+    }
+  } catch {}
+
+  if (regionCode) {
+    return `${languageLabel} (${languageCode}-${regionCode.toUpperCase()})`;
+  }
+
+  return `${languageLabel} (${languageCode})`;
+};
+
+const storybookLocales = getConfiguredLocales();
+if (!storybookLocales.length) {
+  storybookLocales.push('en');
+}
+
+const initialDocumentLocale = typeof document !== 'undefined'
+  ? document.documentElement?.getAttribute('lang')
+  : null;
+
+const defaultStorybookLocale = resolveSupportedLocale(
+  userConfig?.localization?.locale || initialDocumentLocale || 'en',
+  storybookLocales,
+  storybookLocales[0] || 'en'
+);
+
 const initialPreset = getInitialPreset();
+const initialLocale = getInitialLocale(storybookLocales, defaultStorybookLocale);
 console.log('🎨 Starting PDS initialization with preset:', initialPreset);
+console.log('🌍 Starting locale for Storybook:', initialLocale);
+
+if (typeof document !== 'undefined' && document.documentElement) {
+  document.documentElement.setAttribute('lang', initialLocale);
+}
 
 // Helper to detect docs pages - used to prevent PDS from interfering
 function isDocsPage() {
@@ -155,6 +266,7 @@ PDS.addEventListener('pds:ready', (event) => {
   // Merge user config
   if (userConfig) {
     if (userConfig.mode) pdsOptions.mode = userConfig.mode;
+    if (userConfig.localization) pdsOptions.localization = userConfig.localization;
     if (userConfig.autoDefine) {
         // Merge autoDefine options
         pdsOptions.autoDefine = {
@@ -177,6 +289,10 @@ PDS.addEventListener('pds:ready', (event) => {
 
   // Store PDS designer globally for reuse
   PDS.currentPreset = initialPreset;
+
+  if (typeof document !== 'undefined' && document.documentElement) {
+    document.documentElement.setAttribute('lang', initialLocale);
+  }
 })();
 
 // Style protection disabled - decorator controls when PDS styles are applied
@@ -188,6 +304,42 @@ PDS.addEventListener('pds:ready', (event) => {
 // Track current view mode globally for other code to check
 let currentViewMode = 'story';
 let toolbarTheme = null;
+let toolbarLocale = initialLocale;
+
+const setToolbarLocaleValue = (value) => {
+  const supportedLocale = resolveSupportedLocale(value, storybookLocales, defaultStorybookLocale);
+  if (!supportedLocale) return;
+  toolbarLocale = supportedLocale;
+};
+
+const persistStorybookLocale = (locale) => {
+  const supportedLocale = resolveSupportedLocale(locale, storybookLocales, defaultStorybookLocale);
+  if (!supportedLocale) return;
+
+  try {
+    sessionStorage.setItem(STORYBOOK_LOCALE_STORAGE_KEY, supportedLocale);
+    localStorage.setItem(STORYBOOK_LOCALE_STORAGE_KEY, supportedLocale);
+  } catch (error) {
+    console.warn('Failed to store locale:', error);
+  }
+};
+
+const applyStorybookLocale = (locale, { persist = true } = {}) => {
+  const supportedLocale = resolveSupportedLocale(locale, storybookLocales, defaultStorybookLocale);
+  if (!supportedLocale) return null;
+
+  if (persist) {
+    persistStorybookLocale(supportedLocale);
+  }
+
+  setToolbarLocaleValue(supportedLocale);
+
+  if (typeof document !== 'undefined' && document.documentElement) {
+    document.documentElement.setAttribute('lang', supportedLocale);
+  }
+
+  return supportedLocale;
+};
 
 const setToolbarThemeValue = (value) => {
   if (!value) return;
@@ -446,6 +598,18 @@ const withGlobalsHandler = (story, context) => {
   }
   if (globals?.theme) {
     setToolbarThemeValue(globals.theme);
+  }
+
+  if (globals?.locale) {
+    const requestedLocale = resolveSupportedLocale(globals.locale, storybookLocales, defaultStorybookLocale);
+    const activeLocale = normalizeLocale(document.documentElement?.getAttribute('lang') || toolbarLocale);
+
+    if (requestedLocale && requestedLocale !== activeLocale) {
+      applyStorybookLocale(requestedLocale, { persist: true });
+    } else if (requestedLocale && document.documentElement?.getAttribute('lang') !== requestedLocale) {
+      document.documentElement.setAttribute('lang', requestedLocale);
+      setToolbarLocaleValue(requestedLocale);
+    }
   }
   
   return story();
@@ -1539,10 +1703,23 @@ const preview = {
         dynamicTitle: true
       }
     },
+    locale: {
+      name: 'Locale',
+      description: 'PDS locale',
+      defaultValue: initialLocale,
+      toolbar: {
+        icon: 'globe',
+        items: storybookLocales.map((locale) => ({
+          value: locale,
+          title: formatLocaleTitle(locale)
+        })),
+        dynamicTitle: true
+      }
+    },
     preset: {
       name: 'Preset',
       description: 'Design preset',
-      defaultValue: initialPreset, // Use the preset loaded from storage
+      defaultValue: initialPreset,
       toolbar: {
         icon: 'paintbrush',
         items: Object.keys(presets)
@@ -1551,25 +1728,20 @@ const preview = {
             const bPreset = presets[b];
             const aTags = aPreset.tags || [];
             const bTags = bPreset.tags || [];
-            
-            // Check if featured
+
             const aFeatured = aTags.includes('featured');
             const bFeatured = bTags.includes('featured');
-            
             if (aFeatured && !bFeatured) return -1;
             if (!aFeatured && bFeatured) return 1;
-            
-            // Check if has any tags
+
             const aHasTags = aTags.length > 0;
             const bHasTags = bTags.length > 0;
-            
             if (aHasTags && !bHasTags) return -1;
             if (!aHasTags && bHasTags) return 1;
-            
-            // Alphabetical by name
+
             return (aPreset.name || a).localeCompare(bPreset.name || b);
           })
-          .map(key => ({
+          .map((key) => ({
             value: key,
             title: presets[key].name || key
           })),
@@ -1579,102 +1751,97 @@ const preview = {
   }
 };
 
-// Listen to theme and preset changes from toolbar
 if (typeof window !== 'undefined') {
   console.log('👂 Setting up message listener for toolbar changes...');
-  
+
   window.addEventListener('message', async (event) => {
-    if(event.data?.type == null) return;
+    if (event.data?.type == null) return;
 
     console.log('📨 Message received:', event.data?.type, event.data);
-    
+
     if (event.data?.type === 'SET_GLOBALS') {
       console.log('✅ SET_GLOBALS detected, globals:', event.data.globals);
       const { globals } = event.data;
-      
+
       if (globals?.theme) {
         console.log('🌙 Theme change requested:', globals.theme);
-        
-        // Set data-theme attribute on body for PDS theme system
         document.body.setAttribute('data-theme', globals.theme);
-        
-        // Also use PDS.theme property
         PDS.theme = globals.theme;
-        
         console.log('✅ Theme applied:', globals.theme);
         setToolbarThemeValue(globals.theme);
       }
-      
+
       if (globals?.preset) {
         console.log('🔔 SET_GLOBALS message received with preset:', globals.preset);
         console.log('📦 Current stored preset:', PDS.currentPreset);
-        
-        // Skip if already on this preset
+
         if (globals.preset === PDS.currentPreset) {
           console.log('⏭️ Preset unchanged, skipping');
-          return;
-        }
-        
-        try {
-          console.log('📦 Preset change requested:', globals.preset);
-          
-          // Store preset selection for persistence
+        } else {
           try {
-            sessionStorage.setItem('storybook-pds-preset', globals.preset);
-            localStorage.setItem('storybook-pds-preset', globals.preset);
-            console.log('💾 Preset stored in storage');
-          } catch (e) {
-            console.warn('⚠️ Failed to store preset:', e);
-          }
-          
-          // Load preset from PDS presets and create new designer
-          console.log('📥 Importing pds-config...');
-          const configModule = await import('../../../src/js/pds-core/pds-config.js');
-          console.log('✅ Config module loaded:', configModule);
-          
-          const { presets } = configModule;
-          const presetId = globals.preset;
-          const presetConfig = presets[presetId];
-          
-          console.log('📋 Available presets:', Object.keys(presets));
-          console.log('🔍 Looking for preset:', presetId);
-          console.log('✅ Found preset config:', presetConfig ? 'yes' : 'no');
-          
-          if (presetConfig) {
-            console.log(`🎨 Applying preset: ${presetConfig.name || presetId}`);
-            console.log('📝 Preset config:', presetConfig);
-            
-            // Create new designer with preset config (same as pds-config-form does)
-            const generatorOptions = { 
-              design: structuredClone(presetConfig),
-              log: (...args) => console.log('🟦 [Generator]', ...args)
-            };
-            const storedTheme = PDS.theme || null;
-            if (storedTheme) {
-              generatorOptions.theme = storedTheme;
-              console.log('🌙 Applying stored theme:', storedTheme);
+            console.log('📦 Preset change requested:', globals.preset);
+
+            try {
+              sessionStorage.setItem('storybook-pds-preset', globals.preset);
+              localStorage.setItem('storybook-pds-preset', globals.preset);
+              console.log('💾 Preset stored in storage');
+            } catch (e) {
+              console.warn('⚠️ Failed to store preset:', e);
             }
-            
-            console.log('🏗️ Creating new Generator...');
-            const newDesigner = new Generator(generatorOptions);
-            console.log('✅ Generator created');
-            
-            console.log('🎨 Applying styles to document...');
-            setLiveGenerator(newDesigner);
-            await applyStyles(newDesigner);
-            console.log('✅ Styles applied to document');
-            
-            // Update global reference
-            PDS.currentPreset = presetId;
-            
-            console.log(`✅✅✅ Preset applied successfully: ${presetConfig.name || presetId}`);
-          } else {
-            console.error(`❌ Preset not found: ${presetId}`);
-            console.error('❌ Available presets:', Object.keys(presets));
+
+            console.log('📥 Importing pds-config...');
+            const configModule = await import('../../../src/js/pds-core/pds-config.js');
+            console.log('✅ Config module loaded:', configModule);
+
+            const { presets } = configModule;
+            const presetId = globals.preset;
+            const presetConfig = presets[presetId];
+
+            console.log('📋 Available presets:', Object.keys(presets));
+            console.log('🔍 Looking for preset:', presetId);
+            console.log('✅ Found preset config:', presetConfig ? 'yes' : 'no');
+
+            if (presetConfig) {
+              console.log(`🎨 Applying preset: ${presetConfig.name || presetId}`);
+              console.log('📝 Preset config:', presetConfig);
+
+              const generatorOptions = {
+                design: structuredClone(presetConfig),
+                log: (...args) => console.log('🟦 [Generator]', ...args)
+              };
+              const storedTheme = PDS.theme || null;
+              if (storedTheme) {
+                generatorOptions.theme = storedTheme;
+                console.log('🌙 Applying stored theme:', storedTheme);
+              }
+
+              console.log('🏗️ Creating new Generator...');
+              const newDesigner = new Generator(generatorOptions);
+              console.log('✅ Generator created');
+
+              console.log('🎨 Applying styles to document...');
+              setLiveGenerator(newDesigner);
+              await applyStyles(newDesigner);
+              console.log('✅ Styles applied to document');
+
+              PDS.currentPreset = presetId;
+              console.log(`✅✅✅ Preset applied successfully: ${presetConfig.name || presetId}`);
+            } else {
+              console.error(`❌ Preset not found: ${presetId}`);
+              console.error('❌ Available presets:', Object.keys(presets));
+            }
+          } catch (err) {
+            console.error('❌❌❌ Failed to apply preset:', err);
+            console.error('❌ Stack trace:', err.stack);
           }
-        } catch (err) {
-          console.error('❌❌❌ Failed to apply preset:', err);
-          console.error('❌ Stack trace:', err.stack);
+        }
+      }
+
+      if (globals?.locale) {
+        const requestedLocale = resolveSupportedLocale(globals.locale, storybookLocales, defaultStorybookLocale);
+        if (requestedLocale) {
+          console.log('🌍 Locale change requested:', requestedLocale);
+          applyStorybookLocale(requestedLocale, { persist: true });
         }
       }
     }

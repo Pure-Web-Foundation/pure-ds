@@ -31,7 +31,7 @@
  *
  * @property {PdsOmniboxSettings} settings - AutoComplete settings object (required by consumer)
  */
-import { PDS } from "#pds";
+import { PDS, msg } from "#pds";
 
 const LAYERS = ["tokens", "primitives", "components", "utilities"];
 const DEFAULT_PLACEHOLDER = "Search...";
@@ -134,7 +134,7 @@ export class PdsOmnibox extends HTMLElement {
   }
 
   get placeholder() {
-    return this.getAttribute("placeholder") || DEFAULT_PLACEHOLDER;
+    return this.getAttribute("placeholder") || msg(DEFAULT_PLACEHOLDER);
   }
 
   set placeholder(value) {
@@ -215,7 +215,7 @@ export class PdsOmnibox extends HTMLElement {
     this.#root.innerHTML = `
 			<div class="ac-container input-icon">
 				<pds-icon morph icon="${DEFAULT_ICON}"></pds-icon>
-				<input class="ac-input" type="search" placeholder="${DEFAULT_PLACEHOLDER}" autocomplete="off" />
+        <input class="ac-input" type="search" placeholder="${msg(DEFAULT_PLACEHOLDER)}" autocomplete="off" />
 			</div>
 		`;
 
@@ -568,7 +568,7 @@ export class PdsOmnibox extends HTMLElement {
     }
     this.#internals.setValidity(
       { customError: true },
-      this.#input.validationMessage || "Invalid value",
+      this.#input.validationMessage || msg("Invalid value"),
       this.#input,
     );
   }

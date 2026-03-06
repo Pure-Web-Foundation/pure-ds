@@ -1,4 +1,4 @@
-import { PDS } from "#pds";
+import { PDS, msg } from "#pds";
 
 /**
  * @element pds-toaster
@@ -339,7 +339,7 @@ export class AppToaster extends HTMLElement {
     if (closable) {
       const closeBtn = document.createElement("button");
       closeBtn.className = "callout-close";
-      closeBtn.setAttribute("aria-label", "Close");
+      closeBtn.setAttribute("aria-label", msg("Close"));
       closeBtn.textContent = "×";
       closeBtn.onclick = () => this.dismissToast(id);
       toast.appendChild(closeBtn);
@@ -452,10 +452,10 @@ export class AppToaster extends HTMLElement {
    */
   #getToastTitle(type) {
     const titles = {
-      information: "Information",
-      success: "Success!",
-      warning: "Warning",
-      error: "Error",
+      information: msg("Information"),
+      success: msg("Success!"),
+      warning: msg("Warning"),
+      error: msg("Error"),
     };
     return titles[type] || titles.information;
   }

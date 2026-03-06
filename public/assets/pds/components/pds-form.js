@@ -1,5 +1,5 @@
 ﻿import { LitElement, html, nothing, ifDefined, ref, keyed } from "#pds/lit";
-import { PDS } from "#pds";
+import { PDS, msg, str } from "#pds";
 
 function getStep(value) {
   if (typeof value === "number") {
@@ -103,8 +103,8 @@ export class SchemaForm extends LitElement {
     this.values = undefined;
     this.method = "post";
     this.hideActions = false;
-    this.submitLabel = "Submit";
-    this.resetLabel = "Reset";
+    this.submitLabel = msg("Submit");
+    this.resetLabel = msg("Reset");
     this.hideReset = false;
     this.hideLegend = false;
     this.#installDefaultRenderers();
@@ -507,7 +507,7 @@ export class SchemaForm extends LitElement {
         kind: "choice-option",
         index: i,
         schema: s,
-        title: s.title ?? `Option ${i + 1}`,
+        title: s.title ?? msg(str`Option ${i + 1}`),
       }));
       return { kind: "choice", path, title, schema, options: choices };
     }
@@ -714,7 +714,7 @@ export class SchemaForm extends LitElement {
     const tree = this.#compiled;
     if (!tree)
       return html`<div class="callout callout-error">
-        <p>Failed to generate form schema.</p>
+        <p>${msg("Failed to generate form schema.")}</p>
         <pre>${JSON.stringify(this.#data, null, 2)}</pre>
       </div>`;
     const m =
@@ -784,7 +784,7 @@ export class SchemaForm extends LitElement {
   }
 
   #renderFieldset(node, context = {}) {
-    const legend = node.title ?? "Section";
+    const legend = node.title ?? msg("Section");
     const ui = node.ui || this.#uiFor(node.path);
 
     // Check for path-specific options
@@ -885,7 +885,7 @@ export class SchemaForm extends LitElement {
     return html`
       <pds-tabstrip label=${legend} data-path=${node.path}>
         ${children.map((child, idx) => {
-          const childTitle = child.title ?? `Tab ${idx + 1}`;
+          const childTitle = child.title ?? msg(str`Tab ${idx + 1}`);
           const childId = `${node.path}-tab-${idx}`.replace(
             /[^a-zA-Z0-9_-]/g,
             "-"
@@ -909,7 +909,7 @@ export class SchemaForm extends LitElement {
     return html`
       <section class="accordion" data-path=${node.path}>
         ${children.map((child, idx) => {
-          const childTitle = child.title ?? `Section ${idx + 1}`;
+          const childTitle = child.title ?? msg(str`Section ${idx + 1}`);
           const childId = `${node.path}-acc-${idx}`.replace(
             /[^a-zA-Z0-9_-]/g,
             "-"
@@ -931,11 +931,11 @@ export class SchemaForm extends LitElement {
 
   #renderDialog(node) {
     const path = node.path;
-    const title = node.title ?? "Edit";
+    const title = node.title ?? msg("Edit");
     const ui = node.ui || this.#uiFor(path);
     const dialogOpts = ui?.["ui:dialogOptions"] || {};
     const buttonLabel =
-      dialogOpts.buttonLabel || ui?.["ui:dialogButton"] || `Edit ${title}`;
+      dialogOpts.buttonLabel || ui?.["ui:dialogButton"] || msg(str`Edit ${title}`);
     const dialogTitle = dialogOpts.dialogTitle || title;
 
     const openDialog = async () => {
@@ -1034,9 +1034,9 @@ export class SchemaForm extends LitElement {
             },
             size: dialogOpts.size || "lg",
             buttons: {
-              ok: { name: dialogOpts.submitLabel || "Save", primary: true },
+              ok: { name: dialogOpts.submitLabel || msg("Save"), primary: true },
               cancel: {
-                name: dialogOpts.cancelLabel || "Cancel",
+                name: dialogOpts.cancelLabel || msg("Cancel"),
                 cancel: true,
               },
             },
@@ -1190,9 +1190,9 @@ export class SchemaForm extends LitElement {
 
     return html`
       <fieldset data-path=${path}>
-        <legend>${node.title ?? "Choose one"}</legend>
+        <legend>${node.title ?? msg("Choose one")}</legend>
         <label>
-          <span data-label>Variant</span>
+          <span data-label>${msg("Variant")}</span>
           <select @change=${onChange} .value=${String(index)}>
             ${node.options.map(
               (opt, i) => html`<option value=${String(i)}>${opt.title}</option>`
@@ -1329,7 +1329,7 @@ export class SchemaForm extends LitElement {
             if (el) afterRender(el);
           })}
         >
-          <legend>${node.title ?? "List"}</legend>
+          <legend>${node.title ?? msg("List")}</legend>
           ${arr.map((value, i) => {
             const id = `${path}-${i}`;
             const isChecked = isSingleSelection
@@ -1373,7 +1373,7 @@ export class SchemaForm extends LitElement {
 
     return html`
       <fieldset data-path=${path}>
-        <legend>${node.title ?? "List"}</legend>
+        <legend>${node.title ?? msg("List")}</legend>
         <div class="array-list">
           ${arr.map(
             (_, i) => html`
@@ -1383,23 +1383,23 @@ export class SchemaForm extends LitElement {
                   <button
                     type="button"
                     @click=${() => move(i, i - 1)}
-                    title="Move up"
+                    title=${msg("Move up")}
                   >
                     ↑
                   </button>
                   <button
                     type="button"
                     @click=${() => move(i, i + 1)}
-                    title="Move down"
+                    title=${msg("Move down")}
                   >
                     ↓
                   </button>
                   <button
                     type="button"
                     @click=${() => remove(i)}
-                    title="Remove"
+                    title=${msg("Remove")}
                   >
-                    Remove
+                    ${msg("Remove")}
                   </button>
                 </div>
               </div>
@@ -1407,7 +1407,7 @@ export class SchemaForm extends LitElement {
           )}
         </div>
         <div class="array-controls">
-          <button type="button" @click=${add}>Add</button>
+          <button type="button" @click=${add}>${msg("Add")}</button>
         </div>
       </fieldset>
     `;
@@ -1751,7 +1751,7 @@ export class SchemaForm extends LitElement {
                 (attrs.max != null && numValue > attrs.max) ||
                 (attrs.step != null && numValue % parseFloat(attrs.step) !== 0)
               ) {
-                e.target.setCustomValidity("Invalid value");
+                e.target.setCustomValidity(msg("Invalid value"));
               } else {
                 e.target.setCustomValidity("");
                 set(numValue);

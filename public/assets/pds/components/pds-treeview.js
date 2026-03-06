@@ -1,4 +1,4 @@
-import { PDS } from "#pds";
+import { PDS, msg, str } from "#pds";
 
 /**
  * Accessible, form-associated treeview with nested UL output.
@@ -583,7 +583,7 @@ export class PdsTreeview extends HTMLElement {
 	#renderShell() {
 		this.#root.innerHTML = `
 			<div class="tv-host" data-state="ready">
-				<ul class="tv-tree" role="tree" aria-label="Treeview"></ul>
+				<ul class="tv-tree" role="tree" aria-label="${this.#escapeAttribute(msg("Treeview"))}"></ul>
 			</div>
 		`;
 
@@ -988,11 +988,15 @@ export class PdsTreeview extends HTMLElement {
 				const hasPrefix = Boolean(node.image || node.icon);
 				const selected = this.#selectedIds.has(node.id);
 				const toggleGlyph = node.loadingChildren ? "…" : expanded ? "−" : "+";
+				const toggleAriaLabel = this.#escapeAttribute(
+					expanded ? msg(str`Collapse ${node.text}`) : msg(str`Expand ${node.text}`),
+				);
+				const selectAriaLabel = this.#escapeAttribute(msg(str`Select ${node.text}`));
 				const toggle = hasChildren
-					? `<button type="button" class="tv-toggle icon-only" data-node-id="${this.#escapeAttribute(node.id)}" aria-label="${expanded ? "Collapse" : "Expand"} ${this.#escapeAttribute(node.text)}" ${node.loadingChildren ? "disabled" : ""}>${toggleGlyph}</button>`
+					? `<button type="button" class="tv-toggle icon-only" data-node-id="${this.#escapeAttribute(node.id)}" aria-label="${toggleAriaLabel}" ${node.loadingChildren ? "disabled" : ""}>${toggleGlyph}</button>`
 					: `<span class="tv-toggle-gap" aria-hidden="true"></span>`;
 				const checkbox = useCheckboxes
-					? `<span class="tv-check"><input class="tv-checkbox-input" type="checkbox" data-node-id="${this.#escapeAttribute(node.id)}" aria-label="Select ${this.#escapeAttribute(node.text)}" ${selected ? "checked" : ""} ${this.disabled ? "disabled" : ""}></span>`
+					? `<span class="tv-check"><input class="tv-checkbox-input" type="checkbox" data-node-id="${this.#escapeAttribute(node.id)}" aria-label="${selectAriaLabel}" ${selected ? "checked" : ""} ${this.disabled ? "disabled" : ""}></span>`
 					: "";
 				const prefix = this.#renderPrefix(node);
 				const rowClassParts = ["tv-row", hasPrefix ? "tv-row-has-prefix" : "tv-row-no-prefix"];

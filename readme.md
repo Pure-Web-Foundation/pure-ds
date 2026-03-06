@@ -1351,6 +1351,17 @@ await PDS.adoptLayers(shadowRoot, ['primitives'], [customSheet]);
 
 Adopt primitives layer (convenience method).
 
+### PDS.log(level, message, ...data)
+
+Unified logging entry point used by runtime internals and consumer code.
+
+```typescript
+PDS.log('info', 'Design system initialized');
+PDS.log('warn', 'Missing optional preset metadata', { preset: 'travel-market' });
+```
+
+> Configure behavior with `config.log(level, message, ...data)` in `PDS.start(...)`.
+
 ### PDS.createStylesheet(css)
 
 Create constructable stylesheet from CSS string.
@@ -1366,6 +1377,7 @@ PDS.enums                  // Enumeration values (live-only)
 PDS.currentConfig          // Current configuration (read-only)
 PDS.compiled               // Compiled state (live mode only)
 PDS.theme                  // Current theme (getter/setter)
+PDS.log(level, message)    // Canonical logging API
 PDS.defaultEnhancers       // Built-in enhancements
 ```
 

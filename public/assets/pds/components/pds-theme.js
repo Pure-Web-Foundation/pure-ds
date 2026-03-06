@@ -1,4 +1,4 @@
-import { PDS } from "#pds";
+import { PDS, msg, str } from "#pds";
 
 /**
  * `<pds-theme>` exposes a zero-config theme toggle that updates `PDS.theme` and
@@ -103,7 +103,7 @@ class PdsTheme extends HTMLElement {
           <input type="radio" name="theme" value="${option.value}" />
           <span>
             <pds-icon icon="${option.icon}" size="sm"></pds-icon>
-            ${option.label}
+            ${msg(option.label)}
           </span>
         </label>`,
     ).join("");
@@ -134,9 +134,9 @@ class PdsTheme extends HTMLElement {
         currentPreset?.name ||
         PDS.currentPreset?.name ||
         PDS.currentConfig?.preset ||
-        "current preset";
+        msg("current preset");
       console.warn(
-        `PDS theme "${resolvedTheme}" not supported by preset "${presetName}".`
+        msg(str`PDS theme "${resolvedTheme}" not supported by preset "${presetName}".`)
       );
       this.#syncCheckedState();
       return;

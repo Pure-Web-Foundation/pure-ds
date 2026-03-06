@@ -4,6 +4,7 @@
  * generator bundle lean and optional.
  */
 import { registry as pdsRegistry } from "./pds-registry.js";
+import { PDS } from "../pds-singleton.js";
 
 /**
  * Install runtime styles for PDS using constructable stylesheets when
@@ -48,7 +49,7 @@ export function installRuntimeStyles(cssText) {
     // Update the stylesheet content in place
     el.textContent = cssText;
   } catch (err) {
-    console.warn("installRuntimeStyles failed:", err);
+    PDS.log("warn", "installRuntimeStyles failed:", err);
   }
 }
 
@@ -60,8 +61,9 @@ export function applyStyles(generator) {
   const target = generator;
 
   if (!target || typeof target !== "object") {
-    console.error(
-      "[Runtime] applyStyles requires an explicit generator instance in live mode"
+    PDS.log(
+      "error",
+      "Runtime applyStyles requires an explicit generator instance in live mode"
     );
     return;
   }
@@ -72,7 +74,7 @@ export function applyStyles(generator) {
   if (!cssText) {
     target.options?.log?.(
       "warn",
-      "[Runtime] No CSS available on generator to apply"
+      "Runtime: no CSS available on generator to apply"
     );
     return;
   }
@@ -108,8 +110,9 @@ export async function adoptPrimitives(
     shadowRoot.adoptedStyleSheets = [primitives, ...additionalSheets];
   } catch (error) {
     const componentName = shadowRoot.host?.tagName?.toLowerCase() || "unknown";
-    console.error(
-      `[PDS Adopter] <${componentName}> failed to adopt primitives:`,
+    PDS.log(
+      "error",
+      `Adopter: <${componentName}> failed to adopt primitives:`,
       error
     );
     // Continue with just additional sheets as fallback
@@ -177,8 +180,9 @@ export async function adoptLayers(
     shadowRoot.adoptedStyleSheets = [...validStylesheets, ...safeAdditionalSheets];
   } catch (error) {
     const componentName = shadowRoot.host?.tagName?.toLowerCase() || "unknown";
-    console.error(
-      `[PDS Adopter] <${componentName}> failed to adopt layers:`,
+    PDS.log(
+      "error",
+      `Adopter: <${componentName}> failed to adopt layers:`,
       error
     );
     // Continue with just additional sheets as fallback

@@ -28,26 +28,9 @@
  * @property {(css:string) => CSSStyleSheet} createStylesheet - Create a constructable stylesheet from CSS text. @throws {DOMException} on invalid CSS in some browsers.
  * @property {() => boolean} isLiveMode - Returns true when running in live/designer-backed mode
  * @property {() => Promise<typeof import("./pds-core/pds-generator.js").Generator>} getGenerator - Live-only accessor for the Generator class
+ * @property {(level: 'log'|'warn'|'error'|'debug'|'info', message?: any, ...data: any[]) => void} log - Unified logging entry point used by PDS internals and consumers
  */
-
-/**
- * Workspace for the Pure Design System runtime API
- * PDS is now an EventTarget so consumers can subscribe to a single, consistent
- * event bus instead of listening on window/document or individual elements.
- */
-class PDSBase extends EventTarget {}
-/** @type {PDSAPI & PDSBase} */
-const __PDS_SINGLETON_KEY__ = "__PURE_DS_PDS_SINGLETON__";
-const __globalScope__ = typeof globalThis !== "undefined" ? globalThis : window;
-const __existingPDS__ = __globalScope__?.[__PDS_SINGLETON_KEY__];
-const PDS =
-  __existingPDS__ && typeof __existingPDS__.addEventListener === "function"
-    ? __existingPDS__
-    : new PDSBase();
-
-if (__globalScope__) {
-  __globalScope__[__PDS_SINGLETON_KEY__] = PDS;
-}
+import { PDS } from "./pds-singleton.js";
 
 // State properties
 if (typeof PDS.initializing !== "boolean") {
@@ -64,6 +47,12 @@ if (!("currentConfig" in PDS)) {
 }
 if (!("compiled" in PDS)) {
   PDS.compiled = null;
+}
+if (typeof PDS.logHandler !== "function") {
+  PDS.logHandler = null;
+}
+if (!("mode" in PDS)) {
+  PDS.mode = null;
 }
 
 import {
@@ -87,6 +76,7 @@ import {
   isPresetThemeCompatible,
   resolveThemePreference,
 } from "./pds-core/pds-theme-utils.js";
+import { configurePDSLogger, pdsLog } from "./common/pds-log.js";
 
 let __autoCompletePromise = null;
 let __askPromise = null;
@@ -95,11 +85,60 @@ let __defaultEnhancersPromise = null;
 let __localizationPromise = null;
 let __localizationRuntime = null;
 
+const __LOCALIZATION_RUNTIME_SINGLETON_KEY__ = "__pdsLocalizationRuntime";
+
+function __getLocalizationRuntimeSync() {
+  if (__localizationRuntime) {
+    return __localizationRuntime;
+  }
+
+  const sharedRuntime = PDS?.[__LOCALIZATION_RUNTIME_SINGLETON_KEY__];
+  if (sharedRuntime && typeof sharedRuntime === "object") {
+    __localizationRuntime = sharedRuntime;
+    return sharedRuntime;
+  }
+
+  return null;
+}
+
+function __setLocalizationRuntime(runtime) {
+  const normalizedRuntime = runtime && typeof runtime === "object" ? runtime : null;
+  __localizationRuntime = normalizedRuntime;
+  PDS[__LOCALIZATION_RUNTIME_SINGLETON_KEY__] = normalizedRuntime;
+}
+
+configurePDSLogger({
+  getLogger: () => (typeof PDS.logHandler === "function" ? PDS.logHandler : null),
+  getContext: () => {
+    const mode =
+      PDS?.mode ||
+      PDS?.compiled?.mode ||
+      (PDS?.registry?.isLive ? "live" : "static");
+    const debug =
+      (PDS?.debug ||
+        PDS?.currentConfig?.debug ||
+        PDS?.currentConfig?.design?.debug ||
+        PDS?.compiled?.debug ||
+        PDS?.compiled?.design?.debug ||
+        false) === true;
+    return {
+      mode,
+      debug,
+      thisArg: PDS,
+    };
+  },
+});
+
+PDS.log = (level = "log", message, ...data) => {
+  pdsLog(level, message, ...data);
+};
+
 const __fallbackLocalizationState = {
   locale: "en",
   messages: {},
   hasProvider: false,
 };
+const __pendingLocalizationKeys = new Set();
 
 function __isStrTagged(template) {
   return (
@@ -170,9 +209,43 @@ function __fallbackMsg(template) {
   return __fallbackLocalizationState.messages[key] || key;
 }
 
+function __queuePendingLocalizationKey(template) {
+  if (!template) {
+    return;
+  }
+
+  const key = __isStrTagged(template)
+    ? __collateStrings(template.strings || [])
+    : String(template);
+
+  if (typeof key === "string" && key.length > 0) {
+    __pendingLocalizationKeys.add(key);
+  }
+}
+
+function __flushPendingLocalizationKeys(runtime) {
+  if (
+    !runtime ||
+    typeof runtime.msg !== "function" ||
+    __pendingLocalizationKeys.size === 0
+  ) {
+    return;
+  }
+
+  const pendingKeys = Array.from(__pendingLocalizationKeys);
+  __pendingLocalizationKeys.clear();
+
+  for (const key of pendingKeys) {
+    try {
+      runtime.msg(key);
+    } catch {}
+  }
+}
+
 async function __loadLocalizationRuntime() {
-  if (__localizationRuntime) {
-    return __localizationRuntime;
+  const runtime = __getLocalizationRuntimeSync();
+  if (runtime) {
+    return runtime;
   }
 
   if (!__localizationPromise) {
@@ -193,7 +266,8 @@ async function __loadLocalizationRuntime() {
           throw new Error("Failed to load localization runtime exports");
         }
 
-        __localizationRuntime = mod;
+        __setLocalizationRuntime(mod);
+        __flushPendingLocalizationKeys(mod);
         return mod;
       })
       .catch((error) => {
@@ -206,22 +280,26 @@ async function __loadLocalizationRuntime() {
 }
 
 const msg = (template, options = {}) => {
-  if (typeof __localizationRuntime?.msg === "function") {
-    return __localizationRuntime.msg(template, options);
+  const runtime = __getLocalizationRuntimeSync();
+  if (typeof runtime?.msg === "function") {
+    return runtime.msg(template, options);
   }
+  __queuePendingLocalizationKey(template);
   return __fallbackMsg(template, options);
 };
 
 const str = (strings, ...values) => {
-  if (typeof __localizationRuntime?.str === "function") {
-    return __localizationRuntime.str(strings, ...values);
+  const runtime = __getLocalizationRuntimeSync();
+  if (typeof runtime?.str === "function") {
+    return runtime.str(strings, ...values);
   }
   return __fallbackStr(strings, ...values);
 };
 
 const configureLocalization = (config = null) => {
-  if (typeof __localizationRuntime?.configureLocalization === "function") {
-    return __localizationRuntime.configureLocalization(config);
+  const runtime = __getLocalizationRuntimeSync();
+  if (typeof runtime?.configureLocalization === "function") {
+    return runtime.configureLocalization(config);
   }
 
   if (!config || typeof config !== "object") {
@@ -255,6 +333,7 @@ const configureLocalization = (config = null) => {
     __loadLocalizationRuntime()
       .then((runtime) => {
         runtime.configureLocalization(config);
+        __flushPendingLocalizationKeys(runtime);
       })
       .catch(() => {});
   }
@@ -277,13 +356,95 @@ const setLocale = async (locale, options = {}) => {
 };
 
 const getLocalizationState = () => {
-  if (typeof __localizationRuntime?.getLocalizationState === "function") {
-    return __localizationRuntime.getLocalizationState();
+  const runtime = __getLocalizationRuntimeSync();
+  if (typeof runtime?.getLocalizationState === "function") {
+    return runtime.getLocalizationState();
   }
   return {
     locale: __fallbackLocalizationState.locale,
     messages: { ...__fallbackLocalizationState.messages },
     hasProvider: __fallbackLocalizationState.hasProvider,
+  };
+};
+
+const createJSONLocalization = (options = {}) => {
+  const runtime = __getLocalizationRuntimeSync();
+  if (typeof runtime?.createJSONLocalization === "function") {
+    return runtime.createJSONLocalization(options);
+  }
+
+  const defaultLocale =
+    typeof options?.locale === "string" && options.locale.trim()
+      ? options.locale.trim().toLowerCase()
+      : "en";
+
+  const configuredLocales = Array.isArray(options?.locales)
+    ? options.locales
+        .map((locale) => String(locale || "").trim().toLowerCase())
+        .filter(Boolean)
+    : [];
+
+  const locales = Array.from(new Set([defaultLocale, ...configuredLocales]));
+
+  let __jsonLocalizationConfigPromise = null;
+  const __resolveJSONLocalizationConfig = async () => {
+    if (!__jsonLocalizationConfigPromise) {
+      __jsonLocalizationConfigPromise = __loadLocalizationRuntime()
+        .then((runtime) => {
+          if (typeof runtime?.createJSONLocalization === "function") {
+            return runtime.createJSONLocalization(options);
+          }
+          return null;
+        })
+        .catch(() => null);
+    }
+
+    return __jsonLocalizationConfigPromise;
+  };
+
+  const resolveLoader = async (kind = "loadLocale") => {
+    const runtimeConfig = await __resolveJSONLocalizationConfig();
+    if (!runtimeConfig || typeof runtimeConfig !== "object") {
+      return null;
+    }
+
+    const provider = runtimeConfig.provider;
+    if (!provider || typeof provider !== "object") {
+      return null;
+    }
+
+    const exactLoader = provider[kind];
+    if (typeof exactLoader === "function") {
+      return exactLoader;
+    }
+
+    if (kind === "setLocale" && typeof provider.loadLocale === "function") {
+      return provider.loadLocale;
+    }
+
+    return null;
+  };
+
+  return {
+    locale: defaultLocale,
+    locales: [...locales],
+    provider: {
+      locales: [...locales],
+      async loadLocale(context = {}) {
+        const loader = await resolveLoader("loadLocale");
+        if (typeof loader !== "function") {
+          return {};
+        }
+        return loader(context);
+      },
+      async setLocale(context = {}) {
+        const loader = await resolveLoader("setLocale");
+        if (typeof loader !== "function") {
+          return {};
+        }
+        return loader(context);
+      },
+    },
   };
 };
 
@@ -402,22 +563,7 @@ __lazyToast.info = async (...args) => {
 };
 
 const __defaultLog = function (level = "log", message, ...data) {
-  const isStaticMode = Boolean(PDS.registry && !PDS.registry.isLive);
-  const debug =
-    (this?.debug || this?.design?.debug || PDS.debug || false) === true;
-
-  if (isStaticMode) {
-    if (!PDS.debug) return;
-  } else if (!debug && level !== "error" && level !== "warn") {
-    return;
-  }
-
-  const method = console[level] || console.log;
-  if (data.length > 0) {
-    method(message, ...data);
-  } else {
-    method(message);
-  }
+  PDS.log(level, message, ...data);
 };
 
 function __stripFunctionsForClone(value) {
@@ -509,6 +655,7 @@ PDS.configureLocalization = configureLocalization;
 PDS.loadLocale = loadLocale;
 PDS.setLocale = setLocale;
 PDS.getLocalizationState = getLocalizationState;
+PDS.createJSONLocalization = createJSONLocalization;
 PDS.i18n = {
   msg,
   str,
@@ -516,6 +663,7 @@ PDS.i18n = {
   loadLocale,
   setLocale,
   getState: getLocalizationState,
+  createJSONLocalization,
 };
 PDS.AutoComplete = null;
 PDS.loadAutoComplete = async () => {
@@ -712,7 +860,8 @@ if (!__themeDescriptor) {
             PDS.currentPreset?.name ||
             PDS.currentConfig?.preset ||
             "current preset";
-          console.warn(
+          PDS.log(
+            "warn",
             `PDS theme "${resolvedTheme}" not supported by preset "${presetName}".`
           );
           PDS.dispatchEvent(
@@ -801,6 +950,9 @@ async function start(config) {
     const mode = (config && config.mode) || "live";
     const { mode: _omit, ...rest } = config || {};
 
+    PDS.mode = mode;
+    PDS.logHandler = typeof rest?.log === "function" ? rest.log : null;
+
     PDS.currentConfig = __toReadonlyClone(rest);
 
     const localizationConfig =
@@ -840,9 +992,7 @@ async function start(config) {
     const resolvedExternalIconPath =
       PDS?.compiled?.design?.icons?.externalPath || "/assets/img/icons/";
 
-    if (typeof console !== "undefined" && typeof console.info === "function") {
-      console.info(`[PDS] startup ready; external icon path: ${resolvedExternalIconPath}`);
-    }
+    PDS.log("info", `startup ready; external icon path: ${resolvedExternalIconPath}`);
 
     return startResult;
   } finally {
@@ -1027,4 +1177,5 @@ export {
   loadLocale,
   setLocale,
   getLocalizationState,
+  createJSONLocalization,
 };

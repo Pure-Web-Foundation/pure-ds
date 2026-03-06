@@ -1,4 +1,4 @@
-import { PDS } from "#pds";
+import { PDS, msg, str } from "#pds";
 
 /**
  * Drag-and-drop file uploader that participates in native forms.
@@ -52,10 +52,10 @@ class UploadArea extends HTMLElement {
     this.#root.innerHTML = `
       <div class="container" role="button" tabindex="0" aria-disabled="false">
         <div class="instructions">
-          <div class="headline">Drop files here or</div>
-          <div class="sub">Click to browse, or drag & drop files to upload.</div>
+          <div class="headline">${msg("Drop files here or")}</div>
+          <div class="sub">${msg("Click to browse, or drag & drop files to upload.")}</div>
         </div>
-        <button type="button" class="btn-select">Select</button>
+        <button type="button" class="btn-select">${msg("Select")}</button>
       </div>
 
       <div class="tiles" aria-live="polite" aria-relevant="additions removals"></div>
@@ -572,8 +572,9 @@ class UploadArea extends HTMLElement {
       const remove = document.createElement("button");
       remove.className = "remove";
       remove.type = "button";
-      remove.title = `Remove ${file.name}`;
-      remove.setAttribute("aria-label", `Remove ${file.name}`);
+      const removeLabel = msg(str`Remove ${file.name}`);
+      remove.title = removeLabel;
+      remove.setAttribute("aria-label", removeLabel);
       remove.textContent = "✕";
       remove.addEventListener("click", (e) => {
         e.stopPropagation();

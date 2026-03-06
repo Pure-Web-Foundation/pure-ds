@@ -1,0 +1,440 @@
+{
+  "Why develop a Design System when you can generate one?": {
+    "content": "Waarom een Design System ontwikkelen als je er één kunt genereren?"
+  },
+  "version {0}": {
+    "content": "versie {0}"
+  },
+  "not set": {
+    "content": "niet ingesteld"
+  },
+  "* Required fields": {
+    "content": "* Verplichte velden"
+  },
+  "Add item...": {
+    "content": "Item toevoegen..."
+  },
+  "Submit": {
+    "content": "Verzenden"
+  },
+  "Reset": {
+    "content": "Herstellen"
+  },
+  "Failed to generate form schema.": {
+    "content": "Kon formschema niet genereren."
+  },
+  "Section {0}": {
+    "content": "Sectie {0}"
+  },
+  "Section": {
+    "content": "Sectie"
+  },
+  "Option {0}": {
+    "content": "Optie {0}"
+  },
+  "Tab {0}": {
+    "content": "Tabblad {0}"
+  },
+  "Edit": {
+    "content": "Bewerken"
+  },
+  "Edit {0}": {
+    "content": "{0} bewerken"
+  },
+  "Save": {
+    "content": "Opslaan"
+  },
+  "Cancel": {
+    "content": "Annuleren"
+  },
+  "Choose one": {
+    "content": "Kies er één"
+  },
+  "Variant": {
+    "content": "Variant"
+  },
+  "List": {
+    "content": "Lijst"
+  },
+  "Move up": {
+    "content": "Omhoog verplaatsen"
+  },
+  "Move down": {
+    "content": "Omlaag verplaatsen"
+  },
+  "Remove": {
+    "content": "Verwijderen"
+  },
+  "Add": {
+    "content": "Toevoegen"
+  },
+  "Invalid value": {
+    "content": "Ongeldige waarde"
+  },
+  "Drop files here or": {
+    "content": "Sleep bestanden hierheen of"
+  },
+  "Click to browse, or drag & drop files to upload.": {
+    "content": "Klik om te bladeren, of sleep bestanden om te uploaden."
+  },
+  "Select": {
+    "content": "Selecteren"
+  },
+  "Remove {0}": {
+    "content": "{0} verwijderen"
+  },
+  "current preset": {
+    "content": "huidige preset"
+  },
+  "PDS theme \"{0}\" not supported by preset \"{1}\".": {
+    "content": "PDS-thema \"{0}\" wordt niet ondersteund door preset \"{1}\"."
+  },
+  "System": {
+    "content": "Systeem"
+  },
+  "Light": {
+    "content": "Licht"
+  },
+  "Dark": {
+    "content": "Donker"
+  },
+  "When - Add dates": {
+    "content": "Wanneer - Datums toevoegen"
+  },
+  "Departure": {
+    "content": "Vertrek"
+  },
+  "Return": {
+    "content": "Terug"
+  },
+  "Travel day": {
+    "content": "Reisdag"
+  },
+  "Clear": {
+    "content": "Wissen"
+  },
+  "{0} night selected": {
+    "content": "{0} nacht geselecteerd"
+  },
+  "{0} nights selected": {
+    "content": "{0} nachten geselecteerd"
+  },
+  "Select checkout date": {
+    "content": "Selecteer uitcheckdatum"
+  },
+  "Select check-in and checkout dates": {
+    "content": "Selecteer in- en uitcheckdatums"
+  },
+  "Please select a start and end date.": {
+    "content": "Selecteer een start- en einddatum."
+  },
+  "Please select a date.": {
+    "content": "Selecteer een datum."
+  },
+  "Select a day": {
+    "content": "Selecteer een dag"
+  },
+  "Select {0} {1}, {2}": {
+    "content": "Selecteer {0} {1}, {2}"
+  },
+  "Search tags...": {
+    "content": "Zoek tags..."
+  },
+  "No tags selected.": {
+    "content": "Geen tags geselecteerd."
+  },
+  "Please select at least one option.": {
+    "content": "Selecteer minimaal één optie."
+  },
+  "Search...": {
+    "content": "Zoeken..."
+  },
+  "Treeview": {
+    "content": "Boomweergave"
+  },
+  "Collapse {0}": {
+    "content": "{0} inklappen"
+  },
+  "Expand {0}": {
+    "content": "{0} uitklappen"
+  },
+  "Select {0}": {
+    "content": "Selecteer {0}"
+  },
+  "Close": {
+    "content": "Sluiten"
+  },
+  "Information": {
+    "content": "Informatie"
+  },
+  "Success!": {
+    "content": "Succes!"
+  },
+  "Warning": {
+    "content": "Waarschuwing"
+  },
+  "Error": {
+    "content": "Fout"
+  },
+  "Rating": {
+    "content": "Beoordeling"
+  },
+  "{0} out of {1} stars": {
+    "content": "{0} van {1} sterren"
+  },
+  "Language": {
+    "content": "Taal"
+  },
+  "Exported config file": {
+    "content": "Configuratiebestand geëxporteerd"
+  },
+  "Exported Figma tokens": {
+    "content": "Figma-tokens geëxporteerd"
+  },
+  "Export failed": {
+    "content": "Exporteren mislukt"
+  },
+  "Design Groups": {
+    "content": "Ontwerpgroepen"
+  },
+  "Apply": {
+    "content": "Toepassen"
+  },
+  "Undo": {
+    "content": "Ongedaan maken"
+  },
+  "Edit design settings": {
+    "content": "Ontwerkinstellingen bewerken"
+  },
+  "Quick edit": {
+    "content": "Snel bewerken"
+  },
+  "Editor form unavailable. Lazy component definition did not complete in time.": {
+    "content": "Editorformulier niet beschikbaar. Lazy component-definitie is niet op tijd voltooid."
+  },
+  "More settings": {
+    "content": "Meer instellingen"
+  },
+  "Quick theme, preset and language": {
+    "content": "Snel thema, preset en taal"
+  },
+  "Theme": {
+    "content": "Thema"
+  },
+  "Preset": {
+    "content": "Preset"
+  },
+  "Search presets...": {
+    "content": "Zoek presets..."
+  },
+  "Design settings": {
+    "content": "Ontwerkinstellingen"
+  },
+  "Choose a base style": {
+    "content": "Kies een basisstijl"
+  },
+  "Configuration": {
+    "content": "Configuratie"
+  },
+  "Edit the full design config generated from PDS metadata.": {
+    "content": "Bewerk de volledige ontwerpconfiguratie die uit PDS-metadata is gegenereerd."
+  },
+  "Full config metadata is unavailable in this runtime.": {
+    "content": "Volledige configuratiemetadata is niet beschikbaar in deze runtime."
+  },
+  "Canvas Templates": {
+    "content": "Canvas-sjablonen"
+  },
+  "Import & Convert": {
+    "content": "Importeren en converteren"
+  },
+  "Export": {
+    "content": "Exporteren"
+  },
+  "Download": {
+    "content": "Downloaden"
+  },
+  "Config File": {
+    "content": "Configuratiebestand"
+  },
+  "Figma Tokens (JSON)": {
+    "content": "Figma-tokens (JSON)"
+  },
+  "Reset Config": {
+    "content": "Configuratie resetten"
+  },
+  "Design settings groups": {
+    "content": "Groepen ontwerkinstellingen"
+  },
+  "Preset & Theme": {
+    "content": "Preset en thema"
+  },
+  "Canvas": {
+    "content": "Canvas"
+  },
+  "Import & Export": {
+    "content": "Importeren en exporteren"
+  },
+  "This clears your saved local configuration and reloads the page.": {
+    "content": "Dit wist je lokaal opgeslagen configuratie en herlaadt de pagina."
+  },
+  "Reset Config?": {
+    "content": "Configuratie resetten?"
+  },
+  "Template": {
+    "content": "Sjabloon"
+  },
+  "Search canvas templates...": {
+    "content": "Zoek canvassjablonen..."
+  },
+  "Convert to PDS HTML only": {
+    "content": "Alleen converteren naar PDS-HTML"
+  },
+  "Adopt design language + convert": {
+    "content": "Ontwerptaal overnemen + converteren"
+  },
+  "Unknown date": {
+    "content": "Onbekende datum"
+  },
+  "File": {
+    "content": "Bestand"
+  },
+  "Import mode": {
+    "content": "Importmodus"
+  },
+  "Re-import": {
+    "content": "Opnieuw importeren"
+  },
+  "Import History": {
+    "content": "Importgeschiedenis"
+  },
+  "Refresh": {
+    "content": "Vernieuwen"
+  },
+  "Import details": {
+    "content": "Importdetails"
+  },
+  "Import Details": {
+    "content": "Importdetails"
+  },
+  "Copy to clipboard": {
+    "content": "Kopiëren naar klembord"
+  },
+  "none": {
+    "content": "geen"
+  },
+  "Source": {
+    "content": "Bron"
+  },
+  "Mode": {
+    "content": "Modus"
+  },
+  "Date": {
+    "content": "Datum"
+  },
+  "Confidence": {
+    "content": "Betrouwbaarheid"
+  },
+  "Tailwind": {
+    "content": "Tailwind"
+  },
+  "Mapped": {
+    "content": "Gemapt"
+  },
+  "Ignored": {
+    "content": "Genegeerd"
+  },
+  "Policy Skipped": {
+    "content": "Beleid overgeslagen"
+  },
+  "Unknown": {
+    "content": "Onbekend"
+  },
+  "Imported Styles": {
+    "content": "Geïmporteerde stijlen"
+  },
+  "Unknown Tokens": {
+    "content": "Onbekende tokens"
+  },
+  "Notes": {
+    "content": "Notities"
+  },
+  "Issues": {
+    "content": "Issues"
+  },
+  "(untitled import)": {
+    "content": "(import zonder titel)"
+  },
+  "unknown": {
+    "content": "onbekend"
+  },
+  "Apply stored result": {
+    "content": "Opgeslagen resultaat toepassen"
+  },
+  "Re-import input": {
+    "content": "Invoer opnieuw importeren"
+  },
+  "No converted PDS HTML available to copy": {
+    "content": "Geen geconverteerde PDS-HTML beschikbaar om te kopiëren"
+  },
+  "Copied converted PDS HTML to clipboard": {
+    "content": "Geconverteerde PDS-HTML naar klembord gekopieerd"
+  },
+  "Failed to copy converted PDS HTML": {
+    "content": "Kon geconverteerde PDS-HTML niet kopiëren"
+  },
+  "Loading import history...": {
+    "content": "Importgeschiedenis laden..."
+  },
+  "No imports yet.": {
+    "content": "Nog geen imports."
+  },
+  "{0} failed / {1} issues": {
+    "content": "{0} mislukt / {1} issues"
+  },
+  "{0} success": {
+    "content": "{0} succesvol"
+  },
+  "{0} of {1} mapped": {
+    "content": "{0} van {1} gemapt"
+  },
+  "Details": {
+    "content": "Details"
+  },
+  "Status": {
+    "content": "Status"
+  },
+  "Info": {
+    "content": "Info"
+  },
+  "Clear import history?": {
+    "content": "Importgeschiedenis wissen?"
+  },
+  "Import complete: {0}": {
+    "content": "Import voltooid: {0}"
+  },
+  "report=Open Import History > Metadata table": {
+    "content": "rapport=Open Importgeschiedenis > Metadatatabel"
+  },
+  "(no file)": {
+    "content": "(geen bestand)"
+  },
+  "Import failed\nreason=Could not read selected file\nerror={0}": {
+    "content": "Import mislukt\nreden=Kon geselecteerd bestand niet lezen\nfout={0}"
+  },
+  "Import failed\nreason=Import service unavailable": {
+    "content": "Import mislukt\nreden=Importservice niet beschikbaar"
+  },
+  "Import failed: {0}\nsource={1}\nmode={2}\nerror={3}": {
+    "content": "Import mislukt: {0}\nbron={1}\nmodus={2}\nfout={3}"
+  },
+  "Open details": {
+    "content": "Details openen"
+  },
+  "selected file": {
+    "content": "geselecteerd bestand"
+  },
+  "Unknown error": {
+    "content": "Onbekende fout"
+  }
+}

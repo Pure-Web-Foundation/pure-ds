@@ -1,4 +1,4 @@
-import { PDS } from "#pds";
+import { PDS, msg, str } from "#pds";
 
 const DEFAULT_DISPLAY_FORMAT = "d MMM yy";
 
@@ -320,7 +320,7 @@ class PdsDateRange extends HTMLElement {
   render() {
     this.shadowRoot.innerHTML = `
       <div class="daterange">
-        <button type="button" class="trigger btn-outline" part="trigger" aria-haspopup="dialog" aria-expanded="false">When - Add dates</button>
+        <button type="button" class="trigger btn-outline" part="trigger" aria-haspopup="dialog" aria-expanded="false">${msg("When - Add dates")}</button>
         <section class="panel card surface-overlay" part="panel" hidden>
           <div class="calendars">
             <pds-calendar compact id="left-calendar"></pds-calendar>
@@ -328,7 +328,7 @@ class PdsDateRange extends HTMLElement {
           </div>
           <p class="status text-muted" id="status-text"></p>
           <div class="actions">
-            <button type="button" class="btn-secondary btn-sm" id="clear-btn">Clear</button>
+            <button type="button" class="btn-secondary btn-sm" id="clear-btn">${msg("Clear")}</button>
           </div>
         </section>
       </div>
@@ -525,7 +525,7 @@ class PdsDateRange extends HTMLElement {
       const isStart = cursor.getTime() === rangeStart.getTime();
       const isEnd = cursor.getTime() === rangeEnd.getTime();
       map[day] = [{
-        title: isStart ? "Departure" : isEnd ? "Return" : "Travel day",
+        title: isStart ? msg("Departure") : isEnd ? msg("Return") : msg("Travel day"),
         type: isStart || isEnd ? "primary" : "info"
       }];
     }
@@ -608,13 +608,16 @@ class PdsDateRange extends HTMLElement {
       this.triggerButton.textContent = `${this.formatDisplayDate(this.#startDate)} - ${this.formatDisplayDate(this.#endDate)}`;
       const oneDayMs = 24 * 60 * 60 * 1000;
       const nights = Math.round((this.toDayStart(this.#endDate) - this.toDayStart(this.#startDate)) / oneDayMs);
-      this.statusText.textContent = `${nights} night${nights === 1 ? "" : "s"} selected`;
+      this.statusText.textContent =
+        nights === 1
+          ? msg(str`${nights} night selected`)
+          : msg(str`${nights} nights selected`);
     } else if (this.#startDate) {
       this.triggerButton.textContent = `${this.formatDisplayDate(this.#startDate)} - -`;
-      this.statusText.textContent = "Select checkout date";
+      this.statusText.textContent = msg("Select checkout date");
     } else {
       this.triggerButton.textContent = "- - -";
-      this.statusText.textContent = "Select check-in and checkout dates";
+      this.statusText.textContent = msg("Select check-in and checkout dates");
     }
 
     this.reflectValueAttribute();
@@ -653,7 +656,7 @@ class PdsDateRange extends HTMLElement {
     if (this.required && !fieldValue) {
       this.#internals.setValidity(
         { valueMissing: true },
-        "Please select a start and end date.",
+        msg("Please select a start and end date."),
         this.triggerButton
       );
       return;

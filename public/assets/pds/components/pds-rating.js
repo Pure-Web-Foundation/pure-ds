@@ -1,3 +1,5 @@
+import { msg, str } from "#pds";
+
 const STAR_PATH =
   "M12 .9l3.1 6.3 7 1-5 4.9 1.2 6.9L12 16.8 5.7 20l1.2-6.9-5-4.9 7-1L12 .9z";
 
@@ -499,7 +501,7 @@ class PdsRating extends HTMLElement {
     this.#input.name = this.name;
 
     if (!this.#input.hasAttribute("aria-label") && !this.#input.hasAttribute("aria-labelledby")) {
-      this.#input.setAttribute("aria-label", "Rating");
+      this.#input.setAttribute("aria-label", msg("Rating"));
     }
 
     if (!this.hasAttribute("role")) {
@@ -538,8 +540,8 @@ class PdsRating extends HTMLElement {
       this.style.removeProperty("--rating-star-on");
     }
 
-    this.#input.setAttribute("aria-valuetext", `${current} out of ${max} stars`);
-    this.setAttribute("aria-label", this.#input.getAttribute("aria-label") || "Rating");
+    this.#input.setAttribute("aria-valuetext", msg(str`${current} out of ${max} stars`));
+    this.setAttribute("aria-label", this.#input.getAttribute("aria-label") || msg("Rating"));
     this.setAttribute("aria-disabled", String(this.disabled));
     this.setAttribute("aria-readonly", String(this.readOnly));
     this.setAttribute("aria-valuemin", "0");

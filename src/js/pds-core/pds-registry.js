@@ -3,6 +3,8 @@
 // PDS REGISTRY - Global mode manager for live vs static mode
 // ============================================================================
 
+import { PDS } from "../pds-singleton.js";
+
 class PDSRegistry {
   constructor() {
     this._mode = "static"; // Default to static mode
@@ -46,10 +48,10 @@ class PDSRegistry {
         const module = await import(/* @vite-ignore */ this._staticPaths[layer]);
         return module[layer]; // Return exported stylesheet
       } catch (error) {
-        // No access to config in static mode, fall back to console
-        console.error(`[PDS Registry] Failed to load static ${layer}:`, error);
-        console.error(`[PDS Registry] Looking for: ${this._staticPaths[layer]}`);
-        console.error(`[PDS Registry] Make sure you've run 'npm run pds:build' and configured PDS.start() with the correct static.root path`);
+        // Route through centralized logger fallback behavior
+        PDS.log("error", `Registry: failed to load static ${layer}:`, error);
+        PDS.log("error", `Registry: looking for ${this._staticPaths[layer]}`);
+        PDS.log("error", "Registry: make sure you've run 'npm run pds:build' and configured PDS.start() with the correct static.root path");
         // Return empty stylesheet as fallback
         const fallback = new CSSStyleSheet();
         fallback.replaceSync("/* Failed to load " + layer + " */");

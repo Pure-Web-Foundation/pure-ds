@@ -180,11 +180,21 @@ const config = {
     config.resolve.alias.push({ find: '../../../../src', replacement: pdsSrcPath });
     
     // Try to resolve user's pds.config.js
-    const userConfigPath = resolve(process.cwd(), 'pds.config.js');
-    if (fs.existsSync(userConfigPath)) {
-      config.resolve.alias.push({ find: '@user/pds-config', replacement: userConfigPath });
+    const packageRoot = resolve(currentDirname, '..');
+    const monorepoRoot = resolve(currentDirname, '../../..');
+    const cwdUserConfigPath = resolve(process.cwd(), 'pds.config.js');
+    const monorepoUserConfigPath = resolve(monorepoRoot, 'pds.config.js');
+
+    const userConfigCandidates = process.cwd() === packageRoot
+      ? [monorepoUserConfigPath, cwdUserConfigPath]
+      : [cwdUserConfigPath, monorepoUserConfigPath];
+
+    const resolvedUserConfigPath = userConfigCandidates.find((candidate) => fs.existsSync(candidate));
+
+    if (resolvedUserConfigPath) {
+      config.resolve.alias.push({ find: '@user/pds-config', replacement: resolvedUserConfigPath });
     } else {
-        // Fallback to a default config file if user config doesn't exist
+      // Fallback to a default config file if user config doesn't exist
       config.resolve.alias.push({ find: '@user/pds-config', replacement: resolve(currentDirname, '../default-pds.config.js') });
     }
 

@@ -103,7 +103,7 @@ function getToolSchema() {
     },
     {
       name: 'query_design_system',
-      description: 'Run natural-language PDS design system search against SSoT-backed data.',
+      description: 'Run natural-language PDS design system search against SSoT-backed data. Form truth: ui:icon/icon-input rendering is only for regular text-like inputs (text/email/url/tel/search/password), not date/range/textarea/select/choice widgets.',
       inputSchema: {
         type: 'object',
         required: ['question'],
@@ -139,7 +139,7 @@ function getToolSchema() {
     },
     {
       name: 'get_config_relations',
-      description: 'Read PDS_CONFIG_RELATIONS from pds-config.js for deterministic token mapping.',
+      description: 'Read PDS_CONFIG_RELATIONS from pds-config.js for deterministic token mapping and form-UI constraints (including ui:icon/icon-input scope for text-like inputs only).',
       inputSchema: {
         type: 'object',
         properties: {

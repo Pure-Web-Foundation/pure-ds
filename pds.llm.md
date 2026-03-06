@@ -72,6 +72,7 @@ Use MCP as an optimization, not a prerequisite. For fast, simple lookups, read l
 ### Non-negotiable rules
 
 - Do not invent class names, tokens, attributes, events, or selectors.
+- For form generation, `ui:icon` / icon-input rendering is allowed only on regular text-like inputs (`text`, `email`, `url`, `tel`, `search`, `password`). Do **not** apply icon-input rendering to date/date-range, range, select, checkbox/radio groups, textarea, or omnibox widgets.
 - If a value is not found in MCP results, state it is unavailable and suggest nearest matches.
 - Prefer MCP results over memory when MCP is already available.
 - If MCP is unavailable, slow to start, or errors, continue immediately with direct SSoT file reads using the paths above.
@@ -149,7 +150,11 @@ async function simulateSubmit(data) {
 
 ### 5. Smart Icons - Infer from field semantics
 
-**When generating forms, automatically add appropriate icons based on field names and semantics.**
+**When generating forms, automatically add appropriate icons based on field names and semantics for regular text-like inputs only.**
+
+**Scope rule (critical):** `ui:icon` / icon-input rendering is valid only for text-like inputs (`text`, `email`, `url`, `tel`, `search`, `password`).
+
+**Never apply `ui:icon` to:** date/date-range, range sliders, textarea, select, checkbox/radio groups, tag pickers, or omnibox widgets.
 
 **Sources of truth for available icons:**
 - Check `pds.config.js` for project-specific icon configuration
@@ -166,13 +171,18 @@ const uiSchema = {
   "/name": { 'ui:icon': 'user', 'ui:autocomplete': 'name' },
   "/password": { 'ui:icon': 'lock', 'ui:widget': 'password' },
   "/website": { 'ui:icon': 'link' },
-  "/address": { 'ui:icon': 'map-pin' },
-  "/date": { 'ui:icon': 'calendar' },
-  "/message": { 'ui:widget': 'textarea', 'ui:icon': 'message' }
+  "/address": { 'ui:icon': 'map-pin' }
+};
+
+// ❌ WRONG: Non-text widgets should not use ui:icon/icon-input rendering
+const invalidUiSchema = {
+  "/travelDates": { 'ui:widget': 'date-range', 'ui:icon': 'calendar' },
+  "/budget": { 'ui:widget': 'input-range', 'ui:icon': 'coins' },
+  "/notes": { 'ui:widget': 'textarea', 'ui:icon': 'message' }
 };
 ```
 
-**Rule: When generating forms, analyze field names/types and select semantically appropriate icons from the available icon set.**
+**Rule: When generating forms, analyze field names/types and select semantically appropriate icons from the available icon set, but only for text-like inputs.**
 
 ### 6. Submit Handler Pattern - ALWAYS provide working async handler
 
@@ -311,11 +321,10 @@ const contactSchema = {
 // UI schema with smart icons
 const uiSchema = {
   "/name": { 'ui:icon': 'user' },
-  "/email": { 'ui:icon': 'envelope' },
+  "/email": { 'ui:icon': 'envelope', 'ui:autocomplete': 'email' },
   "/message": { 
     'ui:widget': 'textarea',
-    'ui:rows': 4,
-    'ui:icon': 'message'
+    'ui:rows': 4
   }
 };
 
@@ -622,6 +631,6 @@ Before generating code:
 11. ✅ **Use `pw:submit` event** — NOT native `submit` event
 12. ✅ **Add `btn-working` class** — For async submit operations, add during processing
 13. ✅ **Use `examples` in JSON schema** — First example becomes placeholder
-14. ✅ **Add smart icons** — Infer icons based on field names (email→envelope, phone→phone)
+14. ✅ **Add smart icons only to text-like inputs** — Use `ui:icon` only for text/email/url/tel/search/password fields
 15. ✅ **Wrap in `form[data-required]`** — For asterisk enhancement on required fields
 16. ✅ **Pad details content** — After `<summary>`, wrap content in a padded container (usually `.card`)

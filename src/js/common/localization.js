@@ -1,3 +1,5 @@
+import { pdsLog } from "./pds-log.js";
+
 const __DEFAULT_LOCALE__ = "en";
 
 const __localizationState = {
@@ -10,6 +12,7 @@ const __localizationState = {
   requestedKeys: new Set(),
   textNodeKeyMap: new WeakMap(),
   valueToKeys: new Map(),
+  missingWarnings: new Set(),
 };
 
 const __isStrTagged = (val) =>
@@ -325,6 +328,81 @@ function __splitTextWhitespace(value) {
   return { leading, core, trailing };
 }
 
+function __escapeRegExp(value) {
+  return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function __extractValuesFromTemplate(template, text) {
+  const inputTemplate = typeof template === "string" ? template : String(template || "");
+  const inputText = typeof text === "string" ? text : String(text || "");
+  const placeholderPattern = /\{(\d+)\}/g;
+
+  const matches = Array.from(inputTemplate.matchAll(placeholderPattern));
+  if (!matches.length) {
+    return inputTemplate === inputText ? [] : null;
+  }
+
+  const placeholderOrder = [];
+  let pattern = "^";
+  let lastIndex = 0;
+
+  for (const match of matches) {
+    const matchIndex = match.index ?? 0;
+    pattern += __escapeRegExp(inputTemplate.slice(lastIndex, matchIndex));
+    pattern += "([\\s\\S]*?)";
+    placeholderOrder.push(Number(match[1]));
+    lastIndex = matchIndex + match[0].length;
+  }
+
+  pattern += __escapeRegExp(inputTemplate.slice(lastIndex));
+  pattern += "$";
+
+  const result = new RegExp(pattern).exec(inputText);
+  if (!result) {
+    return null;
+  }
+
+  const values = [];
+  for (let groupIndex = 1; groupIndex < result.length; groupIndex += 1) {
+    const placeholderIndex = placeholderOrder[groupIndex - 1];
+    const extractedValue = result[groupIndex];
+
+    if (
+      Object.prototype.hasOwnProperty.call(values, placeholderIndex) &&
+      values[placeholderIndex] !== extractedValue
+    ) {
+      return null;
+    }
+
+    values[placeholderIndex] = extractedValue;
+  }
+
+  return values;
+}
+
+function __resolveTemplateValuesForText(key, text) {
+  if (typeof key !== "string" || !key.length) {
+    return [];
+  }
+
+  const templates = [key];
+  for (const [, messages] of __localizationState.messagesByLocale.entries()) {
+    const candidate = messages?.[key];
+    if (typeof candidate === "string" && candidate.length) {
+      templates.push(candidate);
+    }
+  }
+
+  for (const template of templates) {
+    const extracted = __extractValuesFromTemplate(template, text);
+    if (extracted) {
+      return extracted;
+    }
+  }
+
+  return [];
+}
+
 function __findRequestedKeyForText(coreText) {
   if (!coreText) {
     return null;
@@ -355,6 +433,52 @@ function __findRequestedKeyForText(coreText) {
   return null;
 }
 
+function __findRequestedSubsegmentForText(coreText) {
+  if (!coreText) {
+    return null;
+  }
+
+  let bestMatch = null;
+
+  for (const [indexedValue, indexedKeys] of __localizationState.valueToKeys.entries()) {
+    if (typeof indexedValue !== "string" || !indexedValue.length) {
+      continue;
+    }
+
+    if (indexedValue === coreText) {
+      continue;
+    }
+
+    const start = coreText.indexOf(indexedValue);
+    if (start === -1) {
+      continue;
+    }
+
+    for (const key of indexedKeys) {
+      if (!__localizationState.requestedKeys.has(key)) {
+        continue;
+      }
+
+      const values = __resolveTemplateValuesForText(key, indexedValue);
+      const candidate = {
+        key,
+        matchedText: indexedValue,
+        start,
+        end: start + indexedValue.length,
+        values,
+      };
+
+      if (!bestMatch || candidate.matchedText.length > bestMatch.matchedText.length) {
+        bestMatch = candidate;
+      }
+
+      break;
+    }
+  }
+
+  return bestMatch;
+}
+
 async function __localizeTextNode(textNode) {
   if (!textNode || textNode.nodeType !== 3) {
     return;
@@ -376,6 +500,32 @@ async function __localizeTextNode(textNode) {
   }
 
   if (!key) {
+    const segmentMatch = __findRequestedSubsegmentForText(core);
+    if (!segmentMatch) {
+      return;
+    }
+
+    const scopedLocale = __resolveContextLocale({ element: parentElement });
+    await __loadLocaleInternal(scopedLocale, "text-node");
+
+    const translated = __resolveTranslation(
+      segmentMatch.key,
+      segmentMatch.values,
+      { element: parentElement },
+      null
+    );
+    const translatedText = segmentMatch.values.length
+      ? __replacePlaceholders(translated, (index) => segmentMatch.values[index])
+      : translated;
+    const localizedCore =
+      core.slice(0, segmentMatch.start) +
+      translatedText +
+      core.slice(segmentMatch.end);
+    const localizedText = `${leading}${localizedCore}${trailing}`;
+
+    if (localizedText !== textNode.nodeValue) {
+      textNode.nodeValue = localizedText;
+    }
     return;
   }
 
@@ -384,8 +534,12 @@ async function __localizeTextNode(textNode) {
   const scopedLocale = __resolveContextLocale({ element: parentElement });
   await __loadLocaleInternal(scopedLocale, "text-node");
 
-  const translated = __resolveTranslation(key, [], { element: parentElement }, null);
-  const nextText = `${leading}${translated}${trailing}`;
+  const values = __resolveTemplateValuesForText(key, core);
+  const translated = __resolveTranslation(key, values, { element: parentElement }, null);
+  const translatedText = values.length
+    ? __replacePlaceholders(translated, (index) => values[index])
+    : translated;
+  const nextText = `${leading}${translatedText}${trailing}`;
 
   if (nextText !== textNode.nodeValue) {
     textNode.nodeValue = nextText;
@@ -402,11 +556,42 @@ async function __localizeRequestedTextNodes() {
     return;
   }
 
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const roots = [];
+  const seenRoots = new Set();
+
+  const addRoot = (candidateRoot) => {
+    if (!candidateRoot || seenRoots.has(candidateRoot)) {
+      return;
+    }
+
+    seenRoots.add(candidateRoot);
+    roots.push(candidateRoot);
+  };
+
+  addRoot(root);
+
+  for (let index = 0; index < roots.length; index += 1) {
+    const currentRoot = roots[index];
+    if (!currentRoot || typeof currentRoot.querySelectorAll !== "function") {
+      continue;
+    }
+
+    const elements = currentRoot.querySelectorAll("*");
+    for (const element of elements) {
+      const shadowRoot = element?.shadowRoot;
+      if (shadowRoot) {
+        addRoot(shadowRoot);
+      }
+    }
+  }
+
   const nodes = [];
 
-  while (walker.nextNode()) {
-    nodes.push(walker.currentNode);
+  for (const scanRoot of roots) {
+    const walker = document.createTreeWalker(scanRoot, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      nodes.push(walker.currentNode);
+    }
   }
 
   for (const node of nodes) {
@@ -491,9 +676,13 @@ function __resolveTranslation(key, values = [], options = {}, template = null) {
   };
 
   let translated;
+  const localeLoaded = Boolean(resolvedMessages);
+  const isDefaultLocale = requestedLocale === __localizationState.defaultLocale;
   if (typeof __localizationState.provider?.translate === "function") {
     translated = __localizationState.provider.translate(context);
   }
+
+  let fallbackKind = null;
 
   if (translated === undefined || translated === null) {
     translated = targetMessages[key];
@@ -501,14 +690,35 @@ function __resolveTranslation(key, values = [], options = {}, template = null) {
 
   if (translated === undefined || translated === null) {
     translated = defaultMessages[key];
+    fallbackKind = translated === undefined || translated === null ? null : "default";
   }
 
   if (translated === undefined || translated === null) {
     translated = key;
+    fallbackKind = "key";
+  }
+
+  if (localeLoaded && !isDefaultLocale && fallbackKind) {
+    const warningKey = `${requestedLocale}::${key}`;
+    if (!__localizationState.missingWarnings.has(warningKey)) {
+      __localizationState.missingWarnings.add(warningKey);
+      pdsLog(
+        "warn",
+        `[i18n] Missing translation for locale "${requestedLocale}" and key "${key}"; using ${fallbackKind} fallback.`
+      );
+    }
   }
 
   const resolved = typeof translated === "string" ? translated : String(translated);
   __indexTranslatedValue(key, resolved);
+
+  if (Array.isArray(values) && values.length > 0) {
+    const materialized = __replacePlaceholders(resolved, (index) => values[index]);
+    if (materialized !== resolved) {
+      __indexTranslatedValue(key, materialized);
+    }
+  }
+
   return resolved;
 }
 
@@ -539,6 +749,7 @@ export function configureLocalization(config = null) {
   __localizationState.requestedKeys.clear();
   __localizationState.textNodeKeyMap = new WeakMap();
   __localizationState.valueToKeys.clear();
+  __localizationState.missingWarnings.clear();
 
   if (!config || typeof config !== "object") {
     return getLocalizationState();

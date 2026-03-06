@@ -1,4 +1,5 @@
 import { fragmentFromTemplateLike } from "./common.js";
+import { PDS } from "../pds-singleton.js";
 
 /**
  * Get the current page title for dialogs
@@ -67,7 +68,7 @@ function validateDialogFormTree(form) {
       const message = typeof el.validationMessage === "string" ? el.validationMessage : "";
       return `${describeElement(el)}${message ? ` — ${message}` : ""}`;
     });
-    console.warn(`ask.validateDialogFormTree: invalid controls in ${scopeLabel}:`, list);
+    PDS.log("warn", `ask.validateDialogFormTree: invalid controls in ${scopeLabel}:`, list);
   };
 
   const runValidity = (target, scopeLabel) => {
@@ -80,7 +81,7 @@ function validateDialogFormTree(form) {
       }
       return targetValid;
     } catch (error) {
-      console.error(`ask.validateDialogFormTree: validation threw in ${scopeLabel}`, error);
+      PDS.log("error", `ask.validateDialogFormTree: validation threw in ${scopeLabel}`, error);
       return false;
     }
   };
@@ -231,7 +232,7 @@ export async function ask(message, options = {}) {
       try {
         dialog.close();
       } catch (error) {
-        console.warn("ask: dialog.close() failed", error);
+        PDS.log("warn", "ask: dialog.close() failed", error);
       }
     };
 
@@ -244,7 +245,7 @@ export async function ask(message, options = {}) {
         const beforeCloseResult = await options.beforeClose(context);
         return normalizeBeforeCloseResult(beforeCloseResult);
       } catch (error) {
-        console.error("ask.beforeClose: validation failed", error);
+        PDS.log("error", "ask.beforeClose: validation failed", error);
         return { allow: false };
       }
     };

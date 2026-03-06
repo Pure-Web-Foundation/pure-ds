@@ -3,6 +3,8 @@
  * Automatically loads fonts from Google Fonts when they're not available in the browser
  */
 
+import { PDS } from "../pds-singleton.js";
+
 /**
  * Checks if a font is available in the browser
  * @param {string} fontName - The name of the font to check
@@ -104,11 +106,11 @@ export async function loadGoogleFont(fontFamily, options = {}) {
   );
   
   if (existingLink) {
-    console.log(`Font "${primaryFont}" is already loading or loaded`);
+    PDS.log("log", `Font "${primaryFont}" is already loading or loaded`);
     return Promise.resolve();
   }
   
-  console.log(`Loading font "${primaryFont}" from Google Fonts...`);
+  PDS.log("log", `Loading font "${primaryFont}" from Google Fonts...`);
   
   return new Promise((resolve, reject) => {
     const link = document.createElement('link');
@@ -125,12 +127,12 @@ export async function loadGoogleFont(fontFamily, options = {}) {
     link.setAttribute('data-font-loader', primaryFont);
     
     link.onload = () => {
-      console.log(`Successfully loaded font "${primaryFont}"`);
+      PDS.log("log", `Successfully loaded font "${primaryFont}"`);
       resolve();
     };
     
     link.onerror = () => {
-      console.warn(`Failed to load font "${primaryFont}" from Google Fonts`);
+      PDS.log("warn", `Failed to load font "${primaryFont}" from Google Fonts`);
       reject(new Error(`Failed to load font: ${primaryFont}`));
     };
     
@@ -139,7 +141,7 @@ export async function loadGoogleFont(fontFamily, options = {}) {
     // Set a timeout to prevent hanging indefinitely
     setTimeout(() => {
       if (!isFontAvailable(primaryFont)) {
-        console.warn(`Font "${primaryFont}" did not load within timeout`);
+        PDS.log("warn", `Font "${primaryFont}" did not load within timeout`);
       }
       resolve(); // Resolve anyway to not block the application
     }, 5000);
@@ -172,7 +174,7 @@ export async function loadTypographyFonts(typographyConfig) {
   // Load all fonts in parallel
   const loadPromises = Array.from(fontFamilies).map(fontFamily => 
     loadGoogleFont(fontFamily).catch(err => {
-      console.warn(`Could not load font: ${fontFamily}`, err);
+      PDS.log("warn", `Could not load font: ${fontFamily}`, err);
       // Don't fail the whole operation if one font fails
     })
   );
@@ -193,8 +195,8 @@ export function unloadGoogleFont(fontName = null) {
   links.forEach(link => link.remove());
   
   if (fontName) {
-    console.log(`Unloaded font "${fontName}"`);
+    PDS.log("log", `Unloaded font "${fontName}"`);
   } else {
-    console.log(`Unloaded ${links.length} font(s)`);
+    PDS.log("log", `Unloaded ${links.length} font(s)`);
   }
 }

@@ -1,10 +1,10 @@
-import { PDS } from "#pds";
+import { PDS, msg, str } from "#pds";
 
 const COMPONENT_TAG = "pds-live-importer";
 
 const IMPORT_MODES = [
-  { id: "convert-only", label: "Convert to PDS HTML only" },
-  { id: "adopt-design-and-convert", label: "Adopt design language + convert" },
+  { id: "convert-only", label: msg("Convert to PDS HTML only") },
+  { id: "adopt-design-and-convert", label: msg("Adopt design language + convert") },
 ];
 
 let managerPromise = null;
@@ -46,7 +46,7 @@ function formatBytes(size) {
 
 function formatDateTime(value) {
   const date = value ? new Date(value) : null;
-  if (!date || Number.isNaN(date.getTime())) return "Unknown date";
+  if (!date || Number.isNaN(date.getTime())) return msg("Unknown date");
   return date.toLocaleString();
 }
 
@@ -116,24 +116,24 @@ class PdsLiveImporter extends HTMLElement {
     this.className = "card surface-subtle stack-sm";
     this.innerHTML = `
       <label class="stack-xs">
-        <span>File</span>
+        <span>${msg("File")}</span>
         <pds-upload class="pds-live-import-upload" accept=".html,.htm,.txt,.md,.json,.css,.js,.ts,.tsx,.jsx" max-files="1"></pds-upload>
       </label>
       <label class="stack-xs">
-        <span>Import mode</span>
+        <span>${msg("Import mode")}</span>
         <select class="pds-live-import-mode">
           ${IMPORT_MODES.map((mode) => `<option value="${mode.id}">${escapeHtml(mode.label)}</option>`).join("")}
         </select>
       </label>
       <div class="flex gap-sm justify-end">
-        <button type="button" class="btn-secondary btn-sm pds-live-import-run" disabled>Re-import</button>
+        <button type="button" class="btn-secondary btn-sm pds-live-import-run" disabled>${msg("Re-import")}</button>
       </div>
       <section class="card surface-base stack-xs pds-live-import-history">
         <div class="flex items-center justify-between gap-sm">
-          <strong>Import History</strong>
+          <strong>${msg("Import History")}</strong>
           <div class="flex gap-xs">
-            <button type="button" class="btn-outline btn-sm pds-live-history-refresh">Refresh</button>
-            <button type="button" class="btn-outline btn-sm pds-live-history-clear">Clear</button>
+            <button type="button" class="btn-outline btn-sm pds-live-history-refresh">${msg("Refresh")}</button>
+            <button type="button" class="btn-outline btn-sm pds-live-history-clear">${msg("Clear")}</button>
           </div>
         </div>
         <div class="stack-xs pds-live-history-list"></div>
@@ -213,10 +213,10 @@ class PdsLiveImporter extends HTMLElement {
 
     const dialog = document.createElement("dialog");
     dialog.className = "card surface-elevated stack-sm";
-    dialog.setAttribute("aria-label", "Import details");
+    dialog.setAttribute("aria-label", msg("Import details"));
 
     const title = document.createElement("h4");
-    title.textContent = "Import Details";
+    title.textContent = msg("Import Details");
 
     const content = document.createElement("div");
     content.className = "stack-sm";
@@ -228,7 +228,7 @@ class PdsLiveImporter extends HTMLElement {
     const copyBtn = document.createElement("button");
     copyBtn.type = "button";
     copyBtn.className = "btn-outline btn-sm icon-only";
-    copyBtn.setAttribute("aria-label", "Copy to clipboard");
+    copyBtn.setAttribute("aria-label", msg("Copy to clipboard"));
     const copyIcon = document.createElement("pds-icon");
     copyIcon.setAttribute("icon", "copy");
     copyIcon.setAttribute("size", "sm");
@@ -240,7 +240,7 @@ class PdsLiveImporter extends HTMLElement {
     const closeBtn = document.createElement("button");
     closeBtn.type = "button";
     closeBtn.className = "btn-outline btn-sm";
-    closeBtn.textContent = "Close";
+    closeBtn.textContent = msg("Close");
     closeBtn.addEventListener("click", () => dialog.close());
 
     footer.appendChild(copyBtn);
@@ -265,7 +265,7 @@ class PdsLiveImporter extends HTMLElement {
       ? `<ul>${notes
           .map((note) => `<li>${escapeHtml(note)}</li>`)
           .join("")}</ul>`
-      : "none";
+      : msg("none");
     const issuesHtml = issueCount
       ? `<ul>${entry.issues
           .map(
@@ -273,33 +273,33 @@ class PdsLiveImporter extends HTMLElement {
               `<li><strong>${escapeHtml(issue?.severity || "info")}</strong>: ${escapeHtml(issue?.message || "")}</li>`
           )
           .join("")}</ul>`
-      : "none";
+      : msg("none");
     const unknownHtml = unknownTokens.length
       ? `<code>${escapeHtml(unknownTokens.join(", "))}</code>`
-      : "none";
+      : msg("none");
 
     return `
       <table class="table-bordered table-compact">
         <tbody>
-          <tr><th scope="row">File</th><td>${escapeHtml(entry?.fileName || "(untitled import)")}</td></tr>
-          <tr><th scope="row">Source</th><td>${escapeHtml(entry?.sourceType || "unknown")}</td></tr>
-          <tr><th scope="row">Mode</th><td>${escapeHtml(getImportModeLabel(entry?.importMode || entry?.meta?.importMode))}</td></tr>
-          <tr><th scope="row">Date</th><td>${escapeHtml(formatDateTime(entry?.createdAt || entry?.createdAtIso))}</td></tr>
-          <tr><th scope="row">Confidence</th><td>${confidence}</td></tr>
-          <tr><th scope="row">Tailwind</th><td>${Number(coverage.tailwind ?? 0)}</td></tr>
-          <tr><th scope="row">Mapped</th><td>${Number(coverage.mapped ?? 0)}</td></tr>
-          <tr><th scope="row">Ignored</th><td>${Number(coverage.ignored ?? 0)}</td></tr>
-          <tr><th scope="row">Policy Skipped</th><td>${Number(coverage.policySkipped ?? 0)}</td></tr>
-          <tr><th scope="row">Unknown</th><td>${Number(coverage.unknown ?? 0)}</td></tr>
-          <tr><th scope="row">Imported Styles</th><td>${Number(coverage.importedStyles ?? 0)}</td></tr>
-          <tr><th scope="row">Unknown Tokens</th><td>${unknownHtml}</td></tr>
-          <tr><th scope="row">Notes</th><td>${notesHtml}</td></tr>
-          <tr><th scope="row">Issues</th><td>${issuesHtml}</td></tr>
+          <tr><th scope="row">${msg("File")}</th><td>${escapeHtml(entry?.fileName || msg("(untitled import)"))}</td></tr>
+          <tr><th scope="row">${msg("Source")}</th><td>${escapeHtml(entry?.sourceType || msg("unknown"))}</td></tr>
+          <tr><th scope="row">${msg("Mode")}</th><td>${escapeHtml(getImportModeLabel(entry?.importMode || entry?.meta?.importMode))}</td></tr>
+          <tr><th scope="row">${msg("Date")}</th><td>${escapeHtml(formatDateTime(entry?.createdAt || entry?.createdAtIso))}</td></tr>
+          <tr><th scope="row">${msg("Confidence")}</th><td>${confidence}</td></tr>
+          <tr><th scope="row">${msg("Tailwind")}</th><td>${Number(coverage.tailwind ?? 0)}</td></tr>
+          <tr><th scope="row">${msg("Mapped")}</th><td>${Number(coverage.mapped ?? 0)}</td></tr>
+          <tr><th scope="row">${msg("Ignored")}</th><td>${Number(coverage.ignored ?? 0)}</td></tr>
+          <tr><th scope="row">${msg("Policy Skipped")}</th><td>${Number(coverage.policySkipped ?? 0)}</td></tr>
+          <tr><th scope="row">${msg("Unknown")}</th><td>${Number(coverage.unknown ?? 0)}</td></tr>
+          <tr><th scope="row">${msg("Imported Styles")}</th><td>${Number(coverage.importedStyles ?? 0)}</td></tr>
+          <tr><th scope="row">${msg("Unknown Tokens")}</th><td>${unknownHtml}</td></tr>
+          <tr><th scope="row">${msg("Notes")}</th><td>${notesHtml}</td></tr>
+          <tr><th scope="row">${msg("Issues")}</th><td>${issuesHtml}</td></tr>
         </tbody>
       </table>
       <div class="flex gap-sm justify-end">
-        ${String(entry?.convertedHtml || "").trim() ? '<button type="button" class="btn-secondary btn-sm pds-live-history-apply" data-history-id="' + Number(entry?.id || 0) + '">Apply stored result</button>' : ""}
-        <button type="button" class="btn-outline btn-sm pds-live-history-reimport" data-history-id="${Number(entry?.id || 0)}">Re-import input</button>
+        ${String(entry?.convertedHtml || "").trim() ? '<button type="button" class="btn-secondary btn-sm pds-live-history-apply" data-history-id="' + Number(entry?.id || 0) + '">' + msg("Apply stored result") + '</button>' : ""}
+        <button type="button" class="btn-outline btn-sm pds-live-history-reimport" data-history-id="${Number(entry?.id || 0)}">${msg("Re-import input")}</button>
       </div>
     `;
   }
@@ -338,7 +338,7 @@ class PdsLiveImporter extends HTMLElement {
       entry?.convertedHtml || entry?.resultSnapshot?.template?.html || ""
     ).trim();
     if (!text) {
-      await this._toast("No converted PDS HTML available to copy", "warning");
+      await this._toast(msg("No converted PDS HTML available to copy"), "warning");
       return;
     }
 
@@ -356,9 +356,9 @@ class PdsLiveImporter extends HTMLElement {
         document.execCommand("copy");
         area.remove();
       }
-      await this._toast("Copied converted PDS HTML to clipboard", "success");
+      await this._toast(msg("Copied converted PDS HTML to clipboard"), "success");
     } catch (error) {
-      await this._toast("Failed to copy converted PDS HTML", "error");
+      await this._toast(msg("Failed to copy converted PDS HTML"), "error");
     }
   }
 
@@ -393,12 +393,12 @@ class PdsLiveImporter extends HTMLElement {
     if (!list) return;
 
     if (this._isHistoryLoading) {
-      list.innerHTML = `<p class="text-muted">Loading import history...</p>`;
+      list.innerHTML = `<p class="text-muted">${msg("Loading import history...")}</p>`;
       return;
     }
 
     if (!Array.isArray(this._history) || this._history.length === 0) {
-      list.innerHTML = `<p class="text-muted">No imports yet.</p>`;
+      list.innerHTML = `<p class="text-muted">${msg("No imports yet.")}</p>`;
       return;
     }
 
@@ -412,8 +412,8 @@ class PdsLiveImporter extends HTMLElement {
         const failedCount = Number(coverage.unknown ?? 0);
         const mappedCount = Number(coverage.mapped ?? 0);
         const totalTailwind = Number(coverage.tailwind ?? 0);
-        const statusIssueText = `${failedCount} failed / ${issueCount} issues`;
-        const fileLabel = `${entry?.fileName || "(untitled import)"} (${entry?.sourceType || "unknown"})`;
+        const statusIssueText = msg(str`${failedCount} failed / ${issueCount} issues`);
+        const fileLabel = msg(str`${entry?.fileName || msg("(untitled import)")} (${entry?.sourceType || msg("unknown")})`);
         const importMode = getImportModeLabel(entry?.importMode || entry?.meta?.importMode);
         return `
           <tr data-history-id="${Number(entry?.id || 0)}" data-history-file-name="${escapeHtml(entry?.fileName || "")}" data-history-source-type="${escapeHtml(entry?.sourceType || "")}">
@@ -421,12 +421,12 @@ class PdsLiveImporter extends HTMLElement {
             <td>${escapeHtml(fileLabel)}</td>
             <td class="flex flex-wrap gap-xs items-center">
               <span class="badge badge-outline badge-info badge-sm">${escapeHtml(importMode)}</span>
-              <span class="badge badge-outline badge-success badge-sm">${escapeHtml(confidence)} success</span>
+              <span class="badge badge-outline badge-success badge-sm">${escapeHtml(msg(str`${confidence} success`))}</span>
               <span class="badge badge-outline badge-warning badge-sm">${escapeHtml(statusIssueText)}</span>
-              <span class="badge badge-outline badge-info badge-sm">${mappedCount} of ${totalTailwind} mapped</span>
+              <span class="badge badge-outline badge-info badge-sm">${escapeHtml(msg(str`${mappedCount} of ${totalTailwind} mapped`))}</span>
             </td>
             <td>
-              <button type="button" class="btn-outline btn-sm icon-only pds-live-history-details" data-history-id="${Number(entry?.id || 0)}" aria-label="Details" title="Details">
+              <button type="button" class="btn-outline btn-sm icon-only pds-live-history-details" data-history-id="${Number(entry?.id || 0)}" aria-label="${msg("Details")}" title="${msg("Details")}">
                 <pds-icon icon="info" size="sm"></pds-icon>
               </button>
             </td>
@@ -439,10 +439,10 @@ class PdsLiveImporter extends HTMLElement {
       <table class="table-bordered table-compact">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>File</th>
-            <th>Status</th>
-            <th>Info</th>
+            <th>${msg("Date")}</th>
+            <th>${msg("File")}</th>
+            <th>${msg("Status")}</th>
+            <th>${msg("Info")}</th>
           </tr>
         </thead>
         <tbody>
@@ -485,7 +485,7 @@ class PdsLiveImporter extends HTMLElement {
 
     let proceed = true;
     if (typeof PDS?.ask === "function") {
-      const answer = await PDS.ask("Clear import history?", { type: "confirm" });
+      const answer = await PDS.ask(msg("Clear import history?"), { type: "confirm" });
       proceed = Boolean(answer);
     }
 
@@ -591,13 +591,13 @@ class PdsLiveImporter extends HTMLElement {
     const coverage = result?.meta?.coverage || {};
 
     return [
-      `Import complete: ${fileName || "(no file)"}`,
+      msg(str`Import complete: ${fileName || msg("(no file)")}`),
       `source=${sourceType || "unknown"}`,
       `mode=${normalizeImportMode(result?.meta?.importMode || this._selectedImportMode)}`,
       `confidence=${confidence}`,
       `issues=${issues.length}`,
       `mapped=${coverage.mapped ?? 0}/${coverage.tailwind ?? 0}`,
-      `report=Open Import History > Metadata table`,
+      msg("report=Open Import History > Metadata table"),
     ].join("\n");
   }
 
@@ -610,21 +610,21 @@ class PdsLiveImporter extends HTMLElement {
     const failedCount = Number(coverage.unknown ?? 0);
     const totalTailwind = Number(coverage.tailwind ?? 0);
     const mappedCount = Number(coverage.mapped ?? 0);
-    const fileLabel = `${fileName || "(no file)"} (${sourceType || result?.type || "unknown"})`;
-    const issueText = `${failedCount} failed / ${issues.length} issues`;
+    const fileLabel = msg(str`${fileName || msg("(no file)")} (${sourceType || result?.type || msg("unknown")})`);
+    const issueText = msg(str`${failedCount} failed / ${issues.length} issues`);
     const modeLabel = getImportModeLabel(importMode || result?.meta?.importMode);
 
     return `
       <table class="table-bordered table-compact">
         <tbody>
-          <tr><th scope="row">File</th><td>${escapeHtml(fileLabel)}</td></tr>
-          <tr><th scope="row">Mode</th><td>${escapeHtml(modeLabel)}</td></tr>
+          <tr><th scope="row">${msg("File")}</th><td>${escapeHtml(fileLabel)}</td></tr>
+          <tr><th scope="row">${msg("Mode")}</th><td>${escapeHtml(modeLabel)}</td></tr>
           <tr>
-            <th scope="row">Status</th>
+            <th scope="row">${msg("Status")}</th>
             <td class="flex gap-xs items-center">
-              <span class="badge badge-outline badge-success badge-sm">${confidencePct}% success</span>
+              <span class="badge badge-outline badge-success badge-sm">${escapeHtml(msg(str`${confidencePct}% success`))}</span>
               <span class="badge badge-outline badge-warning badge-sm">${escapeHtml(issueText)}</span>
-              <span class="badge badge-outline badge-info badge-sm">${mappedCount} of ${totalTailwind} mapped</span>
+              <span class="badge badge-outline badge-info badge-sm">${escapeHtml(msg(str`${mappedCount} of ${totalTailwind} mapped`))}</span>
             </td>
           </tr>
         </tbody>
@@ -669,7 +669,9 @@ class PdsLiveImporter extends HTMLElement {
       this._updateSelectionUI();
       await this._runImport({ autoTriggered: true });
     } catch (error) {
-      await this._toast(`Import failed\nreason=Could not read selected file\nerror=${error?.message || "Unknown error"}`, "error");
+      await this._toast(msg(str`Import failed
+    reason=Could not read selected file
+    error=${error?.message || msg("Unknown error")}`), "error");
       this._selectedFile = null;
       this._selectedText = "";
       this._selectedSourceType = "";
@@ -698,7 +700,7 @@ class PdsLiveImporter extends HTMLElement {
 
     const manager = await getManagerModule();
     if (typeof manager?.runLiveImport !== "function") {
-      await this._toast("Import failed\nreason=Import service unavailable", "error");
+      await this._toast(msg("Import failed\nreason=Import service unavailable"), "error");
       return;
     }
 
@@ -731,12 +733,10 @@ class PdsLiveImporter extends HTMLElement {
       );
     } catch (error) {
       await this._toast(
-        [
-          `Import failed: ${this._selectedFile?.name || "selected file"}`,
-          `source=${sourceType || "unknown"}`,
-          `mode=${importMode}`,
-          `error=${error?.message || "Unknown error"}`,
-        ].join("\n"),
+        msg(str`Import failed: ${this._selectedFile?.name || msg("selected file")}
+source=${sourceType || "unknown"}
+mode=${importMode}
+error=${error?.message || msg("Unknown error")}`),
         "error"
       );
     } finally {
@@ -750,7 +750,7 @@ class PdsLiveImporter extends HTMLElement {
           {
             html: true,
             action: {
-              label: "Open details",
+              label: msg("Open details"),
               icon: "caret-right",
               onClick: () =>
                 this._openLatestHistoryMetadata({

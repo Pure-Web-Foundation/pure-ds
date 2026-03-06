@@ -751,7 +751,7 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
   PDS.applyLivePreset = async function(presetId, options = {}) {
     if (!presetId) return false;
     if (!PDS.registry?.isLive) {
-      console.warn("PDS.applyLivePreset is only available in live mode.");
+      PDS.log("warn", "PDS.applyLivePreset is only available in live mode.");
       return false;
     }
 
@@ -775,7 +775,8 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
         normalized.presetInfo?.name ||
         normalized.generatorConfig?.design?.name ||
         presetId;
-      console.warn(
+      PDS.log(
+        "warn",
         `PDS theme "${resolvedTheme}" not supported by preset "${presetName}".`
       );
     }
@@ -886,7 +887,7 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
         document.head.insertBefore(styleEl, document.head.firstChild);
       }
     } catch (error) {
-      console.warn("PDS preload failed:", error);
+      PDS.log("warn", "PDS preload failed:", error);
     }
   };
 
@@ -947,7 +948,7 @@ export async function startLive(PDS, config, { emitReady, emitConfigChanged, app
         document.adoptedStyleSheets = [foucSheet, ...document.adoptedStyleSheets];
       }
     } catch (e) {
-      console.warn("Constructable stylesheets not supported, using <style> tag fallback:", e);
+      PDS.log("warn", "Constructable stylesheets not supported, using <style> tag fallback:", e);
       const existingFoucStyle = document.head.querySelector("style[data-pds-fouc]");
       if (!existingFoucStyle) {
         const foucStyle = document.createElement("style");
@@ -989,7 +990,8 @@ export async function startLive(PDS, config, { emitReady, emitConfigChanged, app
         normalized.generatorConfig?.design?.name ||
         normalized.generatorConfig?.preset ||
         "current preset";
-      console.warn(
+      PDS.log(
+        "warn",
         `PDS theme "${resolvedTheme}" not supported by preset "${presetName}".`
       );
     }

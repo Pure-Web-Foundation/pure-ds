@@ -6,3 +6,5 @@ export {
   setLocale,
   getLocalizationState,
 } from "./common/localization.js";
+
+export { createJSONLocalization } from "./common/localization-resource-provider.js";
