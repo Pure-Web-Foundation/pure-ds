@@ -1,5 +1,4 @@
 import { enums } from "./pds-enums.js";
-import { PDS } from "../pds-singleton.js";
 
 /**
  * Design config types (SSoT) - mirror generator input and document output impact.
@@ -2674,5 +2673,24 @@ export const PDS_DEFAULT_CONFIG_FORM_SCHEMA = buildDesignConfigFormSchema(
  * @param {...any} data - additional data to log
  */
 export function defaultLog(level = "log", message, ...data) {
-  PDS.log(level, message, ...data);
+  const runtimeLogger = globalThis?.PDS?.log;
+  if (typeof runtimeLogger === "function") {
+    runtimeLogger(level, message, ...data);
+    return;
+  }
+
+  if (typeof console === "undefined") return;
+  const method =
+    typeof console[level] === "function"
+      ? console[level].bind(console)
+      : typeof console.log === "function"
+        ? console.log.bind(console)
+        : null;
+  if (!method) return;
+
+  if (data.length > 0) {
+    method(message, ...data);
+  } else {
+    method(message);
+  }
 }

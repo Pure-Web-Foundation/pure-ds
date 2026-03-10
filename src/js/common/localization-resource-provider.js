@@ -71,6 +71,59 @@ function normalizeAliasMap(aliases = {}) {
   return normalized;
 }
 
+function resolveAliasTarget(aliasKey, aliases, localeSet) {
+  const values = Array.isArray(aliases?.[aliasKey]) ? aliases[aliasKey] : [];
+  for (const value of values) {
+    const normalizedValue = normalizeLocaleTag(value);
+    if (localeSet.has(normalizedValue)) {
+      return normalizedValue;
+    }
+  }
+  return "";
+}
+
+function createAliasLookup({ aliases, localeSet }) {
+  const lookup = new Map();
+
+  for (const locale of localeSet) {
+    lookup.set(locale, locale);
+  }
+
+  for (const key of Object.keys(aliases || {})) {
+    const target = resolveAliasTarget(key, aliases, localeSet);
+    if (!target) {
+      throw new Error(
+        `[i18n] Locale alias "${key}" does not map to any configured locale.`
+      );
+    }
+    lookup.set(key, target);
+  }
+
+  return lookup;
+}
+
+function resolveConfiguredLocale(locale, { defaultLocale, aliasLookup }) {
+  const normalized = normalizeLocaleTag(locale);
+  if (!normalized) {
+    return defaultLocale;
+  }
+
+  const direct = aliasLookup.get(normalized);
+  if (direct) {
+    return direct;
+  }
+
+  const base = toBaseLocale(normalized);
+  const baseMapped = base ? aliasLookup.get(base) : "";
+  if (baseMapped) {
+    return baseMapped;
+  }
+
+  throw new Error(
+    `[i18n] Locale alias "${locale}" is not configured. Add an alias entry for "${base || normalized}".`
+  );
+}
+
 function normalizeBundleShape(bundle) {
   if (!bundle || typeof bundle !== "object" || Array.isArray(bundle)) {
     return {};
@@ -177,6 +230,7 @@ function buildCandidateLocales({ locale, effectiveLocale, defaultLocale, aliases
  *   locales: string[],
  *   provider: {
  *     locales: string[],
+ *     resolveLocale: (locale: string) => string,
  *     loadLocale: (context: { locale: string }) => Promise<Record<string, string | { content?: string }>>,
  *   },
  * }}
@@ -186,6 +240,7 @@ export function createJSONLocalization(options = {}) {
   const locales = toLocaleList(options?.locales, defaultLocale);
   const localeSet = new Set(locales);
   const aliases = normalizeAliasMap(options?.aliases || {});
+  const aliasLookup = createAliasLookup({ aliases, localeSet });
   const cache = options?.cache instanceof Map ? options.cache : new Map();
   const basePath = normalizeBasePath(options?.basePath);
   const requestInit =
@@ -194,21 +249,10 @@ export function createJSONLocalization(options = {}) {
       : {};
 
   const resolveEffectiveLocale = (locale) => {
-    const normalized = normalizeLocaleTag(locale);
-    if (!normalized) {
-      return defaultLocale;
-    }
-
-    if (localeSet.has(normalized)) {
-      return normalized;
-    }
-
-    const base = toBaseLocale(normalized);
-    if (localeSet.has(base)) {
-      return base;
-    }
-
-    return defaultLocale;
+    return resolveConfiguredLocale(locale, {
+      defaultLocale,
+      aliasLookup,
+    });
   };
 
   const loadLocale = async ({ locale }) => {
@@ -268,6 +312,7 @@ export function createJSONLocalization(options = {}) {
     locales: [...locales],
     provider: {
       locales: [...locales],
+      resolveLocale: resolveEffectiveLocale,
       loadLocale,
     },
   };

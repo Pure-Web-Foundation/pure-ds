@@ -322,13 +322,72 @@ async function updateVSCodeSettings(targetDir) {
 async function loadConsumerConfig() {
   const cwd = process.cwd();
 
+  const resolveConfigFromModule = (mod) => {
+    if (mod?.config) return mod.config;
+    if (mod?.default) return mod.default;
+    if (mod?.presets?.default) return mod.presets.default;
+    return null;
+  };
+
+  const importConfigWithCompatibilityPatch = async (
+    configPath,
+    {
+      rewritePdsAliases = false,
+      guardDefaultEnhancersSpread = false,
+    } = {},
+  ) => {
+    const source = await readFile(configPath, 'utf-8');
+    let patched = source;
+
+    if (rewritePdsAliases) {
+      patched = patched
+        .replaceAll('"#pds/lit"', '"@pure-ds/core/lit"')
+        .replaceAll("'#pds/lit'", "'@pure-ds/core/lit'")
+        .replaceAll('"#pds"', '"@pure-ds/core"')
+        .replaceAll("'#pds'", "'@pure-ds/core'");
+    }
+
+    if (guardDefaultEnhancersSpread) {
+      patched = patched
+        .replaceAll(
+          '...defaultEnhancers',
+          '...(Array.isArray(defaultEnhancers) ? defaultEnhancers : [])',
+        )
+        .replaceAll(
+          '...PDS.defaultEnhancers',
+          '...(Array.isArray(PDS?.defaultEnhancers) ? PDS.defaultEnhancers : [])',
+        );
+    }
+
+    if (patched === source) {
+      return null;
+    }
+
+    const tempConfigPath = path.join(
+      path.dirname(configPath),
+      `.pds-config.node.${Date.now()}.${Math.random().toString(36).slice(2)}.mjs`,
+    );
+
+    await writeFile(tempConfigPath, patched, 'utf-8');
+    try {
+      return await import(pathToFileURL(tempConfigPath).href);
+    } finally {
+      await unlink(tempConfigPath).catch(() => {});
+    }
+  };
+
+  const isPdsImportSpecifierIssue = (message = '') =>
+    /(?:Package import specifier\s+"#pds(?:\/lit)?"\s+is not defined|Invalid "imports" target .*['"]#pds(?:\/lit)?['"])/i.test(
+      message,
+    );
+
   // 1) Prefer repository-level pds.config.js (source of truth for both live and static)
   const repoConfigPath = path.join(repoRoot, 'pds.config.js');
   if (existsSync(repoConfigPath)) {
     log(`📋 Using repo config: ${path.relative(process.cwd(), repoConfigPath)}`,'blue');
     const mod = await import(pathToFileURL(repoConfigPath).href);
-    if (mod.config) return mod.config;
-    if (mod.default) return mod.default;
+    const resolved = resolveConfigFromModule(mod);
+    if (resolved) return resolved;
   }
 
   // 2) Fallbacks for consumer apps: pds.config.js or legacy pds-config.js in CWD
@@ -339,12 +398,56 @@ async function loadConsumerConfig() {
       log(`📋 Using consumer config: ${path.relative(cwd, configPath)}`,'blue');
       try {
         const mod = await import(pathToFileURL(configPath).href);
-        if (mod.config) return mod.config;
-        if (mod.default) return mod.default;
-        if (mod.presets?.default) return mod.presets.default;
+        const resolved = resolveConfigFromModule(mod);
+        if (resolved) return resolved;
         log(`⚠️  Could not resolve config from ${fname}; trying next/fallback`, 'yellow');
       } catch (e) {
         const msg = e?.message || String(e);
+        if (isPdsImportSpecifierIssue(msg)) {
+          log(`⚠️  Could not evaluate ${fname}: #pds alias resolution failed in Node`, 'yellow');
+          log('   Trying compatibility load by mapping "#pds" → "@pure-ds/core".', 'yellow');
+          try {
+            const compatMod = await importConfigWithCompatibilityPatch(configPath, {
+              rewritePdsAliases: true,
+              guardDefaultEnhancersSpread: true,
+            });
+            if (compatMod) {
+              const resolvedCompat = resolveConfigFromModule(compatMod);
+              if (resolvedCompat) {
+                log(`✅ Loaded ${fname} via compatibility alias mapping`, 'green');
+                return resolvedCompat;
+              }
+            }
+          } catch (compatErr) {
+            log(`⚠️  Compatibility load failed for ${fname}: ${compatErr?.message || compatErr}`, 'yellow');
+          }
+
+          log('   Suggested package.json aliases:', 'yellow');
+          log('   "imports": { "#pds": "@pure-ds/core", "#pds/lit": "@pure-ds/core/lit" }', 'blue');
+          log('   Falling back to internal default preset for this run.', 'yellow');
+          continue;
+        }
+        if (/defaultEnhancers\s+is\s+not\s+iterable/i.test(msg)) {
+          log(`⚠️  Could not evaluate ${fname}: defaultEnhancers is not iterable`, 'yellow');
+          log('   Trying compatibility load with safe enhancer spread guards.', 'yellow');
+          try {
+            const compatMod = await importConfigWithCompatibilityPatch(configPath, {
+              rewritePdsAliases: true,
+              guardDefaultEnhancersSpread: true,
+            });
+            if (compatMod) {
+              const resolvedCompat = resolveConfigFromModule(compatMod);
+              if (resolvedCompat) {
+                log(`✅ Loaded ${fname} with enhancer spread compatibility guard`, 'green');
+                return resolvedCompat;
+              }
+            }
+          } catch (compatErr) {
+            log(`⚠️  Compatibility load failed for ${fname}: ${compatErr?.message || compatErr}`, 'yellow');
+          }
+          log('   Falling back to internal default preset for this run.', 'yellow');
+          continue;
+        }
         // Helpful guidance when consumer config references browser globals
         if (/PDS is not defined/i.test(msg)) {
           log('❌ Failed to evaluate pds.config.js: PDS is not defined', 'red');
@@ -367,6 +470,7 @@ async function loadConsumerConfig() {
 }
 
 async function main(options = {}) {
+  const exitOnError = options.exitOnError !== false;
   const desiredCwd = options.cwd || process.env.PDS_CONSUMER_ROOT || null;
   const originalCwd = process.cwd();
   let cwdChanged = false;
@@ -672,7 +776,10 @@ async function main(options = {}) {
 
   } catch (err) {
     console.error('❌ pds:static failed:', err?.message || err);
-    process.exit(1);
+    if (exitOnError) {
+      process.exit(1);
+    }
+    throw err;
   } finally {
     if (cwdChanged) {
       try {

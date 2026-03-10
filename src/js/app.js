@@ -17,7 +17,7 @@ const issuesUrl = pkg.bugs?.url || "";
 
 document.body.innerHTML = /*html*/ `
 	<div class="container text-center">
-		<img src="/assets/img/pds-logo.svg" alt="PDS Logo" width="64" height="64" />
+		<img src="/assets/img/pds-logo.svg" alt="PDS Logo" title="${msg("PDS Logo")}" width="64" height="64" />
 		<header class="container section">
 			<h1>${pkg.name} ${msg(str`version ${pkg.version}`)}</h1>
 			<small class="text-muted">${msg(pkg.description)}</small>				

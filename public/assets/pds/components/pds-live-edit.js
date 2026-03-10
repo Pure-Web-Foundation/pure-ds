@@ -2025,6 +2025,15 @@ function localeOptionLabel(locale) {
   return normalized;
 }
 
+function localeOptionAlias(locale) {
+  const normalized = normalizeLocaleTag(locale);
+  if (!normalized) return "";
+
+  const base = toBaseLocale(normalized);
+  if (!base) return normalized;
+  return base.slice(0, 2);
+}
+
 function localeMatches(selectedLocale, activeLocale) {
   const selected = normalizeLocaleTag(selectedLocale);
   const active = normalizeLocaleTag(activeLocale);
@@ -2066,8 +2075,15 @@ async function buildQuickLanguageSelector() {
     optionInput.checked = localeMatches(locale, activeDocumentLang);
 
     const optionText = document.createElement("span");
+    const fullLocaleLabel = localeOptionLabel(locale);
+    const localeAlias = localeOptionAlias(locale) || fullLocaleLabel;
 
-    optionText.textContent = localeOptionLabel(locale);
+    optionText.textContent = localeAlias.toUpperCase();
+    if (fullLocaleLabel) {
+      optionLabel.title = fullLocaleLabel;
+      optionText.title = fullLocaleLabel;
+      optionInput.setAttribute("aria-label", `${fullLocaleLabel} (${localeAlias})`);
+    }
 
     optionLabel.append(optionInput, optionText);
     languageFieldset.appendChild(optionLabel);

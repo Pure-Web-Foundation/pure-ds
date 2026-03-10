@@ -11,9 +11,21 @@ const __localizationState = {
   reconcileTimer: null,
   requestedKeys: new Set(),
   textNodeKeyMap: new WeakMap(),
+  attributeKeyMap: new WeakMap(),
   valueToKeys: new Map(),
   missingWarnings: new Set(),
 };
+
+const __LOCALIZABLE_ATTRIBUTES = [
+  "title",
+  "placeholder",
+  "aria-label",
+  "aria-description",
+  "aria-placeholder",
+  "aria-roledescription",
+  "alt",
+  "label",
+];
 
 const __isStrTagged = (val) =>
   Boolean(val) && typeof val !== "string" && typeof val === "object" && "strTag" in val;
@@ -33,6 +45,15 @@ function __resolveLocaleCandidate(locale) {
   if (!normalized) {
     return __localizationState.defaultLocale;
   }
+
+  const resolveLocale = __localizationState.provider?.resolveLocale;
+  if (typeof resolveLocale === "function") {
+    const resolved = __normalizeLocale(resolveLocale(locale));
+    if (resolved) {
+      return resolved;
+    }
+  }
+
   return normalized;
 }
 
@@ -98,7 +119,14 @@ function __resolveProvider(config) {
         ? provider.setLocale
         : null;
 
-  if (!translate && !loadLocale && !setLocale) {
+  const resolveLocale =
+    typeof config?.resolveLocale === "function"
+      ? config.resolveLocale
+      : typeof provider?.resolveLocale === "function"
+        ? provider.resolveLocale
+        : null;
+
+  if (!translate && !loadLocale && !setLocale && !resolveLocale) {
     return null;
   }
 
@@ -106,6 +134,7 @@ function __resolveProvider(config) {
     translate,
     loadLocale,
     setLocale,
+    resolveLocale,
   };
 }
 
@@ -599,10 +628,135 @@ async function __localizeRequestedTextNodes() {
   }
 }
 
+function __getElementAttributeKeyMap(element) {
+  let map = __localizationState.attributeKeyMap.get(element);
+  if (!map) {
+    map = new Map();
+    __localizationState.attributeKeyMap.set(element, map);
+  }
+  return map;
+}
+
+async function __localizeAttribute(element, attrName) {
+  if (!element || typeof element.getAttribute !== "function") {
+    return;
+  }
+
+  const rawValue = element.getAttribute(attrName);
+  if (typeof rawValue !== "string" || !rawValue.length) {
+    return;
+  }
+
+  const keyMap = __getElementAttributeKeyMap(element);
+  let key = keyMap.get(attrName) || null;
+
+  if (!key || !__localizationState.requestedKeys.has(key)) {
+    key = __findRequestedKeyForText(rawValue);
+  }
+
+  if (!key) {
+    const segmentMatch = __findRequestedSubsegmentForText(rawValue);
+    if (!segmentMatch) {
+      return;
+    }
+
+    const scopedLocale = __resolveContextLocale({ element });
+    await __loadLocaleInternal(scopedLocale, "attribute");
+
+    const translated = __resolveTranslation(segmentMatch.key, segmentMatch.values, { element }, null);
+    const translatedText = segmentMatch.values.length
+      ? __replacePlaceholders(translated, (index) => segmentMatch.values[index])
+      : translated;
+
+    const localizedValue =
+      rawValue.slice(0, segmentMatch.start) +
+      translatedText +
+      rawValue.slice(segmentMatch.end);
+
+    if (localizedValue !== rawValue) {
+      element.setAttribute(attrName, localizedValue);
+    }
+
+    keyMap.set(attrName, segmentMatch.key);
+    return;
+  }
+
+  keyMap.set(attrName, key);
+
+  const scopedLocale = __resolveContextLocale({ element });
+  await __loadLocaleInternal(scopedLocale, "attribute");
+
+  const values = __resolveTemplateValuesForText(key, rawValue);
+  const translated = __resolveTranslation(key, values, { element }, null);
+  const translatedText = values.length
+    ? __replacePlaceholders(translated, (index) => values[index])
+    : translated;
+
+  if (translatedText !== rawValue) {
+    element.setAttribute(attrName, translatedText);
+  }
+}
+
+async function __localizeRequestedAttributes() {
+  if (typeof document === "undefined" || __localizationState.requestedKeys.size === 0) {
+    return;
+  }
+
+  const root = document.body || document.documentElement;
+  if (!root) {
+    return;
+  }
+
+  const roots = [];
+  const seenRoots = new Set();
+
+  const addRoot = (candidateRoot) => {
+    if (!candidateRoot || seenRoots.has(candidateRoot)) {
+      return;
+    }
+
+    seenRoots.add(candidateRoot);
+    roots.push(candidateRoot);
+  };
+
+  addRoot(root);
+
+  for (let index = 0; index < roots.length; index += 1) {
+    const currentRoot = roots[index];
+    if (!currentRoot || typeof currentRoot.querySelectorAll !== "function") {
+      continue;
+    }
+
+    const elements = currentRoot.querySelectorAll("*");
+    for (const element of elements) {
+      const shadowRoot = element?.shadowRoot;
+      if (shadowRoot) {
+        addRoot(shadowRoot);
+      }
+    }
+  }
+
+  for (const scanRoot of roots) {
+    if (!scanRoot || typeof scanRoot.querySelectorAll !== "function") {
+      continue;
+    }
+
+    const elements = scanRoot.querySelectorAll("*");
+    for (const element of elements) {
+      for (const attrName of __LOCALIZABLE_ATTRIBUTES) {
+        if (element.hasAttribute(attrName)) {
+          await __localizeAttribute(element, attrName);
+        }
+      }
+    }
+  }
+}
+
 async function __reconcileLocalization() {
   const detectedLocales = __collectDetectedLocales();
   await __ensureDetectedLocalesLoaded(detectedLocales);
   await __localizeRequestedTextNodes();
+  await __localizeRequestedAttributes();
   __pruneUndetectedLocales(detectedLocales);
 }
 
@@ -748,6 +902,7 @@ export function configureLocalization(config = null) {
   __localizationState.loadingByLocale.clear();
   __localizationState.requestedKeys.clear();
   __localizationState.textNodeKeyMap = new WeakMap();
+  __localizationState.attributeKeyMap = new WeakMap();
   __localizationState.valueToKeys.clear();
   __localizationState.missingWarnings.clear();
 
@@ -767,9 +922,16 @@ export function configureLocalization(config = null) {
     Object.prototype.hasOwnProperty.call(config, "provider") ||
     Object.prototype.hasOwnProperty.call(config, "translate") ||
     Object.prototype.hasOwnProperty.call(config, "loadLocale") ||
-    Object.prototype.hasOwnProperty.call(config, "setLocale")
+    Object.prototype.hasOwnProperty.call(config, "setLocale") ||
+    Object.prototype.hasOwnProperty.call(config, "resolveLocale")
   ) {
     __localizationState.provider = __resolveProvider(config);
+  }
+
+  if (__localizationState.provider?.resolveLocale) {
+    __localizationState.defaultLocale = __resolveLocaleCandidate(
+      __localizationState.defaultLocale
+    );
   }
 
   __attachLangObserver();

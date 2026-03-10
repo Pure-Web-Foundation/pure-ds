@@ -1,7 +1,7 @@
 {
   "name": "@pure-ds/core",
   "shortname": "pds",
-  "version": "0.7.31",
+  "version": "0.7.37",
   "description": "Why develop a Design System when you can generate one?",
   "repository": {
     "type": "git",
@@ -47,6 +47,10 @@
       "types": "./dist/types/src/js/pds-localization.d.ts",
       "import": "./public/assets/pds/core/pds-localization.js"
     },
+    "./lit": {
+      "types": "./dist/types/src/js/lit.d.ts",
+      "import": "./public/assets/pds/external/lit.js"
+    },
     "./pds-core": "./src/js/pds.js",
     "./auto-define/*": "./public/auto-define/*"
   },
@@ -70,6 +74,8 @@
     "packages/pds-cli/lib/",
     "src/js/pds.d.ts",
     "src/js/pds.js",
+    "src/js/pds-singleton.js",
+    "src/js/common/",
     "src/js/pds-live-manager/",
     "src/js/pds-core/",
     "custom-elements.json",

@@ -140,6 +140,49 @@ async function ensureBuildScript(consumerRoot) {
       }
     }
 
+    const requiredImports = {
+      '#pds': '@pure-ds/core',
+      '#pds/lit': '@pure-ds/core/lit',
+    };
+
+    const legacyImports = {
+      '#pds': new Set([
+        './node_modules/@pure-ds/core/public/assets/pds/core.js',
+      ]),
+      '#pds/lit': new Set([
+        './node_modules/@pure-ds/core/public/assets/pds/external/lit.js',
+      ]),
+    };
+
+    const normalizeImportTarget = (value) =>
+      typeof value === 'string' ? value.replace(/\\/g, '/').trim().toLowerCase() : '';
+
+    if (consumerPkg.imports && (typeof consumerPkg.imports !== 'object' || Array.isArray(consumerPkg.imports))) {
+      console.warn('⚠️  package.json "imports" is not an object; skipping #pds import aliases');
+    } else {
+      consumerPkg.imports = consumerPkg.imports || {};
+
+      for (const [importKey, importValue] of Object.entries(requiredImports)) {
+        const existingValue = consumerPkg.imports[importKey];
+        const existingNormalized = normalizeImportTarget(existingValue);
+        const legacySet = new Set(
+          Array.from(legacyImports[importKey] || []).map((item) => normalizeImportTarget(item))
+        );
+
+        if (!existingValue) {
+          consumerPkg.imports[importKey] = importValue;
+          console.log(`🧩 Added "imports.${importKey}" alias to consumer package.json`);
+          changed = true;
+        } else if (typeof existingValue === 'string' && legacySet.has(existingNormalized)) {
+          consumerPkg.imports[importKey] = importValue;
+          console.log(`🔁 Migrated legacy "imports.${importKey}" alias to a valid Node target`);
+          changed = true;
+        } else {
+          console.log(`🔧 Import alias "${importKey}" already present in consumer package.json`);
+        }
+      }
+    }
+
     if (changed) {
       await writeFile(consumerPkgPath, JSON.stringify(consumerPkg, null, 2) + '\n');
     }
@@ -435,7 +478,7 @@ async function copyPdsAssets() {
         process.env.PDS_CONSUMER_ROOT = consumerRoot;
 
         const { runPdsStatic } = await import(staticModuleUrl);
-        await runPdsStatic({ cwd: consumerRoot });
+        await runPdsStatic({ cwd: consumerRoot, exitOnError: false });
       } catch (e) {
         console.error('❌ Auto-build failed:', e?.message || e);
         console.log('💡 You can run it manually: npm run pds:build');
@@ -481,7 +524,6 @@ async function copyPdsAssets() {
   } catch (error) {
     console.error('❌ PDS postinstall failed (non-fatal):', error.message);
     console.log('💡 Static build still available via: npm run pds:build');
-    process.exitCode = 1;
   }
 }
 

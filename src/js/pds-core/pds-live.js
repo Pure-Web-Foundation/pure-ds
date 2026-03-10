@@ -3,6 +3,7 @@
  * Separated to keep the base runtime bundle lean for production/static usage.
  */
 import { Generator } from "./pds-generator.js";
+import { msg } from "../common/localization.js";
 import { applyStyles, adoptLayers, adoptPrimitives } from "./pds-runtime.js";
 import {
   presets,
@@ -309,10 +310,10 @@ async function ensureLiveEditToggleButton() {
       return li;
     };
 
-    menu.appendChild(createItem("toggle", "Toggle live editing", "pencil"));
-    menu.appendChild(createItem("open-settings", "Open Settings", "gear"));
+    menu.appendChild(createItem("toggle", msg("Toggle live editing"), "pencil"));
+    menu.appendChild(createItem("open-settings", msg("Open Settings"), "gear"));
     menu.appendChild(createSeparator());
-    menu.appendChild(createItem("reset-config", "Reset Config", "arrow-counter-clockwise"));
+    menu.appendChild(createItem("reset-config", msg("Reset Config"), "arrow-counter-clockwise"));
 
     await ensureSharedQuickModeToggleMenuItem(menu);
 

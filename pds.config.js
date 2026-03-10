@@ -4,11 +4,11 @@
 import { PDS } from "./src/js/pds.js";
 
 const localization = PDS.createJSONLocalization({
-  locale: "en",
-  locales: ["en", "nl"],
+  locale: "en-US",
+  locales: ["en-US", "nl-NL"],
   aliases: {
-    en: ["en", "en-US"],
-    nl: ["nl", "nl-NL"],
+    en: ["en-US"],
+    nl: ["nl-NL"],
   },
   basePath: "/assets/locales",
 });

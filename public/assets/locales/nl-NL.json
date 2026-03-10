@@ -436,5 +436,15 @@
   },
   "Unknown error": {
     "content": "Onbekende fout"
+  },
+  "PDS Logo": {
+    "content": "Het PDS-logo"
+  },
+  "Toggle live editing": {
+    "content": "Live bewerken in- of uitschakelen"
+  },
+  "Open Settings": {
+    "content": "Instellingen openen"
   }
+  
 }
