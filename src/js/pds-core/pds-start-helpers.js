@@ -131,6 +131,14 @@ export function stripFunctions(obj) {
   return result;
 }
 
+function cloneWithoutFunctions(value) {
+  const cloneCandidate = stripFunctions(value);
+  if (typeof structuredClone === "function") {
+    return structuredClone(cloneCandidate);
+  }
+  return JSON.parse(JSON.stringify(cloneCandidate));
+}
+
 // Internal: normalize first-arg config to a full generator config and extract enhancers if provided inline
 export function normalizeInitConfig(
   inputConfig = {},
@@ -212,7 +220,7 @@ export function normalizeInitConfig(
     };
 
     // Merge preset with design overrides
-    let mergedDesign = structuredClone(found);
+    let mergedDesign = cloneWithoutFunctions(found);
     if (
       (designOverrides && typeof designOverrides === "object") ||
       iconOverrides
@@ -227,10 +235,7 @@ export function normalizeInitConfig(
       const mergedOverrides = cloneableIcons
         ? __deepMerge(cloneableDesign, { icons: cloneableIcons })
         : cloneableDesign;
-      mergedDesign = __deepMerge(
-        mergedDesign,
-        structuredClone(mergedOverrides)
-      );
+      mergedDesign = __deepMerge(mergedDesign, cloneWithoutFunctions(mergedOverrides));
     }
 
     // Build structured config with design nested
@@ -258,7 +263,7 @@ export function normalizeInitConfig(
     // Back-compat: treat the provided object as the full design, wrap it
     const { log: userLog, ...designConfig } = inputConfig;
     generatorConfig = {
-      design: structuredClone(designConfig),
+      design: cloneWithoutFunctions(designConfig),
       log: userLog || defaultLog,
     };
   } else {
@@ -272,7 +277,7 @@ export function normalizeInitConfig(
       name: foundDefault.name || "Default",
     };
     generatorConfig = {
-      design: structuredClone(foundDefault),
+      design: cloneWithoutFunctions(foundDefault),
       preset: presetInfo.name,
       log: defaultLog,
     };

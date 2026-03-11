@@ -1405,7 +1405,6 @@
               "type": {
                 "text": "string"
               },
-              "default": "\"Submit\"",
               "attribute": "submit-label"
             },
             {
@@ -1415,7 +1414,6 @@
               "type": {
                 "text": "string"
               },
-              "default": "\"Reset\"",
               "attribute": "reset-label"
             },
             {
@@ -1543,7 +1541,6 @@
               "type": {
                 "text": "string"
               },
-              "default": "\"Submit\"",
               "fieldName": "submitLabel"
             },
             {
@@ -1551,7 +1548,6 @@
               "type": {
                 "text": "string"
               },
-              "default": "\"Reset\"",
               "fieldName": "resetLabel"
             },
             {
@@ -2808,6 +2804,83 @@
           "declaration": {
             "name": "PdsLiveTemplateCanvas",
             "module": "public/assets/pds/components/pds-live-template-canvas.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-locale.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Locale switcher component.\r\n\r\nThe component only persists canonical 5-letter locale tags (`xx-YY`),\r\nfor example `en-US` and `nl-NL`.",
+          "name": "PdsLocale",
+          "members": [
+            {
+              "kind": "method",
+              "name": "whenReady",
+              "description": "Resolves once the first availability check is complete.",
+              "return": {
+                "type": {
+                  "text": "Promise<boolean>"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "available",
+              "description": "Whether locale switching is currently available.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "refresh",
+              "description": "Re-detect available locales and re-render.",
+              "return": {
+                "type": {
+                  "text": "Promise<boolean>"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "pds-locale:ready",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Emitted after locale availability is resolved."
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Accessible label for the locale radio group.",
+              "name": "data-label"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-locale",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-locale",
+          "declaration": {
+            "name": "PdsLocale",
+            "module": "public/assets/pds/components/pds-locale.js"
           }
         }
       ]

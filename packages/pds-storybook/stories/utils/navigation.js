@@ -14,8 +14,8 @@ async function getNavigateToStory() {
   if (navigateToStoryFn) return navigateToStoryFn;
   
   try {
-    const { addons } = await import('@storybook/preview-api');
-    const { SELECT_STORY } = await import('@storybook/core-events');
+    const { addons } = await import(/* @vite-ignore */ '@storybook/preview-api');
+    const { SELECT_STORY } = await import(/* @vite-ignore */ '@storybook/core-events');
     
     navigateToStoryFn = (storyId, viewMode = 'story') => {
       if (!storyId || typeof window === 'undefined') return false;

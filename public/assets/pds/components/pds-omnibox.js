@@ -65,6 +65,7 @@ export class PdsOmnibox extends HTMLElement {
   #lengthProbe;
   #suggestionsUpdatedHandler;
   #suggestionsObserver;
+  #overlayOverflowOverrides = new Map();
 
   constructor() {
     super();
@@ -96,6 +97,7 @@ export class PdsOmnibox extends HTMLElement {
     }
     this.#teardownAutoCompleteSizing();
     this.#teardownSuggestionsObserver();
+    this.#setOverlayClippingOverride(false);
     const autoComplete = this.#input?._autoComplete;
     if (autoComplete) {
       autoComplete.controller?.().clear?.("disconnected");
@@ -765,6 +767,7 @@ export class PdsOmnibox extends HTMLElement {
     this.#suggestionsObserver = new MutationObserver(() => {
       if (!suggestion.classList.contains("ac-active")) {
         this.removeAttribute("data-suggestions-open");
+        this.#setOverlayClippingOverride(false);
         this.#clearSuggestionOverlayStyles(suggestion);
         this.#resetIconToDefault();
       }
@@ -819,7 +822,7 @@ export class PdsOmnibox extends HTMLElement {
     return null;
   }
 
-  #hasTransformedAncestor(startNode) {
+  #getFixedContainingBlock(startNode) {
     let current = startNode;
     let safety = 0;
     while (current && safety < 80) {
@@ -831,19 +834,21 @@ export class PdsOmnibox extends HTMLElement {
           style.filter !== "none" ||
           style.backdropFilter !== "none"
         ) {
-          return true;
+          return current;
         }
       }
       current = this.#getComposedParent(current);
       safety += 1;
     }
-    return false;
+    return null;
   }
 
   #shouldUseFixedSuggestionOverlay(container) {
     if (!container) return false;
-    if (this.closest("pds-drawer, dialog")) return false;
-    return !this.#hasTransformedAncestor(this);
+
+    // Always prefer viewport overlay positioning so results are not clipped by
+    // parent overflow containers (for example dialog bodies or drawers).
+    return true;
   }
 
   #positionSuggestionInline({ container, suggestion, rect, direction, offset, maxHeight }) {
@@ -865,6 +870,7 @@ export class PdsOmnibox extends HTMLElement {
     container,
     suggestion,
     rect,
+    containingBlock,
     viewportHeight,
     viewportWidth,
     direction,
@@ -878,26 +884,95 @@ export class PdsOmnibox extends HTMLElement {
       return;
     }
 
+    const blockRect = containingBlock?.getBoundingClientRect?.();
+    const originLeft = Number.isFinite(blockRect?.left) ? blockRect.left : 0;
+    const originTop = Number.isFinite(blockRect?.top) ? blockRect.top : 0;
+    const blockBottom = Number.isFinite(blockRect?.bottom)
+      ? blockRect.bottom
+      : viewportHeight;
+
     const clampedLeft = Math.max(gap, Math.min(rect.left, viewportWidth - rect.width - gap));
     const clampedWidth = Math.max(0, Math.min(rect.width, viewportWidth - gap * 2));
 
     suggestion.style.position = "fixed";
-    suggestion.style.left = `${Math.round(clampedLeft)}px`;
+    suggestion.style.left = `${Math.round(clampedLeft - originLeft)}px`;
     suggestion.style.width = `${Math.round(clampedWidth)}px`;
     suggestion.style.maxWidth = `${Math.round(Math.max(0, viewportWidth - gap * 2))}px`;
     suggestion.style.right = "auto";
 
     if (direction === "up") {
       suggestion.style.top = "auto";
-      suggestion.style.bottom = `${Math.round(viewportHeight - rect.top + offset)}px`;
+      suggestion.style.bottom = `${Math.round(blockBottom - rect.top + offset)}px`;
     } else {
       suggestion.style.bottom = "auto";
-      suggestion.style.top = `${Math.round(rect.bottom + offset)}px`;
+      suggestion.style.top = `${Math.round(rect.bottom - originTop + offset)}px`;
     }
 
     container.setAttribute("data-direction", direction);
     suggestion.setAttribute("data-direction", direction);
     container.style.setProperty("--ac-max-height", `${maxHeight}px`);
+  }
+
+  #collectClippingAncestors(startNode, stopAt) {
+    const targets = [];
+    let current = this.#getComposedParent(startNode);
+
+    while (current instanceof Element) {
+      const tagName = String(current.tagName || "").toUpperCase();
+      if (tagName === "HTML" || tagName === "BODY") {
+        break;
+      }
+
+      const style = getComputedStyle(current);
+      const clips = [style.overflow, style.overflowX, style.overflowY].some(
+        (value) => value && value !== "visible",
+      );
+
+      if (clips) {
+        targets.push(current);
+      }
+
+      if (stopAt && current === stopAt) {
+        break;
+      }
+
+      current = this.#getComposedParent(current);
+    }
+
+    return targets;
+  }
+
+  #setOverlayClippingOverride(enabled, stopAt) {
+    if (enabled) {
+      if (this.#overlayOverflowOverrides.size) {
+        return;
+      }
+
+      const startNode = this.#input?.parentElement || this;
+      const targets = this.#collectClippingAncestors(startNode, stopAt);
+
+      targets.forEach((element) => {
+        this.#overlayOverflowOverrides.set(element, {
+          overflow: element.style.overflow,
+          overflowX: element.style.overflowX,
+          overflowY: element.style.overflowY,
+        });
+
+        element.style.overflow = "visible";
+        element.style.overflowX = "visible";
+        element.style.overflowY = "visible";
+      });
+
+      return;
+    }
+
+    this.#overlayOverflowOverrides.forEach((previous, element) => {
+      element.style.overflow = previous.overflow;
+      element.style.overflowX = previous.overflowX;
+      element.style.overflowY = previous.overflowY;
+    });
+
+    this.#overlayOverflowOverrides.clear();
   }
 
   #updateSuggestionMaxHeight() {
@@ -908,6 +983,7 @@ export class PdsOmnibox extends HTMLElement {
     const rect = container.getBoundingClientRect();
     const viewportHeight = window.visualViewport?.height || window.innerHeight;
     const gap = this.#readSpacingToken(container, "--ac-viewport-gap") || 0;
+    const containingBlock = this.#getFixedContainingBlock(container);
     const root = container.shadowRoot ?? container;
     const suggestion = root?.querySelector?.(".ac-suggestion");
     const currentDirection =
@@ -948,9 +1024,12 @@ export class PdsOmnibox extends HTMLElement {
     this.toggleAttribute("data-suggestions-open", Boolean(isSuggestionActive));
 
     if (!suggestion || !isSuggestionActive || suggestion.classList.contains("full-mobile")) {
+      this.#setOverlayClippingOverride(false);
       this.#clearSuggestionOverlayStyles(suggestion);
       return;
     }
+
+    this.#setOverlayClippingOverride(true, containingBlock);
 
     if (!this.#shouldUseFixedSuggestionOverlay(container)) {
       this.#positionSuggestionInline({
@@ -969,6 +1048,7 @@ export class PdsOmnibox extends HTMLElement {
       container,
       suggestion,
       rect,
+      containingBlock,
       viewportHeight,
       viewportWidth,
       direction,

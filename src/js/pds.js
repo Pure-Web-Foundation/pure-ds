@@ -677,7 +677,7 @@ PDS.loadAutoComplete = async () => {
   );
 
   if (!__autoCompletePromise) {
-    __autoCompletePromise = import(autoCompleteModuleURL)
+    __autoCompletePromise = import(/* @vite-ignore */ autoCompleteModuleURL)
       .then((mod) => {
         const autoCompleteCtor =
           mod?.AutoComplete ||
@@ -971,15 +971,16 @@ async function start(config) {
     if (mode === "static") {
       startResult = await staticInit(rest);
     } else {
-      const assetRootURL = resolveRuntimeAssetRoot(rest, { resolvePublicAssetURL });
+      const { localization: _managerLocalization, ...managerConfig } = rest || {};
+      const assetRootURL = resolveRuntimeAssetRoot(managerConfig, { resolvePublicAssetURL });
       const managerUrl =
-        rest?.managerURL ||
-        rest?.public?.managerURL ||
-        rest?.manager?.url ||
+        managerConfig?.managerURL ||
+        managerConfig?.public?.managerURL ||
+        managerConfig?.manager?.url ||
         new URL("core/pds-manager.js", assetRootURL).href ||
         new URL("./pds-manager.js", import.meta.url).href;
-      const { startLive } = await import(managerUrl);
-      startResult = await startLive(PDS, rest, {
+      const { startLive } = await import(/* @vite-ignore */ managerUrl);
+      startResult = await startLive(PDS, managerConfig, {
         emitReady: __emitPDSReady,
         emitConfigChanged: __emitPDSConfigChanged,
         applyResolvedTheme: __applyResolvedTheme,

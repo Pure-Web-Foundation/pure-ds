@@ -162,13 +162,14 @@ const colorNames = [
   'primary',
   'secondary',
   'accent',
+  'gray',
   'success',
   'warning',
   'danger',
   'info'
 ];
 
-const colorShades = [50, 100, 200, 300, 400, 500, 600, 700, 800];
+const colorShades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
 
 const getFallbackTextColor = (color, shade) =>
   shade >= 400
@@ -276,6 +277,7 @@ export const Default = {
         ${renderColorScale('primary')}
         ${renderColorScale('secondary')}
         ${renderColorScale('accent')}
+        ${renderColorScale('gray')}
         ${renderColorScale('success')}
         ${renderColorScale('warning')}
         ${renderColorScale('danger')}

@@ -57,6 +57,14 @@ function deepFreeze(value, seen = new WeakSet()) {
   return value;
 }
 
+function cloneWithoutFunctions(value) {
+  const cloneCandidate = stripFunctions(value);
+  if (typeof structuredClone === "function") {
+    return structuredClone(cloneCandidate);
+  }
+  return JSON.parse(JSON.stringify(cloneCandidate));
+}
+
 function toReadonlyClone(value) {
   if (value === null || value === undefined) {
     return value;
@@ -64,7 +72,7 @@ function toReadonlyClone(value) {
   if (typeof value !== "object") {
     return value;
   }
-  return deepFreeze(structuredClone(stripFunctions(value)));
+  return deepFreeze(cloneWithoutFunctions(value));
 }
 
 function whenDocumentBodyReady(callback) {
@@ -759,7 +767,7 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
     const baseConfig = PDS.currentConfig || {};
     const { design: _design, preset: _preset, ...rest } = baseConfig;
     const inputConfig = {
-      ...structuredClone(stripFunctions(rest)),
+      ...cloneWithoutFunctions(rest),
       preset: presetId,
     };
 
@@ -828,7 +836,7 @@ async function __attachLiveAPIs(PDS, { applyResolvedTheme, setupSystemListenerIf
             ? storedParsed
             : {}),
           preset: presetInfo.id || presetId,
-          design: structuredClone(normalized.generatorConfig.design || {}),
+          design: cloneWithoutFunctions(normalized.generatorConfig.design || {}),
         };
         localStorage.setItem(storageKey, JSON.stringify(nextStored));
       } catch (error) {
@@ -998,7 +1006,7 @@ export async function startLive(PDS, config, { emitReady, emitConfigChanged, app
     }
     const userEnhancers = normalized.enhancers;
     const { log: logFn, ...configToClone } = normalized.generatorConfig;
-    const generatorConfig = structuredClone(configToClone);
+    const generatorConfig = cloneWithoutFunctions(configToClone);
     generatorConfig.log = logFn;
     if (manageTheme) {
       generatorConfig.theme = resolvedTheme;

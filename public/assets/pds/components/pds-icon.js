@@ -162,7 +162,8 @@ export class SvgIcon extends HTMLElement {
     const attrIcon = this.getAttribute('icon') || 'missing';
     const icon = this._morphing ? (this._currentIcon || attrIcon) : attrIcon;
     const sizeAttr = this.getAttribute('size') || '24';
-    const color = this.getAttribute('color') || 'currentColor';
+    const colorAttr = this.getAttribute('color');
+    const color = colorAttr || 'currentColor';
     const label = this.getAttribute('label');
     const spriteOverride = this.getAttribute('sprite');
     const rotate = this.getAttribute('rotate') || '0';
@@ -377,6 +378,13 @@ export class SvgIcon extends HTMLElement {
 
     if (!this._stackEl || !this._svgOldEl || !this._svgNewEl || !this._iconOldGroupEl || !this._iconNewGroupEl) {
       return;
+    }
+
+    // Keep host color in sync for external SVGs that rely on fill="currentColor".
+    if (colorAttr) {
+      this.style.setProperty('color', colorAttr);
+    } else {
+      this.style.removeProperty('color');
     }
 
     this._stackEl.setAttribute('class', `icon-stack${morphClass ? ` ${morphClass}` : ''}`);

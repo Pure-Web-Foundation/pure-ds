@@ -1,4 +1,4 @@
-﻿import { html } from 'lit';
+﻿import { html } from '#pds/lit';
 import { PDS } from '#pds';
 import { ask as askFallback } from '../../../../src/js/common/ask.js';
 import { toastFormData } from './toast-utils.js';
@@ -140,6 +140,98 @@ const askPdsFormSource = `const dialogResult = await PDS.ask(
     buttons: {
       ok: { name: 'Save changes', primary: true },
       cancel: { name: 'Cancel', cancel: true }
+    }
+  }
+);`;
+
+const omniboxViewportItems = [
+  { id: 'alpha-roadmap', text: 'Alpha roadmap review', description: 'Planning' },
+  { id: 'beta-launch', text: 'Beta launch checklist', description: 'Release' },
+  { id: 'calendar-sync', text: 'Calendar sync reliability', description: 'Operations' },
+  { id: 'design-ops', text: 'Design ops backlog', description: 'Design' },
+  { id: 'eng-incident', text: 'Engineering incident playbook', description: 'Engineering' },
+  { id: 'feature-flags', text: 'Feature flag governance', description: 'Architecture' },
+  { id: 'growth-kpis', text: 'Growth KPI dashboard', description: 'Analytics' },
+  { id: 'help-center', text: 'Help center migration', description: 'Support' },
+  { id: 'insights', text: 'Insights weekly digest', description: 'Communication' },
+  { id: 'journey-map', text: 'Journey map synthesis', description: 'Research' },
+  { id: 'knowledge-base', text: 'Knowledge base IA', description: 'Content' },
+  { id: 'localization', text: 'Localization rollout', description: 'Globalization' }
+];
+
+const askOmniboxViewportSettings = {
+  itemGrid: '0 1fr 0',
+  hideCategory: true,
+  iconHandler: (item) => {
+    return '';
+  },
+  categories: {
+    Suggestions: {
+      trigger: () => true,
+      getItems: async (options) => {
+        const q = (options.search || '').trim().toLowerCase();
+        if (!q) {
+          return omniboxViewportItems;
+        }
+
+        return omniboxViewportItems.filter((item) => {
+          const text = `${item.text} ${item.description}`.toLowerCase();
+          return text.includes(q);
+        });
+      }
+    }
+  }
+};
+
+const askOmniboxViewportSource = `const omniboxSettings = {
+  itemGrid: '0 1fr 0',
+  hideCategory: true,
+  iconHandler: (item) => {
+    return '';
+  },
+  categories: {
+    Suggestions: {
+      trigger: () => true,
+      getItems: async (options) => {
+        const q = (options.search || '').trim().toLowerCase();
+        return q ? items.filter((item) => (\`${'${item.text}'} ${'${item.description}'}\`).toLowerCase().includes(q)) : items;
+      }
+    }
+  }
+};
+
+const result = await PDS.ask(
+  html\`
+    <form method="dialog" class="stack-sm min-w-sm">
+      <p class="text-muted">Type to open suggestions. The list can escape dialog height constraints.</p>
+      <pds-omnibox
+        id="ask-omnibox"
+        name="query"
+        placeholder="Try: roadmap, design, launch"
+      ></pds-omnibox>
+    </form>
+  \`,
+  {
+    title: 'Omnibox in ask dialog',
+    useForm: true,
+    maxHeight: '360px',
+    buttons: {
+      ok: { name: 'Select', primary: true },
+      cancel: { name: 'Close', cancel: true }
+    },
+    rendered(dialog) {
+      const applySettings = () => {
+        const omnibox = dialog.querySelector('#ask-omnibox');
+        if (omnibox) {
+          omnibox.settings = omniboxSettings;
+        }
+      };
+
+      if (typeof customElements?.whenDefined === 'function') {
+        customElements.whenDefined('pds-omnibox').then(applySettings);
+      } else {
+        applySettings();
+      }
     }
   }
 );`;
@@ -452,6 +544,91 @@ const AsyncServerValidationGate = {
   }
 };
 
+const OmniboxViewportBehavior = {
+  name: 'Omnibox viewport behavior',
+  render: () => {
+    const handleClick = async (event) => {
+      const ask = ensureAsk();
+      const container = event.currentTarget.closest('[data-ask-example]');
+      const status = container?.querySelector('[data-status]');
+
+      if (status) {
+        status.textContent = 'Opening omnibox dialog…';
+      }
+
+      const dialogResult = await ask(
+        html`
+          <form method="dialog" class="stack-sm min-w-sm">
+            <p class="text-muted">
+              Type to open suggestions. This dialog has a short max height, but the omnibox list is viewport-positioned.
+            </p>
+            <pds-omnibox
+              id="ask-omnibox"
+              name="query"
+              placeholder="Try: roadmap, design, launch"
+            ></pds-omnibox>
+            <small class="text-muted">Move the browser viewport to see the list flip up/down as space changes.</small>
+          </form>
+        `,
+        {
+          title: 'Omnibox in ask dialog',
+          useForm: true,
+          maxHeight: '360px',
+          buttons: {
+            ok: { name: 'Select', primary: true },
+            cancel: { name: 'Close', cancel: true }
+          },
+          rendered(dialog) {
+            const applySettings = () => {
+              const omnibox = dialog.querySelector('#ask-omnibox');
+              if (!omnibox) return;
+              omnibox.settings = askOmniboxViewportSettings;
+            };
+
+            if (typeof customElements?.whenDefined === 'function') {
+              customElements.whenDefined('pds-omnibox').then(applySettings);
+            } else {
+              applySettings();
+            }
+          }
+        }
+      );
+
+      if (dialogResult instanceof FormData) {
+        const payload = formDataToObject(dialogResult);
+        if (status) {
+          status.textContent = payload.query
+            ? `Selected query: ${payload.query}`
+            : 'Dialog submitted with no query value';
+        }
+        await toastFormData({ ...payload, scenario: 'omnibox-viewport-behavior' });
+      } else {
+        if (status) {
+          status.textContent = 'Dialog cancelled';
+        }
+      }
+    };
+
+    return html`
+      <section
+        data-ask-example
+        class="card max-w-sm"
+        .pdsCodeHeading=${'PDS.ask()'}
+        .pdsCodeLabel=${'Omnibox escapes dialog height'}
+        .pdsCodeSource=${askOmniboxViewportSource}
+      >
+        <h3>Omnibox in constrained dialog</h3>
+        <p>
+          This example mounts <code>&lt;pds-omnibox&gt;</code> inside a short-height dialog.
+          Its suggestion panel is not clipped by the dialog container and repositions with viewport space.
+        </p>
+        <button class="btn btn-outline" @click=${handleClick}>Open omnibox dialog</button>
+        <small data-status class="text-muted">No selection yet.</small>
+      </section>
+    `;
+  }
+};
+
 const EmbedPdsFormSubform = {
   name: 'Embed a pds-form subform',
   render: () => {
@@ -577,6 +754,7 @@ export const PDSAsk = {
       ${MiniFormSubmission.render()}
       ${BooleanConfirmFlow.render()}
       ${AsyncServerValidationGate.render()}
+      ${OmniboxViewportBehavior.render()}
       ${EmbedPdsFormSubform.render()}
     </section>
   `

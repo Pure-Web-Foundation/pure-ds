@@ -456,6 +456,81 @@ const combinedSettings = {
   },
 };
 
+const selectedItemSettingsSource = `const renderSelectionPreview = (options = {}) => {
+  const selectedItem = options.selectedItem;
+  const toLargeAvatar = (src, size = 384) => {
+    if (!src) return "";
+    return src.replace(/\/\d+(\?img=\d+)/, "/" + size + "$1");
+  };
+  const selectedImage =
+    selectedItem?.querySelector("img")?.getAttribute("src") || options.image || "";
+  const selectedTitle = options.text || options.id || "Selected item";
+  const selectedCaption = options.description
+    ? selectedTitle + " - " + options.description
+    : selectedTitle;
+
+  const root = selectedItem?.getRootNode?.();
+  const host = root?.host || null;
+  const demo = host?.closest?.("[data-selected-item-demo]") ||
+    document.querySelector("[data-selected-item-demo]");
+  const preview = demo?.querySelector("[data-selected-preview]");
+  const previewImage = demo?.querySelector("[data-selected-preview-image]");
+  const previewCaption = demo?.querySelector("[data-selected-preview-caption]");
+
+  if (preview && previewImage && previewCaption) {
+    const previewSrc = toLargeAvatar(selectedImage, 384) || selectedImage;
+    if (previewSrc) {
+      previewImage.setAttribute("src", previewSrc);
+    }
+    previewImage.setAttribute("alt", selectedCaption);
+    previewCaption.textContent = selectedCaption;
+    preview.hidden = false;
+  }
+};
+
+const settings = {
+  hideCategory: true,
+  itemGrid: "45px 1fr",
+  iconHandler: (item) =>
+    item.image
+      ? \`<img src="${"${item.image}"}" alt="" loading="lazy" />\`
+      : null,
+  categories: {
+    People: {
+      trigger: () => true,
+      getItems: async (options) => {
+        const q = (options.search || "").toLowerCase();
+        const items = [
+          { id: "alex", text: "Alex Johnson", description: "Design", image: "https://i.pravatar.cc/96?img=12" },
+          { id: "sam", text: "Sam Lee", description: "Engineering", image: "https://i.pravatar.cc/96?img=32" },
+          { id: "taylor", text: "Taylor Morgan", description: "Product", image: "https://i.pravatar.cc/96?img=64" },
+        ];
+        return items.filter((item) => {
+          const haystack = \`${"${item.id}"} ${"${item.text}"} ${"${item.description}"}\`.toLowerCase();
+          return haystack.includes(q);
+        }).map((item) => ({
+          ...item,
+          action: renderSelectionPreview,
+        }));
+      },
+      action: renderSelectionPreview,
+    },
+  },
+};
+
+<section class="stack-sm" data-selected-item-demo>
+  <pds-omnibox
+    name="search"
+    placeholder="Type alex, sam, or taylor"
+    ${"${lazyProps({ settings })}"}
+    data-settings-source=${"${selectedItemSettingsSource}"}
+  ></pds-omnibox>
+  <figure class="card stack-xs" hidden data-selected-preview>
+    <img src="" alt="" width="320" height="320" loading="lazy" data-selected-preview-image />
+    <figcaption class="text-muted" data-selected-preview-caption></figcaption>
+  </figure>
+</section>`;
+
 export default {
   title: "Components/pds-omnibox",
   tags: ["autodocs", "autocomplete", "search", "input", "forms", "pds-omnibox"],
@@ -571,6 +646,137 @@ export const CombinedCategories = {
       source: {
         type: "code",
         code: combinedSettingsSource,
+      },
+    },
+  },
+};
+
+export const SelectedItemActionHook = {
+  name: "Action receives selectedItem",
+  render: () => {
+    const sectionId = `selected-item-demo-${Math.random().toString(36).slice(2, 10)}`;
+    const renderSelectionPreview = (options = {}) => {
+      const selectedItem = options.selectedItem;
+      const toLargeAvatar = (src, size = 384) => {
+        if (!src) return "";
+        return src.replace(/\/\d+(\?img=\d+)/, `/${size}$1`);
+      };
+      const selectedImage =
+        selectedItem?.querySelector("img")?.getAttribute("src") ||
+        options.image ||
+        "";
+      const selectedTitle = options.text || options.id || "Selected item";
+      const selectedCaption = options.description
+        ? `${selectedTitle} - ${options.description}`
+        : selectedTitle;
+
+      const root = selectedItem?.getRootNode?.();
+      const host = root?.host || null;
+      const sectionEl =
+        host?.closest?.("[data-selected-item-demo]") ||
+        document.getElementById(sectionId);
+      const previewEl = sectionEl?.querySelector("[data-selected-preview]");
+      const previewImageEl = sectionEl?.querySelector(
+        "[data-selected-preview-image]",
+      );
+      const previewCaptionEl = sectionEl?.querySelector(
+        "[data-selected-preview-caption]",
+      );
+
+      if (previewEl && previewImageEl && previewCaptionEl) {
+        const previewSrc = toLargeAvatar(selectedImage, 384) || selectedImage;
+        if (previewSrc) {
+          previewImageEl.setAttribute("src", previewSrc);
+        }
+        previewImageEl.setAttribute("alt", selectedCaption);
+        previewCaptionEl.textContent = selectedCaption;
+        previewEl.hidden = false;
+      }
+
+      PDS.toast(`Selected: ${selectedTitle}`, {
+        type: "information",
+      });
+    };
+
+    const settings = {
+      hideCategory: true,
+      itemGrid: "45px 1fr",
+      iconHandler: (item) =>
+        item.image
+          ? `<img src="${item.image}" alt="" loading="lazy" />`
+          : null,
+      categories: {
+        People: {
+          trigger: () => true,
+          getItems: async (options) => {
+            const q = (options.search || "").toLowerCase();
+            const items = [
+              {
+                id: "alex",
+                text: "Alex Johnson",
+                description: "Design",
+                image: "https://i.pravatar.cc/96?img=12",
+              },
+              {
+                id: "sam",
+                text: "Sam Lee",
+                description: "Engineering",
+                image: "https://i.pravatar.cc/96?img=32",
+              },
+              {
+                id: "taylor",
+                text: "Taylor Morgan",
+                description: "Product",
+                image: "https://i.pravatar.cc/96?img=64",
+              },
+            ];
+
+            return items.filter((item) => {
+              const haystack = `${item.id} ${item.text} ${item.description}`.toLowerCase();
+              return haystack.includes(q);
+            }).map((item) => ({
+              ...item,
+              action: renderSelectionPreview,
+            }));
+          },
+          action: renderSelectionPreview,
+        },
+      },
+    };
+
+    return html`
+      <section class="stack-sm" id=${sectionId} data-selected-item-demo>
+        <p class="text-muted">
+          Suggestions use image thumbnails. Select one and this story reads the
+          image from <code>options.selectedItem</code> to render a larger preview.
+        </p>
+        <pds-omnibox
+          name="selected-item-demo"
+          placeholder="Type alex, sam, or taylor"
+          ${lazyProps({ settings })}
+          data-settings-source=${selectedItemSettingsSource}
+        ></pds-omnibox>
+        <figure class="card stack-xs" hidden data-selected-preview>
+          <img
+            src=""
+            alt=""
+            width="320"
+            height="320"
+            loading="lazy"
+            data-selected-preview-image
+          />
+          <figcaption class="text-muted" data-selected-preview-caption>
+            No result selected yet.
+          </figcaption>
+        </figure>
+      </section>
+    `;
+  },
+  parameters: {
+    docs: {
+      source: {
+        type: "code",
+        code: selectedItemSettingsSource,
       },
     },
   },

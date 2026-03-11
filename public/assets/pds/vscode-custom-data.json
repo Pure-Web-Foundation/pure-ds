@@ -766,6 +766,16 @@
       "description": "PdsLiveTemplateCanvas component"
     },
     {
+      "name": "pds-locale",
+      "description": "Locale switcher component.\r\n\r\nThe component only persists canonical 5-letter locale tags (`xx-YY`),\r\nfor example `en-US` and `nl-NL`.",
+      "attributes": [
+        {
+          "name": "data-label",
+          "description": "Accessible label for the locale radio group."
+        }
+      ]
+    },
+    {
       "name": "pds-omnibox",
       "description": "PdsOmnibox component",
       "attributes": [

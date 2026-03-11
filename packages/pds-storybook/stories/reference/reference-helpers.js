@@ -11,8 +11,8 @@ async function getStorybookChannel() {
   if (storybookAddons === null) {
     try {
       const [{ addons }, { SELECT_STORY }] = await Promise.all([
-        import('@storybook/preview-api'),
-        import('@storybook/core-events')
+        import(/* @vite-ignore */ '@storybook/preview-api'),
+        import(/* @vite-ignore */ '@storybook/core-events')
       ]);
       storybookAddons = addons;
       storybookSelectStory = SELECT_STORY;

@@ -7,6 +7,7 @@ import { PDS } from '#pds';
 import { presets } from '@pds-src/js/pds-core/pds-config.js';
 import { Generator } from '@pds-src/js/pds-core/pds-generator.js';
 import { applyStyles } from '@pds-src/js/pds-core/pds-runtime.js';
+import { stripFunctions } from '@pds-src/js/pds-core/pds-start-helpers.js';
 import { config as userConfig } from '@user/pds-config';
 import { withHTMLExtractor } from './addons/html-preview/preview.js';
 import { withDescription } from './addons/description/preview.js';
@@ -184,6 +185,14 @@ const initialPreset = getInitialPreset();
 const initialLocale = getInitialLocale(storybookLocales, defaultStorybookLocale);
 console.log('🎨 Starting PDS initialization with preset:', initialPreset);
 console.log('🌍 Starting locale for Storybook:', initialLocale);
+
+const clonePresetDesign = (presetConfig) => {
+  const cloneCandidate = stripFunctions(presetConfig);
+  if (typeof structuredClone === 'function') {
+    return structuredClone(cloneCandidate);
+  }
+  return JSON.parse(JSON.stringify(cloneCandidate));
+};
 
 if (typeof document !== 'undefined' && document.documentElement) {
   document.documentElement.setAttribute('lang', initialLocale);
@@ -572,7 +581,7 @@ const withGlobalsHandler = (story, context) => {
           console.log(`🎨 Applying preset via decorator: ${presetConfig.name || globals.preset}`);
           
           const generatorOptions = { 
-            design: structuredClone(presetConfig),
+            design: clonePresetDesign(presetConfig),
             log: (...args) => console.log('🟦 [Generator]', ...args)
           };
           
@@ -1806,7 +1815,7 @@ if (typeof window !== 'undefined') {
               console.log('📝 Preset config:', presetConfig);
 
               const generatorOptions = {
-                design: structuredClone(presetConfig),
+                design: clonePresetDesign(presetConfig),
                 log: (...args) => console.log('🟦 [Generator]', ...args)
               };
               const storedTheme = PDS.theme || null;

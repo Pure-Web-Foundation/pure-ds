@@ -667,7 +667,7 @@ See the examples below to get started, or check the [primitive forms](/story/pri
 
 export default {
   title: "Components/pds-form",
-  includeStories: [],
+  includeStories: ["Docs"],
   tags: ["autodocs", "forms", "json-schema", "validation", "input"],
   parameters: {
     pds: {
@@ -681,6 +681,14 @@ export default {
       ],
     },
     docs: docsParameters,
+  },
+};
+
+export const Docs = {
+  name: "Docs",
+  render: () => nothing,
+  parameters: {
+    docsOnly: true,
   },
 };
 
