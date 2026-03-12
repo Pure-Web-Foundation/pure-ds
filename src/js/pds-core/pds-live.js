@@ -319,8 +319,12 @@ async function ensureLiveEditToggleButton() {
     };
 
     menu.appendChild(createItem("toggle", msg("Toggle live editing"), "pencil"));
-    menu.appendChild(createItem("open-settings", msg("Open Settings"), "gear"));
-    menu.appendChild(createSeparator());
+
+    const settingsItem = createItem("open-settings", msg("Open Settings"), "gear");
+    settingsItem.setAttribute("data-dropdown-close", "");
+
+    menu.appendChild(settingsItem);
+    
     menu.appendChild(createItem("reset-config", msg("Reset Config"), "arrow-counter-clockwise"));
 
     await ensureSharedQuickModeToggleMenuItem(menu);

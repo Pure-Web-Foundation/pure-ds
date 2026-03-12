@@ -452,8 +452,14 @@ export const ontology = {
     {
       id: "dropdown",
       selector: "nav[data-dropdown]",
-      description: "Dropdown menu from nav element",
-      tags: ["menu", "interactive", "navigation"]
+      description: "Dropdown menu from nav element. Use data-dropdown-close on clickable descendants to dismiss on selection.",
+      tags: ["menu", "interactive", "navigation", "dismiss", "close"]
+    },
+    {
+      id: "dropdown-close",
+      selector: "[data-dropdown-close]",
+      description: "Declarative close marker for nav[data-dropdown] panels; clicking marked targets closes the open dropdown.",
+      tags: ["dropdown", "menu", "dismiss", "close", "attribute"]
     },
     {
       id: "toggle",

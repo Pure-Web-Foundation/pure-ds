@@ -90,7 +90,9 @@ export const RightAligned = () => html`
 `;
 
 export const WithIcons = () => html`
-  ${enhancementHeader('dropdown')}
+  ${enhancementHeader('dropdown', {
+    description: 'Use `data-dropdown-close` on action links/buttons that should close the menu after click.'
+  })}
   <nav data-dropdown>
     <button class="btn-outline">
       <pds-icon icon="list" size="sm"></pds-icon>
@@ -98,19 +100,19 @@ export const WithIcons = () => html`
     </button>
     <menu>
       <li>
-        <a href="#edit">
+        <a href="#edit" data-dropdown-close>
           <pds-icon icon="pencil" size="sm"></pds-icon>
           Edit
         </a>
       </li>
       <li>
-        <a href="#copy">
+        <a href="#copy" data-dropdown-close>
           <pds-icon icon="copy" size="sm"></pds-icon>
           Copy
         </a>
       </li>
       <li>
-        <a href="#delete">
+        <a href="#delete" data-dropdown-close>
           <pds-icon icon="trash" size="sm"></pds-icon>
           Delete
         </a>
@@ -121,7 +123,7 @@ export const WithIcons = () => html`
 
 export const WithSemanticSeparator = () => html`
   ${enhancementHeader('dropdown', {
-    description: 'Uses a semantic separator (`<li><hr /></li>`) to split normal actions from destructive actions.'
+    description: 'Uses a semantic separator (`<li><hr /></li>`) and `data-dropdown-close` on action items.'
   })}
   <nav data-dropdown>
     <button class="btn-outline">
@@ -130,20 +132,20 @@ export const WithSemanticSeparator = () => html`
     </button>
     <menu>
       <li>
-        <a href="#toggle-edit">
+        <a href="#toggle-edit" data-dropdown-close>
           <pds-icon icon="pencil" size="sm"></pds-icon>
           Toggle live editing
         </a>
       </li>
       <li>
-        <a href="#open-settings">
+        <a href="#open-settings" data-dropdown-close>
           <pds-icon icon="gear" size="sm"></pds-icon>
           Open Design Settings
         </a>
       </li>
       <li><hr /></li>
       <li>
-        <a href="#reset-config" class="text-danger">
+        <a href="#reset-config" class="text-danger" data-dropdown-close>
           <pds-icon icon="arrow-counter-clockwise" size="sm"></pds-icon>
           Reset Config
         </a>
@@ -191,7 +193,7 @@ export const BackgroundImageLiquidGlass = () => html`
 
 export const CardPanel = () => html`
   ${enhancementHeader('dropdown', {
-    description: 'Use any last-child element as the dropdown panel (card, section, form, etc.).'
+    description: 'Use any last-child element as the dropdown panel (card, section, form, etc.). Add `data-dropdown-close` on panel actions that should dismiss the dropdown.'
   })}
   <nav data-dropdown>
     <button class="btn-secondary">Project Actions</button>
@@ -201,8 +203,8 @@ export const CardPanel = () => html`
         <small class="text-muted">Keep the essentials visible.</small>
       </header>
       <div class="flex gap-sm">
-        <button class="btn-primary btn-sm">Ship now</button>
-        <button class="btn-outline btn-sm">Schedule</button>
+        <button class="btn-primary btn-sm" data-dropdown-close>Ship now</button>
+        <button class="btn-outline btn-sm" data-dropdown-close>Schedule</button>
       </div>
       <hr data-label="Optional" />
       <footer class="flex gap-sm">
@@ -215,7 +217,7 @@ export const CardPanel = () => html`
 
 export const FormPanel = () => html`
   ${enhancementHeader('dropdown', {
-    description: 'Dropdowns can host richer content like forms and toggles.'
+    description: 'Dropdowns can host richer content like forms and toggles. Here, Save/Reset use `data-dropdown-close` to dismiss the menu.'
   })}
   <nav data-dropdown>
     <button class="btn-outline">Notification Settings</button>
@@ -233,8 +235,8 @@ export const FormPanel = () => html`
         <span data-label>Weekly summary</span>
       </label>
       <div class="flex gap-sm">
-        <button class="btn-primary btn-sm">Save</button>
-        <button class="btn-secondary btn-sm">Reset</button>
+        <button class="btn-primary btn-sm" data-dropdown-close>Save</button>
+        <button class="btn-secondary btn-sm" data-dropdown-close>Reset</button>
       </div>
     </div>
   </nav>
@@ -242,7 +244,7 @@ export const FormPanel = () => html`
 
 export const ProfilePanel = () => html`
   ${enhancementHeader('dropdown', {
-    description: 'Panels can be semantic HTML containers while keeping menu styles for real menus.'
+    description: 'Panels can be semantic HTML containers while keeping menu styles for real menus. Profile actions can opt into close-on-select with `data-dropdown-close`.'
   })}
   <nav data-dropdown>
     <button class="btn-primary">Account</button>
@@ -255,8 +257,8 @@ export const ProfilePanel = () => html`
         </div>
       </div>
       <div class="stack-xs">
-        <a class="btn btn-outline btn-sm" href="#profile">View profile</a>
-        <a class="btn btn-secondary btn-sm" href="#billing">Billing</a>
+        <a class="btn btn-outline btn-sm" href="#profile" data-dropdown-close>View profile</a>
+        <a class="btn btn-secondary btn-sm" href="#billing" data-dropdown-close>Billing</a>
       </div>
     </article>
   </nav>

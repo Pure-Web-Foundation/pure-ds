@@ -458,6 +458,7 @@ async function handleGetEnhancerMetadata(ctx, args = {}) {
     .map((item) => ({
       selector: item.selector,
       description: item.description || '',
+      attributes: Array.isArray(item.attributes) ? item.attributes : undefined,
       demoHtml: includeDemoHtml ? item.demoHtml || '' : undefined,
     }));
 

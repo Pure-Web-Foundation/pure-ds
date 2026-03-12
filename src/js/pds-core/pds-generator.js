@@ -3582,12 +3582,11 @@ dialog {
 
 /*
  * Overlay safety valve:
- * Some controls (e.g. pds-daterange panel, data-dropdown menus) need to escape
+ * Some controls (e.g. pds-daterange panel) need to escape
  * the dialog bounds. Scope overflow visibility to custom dialogs that contain
  * those controls instead of enabling it for all dialogs.
  */
-dialog.dialog-custom:has(pds-daterange),
-dialog.dialog-custom:has([data-dropdown]) {
+dialog.dialog-custom:has(pds-daterange) {
   overflow: visible;
 }
 
@@ -3655,13 +3654,6 @@ dialog {
     padding: var(--spacing-3) var(--spacing-6);
     overflow-y: auto;
     overflow-x: visible;
-  }
-
-  /* Allow overlay menus (e.g. data-dropdown) to escape dialog-body clipping while open */
-  article:has([data-dropdown] > :last-child[aria-hidden="false"]),
-  form > article:has([data-dropdown] > :last-child[aria-hidden="false"]),
-  .dialog-body:has([data-dropdown] > :last-child[aria-hidden="false"]) {
-    overflow: visible;
   }
 
   article:has(pds-daterange),
@@ -3751,7 +3743,8 @@ dialog.dialog-full { width: calc(100vw - var(--spacing-8)); max-width: calc(100v
   dialog, dialog::backdrop { transition-duration: 0.01s !important; }
 }
 
-html:has(dialog[open]:modal) {
+html:has(dialog[open]:modal),
+html:has(pds-drawer[open]) {
  overflow: hidden;
  scrollbar-gutter: stable;
 }
@@ -4096,7 +4089,13 @@ nav[data-dropdown] {
     transition-behavior: allow-discrete;
   }
 
-  & > :last-child[aria-hidden="false"] {
+  & > :last-child[popover] {
+    inset: auto;
+    margin: 0;
+  }
+
+  & > :last-child[aria-hidden="false"],
+  & > :last-child:popover-open {
     display: inline-block;
     opacity: 1;
     visibility: visible;
@@ -4198,7 +4197,8 @@ nav[data-dropdown] {
 }
 
 @starting-style {
-  nav[data-dropdown] > :last-child[aria-hidden="false"] {
+  nav[data-dropdown] > :last-child[aria-hidden="false"],
+  nav[data-dropdown] > :last-child:popover-open {
     opacity: 0;
   }
 }

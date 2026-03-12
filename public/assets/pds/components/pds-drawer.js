@@ -392,7 +392,7 @@ class PdsDrawer extends HTMLElement {
     // Global listeners
     window.addEventListener("pointermove", this.#onPointerMove, { passive: false });
     window.addEventListener("pointerup", this.#onPointerUp, { passive: true });
-    window.addEventListener("keydown", this.#onKeyDown);
+    document.addEventListener("keydown", this.#onKeyDown, true);
 
     // Resize observers
     this.#resizeObs = new ResizeObserver(this.#recalc);
@@ -407,7 +407,7 @@ class PdsDrawer extends HTMLElement {
     // Clean up global listeners
     window.removeEventListener("pointermove", this.#onPointerMove);
     window.removeEventListener("pointerup", this.#onPointerUp);
-    window.removeEventListener("keydown", this.#onKeyDown);
+    document.removeEventListener("keydown", this.#onKeyDown, true);
     if (this.#focusTrapActive) {
       document.removeEventListener("focusin", this.#onFocusIn, true);
       this.#focusTrapActive = false;
@@ -578,6 +578,11 @@ class PdsDrawer extends HTMLElement {
   #onKeyDown = (e) => {
     if (!this.open) return;
     if (e.key === "Escape") {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof e.stopImmediatePropagation === "function") {
+        e.stopImmediatePropagation();
+      }
       this.closeDrawer();
       return;
     }

@@ -61,6 +61,11 @@ function enhanceDropdown(elem) {
     elem.querySelector("[data-dropdown-toggle]") ||
     elem.querySelector("button");
 
+  const supportsPopover =
+    typeof HTMLElement !== "undefined" &&
+    "showPopover" in HTMLElement.prototype &&
+    "hidePopover" in HTMLElement.prototype;
+
   if (trigger && !trigger.hasAttribute("type")) {
     trigger.setAttribute("type", "button");
   }
@@ -84,6 +89,19 @@ function enhanceDropdown(elem) {
     trigger.setAttribute("aria-expanded", "false");
   }
 
+  if (!supportsPopover) {
+    const warnKey = "__PDS_DROPDOWN_POPOVER_WARNED__";
+    if (!globalThis[warnKey]) {
+      globalThis[warnKey] = true;
+      console.warn(
+        "[PDS] nav[data-dropdown] requires the Popover API. Add a popover polyfill (recommended: @oddbird/popover-polyfill) for browsers without support.",
+      );
+    }
+    return;
+  }
+
+  menu.setAttribute("popover", "auto");
+
   const measureMenuSize = () => {
     const previousStyle = menu.getAttribute("style");
     menu.style.visibility = "hidden";
@@ -106,6 +124,24 @@ function enhanceDropdown(elem) {
     }
 
     return { width, height };
+  };
+
+  const isPopoverOpen = () => {
+    try {
+      return menu.matches(":popover-open");
+    } catch {
+      return false;
+    }
+  };
+
+  const syncClosedState = () => {
+    menu.setAttribute("aria-hidden", "true");
+    trigger?.setAttribute("aria-expanded", "false");
+  };
+
+  const syncOpenState = () => {
+    menu.setAttribute("aria-hidden", "false");
+    trigger?.setAttribute("aria-expanded", "true");
   };
 
   const resolveDirection = () => {
@@ -170,70 +206,24 @@ function enhanceDropdown(elem) {
   };
 
   const clearFloatingMenuPosition = () => {
-    menu.style.removeProperty("position");
-    menu.style.removeProperty("left");
-    menu.style.removeProperty("top");
-    menu.style.removeProperty("right");
-    menu.style.removeProperty("bottom");
-    menu.style.removeProperty("margin-top");
-    menu.style.removeProperty("margin-bottom");
-    menu.style.removeProperty("max-width");
-    menu.style.removeProperty("max-inline-size");
-    menu.style.removeProperty("max-height");
-    menu.style.removeProperty("overflow");
+    [
+      "position",
+      "left",
+      "top",
+      "right",
+      "bottom",
+      "margin-top",
+      "margin-bottom",
+      "max-width",
+      "max-inline-size",
+      "max-height",
+      "overflow",
+    ].forEach((prop) => menu.style.removeProperty(prop));
   };
+  
+  const positionPopoverMenu = () => {
+    if (!isPopoverOpen()) return;
 
-  const getContainingAncestor = (node) => {
-    if (!node) return null;
-    if (node.parentElement) return node.parentElement;
-    const root = node.getRootNode?.();
-    return root instanceof ShadowRoot ? root.host : null;
-  };
-
-  const hasNonViewportFixedContainingBlock = () => {
-    let current = getContainingAncestor(menu);
-    while (current && current !== document.documentElement) {
-      const style = getComputedStyle(current);
-      const contain = style.contain || "";
-      const willChange = style.willChange || "";
-      const createsContainingBlock =
-        style.transform !== "none" ||
-        style.perspective !== "none" ||
-        style.filter !== "none" ||
-        style.backdropFilter !== "none" ||
-        contain.includes("paint") ||
-        contain.includes("layout") ||
-        contain.includes("strict") ||
-        contain.includes("content") ||
-        willChange.includes("transform") ||
-        willChange.includes("perspective") ||
-        willChange.includes("filter");
-
-      if (createsContainingBlock) {
-        return true;
-      }
-
-      current = getContainingAncestor(current);
-    }
-    return false;
-  };
-
-  const reattachFloatingMenu = () => {
-    if (menu.getAttribute("aria-hidden") !== "false") return;
-    clearFloatingMenuPosition();
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        positionFloatingMenu();
-      });
-    });
-  };
-
-  const positionFloatingMenu = () => {
-    if (menu.getAttribute("aria-hidden") !== "false") return;
-    if (hasNonViewportFixedContainingBlock()) {
-      clearFloatingMenuPosition();
-      return;
-    }
     const anchorRect = (trigger || elem).getBoundingClientRect();
     const viewport = window.visualViewport;
     const viewportWidth =
@@ -283,19 +273,21 @@ function enhanceDropdown(elem) {
       ),
     );
 
-    menu.style.position = "fixed";
-    menu.style.left = `${Math.round(left)}px`;
-    menu.style.top = `${Math.round(top)}px`;
-    menu.style.right = "auto";
-    menu.style.bottom = "auto";
-    menu.style.marginTop = "0";
-    menu.style.marginBottom = "0";
+    Object.assign(menu.style, {
+      position: "fixed",
+      left: `${Math.round(left)}px`,
+      top: `${Math.round(top)}px`,
+      right: "auto",
+      bottom: "auto",
+      marginTop: "0",
+      marginBottom: "0",
+    });
   };
 
   let repositionHandler = null;
   const bindReposition = () => {
     if (repositionHandler) return;
-    repositionHandler = () => positionFloatingMenu();
+    repositionHandler = () => positionPopoverMenu();
     window.addEventListener("resize", repositionHandler);
     window.addEventListener("scroll", repositionHandler, true);
   };
@@ -312,7 +304,7 @@ function enhanceDropdown(elem) {
   const bindConfigChanged = () => {
     if (configChangedHandler || typeof document === "undefined") return;
     configChangedHandler = () => {
-      if (menu.getAttribute("aria-hidden") !== "false") return;
+      if (!isPopoverOpen()) return;
       elem.dataset.dropdownDirection = resolveDirection();
       elem.dataset.dropdownAlign = resolveAlign();
 
@@ -321,8 +313,8 @@ function enhanceDropdown(elem) {
       }
       configRepositionFrame = requestAnimationFrame(() => {
         configRepositionFrame = null;
-        if (menu.getAttribute("aria-hidden") !== "false") return;
-        positionFloatingMenu();
+        if (!isPopoverOpen()) return;
+        positionPopoverMenu();
       });
     };
     document.addEventListener("pds:config-changed", configChangedHandler);
@@ -338,57 +330,53 @@ function enhanceDropdown(elem) {
     }
   };
 
-  // Store click handler reference for cleanup
-  let clickHandler = null;
+  menu.addEventListener("toggle", (event) => {
+    const isOpen = event.newState === "open";
 
-  const openMenu = () => {
-    elem.dataset.dropdownDirection = resolveDirection();
-    elem.dataset.dropdownAlign = resolveAlign();
-    menu.setAttribute("aria-hidden", "false");
-    trigger?.setAttribute("aria-expanded", "true");
-    bindReposition();
-    bindConfigChanged();
-    reattachFloatingMenu();
-
-    // Add click-outside handler when opening
-    if (!clickHandler) {
-      clickHandler = (event) => {
-        // Use composedPath() to handle Shadow DOM
-        const path = event.composedPath ? event.composedPath() : [event.target];
-        const clickedInside = path.some((node) => node === elem);
-
-        if (!clickedInside) {
-          closeMenu();
-        }
-      };
-      // Use a slight delay to avoid closing immediately if this was triggered by a click
-      setTimeout(() => {
-        document.addEventListener("click", clickHandler);
-      }, 0);
+    if (isOpen) {
+      syncOpenState();
+      positionPopoverMenu();
+      bindReposition();
+      bindConfigChanged();
+      return;
     }
-  };
 
-  const closeMenu = () => {
-    menu.setAttribute("aria-hidden", "true");
-    trigger?.setAttribute("aria-expanded", "false");
+    syncClosedState();
     unbindReposition();
     unbindConfigChanged();
     clearFloatingMenuPosition();
+  });
 
-    // Remove click-outside handler when closing
-    if (clickHandler) {
-      document.removeEventListener("click", clickHandler);
-      clickHandler = null;
-    }
+  const openMenu = () => {
+    if (isPopoverOpen()) return;
+    elem.dataset.dropdownDirection = resolveDirection();
+    elem.dataset.dropdownAlign = resolveAlign();
+    menu.showPopover();
+    requestAnimationFrame(() => positionPopoverMenu());
+  };
+
+  const closeMenu = () => {
+    if (!isPopoverOpen()) return;
+    menu.hidePopover();
   };
 
   const toggleMenu = () => {
-    if (menu.getAttribute("aria-hidden") === "false") {
+    if (isPopoverOpen()) {
       closeMenu();
     } else {
       openMenu();
     }
   };
+
+  syncClosedState();
+
+  menu.addEventListener("click", (event) => {
+    const target =
+      event.target instanceof Element ? event.target : event.target?.parentElement;
+    if (!target) return;
+    if (!target.closest("[data-dropdown-close]")) return;
+    closeMenu();
+  });
 
   trigger?.addEventListener("click", (event) => {
     event.preventDefault();
@@ -400,19 +388,6 @@ function enhanceDropdown(elem) {
     if (event.key === "Escape") {
       closeMenu();
       trigger?.focus();
-    }
-  });
-
-  elem.addEventListener("focusout", (event) => {
-    // Only close if focus is explicitly moving to an element outside the dropdown
-    // Don't close if relatedTarget is null (which happens when clicking non-focusable elements inside)
-    // Use composedPath() to handle Shadow DOM properly
-    if (event.relatedTarget) {
-      const path = event.composedPath ? event.composedPath() : [event.relatedTarget];
-      const focusedInside = path.some((node) => node === elem);
-      if (!focusedInside) {
-        closeMenu();
-      }
     }
   });
 }

@@ -469,6 +469,7 @@ Features:
 - Horizontal alignment (`.align-right` class)
 - Keyboard support (Escape to close)
 - Click-outside to close
+- Declarative close on selection via `data-dropdown-close` on clickable menu/panel items
 - Scrollable when content exceeds viewport
 - Panel can be any last child element (menu, card, form, etc.)
 

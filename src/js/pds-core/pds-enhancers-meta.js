@@ -31,17 +31,22 @@ export const defaultPDSEnhancerMetadata = [
   {
     selector: "nav[data-dropdown]",
     description:
-      "Enhances a nav element with data-dropdown to toggle its last child as a dropdown panel (menu, card, form, etc.).",
+      "Enhances a nav element with data-dropdown to toggle its last child as a dropdown panel (menu, card, form, etc.). Add data-dropdown-close to any clickable descendant that should close the menu on selection.",
+    attributes: [
+      {
+        name: "data-dropdown-close",
+        description:
+          "When clicked (or when a descendant is clicked), closes the currently open dropdown popover.",
+        appliesTo: "Any clickable element inside nav[data-dropdown] menu/panel content",
+      },
+    ],
     demoHtml: `
       <nav data-dropdown>
         <button class="btn-primary">Menu</button>
-        <div class="card surface-overlay stack-sm">
-          <strong>Quick actions</strong>
-          <div class="flex gap-sm">
-            <button class="btn-primary btn-sm">Ship now</button>
-            <button class="btn-outline btn-sm">Schedule</button>
-          </div>
-        </div>
+        <menu>
+          <li><a href="#open">Open</a></li>
+          <li><a href="#settings" data-dropdown-close>Open settings and close</a></li>
+        </menu>
       </nav>
     `.trim(),
   },
