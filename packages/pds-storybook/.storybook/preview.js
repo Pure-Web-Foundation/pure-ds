@@ -11,9 +11,13 @@ import { stripFunctions } from '@pds-src/js/pds-core/pds-start-helpers.js';
 import { config as userConfig } from '@user/pds-config';
 import { withHTMLExtractor } from './addons/html-preview/preview.js';
 import { withDescription } from './addons/description/preview.js';
+import { ensureSharedShikiStyles, preloadShiki } from './shiki.js';
 import './htmlPreview.css';
 import './docs.css';
 import { toastFormData } from '../stories/utils/toast-utils.js';
+
+ensureSharedShikiStyles();
+preloadShiki();
 
 // Expose toastFormData globally for inline event handlers
 window.toastFormData = toastFormData;
@@ -209,14 +213,22 @@ function isDocsPage() {
   }
 }
 
-function inferCodeLanguage(codeEl) {
-  if (!codeEl) return 'html';
-  const className = codeEl.className || '';
+function inferCodeLanguage(codeEl, preEl) {
+  if (!codeEl && !preEl) return 'html';
+
+  const className = codeEl?.className || '';
   const languageMatch = className.match(/(?:language|lang)-([a-z0-9-]+)/i);
   if (languageMatch?.[1]) {
     return languageMatch[1].toLowerCase();
   }
-  return codeEl.getAttribute('data-lang') || 'html';
+
+  const preClassName = preEl?.className || '';
+  const preLanguageMatch = preClassName.match(/(?:language|lang)-([a-z0-9-]+)/i);
+  if (preLanguageMatch?.[1]) {
+    return preLanguageMatch[1].toLowerCase();
+  }
+
+  return codeEl?.getAttribute('data-lang') || preEl?.getAttribute('data-lang') || 'html';
 }
 
 function upgradeLegacyCodeBlocks(root) {
@@ -228,15 +240,55 @@ function upgradeLegacyCodeBlocks(root) {
     const preEl = codeEl.parentElement;
     if (!preEl || preEl.closest('pds-code')) return;
 
+    // Keep Shiki-rendered blocks intact; they already carry correct language + theme.
+    if (
+      preEl.classList.contains('shiki') ||
+      preEl.classList.contains('pds-shiki-block') ||
+      preEl.hasAttribute('data-pds-shiki')
+    ) {
+      return;
+    }
+
     const content = codeEl.textContent || '';
     if (!content.trim()) return;
 
-    const lang = inferCodeLanguage(codeEl);
+    const lang = inferCodeLanguage(codeEl, preEl);
     const pdsCode = document.createElement('pds-code');
     pdsCode.setAttribute('lang', lang);
     pdsCode.code = content;
     preEl.replaceWith(pdsCode);
   });
+}
+
+const observeCodeBlocks = (() => {
+  const observedRoots = new WeakSet();
+  return (root) => {
+    if (!root || observedRoots.has(root)) return;
+
+    const observer = new MutationObserver(() => {
+      upgradeLegacyCodeBlocks(root);
+    });
+
+    observer.observe(root, { childList: true, subtree: true });
+    observedRoots.add(root);
+  };
+})();
+
+function scheduleCodeBlockUpgrade(root) {
+  if (!root) return;
+
+  const runUpgrade = () => upgradeLegacyCodeBlocks(root);
+  runUpgrade();
+  requestAnimationFrame(runUpgrade);
+  setTimeout(runUpgrade, 60);
+  setTimeout(runUpgrade, 220);
+
+  void ensurePdsCodeLoaded().then(() => {
+    runUpgrade();
+    observeCodeBlocks(root);
+  });
+
+  observeCodeBlocks(root);
 }
 
 let liveGenerator = null;
@@ -414,7 +466,13 @@ const withPDS = (story, context) => {
       const nonPdsSheets = document.adoptedStyleSheets.filter(s => !s._pds);
       document.adoptedStyleSheets = nonPdsSheets;
     }
-    return story();
+    const docsStory = story();
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        scheduleCodeBlockUpgrade(document.getElementById('docs-root'));
+      });
+    });
+    return docsStory;
   }
   
   console.log('🎬 withPDS decorator called for:', context.title);
@@ -514,7 +572,7 @@ const withPDS = (story, context) => {
   
   // Initial adoption - run multiple times to catch lazy components
   setTimeout(() => {
-    upgradeLegacyCodeBlocks(document.querySelector('#storybook-root'));
+    scheduleCodeBlockUpgrade(document.querySelector('#storybook-root'));
   }, 0);
   setTimeout(adoptAllShadowStyles, 0);
   setTimeout(adoptAllShadowStyles, 100);
@@ -1581,6 +1639,7 @@ const withRelatedStories = (story, context) => {
     requestAnimationFrame(() => {
       if (context.viewMode === 'docs') {
         pruneDocsStories();
+        scheduleCodeBlockUpgrade(document.getElementById('docs-root'));
         renderRelatedFooter(context);
         removeRelatedOverlay();
         return;

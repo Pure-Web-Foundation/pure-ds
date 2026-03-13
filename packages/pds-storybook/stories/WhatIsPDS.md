@@ -94,7 +94,7 @@ This is where PDS diverges fundamentally from mainstream frameworks. In React, V
 
 You write a small JavaScript config:
 
-```js
+```javascript
 export const config = {
   design: {
     colors: { primary: "#0891b2", secondary: "#7c3aed" },

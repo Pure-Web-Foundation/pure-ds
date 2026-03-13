@@ -2,6 +2,7 @@
 import { PDS } from '#pds';
 import { ask as askFallback } from '../../../../src/js/common/ask.js';
 import { toastFormData } from './toast-utils.js';
+import { pdsObjectDocsParameters } from './pds-object-meta.js';
 
 const ensureAsk = () => {
   if (PDS?.ask) {
@@ -238,17 +239,12 @@ const result = await PDS.ask(
 
 export default {
   title: 'PDS/PDS Object',
-  tags: ['interaction', 'dialogs', 'forms', 'modal', 'dialog', 'alert', 'confirm', 'prompt', 'popup', 'overlay'],
+  tags: ['autodocs', 'runtime', 'api', 'reference', 'utilities', 'pds-object', 'interaction', 'dialogs', 'forms', 'modal', 'dialog', 'alert', 'confirm', 'prompt', 'popup', 'overlay'],
   parameters: {
     pds: {
-      tags: ['interaction', 'dialogs', 'forms', 'pds-ask', 'modal', 'alert', 'confirm', 'prompt']
+      tags: ['runtime', 'api', 'reference', 'pds-object', 'pds-start', 'pds-compiled', 'pds-enums', 'pds-ask', 'pds-toast', 'pds-parse', 'interaction', 'dialogs', 'forms', 'modal', 'alert', 'confirm', 'prompt']
     },
-    docs: {
-      description: {
-        component: `The \`PDS.ask()\` helper wraps the native \`<dialog>\` element with PDS styling and a promise-based API.
-Use it to collect quick confirmations or to stage entire forms before committing data back to the host application.`
-      }
-    }
+    docs: pdsObjectDocsParameters
   }
 };
 

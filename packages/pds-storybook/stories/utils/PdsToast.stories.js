@@ -1,5 +1,6 @@
 import { html } from '#pds/lit';
 import { toast as toastFallback } from '@pds-src/js/common/toast.js';
+import { pdsObjectDocsParameters } from './pds-object-meta.js';
 
 const ensureToast = () => {
   return toastFallback;
@@ -32,17 +33,12 @@ const toastHtmlActionSource = `await PDS.toast(
 
 export default {
   title: 'PDS/PDS Object',
-  tags: ['notifications', 'toast', 'utilities', 'feedback'],
+  tags: ['autodocs', 'runtime', 'api', 'reference', 'utilities', 'pds-object', 'notifications', 'toast', 'feedback'],
   parameters: {
     pds: {
-      tags: ['toast', 'notifications', 'feedback', 'pds-toast']
+      tags: ['runtime', 'api', 'reference', 'pds-object', 'pds-start', 'pds-compiled', 'pds-enums', 'pds-ask', 'pds-toast', 'pds-parse', 'toast', 'notifications', 'feedback']
     },
-    docs: {
-      disable: true,
-      description: {
-        component: `Use <code>PDS.toast()</code> to show non-blocking notifications. The helper ensures a <code>pds-toaster</code> instance exists before displaying the message.`
-      }
-    }
+    docs: pdsObjectDocsParameters
   }
 };
 

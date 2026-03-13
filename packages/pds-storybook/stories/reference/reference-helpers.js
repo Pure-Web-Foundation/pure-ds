@@ -242,9 +242,10 @@ export function formatTableValue(value) {
   }
 
   if (typeof value === 'object') {
+    const json = JSON.stringify(value, null, 2);
     return html`
       <pre class="pds-reference-docs-pre">
-${JSON.stringify(value, null, 2)}
+        <code class="language-json">${json}</code>
       </pre>
     `;
   }

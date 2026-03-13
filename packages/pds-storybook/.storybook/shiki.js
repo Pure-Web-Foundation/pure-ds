@@ -6,10 +6,12 @@
  */
 
 export { 
+  SHIKI_CODE_THEME,
   loadShiki, 
   highlight, 
   renderCodeBlock,
   getCurrentTheme, 
   escapeHtml, 
-  preloadShiki 
+  preloadShiki,
+  ensureSharedShikiStyles
 } from '../stories/utils/shiki.js';

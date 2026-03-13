@@ -39,13 +39,16 @@
   padding: var(--spacing-4, 1rem);
   border-radius: var(--radius-md, 4px);
   overflow-x: auto;
-  font-size: 13.6px;
-  line-height: 24px;
-  tab-size: 2;
+  font-size: var(--pds-shiki-font-size, 13.6px);
+  line-height: var(--pds-shiki-line-height, 24px);
+  tab-size: var(--pds-shiki-tab-size, 2);
 }
 
 .html-source-content pre code {
-  font-family: 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--pds-shiki-font-family, 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 /* Fallback pre styling (before Shiki loads) */
@@ -54,10 +57,13 @@
   padding: var(--spacing-4, 1rem);
   border-radius: var(--radius-md, 4px);
   overflow-x: auto;
-  font-family: 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 13.6px;
-  line-height: 24px;
-  tab-size: 2;
+  font-family: var(--pds-shiki-font-family, 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-size: var(--pds-shiki-font-size, 13.6px);
+  line-height: var(--pds-shiki-line-height, 24px);
+  tab-size: var(--pds-shiki-tab-size, 2);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
   background: var(--color-surface-raised, #282c34);
   color: var(--color-text-primary, #abb2bf);
 }

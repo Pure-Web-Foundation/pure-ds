@@ -37,7 +37,8 @@ const DOC_STYLE_CONTENT = `
     background: #f5f5f5;
     border-radius: 4px;
     overflow: auto;
-    font-size: 13px;
+    font-size: var(--pds-shiki-font-size, 13.6px);
+    line-height: var(--pds-shiki-line-height, 24px);
   }
 
   .pds-reference-docs-section {
@@ -77,7 +78,7 @@ const DOC_STYLE_CONTENT = `
   }
 
   .pds-reference-docs-table td:first-child {
-    font-family: monospace;
+    font-family: var(--pds-shiki-font-family, 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
     white-space: nowrap;
   }
 
@@ -85,7 +86,9 @@ const DOC_STYLE_CONTENT = `
     background: #f0f0f0;
     padding: 2px 6px;
     border-radius: 3px;
-    font-size: 13px;
+    font-size: var(--pds-shiki-font-size, 13.6px);
+    line-height: var(--pds-shiki-line-height, 24px);
+    font-family: var(--pds-shiki-font-family, 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
   }
 
   .pds-reference-docs-badge {
@@ -185,8 +188,20 @@ const DOC_STYLE_CONTENT = `
     background: #f0f0f0;
     padding: 2px 6px;
     border-radius: 3px;
-    font-family: monospace;
-    font-size: 13px;
+    font-family: var(--pds-shiki-font-family, 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+    font-size: var(--pds-shiki-font-size, 13.6px);
+    line-height: var(--pds-shiki-line-height, 24px);
+  }
+
+  /* Keep inline-code chip styling out of block code rendered by pds-code/Shiki. */
+  .pds-reference-additional-content pre code,
+  .pds-reference-additional-content .shiki code,
+  .pds-reference-additional-content pds-code code {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+    line-height: inherit;
   }
 
   .pds-reference-additional-content table {
@@ -226,6 +241,75 @@ function ensureDocStyles() {
 if (typeof document !== 'undefined') {
   ensureDocStyles();
 }
+
+function inferCodeLanguage(codeEl, preEl) {
+  if (!codeEl && !preEl) return 'text';
+
+  const codeClassName = codeEl?.className || '';
+  const codeMatch = codeClassName.match(/(?:language|lang)-([a-z0-9-]+)/i);
+  if (codeMatch?.[1]) return codeMatch[1].toLowerCase();
+
+  const preClassName = preEl?.className || '';
+  const preMatch = preClassName.match(/(?:language|lang)-([a-z0-9-]+)/i);
+  if (preMatch?.[1]) return preMatch[1].toLowerCase();
+
+  return codeEl?.getAttribute('data-lang') || preEl?.getAttribute('data-lang') || 'text';
+}
+
+function upgradeCodeBlocksInContainer(container) {
+  if (!container || typeof customElements === 'undefined' || !customElements.get('pds-code')) return;
+
+  const blocks = container.querySelectorAll('pre > code');
+  blocks.forEach((codeEl) => {
+    const preEl = codeEl.parentElement;
+    if (!preEl || preEl.closest('pds-code')) return;
+
+    if (
+      preEl.classList.contains('shiki') ||
+      preEl.classList.contains('pds-shiki-block') ||
+      preEl.hasAttribute('data-pds-shiki')
+    ) {
+      return;
+    }
+
+    const code = codeEl.textContent || '';
+    if (!code.trim()) return;
+
+    const lang = inferCodeLanguage(codeEl, preEl);
+    const pdsCode = document.createElement('pds-code');
+    pdsCode.setAttribute('lang', lang);
+    pdsCode.code = code;
+    preEl.replaceWith(pdsCode);
+  });
+}
+
+const AdditionalContent = ({ htmlContent }) => {
+  const containerRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return undefined;
+
+    const runUpgrade = () => upgradeCodeBlocksInContainer(container);
+    runUpgrade();
+    requestAnimationFrame(runUpgrade);
+    const timeoutId = window.setTimeout(runUpgrade, 120);
+
+    const observer = new MutationObserver(runUpgrade);
+    observer.observe(container, { childList: true, subtree: true });
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      observer.disconnect();
+    };
+  }, [htmlContent]);
+
+  return React.createElement('div', {
+    ref: containerRef,
+    className: 'pds-reference-additional-content',
+    dangerouslySetInnerHTML: { __html: htmlContent }
+  });
+};
 
 class PdsReferenceComponentDocs extends LitElement {
   static properties = {
@@ -358,7 +442,7 @@ class PdsReferenceComponentDocs extends LitElement {
     return html`
       <section class="pds-reference-docs-section">
         <h3 id="manifest-notes" class="pds-reference-docs-reset">Manifest Notes</h3>
-        <pre class="pds-reference-docs-pre">${description}</pre>
+        <div>${renderMarkdown(description)}</div>
       </section>
     `;
   }
@@ -454,13 +538,7 @@ export function createComponentDocsPage(tag, options = {}) {
         },
         React.createElement('pds-reference-component-docs', { component: tag })
       ),
-      additionalContent ? React.createElement(
-        'div',
-        {
-          className: 'pds-reference-additional-content',
-          dangerouslySetInnerHTML: { __html: additionalContent }
-        }
-      ) : null,
+      additionalContent ? React.createElement(AdditionalContent, { htmlContent: additionalContent }) : null,
       hideStories ? null : React.createElement(Stories, { includePrimary: false })
     );
   };

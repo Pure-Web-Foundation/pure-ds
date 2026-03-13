@@ -1,5 +1,6 @@
 import { PDS } from '#pds';
 import { getCurrentTheme, preloadShiki, renderCodeBlock } from './shiki.js';
+import { pdsObjectDocsParameters } from './pds-object-meta.js';
 
 preloadShiki();
 
@@ -60,6 +61,20 @@ const compiledCode = `await PDS.start({ mode: 'static', preset: 'default' });
 
 console.log(PDS.compiled);
 console.log(PDS.compiled.design.colors);`;
+
+const startCode = `await PDS.start({
+  mode: 'live',
+  preset: 'default',
+  design: {
+    colors: { accent: '#5B6CFF' }
+  },
+  applyGlobalStyles: true,
+  manageTheme: true
+});
+
+console.log(PDS.currentConfig);
+console.log(PDS.compiled);
+console.log(PDS.mode);`;
 
 const resolveEnhancerMetadata = async () => {
   if (Array.isArray(PDS.enhancerMetadata) && PDS.enhancerMetadata.length > 0) {
@@ -246,17 +261,12 @@ const makeCard = ({
 
 export default {
   title: 'PDS/PDS Object',
-  tags: ['runtime', 'api', 'utilities', 'reference', 'pds-object'],
+  tags: ['autodocs', 'runtime', 'api', 'reference', 'utilities', 'pds-object'],
   parameters: {
     pds: {
-      tags: ['runtime', 'api', 'reference', 'pds-compiled', 'pds-enums']
+      tags: ['runtime', 'api', 'reference', 'pds-object', 'pds-start', 'pds-compiled', 'pds-enums', 'pds-ask', 'pds-toast', 'pds-parse']
     },
-    docs: {
-      disable: true,
-      description: {
-        component: 'Reference examples for additional PDS runtime properties and methods.'
-      }
-    }
+    docs: pdsObjectDocsParameters
   }
 };
 
@@ -536,6 +546,31 @@ export const PDSDefaultEnhancers = {
     PDS.addEventListener('pds:ready', handleReady, { once: true });
 
     return section;
+  }
+};
+
+export const PDSStart = {
+  name: 'PDS.start()',
+  render: () => {
+    return makeCard({
+      title: 'PDS.start(config)',
+      description: 'Initializes PDS in live/static mode and materializes PDS.currentConfig + PDS.compiled.',
+      code: startCode,
+      outputLabel: 'Runtime snapshot',
+      initialOutput: 'Click to inspect the currently active startup state.',
+      buttonLabel: 'Inspect current startup state',
+      onRun: () => {
+        return {
+          mode: PDS.mode || null,
+          hasCurrentConfig: Boolean(PDS.currentConfig),
+          currentConfigKeys: Object.keys(PDS.currentConfig || {}),
+          hasCompiled: Boolean(PDS.compiled),
+          compiledTopLevelKeys: Object.keys(PDS.compiled || {}),
+          currentPreset: PDS.currentPreset || null,
+        };
+      },
+      maxWidth: 'max-w-3xl'
+    });
   }
 };
 

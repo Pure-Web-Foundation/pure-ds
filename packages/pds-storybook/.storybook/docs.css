@@ -2,9 +2,12 @@
 
 /* Override Storybook's default mono font for code panels */
 pre, code, .docblock-source pre, .docblock-source code {
-  font-family: 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
-  font-size: 13.6px;
-  line-height: 24px;
+  font-family: var(--pds-shiki-font-family, 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace) !important;
+  font-size: var(--pds-shiki-font-size, 13.6px);
+  line-height: var(--pds-shiki-line-height, 24px);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 /* Hide ALL story previews and interactive elements in Docs */

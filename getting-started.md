@@ -187,16 +187,6 @@ npm run storybook
 
 ---
 
-## 9) Console quick wins
-
-```javascript
-PDS.theme = 'dark';
-await PDS.toast('Saved!', { type: 'success' });
-const tokens = PDS.compiled.tokens;
-```
-
----
-
 ## Need help?
 
 - **Homepage** https://www.pure-ds.com/

@@ -10,7 +10,6 @@ import {
   renderTable,
   navigateToStory
 } from './reference-helpers.js';
-import { escapeHtml as shikiEscapeHtml } from '../utils/shiki.js';
 
 export class PdsReferenceCatalog extends LitElement {
   static properties = {
@@ -145,7 +144,7 @@ export class PdsReferenceCatalog extends LitElement {
       ${component.description ? html`
         <section class="card surface-base flex flex-col gap-sm">
           <h3 style="margin: 0;">Manifest Notes</h3>
-          <pre class="surface-subtle radius-lg text-sm overflow-auto" style="margin: 0; padding: var(--spacing-3);">${component.description}</pre>
+          <div class="card surface-subtle">${renderMarkdown(component.description)}</div>
         </section>
       ` : nothing}
 
@@ -319,7 +318,7 @@ export class PdsReferenceCatalog extends LitElement {
       ${utilities.length ? html`
         <section class="card surface-base flex flex-col gap-sm">
           <h3 style="margin: 0;">Utility Classes</h3>
-          <pre class="surface-subtle radius-lg text-sm overflow-auto" style="margin: 0; padding: var(--spacing-3);">${utilities.join('\n')}</pre>
+          <pds-code lang="text" .code=${utilities.join('\n')}></pds-code>
         </section>
       ` : nothing}
     `;
@@ -391,8 +390,6 @@ export class PdsReferenceCatalog extends LitElement {
       : (name || id || (selector?.toString?.() !== '[object Object]' ? String(selector) : '(unknown selector)'));
     const demoMarkup = typeof demoHtml === 'string' ? demoHtml.trim() : '';
     const formattedDemoHtml = demoMarkup ? formatDemoHtml(demoMarkup) : '';
-    // Use sync escaping instead of async shiki highlighting to avoid Promise in template
-    const highlightedDemoHtml = formattedDemoHtml ? shikiEscapeHtml(formattedDemoHtml) : '';
     const hasDetails = Boolean(description || demoMarkup);
 
     if (demoMarkup) {
@@ -412,8 +409,8 @@ export class PdsReferenceCatalog extends LitElement {
             <div class="surface-subtle radius-lg pds-ref-demo" style="padding: var(--spacing-3);">
               ${unsafeHTML(demoMarkup)}
             </div>
-            ${highlightedDemoHtml && typeof highlightedDemoHtml === 'string' ? html`
-              <pre class="html-source-pre radius-lg text-sm overflow-auto" style="margin: 0;"><code class="html-source-code">${unsafeHTML(highlightedDemoHtml)}</code></pre>
+            ${formattedDemoHtml ? html`
+              <pds-code lang="html" .code=${formattedDemoHtml}></pds-code>
             ` : nothing}
           </div>
         ` : nothing}

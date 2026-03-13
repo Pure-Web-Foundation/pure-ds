@@ -1,5 +1,6 @@
 import { renderCodeBlock, getCurrentTheme, preloadShiki } from './shiki.js';
 import { PDS } from '#pds';
+import { pdsObjectDocsParameters } from './pds-object-meta.js';
 
 const ensureParse = () => {
   if (typeof PDS?.parse === 'function') {
@@ -14,17 +15,12 @@ const sampleHtml = '<div class="card"><p>Hello PDS</p></div><span>World</span>';
 
 export default {
   title: 'PDS/PDS Object',
-  tags: ['runtime', 'api', 'utilities', 'reference', 'parse'],
+  tags: ['autodocs', 'runtime', 'api', 'reference', 'utilities', 'pds-object', 'parse'],
   parameters: {
     pds: {
-      tags: ['runtime', 'api', 'reference', 'pds-parse']
+      tags: ['runtime', 'api', 'reference', 'pds-object', 'pds-start', 'pds-compiled', 'pds-enums', 'pds-ask', 'pds-toast', 'pds-parse']
     },
-    docs: {
-      disable: true,
-      description: {
-        component: 'Parse HTML strings into DOM elements using the PDS helper.'
-      }
-    }
+    docs: pdsObjectDocsParameters
   }
 };
 

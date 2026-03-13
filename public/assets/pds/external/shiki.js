@@ -5,7 +5,7 @@ let shikiModulePromise = null;
 async function loadShikiModule() {
   if (shikiModulePromise) return shikiModulePromise;
 
-  shikiModulePromise = import(SHIKI_CDN_URL).catch((error) => {
+  shikiModulePromise = import(/* @vite-ignore */ SHIKI_CDN_URL).catch((error) => {
     shikiModulePromise = null;
     throw error;
   });
