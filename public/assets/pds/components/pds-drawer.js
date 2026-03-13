@@ -577,6 +577,7 @@ class PdsDrawer extends HTMLElement {
 
   #onKeyDown = (e) => {
     if (!this.open) return;
+    if (this.#hasActiveModalDialog()) return;
     if (e.key === "Escape") {
       e.preventDefault();
       e.stopPropagation();
@@ -593,12 +594,22 @@ class PdsDrawer extends HTMLElement {
 
   #onFocusIn = (e) => {
     if (!this.open) return;
+    if (this.#hasActiveModalDialog()) return;
     const target = e.target;
     const inShadow = this.shadowRoot?.contains(target);
     const inLight = this.contains(target);
     if (inShadow || inLight) return;
     this.#focusInitial();
   };
+
+  #hasActiveModalDialog() {
+    try {
+      return Boolean(document.querySelector("dialog:modal"));
+    } catch {
+      // Fallback for engines without :modal support.
+      return Boolean(document.querySelector("dialog[open]"));
+    }
+  }
 
   #onPointerDown = (e) => {
     if (this._drag === "none") return;
