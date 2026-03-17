@@ -138,15 +138,15 @@ button { all: unset; }`;
     const pdsCode = `/* Provides sensible styles */
 :where(blockquote) {
   border-left: 4px solid 
-    var(--color-primary-500);
+    var(--color-link);
   background: var(--surface-subtle);
 }`;
 
     const specificityCode = `/* PDS default (specificity: 0,0,0) */
-:where(blockquote) { border-left-color: var(--color-primary-500); }
+  :where(blockquote) { border-left-color: var(--color-link); }
 
 /* Your override wins automatically (specificity: 0,1,0) */
-.my-quote { border-left-color: var(--color-accent-500); }`;
+  .my-quote { border-left-color: var(--color-accent-text); }`;
 
     renderCodeBlock(container.querySelector('.code-traditional'), traditionalCode, 'css', getCurrentTheme());
     renderCodeBlock(container.querySelector('.code-pds'), pdsCode, 'css', getCurrentTheme());

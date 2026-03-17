@@ -26,8 +26,8 @@ const splitpanelStoryStyles = html`
     .story-splitpanel-console { 
       background: var(--color-gray-900); 
       color: var(--color-gray-200);
-      & .story-cmd { color: var(--color-primary-400); }
-      & .story-meta { color: var(--color-success-500); }
+      & .story-cmd { color: var(--color-primary-text); }
+      & .story-meta { color: var(--color-success-text); }
     }
     .story-splitpanel-stat { 
       font-size: 2.5rem; 
@@ -329,27 +329,27 @@ export const StyledSplitter = () => html`
   ${splitpanelStoryStyles}
   <style>
     .primary-splitter::part(splitter) {
-      background-color: var(--color-primary-500);
+      background-color: var(--color-primary-fill);
       width: 6px;
       transition: background-color 0.15s ease;
-      &:hover { background-color: var(--color-primary-400); }
+      &:hover { background-color: var(--color-primary-fill-hover); }
     }
     .wide-splitter::part(splitter) {
-      background-color: var(--color-accent-500);
+      background-color: var(--color-accent-fill);
       width: 10px;
       transition: background-color 0.15s ease;
-      &:hover { background-color: var(--color-accent-400); }
+      &:hover { background-color: var(--color-accent-fill-hover); }
     }
     .subtle-splitter::part(splitter) {
       background-color: var(--surface-elevated-bg);
       transition: background-color 0.15s ease, box-shadow 0.15s ease;
     }
     .subtle-splitter::part(splitter):hover { 
-      background-color: var(--color-primary-500); 
+      background-color: var(--color-primary-fill); 
       box-shadow: var(--shadow-md);
     }
     .gradient-splitter::part(splitter) {
-      background: linear-gradient(180deg, var(--color-secondary-400), var(--color-accent-500));
+      background: linear-gradient(180deg, var(--color-text-secondary), var(--color-accent-fill));
       width: 8px;
       transition: opacity 0.15s ease;
       &:hover { opacity: 0.8; }

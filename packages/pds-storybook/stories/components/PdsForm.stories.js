@@ -614,7 +614,7 @@ Inject custom HTML content before/after fields, create fully custom renderers, o
 // Custom wrapper with colored border
 "/email": {
   "ui:wrapper": (field) => html\`
-    <div style="border-left: 5px solid var(--color-primary-500); padding-left: var(--spacing-sm);">
+    <div style="border-left: 5px solid var(--color-primary-fill); padding-left: var(--spacing-sm);">
       <label for=\${field.id}>
         <span data-label>\${field.label}</span>
         \${field.control}
@@ -4900,9 +4900,9 @@ The wrapper function receives a \`field\` object with: \`{ control, label, help,
             <span
               class="text-sm"
               style="color: var(${isOver
-                ? "--color-danger-600"
+                ? "--color-danger-text"
                 : isWarning
-                ? "--color-warning-600"
+                ? "--color-warning-text"
                 : "--color-text-muted"})"
             >
               ${currentLength}/${maxLength}

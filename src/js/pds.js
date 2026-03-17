@@ -253,7 +253,7 @@ async function __loadLocalizationRuntime() {
       "pds-localization.js"
     );
 
-    __localizationPromise = import(localizationModuleURL)
+    __localizationPromise = import(/* @vite-ignore */ localizationModuleURL)
       .then((mod) => {
         if (
           typeof mod?.msg !== "function" ||
@@ -467,7 +467,7 @@ async function __loadDefaultEnhancers() {
       "pds-enhancers.js",
       PDS.currentConfig?.enhancersURL
     );
-    __defaultEnhancersPromise = import(enhancersModuleURL)
+    __defaultEnhancersPromise = import(/* @vite-ignore */ enhancersModuleURL)
       .then((mod) => {
         const enhancers = Array.isArray(mod?.defaultPDSEnhancers)
           ? mod.defaultPDSEnhancers
@@ -492,7 +492,7 @@ async function __loadAsk() {
       "pds-ask.js",
       PDS.currentConfig?.askURL
     );
-    __askPromise = import(askModuleURL)
+    __askPromise = import(/* @vite-ignore */ askModuleURL)
       .then((mod) => {
         const impl = mod?.ask;
         if (typeof impl !== "function") {
@@ -518,7 +518,7 @@ async function __loadToast() {
       "pds-toast.js",
       PDS.currentConfig?.toastURL
     );
-    __toastPromise = import(toastModuleURL)
+    __toastPromise = import(/* @vite-ignore */ toastModuleURL)
       .then((mod) => {
         const impl = mod?.toast;
         if (typeof impl !== "function") {

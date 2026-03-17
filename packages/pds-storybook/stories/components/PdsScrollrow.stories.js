@@ -63,7 +63,7 @@ const scrollrowStoryStyles = html`
     .story-product-price {
       font-size: var(--font-size-xl);
       font-weight: var(--font-weight-bold);
-      color: var(--color-primary-600);
+      color: var(--color-link);
     }
   </style>
 `;
@@ -198,15 +198,15 @@ export const CustomStyledButtons = () => html`
   <style>
     .story-scrollrow-custom-buttons::part(prev),
     .story-scrollrow-custom-buttons::part(next) {
-      background: rgba(var(--color-primary-rgb), 0.15);
-      border: 2px solid var(--color-primary);
-      color: var(--color-primary);
+      background: color-mix(in oklab, var(--color-primary-fill) 15%, transparent);
+      border: 2px solid var(--color-link);
+      color: var(--color-link);
       border-radius: var(--radius-full);
       backdrop-filter: blur(4px);
     }
     .story-scrollrow-custom-buttons::part(prev):hover,
     .story-scrollrow-custom-buttons::part(next):hover {
-      background: rgba(var(--color-primary-rgb), 0.3);
+      background: color-mix(in oklab, var(--color-primary-fill) 30%, transparent);
     }
   </style>
   <div class="stack-md">
@@ -238,9 +238,9 @@ export const ExternalButtons = () => html`
       display: none;
     }
     .story-external-nav-btn {
-      background: rgba(var(--color-surface-rgb), 0.8);
+      background: color-mix(in oklab, var(--color-surface-base) 80%, transparent);
       border: 2px solid var(--color-border);
-      color: var(--color-text);
+      color: var(--color-text-primary);
       width: 3rem;
       height: 3rem;
       border-radius: var(--radius-full);
@@ -249,9 +249,9 @@ export const ExternalButtons = () => html`
       transition: all 0.2s ease;
     }
     .story-external-nav-btn:hover {
-      background: var(--color-primary);
-      border-color: var(--color-primary);
-      color: var(--color-on-primary);
+      background: var(--color-primary-fill);
+      border-color: var(--color-primary-fill);
+      color: var(--color-primary-contrast);
     }
   </style>
   <div class="stack-sm">

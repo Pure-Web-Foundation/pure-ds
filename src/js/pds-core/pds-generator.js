@@ -190,20 +190,70 @@ export class Generator {
       );
     }
 
-    // NEW: Generate interactive semantic tokens for buttons vs links/outlines
-    // Use purpose-specific shade selection for optimal contrast
+    // Generate semantic interactive role tokens so components can avoid hardcoded ramp picks.
     colors.interactive = {
+      light: this.#buildInteractiveRoleTokens(
+        colors.primary,
+        colors.surface.base,
+      ),
+      dark: this.#buildInteractiveRoleTokens(
+        colors.dark.primary,
+        colors.dark.surface.base,
+      ),
+    };
+
+    // Accent role tokens mirror primary behavior for expressive accents on UI surfaces.
+    colors.accentInteractive = {
+      light: this.#buildInteractiveRoleTokens(
+        colors.accent,
+        colors.surface.base,
+      ),
+      dark: this.#buildInteractiveRoleTokens(
+        colors.dark.accent,
+        colors.dark.surface.base,
+      ),
+    };
+
+    colors.surfaceAccent = {
+      light: this.#buildSurfaceAccentTokens(colors.accent, colors.surface),
+      dark: this.#buildSurfaceAccentTokens(colors.dark.accent, colors.dark.surface),
+    };
+
+    // Semantic role tokens for danger (mirrors primary/accent pattern).
+    colors.dangerInteractive = {
+      light: this.#buildInteractiveRoleTokens(colors.danger, colors.surface.base),
+      dark: this.#buildInteractiveRoleTokens(colors.dark.danger, colors.dark.surface.base),
+    };
+
+    // Status role tokens for success/warning/info to avoid hardcoded shade picks in UI roles.
+    colors.successInteractive = {
+      light: this.#buildInteractiveRoleTokens(colors.success, colors.surface.base),
+      dark: this.#buildInteractiveRoleTokens(colors.dark.success, colors.dark.surface.base),
+    };
+
+    colors.warningInteractive = {
+      light: this.#buildInteractiveRoleTokens(colors.warning, colors.surface.base),
+      dark: this.#buildInteractiveRoleTokens(colors.dark.warning, colors.dark.surface.base),
+    };
+
+    colors.infoInteractive = {
+      light: this.#buildInteractiveRoleTokens(colors.info, colors.surface.base),
+      dark: this.#buildInteractiveRoleTokens(colors.dark.info, colors.dark.surface.base),
+    };
+
+    // Surface-aware semantic status text tokens for all core status families.
+    colors.surfaceStatus = {
       light: {
-        fill: this.#pickFillShadeForWhite(colors.primary, 4.5), // For button fills with white text
-        text: colors.primary[600], // For links/outlines on light backgrounds
+        success: this.#buildSurfaceAccentTokens(colors.success, colors.surface),
+        warning: this.#buildSurfaceAccentTokens(colors.warning, colors.surface),
+        info: this.#buildSurfaceAccentTokens(colors.info, colors.surface),
+        danger: this.#buildSurfaceAccentTokens(colors.danger, colors.surface),
       },
       dark: {
-        fill: this.#pickFillShadeForWhite(colors.dark.primary, 4.5), // For button fills with white text
-        text: this.#pickReadablePrimaryOnSurface(
-          colors.dark.primary,
-          colors.dark.surface.base,
-          4.5,
-        ), // For links/outlines on dark backgrounds
+        success: this.#buildSurfaceAccentTokens(colors.dark.success, colors.dark.surface),
+        warning: this.#buildSurfaceAccentTokens(colors.dark.warning, colors.dark.surface),
+        info: this.#buildSurfaceAccentTokens(colors.dark.info, colors.dark.surface),
+        danger: this.#buildSurfaceAccentTokens(colors.dark.danger, colors.dark.surface),
       },
     };
 
@@ -338,34 +388,26 @@ export class Generator {
 
     const darkSurface = this.#generateBackgroundShades(darkBackgroundBase);
 
-    // Determine a readable primary text shade for outline/link on dark surfaces
-    const derivedPrimaryScale = overrides.primary
-      ? this.#generateColorScale(overrides.primary)
-      : this.#adjustColorsForDarkMode(lightColors.primary);
+    const buildScale = (overrideColor, fallbackScale) =>
+      overrideColor ? this.#generateColorScale(overrideColor) : fallbackScale;
 
     return {
       surface: {
         ...darkSurface,
         fieldset: this.#generateDarkModeFieldsetColors(darkSurface),
       },
-      // For primary colors, use override, or adjust light colors for dark mode (dimmed for accessibility)
-      primary: derivedPrimaryScale,
-      // Adjust other colors for dark mode, with optional overrides
-      secondary: overrides.secondary
-        ? this.#generateColorScale(overrides.secondary)
-        : this.#adjustColorsForDarkMode(lightColors.secondary),
-      accent: overrides.accent
-        ? this.#generateColorScale(overrides.accent)
-        : this.#adjustColorsForDarkMode(lightColors.accent),
-      // Regenerate grays if secondary override is provided (grays are derived from secondary)
+      // Keep scale direction stable in both themes (50 = lightest, 900 = darkest).
+      primary: buildScale(overrides.primary, lightColors.primary),
+      secondary: buildScale(overrides.secondary, lightColors.secondary),
+      accent: buildScale(overrides.accent, lightColors.accent),
+      // Grays are derived from secondary, so only regenerate when secondary is overridden.
       gray: overrides.secondary
         ? this.#generateGrayScale(overrides.secondary)
         : lightColors.gray,
-      // Adjust semantic colors for dark mode
-      success: this.#adjustColorsForDarkMode(lightColors.success),
-      info: this.#adjustColorsForDarkMode(lightColors.info),
-      warning: this.#adjustColorsForDarkMode(lightColors.warning),
-      danger: this.#adjustColorsForDarkMode(lightColors.danger),
+      success: buildScale(overrides.success, lightColors.success),
+      info: buildScale(overrides.info, lightColors.info),
+      warning: buildScale(overrides.warning, lightColors.warning),
+      danger: buildScale(overrides.danger, lightColors.danger),
     };
   }
 
@@ -473,6 +515,55 @@ export class Generator {
     return best.color || primaryScale?.["600"] || primaryScale?.["500"];
   }
 
+  #buildInteractiveRoleTokens(scale = {}, surfaceBg = "#ffffff") {
+    const isDarkSurface = this.#luminance(surfaceBg) < 0.18;
+    const fill = this.#pickFillShadeForWhite(scale, 4.5);
+    // On dark surfaces hover/active should lighten the fill (move toward visible);
+    // on light surfaces they should deepen it.
+    const fillHover = isDarkSurface
+      ? this.#lightenColor(fill, 0.15)
+      : this.#darkenColor(fill, 0.1);
+    const fillActive = isDarkSurface
+      ? this.#lightenColor(fill, 0.07)
+      : this.#darkenColor(fill, 0.2);
+    const text = this.#pickReadablePrimaryOnSurface(scale, surfaceBg, 4.5);
+    const textHover = this.#pickReadablePrimaryOnSurface(scale, surfaceBg, 5.5);
+    const focusRing = this.#pickReadablePrimaryOnSurface(scale, surfaceBg, 3.0);
+
+    return {
+      fill,
+      fillHover,
+      fillActive,
+      text,
+      textHover: textHover || text,
+      // Keep visited links legible by subtly mixing with the current surface context.
+      textVisited: this.#mixTowards(text || fill, surfaceBg, 0.2),
+      focusRing: focusRing || text || fill,
+      selectionBg: text || fill,
+      selectionText: this.#findReadableOnColor(text || fill, 4.5),
+      contrast: this.#findReadableOnColor(fill, 4.5),
+    };
+  }
+
+  #buildSurfaceAccentTokens(scale = {}, surfaces = {}) {
+    const roles = {};
+
+    Object.entries(surfaces).forEach(([surfaceKey, bgColor]) => {
+      if (!bgColor || typeof bgColor !== "string" || !bgColor.startsWith("#")) {
+        return;
+      }
+
+      const text = this.#pickReadablePrimaryOnSurface(scale, bgColor, 4.5);
+      const textHover = this.#pickReadablePrimaryOnSurface(scale, bgColor, 5.0);
+      roles[surfaceKey] = {
+        text,
+        textHover: textHover || text,
+      };
+    });
+
+    return roles;
+  }
+
   // Pick a color scale shade that supports white text at AA
   #pickFillShadeForWhite(scale = {}, target = 4.5) {
     const order = ["600", "700", "800", "500", "400", "900"]; // typical UI fills
@@ -549,46 +640,6 @@ export class Generator {
     const hsl = this.#hexToHsl(hexColor);
     const lighterLightness = Math.min(hsl.l + (100 - hsl.l) * factor, 95);
     return this.#hslToHex(hsl.h, hsl.s, lighterLightness);
-  }
-
-  #adjustColorsForDarkMode(colorScale) {
-    // Create dimmed and inverted colors for dark mode
-    const dimmedScale = {};
-
-    // Invert the scale and apply dimming for better dark mode appearance
-    // For accessibility, mid-range colors (used for buttons/interactive elements) are more heavily dimmed
-    const mapping = {
-      50: { source: "900", dimFactor: 0.8 },
-      100: { source: "800", dimFactor: 0.8 },
-      200: { source: "700", dimFactor: 0.8 }, // Increased dimming
-      300: { source: "600", dimFactor: 0.8 }, // Increased dimming
-      400: { source: "500", dimFactor: 0.85 }, // Increased dimming
-      500: { source: "400", dimFactor: 0.85 }, // Increased dimming
-      600: { source: "300", dimFactor: 0.85 }, // Increased dimming (buttons use this!)
-      700: { source: "200", dimFactor: 0.85 }, // Increased dimming (button hover)
-      800: { source: "100", dimFactor: 0.95 }, // Less dimming for text
-      900: { source: "50", dimFactor: 0.95 }, // Less dimming for text
-    };
-
-    Object.entries(mapping).forEach(([key, config]) => {
-      const sourceColor = colorScale[config.source];
-      dimmedScale[key] = this.#dimColorForDarkMode(
-        sourceColor,
-        config.dimFactor,
-      );
-    });
-
-    return dimmedScale;
-  }
-
-  #dimColorForDarkMode(hexColor, dimFactor = 0.8) {
-    const hsl = this.#hexToHsl(hexColor);
-
-    // Reduce saturation and lightness for dark mode, similar to image dimming
-    const dimmedSaturation = Math.max(hsl.s * dimFactor, 5);
-    const dimmedLightness = Math.max(hsl.l * dimFactor, 5);
-
-    return this.#hslToHex(hsl.h, dimmedSaturation, dimmedLightness);
   }
 
   /**
@@ -1044,6 +1095,13 @@ export class Generator {
       if (category === "dark") return; // handled elsewhere
       if (category === "surfaceSmart") return; // handled below
       if (category === "interactive") return; // handled below with semantic tokens
+      if (category === "accentInteractive") return;
+      if (category === "dangerInteractive") return;
+      if (category === "successInteractive") return;
+      if (category === "warningInteractive") return;
+      if (category === "infoInteractive") return;
+      if (category === "surfaceAccent") return;
+      if (category === "surfaceStatus") return;
       if (typeof values === "object" && values !== null) {
         generateNestedColors(values, `${category}-`);
       }
@@ -1075,7 +1133,7 @@ export class Generator {
     chunks.push(`  /* Semantic Text Colors */\n`);
     chunks.push(`  --color-text-primary: var(--color-gray-900);\n`);
     chunks.push(`  --color-text-secondary: var(--color-gray-600);\n`);
-    chunks.push(`  --color-text-muted: var(--color-gray-600);\n`);
+    chunks.push(`  --color-text-muted: var(--color-gray-500);\n`);
     chunks.push(`  --color-border: var(--color-gray-300);\n`);
     chunks.push(`  --color-input-bg: var(--color-surface-base);\n`);
     chunks.push(`  --color-input-disabled-bg: var(--color-gray-50);\n`);
@@ -1091,8 +1149,123 @@ export class Generator {
         `  --color-primary-fill: ${colors.interactive.light.fill}; /* For button backgrounds with white text */\n`,
       );
       chunks.push(
+        `  --color-primary-fill-hover: ${colors.interactive.light.fillHover};\n`,
+      );
+      chunks.push(
+        `  --color-primary-fill-active: ${colors.interactive.light.fillActive};\n`,
+      );
+      chunks.push(
         `  --color-primary-text: ${colors.interactive.light.text}; /* For links and outline buttons on light surfaces */\n`,
       );
+      chunks.push(
+        `  --color-primary-text-hover: ${colors.interactive.light.textHover};\n`,
+      );
+      chunks.push(
+        `  --color-primary-text-visited: ${colors.interactive.light.textVisited};\n`,
+      );
+      chunks.push(
+        `  --color-primary-contrast: ${colors.interactive.light.contrast};\n`,
+      );
+      chunks.push(
+        `  --color-focus-ring: ${colors.interactive.light.focusRing};\n`,
+      );
+      chunks.push(
+        `  --color-selection-bg: ${colors.interactive.light.selectionBg};\n`,
+      );
+      chunks.push(
+        `  --color-selection-text: ${colors.interactive.light.selectionText};\n`,
+      );
+      chunks.push(`  --color-link: var(--color-primary-text);\n`);
+      chunks.push(`  --color-link-hover: var(--color-primary-text-hover);\n`);
+      chunks.push(`  --color-link-visited: var(--color-primary-text-visited);\n`);
+    }
+
+    if (colors.accentInteractive?.light) {
+      chunks.push(`  /* Accent Role Colors */\n`);
+      chunks.push(
+        `  --color-accent-fill: ${colors.accentInteractive.light.fill};\n`,
+      );
+      chunks.push(
+        `  --color-accent-fill-hover: ${colors.accentInteractive.light.fillHover};\n`,
+      );
+      chunks.push(
+        `  --color-accent-fill-active: ${colors.accentInteractive.light.fillActive};\n`,
+      );
+      chunks.push(
+        `  --color-accent-text: ${colors.accentInteractive.light.text};\n`,
+      );
+      chunks.push(
+        `  --color-accent-text-hover: ${colors.accentInteractive.light.textHover};\n`,
+      );
+    }
+
+    if (colors.surfaceAccent?.light) {
+      chunks.push(`  /* Surface-Aware Accent Text Tokens */\n`);
+      Object.entries(colors.surfaceAccent.light).forEach(([surfaceKey, role]) => {
+        chunks.push(`  --surface-${surfaceKey}-accent-text: ${role.text};\n`);
+        chunks.push(
+          `  --surface-${surfaceKey}-accent-text-hover: ${role.textHover};\n`,
+        );
+      });
+    }
+
+    if (colors.dangerInteractive?.light) {
+      chunks.push(`  /* Danger Role Colors */\n`);
+      chunks.push(`  --color-danger-fill: ${colors.dangerInteractive.light.fill};\n`);
+      chunks.push(`  --color-danger-fill-hover: ${colors.dangerInteractive.light.fillHover};\n`);
+      chunks.push(`  --color-danger-fill-active: ${colors.dangerInteractive.light.fillActive};\n`);
+      chunks.push(`  --color-danger-text: ${colors.dangerInteractive.light.text};\n`);
+      chunks.push(`  --color-danger-text-hover: ${colors.dangerInteractive.light.textHover};\n`);
+      chunks.push(`  --color-danger-contrast: ${colors.dangerInteractive.light.contrast};\n`);
+    }
+
+    if (colors.successInteractive?.light) {
+      chunks.push(`  /* Success Role Colors */\n`);
+      chunks.push(`  --color-success-fill: ${colors.successInteractive.light.fill};\n`);
+      chunks.push(`  --color-success-fill-hover: ${colors.successInteractive.light.fillHover};\n`);
+      chunks.push(`  --color-success-fill-active: ${colors.successInteractive.light.fillActive};\n`);
+      chunks.push(`  --color-success-text: ${colors.successInteractive.light.text};\n`);
+      chunks.push(`  --color-success-text-hover: ${colors.successInteractive.light.textHover};\n`);
+      chunks.push(`  --color-success-contrast: ${colors.successInteractive.light.contrast};\n`);
+    }
+
+    if (colors.warningInteractive?.light) {
+      chunks.push(`  /* Warning Role Colors */\n`);
+      chunks.push(`  --color-warning-fill: ${colors.warningInteractive.light.fill};\n`);
+      chunks.push(`  --color-warning-fill-hover: ${colors.warningInteractive.light.fillHover};\n`);
+      chunks.push(`  --color-warning-fill-active: ${colors.warningInteractive.light.fillActive};\n`);
+      chunks.push(`  --color-warning-text: ${colors.warningInteractive.light.text};\n`);
+      chunks.push(`  --color-warning-text-hover: ${colors.warningInteractive.light.textHover};\n`);
+      chunks.push(`  --color-warning-contrast: ${colors.warningInteractive.light.contrast};\n`);
+    }
+
+    if (colors.infoInteractive?.light) {
+      chunks.push(`  /* Info Role Colors */\n`);
+      chunks.push(`  --color-info-fill: ${colors.infoInteractive.light.fill};\n`);
+      chunks.push(`  --color-info-fill-hover: ${colors.infoInteractive.light.fillHover};\n`);
+      chunks.push(`  --color-info-fill-active: ${colors.infoInteractive.light.fillActive};\n`);
+      chunks.push(`  --color-info-text: ${colors.infoInteractive.light.text};\n`);
+      chunks.push(`  --color-info-text-hover: ${colors.infoInteractive.light.textHover};\n`);
+      chunks.push(`  --color-info-contrast: ${colors.infoInteractive.light.contrast};\n`);
+    }
+
+    if (colors.surfaceStatus?.light) {
+      chunks.push(`  /* Surface-Aware Status Text Tokens */\n`);
+      Object.entries(colors.surfaceStatus.light).forEach(([family, roleBySurface]) => {
+        Object.entries(roleBySurface).forEach(([surfaceKey, role]) => {
+          chunks.push(`  --surface-${surfaceKey}-${family}-text: ${role.text};\n`);
+          chunks.push(`  --surface-${surfaceKey}-${family}-text-hover: ${role.textHover};\n`);
+        });
+      });
+    }
+
+    // Callout display tokens — theme-aware shade aliases for callout bg/border/text.
+    // Dark mode overrides these in the dark variables section.
+    chunks.push(`  /* Semantic Callout Display Tokens */\n`);
+    for (const family of ['success', 'info', 'warning', 'danger']) {
+      chunks.push(`  --color-${family}-display-bg: var(--color-${family}-50);\n`);
+      chunks.push(`  --color-${family}-display-border: var(--color-${family}-600);\n`);
+      chunks.push(`  --color-${family}-display-text: var(--color-${family}-900);\n`);
     }
 
     // Translucent surface tokens
@@ -1317,7 +1490,145 @@ export class Generator {
       smartLines.push(`\n`);
     }
 
-    const semantic = `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-600);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n`;
+    const interactiveLines = [];
+    if (colors.interactive?.dark) {
+      interactiveLines.push(
+        `  /* Interactive Colors - optimized for specific use cases (dark mode) */\n`,
+      );
+      interactiveLines.push(
+        `  --color-primary-fill: ${colors.interactive.dark.fill};\n`,
+      );
+      interactiveLines.push(
+        `  --color-primary-fill-hover: ${colors.interactive.dark.fillHover};\n`,
+      );
+      interactiveLines.push(
+        `  --color-primary-fill-active: ${colors.interactive.dark.fillActive};\n`,
+      );
+      interactiveLines.push(
+        `  --color-primary-text: ${colors.interactive.dark.text};\n`,
+      );
+      interactiveLines.push(
+        `  --color-primary-text-hover: ${colors.interactive.dark.textHover};\n`,
+      );
+      interactiveLines.push(
+        `  --color-primary-text-visited: ${colors.interactive.dark.textVisited};\n`,
+      );
+      interactiveLines.push(
+        `  --color-primary-contrast: ${colors.interactive.dark.contrast};\n`,
+      );
+      interactiveLines.push(
+        `  --color-focus-ring: ${colors.interactive.dark.focusRing};\n`,
+      );
+      interactiveLines.push(
+        `  --color-selection-bg: ${colors.interactive.dark.selectionBg};\n`,
+      );
+      interactiveLines.push(
+        `  --color-selection-text: ${colors.interactive.dark.selectionText};\n`,
+      );
+      interactiveLines.push(`  --color-link: var(--color-primary-text);\n`);
+      interactiveLines.push(`  --color-link-hover: var(--color-primary-text-hover);\n`);
+      interactiveLines.push(`  --color-link-visited: var(--color-primary-text-visited);\n`);
+    }
+
+    const accentLines = [];
+    if (colors.accentInteractive?.dark) {
+      accentLines.push(`  /* Accent Role Colors (dark mode) */\n`);
+      accentLines.push(
+        `  --color-accent-fill: ${colors.accentInteractive.dark.fill};\n`,
+      );
+      accentLines.push(
+        `  --color-accent-fill-hover: ${colors.accentInteractive.dark.fillHover};\n`,
+      );
+      accentLines.push(
+        `  --color-accent-fill-active: ${colors.accentInteractive.dark.fillActive};\n`,
+      );
+      accentLines.push(
+        `  --color-accent-text: ${colors.accentInteractive.dark.text};\n`,
+      );
+      accentLines.push(
+        `  --color-accent-text-hover: ${colors.accentInteractive.dark.textHover};\n`,
+      );
+    }
+
+    const surfaceAccentLines = [];
+    if (colors.surfaceAccent?.dark) {
+      surfaceAccentLines.push(`  /* Surface-Aware Accent Text Tokens (dark mode) */\n`);
+      Object.entries(colors.surfaceAccent.dark).forEach(([surfaceKey, role]) => {
+        surfaceAccentLines.push(
+          `  --surface-${surfaceKey}-accent-text: ${role.text};\n`,
+        );
+        surfaceAccentLines.push(
+          `  --surface-${surfaceKey}-accent-text-hover: ${role.textHover};\n`,
+        );
+      });
+    }
+
+    const dangerLines = [];
+    if (colors.dangerInteractive?.dark) {
+      dangerLines.push(`  /* Danger Role Colors (dark mode) */\n`);
+      dangerLines.push(`  --color-danger-fill: ${colors.dangerInteractive.dark.fill};\n`);
+      dangerLines.push(`  --color-danger-fill-hover: ${colors.dangerInteractive.dark.fillHover};\n`);
+      dangerLines.push(`  --color-danger-fill-active: ${colors.dangerInteractive.dark.fillActive};\n`);
+      dangerLines.push(`  --color-danger-text: ${colors.dangerInteractive.dark.text};\n`);
+      dangerLines.push(`  --color-danger-text-hover: ${colors.dangerInteractive.dark.textHover};\n`);
+      dangerLines.push(`  --color-danger-contrast: ${colors.dangerInteractive.dark.contrast};\n`);
+    }
+
+    const successLines = [];
+    if (colors.successInteractive?.dark) {
+      successLines.push(`  /* Success Role Colors (dark mode) */\n`);
+      successLines.push(`  --color-success-fill: ${colors.successInteractive.dark.fill};\n`);
+      successLines.push(`  --color-success-fill-hover: ${colors.successInteractive.dark.fillHover};\n`);
+      successLines.push(`  --color-success-fill-active: ${colors.successInteractive.dark.fillActive};\n`);
+      successLines.push(`  --color-success-text: ${colors.successInteractive.dark.text};\n`);
+      successLines.push(`  --color-success-text-hover: ${colors.successInteractive.dark.textHover};\n`);
+      successLines.push(`  --color-success-contrast: ${colors.successInteractive.dark.contrast};\n`);
+    }
+
+    const warningLines = [];
+    if (colors.warningInteractive?.dark) {
+      warningLines.push(`  /* Warning Role Colors (dark mode) */\n`);
+      warningLines.push(`  --color-warning-fill: ${colors.warningInteractive.dark.fill};\n`);
+      warningLines.push(`  --color-warning-fill-hover: ${colors.warningInteractive.dark.fillHover};\n`);
+      warningLines.push(`  --color-warning-fill-active: ${colors.warningInteractive.dark.fillActive};\n`);
+      warningLines.push(`  --color-warning-text: ${colors.warningInteractive.dark.text};\n`);
+      warningLines.push(`  --color-warning-text-hover: ${colors.warningInteractive.dark.textHover};\n`);
+      warningLines.push(`  --color-warning-contrast: ${colors.warningInteractive.dark.contrast};\n`);
+    }
+
+    const infoLines = [];
+    if (colors.infoInteractive?.dark) {
+      infoLines.push(`  /* Info Role Colors (dark mode) */\n`);
+      infoLines.push(`  --color-info-fill: ${colors.infoInteractive.dark.fill};\n`);
+      infoLines.push(`  --color-info-fill-hover: ${colors.infoInteractive.dark.fillHover};\n`);
+      infoLines.push(`  --color-info-fill-active: ${colors.infoInteractive.dark.fillActive};\n`);
+      infoLines.push(`  --color-info-text: ${colors.infoInteractive.dark.text};\n`);
+      infoLines.push(`  --color-info-text-hover: ${colors.infoInteractive.dark.textHover};\n`);
+      infoLines.push(`  --color-info-contrast: ${colors.infoInteractive.dark.contrast};\n`);
+    }
+
+    const surfaceStatusLines = [];
+    if (colors.surfaceStatus?.dark) {
+      surfaceStatusLines.push(`  /* Surface-Aware Status Text Tokens (dark mode) */\n`);
+      Object.entries(colors.surfaceStatus.dark).forEach(([family, roleBySurface]) => {
+        Object.entries(roleBySurface).forEach(([surfaceKey, role]) => {
+          surfaceStatusLines.push(`  --surface-${surfaceKey}-${family}-text: ${role.text};\n`);
+          surfaceStatusLines.push(`  --surface-${surfaceKey}-${family}-text-hover: ${role.textHover};\n`);
+        });
+      });
+    }
+
+    // Callout display token overrides for dark mode.
+    // Use color-mix() to create a subtle hue-tinted surface (adapts to any dark bg),
+    // a visible medium-bright border, and light text — no hard shade guessing needed.
+    const calloutDisplayLines = [`  /* Semantic Callout Display Tokens (dark mode) */\n`];
+    for (const family of ['success', 'info', 'warning', 'danger']) {
+      calloutDisplayLines.push(`  --color-${family}-display-bg: color-mix(in oklab, var(--color-${family}-400) 12%, var(--color-surface-base));\n`);
+      calloutDisplayLines.push(`  --color-${family}-display-border: var(--color-${family}-400);\n`);
+      calloutDisplayLines.push(`  --color-${family}-display-text: var(--color-${family}-100);\n`);
+    }
+
+    const semantic = `  --color-text-primary: var(--color-gray-100);\n  --color-text-secondary: var(--color-gray-300);\n  --color-text-muted: var(--color-gray-500);\n  --color-border: var(--color-gray-700);\n  --color-input-bg: var(--color-gray-800);\n  --color-input-disabled-bg: var(--color-gray-900);\n  --color-input-disabled-text: var(--color-gray-600);\n  --color-code-bg: var(--color-gray-800);\n`;
 
     const backdrop = `  /* Backdrop tokens - dark mode */\n  --backdrop-bg: linear-gradient(\n      135deg,\n      rgba(0, 0, 0, 0.6),\n      rgba(0, 0, 0, 0.4)\n    );\n  --backdrop-blur: 10px;\n  --backdrop-saturate: 120%;\n  --backdrop-brightness: 0.7;\n  --backdrop-filter: blur(var(--backdrop-blur)) saturate(var(--backdrop-saturate)) brightness(var(--backdrop-brightness));\n  --backdrop-opacity: 1;\n  \n  /* Legacy alias for backwards compatibility */\n  --backdrop-background: var(--backdrop-bg);\n`;
 
@@ -1332,6 +1643,15 @@ export class Generator {
       ...smartLines,
       ...shadowLines,
       semantic,
+      ...interactiveLines,
+      ...accentLines,
+      ...surfaceAccentLines,
+      ...dangerLines,
+      ...successLines,
+      ...warningLines,
+      ...infoLines,
+      ...surfaceStatusLines,
+      ...calloutDisplayLines,
       backdrop,
       mesh,
     ].join("");
@@ -1405,17 +1725,141 @@ export class Generator {
         `    /* Interactive Colors - optimized for specific use cases (dark mode) */\n`,
       );
       interactiveLines.push(
-        `    --color-primary-fill: ${colors.interactive.dark.fill}; /* For button backgrounds with white text */\n`,
+        `    --color-primary-fill: ${colors.interactive.dark.fill};\n`,
       );
       interactiveLines.push(
-        `    --color-primary-text: ${colors.interactive.dark.text}; /* For links and outline buttons on dark surfaces */\n`,
+        `    --color-primary-fill-hover: ${colors.interactive.dark.fillHover};\n`,
       );
+      interactiveLines.push(
+        `    --color-primary-fill-active: ${colors.interactive.dark.fillActive};\n`,
+      );
+      interactiveLines.push(
+        `    --color-primary-text: ${colors.interactive.dark.text};\n`,
+      );
+      interactiveLines.push(
+        `    --color-primary-text-hover: ${colors.interactive.dark.textHover};\n`,
+      );
+      interactiveLines.push(
+        `    --color-primary-text-visited: ${colors.interactive.dark.textVisited};\n`,
+      );
+      interactiveLines.push(
+        `    --color-primary-contrast: ${colors.interactive.dark.contrast};\n`,
+      );
+      interactiveLines.push(
+        `    --color-focus-ring: ${colors.interactive.dark.focusRing};\n`,
+      );
+      interactiveLines.push(
+        `    --color-selection-bg: ${colors.interactive.dark.selectionBg};\n`,
+      );
+      interactiveLines.push(
+        `    --color-selection-text: ${colors.interactive.dark.selectionText};\n`,
+      );
+      interactiveLines.push(`    --color-link: var(--color-primary-text);\n`);
+      interactiveLines.push(`    --color-link-hover: var(--color-primary-text-hover);\n`);
+      interactiveLines.push(`    --color-link-visited: var(--color-primary-text-visited);\n`);
+    }
+
+    const accentLines = [];
+    if (colors.accentInteractive?.dark) {
+      accentLines.push(`    /* Accent Role Colors (dark mode) */\n`);
+      accentLines.push(
+        `    --color-accent-fill: ${colors.accentInteractive.dark.fill};\n`,
+      );
+      accentLines.push(
+        `    --color-accent-fill-hover: ${colors.accentInteractive.dark.fillHover};\n`,
+      );
+      accentLines.push(
+        `    --color-accent-fill-active: ${colors.accentInteractive.dark.fillActive};\n`,
+      );
+      accentLines.push(
+        `    --color-accent-text: ${colors.accentInteractive.dark.text};\n`,
+      );
+      accentLines.push(
+        `    --color-accent-text-hover: ${colors.accentInteractive.dark.textHover};\n`,
+      );
+    }
+
+    const surfaceAccentLines = [];
+    if (colors.surfaceAccent?.dark) {
+      surfaceAccentLines.push(
+        `    /* Surface-Aware Accent Text Tokens (dark mode) */\n`,
+      );
+      Object.entries(colors.surfaceAccent.dark).forEach(([surfaceKey, role]) => {
+        surfaceAccentLines.push(
+          `    --surface-${surfaceKey}-accent-text: ${role.text};\n`,
+        );
+        surfaceAccentLines.push(
+          `    --surface-${surfaceKey}-accent-text-hover: ${role.textHover};\n`,
+        );
+      });
+    }
+
+    const dangerLines2 = [];
+    if (colors.dangerInteractive?.dark) {
+      dangerLines2.push(`    /* Danger Role Colors (dark mode) */\n`);
+      dangerLines2.push(`    --color-danger-fill: ${colors.dangerInteractive.dark.fill};\n`);
+      dangerLines2.push(`    --color-danger-fill-hover: ${colors.dangerInteractive.dark.fillHover};\n`);
+      dangerLines2.push(`    --color-danger-fill-active: ${colors.dangerInteractive.dark.fillActive};\n`);
+      dangerLines2.push(`    --color-danger-text: ${colors.dangerInteractive.dark.text};\n`);
+      dangerLines2.push(`    --color-danger-text-hover: ${colors.dangerInteractive.dark.textHover};\n`);
+      dangerLines2.push(`    --color-danger-contrast: ${colors.dangerInteractive.dark.contrast};\n`);
+    }
+
+    const successLines2 = [];
+    if (colors.successInteractive?.dark) {
+      successLines2.push(`    /* Success Role Colors (dark mode) */\n`);
+      successLines2.push(`    --color-success-fill: ${colors.successInteractive.dark.fill};\n`);
+      successLines2.push(`    --color-success-fill-hover: ${colors.successInteractive.dark.fillHover};\n`);
+      successLines2.push(`    --color-success-fill-active: ${colors.successInteractive.dark.fillActive};\n`);
+      successLines2.push(`    --color-success-text: ${colors.successInteractive.dark.text};\n`);
+      successLines2.push(`    --color-success-text-hover: ${colors.successInteractive.dark.textHover};\n`);
+      successLines2.push(`    --color-success-contrast: ${colors.successInteractive.dark.contrast};\n`);
+    }
+
+    const warningLines2 = [];
+    if (colors.warningInteractive?.dark) {
+      warningLines2.push(`    /* Warning Role Colors (dark mode) */\n`);
+      warningLines2.push(`    --color-warning-fill: ${colors.warningInteractive.dark.fill};\n`);
+      warningLines2.push(`    --color-warning-fill-hover: ${colors.warningInteractive.dark.fillHover};\n`);
+      warningLines2.push(`    --color-warning-fill-active: ${colors.warningInteractive.dark.fillActive};\n`);
+      warningLines2.push(`    --color-warning-text: ${colors.warningInteractive.dark.text};\n`);
+      warningLines2.push(`    --color-warning-text-hover: ${colors.warningInteractive.dark.textHover};\n`);
+      warningLines2.push(`    --color-warning-contrast: ${colors.warningInteractive.dark.contrast};\n`);
+    }
+
+    const infoLines2 = [];
+    if (colors.infoInteractive?.dark) {
+      infoLines2.push(`    /* Info Role Colors (dark mode) */\n`);
+      infoLines2.push(`    --color-info-fill: ${colors.infoInteractive.dark.fill};\n`);
+      infoLines2.push(`    --color-info-fill-hover: ${colors.infoInteractive.dark.fillHover};\n`);
+      infoLines2.push(`    --color-info-fill-active: ${colors.infoInteractive.dark.fillActive};\n`);
+      infoLines2.push(`    --color-info-text: ${colors.infoInteractive.dark.text};\n`);
+      infoLines2.push(`    --color-info-text-hover: ${colors.infoInteractive.dark.textHover};\n`);
+      infoLines2.push(`    --color-info-contrast: ${colors.infoInteractive.dark.contrast};\n`);
+    }
+
+    const surfaceStatusLines2 = [];
+    if (colors.surfaceStatus?.dark) {
+      surfaceStatusLines2.push(`    /* Surface-Aware Status Text Tokens (dark mode) */\n`);
+      Object.entries(colors.surfaceStatus.dark).forEach(([family, roleBySurface]) => {
+        Object.entries(roleBySurface).forEach(([surfaceKey, role]) => {
+          surfaceStatusLines2.push(`    --surface-${surfaceKey}-${family}-text: ${role.text};\n`);
+          surfaceStatusLines2.push(`    --surface-${surfaceKey}-${family}-text-hover: ${role.textHover};\n`);
+        });
+      });
+    }
+
+    const calloutDisplayLines2 = [`    /* Semantic Callout Display Tokens (dark mode) */\n`];
+    for (const family of ['success', 'info', 'warning', 'danger']) {
+      calloutDisplayLines2.push(`    --color-${family}-display-bg: color-mix(in oklab, var(--color-${family}-400) 12%, var(--color-surface-base));\n`);
+      calloutDisplayLines2.push(`    --color-${family}-display-border: var(--color-${family}-400);\n`);
+      calloutDisplayLines2.push(`    --color-${family}-display-text: var(--color-${family}-100);\n`);
     }
 
     const semantic = [
       `    --color-text-primary: var(--color-gray-100);\n`,
       `    --color-text-secondary: var(--color-gray-300);\n`,
-      `    --color-text-muted: var(--color-gray-600);\n`,
+      `    --color-text-muted: var(--color-gray-500);\n`,
       `    --color-border: var(--color-gray-700);\n`,
       `    --color-input-bg: var(--color-gray-800);\n`,
       `    --color-input-disabled-bg: var(--color-gray-900);\n`,
@@ -1436,6 +1880,14 @@ export class Generator {
       ...smartLines,
       ...shadowLines,
       semantic,
+      ...accentLines,
+      ...surfaceAccentLines,
+      ...dangerLines2,
+      ...successLines2,
+      ...warningLines2,
+      ...infoLines2,
+      ...surfaceStatusLines2,
+      ...calloutDisplayLines2,
       backdrop,
       mesh,
     ].join("");
@@ -1517,12 +1969,10 @@ export class Generator {
 
   // Generate dark mode component adjustments (for components layer)
   #generateDarkModeComponentRules() {
-    const rules = /*css*/ `/* Callout dark mode adjustments */
+    // Callout display tokens are now overridden in the dark mode token variables section,
+    // so no explicit callout rules are needed here.
+    const rules = /*css*/ `/* Dark mode component adjustments */
 html[data-theme="dark"] {
-  .callout-success { background-color: var(--color-success-50); border-color: var(--color-success-500); color: var(--color-success-900); }
-  .callout-info { background-color: var(--color-info-50); border-color: var(--color-info-500); color: var(--color-info-900); }
-  .callout-warning { background-color: var(--color-warning-50); border-color: var(--color-warning-500); color: var(--color-warning-900); }
-  .callout-danger, .callout-error { background-color: var(--color-danger-50); border-color: var(--color-danger-500); color: var(--color-danger-900); }
   img, video { opacity: 0.8; transition: opacity var(--transition-normal); }
   img:hover, video:hover { opacity: 1; }
 }`;
@@ -1791,7 +2241,7 @@ html[data-theme="dark"] .liquid-glass {
 :where(blockquote) {
   margin: 0 0 var(--spacing-4) 0;
   padding: var(--spacing-6) var(--spacing-8);
-  border-left: calc(var(--border-width-thick) + var(--border-width-thin)) solid var(--color-primary-500);
+  border-left: calc(var(--border-width-thick) + var(--border-width-thin)) solid var(--color-link);
   background-color: var(--color-surface-elevated);
   border-radius: var(--radius-none);
   font-size: var(--font-size-lg);
@@ -1807,7 +2257,7 @@ html[data-theme="dark"] .liquid-glass {
     margin-top: var(--spacing-4);
     font-size: var(--font-size-base);
     font-style: normal;
-    color: var(--color-primary-500);
+    color: var(--color-link);
   }
 }
 
@@ -1890,8 +2340,8 @@ html[data-theme="dark"] .liquid-glass {
 }
 
 :where(mark) {
-  background-color: var(--color-warning-200);
-  color: var(--color-warning-900);
+  background-color: var(--color-warning-display-bg);
+  color: var(--color-warning-display-text);
   padding: 0 var(--spacing-1);
   border-radius: var(--radius-sm);
 }
@@ -2044,7 +2494,7 @@ fieldset {
       margin-bottom: 0;
       
       &:hover {
-        color: var(--color-primary-700);
+        color: var(--color-link-hover, var(--color-primary-text-hover));
       }
     }
 
@@ -2063,21 +2513,21 @@ fieldset {
       margin: 0;
       cursor: pointer;
       flex-shrink: 0;
-      accent-color: var(--color-primary-600);
+      accent-color: var(--color-primary-fill);
 
       &:focus-visible {
         outline: none;
 
         box-shadow:
-          0 0 0 2px var(--color-primary-500),
+          0 0 0 2px var(--color-focus-ring, var(--color-primary-500)),
           0 0 0 4px color-mix(in srgb,
-            var(--color-primary-500) 40%,
+            var(--color-focus-ring, var(--color-primary-500)) 40%,
             transparent
           );
       }
 
       &:checked {
-        background-color: var(--color-primary-600);
+        background-color: var(--color-primary-fill);
       }
       
     }
@@ -2155,7 +2605,7 @@ input, textarea, select {
   -webkit-appearance: none;
   
   &:focus {
-    border-color: var(--color-primary-500);
+    border-color: var(--color-focus-ring, var(--color-primary-500));
     background-color: var(--color-surface-base);
   }
   
@@ -2168,10 +2618,10 @@ input, textarea, select {
   }
   
   &:invalid {
-    border-color: var(--color-danger-500);
+    border-color: var(--color-danger-fill);
     
     &:focus {
-      box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-danger-500) ${Math.round(
+      box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-danger-fill) ${Math.round(
         (focusRingOpacity || 0.3) * 100,
       )}%, transparent);
     }
@@ -2208,11 +2658,11 @@ input[type="range"] {
     width: var(--range-thumb-size, 28px);
     height: var(--range-thumb-size, 28px);
     margin-top: calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2);
-    background: color-mix(in srgb, var(--color-primary-500) 15%, var(--color-surface-base));
+    background: color-mix(in srgb, var(--color-primary-fill) 15%, var(--color-surface-base));
     border-radius: 50%;
     box-shadow: var(--shadow-sm);
     cursor: grab;
-    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
+    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-fill) 30%, var(--color-border));
   }
 
   /* Mozilla track */
@@ -2226,10 +2676,10 @@ input[type="range"] {
   &::-moz-range-thumb {
     width: var(--range-thumb-size, 28px);
     height: var(--range-thumb-size, 28px);
-    background: color-mix(in srgb, var(--color-primary-500) 15%, var(--color-surface-base));
+    background: color-mix(in srgb, var(--color-primary-fill) 15%, var(--color-surface-base));
     border-radius: 50%;
     box-shadow: var(--shadow-sm);
-    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
+    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-fill) 30%, var(--color-border));
     transform: translateY(calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2));
   }
 
@@ -2237,39 +2687,39 @@ input[type="range"] {
   &:hover::-webkit-slider-thumb,
   &:focus-visible::-webkit-slider-thumb {
     cursor: grabbing;
-    background: var(--color-primary-500);
+    background: var(--color-primary-fill);
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    border-color: var(--color-primary-600);
+    border-color: var(--color-primary-fill-hover);
   }
 
   /* Active state for WebKit */
   &:active::-webkit-slider-thumb {
-    background: var(--color-primary-600);
+    background: var(--color-primary-fill-active);
   }
 
   /* Hover and focus states for Mozilla */
   &:hover::-moz-range-thumb,
   &:focus-visible::-moz-range-thumb {
-    background: var(--color-primary-500);
+    background: var(--color-primary-fill);
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    border-color: var(--color-primary-600);
+    border-color: var(--color-primary-fill-hover);
     cursor: grabbing;
   }
 
   /* Active state for Mozilla */
   &:active::-moz-range-thumb {
-    background: var(--color-primary-600);
+    background: var(--color-primary-fill-active);
   }
 }
 
 /* Focus style for container to match input focus */
 .range-container:focus-within {
-  border-color: var(--color-primary-500);  
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500) 30%, transparent);
+  border-color: var(--color-focus-ring, var(--color-primary-500));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
 }
 
 input[type="range"]:active::-moz-range-thumb {
-  background: var(--color-primary-600);
+  background: var(--color-primary-fill-active);
 }
 
 input[type="color"] {
@@ -2345,27 +2795,27 @@ input[type="color"] {
   
   &:hover {
     background-color: var(--color-surface-subtle);
-    border-color: var(--color-primary-500);
+    border-color: var(--color-primary-fill);
   }
 
   &:has(input[type="checkbox"]:checked),
   input[type="checkbox"]:checked + label:not(fieldset label):not(label[data-toggle]) {
-    background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
-    color: var(--color-primary-700);
-    border-color: var(--color-primary-500);
+    background-color: color-mix(in oklab, var(--color-primary-fill) 8%, transparent);
+    color: var(--color-primary-text);
+    border-color: var(--color-primary-fill);
     border-width: var(--border-width-medium);
     font-weight: var(--font-weight-semibold);
     
     &:hover {
-      background-color: color-mix(in oklab, var(--color-primary-500) 15%, transparent);
-      border-color: var(--color-primary-600);
+      background-color: color-mix(in oklab, var(--color-primary-fill) 15%, transparent);
+      border-color: var(--color-primary-fill);
     }
   }
 
   &:has(input[type="checkbox"]:focus),
   input[type="checkbox"]:focus + label:not(fieldset label):not(label[data-toggle]) {
     outline: none;
-    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
+    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) ${Math.round(
       (focusRingOpacity || 0.3) * 100,
     )}%, transparent);
   }
@@ -2399,6 +2849,7 @@ input[type="radio"]:not(fieldset input[type="radio"]) {
   opacity: 1;
   appearance: auto;
   -webkit-appearance: auto;
+  accent-color: var(--color-primary-fill);
 
   &:disabled {
     cursor: not-allowed;
@@ -2453,7 +2904,7 @@ fieldset[role="group"].buttons {
     
     &:hover {
       background-color: var(--color-surface-subtle);
-      border-color: var(--color-primary-500);
+      border-color: var(--color-primary-fill);
       color: var(--color-text-primary);
     }
 
@@ -2462,20 +2913,20 @@ fieldset[role="group"].buttons {
     }
 
     &:has(input:is([type="radio"], [type="checkbox"]):checked) {
-      background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
-      border-color: var(--color-primary-500);
+      background-color: color-mix(in oklab, var(--color-primary-fill) 8%, transparent);
+      border-color: var(--color-primary-fill);
       border-width: var(--border-width-medium);
       font-weight: var(--font-weight-semibold);
       
       &:hover {
-        background-color: color-mix(in oklab, var(--color-primary-500) 15%, transparent);
-        border-color: var(--color-primary-600);
+        background-color: color-mix(in oklab, var(--color-primary-fill) 15%, transparent);
+        border-color: var(--color-primary-fill-hover);
       }
     }
 
     &:has(input:is([type="radio"], [type="checkbox"]):focus) {
       outline: none;
-      box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
+      box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) ${Math.round(
         (focusRingOpacity || 0.3) * 100,
       )}%, transparent);
     }
@@ -2561,7 +3012,7 @@ label[data-toggle] {
   &:has(input[type="checkbox"]:checked) {
     &.with-icons .toggle-knob::before {
       content: "✓";
-      color: var(--color-primary-600);
+      color: var(--color-primary-contrast, white);
     }
 
     .toggle-switch {
@@ -2575,7 +3026,7 @@ label[data-toggle] {
 
   &:has(input[type="checkbox"]:focus) .toggle-switch,
   &:focus-visible .toggle-switch {
-    outline: 2px solid var(--color-primary-500);
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
     outline-offset: 2px;
   }
 
@@ -2693,8 +3144,8 @@ label[data-color] {
   }
 
   &:focus-within .color-control {
-    border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
+    border-color: var(--color-focus-ring, var(--color-primary-500));
+    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) ${Math.round(
       (focusRingOpacity || 0.3) * 100,
     )}%, transparent);
   }
@@ -2764,7 +3215,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
+    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) ${Math.round(
       (focusRingOpacity || 0.3) * 100,
     )}%, transparent);
   }
@@ -2784,19 +3235,19 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   border-color: var(--color-primary-fill);
   
   &:hover {
-    background-color: color-mix(in oklab, var(--color-primary-fill) 90%, black 10%);
-    border-color: color-mix(in oklab, var(--color-primary-fill) 90%, black 10%);
+    background-color: var(--color-primary-fill-hover);
+    border-color: var(--color-primary-fill-hover);
     color: white;
   }
 
   &:active {
-    background-color: color-mix(in oklab, var(--color-primary-fill) 80%, black 20%);
-    border-color: color-mix(in oklab, var(--color-primary-fill) 80%, black 20%);
+    background-color: var(--color-primary-fill-active);
+    border-color: var(--color-primary-fill-active);
     color: white;
   }
   
   &:focus {
-    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-primary-500) ${Math.round(
+    box-shadow: 0 0 0 ${focusWidth}px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) ${Math.round(
       (focusRingOpacity || 0.3) * 100,
     )}%, transparent);
   }
@@ -2820,13 +3271,13 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 
 .btn-outline {
   background-color: transparent;
-  color: var(--color-primary-500);
-  border-color: var(--color-primary-500);
+  color: var(--color-link);
+  border-color: var(--color-link);
   
   &:hover {
-    background-color: var(--color-primary-500);
+    background-color: var(--color-primary-fill);
     color: var(--color-primary-contrast, #ffffff);
-    border-color: var(--color-primary-500);
+    border-color: var(--color-primary-fill);
 
     pds-icon {
       color: var(--color-primary-contrast, #ffffff);
@@ -2834,8 +3285,8 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   }
 
   &:active {
-    background-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
-    border-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
+    background-color: var(--color-primary-fill-active);
+    border-color: var(--color-primary-fill-active);
     color: var(--color-primary-contrast, #ffffff);
 
     pds-icon {
@@ -2851,31 +3302,31 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .btn-danger {
-  background-color: var(--color-danger-600);
+  background-color: var(--color-danger-fill);
   color: white;
-  border-color: var(--color-danger-600);
+  border-color: var(--color-danger-fill);
 
   &:hover {
-    background-color: color-mix(in oklab, var(--color-danger-600) 90%, black 10%);
-    border-color: color-mix(in oklab, var(--color-danger-600) 90%, black 10%);
+    background-color: var(--color-danger-fill-hover);
+    border-color: var(--color-danger-fill-hover);
     color: white;
   }
 
   &:active {
-    background-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
-    border-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
+    background-color: var(--color-danger-fill-active);
+    border-color: var(--color-danger-fill-active);
     color: white;
   }
 }
 
 .btn-danger.btn-outline {
   background-color: transparent;
-  color: var(--color-danger-600);
-  border-color: var(--color-danger-600);
+  color: var(--color-danger-fill);
+  border-color: var(--color-danger-fill);
 
   &:hover {
-    background-color: var(--color-danger-600);
-    border-color: var(--color-danger-600);
+    background-color: var(--color-danger-fill);
+    border-color: var(--color-danger-fill);
     color: white;
 
     pds-icon {
@@ -2884,8 +3335,8 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   }
 
   &:active {
-    background-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
-    border-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
+    background-color: var(--color-danger-fill-active);
+    border-color: var(--color-danger-fill-active);
     color: white;
 
     pds-icon {
@@ -3268,25 +3719,25 @@ tbody {
 }
 /* Variants: success/info/warning/danger mapped to tokens */
 .callout-success {
-  background-color: var(--color-success-50);
-  border-color: var(--color-success-600);
-  color: var(--color-success-900);
+  background-color: var(--color-success-display-bg);
+  border-color: var(--color-success-display-border);
+  color: var(--color-success-display-text);
 }
 .callout-info {
-  background-color: var(--color-info-50);
-  border-color: var(--color-info-600);
-  color: var(--color-info-900);
+  background-color: var(--color-info-display-bg);
+  border-color: var(--color-info-display-border);
+  color: var(--color-info-display-text);
 }
 .callout-warning {
-  background-color: var(--color-warning-50);
-  border-color: var(--color-warning-600);
-  color: var(--color-warning-900);
+  background-color: var(--color-warning-display-bg);
+  border-color: var(--color-warning-display-border);
+  color: var(--color-warning-display-text);
 }
 .callout-danger,
 .callout-error {
-  background-color: var(--color-danger-50);
-  border-color: var(--color-danger-600);
-  color: var(--color-danger-900);
+  background-color: var(--color-danger-display-bg);
+  border-color: var(--color-danger-display-border);
+  color: var(--color-danger-display-text);
 }
 
 .callout-title {
@@ -3393,7 +3844,7 @@ tbody {
   }
 
   &:focus-visible {
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
   }
 
   /* Chevron indicator */
@@ -3453,22 +3904,22 @@ tbody {
 }
 
 .badge-primary, .badge-secondary, .badge-success, .badge-info, .badge-warning, .badge-danger { color: white; }
-.badge-primary { background-color: var(--color-primary-600); }
+.badge-primary { background-color: var(--color-primary-fill); }
 .badge-secondary { background-color: var(--color-secondary-600); }
-.badge-success { background-color: var(--color-success-600); }
-.badge-info { background-color: var(--color-info-600); }
-.badge-warning { background-color: var(--color-warning-600); }
-.badge-danger { background-color: var(--color-danger-600); }
+.badge-success { background-color: var(--color-success-fill); }
+.badge-info { background-color: var(--color-info-fill); }
+.badge-warning { background-color: var(--color-warning-fill); }
+.badge-danger { background-color: var(--color-danger-fill); }
 
 .badge-outline {
   background-color: transparent;
   border: var(--border-width-thin) solid currentColor;
-  &.badge-primary { color: var(--color-text-primary); }
-  &.badge-secondary { color: var(--color-secondary-600); }
-  &.badge-success { color: var(--color-success-600); }
-  &.badge-info { color: var(--color-info-600); }
-  &.badge-warning { color: var(--color-warning-600); }
-  &.badge-danger { color: var(--color-danger-600); }
+  &.badge-primary { color: var(--color-primary-text); }
+  &.badge-secondary { color: var(--color-text-secondary); }
+  &.badge-success { color: var(--color-success-text); }
+  &.badge-info { color: var(--color-info-text); }
+  &.badge-warning { color: var(--color-warning-text); }
+  &.badge-danger { color: var(--color-danger-text); }
 }
 
 .badge-sm { padding: 2px var(--spacing-1); font-size: 10px; }
@@ -3810,7 +4261,7 @@ pds-tabstrip {
       }
 
       &:focus-visible {
-        outline: var(--focus-ring-width, 2px) solid var(--color-primary-500);
+        outline: var(--focus-ring-width, 2px) solid var(--color-focus-ring, var(--color-primary-500));
         outline-offset: -2px;
         border-radius: var(--radius-sm);
         z-index: 1;
@@ -3818,14 +4269,14 @@ pds-tabstrip {
 
       /* Active tab */
       &[aria-current="page"] {
-        color: var(--color-primary-600);
+        color: var(--color-link);
         font-weight: var(--font-weight-semibold);
-        border-bottom-color: var(--color-primary-600);
+        border-bottom-color: var(--color-link);
 
         &:hover {
-          color: var(--color-primary-700);
-          border-bottom-color: var(--color-primary-700);
-          background-color: var(--color-primary-50);
+          color: var(--color-link-hover);
+          border-bottom-color: var(--color-link-hover);
+          background-color: color-mix(in oklab, var(--color-link) 10%, transparent);
         }
       }
     }
@@ -3936,13 +4387,13 @@ pds-icon {
 
 
 /* Icon color utilities */
-.icon-primary, pds-icon.primary { color: var(--color-primary-600); }
-.icon-secondary, pds-icon.secondary { color: var(--color-secondary-600); }
-.icon-accent, pds-icon.accent { color: var(--color-accent-600); }
-.icon-success, pds-icon.success { color: var(--color-success-600); }
-.icon-warning, pds-icon.warning { color: var(--color-warning-600); }
-.icon-danger, pds-icon.danger { color: var(--color-danger-600); }
-.icon-info, pds-icon.info { color: var(--color-info-600); }
+.icon-primary, pds-icon.primary { color: var(--color-primary-text); }
+.icon-secondary, pds-icon.secondary { color: var(--color-text-secondary); }
+.icon-accent, pds-icon.accent { color: var(--color-accent-text); }
+.icon-success, pds-icon.success { color: var(--color-success-text); }
+.icon-warning, pds-icon.warning { color: var(--color-warning-text); }
+.icon-danger, pds-icon.danger { color: var(--color-danger-text); }
+.icon-info, pds-icon.info { color: var(--color-info-text); }
 .icon-muted, pds-icon.muted { color: var(--color-text-muted); }
 .icon-subtle, pds-icon.subtle { color: var(--color-text-subtle); }
 
@@ -4144,7 +4595,7 @@ nav[data-dropdown] {
     gap: var(--spacing-2);
 
     &.danger {
-      color: var(--color-danger-600);
+      color: var(--color-danger-text);
     }
   }
 
@@ -4464,7 +4915,7 @@ nav[data-dropdown] {
   
   a {
     &:hover {
-      color: var(--color-primary-600);
+      color: var(--color-link-hover);
     }
   }
 }
@@ -4725,7 +5176,7 @@ nav[data-dropdown] {
     box-sizing: border-box;
     font: inherit;
     color: var(--color-primary-contrast, white);
-    background: var(--color-primary-600);
+    background: var(--color-primary-fill);
     padding: var(--spacing-2) var(--spacing-4);
     border: 0;
     border-radius: var(--radius-md);
@@ -4744,11 +5195,11 @@ nav[data-dropdown] {
 
   :where(button):hover:not(:disabled) {
     opacity: 0.9;
-    background-color: var(--color-primary-700);
+    background-color: var(--color-primary-fill-hover);
   }
 
   :where(button):focus-visible {
-    outline: 2px solid var(--color-primary-500);
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
     outline-offset: 2px;
   }
 
@@ -4781,8 +5232,8 @@ nav[data-dropdown] {
   :where(select):focus-visible,
   :where(textarea):focus-visible {
     outline: none;
-    border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500) 30%, transparent);
+    border-color: var(--color-focus-ring, var(--color-primary-500));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
   }
 
   :where(input):disabled,
@@ -4809,20 +5260,30 @@ nav[data-dropdown] {
 
   /* Link primitives */
   :where(a) {
-    color: var(--color-primary-text, var(--color-primary-600));
+    color: var(--color-link, var(--color-primary-text, var(--color-primary-600)));
     text-decoration: underline;
     text-underline-offset: 0.2em;
-    transition: opacity var(--transition-fast);
+    transition: color var(--transition-fast), opacity var(--transition-fast);
   }
 
   :where(a):hover {
-    opacity: 0.8;
+    color: var(--color-link-hover, var(--color-link, var(--color-primary-text, var(--color-primary-600))));
+    opacity: 0.9;
+  }
+
+  :where(a):visited {
+    color: var(--color-link-visited, var(--color-link, var(--color-primary-text, var(--color-primary-600))));
   }
 
   :where(a):focus-visible {
-    outline: 2px solid var(--color-primary-500);
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
     outline-offset: 2px;
     border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background: var(--color-selection-bg, var(--color-primary-text, var(--color-primary-600)));
+    color: var(--color-selection-text, var(--color-primary-contrast, #ffffff));
   }
 
   /* Form primitives */
@@ -4882,23 +5343,23 @@ nav[data-dropdown] {
     }
 
     &:has(input[type="checkbox"]:checked)::before {
-      background: var(--color-primary-600);
-      border-color: var(--color-primary-600);
+      background: var(--color-primary-fill);
+      border-color: var(--color-primary-fill);
     }
 
     &:has(input[type="checkbox"]:focus)::before {
-      outline: 2px solid var(--color-primary-500);
+      outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
       outline-offset: 2px;
     }
 
     &:has(input[type="checkbox"]:not(:disabled)):hover::before {
-      border-color: var(--color-primary-600);
+      border-color: var(--color-primary-fill);
       background: var(--color-surface-subtle);
     }
 
     &:has(input[type="checkbox"]:checked:not(:disabled)):hover::before {
-      background: var(--color-primary-700);
-      border-color: var(--color-primary-700);
+      background: var(--color-primary-fill-hover);
+      border-color: var(--color-primary-fill-hover);
     }
 
     &:has(input[type="checkbox"]:disabled) {
@@ -5189,13 +5650,13 @@ ${this.#generateBorderGradientUtilities()}
   
   /* btn-primary stays vibrant in any context */
   & .btn-primary {
-    background-color: var(--color-primary-500);
-    border-color: var(--color-primary-500);
+    background-color: var(--color-primary-fill);
+    border-color: var(--color-primary-fill);
     color: var(--color-primary-contrast, #ffffff);
     
     &:hover {
-      background-color: var(--color-primary-400);
-      border-color: var(--color-primary-400);
+      background-color: var(--color-primary-fill-hover);
+      border-color: var(--color-primary-fill-hover);
     }
   }
 }
@@ -5228,7 +5689,7 @@ html:not([data-theme="dark"]) .surface-inverse {
   }
   
   & a:not([class*="btn"]) {
-    color: var(--color-primary-300, #7dd3fc);
+    color: var(--color-link);
   }
 }
 
@@ -5260,7 +5721,7 @@ html[data-theme="dark"] .surface-inverse {
   }
   
   & a:not([class*="btn"]) {
-    color: var(--color-primary-600, #0284c7);
+    color: var(--color-link);
   }
 }
 
@@ -5650,16 +6111,43 @@ export const ${name}CSS = \`${escapedCSS}\`;
  * @param {object} designConfig - A full or partial PDS config object
  * @param {object} [options]
  * @param {number} [options.minContrast=4.5] - Minimum contrast ratio for normal text
- * @returns {{ ok: boolean, issues: Array<{path:string, message:string, ratio:number, min:number, context?:string}> }}
+ * @param {boolean} [options.warnOnHueDrift=true] - Emit non-blocking brand-identity hue drift warnings for darkMode overrides.
+ * @param {number} [options.maxHueDrift=35] - Maximum recommended hue delta (degrees) before warning.
+ * @returns {{ ok: boolean, issues: Array<{path:string, message:string, ratio:number, min:number, context?:string}>, warnings: Array<{path:string, message:string, context?:string}> }}
  */
 export function validateDesign(designConfig = {}, options = {}) {
   const MIN = Number(options.minContrast || 4.5);
   const MIN_MUTED = Number(options.minMutedContrast || 3.0);
   const EXTENDED = Boolean(options.extendedChecks);
+  const ENABLE_HUE_DRIFT_WARNINGS = options.warnOnHueDrift !== false;
+  const MAX_HUE_DRIFT = Number.isFinite(Number(options.maxHueDrift))
+    ? Number(options.maxHueDrift)
+    : 35;
+  const MIN_SAT_FOR_HUE_WARNING = Number.isFinite(
+    Number(options.minSaturationForHueWarning),
+  )
+    ? Number(options.minSaturationForHueWarning)
+    : 18;
 
   // Local helpers (keep public; no dependency on private Generator methods)
+  const normalizeHex = (hex) => {
+    const raw = String(hex || "").trim();
+    const m = raw.match(/^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/);
+    if (!m) return null;
+    const body = m[1];
+    const full =
+      body.length === 3
+        ? body
+            .split("")
+            .map((c) => c + c)
+            .join("")
+        : body;
+    return `#${full.toLowerCase()}`;
+  };
   const hexToRgb = (hex) => {
-    const h = String(hex || "").replace("#", "");
+    const normalized = normalizeHex(hex);
+    if (!normalized) return null;
+    const h = normalized.replace("#", "");
     const full =
       h.length === 3
         ? h
@@ -5671,7 +6159,9 @@ export function validateDesign(designConfig = {}, options = {}) {
     return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
   };
   const luminance = (hex) => {
-    const { r, g, b } = hexToRgb(hex);
+    const rgb = hexToRgb(hex);
+    if (!rgb) return 0;
+    const { r, g, b } = rgb;
     const srgb = [r / 255, g / 255, b / 255].map((v) =>
       v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4),
     );
@@ -5685,8 +6175,39 @@ export function validateDesign(designConfig = {}, options = {}) {
     const darker = Math.min(L1, L2);
     return (lighter + 0.05) / (darker + 0.05);
   };
+  const hexToHsl = (hex) => {
+    const rgb = hexToRgb(hex);
+    if (!rgb) return null;
+    const r = rgb.r / 255;
+    const g = rgb.g / 255;
+    const b = rgb.b / 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const delta = max - min;
+
+    let h = 0;
+    if (delta !== 0) {
+      if (max === r) h = ((g - b) / delta) % 6;
+      else if (max === g) h = (b - r) / delta + 2;
+      else h = (r - g) / delta + 4;
+      h *= 60;
+      if (h < 0) h += 360;
+    }
+
+    const l = (max + min) / 2;
+    const s =
+      delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+
+    return { h, s: s * 100, l: l * 100 };
+  };
+  const hueDelta = (h1, h2) => {
+    if (!Number.isFinite(h1) || !Number.isFinite(h2)) return null;
+    const diff = Math.abs(h1 - h2);
+    return Math.min(diff, 360 - diff);
+  };
 
   const issues = [];
+  const warnings = [];
   try {
     // Build tokens from the candidate config
     const gen = new Generator({ design: structuredClone(designConfig) });
@@ -5889,6 +6410,45 @@ export function validateDesign(designConfig = {}, options = {}) {
         }
       }
     }
+
+    if (ENABLE_HUE_DRIFT_WARNINGS) {
+      const configured = designConfig?.colors || {};
+      const configuredDark = configured?.darkMode || {};
+      const families = ["primary", "secondary", "accent"];
+
+      families.forEach((family) => {
+        const lightBase = configured?.[family];
+        const darkOverride = configuredDark?.[family];
+        if (!lightBase || !darkOverride) return;
+
+        const lightHsl = hexToHsl(lightBase);
+        const darkHsl = hexToHsl(darkOverride);
+        if (!lightHsl || !darkHsl) return;
+
+        // For near-neutrals hue isn't meaningful enough to warn.
+        if (
+          lightHsl.s < MIN_SAT_FOR_HUE_WARNING &&
+          darkHsl.s < MIN_SAT_FOR_HUE_WARNING
+        ) {
+          return;
+        }
+
+        const drift = hueDelta(lightHsl.h, darkHsl.h);
+        if (drift == null || drift <= MAX_HUE_DRIFT) return;
+
+        warnings.push({
+          path: `/colors/darkMode/${family}`,
+          message: `Dark mode ${family} hue drifts ${drift.toFixed(
+            1,
+          )}deg from light ${family} (${lightHsl.h.toFixed(
+            1,
+          )}deg -> ${darkHsl.h.toFixed(
+            1,
+          )}deg). This may reduce cross-theme brand identity consistency.`,
+          context: `dark/identity-hue-${family}`,
+        });
+      });
+    }
   } catch (err) {
     issues.push({
       path: "/",
@@ -5898,7 +6458,7 @@ export function validateDesign(designConfig = {}, options = {}) {
     });
   }
 
-  return { ok: issues.length === 0, issues };
+  return { ok: issues.length === 0, issues, warnings };
 }
 
 /**
@@ -5907,7 +6467,7 @@ export function validateDesign(designConfig = {}, options = {}) {
  *
  * @param {Array<object>} designs - Array of design configs; items may include an optional `name` property.
  * @param {object} [options] - Options forwarded to validateDesign (e.g., { minContrast })
- * @returns {{ ok: boolean, results: Array<{ name?: string, ok: boolean, issues: Array<{path:string, message:string, ratio:number, min:number, context?:string}> }> }}
+ * @returns {{ ok: boolean, results: Array<{ name?: string, ok: boolean, issues: Array<{path:string, message:string, ratio:number, min:number, context?:string}>, warnings?: Array<{path:string, message:string, context?:string}> }> }}
  */
 export function validateDesigns(designs = [], options = {}) {
   const results = [];

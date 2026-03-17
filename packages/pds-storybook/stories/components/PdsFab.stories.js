@@ -252,11 +252,11 @@ export const CustomStyling = {
 
       <style>
         #fab-custom {
-          --fab-bg: var(--color-accent-600);
+          --fab-bg: var(--color-accent-fill);
           --fab-fg: white;
           --fab-size: 72px;
           --sat-size: 56px;
-          --sat-bg: var(--color-accent-500);
+          --sat-bg: var(--color-accent-fill-hover);
           --sat-fg: white;
         }
       </style>

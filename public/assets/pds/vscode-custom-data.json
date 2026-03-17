@@ -770,6 +770,36 @@
       "description": "Locale switcher component.\r\n\r\nThe component only persists canonical 5-letter locale tags (`xx-YY`),\r\nfor example `en-US` and `nl-NL`.",
       "attributes": [
         {
+          "name": "name",
+          "description": "Form field name used during submit."
+        },
+        {
+          "name": "value",
+          "description": "Selected canonical locale tag (`xx-YY`)."
+        },
+        {
+          "name": "required",
+          "description": "Requires a locale value for validity.",
+          "valueSet": "v"
+        },
+        {
+          "name": "disabled",
+          "description": "Disables interaction and omits form value.",
+          "valueSet": "v"
+        },
+        {
+          "name": "mode",
+          "description": "Label display mode. In `compact`, the UI shows 2-letter aliases and puts the full Intl language name in the `title` attribute. In `full`, it renders the full Intl language name as the visible label.",
+          "values": [
+            {
+              "name": "compact"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        },
+        {
           "name": "data-label",
           "description": "Accessible label for the locale radio group."
         }

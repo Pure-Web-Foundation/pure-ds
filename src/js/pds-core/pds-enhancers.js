@@ -555,6 +555,11 @@ function enhanceRange(elem) {
   if (hasRangeOutputClass) {
     const labelSpan = label.querySelector("span");
     if (labelSpan && !labelSpan.classList.contains("range-output-wrapper")) {
+      const explicitRangeLabel =
+        labelSpan.getAttribute("data-range-label") ||
+        label.getAttribute("data-range-label") ||
+        "";
+
       const wrapper = document.createElement("span");
       wrapper.className = "range-output-wrapper";
       wrapper.style.display = "flex";
@@ -562,7 +567,7 @@ function enhanceRange(elem) {
       wrapper.style.alignItems = "center";
 
       const textSpan = document.createElement("span");
-      textSpan.textContent = labelSpan.textContent;
+      textSpan.textContent = explicitRangeLabel || labelSpan.textContent;
       wrapper.appendChild(textSpan);
 
       const output = document.createElement("output");

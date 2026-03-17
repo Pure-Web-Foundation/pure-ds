@@ -26,8 +26,8 @@ const componentDescription = `The \`<pds-icon>\` web component renders SVG icons
 
 \`\`\`html
 <pds-icon icon="heart"></pds-icon>
-<pds-icon icon="star" size="lg" color="var(--color-warning-500)"></pds-icon>
-<pds-icon icon="check" color="var(--color-success-500)"></pds-icon>
+<pds-icon icon="star" size="lg" color="var(--color-warning-text)"></pds-icon>
+<pds-icon icon="check" color="var(--color-success-text)"></pds-icon>
 \`\`\`
 `;
 

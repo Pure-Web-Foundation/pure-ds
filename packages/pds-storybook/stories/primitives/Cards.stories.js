@@ -39,7 +39,7 @@ const cardsStoryStyles = html`
       content: "◆";
       position: absolute;
       inset-inline-start: 0;
-      color: var(--color-primary-500);
+      color: var(--color-primary-text);
       font-size: var(--font-size-md);
       
       
@@ -51,10 +51,10 @@ const cardsStoryStyles = html`
       font-weight: var(--font-weight-bold);
     }
     .story-stat-primary {
-      color: var(--color-primary-600);
+      color: var(--color-primary-text);
     }
     .story-stat-secondary {
-      color: var(--color-secondary-600);
+      color: var(--color-text-secondary);
     }
   </style>
 `;

@@ -1168,6 +1168,160 @@
       ]
     },
     {
+      "name": "--color-accentInteractive-light",
+      "description": "accentInteractive color scale - shade light",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-accentInteractive-dark",
+      "description": "accentInteractive color scale - shade dark",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-surfaceAccent-light",
+      "description": "surfaceAccent color scale - shade light",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-surfaceAccent-dark",
+      "description": "surfaceAccent color scale - shade dark",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-dangerInteractive-light",
+      "description": "dangerInteractive color scale - shade light",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-dangerInteractive-dark",
+      "description": "dangerInteractive color scale - shade dark",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-successInteractive-light",
+      "description": "successInteractive color scale - shade light",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-successInteractive-dark",
+      "description": "successInteractive color scale - shade dark",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-warningInteractive-light",
+      "description": "warningInteractive color scale - shade light",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-warningInteractive-dark",
+      "description": "warningInteractive color scale - shade dark",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-infoInteractive-light",
+      "description": "infoInteractive color scale - shade light",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-infoInteractive-dark",
+      "description": "infoInteractive color scale - shade dark",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-surfaceStatus-light",
+      "description": "surfaceStatus color scale - shade light",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
+      "name": "--color-surfaceStatus-dark",
+      "description": "surfaceStatus color scale - shade dark",
+      "syntax": "<color>",
+      "references": [
+        {
+          "name": "Value",
+          "url": "data:text/plain,%5Bobject%20Object%5D"
+        }
+      ]
+    },
+    {
       "name": "--spacing-0",
       "description": "Spacing scale value 0",
       "syntax": "<length>",

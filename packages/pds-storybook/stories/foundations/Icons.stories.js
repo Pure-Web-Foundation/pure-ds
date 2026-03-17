@@ -454,11 +454,11 @@ export const ColoredIcons = () => html`
     <article class="card">
       <h4>Using Design Tokens (Explicit)</h4>
       <div class="flex gap-md flex-wrap items-center">
-        <pds-icon icon="heart" size="lg" color="var(--color-danger-500)"></pds-icon>
-        <pds-icon icon="star" size="lg" color="var(--color-warning-500)"></pds-icon>
-        <pds-icon icon="check" size="lg" color="var(--color-success-500)"></pds-icon>
-        <pds-icon icon="x" size="lg" color="var(--color-danger-600)"></pds-icon>
-        <pds-icon icon="info" size="lg" color="var(--color-info-500)"></pds-icon>
+        <pds-icon icon="heart" size="lg" color="var(--color-danger-text)"></pds-icon>
+        <pds-icon icon="star" size="lg" color="var(--color-warning-text)"></pds-icon>
+        <pds-icon icon="check" size="lg" color="var(--color-success-text)"></pds-icon>
+        <pds-icon icon="x" size="lg" color="var(--color-danger-text)"></pds-icon>
+        <pds-icon icon="info" size="lg" color="var(--color-info-text)"></pds-icon>
       </div>
     </article>
 
@@ -466,11 +466,11 @@ export const ColoredIcons = () => html`
       <h4>Using Design Tokens</h4>
       <p class="text-muted story-desc">Recommended approach for consistent theming.</p>
       <div class="flex gap-md flex-wrap items-center">
-        <pds-icon icon="heart" size="lg" color="var(--color-primary-500)"></pds-icon>
-        <pds-icon icon="star" size="lg" color="var(--color-accent-500)"></pds-icon>
-        <pds-icon icon="check-circle" size="lg" color="var(--color-success-500)"></pds-icon>
-        <pds-icon icon="warning" size="lg" color="var(--color-warning-500)"></pds-icon>
-        <pds-icon icon="x-circle" size="lg" color="var(--color-error-500)"></pds-icon>
+        <pds-icon icon="heart" size="lg" color="var(--color-primary-text)"></pds-icon>
+        <pds-icon icon="star" size="lg" color="var(--color-accent-text)"></pds-icon>
+        <pds-icon icon="check-circle" size="lg" color="var(--color-success-text)"></pds-icon>
+        <pds-icon icon="warning" size="lg" color="var(--color-warning-text)"></pds-icon>
+        <pds-icon icon="x-circle" size="lg" color="var(--color-danger-text)"></pds-icon>
       </div>
     </article>
 
@@ -496,10 +496,10 @@ export const ColoredIcons = () => html`
     <article class="card surface-elevated">
       <h4>Usage</h4>
       <pre><code>&lt;!-- Design token (recommended) --&gt;
-    &lt;pds-icon icon="heart" color="var(--color-danger-500)"&gt;&lt;/pds-icon&gt;
+    &lt;pds-icon icon="heart" color="var(--color-danger-text)"&gt;&lt;/pds-icon&gt;
 
 &lt;!-- Design token (recommended) --&gt;
-&lt;pds-icon icon="check" color="var(--color-success-500)"&gt;&lt;/pds-icon&gt;
+&lt;pds-icon icon="check" color="var(--color-success-text)"&gt;&lt;/pds-icon&gt;
 
 &lt;!-- Inherit from parent --&gt;
 &lt;span class="text-primary"&gt;
@@ -633,9 +633,9 @@ export const ExternalIcons = () => html`
           <h4 class="flex items-center gap-sm"><pds-icon icon="cloud-arrow-down" size="sm"></pds-icon> External Icons (On-Demand)</h4>
           <small class="text-muted">More 'exotic' icons are fetched individually, then cached for subsequent use.</small>
           <div class="flex gap-lg flex-wrap items-center">
-            <pds-icon icon="solid-anatomy-brain-1" size="lg" color="var(--color-primary-500)"></pds-icon>
-            <pds-icon icon="solid-anatomy-hand-bones" size="lg" color="var(--color-accent-500)"></pds-icon>
-            <pds-icon icon="solid-conditions-lung-condition-2" size="lg" color="var(--color-success-500)"></pds-icon>
+            <pds-icon icon="solid-anatomy-brain-1" size="lg" color="var(--color-primary-text)"></pds-icon>
+            <pds-icon icon="solid-anatomy-hand-bones" size="lg" color="var(--color-accent-text)"></pds-icon>
+            <pds-icon icon="solid-conditions-lung-condition-2" size="lg" color="var(--color-success-text)"></pds-icon>
           </div>
         </article>
       </div>
@@ -677,23 +677,23 @@ export const ExternalIcons = () => html`
       <small class="text-muted">External icons support color customization just like sprite icons.</small>
       <div class="flex gap-lg flex-wrap items-center">
         <div class="card surface-elevated text-center items-center story-icon-card">
-          <pds-icon icon="solid-anatomy-brain-1" size="xl" color="var(--color-primary-500)"></pds-icon>
+          <pds-icon icon="solid-anatomy-brain-1" size="xl" color="var(--color-primary-text)"></pds-icon>
           <small class="text-muted">Primary</small>
         </div>
         <div class="card surface-elevated text-center items-center story-icon-card">
-          <pds-icon icon="solid-anatomy-hand-bones" size="xl" color="var(--color-accent-500)"></pds-icon>
+          <pds-icon icon="solid-anatomy-hand-bones" size="xl" color="var(--color-accent-text)"></pds-icon>
           <small class="text-muted">Accent</small>
         </div>
         <div class="card surface-elevated text-center items-center story-icon-card">
-          <pds-icon icon="solid-conditions-lung-condition-2" size="xl" color="var(--color-success-500)"></pds-icon>
+          <pds-icon icon="solid-conditions-lung-condition-2" size="xl" color="var(--color-success-text)"></pds-icon>
           <small class="text-muted">Success</small>
         </div>
         <div class="card surface-elevated text-center items-center story-icon-card">
-          <pds-icon icon="solid-anatomy-brain-1" size="xl" color="var(--color-warning-500)"></pds-icon>
+          <pds-icon icon="solid-anatomy-brain-1" size="xl" color="var(--color-warning-text)"></pds-icon>
           <small class="text-muted">Warning</small>
         </div>
         <div class="card surface-elevated text-center items-center story-icon-card">
-          <pds-icon icon="solid-anatomy-hand-bones" size="xl" color="var(--color-error-500)"></pds-icon>
+          <pds-icon icon="solid-anatomy-hand-bones" size="xl" color="var(--color-danger-text)"></pds-icon>
           <small class="text-muted">Error</small>
         </div>
       </div>

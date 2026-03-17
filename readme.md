@@ -1055,6 +1055,16 @@ Validates all presets during build and reports issues:
     [dark/btn-primary] (/colors/darkMode/primary)
 ```
 
+Build can also emit non-blocking identity warnings when a dark mode brand override drifts too far from the light mode hue:
+
+```
+⚠️ Preset identity warnings (non-blocking):
+
+— Travel Market
+  • Dark mode primary hue drifts 48.6deg from light primary...
+    [dark/identity-hue-primary] (/colors/darkMode/primary)
+```
+
 ### Manual Validation
 
 ```javascript
@@ -1080,6 +1090,10 @@ if (!result.ok) {
   //     context: 'light/btn-primary'
   //   }
   // ]
+}
+
+if (result.warnings?.length) {
+  console.table(result.warnings);
 }
 ```
 
@@ -1337,7 +1351,7 @@ Validate design for accessibility.
 import { validateDesign } from '@pure-ds/core/pds-core/pds-generator.js';
 
 const result = validateDesign(config, { minContrast: 4.5 });
-// Returns: { ok: boolean, issues: Array }
+// Returns: { ok: boolean, issues: Array, warnings: Array }
 ```
 
 ### PDS.adoptLayers(shadowRoot, layers, additionalSheets)

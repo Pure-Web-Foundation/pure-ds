@@ -92,7 +92,7 @@ export const States = {
       </label>
       <label class="stack-2xs">
         <span>Accent color variant</span>
-        <pds-rating max="5" value="3.5" color="var(--color-accent-500)" name="color-rating"></pds-rating>
+        <pds-rating max="5" value="3.5" color="var(--color-accent-text)" name="color-rating"></pds-rating>
       </label>
       <label class="stack-2xs">
         <span>Read-only</span>

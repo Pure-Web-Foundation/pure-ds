@@ -39,7 +39,7 @@ async function ensurePdsCodeLoaded() {
 
       for (const specifier of candidates) {
         try {
-          await import(specifier);
+          await import(/* @vite-ignore */ specifier);
           if (typeof customElements !== 'undefined' && customElements.get('pds-code')) {
             return true;
           }
@@ -1771,19 +1771,6 @@ const preview = {
         dynamicTitle: true
       }
     },
-    locale: {
-      name: 'Locale',
-      description: 'PDS locale',
-      defaultValue: initialLocale,
-      toolbar: {
-        icon: 'globe',
-        items: storybookLocales.map((locale) => ({
-          value: locale,
-          title: formatLocaleTitle(locale)
-        })),
-        dynamicTitle: true
-      }
-    },
     preset: {
       name: 'Preset',
       description: 'Design preset',
@@ -1813,6 +1800,19 @@ const preview = {
             value: key,
             title: presets[key].name || key
           })),
+        dynamicTitle: true
+      }
+    },
+    locale: {
+      name: 'Locale',
+      description: 'PDS locale',
+      defaultValue: initialLocale,
+      toolbar: {
+        icon: 'globe',
+        items: storybookLocales.map((locale) => ({
+          value: locale,
+          title: formatLocaleTitle(locale)
+        })),
         dynamicTitle: true
       }
     }

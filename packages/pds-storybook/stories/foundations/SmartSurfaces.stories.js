@@ -112,8 +112,8 @@ export const ContextAwareShadows = () => html`
     <header>
       <h3>Context-Aware Shadows</h3>
       <small class="text-muted">
-        Shadows automatically invert in dark mode: dark shadows on light surfaces,
-        light shadows on dark surfaces.
+        Shadows automatically invert in dark mode: dark shadows on light
+        surfaces, light shadows on dark surfaces.
       </small>
     </header>
 
@@ -417,23 +417,20 @@ const example = "Hello!";</code></pre>
           <span data-label>Input Field</span>
           <input type="text" placeholder="Type here..." />
         </label>
-        <button class="btn-outline story-border-current">
-          Outline Button
-        </button>
+        <button class="btn-outline story-border-current">Outline Button</button>
       </article>
     </div>
 
     <section class="card">
       <h3>CSS Variables Set by .surface-inverse</h3>
-      <pre><code>.surface-inverse {
-  background-color: var(--color-surface-inverse);
-  color: var(--surface-inverse-text);
-  --color-text-primary: var(--surface-inverse-text);
-  --color-text-secondary: var(--surface-inverse-text-secondary);
-  --color-text-muted: var(--surface-inverse-text-muted);
-  --color-surface-muted: rgba(255, 255, 255, 0.08);
-  --color-border: var(--surface-inverse-border);
-}</code></pre>
+      <pds-code language="css">
+.surface-inverse { background-color: var(--color-surface-inverse);
+color: var(--surface-inverse-text); --color-text-primary:
+var(--surface-inverse-text); --color-text-secondary:
+var(--surface-inverse-text-secondary); --color-text-muted:
+var(--surface-inverse-text-muted); --color-surface-muted: rgba(255, 255,
+255, 0.08); --color-border: var(--surface-inverse-border);
+      </pds-code>
     </section>
   </div>
 `;

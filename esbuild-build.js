@@ -19,7 +19,22 @@ const validatePresetsPlugin = {
         name: preset?.name,
         ...validateDesign(preset, { minContrast: 4.5 }),
       }));
+      const warningResults = results.filter(
+        (r) => Array.isArray(r.warnings) && r.warnings.length > 0,
+      );
       const ok = results.every((r) => r.ok);
+
+      if (warningResults.length) {
+        console.warn('\n⚠️ Preset identity warnings (non-blocking):');
+        for (const r of warningResults) {
+          const name = r.name || 'Unnamed preset';
+          console.warn(`\n— ${name}`);
+          for (const warning of r.warnings) {
+            console.warn(`  • ${warning.message} [${warning.context}] (${warning.path})`);
+          }
+        }
+      }
+
       if (!ok) {
         console.error('\n❌ Preset validation failed for the following presets:');
         for (const r of results) {

@@ -788,16 +788,16 @@
       "description": "dark color scale - shade accent",
       "syntax": "<color>",
       "value": {
-        "50": "#3a0e1b",
-        "100": "#5b162a",
-        "200": "#7c1e3a",
-        "300": "#9c2749",
-        "400": "#ce2d5b",
-        "500": "#d53b68",
-        "600": "#dc5f84",
-        "700": "#e4839f",
-        "800": "#f4c1d0",
-        "900": "#f6d6e0"
+        "50": "#fbeaef",
+        "100": "#f8d3de",
+        "200": "#f4b2c5",
+        "300": "#ee85a4",
+        "400": "#e85882",
+        "500": "#e54271",
+        "600": "#d61e53",
+        "700": "#aa1742",
+        "800": "#7d1130",
+        "900": "#500b1f"
       },
       "category": "Color Tokens"
     },
@@ -824,16 +824,16 @@
       "description": "dark color scale - shade success",
       "syntax": "<color>",
       "value": {
-        "50": "#072207",
-        "100": "#0b330b",
-        "200": "#115411",
-        "300": "#187618",
-        "400": "#1da61d",
-        "500": "#20b820",
-        "600": "#2ad92a",
-        "700": "#4fe14f",
-        "800": "#94ee94",
-        "900": "#c1f4c1"
+        "50": "#d3f8d3",
+        "100": "#a4f3a4",
+        "200": "#73f273",
+        "300": "#44ed44",
+        "400": "#16e816",
+        "500": "#14d114",
+        "600": "#10a210",
+        "700": "#0b740b",
+        "800": "#074607",
+        "900": "#042f04"
       },
       "category": "Color Tokens"
     },
@@ -842,16 +842,16 @@
       "description": "dark color scale - shade info",
       "syntax": "<color>",
       "value": {
-        "50": "#071c22",
-        "100": "#0b2a33",
-        "200": "#0e3844",
-        "300": "#114654",
-        "400": "#145e72",
-        "500": "#176d84",
-        "600": "#1e8baa",
-        "700": "#24a9ce",
-        "800": "#5ac7e5",
-        "900": "#87d4e9"
+        "50": "#95dbee",
+        "100": "#65ceeb",
+        "200": "#32c3eb",
+        "300": "#15acd6",
+        "400": "#1087a7",
+        "500": "#0e7490",
+        "600": "#0b5e74",
+        "700": "#094b5d",
+        "800": "#073846",
+        "900": "#05252e"
       },
       "category": "Color Tokens"
     },
@@ -860,16 +860,16 @@
       "description": "dark color scale - shade warning",
       "syntax": "<color>",
       "value": {
-        "50": "#251c04",
-        "100": "#372b06",
-        "200": "#493908",
-        "300": "#5c480a",
-        "400": "#8d6c0b",
-        "500": "#a07c0d",
-        "600": "#c89a10",
-        "700": "#ecb718",
-        "800": "#f6d05d",
-        "900": "#f6dc8e"
+        "50": "#fae39f",
+        "100": "#fbd76a",
+        "200": "#ffcc33",
+        "300": "#ffbf00",
+        "400": "#cc9900",
+        "500": "#B38600",
+        "600": "#806000",
+        "700": "#664c00",
+        "800": "#4d3900",
+        "900": "#332600"
       },
       "category": "Color Tokens"
     },
@@ -878,16 +878,16 @@
       "description": "dark color scale - shade danger",
       "syntax": "<color>",
       "value": {
-        "50": "#220707",
-        "100": "#440e0e",
-        "200": "#651515",
-        "300": "#871c1c",
-        "400": "#b82121",
-        "500": "#ca2424",
-        "600": "#dd3e3e",
-        "700": "#e26262",
-        "800": "#f2aaaa",
-        "900": "#f6d5d5"
+        "50": "#fbe9e9",
+        "100": "#f6bbbb",
+        "200": "#f38b8b",
+        "300": "#ef5d5d",
+        "400": "#ea2e2e",
+        "500": "#e81717",
+        "600": "#ba1212",
+        "700": "#8b0e0e",
+        "800": "#5d0909",
+        "900": "#2e0505"
       },
       "category": "Color Tokens"
     },
@@ -971,7 +971,15 @@
       "syntax": "<color>",
       "value": {
         "fill": "#0b5e74",
-        "text": "#0b5e74"
+        "fillHover": "#0a5568",
+        "fillActive": "#094b5d",
+        "text": "#0b5e74",
+        "textHover": "#0b5e74",
+        "textVisited": "#377989",
+        "focusRing": "#0b5e74",
+        "selectionBg": "#0b5e74",
+        "selectionText": "#ffffff",
+        "contrast": "#ffffff"
       },
       "category": "Color Tokens"
     },
@@ -981,7 +989,483 @@
       "syntax": "<color>",
       "value": {
         "fill": "#036171",
-        "text": "#06b6d4"
+        "fillHover": "#0592ab",
+        "fillActive": "#04788c",
+        "text": "#06b6d4",
+        "textHover": "#06b6d4",
+        "textVisited": "#0996af",
+        "focusRing": "#058ba2",
+        "selectionBg": "#06b6d4",
+        "selectionText": "#000000",
+        "contrast": "#ffffff"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-accentInteractive-light",
+      "description": "accentInteractive color scale - shade light",
+      "syntax": "<color>",
+      "value": {
+        "fill": "#d61e53",
+        "fillHover": "#c11b4b",
+        "fillActive": "#ab1842",
+        "text": "#aa1742",
+        "textHover": "#aa1742",
+        "textVisited": "#b64061",
+        "focusRing": "#d61e53",
+        "selectionBg": "#aa1742",
+        "selectionText": "#ffffff",
+        "contrast": "#ffffff"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-accentInteractive-dark",
+      "description": "accentInteractive color scale - shade dark",
+      "syntax": "<color>",
+      "value": {
+        "fill": "#d61e53",
+        "fillHover": "#e3396a",
+        "fillActive": "#e1265c",
+        "text": "#e54271",
+        "textHover": "#ee85a4",
+        "textVisited": "#bc3960",
+        "focusRing": "#d61e53",
+        "selectionBg": "#e54271",
+        "selectionText": "#000000",
+        "contrast": "#ffffff"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surfaceAccent-light",
+      "description": "surfaceAccent color scale - shade light",
+      "syntax": "<color>",
+      "value": {
+        "base": {
+          "text": "#aa1742",
+          "textHover": "#aa1742"
+        },
+        "subtle": {
+          "text": "#aa1742",
+          "textHover": "#aa1742"
+        },
+        "elevated": {
+          "text": "#aa1742",
+          "textHover": "#aa1742"
+        },
+        "sunken": {
+          "text": "#aa1742",
+          "textHover": "#aa1742"
+        },
+        "overlay": {
+          "text": "#aa1742",
+          "textHover": "#aa1742"
+        },
+        "inverse": {
+          "text": "#e54271",
+          "textHover": "#e85882"
+        }
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surfaceAccent-dark",
+      "description": "surfaceAccent color scale - shade dark",
+      "syntax": "<color>",
+      "value": {
+        "base": {
+          "text": "#e54271",
+          "textHover": "#e85882"
+        },
+        "subtle": {
+          "text": "#e54271",
+          "textHover": "#e85882"
+        },
+        "elevated": {
+          "text": "#e54271",
+          "textHover": "#e85882"
+        },
+        "sunken": {
+          "text": "#e54271",
+          "textHover": "#e85882"
+        },
+        "overlay": {
+          "text": "#e85882",
+          "textHover": "#ee85a4"
+        },
+        "inverse": {
+          "text": "#d61e53",
+          "textHover": "#aa1742"
+        }
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-dangerInteractive-light",
+      "description": "dangerInteractive color scale - shade light",
+      "syntax": "<color>",
+      "value": {
+        "fill": "#ba1212",
+        "fillHover": "#a71010",
+        "fillActive": "#950e0e",
+        "text": "#ba1212",
+        "textHover": "#8b0e0e",
+        "textVisited": "#c33c3b",
+        "focusRing": "#ba1212",
+        "selectionBg": "#ba1212",
+        "selectionText": "#ffffff",
+        "contrast": "#ffffff"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-dangerInteractive-dark",
+      "description": "dangerInteractive color scale - shade dark",
+      "syntax": "<color>",
+      "value": {
+        "fill": "#ba1212",
+        "fillHover": "#e41616",
+        "fillActive": "#ce1414",
+        "text": "#ef5d5d",
+        "textHover": "#f38b8b",
+        "textVisited": "#c44f50",
+        "focusRing": "#e81717",
+        "selectionBg": "#ef5d5d",
+        "selectionText": "#000000",
+        "contrast": "#ffffff"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-successInteractive-light",
+      "description": "successInteractive color scale - shade light",
+      "syntax": "<color>",
+      "value": {
+        "fill": "#0b740b",
+        "fillHover": "#0a680a",
+        "fillActive": "#095d09",
+        "text": "#0b740b",
+        "textHover": "#074607",
+        "textVisited": "#378b35",
+        "focusRing": "#0b740b",
+        "selectionBg": "#0b740b",
+        "selectionText": "#ffffff",
+        "contrast": "#ffffff"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-successInteractive-dark",
+      "description": "successInteractive color scale - shade dark",
+      "syntax": "<color>",
+      "value": {
+        "fill": "#0b740b",
+        "fillHover": "#10a810",
+        "fillActive": "#0d8c0d",
+        "text": "#10a210",
+        "textHover": "#14d114",
+        "textVisited": "#118612",
+        "focusRing": "#10a210",
+        "selectionBg": "#10a210",
+        "selectionText": "#000000",
+        "contrast": "#ffffff"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-warningInteractive-light",
+      "description": "warningInteractive color scale - shade light",
+      "syntax": "<color>",
+      "value": {
+        "fill": "#806000",
+        "fillHover": "#735600",
+        "fillActive": "#664d00",
+        "text": "#806000",
+        "textHover": "#664c00",
+        "textVisited": "#957b2c",
+        "focusRing": "#806000",
+        "selectionBg": "#806000",
+        "selectionText": "#ffffff",
+        "contrast": "#ffffff"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-warningInteractive-dark",
+      "description": "warningInteractive color scale - shade dark",
+      "syntax": "<color>",
+      "value": {
+        "fill": "#806000",
+        "fillHover": "#b98b00",
+        "fillActive": "#9b7400",
+        "text": "#B38600",
+        "textHover": "#cc9900",
+        "textVisited": "#947005",
+        "focusRing": "#806000",
+        "selectionBg": "#B38600",
+        "selectionText": "#000000",
+        "contrast": "#ffffff"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-infoInteractive-light",
+      "description": "infoInteractive color scale - shade light",
+      "syntax": "<color>",
+      "value": {
+        "fill": "#0b5e74",
+        "fillHover": "#0a5568",
+        "fillActive": "#094b5d",
+        "text": "#0b5e74",
+        "textHover": "#0b5e74",
+        "textVisited": "#377989",
+        "focusRing": "#0b5e74",
+        "selectionBg": "#0b5e74",
+        "selectionText": "#ffffff",
+        "contrast": "#ffffff"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-infoInteractive-dark",
+      "description": "infoInteractive color scale - shade dark",
+      "syntax": "<color>",
+      "value": {
+        "fill": "#0b5e74",
+        "fillHover": "#1089a8",
+        "fillActive": "#0d728c",
+        "text": "#15acd6",
+        "textHover": "#15acd6",
+        "textVisited": "#158eb0",
+        "focusRing": "#0e7490",
+        "selectionBg": "#15acd6",
+        "selectionText": "#000000",
+        "contrast": "#ffffff"
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surfaceStatus-light",
+      "description": "surfaceStatus color scale - shade light",
+      "syntax": "<color>",
+      "value": {
+        "success": {
+          "base": {
+            "text": "#0b740b",
+            "textHover": "#074607"
+          },
+          "subtle": {
+            "text": "#0b740b",
+            "textHover": "#074607"
+          },
+          "elevated": {
+            "text": "#074607",
+            "textHover": "#074607"
+          },
+          "sunken": {
+            "text": "#074607",
+            "textHover": "#074607"
+          },
+          "overlay": {
+            "text": "#0b740b",
+            "textHover": "#074607"
+          },
+          "inverse": {
+            "text": "#10a210",
+            "textHover": "#10a210"
+          }
+        },
+        "warning": {
+          "base": {
+            "text": "#806000",
+            "textHover": "#664c00"
+          },
+          "subtle": {
+            "text": "#664c00",
+            "textHover": "#664c00"
+          },
+          "elevated": {
+            "text": "#664c00",
+            "textHover": "#664c00"
+          },
+          "sunken": {
+            "text": "#664c00",
+            "textHover": "#664c00"
+          },
+          "overlay": {
+            "text": "#806000",
+            "textHover": "#664c00"
+          },
+          "inverse": {
+            "text": "#B38600",
+            "textHover": "#B38600"
+          }
+        },
+        "info": {
+          "base": {
+            "text": "#0b5e74",
+            "textHover": "#0b5e74"
+          },
+          "subtle": {
+            "text": "#0b5e74",
+            "textHover": "#0b5e74"
+          },
+          "elevated": {
+            "text": "#0b5e74",
+            "textHover": "#0b5e74"
+          },
+          "sunken": {
+            "text": "#0b5e74",
+            "textHover": "#0b5e74"
+          },
+          "overlay": {
+            "text": "#0b5e74",
+            "textHover": "#0b5e74"
+          },
+          "inverse": {
+            "text": "#15acd6",
+            "textHover": "#15acd6"
+          }
+        },
+        "danger": {
+          "base": {
+            "text": "#ba1212",
+            "textHover": "#ba1212"
+          },
+          "subtle": {
+            "text": "#ba1212",
+            "textHover": "#ba1212"
+          },
+          "elevated": {
+            "text": "#ba1212",
+            "textHover": "#8b0e0e"
+          },
+          "sunken": {
+            "text": "#ba1212",
+            "textHover": "#8b0e0e"
+          },
+          "overlay": {
+            "text": "#ba1212",
+            "textHover": "#ba1212"
+          },
+          "inverse": {
+            "text": "#ef5d5d",
+            "textHover": "#ef5d5d"
+          }
+        }
+      },
+      "category": "Color Tokens"
+    },
+    {
+      "name": "--color-surfaceStatus-dark",
+      "description": "surfaceStatus color scale - shade dark",
+      "syntax": "<color>",
+      "value": {
+        "success": {
+          "base": {
+            "text": "#10a210",
+            "textHover": "#10a210"
+          },
+          "subtle": {
+            "text": "#10a210",
+            "textHover": "#10a210"
+          },
+          "elevated": {
+            "text": "#10a210",
+            "textHover": "#10a210"
+          },
+          "sunken": {
+            "text": "#10a210",
+            "textHover": "#10a210"
+          },
+          "overlay": {
+            "text": "#10a210",
+            "textHover": "#10a210"
+          },
+          "inverse": {
+            "text": "#0b740b",
+            "textHover": "#0b740b"
+          }
+        },
+        "warning": {
+          "base": {
+            "text": "#B38600",
+            "textHover": "#B38600"
+          },
+          "subtle": {
+            "text": "#B38600",
+            "textHover": "#B38600"
+          },
+          "elevated": {
+            "text": "#B38600",
+            "textHover": "#B38600"
+          },
+          "sunken": {
+            "text": "#B38600",
+            "textHover": "#B38600"
+          },
+          "overlay": {
+            "text": "#B38600",
+            "textHover": "#B38600"
+          },
+          "inverse": {
+            "text": "#806000",
+            "textHover": "#806000"
+          }
+        },
+        "info": {
+          "base": {
+            "text": "#15acd6",
+            "textHover": "#15acd6"
+          },
+          "subtle": {
+            "text": "#1087a7",
+            "textHover": "#15acd6"
+          },
+          "elevated": {
+            "text": "#1087a7",
+            "textHover": "#15acd6"
+          },
+          "sunken": {
+            "text": "#15acd6",
+            "textHover": "#15acd6"
+          },
+          "overlay": {
+            "text": "#15acd6",
+            "textHover": "#15acd6"
+          },
+          "inverse": {
+            "text": "#0b5e74",
+            "textHover": "#0b5e74"
+          }
+        },
+        "danger": {
+          "base": {
+            "text": "#ef5d5d",
+            "textHover": "#ef5d5d"
+          },
+          "subtle": {
+            "text": "#ef5d5d",
+            "textHover": "#ef5d5d"
+          },
+          "elevated": {
+            "text": "#ea2e2e",
+            "textHover": "#ef5d5d"
+          },
+          "sunken": {
+            "text": "#ef5d5d",
+            "textHover": "#ef5d5d"
+          },
+          "overlay": {
+            "text": "#ef5d5d",
+            "textHover": "#ef5d5d"
+          },
+          "inverse": {
+            "text": "#ba1212",
+            "textHover": "#ba1212"
+          }
+        }
       },
       "category": "Color Tokens"
     },
@@ -2275,6 +2759,11 @@
       "category": "Data Enhancements"
     },
     {
+      "name": "data-dropdown-close",
+      "description": "Enhancement: [data-dropdown-close]",
+      "category": "Data Enhancements"
+    },
+    {
       "name": "data-toggle",
       "description": "Enhancement: label[data-toggle]",
       "category": "Data Enhancements"
@@ -2297,9 +2786,9 @@
   ],
   "metadata": {
     "generator": "PDS CSS Data Generator",
-    "generatedAt": "2026-03-04T14:29:06.155Z",
-    "totalProperties": 169,
+    "generatedAt": "2026-03-14T12:22:35.002Z",
+    "totalProperties": 183,
     "totalClasses": 170,
-    "totalAttributes": 5
+    "totalAttributes": 6
   }
 }

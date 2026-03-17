@@ -19,10 +19,10 @@ import { enums } from "./pds-enums.js";
  * @property {string} [secondary] - Drives neutral scale: --color-gray-50..900.
  * @property {string} [accent] - Drives accent scale: --color-accent-50..900.
  * @property {string} [background] - Drives surface shades: --color-surface-* and smart surfaces.
- * @property {string | null} [success] - Drives semantic success scale: --color-success-*.
- * @property {string | null} [warning] - Drives semantic warning scale: --color-warning-*.
- * @property {string | null} [danger] - Drives semantic danger scale: --color-danger-*.
- * @property {string | null} [info] - Drives semantic info scale: --color-info-*.
+ * @property {string | null} [success] - Drives semantic success scale and role tokens: --color-success-*, --color-success-fill/text/*, and --surface-*-success-text.
+ * @property {string | null} [warning] - Drives semantic warning scale and role tokens: --color-warning-*, --color-warning-fill/text/*, and --surface-*-warning-text.
+ * @property {string | null} [danger] - Drives semantic danger scale and role tokens: --color-danger-*, --color-danger-fill/text/*, and --surface-*-danger-text.
+ * @property {string | null} [info] - Drives semantic info scale and role tokens: --color-info-*, --color-info-fill/text/*, and --surface-*-info-text.
  * @property {number} [gradientStops] - Affects generated gradient scales.
  * @property {number} [elevationOpacity] - Affects smart surface shadows (opacity).
  * @property {PDSDarkModeColorsConfig} [darkMode] - Overrides dark mode palette generation.
@@ -407,19 +407,71 @@ const __DESIGN_CONFIG_SPEC__ = {
         },
         success: {
           type: ["string", "null"],
-          relations: { tokens: ["--color-success-*"] },
+          relations: {
+            tokens: [
+              "--color-success-*",
+              "--color-success-fill",
+              "--color-success-fill-hover",
+              "--color-success-fill-active",
+              "--color-success-text",
+              "--color-success-text-hover",
+              "--color-success-contrast",
+              "--color-success-display-*",
+              "--surface-*-success-text",
+              "--surface-*-success-text-hover",
+            ],
+          },
         },
         warning: {
           type: ["string", "null"],
-          relations: { tokens: ["--color-warning-*"] },
+          relations: {
+            tokens: [
+              "--color-warning-*",
+              "--color-warning-fill",
+              "--color-warning-fill-hover",
+              "--color-warning-fill-active",
+              "--color-warning-text",
+              "--color-warning-text-hover",
+              "--color-warning-contrast",
+              "--color-warning-display-*",
+              "--surface-*-warning-text",
+              "--surface-*-warning-text-hover",
+            ],
+          },
         },
         danger: {
           type: ["string", "null"],
-          relations: { tokens: ["--color-danger-*"] },
+          relations: {
+            tokens: [
+              "--color-danger-*",
+              "--color-danger-fill",
+              "--color-danger-fill-hover",
+              "--color-danger-fill-active",
+              "--color-danger-text",
+              "--color-danger-text-hover",
+              "--color-danger-contrast",
+              "--color-danger-display-*",
+              "--surface-*-danger-text",
+              "--surface-*-danger-text-hover",
+            ],
+          },
         },
         info: {
           type: ["string", "null"],
-          relations: { tokens: ["--color-info-*"] },
+          relations: {
+            tokens: [
+              "--color-info-*",
+              "--color-info-fill",
+              "--color-info-fill-hover",
+              "--color-info-fill-active",
+              "--color-info-text",
+              "--color-info-text-hover",
+              "--color-info-contrast",
+              "--color-info-display-*",
+              "--surface-*-info-text",
+              "--surface-*-info-text-hover",
+            ],
+          },
         },
         gradientStops: { type: "number" },
         elevationOpacity: {
@@ -1998,7 +2050,7 @@ export const presets = {
       darkMode: {
         background: "#1a1d21", // deep charcoal like WHOOP
         secondary: "#78909c",
-        primary: "#0a4ca4",
+        //primary: "#0a4ca4",
       },
     },
     typography: {
@@ -2106,7 +2158,8 @@ export const presets = {
       darkMode: {
         background: "#0f0f0f",
         secondary: "#8a8a8a",
-        primary: "#06c167", // Use bright green for dark mode buttons (was white)
+        primary: "#b1b1b1"
+        //primary: "#06c167", // Use bright green for dark mode buttons (was white)
       },
     },
     typography: {
