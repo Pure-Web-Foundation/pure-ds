@@ -2718,7 +2718,7 @@ nav[data-dropdown] {
 
   & > :last-child {
     position: absolute;
-    padding: var(--spacing-2);
+    padding: 0 var(--spacing-2);
     margin: 0;
     background: var(--color-surface-overlay);
     border: var(--border-width-thin) solid var(--color-border);
@@ -2773,7 +2773,7 @@ nav[data-dropdown] {
   }
 
   menu li {
-    padding: var(--spacing-1) 0;
+    padding: var(--spacing-2) 0;
 
     & + li {
       border-top: var(--border-width-thin) solid var(--color-border);
@@ -3859,8 +3859,7 @@ export const ${e}CSS = \`${n}\`;
     :where(.pds-live-edit-toggle-nav menu li.pds-live-shared-quick-mode-item .pds-live-editor-menu) {
       display: grid;
       gap: var(--spacing-2);
-      padding: var(--spacing-2);
-      border-bottom: var(--border-width-thin) solid var(--color-border);
+      padding: var(--spacing-2);      
     }
 
     :where(.pds-live-edit-toggle-nav menu li.pds-live-shared-quick-mode-item label) {
@@ -3888,11 +3887,11 @@ export const ${e}CSS = \`${n}\`;
     }
 
     :where(.pds-live-edit-toggle-nav menu a[data-pds-live-action="reset-config"]) {
-      color: var(--color-danger-700);
+      color: var(--color-danger-text);
     }
 
     :where(.pds-live-edit-toggle-nav menu a[data-pds-live-action="reset-config"] pds-icon) {
-      color: var(--color-danger-700);
+      color: var(--color-danger-text);
     }
   `,document.head.appendChild(t)}function or(t,e){if(!t)return;t.classList.toggle("btn-primary",e),t.classList.toggle("btn-secondary",!e),t.setAttribute("aria-pressed",e?"true":"false");let r="PDS Manager";t.setAttribute("aria-label",r),t.setAttribute("title",r)}async function ra(){if(typeof document>"u")return null;ta();let t=document.getElementById(pt);if(!t){let e=document.createElement("nav");e.className="pds-live-edit-toggle-nav",e.setAttribute("data-dropdown",""),e.setAttribute("data-mode","auto"),e.setAttribute("data-pds-live-edit-ignore","true"),t=document.createElement("button"),t.id=pt,t.type="button",t.className="icon-only btn-secondary",t.setAttribute("data-pds-live-edit-ignore","true"),t.innerHTML='<pds-icon icon="cursor-click" size="sm"></pds-icon>';let r=document.createElement("menu");r.setAttribute("data-pds-live-edit-ignore","true");let n=(i,s,d)=>{let c=document.createElement("li"),p=document.createElement("a");p.href="#",p.dataset.pdsLiveAction=i,p.setAttribute("data-pds-live-edit-ignore","true");let l=document.createElement("pds-icon");return l.setAttribute("icon",d),l.setAttribute("size","sm"),p.append(l,document.createTextNode(` ${s}`)),c.appendChild(p),c},o=()=>{let i=document.createElement("li");i.setAttribute("data-pds-live-edit-ignore","true");let s=document.createElement("hr");return s.setAttribute("aria-hidden","true"),i.appendChild(s),i};r.appendChild(n("toggle",se("Toggle live editing"),"pencil"));let a=n("open-settings",se("Open Settings"),"gear");a.setAttribute("data-dropdown-close",""),r.appendChild(a),r.appendChild(n("reset-config",se("Reset Config"),"arrow-counter-clockwise")),await na(r),e.append(t,r),tn(()=>{document.getElementById(pt)||document.body.appendChild(e)})}return t}async function na(t){if(t instanceof Element){if(t.__pdsLiveSharedMenuItemInFlight)return t.__pdsLiveSharedMenuItemInFlight;t.__pdsLiveSharedMenuItemInFlight=(async()=>{t.querySelectorAll("li.pds-live-shared-quick-mode-item").forEach(s=>s.remove());let e=await We({mountIfMissing:!0,interactive:!1,requiredMethod:"createSharedQuickModeMenuItem",timeoutMs:7e3});if(!e||typeof e.createSharedQuickModeMenuItem!="function")return;let r=await e.createSharedQuickModeMenuItem();if(!(r instanceof Element))return;r.classList.add("pds-live-shared-quick-mode-item");let o=t.querySelector('a[data-pds-live-action="reset-config"]')?.closest("li")||null,a=o?.previousElementSibling||null,i=a&&a.querySelector?.(":scope > hr")?a:null;if(i){t.insertBefore(r,i);return}if(o){t.insertBefore(r,o);return}t.appendChild(r)})();try{await t.__pdsLiveSharedMenuItemInFlight}finally{t.__pdsLiveSharedMenuItemInFlight=null}}}function oa(){if(typeof document>"u")return;let t=document.getElementById(pt);if(t){let r=t.closest(".pds-live-edit-toggle-nav");r?r.remove():t.remove()}let e=document.getElementById(ar);e&&e.remove(),rn()}async function aa(){if(typeof document>"u")return;let t=await ra();if(!t)return;let e=async i=>{if(i){let s=await We({mountIfMissing:!0});s&&typeof s.setInteractiveEditingEnabled=="function"&&s.setInteractiveEditingEnabled(!0)}else rn();or(t,i)};e(!1);let r=t.closest(".pds-live-edit-toggle-nav")||t;t.__pdsLiveEditActionHandler&&r.removeEventListener("click",t.__pdsLiveEditActionHandler);let n=async i=>{let s=i.target?.closest?.("[data-pds-live-action]");if(!s)return;i.preventDefault();let d=String(s.dataset.pdsLiveAction||"");if(d==="toggle"){let c=await We({mountIfMissing:!1}),p=ea(c);await e(!p);return}if(d==="open-settings"){let c=await We({mountIfMissing:!0,requiredMethod:"openDesignSettings",interactive:!1});c&&typeof c.setInteractiveEditingEnabled=="function"&&c.setInteractiveEditingEnabled(!1),c&&typeof c.openDesignSettings=="function"&&(or(t,!1),await c.openDesignSettings());return}if(d==="reset-config"){let c=await We({mountIfMissing:!0,requiredMethod:"resetConfig",interactive:!1});or(t,!1),c&&typeof c.resetConfig=="function"&&await c.resetConfig();return}};t.__pdsLiveEditActionHandler=n,r.addEventListener("click",n),t.__pdsLiveEditDisableHandler&&document.removeEventListener("pds:live-edit:disable",t.__pdsLiveEditDisableHandler),t.__pdsLiveEditEnableHandler&&document.removeEventListener("pds:live-edit:enable",t.__pdsLiveEditEnableHandler);let o=()=>{e(!1)},a=()=>{e(!0)};t.__pdsLiveEditDisableHandler=o,document.addEventListener("pds:live-edit:disable",o),t.__pdsLiveEditEnableHandler=a,document.addEventListener("pds:live-edit:enable",a)}function ia(){if(typeof window>"u"||!window.localStorage)return null;try{let t=window.localStorage.getItem("pure-ds-config");if(!t)return null;let e=JSON.parse(t);if(e&&("preset"in e||"design"in e))return e}catch{return null}return null}function ir(t={},e={}){if(!e||typeof e!="object")return t;let r=Array.isArray(t)?[...t]:{...t};for(let[n,o]of Object.entries(e))o&&typeof o=="object"&&!Array.isArray(o)?r[n]=ir(r[n]&&typeof r[n]=="object"?r[n]:{},o):r[n]=o;return r}function sa(t){let e=ia();if(!e||!t||typeof t!="object")return t;let r=e.preset,n=e.design&&typeof e.design=="object"?e.design:null;if(!r&&!n)return t;let o="preset"in t||"design"in t||"enhancers"in t,a={...t};if(r&&(a.preset=r),n)if(o){let i=t.design&&typeof t.design=="object"?t.design:{};a.design=ir(i,n)}else a=ir(t,n);return a}function la(t,e={}){let{hideCategory:r=!0,itemGrid:n="45px 1fr",includeIncompatible:o=!0,disableIncompatible:a=!0,categoryName:i="Presets",theme:s,onSelect:d,iconHandler:c}=e||{},p=ze(s??t?.theme),l=f=>{let b=g(f?.id)?.colors||{},m=b?.primary,y=b?.secondary,v=b?.accent;return m&&y&&v?`<span style="display:flex;gap:1px;flex-shrink:0;" aria-hidden="true">
         <span style="display:inline-block;width:10px;height:20px;background-color:${m};">&nbsp;</span>

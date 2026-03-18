@@ -4507,7 +4507,7 @@ nav[data-dropdown] {
 
   & > :last-child {
     position: absolute;
-    padding: var(--spacing-2);
+    padding: 0 var(--spacing-2);
     margin: 0;
     background: var(--color-surface-overlay);
     border: var(--border-width-thin) solid var(--color-border);
@@ -4562,7 +4562,7 @@ nav[data-dropdown] {
   }
 
   menu li {
-    padding: var(--spacing-1) 0;
+    padding: var(--spacing-2) 0;
 
     & + li {
       border-top: var(--border-width-thin) solid var(--color-border);

@@ -219,8 +219,7 @@ function ensureLiveEditToggleStyles() {
     :where(.pds-live-edit-toggle-nav menu li.pds-live-shared-quick-mode-item .pds-live-editor-menu) {
       display: grid;
       gap: var(--spacing-2);
-      padding: var(--spacing-2);
-      border-bottom: var(--border-width-thin) solid var(--color-border);
+      padding: var(--spacing-2);      
     }
 
     :where(.pds-live-edit-toggle-nav menu li.pds-live-shared-quick-mode-item label) {
@@ -248,11 +247,11 @@ function ensureLiveEditToggleStyles() {
     }
 
     :where(.pds-live-edit-toggle-nav menu a[data-pds-live-action="reset-config"]) {
-      color: var(--color-danger-700);
+      color: var(--color-danger-text);
     }
 
     :where(.pds-live-edit-toggle-nav menu a[data-pds-live-action="reset-config"] pds-icon) {
-      color: var(--color-danger-700);
+      color: var(--color-danger-text);
     }
   `;
   document.head.appendChild(style);
