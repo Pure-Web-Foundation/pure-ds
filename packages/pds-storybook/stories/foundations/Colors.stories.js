@@ -427,7 +427,7 @@ const renderScaleRow = (scaleName) => html`
         const fallback = step >= 500 ? "var(--surface-inverse-text)" : "var(--surface-text)";
         return html`
           <div
-            class="badge badge-outline"
+            class="story-colors-derived-chip"
             style=${`background: var(${tokenName}); color: ${chooseReadableTextColor(tokenValue, fallback)}`}
             title=${`${tokenName}: ${tokenValue || "not available"}`}
           >
@@ -451,7 +451,7 @@ const renderRoleTokenRow = (family) => html`
         const tokenValue = readTokenValue(tokenName);
         return html`
           <div
-            class="badge badge-outline"
+            class="story-colors-derived-chip"
             style=${`background: var(${tokenName}); color: ${chooseReadableTextColor(tokenValue, "var(--surface-text)")}`}
             title=${`${tokenName}: ${tokenValue || "not available"}`}
           >
@@ -661,7 +661,7 @@ const walkthroughStyles = html`
 
     .story-colors-preset-swatch {
       min-height: 3.75rem;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-lg);
       border: var(--border-width-thin, 1px) solid color-mix(in srgb, var(--surface-border), transparent 35%);
       padding: var(--spacing-2);
       font-size: 0.72rem;
@@ -711,6 +711,7 @@ const walkthroughStyles = html`
 
     .story-colors-derived-chip {
       min-height: 5.4rem;
+      min-width: 5.4rem;
       padding: var(--spacing-3);
       border-radius: var(--radius-md);
       border: var(--border-width-thin, 1px) solid color-mix(in srgb, var(--surface-border), transparent 40%);
@@ -798,7 +799,7 @@ export const Default = {
     const activeDesign = compiled?.design || activePreset;
 
     return html`
-      ${walkthroughStyles}
+      
       <section class="section stack-lg">
         <header>
           <h3>Config to Runtime Token Flow</h3>
@@ -971,7 +972,7 @@ export const PresetGallery = {
                 <p class="text-muted">${preset?.description || "No description provided."}</p>
 
                 <div class="flex flex-wrap gap-sm">
-                  ${(preset?.tags || []).map((tag) => html`<span class="badge badge-outline">${tag}</span>`)}
+                  ${(preset?.tags || []).map((tag) => html`<span class="story-colors-preset-swatch">${tag}</span>`)}
                 </div>
 
                 <small class="text-muted">Theme support: ${getThemeSupportLabel(preset)}</small>

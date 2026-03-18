@@ -3616,7 +3616,7 @@ class PdsLiveEdit extends HTMLElement {
           title: msg("Reset Config?"),
           type: "confirm",
           buttons: {
-            ok: { name: msg("Reset"), variant: "danger" },
+            ok: { name: msg("Reset"), variant: "danger", primary: true },
             cancel: { name: msg("Cancel"), cancel: true },
           },
         }

@@ -80,6 +80,32 @@ export class AppToaster extends HTMLElement {
           opacity: 1;
         }
 
+        /* Toast variants: mirror callout semantic token mapping exactly */
+        aside.toast.callout-success {
+          background-color: var(--color-success-display-bg);
+          border-color: var(--color-success-display-border);
+          color: var(--color-success-display-text);
+        }
+
+        aside.toast.callout-info {
+          background-color: var(--color-info-display-bg);
+          border-color: var(--color-info-display-border);
+          color: var(--color-info-display-text);
+        }
+
+        aside.toast.callout-warning {
+          background-color: var(--color-warning-display-bg);
+          border-color: var(--color-warning-display-border);
+          color: var(--color-warning-display-text);
+        }
+
+        aside.toast.callout-danger,
+        aside.toast.callout-error {
+          background-color: var(--color-danger-display-bg);
+          border-color: var(--color-danger-display-border);
+          color: var(--color-danger-display-text);
+        }
+
         /* Toast dismiss animation */
         aside.toast.dismissing {
           margin-bottom: 0;
@@ -103,20 +129,20 @@ export class AppToaster extends HTMLElement {
         }
 
         aside.toast.callout-info .toast-progress { 
-          background: var(--color-info-600);
+          background: var(--color-info-display-border);
         }
 
         aside.toast.callout-success .toast-progress { 
-          background: var(--color-success-600);
+          background: var(--color-success-display-border);
         }
 
         aside.toast.callout-warning .toast-progress { 
-          background: var(--color-warning-600);
+          background: var(--color-warning-display-border);
         }
 
         aside.toast.callout-danger .toast-progress,
         aside.toast.callout-error .toast-progress { 
-          background: var(--color-danger-600);
+          background: var(--color-danger-display-border);
         }
 
         /* Toast shrink animation */

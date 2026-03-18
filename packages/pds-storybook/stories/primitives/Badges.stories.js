@@ -64,6 +64,7 @@ export const OutlinedBadges = {
           <small class="text-muted">Use <code>.badge-outline</code> for subtle, low-emphasis badge treatments.</small>
         </header>
         <div class="flex gap-md flex-wrap items-center">
+          <span class="badge badge-outline">Default</span>
           <span class="badge badge-outline badge-primary">Primary</span>
           <span class="badge badge-outline badge-secondary">Secondary</span>
           <span class="badge badge-outline badge-success">Success</span>

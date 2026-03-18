@@ -2181,6 +2181,7 @@ tbody {
 
 .badge-outline {
   background-color: transparent;
+  color: var(--color-text-secondary);
   border: var(--border-width-thin) solid currentColor;
   &.badge-primary { color: var(--color-primary-text); }
   &.badge-secondary { color: var(--color-text-secondary); }
