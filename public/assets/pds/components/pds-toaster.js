@@ -39,8 +39,8 @@ export class AppToaster extends HTMLElement {
 
     // Listen for global toast events
     this._handleToastEvent = (e) => {
-      const { message, type, duration, closable, persistent } = e.detail;
-      this.toast(message, { type, duration, closable, persistent });
+      const { message, type, title, duration, closable, persistent, html, action } = e.detail;
+      this.toast(message, { type, title, duration, closable, persistent, html, action });
     };
     PDS.addEventListener('pds:toast', this._handleToastEvent);
 
@@ -210,6 +210,7 @@ export class AppToaster extends HTMLElement {
    * @param {string} message - The message to display
    * @param {Object} [options] - Toast configuration
    * @param {"information"|"success"|"warning"|"error"} [options.type="information"] - Toast type
+    * @param {string} [options.title] - Optional heading text (falls back to type-based title when empty)
    * @param {number} [options.duration] - Duration in ms (auto-calculated if not provided)
    * @param {boolean} [options.closable=true] - Whether toast can be closed manually
    * @param {boolean} [options.persistent=false] - If true, toast doesn't auto-dismiss
@@ -218,6 +219,7 @@ export class AppToaster extends HTMLElement {
   toast(message, options = {}) {
     const defaults = {
       type: "information", // information, success, warning, error
+      title: null,
       duration: null, // auto-calculated based on reading time
       closable: true,
       persistent: false, // if true, doesn't auto-dismiss
@@ -265,6 +267,7 @@ export class AppToaster extends HTMLElement {
       toastId,
       message,
       config.type,
+      config.title,
       config.closable,
       duration,
       config.persistent,
@@ -298,12 +301,13 @@ export class AppToaster extends HTMLElement {
    * @param {string} id
    * @param {string} message
    * @param {"information"|"success"|"warning"|"error"} type
+    * @param {string|null|undefined} title
    * @param {boolean} closable
    * @param {number} duration
    * @param {boolean} persistent
    * @returns {HTMLElement}
    */
-  createToastElement(id, message, type, closable, duration, persistent, html = false, action = null) {
+  createToastElement(id, message, type, title, closable, duration, persistent, html = false, action = null) {
     const toast = document.createElement("aside");
     toast.className = `toast callout ${this.#getAlertClass(type)}`;
     toast.setAttribute("data-toast-id", id);
@@ -318,9 +322,9 @@ export class AppToaster extends HTMLElement {
     const content = document.createElement("div");
     content.className = "toast-content";
 
-    const title = document.createElement("div");
-    title.className = "callout-title";
-    title.textContent = this.#getToastTitle(type);
+    const titleElement = document.createElement("div");
+    titleElement.className = "callout-title";
+    titleElement.textContent = this.#resolveToastTitle(type, title);
 
     const text = document.createElement("p");
     text.style.margin = "0";
@@ -330,7 +334,7 @@ export class AppToaster extends HTMLElement {
       text.textContent = String(message || "");
     }
 
-    content.appendChild(title);
+    content.appendChild(titleElement);
     content.appendChild(text);
 
     if (action && typeof action === "object" && action.label) {
@@ -484,6 +488,20 @@ export class AppToaster extends HTMLElement {
       error: msg("Error"),
     };
     return titles[type] || titles.information;
+  }
+
+  /**
+   * Resolve toast heading: custom title first, then localized type-based fallback.
+   * @param {"information"|"success"|"warning"|"error"} type
+   * @param {string|null|undefined} title
+   * @returns {string}
+   */
+  #resolveToastTitle(type, title) {
+    const normalizedCustomTitle = typeof title === "string" ? title.trim() : "";
+    if (normalizedCustomTitle) {
+      return normalizedCustomTitle;
+    }
+    return this.#getToastTitle(type);
   }
 
   /**

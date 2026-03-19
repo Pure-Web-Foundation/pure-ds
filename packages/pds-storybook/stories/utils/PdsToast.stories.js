@@ -15,6 +15,16 @@ const toastPersistentSource = `await PDS.toast('Heads up! This toast stays until
   persistent: true
 });`;
 
+const toastCustomTitleSource = `await PDS.toast('Feature coming soon...', {
+  type: 'information',
+  title: 'Qogni'
+});
+
+await PDS.toast('Default title fallback when title is empty.', {
+  type: 'success',
+  title: '   '
+});`;
+
 const toastHtmlActionSource = `await PDS.toast(
   '<strong>File archived.</strong><br><span class="text-muted">You can restore it within 30 days.</span>',
   {
@@ -100,6 +110,53 @@ const PersistentToast = {
   }
 };
 
+const CustomTitleToast = {
+  name: 'Custom title toast',
+  render: () => {
+    const showCustomTitle = async () => {
+      const toast = ensureToast();
+      await toast('Feature coming soon...', {
+        type: 'information',
+        title: 'Qogni'
+      });
+    };
+
+    const showDefaultFallback = async () => {
+      const toast = ensureToast();
+      await toast('This uses the default Success! title.', {
+        type: 'success'
+      });
+    };
+
+    const showBlankTitleFallback = async () => {
+      const toast = ensureToast();
+      await toast('Blank custom title falls back to Information.', {
+        type: 'information',
+        title: '   '
+      });
+    };
+
+    return html`
+      <section
+        class="card max-w-sm"
+        .pdsCodeHeading=${'PDS.toast()'}
+        .pdsCodeLabel=${'Custom title toast'}
+        .pdsCodeSource=${toastCustomTitleSource}
+      >
+        <header>
+          <h3>Custom title toast</h3>
+          <small class="text-muted">Set <code>title</code> to override the default heading or omit it to use type-based labels.</small>
+        </header>
+        <div class="flex gap-sm">
+          <button class="btn" @click=${showCustomTitle}>Show custom title</button>
+          <button class="btn btn-outline" @click=${showDefaultFallback}>Show default fallback</button>
+          <button class="btn btn-outline" @click=${showBlankTitleFallback}>Show blank-title fallback</button>
+        </div>
+      </section>
+    `;
+  }
+};
+
 const CustomHtmlToasts = {
   name: 'Custom HTML toasts',
   render: () => {
@@ -172,13 +229,17 @@ export const PDSToast = {
     <section class="stack-lg">
       ${QuickToasts.render()}
       ${PersistentToast.render()}
+      ${CustomTitleToast.render()}
       ${CustomHtmlToasts.render()}
       <div class="callout callout-info">
         <span class="callout-icon">
           <pds-icon icon="info" size="md"></pds-icon>
         </span>
         <div class="stack-xs">
-          <strong class="callout-title">More info on PDS toasters</strong>
+          <strong class="callout-title">Title precedence</strong>
+          <small>
+            <code>options.title</code> is used when non-empty. Missing or whitespace-only values fall back to type-based labels (<em>Information</em>, <em>Success!</em>, etc.).
+          </small>
           <div>
             <a href="/?path=/story/components-pds-toaster--default" target="_top">See Components/Pds Toaster story</a>
           </div>

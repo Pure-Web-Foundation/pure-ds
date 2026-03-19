@@ -28,6 +28,7 @@ async function ensureToaster() {
  * @param {string} message - The message to display
  * @param {Object} [options={}] - Toast configuration
  * @param {"information"|"success"|"warning"|"error"} [options.type="information"] - Toast type/severity
+ * @param {string} [options.title] - Optional heading override (falls back to type label when empty)
  * @param {number} [options.duration] - Duration in milliseconds (auto-calculated if not provided based on message length)
  * @param {boolean} [options.closable=true] - Whether the toast can be manually closed
  * @param {boolean} [options.persistent=false] - If true, toast won't auto-dismiss (requires manual close)
@@ -44,6 +45,13 @@ async function ensureToaster() {
  * await PDS.toast('Failed to save changes', { 
  *   type: 'error',
  *   duration: 8000 
+ * });
+ * 
+ * @example
+ * // Custom title overrides type-derived heading
+ * await PDS.toast('Feature coming soon...', {
+ *   type: 'information',
+ *   title: 'Qogni'
  * });
  * 
  * @example
