@@ -456,69 +456,122 @@ form.getFormData(); // May throw error
 
 ### DOM Building with PDS.parse
 
-For runtime DOM composition, **always use `PDS.parse()` with template literals** instead of `document.createElement()` and `setAttribute()`. This approach is **10x more readable** and makes variable interpolation seamless.
+For runtime DOM composition, **use `PDS.parse` for both simple HTML and interactive bindings**. Two modes:
 
-**Signature:** `PDS.parse(html: string) → NodeList` — Access the first element with `[0]`.
-
-**Why it matters:** Template literals with `${}` variable interpolation are cleaner, more maintainable, and eliminate the verbosity of traditional DOM APIs. The resulting HTML is immediately clear vs. scattered setAttribute calls.
-
-#### Example 1: Simple Button
-
+**Mode 1: String mode (backward compatible, no bindings)**
 ```javascript
-// ✅ CORRECT: PDS.parse with template literal
-const button = PDS.parse(
-  '<button class="btn-primary">Save</button>'
-)[0];
-document.body.appendChild(button);
-
-// ❌ WRONG: Traditional createElement
-const button = document.createElement('button');
-button.className = 'btn-primary';
-button.textContent = 'Save';
-document.body.appendChild(button);
+// Simple HTML strings work as before
+const button = PDS.parse(`<button class="btn-primary">Save</button>`)[0];
+body.appendChild(button);
 ```
 
-#### Example 2: With Variable Interpolation
+**Mode 2: Tagged template mode (supports Lit-like bindings)**
+```javascript
+// Bindings require tagged template syntax (no parentheses around the template)
+const element = PDS.parse`
+  <button
+    class=${className}
+    ?disabled=${isDisabled}
+    @click=${handler}
+    data-id=${id}
+  >
+    Click me
+  </button>
+`[0];
+body.appendChild(element);
+```
+
+**Tagged-template bindings (Lit-like):**
+- `.prop=${value}` — sets DOM properties
+- `@event=${handler}` — adds event listeners (handler can be function or object with handleEvent)
+- `?boolean=${flag}` — toggles boolean attributes
+- `attr=${value}` — sets/removes regular attributes
+
+**Critical distinction:**
+- `PDS.parse("string")` — regular function call, HTML only, no binding support
+- `PDS.parse\`template\`` — tagged template call, bindings fully supported
+
+This is because JavaScript template literals work differently:
+- Regular function: `${value}` is **evaluated to a string** before the function is called
+- Tagged template: `${value}` is **kept as a value object** and passed separately to the function
+
+**Why it matters:** Only tagged templates preserve function objects for `@event` bindings. Regular strings convert functions to `[Function]` strings, which is why binding syntax only works with tagged templates.
+
+#### Example 1: Simple Button (String Mode)
 
 ```javascript
-// ✅ CORRECT: Template literal with variables
+// ✅ CORRECT: Simple HTML, no bindings needed — works with plain strings
+const button = PDS.parse(`<button class="btn-primary">Save</button>`)[0];
+document.body.appendChild(button);
+
+// ✅ Also works: Multiple elements
+const elements = PDS.parse(`
+  <button class="btn-primary">Save</button>
+  <button class="btn-secondary">Cancel</button>
+`);
+document.body.append(...elements);
+```
+
+#### Example 2: With Bindings (Tagged Template Mode)
+
+```javascript
+// ✅ CORRECT: Use tagged template for event handlers and bindings
 const icon = 'heart';
 const label = 'Favorite';
-const isDisabled = true;
+const isDisabled = false;
+const onClick = () => console.log('Clicked!');
 
-const button = PDS.parse(
-  `<button class="btn-outline" ${isDisabled ? 'disabled' : ''}>
-    <pds-icon icon="${icon}"></pds-icon>
+// No parentheses — this is tagged template syntax
+const button = PDS.parse`
+  <button
+    class=${'btn-outline'}
+    ?disabled=${isDisabled}
+    @click=${onClick}
+    aria-label=${label}
+  >
+    <pds-icon icon=${icon}></pds-icon>
     ${label}
-  </button>`
-)[0];
+  </button>
+`[0];
 
-// ❌ WRONG: createElement with scattered setAttribute calls
-const button = document.createElement('button');
-button.className = 'btn-outline';
-if (isDisabled) button.disabled = true;
-const icon = document.createElement('pds-icon');
-icon.setAttribute('icon', 'heart');
-button.appendChild(icon);
-const label = document.createTextNode('Favorite');
-button.appendChild(label);
+document.body.appendChild(button);
+
+// ❌ WRONG: This won't work for event handlers (parentheses version)
+const button = PDS.parse(`
+  <button @click=${onClick}>...</button>
+`)[0];
+// Why? Parentheses means regular function call, not tagged template.
+// The click handler gets stringified to "[Function]" before parseHTML is called.
 ```
 
-#### Example 3: Complex Structure
+#### Example 3: Complex Interactive UI (Tagged Template Mode)
 
 ```javascript
-// ✅ CORRECT: Nested structure is immediately readable
-const cardHtml = `
+// ✅ CORRECT: Nested structure with multiple bindings, tagged template
+const title = 'Confirm Action';
+const description = 'Are you sure?';
+const closeHandler = () => console.log('Closed');
+const onCancel = () => console.log('Cancelled');
+const onConfirm = () => console.log('Confirmed');
+
+const card = PDS.parse`
   <article class="card surface-elevated">
     <header class="flex justify-between items-center">
       <h3>${title}</h3>
-      <button class="btn-xs icon-only" aria-label="Close">
+      <button class="btn-xs icon-only" aria-label="Close" @click=${closeHandler}>
         <pds-icon icon="x"></pds-icon>
       </button>
     </header>
     <p class="text-muted">${description}</p>
     <footer class="flex gap-sm">
-      <button class="btn-secondary">Cancel</button>
+      <button class="btn-secondary" @click=${onCancel}>Cancel</button>
+      <button class="btn-primary" @click=${onConfirm}>Confirm</button>
+    </footer>
+  </article>
+`[0];
+
+document.body.appendChild(card);
+```
       <button class="btn-primary">Confirm</button>
     </footer>
   </article>

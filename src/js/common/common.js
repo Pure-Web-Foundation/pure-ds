@@ -31,20 +31,48 @@ export function fragmentFromTemplateLike(templateLike) {
   const htmlParts = [];
 
   const propBindingPattern = /(\s)(\.[\w-]+)=\s*$/;
+  const eventBindingPattern = /(\s)(@[\w-]+)=\s*$/;
+  const booleanBindingPattern = /(\s)(\?[\w-]+)=\s*$/;
+  const attrBindingPattern = /(\s)([\w:-]+)=\s*$/;
 
   for (let i = 0; i < strings.length; i += 1) {
     let chunk = strings[i] ?? "";
-    const match = chunk.match(propBindingPattern);
-
-    if (match && i < values.length) {
-      const propToken = match[2];
-      const propName = propToken.slice(1);
+    if (i < values.length) {
       const marker = `pds-val-${i}`;
-      chunk = chunk.replace(
-        propBindingPattern,
-        `$1data-pds-prop="${propName}:${marker}"`
-      );
-      consumedValues.add(i);
+      const propMatch = chunk.match(propBindingPattern);
+      const eventMatch = chunk.match(eventBindingPattern);
+      const boolMatch = chunk.match(booleanBindingPattern);
+      const attrMatch = chunk.match(attrBindingPattern);
+
+      if (propMatch) {
+        const propName = propMatch[2].slice(1);
+        chunk = chunk.replace(
+          propBindingPattern,
+          `$1data-pds-bind-${i}="prop:${propName}:${marker}"`
+        );
+        consumedValues.add(i);
+      } else if (eventMatch) {
+        const eventName = eventMatch[2].slice(1);
+        chunk = chunk.replace(
+          eventBindingPattern,
+          `$1data-pds-bind-${i}="event:${eventName}:${marker}"`
+        );
+        consumedValues.add(i);
+      } else if (boolMatch) {
+        const attrName = boolMatch[2].slice(1);
+        chunk = chunk.replace(
+          booleanBindingPattern,
+          `$1data-pds-bind-${i}="boolean:${attrName}:${marker}"`
+        );
+        consumedValues.add(i);
+      } else if (attrMatch) {
+        const attrName = attrMatch[2];
+        chunk = chunk.replace(
+          attrBindingPattern,
+          `$1data-pds-bind-${i}="attr:${attrName}:${marker}"`
+        );
+        consumedValues.add(i);
+      }
     }
 
     htmlParts.push(chunk);
@@ -99,24 +127,84 @@ export function fragmentFromTemplateLike(templateLike) {
 
   const elements = tpl.content.querySelectorAll("*");
   elements.forEach((el) => {
-    const propAttr = el.getAttribute("data-pds-prop");
-    if (!propAttr) return;
-    const [propName, markerValue] = propAttr.split(":");
-    const index = Number(String(markerValue).replace("pds-val-", ""));
-    if (propName && Number.isInteger(index)) {
-      el[propName] = values[index];
-    }
-    el.removeAttribute("data-pds-prop");
+    [...el.attributes].forEach((attr) => {
+      if (!attr.name.startsWith("data-pds-bind-")) return;
+
+      const firstColon = attr.value.indexOf(":");
+      const lastColon = attr.value.lastIndexOf(":");
+      if (firstColon <= 0 || lastColon <= firstColon) {
+        el.removeAttribute(attr.name);
+        return;
+      }
+
+      const kind = attr.value.slice(0, firstColon);
+      const bindingName = attr.value.slice(firstColon + 1, lastColon);
+      const markerValue = attr.value.slice(lastColon + 1);
+      const index = Number(String(markerValue).replace("pds-val-", ""));
+      const value = values[index];
+
+      if (!bindingName || !Number.isInteger(index)) {
+        el.removeAttribute(attr.name);
+        return;
+      }
+
+      if (kind === "prop") {
+        el[bindingName] = value;
+      } else if (kind === "event") {
+        if (typeof value === "function" || (value && typeof value.handleEvent === "function")) {
+          el.addEventListener(bindingName, value);
+        }
+      } else if (kind === "boolean") {
+        if (value) {
+          el.setAttribute(bindingName, "");
+        } else {
+          el.removeAttribute(bindingName);
+        }
+      } else if (kind === "attr") {
+        if (value == null || value === false) {
+          el.removeAttribute(bindingName);
+        } else {
+          el.setAttribute(bindingName, String(value));
+        }
+      }
+
+      el.removeAttribute(attr.name);
+    });
   });
 
   return tpl.content;
 }
 
 /**
- * Parses an HTML string into a NodeList
- * @param {String} html
+ * Parses either an HTML string or a tagged template into DOM nodes.
+ * 
+ * Supports two modes:
+ * 1. String mode: PDS.parse(htmlString) - returns NodeList, no binding support
+ *    Example: PDS.parse(`<button class="btn">Click</button>`)
+ * 
+ * 2. Tagged template mode: PDS.parse`...` - supports Lit-like bindings
+ *    Bindings: `.prop=${value}`, `@event=${handler}`, `?boolean=${flag}`, `attr=${value}`
+ *    Example: PDS.parse`<h1 @click=${handler}>...</h1>`
+ * 
+ * @param {string | TemplateStringsArray | {strings: string[], values: unknown[]}} html
+ * @param {...unknown} values
  * @returns {NodeListOf<ChildNode>}
  */
-export function parseHTML(html) {
-  return new DOMParser().parseFromString(html, "text/html").body.childNodes;
+export function parseHTML(html, ...values) {
+  // Tagged template mode: html is TemplateStringsArray
+  const isTaggedTemplate =
+    Array.isArray(html) && Object.prototype.hasOwnProperty.call(html, "raw");
+
+  if (isTaggedTemplate) {
+    return fragmentFromTemplateLike({ strings: Array.from(html), values }).childNodes;
+  }
+
+  // Object mode: {strings, values} prepared shape
+  if (Array.isArray(html?.strings) && Array.isArray(html?.values)) {
+    return fragmentFromTemplateLike({ strings: html.strings, values: html.values }).childNodes;
+  }
+
+  // String mode: plain HTML string (no binding support)
+  // This is the backward-compatible path
+  return new DOMParser().parseFromString(String(html ?? ""), "text/html").body.childNodes;
 }

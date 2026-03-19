@@ -237,9 +237,9 @@ const runtimeSurfaceRows = [
     description: 'Notification helper that ensures a toaster host exists before showing toasts.'
   },
   {
-    member: 'PDS.parse(html)',
+    member: 'PDS.parse(html | template)',
     type: 'method',
-    description: 'Parses HTML strings into DOM nodes for runtime composition helpers.'
+    description: 'Parses HTML strings or tagged templates into DOM nodes with support for Lit-like .prop, @event, ?boolean, and attr bindings.'
   },
   {
     member: 'PDS.adoptLayers(root, layers, sheets)',
