@@ -2714,7 +2714,7 @@ a.icon-only {
 /* Basic dropdown host */
 nav[data-dropdown] {
   position: relative;
-  display: inline-block;
+  display: flex;
   padding: 0;
 
   & > :last-child {

@@ -2818,6 +2818,143 @@
           "name": "PdsLocale",
           "members": [
             {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity"
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity"
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "type": {
+                "text": "HTMLFormElement|null"
+              },
+              "description": "Associated form element."
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "type": {
+                "text": "NodeListOf<HTMLLabelElement>|null"
+              },
+              "description": "Associated labels."
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "readonly": true,
+              "type": {
+                "text": "string"
+              },
+              "description": "Form control type."
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "type": {
+                "text": "ValidityState|null"
+              },
+              "description": "Current validity state."
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "type": {
+                "text": "string"
+              },
+              "description": "Current validation message."
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Whether the control participates in validation."
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name."
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Selected canonical locale tag (`xx-YY`)."
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Whether a value is required."
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Whether interaction is disabled."
+            },
+            {
+              "kind": "field",
+              "name": "mode",
+              "type": {
+                "text": "\"compact\"|\"full\""
+              },
+              "description": "Label display mode."
+            },
+            {
               "kind": "method",
               "name": "whenReady",
               "description": "Resolves once the first availability check is complete.",
@@ -2851,20 +2988,74 @@
           ],
           "events": [
             {
+              "name": "input",
+              "type": {
+                "text": "Event"
+              },
+              "description": "Native-like input event when user selection changes."
+            },
+            {
+              "name": "change",
+              "type": {
+                "text": "Event"
+              },
+              "description": "Native-like change event when user selection changes."
+            },
+            {
               "name": "pds-locale:ready",
               "type": {
                 "text": "CustomEvent"
               },
               "description": "Emitted after locale availability is resolved."
+            },
+            {
+              "description": "Emitted after a new locale is selected.",
+              "name": "pds:locale:changed"
             }
           ],
           "attributes": [
             {
+              "name": "name",
               "type": {
                 "text": "string"
               },
-              "description": "Accessible label for the locale radio group.",
-              "name": "data-label"
+              "description": "Form field name used during submit."
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Selected canonical locale tag (`xx-YY`)."
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Requires a locale value for validity."
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables interaction and omits form value."
+            },
+            {
+              "name": "mode",
+              "type": {
+                "text": "\"compact\"|\"full\""
+              },
+              "description": "Label display mode. In `compact`, the UI shows 2-letter aliases and puts the full Intl language name in the `title` attribute. In `full`, it renders the full Intl language name as the visible label.",
+              "default": "\"compact\""
+            },
+            {
+              "name": "data-label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Accessible label for the locale radio group."
             }
           ],
           "superclass": {
