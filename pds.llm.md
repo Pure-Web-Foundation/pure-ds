@@ -454,6 +454,93 @@ form.getFormData(); // May throw error
 
 ## ✅ Quick Reference Patterns
 
+### DOM Building with PDS.parse
+
+For runtime DOM composition, **always use `PDS.parse()` with template literals** instead of `document.createElement()` and `setAttribute()`. This approach is **10x more readable** and makes variable interpolation seamless.
+
+**Signature:** `PDS.parse(html: string) → NodeList` — Access the first element with `[0]`.
+
+**Why it matters:** Template literals with `${}` variable interpolation are cleaner, more maintainable, and eliminate the verbosity of traditional DOM APIs. The resulting HTML is immediately clear vs. scattered setAttribute calls.
+
+#### Example 1: Simple Button
+
+```javascript
+// ✅ CORRECT: PDS.parse with template literal
+const button = PDS.parse(
+  '<button class="btn-primary">Save</button>'
+)[0];
+document.body.appendChild(button);
+
+// ❌ WRONG: Traditional createElement
+const button = document.createElement('button');
+button.className = 'btn-primary';
+button.textContent = 'Save';
+document.body.appendChild(button);
+```
+
+#### Example 2: With Variable Interpolation
+
+```javascript
+// ✅ CORRECT: Template literal with variables
+const icon = 'heart';
+const label = 'Favorite';
+const isDisabled = true;
+
+const button = PDS.parse(
+  `<button class="btn-outline" ${isDisabled ? 'disabled' : ''}>
+    <pds-icon icon="${icon}"></pds-icon>
+    ${label}
+  </button>`
+)[0];
+
+// ❌ WRONG: createElement with scattered setAttribute calls
+const button = document.createElement('button');
+button.className = 'btn-outline';
+if (isDisabled) button.disabled = true;
+const icon = document.createElement('pds-icon');
+icon.setAttribute('icon', 'heart');
+button.appendChild(icon);
+const label = document.createTextNode('Favorite');
+button.appendChild(label);
+```
+
+#### Example 3: Complex Structure
+
+```javascript
+// ✅ CORRECT: Nested structure is immediately readable
+const cardHtml = `
+  <article class="card surface-elevated">
+    <header class="flex justify-between items-center">
+      <h3>${title}</h3>
+      <button class="btn-xs icon-only" aria-label="Close">
+        <pds-icon icon="x"></pds-icon>
+      </button>
+    </header>
+    <p class="text-muted">${description}</p>
+    <footer class="flex gap-sm">
+      <button class="btn-secondary">Cancel</button>
+      <button class="btn-primary">Confirm</button>
+    </footer>
+  </article>
+`;
+const card = PDS.parse(cardHtml)[0];
+
+// ❌ WRONG: Traditional approach is verbose and error-prone
+const article = document.createElement('article');
+article.className = 'card surface-elevated';
+const header = document.createElement('header');
+header.className = 'flex justify-between items-center';
+const h3 = document.createElement('h3');
+h3.textContent = title;
+header.appendChild(h3);
+const btn = document.createElement('button');
+btn.className = 'btn-xs icon-only';
+btn.setAttribute('aria-label', 'Close');
+// ... (continues for several more lines)
+```
+
+---
+
 ```html
 <!-- Buttons: semantic HTML + PDS classes (see pds-ontology.js → primitives) -->
 <button class="btn-primary">Save</button>
@@ -624,13 +711,14 @@ Before generating code:
 7. ✅ **Components as last resort** — Only when native HTML can't achieve it
 8. ✅ **Prefer primitives** — `.card`, `.badge`, `.callout` over custom components
 9. ✅ **Wait for lazy components** — Use `await customElements.whenDefined()` before accessing APIs
-10. ✅ **Include import map** — When using Lit-dependent components (such as `pds-form`), ensure `#pds/lit` is mapped
+10. ✅ **Use `PDS.parse()` for DOM building** — Prefer template literals with variable interpolation over createElement/setAttribute
+11. ✅ **Include import map** — When using Lit-dependent components (such as `pds-form`), ensure `#pds/lit` is mapped
 
 **For pds-form specifically:**
 
-11. ✅ **Use `pw:submit` event** — NOT native `submit` event
-12. ✅ **Add `btn-working` class** — For async submit operations, add during processing
-13. ✅ **Use `examples` in JSON schema** — First example becomes placeholder
-14. ✅ **Add smart icons only to text-like inputs** — Use `ui:icon` only for text/email/url/tel/search/password fields
-15. ✅ **Wrap in `form[data-required]`** — For asterisk enhancement on required fields
-16. ✅ **Pad details content** — After `<summary>`, wrap content in a padded container (usually `.card`)
+12. ✅ **Use `pw:submit` event** — NOT native `submit` event
+13. ✅ **Add `btn-working` class** — For async submit operations, add during processing
+14. ✅ **Use `examples` in JSON schema** — First example becomes placeholder
+15. ✅ **Add smart icons only to text-like inputs** — Use `ui:icon` only for text/email/url/tel/search/password fields
+16. ✅ **Wrap in `form[data-required]`** — For asterisk enhancement on required fields
+17. ✅ **Pad details content** — After `<summary>`, wrap content in a padded container (usually `.card`)
