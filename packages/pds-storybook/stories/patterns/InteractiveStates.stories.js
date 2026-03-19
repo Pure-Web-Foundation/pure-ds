@@ -490,7 +490,7 @@ WorkingStates.storyName = "Working States";
 
 export const SkeletonLoading = () => html`
   ${interactiveSkeletonStoryStyles}
-  <div class="card">
+  <div class="">
     <header>
       <h3>Skeleton Loading</h3>
       <small class="text-muted">
@@ -501,10 +501,10 @@ export const SkeletonLoading = () => html`
 
     <h3>Card Skeleton</h3>
 
-    <div class="card story-product-card">
+    <div class="story-product-card">
       <h3>Product Card Empty State</h3>
       <div class="max-w-md">
-        <article class="card">
+        <article >
           <div class="skeleton" data-media></div>
           <div class="stack-sm">
             <div class="skeleton"></div>
@@ -520,7 +520,7 @@ export const SkeletonLoading = () => html`
     </div>
   </div>
 
-  <div class="card">
+  <div class="">
     <h3>List Skeleton</h3>
     <div class="max-w-md stack-sm">
       ${Array.from(
@@ -534,7 +534,7 @@ export const SkeletonLoading = () => html`
     </div>
   </div>
 
-  <div class="card">
+  <div class="">
     <h3>Text Skeleton</h3>
     <div class="max-w-md stack-md">
       <div class="skeleton interactive-skeleton-height-48"></div>

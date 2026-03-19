@@ -3397,19 +3397,28 @@ a.btn-working {
 
 /* Skeleton loading animation */
 .skeleton {
+  --skeleton-base: color-mix(in oklab, var(--color-text-primary) 8%, transparent);
+  --skeleton-highlight: color-mix(in oklab, var(--color-text-primary) 16%, transparent);
   background: linear-gradient(
     90deg,
-    color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%) 0%,
-    color-mix(in oklab, var(--color-surface-base) 85%, var(--color-text-primary) 15%) 50%,
-    color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%) 100%
+    var(--skeleton-base) 0%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 100%
   );
   background-size: 200% 100%;
-  animation: pds-skeleton 1.5s ease-in-out infinite;
+  animation:
+    pds-skeleton-fade-in 220ms ease-out both,
+    pds-skeleton 1.5s ease-in-out infinite 220ms;
   border-radius: var(--radius-sm);
   
   &::before {
     content: '\\00a0';
   }
+}
+
+@keyframes pds-skeleton-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes pds-skeleton {
