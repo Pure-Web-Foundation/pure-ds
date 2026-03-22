@@ -15,8 +15,8 @@ const repoUrl = rawRepoUrl
 const homepageUrl = pkg.homepage || repoUrl;
 const issuesUrl = pkg.bugs?.url || "";
 
-// ✅ Tagged template mode: Interactive elements with bindings
-document.body.append(...PDS.parse`
+// ✅ Lit-like ergonomics: appendChild(DocumentFragment) with bindings
+document.body.appendChild(PDS.html`
 	<div class="container text-center">
 		<img src="/assets/img/pds-logo.svg" alt="PDS Logo" title="${msg("PDS Logo")}" width="64" height="64" />
 		<header class="container section">

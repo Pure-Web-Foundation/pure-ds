@@ -638,8 +638,11 @@ PDS.adoptLayers = adoptLayers;
 /** Convenience to adopt only primitives into a ShadowRoot */
 PDS.adoptPrimitives = adoptPrimitives;
 
-/** Parse an HTML string into a NodeList */
+/** Parse HTML strings or tagged templates into a NodeList */
 PDS.parse = common.parseHTML;
+
+/** Parse HTML or tagged templates into a DocumentFragment */
+PDS.html = common.parseFragment;
 
 /** Create a constructable CSSStyleSheet from a CSS string */
 PDS.createStylesheet = createStylesheet;

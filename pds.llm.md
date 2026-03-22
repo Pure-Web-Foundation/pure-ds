@@ -454,9 +454,13 @@ form.getFormData(); // May throw error
 
 ## ✅ Quick Reference Patterns
 
-### DOM Building with PDS.parse
+### DOM Building with PDS.parse and PDS.html
 
-For runtime DOM composition, **use `PDS.parse` for both simple HTML and interactive bindings**. Two modes:
+For runtime DOM composition, use:
+- `PDS.parse(...)` when you want a NodeList (legacy-compatible)
+- `PDS.html(...)` when you want a DocumentFragment you can `appendChild()` directly
+
+`PDS.html` aligns closely with Lit's `html` template tag for DOM creation.
 
 **Mode 1: String mode (backward compatible, no bindings)**
 ```javascript
@@ -481,6 +485,18 @@ const element = PDS.parse`
 body.appendChild(element);
 ```
 
+**Mode 3: Lit-like append ergonomics with `PDS.html` (DocumentFragment)**
+```javascript
+// Tagged template + direct appendChild (no spreading)
+document.body.appendChild(PDS.html`
+  <button @click=${handler}>Click me</button>
+`);
+
+// String mode also works and remains backward-compatible
+const fragment2 = PDS.html(`<button class="btn-primary">Save</button>`);
+document.body.appendChild(fragment2);
+```
+
 **Tagged-template bindings (Lit-like):**
 - `.prop=${value}` — sets DOM properties
 - `@event=${handler}` — adds event listeners (handler can be function or object with handleEvent)
@@ -490,6 +506,8 @@ body.appendChild(element);
 **Critical distinction:**
 - `PDS.parse("string")` — regular function call, HTML only, no binding support
 - `PDS.parse\`template\`` — tagged template call, bindings fully supported
+- `PDS.html("string")` — returns DocumentFragment
+- `PDS.html\`template\`` — returns DocumentFragment with bindings supported
 
 This is because JavaScript template literals work differently:
 - Regular function: `${value}` is **evaluated to a string** before the function is called
@@ -764,7 +782,7 @@ Before generating code:
 7. ✅ **Components as last resort** — Only when native HTML can't achieve it
 8. ✅ **Prefer primitives** — `.card`, `.badge`, `.callout` over custom components
 9. ✅ **Wait for lazy components** — Use `await customElements.whenDefined()` before accessing APIs
-10. ✅ **Use `PDS.parse()` for DOM building** — Prefer template literals with variable interpolation over createElement/setAttribute
+10. ✅ **Use `PDS.parse()` or `PDS.html()` for DOM building** — Use `PDS.parse` for NodeList workflows and `PDS.html` for direct appendChild(DocumentFragment) ergonomics
 11. ✅ **Include import map** — When using Lit-dependent components (such as `pds-form`), ensure `#pds/lit` is mapped
 
 **For pds-form specifically:**

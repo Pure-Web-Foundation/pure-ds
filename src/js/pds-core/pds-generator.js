@@ -3399,6 +3399,15 @@ a.btn-working {
 .skeleton {
   --skeleton-base: color-mix(in oklab, var(--color-text-primary) 8%, transparent);
   --skeleton-highlight: color-mix(in oklab, var(--color-text-primary) 16%, transparent);
+  --skeleton-child-offset: 0ms;
+  --skeleton-type-offset: 0ms;
+  --skeleton-parent-offset: 0ms;
+  --skeleton-delay: calc(
+    220ms +
+    var(--skeleton-child-offset) +
+    var(--skeleton-type-offset) +
+    var(--skeleton-parent-offset)
+  );
   background: linear-gradient(
     90deg,
     var(--skeleton-base) 0%,
@@ -3408,13 +3417,40 @@ a.btn-working {
   background-size: 200% 100%;
   animation:
     pds-skeleton-fade-in 220ms ease-out both,
-    pds-skeleton 1.5s ease-in-out infinite 220ms;
+    pds-skeleton 1.5s ease-in-out infinite var(--skeleton-delay);
   border-radius: var(--radius-sm);
   
   &::before {
     content: '\\00a0';
   }
 }
+
+/* Deterministic stagger so large skeleton groups do not animate in lockstep. */
+:where(.skeleton:nth-child(11n + 1)) { --skeleton-child-offset: 0ms; }
+:where(.skeleton:nth-child(11n + 2)) { --skeleton-child-offset: 17ms; }
+:where(.skeleton:nth-child(11n + 3)) { --skeleton-child-offset: 34ms; }
+:where(.skeleton:nth-child(11n + 4)) { --skeleton-child-offset: 51ms; }
+:where(.skeleton:nth-child(11n + 5)) { --skeleton-child-offset: 68ms; }
+:where(.skeleton:nth-child(11n + 6)) { --skeleton-child-offset: 85ms; }
+:where(.skeleton:nth-child(11n + 7)) { --skeleton-child-offset: 102ms; }
+:where(.skeleton:nth-child(11n + 8)) { --skeleton-child-offset: 119ms; }
+:where(.skeleton:nth-child(11n + 9)) { --skeleton-child-offset: 136ms; }
+:where(.skeleton:nth-child(11n + 10)) { --skeleton-child-offset: 153ms; }
+:where(.skeleton:nth-child(11n + 11)) { --skeleton-child-offset: 170ms; }
+
+:where(.skeleton:nth-of-type(7n + 1)) { --skeleton-type-offset: 0ms; }
+:where(.skeleton:nth-of-type(7n + 2)) { --skeleton-type-offset: 11ms; }
+:where(.skeleton:nth-of-type(7n + 3)) { --skeleton-type-offset: 22ms; }
+:where(.skeleton:nth-of-type(7n + 4)) { --skeleton-type-offset: 33ms; }
+:where(.skeleton:nth-of-type(7n + 5)) { --skeleton-type-offset: 44ms; }
+:where(.skeleton:nth-of-type(7n + 6)) { --skeleton-type-offset: 55ms; }
+:where(.skeleton:nth-of-type(7n + 7)) { --skeleton-type-offset: 66ms; }
+
+:where(*:nth-child(5n + 1) > .skeleton) { --skeleton-parent-offset: 0ms; }
+:where(*:nth-child(5n + 2) > .skeleton) { --skeleton-parent-offset: 9ms; }
+:where(*:nth-child(5n + 3) > .skeleton) { --skeleton-parent-offset: 18ms; }
+:where(*:nth-child(5n + 4) > .skeleton) { --skeleton-parent-offset: 27ms; }
+:where(*:nth-child(5n + 5) > .skeleton) { --skeleton-parent-offset: 36ms; }
 
 @keyframes pds-skeleton-fade-in {
   from { opacity: 0; }

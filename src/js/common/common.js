@@ -176,6 +176,30 @@ export function fragmentFromTemplateLike(templateLike) {
 }
 
 /**
+ * Parses either an HTML string or tagged template into a DocumentFragment.
+ * Useful when you want direct appendChild(fragment) ergonomics.
+ * @param {string | TemplateStringsArray | {strings: string[], values: unknown[]}} html
+ * @param {...unknown} values
+ * @returns {DocumentFragment}
+ */
+export function parseFragment(html, ...values) {
+  const isTaggedTemplate =
+    Array.isArray(html) && Object.prototype.hasOwnProperty.call(html, "raw");
+
+  if (isTaggedTemplate) {
+    return fragmentFromTemplateLike({ strings: Array.from(html), values });
+  }
+
+  if (Array.isArray(html?.strings) && Array.isArray(html?.values)) {
+    return fragmentFromTemplateLike({ strings: html.strings, values: html.values });
+  }
+
+  const tpl = document.createElement("template");
+  tpl.innerHTML = String(html ?? "");
+  return tpl.content;
+}
+
+/**
  * Parses either an HTML string or a tagged template into DOM nodes.
  * 
  * Supports two modes:
@@ -191,20 +215,5 @@ export function fragmentFromTemplateLike(templateLike) {
  * @returns {NodeListOf<ChildNode>}
  */
 export function parseHTML(html, ...values) {
-  // Tagged template mode: html is TemplateStringsArray
-  const isTaggedTemplate =
-    Array.isArray(html) && Object.prototype.hasOwnProperty.call(html, "raw");
-
-  if (isTaggedTemplate) {
-    return fragmentFromTemplateLike({ strings: Array.from(html), values }).childNodes;
-  }
-
-  // Object mode: {strings, values} prepared shape
-  if (Array.isArray(html?.strings) && Array.isArray(html?.values)) {
-    return fragmentFromTemplateLike({ strings: html.strings, values: html.values }).childNodes;
-  }
-
-  // String mode: plain HTML string (no binding support)
-  // This is the backward-compatible path
-  return new DOMParser().parseFromString(String(html ?? ""), "text/html").body.childNodes;
+  return parseFragment(html, ...values).childNodes;
 }
