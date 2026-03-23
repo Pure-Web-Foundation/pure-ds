@@ -30,13 +30,25 @@ export function fragmentFromTemplateLike(templateLike) {
   const consumedValues = new Set();
   const htmlParts = [];
 
-  const propBindingPattern = /(\s)(\.[\w-]+)=\s*$/;
-  const eventBindingPattern = /(\s)(@[\w-]+)=\s*$/;
-  const booleanBindingPattern = /(\s)(\?[\w-]+)=\s*$/;
-  const attrBindingPattern = /(\s)([\w:-]+)=\s*$/;
+  // Patterns handle both quoted (attr="${val}") and unquoted (attr=${val}) forms.
+  const propBindingPattern = /(\s)(\.[\w-]+)=["']?\s*$/;
+  const eventBindingPattern = /(\s)(@[\w-]+)=["']?\s*$/;
+  const booleanBindingPattern = /(\s)(\?[\w-]+)=["']?\s*$/;
+  const attrBindingPattern = /(\s)([\w:-]+)=["']?\s*$/;
+  // Detects whether the original string used a quoted binding (e.g. attr="..."),
+  // so we can strip the matching closing quote from the next string part.
+  const quotedBindingPattern = /=["']\s*$/;
+
+  let skipLeadingQuote = false;
 
   for (let i = 0; i < strings.length; i += 1) {
     let chunk = strings[i] ?? "";
+
+    if (skipLeadingQuote) {
+      chunk = chunk.replace(/^["']/, "");
+      skipLeadingQuote = false;
+    }
+
     if (i < values.length) {
       const marker = `pds-val-${i}`;
       const propMatch = chunk.match(propBindingPattern);
@@ -46,6 +58,7 @@ export function fragmentFromTemplateLike(templateLike) {
 
       if (propMatch) {
         const propName = propMatch[2].slice(1);
+        skipLeadingQuote = quotedBindingPattern.test(strings[i] ?? "");
         chunk = chunk.replace(
           propBindingPattern,
           `$1data-pds-bind-${i}="prop:${propName}:${marker}"`
@@ -53,6 +66,7 @@ export function fragmentFromTemplateLike(templateLike) {
         consumedValues.add(i);
       } else if (eventMatch) {
         const eventName = eventMatch[2].slice(1);
+        skipLeadingQuote = quotedBindingPattern.test(strings[i] ?? "");
         chunk = chunk.replace(
           eventBindingPattern,
           `$1data-pds-bind-${i}="event:${eventName}:${marker}"`
@@ -60,6 +74,7 @@ export function fragmentFromTemplateLike(templateLike) {
         consumedValues.add(i);
       } else if (boolMatch) {
         const attrName = boolMatch[2].slice(1);
+        skipLeadingQuote = quotedBindingPattern.test(strings[i] ?? "");
         chunk = chunk.replace(
           booleanBindingPattern,
           `$1data-pds-bind-${i}="boolean:${attrName}:${marker}"`
@@ -67,6 +82,7 @@ export function fragmentFromTemplateLike(templateLike) {
         consumedValues.add(i);
       } else if (attrMatch) {
         const attrName = attrMatch[2];
+        skipLeadingQuote = quotedBindingPattern.test(strings[i] ?? "");
         chunk = chunk.replace(
           attrBindingPattern,
           `$1data-pds-bind-${i}="attr:${attrName}:${marker}"`
