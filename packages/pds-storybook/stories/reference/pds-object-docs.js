@@ -239,12 +239,12 @@ const runtimeSurfaceRows = [
   {
     member: 'PDS.parse(html | template)',
     type: 'method',
-    description: 'Parses HTML strings or tagged templates into DOM nodes with support for Lit-like .prop, @event, ?boolean, and attr bindings.'
+    description: 'Parses HTML strings or tagged templates into DOM nodes with support for Lit-like .prop, @event, ?boolean, and attr bindings. Also available as named export `parse` from #pds.'
   },
   {
     member: 'PDS.html(html | template)',
     type: 'method',
-    description: 'Parses HTML strings or tagged templates into a DocumentFragment so callers can appendChild() directly.'
+    description: 'Parses HTML strings or tagged templates into a DocumentFragment so callers can appendChild() directly. Also available as named export `html` from #pds.'
   },
   {
     member: 'PDS.adoptLayers(root, layers, sheets)',

@@ -639,10 +639,12 @@ PDS.adoptLayers = adoptLayers;
 PDS.adoptPrimitives = adoptPrimitives;
 
 /** Parse HTML strings or tagged templates into a NodeList */
-PDS.parse = common.parseHTML;
+export const parse = common.parseHTML;
+PDS.parse = parse;
 
 /** Parse HTML or tagged templates into a DocumentFragment */
-PDS.html = common.parseFragment;
+export const html = common.parseFragment;
+PDS.html = html;
 
 /** Create a constructable CSSStyleSheet from a CSS string */
 PDS.createStylesheet = createStylesheet;

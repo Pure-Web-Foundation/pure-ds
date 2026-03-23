@@ -1,4 +1,4 @@
-import { PDS, msg, str } from "./pds";
+import { PDS, html, msg, str } from "./pds";
 import { config } from "../../pds.config.js";
 import pkg from "../../package.json";
 
@@ -16,7 +16,7 @@ const homepageUrl = pkg.homepage || repoUrl;
 const issuesUrl = pkg.bugs?.url || "";
 
 // ✅ Lit-like ergonomics: appendChild(DocumentFragment) with bindings
-document.body.appendChild(PDS.html`
+document.body.appendChild(html`
 	<div class="container text-center">
 		<img src="/assets/img/pds-logo.svg" alt="PDS Logo" title="${msg("PDS Logo")}" width="64" height="64" />
 		<header class="container section">
