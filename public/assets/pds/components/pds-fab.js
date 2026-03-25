@@ -1,3 +1,5 @@
+import { PDS } from "#pds";
+
 /**
  * Floating Action Button (FAB) with expandable satellite actions
  * 
@@ -15,6 +17,10 @@
  * @cssprop --sat-fg - Foreground color of satellites (default: var(--color-text-primary))
  * @cssprop --radius - Distance of satellites from main FAB (default: 100px)
  * @cssprop --transition-duration - Animation duration (default: 420ms)
+ * @cssprop --z-fab-in-drawer - FAB z-index when used inside pds-drawer (default: var(--z-popover))
+ *
+ * @attr {"click"|"hover"} behavior - Interaction mode for opening satellites (default: click)
+ * @attr {"fixed"|"inline"} mode - Layout mode for FAB positioning (default: fixed)
  * 
  * @csspart fab - The main FAB button
  * @csspart satellite - Individual satellite buttons
@@ -31,6 +37,11 @@ export class PdsFab extends HTMLElement {
   #hasCustomSpread = false;
   #hasCustomStartAngle = false;
   #iconRetryPending = false;
+  #behavior = 'click';
+  #mode = 'fixed';
+  #fabClass = '';
+  #hoverMoveTracker = null;
+  #componentStyles = null;
 
   constructor() {
     super();
@@ -39,7 +50,7 @@ export class PdsFab extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['open', 'radius', 'spread', 'start-angle'];
+    return ['open', 'radius', 'spread', 'start-angle', 'behavior', 'mode', 'fab-class'];
   }
 
   /**
@@ -109,10 +120,10 @@ export class PdsFab extends HTMLElement {
   /**
    * Starting angle in degrees (0=right, 90=down, 180=left, 270=up)
    * If not specified, the angle is auto-detected based on the FAB's corner position:
-   * - Bottom-right: 180° (fly left/up)
-   * - Bottom-left: 315° (fly right/up)
-   * - Top-right: 225° (fly left/down)
-   * - Top-left: 45° (fly right/down)
+   * - Bottom-right: 180-� (fly left/up)
+   * - Bottom-left: 315-� (fly right/up)
+   * - Top-right: 225-� (fly left/down)
+   * - Top-left: 45-� (fly right/down)
    * @type {number}
    * @attr start-angle
    * @default 180 (or auto-detected)
@@ -131,8 +142,77 @@ export class PdsFab extends HTMLElement {
   }
 
   /**
+   * Interaction mode for satellite menu.
+   * - click: toggles satellites when main FAB is clicked
+   * - hover: opens on hover/focus and closes when pointer leaves safe area
+   * @type {'click'|'hover'}
+   * @attr behavior
+   * @default click
+   */
+  get behavior() {
+    return this.#behavior;
+  }
+  set behavior(val) {
+    const next = val === 'hover' ? 'hover' : 'click';
+    if (this.#behavior === next) return;
+    this.#behavior = next;
+    if (this.getAttribute('behavior') !== next) {
+      this.setAttribute('behavior', next);
+      return;
+    }
+    this.#render();
+  }
+
+  /**
+   * Layout mode for host positioning.
+   * - fixed: FAB is anchored to viewport bottom-right
+   * - inline: FAB participates in normal document flow
+   * @type {'fixed'|'inline'}
+   * @attr mode
+   * @default fixed
+   */
+  get mode() {
+    return this.#mode;
+  }
+  set mode(val) {
+    const next = val === 'inline' ? 'inline' : 'fixed';
+    if (this.#mode === next) return;
+    this.#mode = next;
+    if (this.getAttribute('mode') !== next) {
+      this.setAttribute('mode', next);
+      return;
+    }
+    this.#render();
+  }
+
+  /**
+   * Space-separated class list forwarded to the internal button.
+   * Use this instead of host classes for btn-* and icon-only.
+   * @type {string}
+   * @attr fab-class
+   * @example "btn-primary icon-only"
+   */
+  get fabClass() {
+    return this.#fabClass;
+  }
+  set fabClass(val) {
+    const next = String(val || '').trim();
+    if (this.#fabClass === next) return;
+    this.#fabClass = next;
+    if (this.getAttribute('fab-class') !== next) {
+      if (next) {
+        this.setAttribute('fab-class', next);
+      } else {
+        this.removeAttribute('fab-class');
+      }
+      return;
+    }
+    this.#render();
+  }
+
+  /**
    * Array of satellite button configurations
-   * @type {Array<{key: string, icon?: string, label?: string, action?: string}>}
+  * @type {Array<{key: string, icon?: string, iconColor?: string, bgColor?: string, iconSize?: string, label?: string, action?: string}>}
    */
   get satellites() {
     return this.#satellites;
@@ -184,18 +264,257 @@ export class PdsFab extends HTMLElement {
         this.#hasCustomStartAngle = true;
         this.startAngle = Number(newVal) || 180;
         break;
+      case 'behavior':
+        this.behavior = newVal === 'hover' ? 'hover' : 'click';
+        break;
+      case 'mode':
+        this.mode = newVal === 'inline' ? 'inline' : 'fixed';
+        break;
+      case 'fab-class':
+        this.fabClass = newVal || '';
+        break;
     }
   }
 
-  connectedCallback() {
+  async connectedCallback() {
     this.#hasCustomRadius = this.hasAttribute('radius');
     this.#hasCustomSpread = this.hasAttribute('spread');
     this.#hasCustomStartAngle = this.hasAttribute('start-angle');
+    this.#behavior = this.getAttribute('behavior') === 'hover' ? 'hover' : 'click';
+    this.#mode = this.getAttribute('mode') === 'inline' ? 'inline' : 'fixed';
+    this.#fabClass = (this.getAttribute('fab-class') || '').trim();
+    if (!this.#componentStyles) {
+      this.#componentStyles = PDS.createStylesheet(/*css*/`
+        @layer pds-fab {
+          :host {
+            --fab-hit-area: var(--control-min-height, 2.5rem);
+            --sat-size: 48px;
+            --fab-size: 64px;
+            --fab-bg: var(--color-primary-600, #0078d4);
+            --fab-fg: white;
+            --sat-bg: var(--color-surface-elevated, #2a2a2a);
+            --sat-fg: var(--color-text-primary, #fff);
+            --radius: 100px;
+            --transition-duration: 420ms;
+
+            position: fixed;
+            inset: auto 20px 20px auto;
+            z-index: var(--fab-host-z-index, var(--z-notification, 1000));
+            display: inline-block;
+            vertical-align: middle;
+          }
+
+          :host([mode="inline"]) {
+            position: relative;
+            inset: auto;
+            --fab-size: auto;
+            --sat-size: 40px;
+          }
+
+          .wrap {
+            position: relative;
+            width: var(--fab-size);
+            height: var(--fab-size);
+          }
+
+          :host([mode="inline"]) .wrap {
+            width: auto;
+            height: auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .fab {
+            position: relative;
+            z-index: 2;
+          }
+
+          .fab ::slotted(pds-icon) {
+            display: inline-block;
+            transition: transform 0.2s ease;
+          }
+
+          /* When FAB is icon-only, the slot must fill and center for proper button geometry */
+          .fab.icon-only ::slotted(pds-icon) {
+            display: grid;
+            place-items: center;
+            inline-size: 100%;
+            block-size: 100%;
+          }
+
+          :host([mode="inline"]) .fab.icon-only {
+            /* Match compact icon-only geometry used by normal PDS buttons */
+            inline-size: max(36px, calc(var(--font-size-base) + (max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 2) + (var(--border-width-medium) * 2)));
+            block-size: max(36px, calc(var(--font-size-base) + (max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 2) + (var(--border-width-medium) * 2)));
+            min-inline-size: 0;
+            min-block-size: 0;
+            padding: 0;
+          }
+
+          :host([open]) .fab.has-satellites.has-plus ::slotted(pds-icon) {
+            transform: rotate(45deg);
+          }
+
+          .sat-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            user-select: none;
+          }
+        }
+
+        /* Host may carry forwarded button classes, but must never render as a button */
+        :host([class*="btn-"]),
+        :host(.icon-only) {
+          background: transparent;
+          border: 0;
+          border-radius: 0;
+          box-shadow: none;
+          color: inherit;
+          font: inherit;
+          inline-size: auto;
+          block-size: auto;
+          min-inline-size: 0;
+          min-block-size: 0;
+          padding: 0;
+          text-decoration: none;
+          transform: none;
+        }
+
+        /* Unlayered to prevent generic button primitives from overriding satellites */
+        .sat {
+          all: unset;
+          position: absolute;
+          top: calc((var(--fab-size) - var(--sat-size)) / 2);
+          left: calc((var(--fab-size) - var(--sat-size)) / 2);
+          inline-size: var(--sat-size);
+          block-size: var(--sat-size);
+          border-radius: 50%;
+          overflow: hidden;
+          background: var(--sat-bg);
+          color: var(--sat-fg);
+          box-shadow:
+            0 2px 6px rgba(0, 0, 0, 0.15),
+            0 6px 18px rgba(0, 0, 0, 0.2);
+          display: grid;
+          place-items: center;
+          cursor: pointer;
+          transform: translate(0, 0) scale(0.2);
+          opacity: 0;
+          pointer-events: none;
+          transition:
+            transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1.4),
+            opacity 420ms ease;
+        }
+
+        :host([mode="inline"]) .sat {
+          inline-size: 40px;
+          block-size: 40px;
+          border-radius: 50%;
+          --sat-icon-offset-x: 0px;
+          --sat-icon-offset-y: 3px;
+          background: var(--sat-bg-color, var(--sat-bg, var(--color-primary-600, #0078d4)));
+          color: var(--sat-icon-color, #fff);
+          box-shadow:
+            0 2px 6px rgba(0, 0, 0, 0.18),
+            0 8px 16px rgba(0, 0, 0, 0.16);
+        }
+
+        :host([mode="inline"]) .sat pds-icon {
+          color: var(--sat-icon-color, #fff);
+          filter: none;
+        }
+
+        :host([open]) .sat {
+          transform: translate(var(--tx, 0), var(--ty, 0)) scale(1);
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .sat:hover,
+        .sat:focus-visible {
+          transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.1);
+          outline: 2px solid var(--color-accent-400, #0078d4);
+          outline-offset: 2px;
+        }
+
+        .sat pds-icon,
+        .sat ::slotted(pds-icon) {
+          display: block;
+          margin: 0;
+          transform: translate(var(--sat-icon-offset-x, 0px), var(--sat-icon-offset-y, 0px));
+          pointer-events: none;
+        }
+
+        .sat > slot {
+          position: absolute;
+          inset: 0;
+          display: grid;
+          place-items: center;
+          inline-size: 100%;
+          block-size: 100%;
+        }
+
+        :host([mode="inline"]) .sat[data-key="like"] {
+          background: var(--sat-bg-color, var(--color-primary-600, #0078d4));
+        }
+
+        :host([mode="inline"]) .sat[data-key="love"] {
+          background: var(--sat-bg-color, var(--color-danger-600, #b42318));
+        }
+
+        :host([mode="inline"]) .sat[data-key="interesting"] {
+          background: var(--sat-bg-color, var(--color-warning-600, #b54708));
+        }
+
+        :host(:not([mode="inline"])) .fab {
+          appearance: none;
+          border: none;
+          border-radius: 50%;
+          inline-size: var(--fab-size);
+          block-size: var(--fab-size);
+          background: var(--fab-bg);
+          color: var(--fab-fg);
+          box-shadow:
+            0 2px 8px rgba(0, 0, 0, 0.15),
+            0 8px 24px rgba(0, 0, 0, 0.25);
+          display: grid;
+          place-items: center;
+          cursor: pointer;
+          position: relative;
+          z-index: 2;
+          transition: transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        :host(:not([mode="inline"])) .fab:hover {
+          transform: scale(1.05);
+          box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.2),
+            0 12px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        :host(:not([mode="inline"])) .fab:active {
+          transform: scale(0.98);
+        }
+
+        :host(:not([mode="inline"])[open]) .fab {
+          box-shadow:
+            0 0 0 2px var(--color-accent-400, #0078d4),
+            0 4px 16px rgba(0, 120, 212, 0.4);
+        }
+
+      `);
+    }
+    await PDS.adoptLayers(this.shadowRoot, ['primitives', 'components'], [this.#componentStyles]);
     this.#render();
   }
 
   disconnectedCallback() {
     document.removeEventListener('click', this.#outsideClickBound, true);
+    if (this.#hoverMoveTracker) {
+      document.removeEventListener('pointermove', this.#hoverMoveTracker);
+      this.#hoverMoveTracker = null;
+    }
   }
 
   /**
@@ -253,24 +572,44 @@ export class PdsFab extends HTMLElement {
     const isBottom = rect.bottom > viewportHeight / 2;
 
     // Calculate optimal angle based on corner:
-    // - Bottom-right (default): 180° (fly left/up)
-    // - Bottom-left: 315° or -45° (fly right/up) 
-    // - Top-right: 225° (fly left/down)
-    // - Top-left: 45° (fly right/down)
+    // - Bottom-right (default): 180-� (fly left/up)
+    // - Bottom-left: 315-� or -45-� (fly right/up) 
+    // - Top-right: 225-� (fly left/down)
+    // - Top-left: 45-� (fly right/down)
     
     if (isBottom && isRight) {
-      return 180; // Bottom-right → fly left
+      return 180; // Bottom-right ��� fly left
     } else if (isBottom && !isRight) {
-      return 315; // Bottom-left → fly up-right
+      return 315; // Bottom-left ��� fly up-right
     } else if (!isBottom && isRight) {
-      return 225; // Top-right → fly left-down
+      return 225; // Top-right ��� fly left-down
     } else {
-      return 45; // Top-left → fly right-down
+      return 45; // Top-left ��� fly right-down
     }
   }
 
   #render() {
+    if (this.#hoverMoveTracker) {
+      document.removeEventListener('pointermove', this.#hoverMoveTracker);
+      this.#hoverMoveTracker = null;
+    }
+
     const count = this.satellites.length;
+    const isInDrawer = Boolean(this.closest('pds-drawer'));
+    const isInlineMode = this.#mode === 'inline';
+    const isIconOnlyFab = this.#fabClass.split(/\s+/).includes('icon-only');
+    const hostPosition = isInlineMode ? 'relative' : 'fixed';
+    const hostInset = isInlineMode ? 'auto' : 'auto 20px 20px auto';
+    const hostZIndex = isInDrawer
+      ? 'var(--z-fab-in-drawer, var(--z-popover, 1060))'
+      : 'var(--z-notification, 1000)';
+
+    this.style.setProperty('--fab-host-z-index', hostZIndex);
+
+    const forwardedClasses = this.#fabClass
+      .split(/\s+/)
+      .filter(Boolean)
+      .join(' ');
     
     // Auto-adjust spread and radius if not explicitly set by user
     const hasCustomRadius = this.#hasCustomRadius;
@@ -291,6 +630,11 @@ export class PdsFab extends HTMLElement {
       if (!hasCustomSpread) activeSpread = optimal.spread;
     }
 
+    // Keep inline icon-only FAB satellites tighter to the trigger button.
+    if (isInlineMode && isIconOnlyFab && !hasCustomRadius) {
+      activeRadius = Math.min(activeRadius, 56);
+    }
+
     // Calculate positions along an arc
     const step = count > 1 ? activeSpread / (count - 1) : 0;
     const baseAngle = hasCustomStartAngle || typeof activeStartAngle === 'number'
@@ -300,131 +644,9 @@ export class PdsFab extends HTMLElement {
       ? baseAngle
       : baseAngle - (activeSpread / 2);
 
+    this.style.setProperty('--radius', `${activeRadius}px`);
+
     this.shadowRoot.innerHTML = `
-      <style>
-        :host {
-          --sat-size: 48px;
-          --fab-size: 64px;
-          --fab-bg: var(--color-primary-600, #0078d4);
-          --fab-fg: white;
-          --sat-bg: var(--color-surface-elevated, #2a2a2a);
-          --sat-fg: var(--color-text-primary, #fff);
-          --radius: ${activeRadius}px;
-          --transition-duration: 420ms;
-          
-          position: fixed;
-          inset: auto 20px 20px auto;
-          z-index: var(--z-notification, 1000);
-          display: inline-block;
-        }
-
-        .wrap {
-          position: relative;
-          width: var(--fab-size);
-          height: var(--fab-size);
-        }
-
-        /* MAIN FAB */
-        .fab {
-          appearance: none;
-          border: none;
-          border-radius: 50%;
-          inline-size: var(--fab-size);
-          block-size: var(--fab-size);
-          background: var(--fab-bg);
-          color: var(--fab-fg);
-          box-shadow: 
-            0 2px 8px rgba(0, 0, 0, 0.15),
-            0 8px 24px rgba(0, 0, 0, 0.25);
-          display: grid;
-          place-items: center;
-          cursor: pointer;
-          transition: transform 0.2s ease, box-shadow 0.3s ease;
-          position: relative;
-          z-index: 2;
-        }
-        
-        .fab:hover {
-          transform: scale(1.05);
-          box-shadow: 
-            0 4px 12px rgba(0, 0, 0, 0.2),
-            0 12px 32px rgba(0, 0, 0, 0.3);
-        }
-        
-        .fab:active {
-          transform: scale(0.98);
-        }
-
-        :host([open]) .fab {
-          box-shadow: 
-            0 0 0 2px var(--color-accent-400, #0078d4),
-            0 4px 16px rgba(0, 120, 212, 0.4);
-        }
-        
-        /* Rotate plus icon 45deg when open to look like X */
-        .fab ::slotted(pds-icon) {
-          display: inline-block;
-          transition: transform 0.2s ease;
-        }
-
-        :host([open]) .fab.has-satellites.has-plus ::slotted(pds-icon) {
-          transform: rotate(45deg);
-        }
-
-        /* SATELLITES */
-        .sat {
-          position: absolute;
-          top: calc((var(--fab-size) - var(--sat-size)) / 2);
-          left: calc((var(--fab-size) - var(--sat-size)) / 2);
-          inline-size: var(--sat-size);
-          block-size: var(--sat-size);
-          border-radius: 50%;
-          background: var(--sat-bg);
-          color: var(--sat-fg);
-          box-shadow: 
-            0 2px 6px rgba(0, 0, 0, 0.15),
-            0 6px 18px rgba(0, 0, 0, 0.2);
-          display: grid;
-          place-items: center;
-          cursor: pointer;
-          border: none;
-          appearance: none;
-          
-          transform: translate(0, 0) scale(0.2);
-          opacity: 0;
-          pointer-events: none;
-          
-          transition: 
-            transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1.4),
-            opacity 420ms ease;
-        }
-
-        :host([open]) .sat {
-          transform: translate(var(--tx, 0), var(--ty, 0)) scale(1);
-          opacity: 1;
-          pointer-events: auto;
-        }
-
-
-        .sat:hover,
-        .sat:focus-visible {
-          transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.1);
-          outline: 2px solid var(--color-accent-400, #0078d4);
-          outline-offset: 2px;
-        }
-
-        .sat pds-icon,
-        .sat ::slotted(pds-icon) {
-          pointer-events: none;
-        }
-
-        /* Fallback text for satellites without icons */
-        .sat-text {
-          font-size: 1.25rem;
-          font-weight: 600;
-          user-select: none;
-        }
-      </style>
       
       <div class="wrap" role="group" aria-label="Floating actions">
         ${this.satellites.map((sat, i) => {
@@ -438,14 +660,14 @@ export class PdsFab extends HTMLElement {
             <button
               class="sat"
               part="satellite"
-              style="--tx: ${tx}px; --ty: ${ty}px; transition-delay: ${delay}ms;"
+              style="--tx: ${tx}px; --ty: ${ty}px; transition-delay: ${delay}ms;${sat.bgColor ? ` --sat-bg-color: ${sat.bgColor};` : ''}${sat.iconColor ? ` --sat-icon-color: ${sat.iconColor};` : ''}"
               data-key="${sat.key}"
               aria-label="${sat.label || sat.key}"
               title="${sat.label || sat.key}"
             >
               <slot name="satellite-${sat.key}">
                 ${sat.icon 
-                  ? `<pds-icon icon="${sat.icon}"></pds-icon>` 
+                  ? `<pds-icon icon="${sat.icon}" size="${sat.iconSize || (isInlineMode ? 'md' : 'md')}"${sat.iconColor && !isInlineMode ? ` color="${sat.iconColor}"` : ''}></pds-icon>` 
                   : `<span class="sat-text">${(sat.label || sat.key).charAt(0).toUpperCase()}</span>`
                 }
               </slot>
@@ -454,7 +676,7 @@ export class PdsFab extends HTMLElement {
         }).join('')}
         
         <button 
-          class="fab${count > 0 ? ' has-satellites' : ''}" 
+          class="fab${count > 0 ? ' has-satellites' : ''}${forwardedClasses ? ' ' + forwardedClasses : ''}" 
           part="fab"
           aria-expanded="${this.#open}"
           aria-haspopup="menu"
@@ -476,12 +698,75 @@ export class PdsFab extends HTMLElement {
 
     const wrap = this.shadowRoot.querySelector('.wrap');
     wrap?.addEventListener('keydown', (e) => this.#onKey(e));
+
+    this.#syncFabClasses();
+
+    if (this.#behavior === 'hover') {
+      const stopTracking = () => {
+        if (this.#hoverMoveTracker) {
+          document.removeEventListener('pointermove', this.#hoverMoveTracker);
+          this.#hoverMoveTracker = null;
+        }
+      };
+
+      const isPointerSafe = (x, y) => {
+        const fabEl = this.shadowRoot?.querySelector('.fab');
+        const satEls = Array.from(this.shadowRoot?.querySelectorAll('.sat') ?? []);
+        const padding = 40;
+        for (const el of [fabEl, ...satEls].filter(Boolean)) {
+          const r = el.getBoundingClientRect();
+          if (x >= r.left - padding && x <= r.right + padding &&
+              y >= r.top - padding && y <= r.bottom + padding) {
+            return true;
+          }
+        }
+        return false;
+      };
+
+      const startTracking = () => {
+        stopTracking();
+        this.#hoverMoveTracker = (e) => {
+          if (!isPointerSafe(e.clientX, e.clientY)) {
+            stopTracking();
+            this.open = false;
+          }
+        };
+        document.addEventListener('pointermove', this.#hoverMoveTracker, { passive: true });
+      };
+
+      wrap?.addEventListener('mouseenter', () => {
+        stopTracking();
+        if (count > 0) this.open = true;
+      });
+
+      wrap?.addEventListener('mouseleave', startTracking);
+
+      wrap?.addEventListener('focusin', () => {
+        stopTracking();
+        if (count > 0) this.open = true;
+      });
+
+      wrap?.addEventListener('focusout', (e) => {
+        if (!wrap.contains(e.relatedTarget)) {
+          stopTracking();
+          this.open = false;
+        }
+      });
+    }
     
     // Handle icon swapping when slot content changes (main FAB slot only)
     const fabSlot = this.shadowRoot.querySelector('.fab slot');
     fabSlot?.addEventListener('slotchange', () => this.#updateIconState());
     this.#updateSatelliteTransitionDelays(this.#open);
     requestAnimationFrame(() => this.#updateIconState());
+  }
+
+  #syncFabClasses() {
+    const fab = this.shadowRoot?.querySelector('.fab');
+    if (!fab) return;
+    const baseClasses = Array.from(fab.classList).filter((c) => c === 'fab' || c === 'has-satellites' || c === 'has-plus');
+    const forwarded = this.#fabClass.split(/\s+/).filter(Boolean);
+    fab.className = [...baseClasses, ...forwarded].join(' ');
   }
 
   #updateSatelliteTransitionDelays(isOpen) {

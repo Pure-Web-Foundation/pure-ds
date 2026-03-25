@@ -1210,10 +1210,6 @@ fieldset[role="group"].buttons {
       color: var(--color-text-primary);
     }
 
-    &:has([disabled]) {
-      pointer-events: none;
-    }
-
     &:has(input:is([type="radio"], [type="checkbox"]):checked) {
       background-color: color-mix(in oklab, var(--color-primary-fill) 8%, transparent);
       border-color: var(--color-primary-fill);
@@ -3213,6 +3209,20 @@ nav[data-dropdown] {
   :where(body.drawer-open) {
     /* overflow: hidden; */
     /* scrollbar-gutter: stable; */
+  }
+
+  /* Disabled primitive (low specificity): usable on any element via [disabled] or aria-disabled. */
+  :where([disabled], [aria-disabled="true"]) {
+    opacity: var(--state-disabled-opacity, 0.7);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Also dim/disable labels that contain disabled controls. */
+  :where(label:has(:disabled), label:has([disabled])) {
+    opacity: var(--state-disabled-opacity, 0.7);
+    cursor: not-allowed;
+    pointer-events: none;
   }
 
   /* Button primitives */

@@ -624,3 +624,135 @@ fab.addEventListener('satellite-click', (e) => {
     `;
   },
 };
+
+/**
+ * Demonstrates `mode="inline"` + `behavior="hover"` for drawer workflows
+ * where FAB should align with regular action buttons in a toolbar row.
+ */
+export const InDrawerSocialInline = {
+  render: () => {
+    const satellites = [
+      {
+        key: "like",
+        icon: "heart",
+        label: "Like",
+        bgColor: "var(--color-primary-600)",
+      },
+      {
+        key: "love",
+        icon: "heart",
+        label: "Love",
+        bgColor: "var(--color-danger-600)",
+      },
+      {
+        key: "interesting",
+        icon: "sparkle",
+        label: "Interesting",
+        bgColor: "var(--color-warning-600)",
+      },
+    ];
+
+    const handleSatelliteClick = (event) => {
+      PDS.toast(`Reaction selected: ${event.detail.label}`, { type: "success" });
+    };
+
+    requestAnimationFrame(() => {
+      const openBtn = document.querySelector("#open-fab-drawer-btn");
+      const closeBtn = document.querySelector("#close-fab-drawer-btn");
+      const drawer = document.querySelector("#fab-drawer");
+
+      if (openBtn && drawer && !openBtn.dataset.bound) {
+        openBtn.addEventListener("click", () => {
+          drawer.open = true;
+        });
+        openBtn.dataset.bound = "true";
+      }
+
+      if (closeBtn && drawer && !closeBtn.dataset.bound) {
+        closeBtn.addEventListener("click", () => {
+          drawer.open = false;
+        });
+        closeBtn.dataset.bound = "true";
+      }
+    });
+
+    return html`
+      <style>
+        #fab-drawer-demo {
+          min-height: 320px;
+        }
+
+        #social-action-row {
+          flex-wrap: wrap;
+        }
+
+        #social-fab-inline {
+          --z-fab-in-drawer: var(--z-popover, 1060);
+        }
+      </style>
+
+      <div id="fab-drawer-demo" class="stack-md">
+        <div class="callout callout-info">
+          <p>
+            <strong>Inline social FAB in drawer</strong> - Shows FAB participating
+            in a regular button row while still exposing satellites.
+          </p>
+          <p>
+            Hover or focus the FAB to reveal reactions, then click an icon to
+            show a toaster message.
+          </p>
+        </div>
+
+        <button id="open-fab-drawer-btn" class="btn-primary">
+          <pds-icon icon="sidebar" rotate="180" size="sm"></pds-icon>
+          Open Drawer With FAB
+        </button>
+      </div>
+
+      <pds-drawer id="fab-drawer" position="right">
+        <div slot="drawer-header" class="flex items-center gap-sm">
+          <pds-icon icon="chat" size="md"></pds-icon>
+          <h3>Social Interaction Actions</h3>
+        </div>
+
+        <div slot="drawer-content" class="stack-md">
+          <div class="card stack-sm">
+            <p>
+              The FAB is configured as an inline control next to standard
+              buttons, including disabled ones.
+            </p>
+
+            <div id="social-action-row" class="flex items-center gap-sm">
+              <button class="btn-outline" >
+                <pds-icon icon="arrow-left" size="sm"></pds-icon>
+                Reply
+              </button>
+              <button class="btn-outline icon-only">
+                <pds-icon icon="share" size="sm"></pds-icon>
+              </button>
+
+              <pds-fab
+                id="social-fab-inline"
+                fab-class="btn-primary icon-only"
+                behavior="hover"
+
+                mode="inline"
+                ${lazyProps({ satellites })}
+                @satellite-click=${handleSatelliteClick}
+              >
+                <pds-icon icon="heart" size="sm"></pds-icon>
+                
+              </pds-fab>
+              
+            </div>
+          </div>
+
+          <button id="close-fab-drawer-btn" class="btn-secondary">
+            <pds-icon icon="x" size="sm"></pds-icon>
+            Close Drawer
+          </button>
+        </div>
+      </pds-drawer>
+    `;
+  },
+};
