@@ -87,6 +87,8 @@ class DateHelper {
  *
  * @fires pds-calendar#month-rendered - Dispatched after the calendar month is rendered with event fill capability
  * @fires pds-calendar#month-change - Dispatched when the visible month/year changes
+ * @fires pds-calendar#day-click - Dispatched when a day cell is selected from the calendar grid
+ * @fires pds-calendar#task-click - Dispatched when a task item is clicked
  *
  * @attr {String} date - The date to display (defaults to current date). Accepts any valid date string
  *
@@ -294,10 +296,10 @@ class PdsCalendar extends HTMLElement {
 .calendar {
   display: grid;
   width: 100%;
-  min-height: 400px;
+  min-height: var(--calendar-min-height, 400px);
   grid-template-columns: repeat(7, minmax(50px, 1fr));
-  grid-template-rows: 50px;
-  grid-auto-rows: 60px;
+  grid-template-rows: var(--calendar-header-row-height, 50px);
+  grid-auto-rows: var(--calendar-day-row-height, 60px);
   overflow: auto;
   position: relative;
 }
@@ -378,7 +380,10 @@ class PdsCalendar extends HTMLElement {
   position: relative;
   pointer-events: all;
   z-index: 1;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 
   &:nth-of-type(7n + 7) {
     border-right: 0;
@@ -448,11 +453,18 @@ class PdsCalendar extends HTMLElement {
   }
 }
 
+.day::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 .calendar.compact .day {
   min-height: 0;
   width: var(--calendar-compact-cell-size, 2.25rem);
   height: var(--calendar-compact-cell-size, 2.25rem);
   padding: 0;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1030,6 +1042,27 @@ label {
         this.reRender();
       });
 
+      this.shadowRoot.addEventListener("click", (event) => {
+        const task = event.target?.closest?.(".task");
+        if (!task) return;
+
+        const dayCell = task.closest(".day[data-day]");
+        const day = Number.parseInt(dayCell?.dataset?.day || "", 10);
+        if (!Number.isInteger(day) || day < 1) return;
+
+        const taskItems = [...dayCell.querySelectorAll(".task")];
+        const taskIndex = taskItems.indexOf(task);
+        if (taskIndex < 0) return;
+
+        this.dispatchTaskClick({
+          day,
+          taskIndex,
+          task,
+          dayCell,
+          originalEvent: event,
+        });
+      });
+
       this.shadowRoot.addEventListener('change', (event) => {
         const radio = event.target?.closest?.('.day-radio-input[data-day]');
         if (!radio) return;
@@ -1037,6 +1070,11 @@ label {
         const selectedDay = Number.parseInt(radio.dataset.day, 10);
         if (Number.isInteger(selectedDay) && selectedDay > 0) {
           this.selectDay(selectedDay);
+          this.dispatchDayClick({
+            day: selectedDay,
+            radio,
+            originalEvent: event,
+          });
         }
       });
 
@@ -1130,6 +1168,67 @@ label {
     }
 
     /**
+     * Dispatches the day-click event for selected day interactions.
+     * @param {{ day: number, radio?: HTMLInputElement, originalEvent?: Event }} data
+     * @private
+     */
+    dispatchDayClick({ day, radio = null, originalEvent = null } = {}) {
+      if (!Number.isInteger(day) || day < 1) return;
+
+      const selectedDate = new Date(this.year, this.month, day);
+      this.dispatchEvent(
+        new CustomEvent("day-click", {
+          detail: {
+            day,
+            date: selectedDate,
+            year: selectedDate.getFullYear(),
+            month: selectedDate.getMonth(),
+            dayOfMonth: selectedDate.getDate(),
+            radio,
+            originalEvent,
+          },
+          bubbles: true,
+          composed: true,
+        })
+      );
+    }
+
+    /**
+     * Dispatches the task-click event for task item interactions.
+     * @param {{ day: number, taskIndex: number, task?: HTMLElement, dayCell?: HTMLElement, originalEvent?: Event }} data
+     * @private
+     */
+    dispatchTaskClick({
+      day,
+      taskIndex,
+      task = null,
+      dayCell = null,
+      originalEvent = null,
+    } = {}) {
+      if (!Number.isInteger(day) || day < 1) return;
+      if (!Number.isInteger(taskIndex) || taskIndex < 0) return;
+
+      const selectedDate = new Date(this.year, this.month, day);
+      this.dispatchEvent(
+        new CustomEvent("task-click", {
+          detail: {
+            day,
+            taskIndex,
+            date: selectedDate,
+            year: selectedDate.getFullYear(),
+            month: selectedDate.getMonth(),
+            dayOfMonth: selectedDate.getDate(),
+            task,
+            dayCell,
+            originalEvent,
+          },
+          bubbles: true,
+          composed: true,
+        })
+      );
+    }
+
+    /**
      * Dispatches the month-rendered event with fill capability
      * @fires pds-calendar#month-rendered
      * @private
@@ -1168,9 +1267,6 @@ label {
                       <h3>
                         ${item.title}
                       </h3>
-                      <p>
-                        Test
-                      </p>
                     </div>
                   </div>`;
 

@@ -138,7 +138,23 @@ export const WithManyEvents = {
       }
     }, 0);
 
-    return html` <pds-calendar id="many-events-calendar"></pds-calendar> `;
+    return html`
+      <style>
+        #many-events-calendar {
+          width: 100%;
+          --calendar-min-height: clamp(38rem, 92svh, 80rem);
+          --calendar-day-row-height: minmax(7rem, 1fr);
+        }
+
+        @media (max-width: 48rem) {
+          #many-events-calendar {
+            --calendar-min-height: clamp(26rem, 82svh, 56rem);
+            --calendar-day-row-height: minmax(4.75rem, 1fr);
+          }
+        }
+      </style>
+      <pds-calendar id="many-events-calendar"></pds-calendar>
+    `;
   },
 };
 
@@ -773,28 +789,17 @@ export const EventDetailsPanel = {
       if (!calendar.dataset.detailsClickBound) {
         calendar.dataset.detailsClickBound = "true";
 
-        calendar.shadowRoot?.addEventListener("change", (event) => {
-          const radio = event.target?.closest?.(".day-radio-input[data-day]");
-          if (!radio) return;
-
-          const day = Number.parseInt(radio.dataset.day || "", 10);
-          if (!Number.isInteger(day)) return;
-
+        calendar.addEventListener("day-click", (event) => {
+          const day = Number.parseInt(event.detail?.day || "", 10);
+          if (!Number.isInteger(day) || day < 1) return;
           renderDayDetails(day);
         });
 
-        calendar.shadowRoot?.addEventListener("click", (event) => {
-          const task = event.target?.closest?.(".task");
-          if (!task) return;
-
-          const dayCell = task.closest(".day[data-day]");
-          const day = Number.parseInt(dayCell?.dataset?.day || "", 10);
-          if (!Number.isInteger(day)) return;
-
-          const taskItems = [...dayCell.querySelectorAll(".task")];
-          const taskIndex = taskItems.indexOf(task);
-          if (taskIndex < 0) return;
-
+        calendar.addEventListener("task-click", (event) => {
+          const day = Number.parseInt(event.detail?.day || "", 10);
+          const taskIndex = Number.parseInt(event.detail?.taskIndex || "", 10);
+          if (!Number.isInteger(day) || day < 1) return;
+          if (!Number.isInteger(taskIndex) || taskIndex < 0) return;
           const details = eventsByDay[day]?.[taskIndex] || null;
           renderDetails(details, day);
         });
