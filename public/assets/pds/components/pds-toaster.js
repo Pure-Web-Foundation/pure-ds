@@ -214,7 +214,8 @@ export class AppToaster extends HTMLElement {
    * @param {number} [options.duration] - Duration in ms (auto-calculated if not provided)
    * @param {boolean} [options.closable=true] - Whether toast can be closed manually
    * @param {boolean} [options.persistent=false] - If true, toast doesn't auto-dismiss
-   * @returns {string} Toast ID
+   * @param {boolean} [options.returnToastElement=false] - If true, return the toast element instead of toast ID
+   * @returns {string|HTMLElement|null} Toast ID by default, or toast element when returnToastElement is true
    */
   toast(message, options = {}) {
     const defaults = {
@@ -225,6 +226,7 @@ export class AppToaster extends HTMLElement {
       persistent: false, // if true, doesn't auto-dismiss
       html: false,
       action: null,
+      returnToastElement: false,
     };
 
     const config = { ...defaults, ...options };
@@ -235,6 +237,9 @@ export class AppToaster extends HTMLElement {
     const dedupeKey = this.#createActiveToastKey(messageText, config.type);
     const activeToastId = this.activeToastIdsByKey.get(dedupeKey);
     if (activeToastId) {
+      if (config.returnToastElement) {
+        return this.getToastElement(activeToastId);
+      }
       return activeToastId;
     }
 
@@ -250,7 +255,23 @@ export class AppToaster extends HTMLElement {
     this.activeToastKeys.add(dedupeKey);
     this.activeToastIdsByKey.set(dedupeKey, toastId);
     this.activeToastKeysById.set(toastId, dedupeKey);
+
+    if (config.returnToastElement) {
+      return this.getToastElement(toastId);
+    }
+
     return toastId;
+  }
+
+  /**
+   * Get toast element by ID.
+   * @method getToastElement
+   * @public
+   * @param {string} toastId - Toast ID
+   * @returns {HTMLElement|null} Matching toast element or null if not found
+   */
+  getToastElement(toastId) {
+    return this.shadowRoot.querySelector(`[data-toast-id="${toastId}"]`);
   }
 
   /*

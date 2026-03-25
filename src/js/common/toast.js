@@ -34,7 +34,8 @@ async function ensureToaster() {
  * @param {boolean} [options.persistent=false] - If true, toast won't auto-dismiss (requires manual close)
  * @param {boolean} [options.html=false] - Render `message` as HTML (trusted content only)
  * @param {{label: string, onClick?: Function, dismissOnClick?: boolean}} [options.action] - Optional action button config
- * @returns {Promise<string>} Toast ID (can be used to dismiss programmatically)
+ * @param {boolean} [options.returnToastElement=false] - If true, resolves to the rendered toast element instead of toast ID
+ * @returns {Promise<string|HTMLElement|null>} Toast ID by default, or toast element when returnToastElement is true
  * 
  * @example
  * // Simple success toast
@@ -67,6 +68,14 @@ async function ensureToaster() {
  * // ... later
  * const toaster = document.querySelector('pds-toaster');
  * toaster.dismissToast(toastId);
+ * 
+ * @example
+ * // Get toast element directly for live updates
+ * const toastEl = await PDS.toast('Syncing draft... 0%', {
+ *   persistent: true,
+ *   returnToastElement: true
+ * });
+ * toastEl?.querySelector('.toast-content p').textContent = 'Syncing draft... 35%';
  */
 export async function toast(message, options = {}) {
   const toaster = await ensureToaster();
@@ -78,7 +87,7 @@ export async function toast(message, options = {}) {
  * 
  * @param {string} message - The success message
  * @param {Object} [options={}] - Additional toast options (type is preset to 'success')
- * @returns {Promise<string>} Toast ID
+ * @returns {Promise<string|HTMLElement|null>} Toast ID by default, or toast element when returnToastElement is true
  * 
  * @example
  * await PDS.toast.success('Profile updated!');
@@ -92,7 +101,7 @@ toast.success = async function(message, options = {}) {
  * 
  * @param {string} message - The error message
  * @param {Object} [options={}] - Additional toast options (type is preset to 'error')
- * @returns {Promise<string>} Toast ID
+ * @returns {Promise<string|HTMLElement|null>} Toast ID by default, or toast element when returnToastElement is true
  * 
  * @example
  * await PDS.toast.error('Failed to connect to server');
@@ -106,7 +115,7 @@ toast.error = async function(message, options = {}) {
  * 
  * @param {string} message - The warning message
  * @param {Object} [options={}] - Additional toast options (type is preset to 'warning')
- * @returns {Promise<string>} Toast ID
+ * @returns {Promise<string|HTMLElement|null>} Toast ID by default, or toast element when returnToastElement is true
  * 
  * @example
  * await PDS.toast.warning('Session will expire in 5 minutes');
@@ -120,7 +129,7 @@ toast.warning = async function(message, options = {}) {
  * 
  * @param {string} message - The information message
  * @param {Object} [options={}] - Additional toast options (type is preset to 'information')
- * @returns {Promise<string>} Toast ID
+ * @returns {Promise<string|HTMLElement|null>} Toast ID by default, or toast element when returnToastElement is true
  * 
  * @example
  * await PDS.toast.info('New features available!');

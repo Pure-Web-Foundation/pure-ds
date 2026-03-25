@@ -234,7 +234,7 @@ const runtimeSurfaceRows = [
   {
     member: 'PDS.toast(message, options)',
     type: 'method',
-    description: 'Notification helper that ensures a toaster host exists before showing toasts.'
+    description: 'Notification helper that ensures a toaster host exists before showing toasts; supports returnToastElement for direct live element access.'
   },
   {
     member: 'PDS.parse(html | template)',

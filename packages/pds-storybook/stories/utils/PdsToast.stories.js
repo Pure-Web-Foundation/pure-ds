@@ -41,6 +41,33 @@ const toastHtmlActionSource = `await PDS.toast(
   }
 );`;
 
+const toastPersistentLiveUpdateSource = `const toastEl = await PDS.toast('Syncing draft... 0%', {
+  type: 'information',
+  title: 'Saving draft',
+  persistent: true,
+  returnToastElement: true
+});
+
+if (!toastEl) return;
+
+for (const percent of [20, 45, 70, 90, 100]) {
+  await new Promise((resolve) => setTimeout(resolve, 450));
+  const title = toastEl.querySelector('.callout-title');
+  const msg = toastEl.querySelector('.toast-content p');
+  if (title) title.textContent = 'Saving draft';
+  if (msg) msg.textContent = 'Syncing draft... ' + percent + '%';
+}
+
+const done = toastEl;
+done?.classList.remove('callout-info');
+done?.classList.add('callout-success');
+done?.querySelector('.callout-icon')?.setAttribute('icon', 'check-circle');
+done?.querySelector('.callout-title') && (done.querySelector('.callout-title').textContent = 'Draft saved');
+done?.querySelector('.toast-content p') && (done.querySelector('.toast-content p').textContent = 'All changes were synced successfully.');
+
+await new Promise((resolve) => setTimeout(resolve, 1200));
+done?.querySelector('.callout-close')?.click();`;
+
 export default {
   title: 'PDS/PDS Object',
   tags: ['autodocs', 'runtime', 'api', 'reference', 'utilities', 'pds-object', 'notifications', 'toast', 'feedback'],
@@ -223,12 +250,83 @@ const CustomHtmlToasts = {
   }
 };
 
+const PersistentToastLiveUpdate = {
+  name: 'Persistent toast live updates',
+  render: () => {
+    const showLiveUpdateToast = async () => {
+      const toast = ensureToast();
+      const toastElement = await toast('Syncing draft... 0%', {
+        type: 'information',
+        title: 'Saving draft',
+        persistent: true,
+        returnToastElement: true
+      });
+
+      if (!toastElement) {
+        return;
+      }
+
+      for (const percent of [20, 45, 70, 90, 100]) {
+        await new Promise((resolve) => setTimeout(resolve, 450));
+        const titleElement = toastElement.querySelector('.callout-title');
+        const messageElement = toastElement.querySelector('.toast-content p');
+
+        if (titleElement) {
+          titleElement.textContent = 'Saving draft';
+        }
+        if (messageElement) {
+          messageElement.textContent = `Syncing draft... ${percent}%`;
+        }
+      }
+
+      toastElement.classList.remove('callout-info');
+      toastElement.classList.add('callout-success');
+
+      const iconElement = toastElement.querySelector('.callout-icon');
+      const titleElement = toastElement.querySelector('.callout-title');
+      const messageElement = toastElement.querySelector('.toast-content p');
+
+      if (iconElement) {
+        iconElement.setAttribute('icon', 'check-circle');
+      }
+      if (titleElement) {
+        titleElement.textContent = 'Draft saved';
+      }
+      if (messageElement) {
+        messageElement.textContent = 'All changes were synced successfully.';
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+      const closeButton = toastElement.querySelector('.callout-close');
+      if (closeButton instanceof HTMLButtonElement) {
+        closeButton.click();
+      }
+    };
+
+    return html`
+      <section
+        class="card max-w-sm"
+        .pdsCodeHeading=${'PDS.toast()'}
+        .pdsCodeLabel=${'Persistent toast live updates'}
+        .pdsCodeSource=${toastPersistentLiveUpdateSource}
+      >
+        <header>
+          <h3>Persistent toast live updates</h3>
+          <small class="text-muted">Set <code>returnToastElement: true</code> to get the live toast element directly and update it while visible.</small>
+        </header>
+        <button class="btn btn-outline" @click=${showLiveUpdateToast}>Run live update demo</button>
+      </section>
+    `;
+  }
+};
+
 export const PDSToast = {
   name: 'PDS.toast()',
   render: () => html`
     <section class="stack-lg">
       ${QuickToasts.render()}
       ${PersistentToast.render()}
+      ${PersistentToastLiveUpdate.render()}
       ${CustomTitleToast.render()}
       ${CustomHtmlToasts.render()}
       <div class="callout callout-info">

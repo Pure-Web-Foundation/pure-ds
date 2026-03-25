@@ -1,4 +1,5 @@
 import { html } from 'lit';
+import { PDS } from '#pds';
 
 const docsParameters = {
   description: {
@@ -51,6 +52,99 @@ const bindToastForms = (selector) => {
       });
 
       form.dataset.toastBound = 'true';
+    });
+  }, 0);
+};
+
+const updateToastVisualState = (toastElement, { title, message, type }) => {
+  if (!toastElement) {
+    return;
+  }
+
+  const titleElement = toastElement.querySelector('.callout-title');
+  const messageElement = toastElement.querySelector('.toast-content p');
+  const iconElement = toastElement.querySelector('.callout-icon');
+
+  if (titleElement && typeof title === 'string') {
+    titleElement.textContent = title;
+  }
+
+  if (messageElement && typeof message === 'string') {
+    messageElement.textContent = message;
+  }
+
+  if (type === 'success') {
+    toastElement.classList.remove('callout-info');
+    toastElement.classList.add('callout-success');
+    if (iconElement) {
+      iconElement.setAttribute('icon', 'check-circle');
+    }
+  }
+};
+
+const bindPersistentToastDemo = (selector) => {
+  setTimeout(() => {
+    if (typeof document === 'undefined') {
+      return;
+    }
+
+    document.querySelectorAll(selector).forEach((form) => {
+      if (!(form instanceof HTMLFormElement)) {
+        return;
+      }
+
+      if (form.dataset.persistentToastBound === 'true') {
+        return;
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        submitButton?.classList.add('btn-working');
+
+        try {
+          const toastElement = await PDS.toast('Syncing draft... 0%', {
+            type: 'information',
+            title: 'Saving draft',
+            persistent: true,
+            returnToastElement: true
+          });
+
+          if (!toastElement) {
+            return;
+          }
+
+          const checkpoints = [20, 45, 70, 90, 100];
+          for (const percent of checkpoints) {
+            await new Promise((resolve) => setTimeout(resolve, 450));
+            updateToastVisualState(toastElement, {
+              title: 'Saving draft',
+              message: `Syncing draft... ${percent}%`
+            });
+          }
+
+          updateToastVisualState(toastElement, {
+            title: 'Draft saved',
+            message: 'All changes were synced successfully.',
+            type: 'success'
+          });
+
+          await new Promise((resolve) => setTimeout(resolve, 1200));
+          const closeButton = toastElement.querySelector('.callout-close');
+          if (closeButton instanceof HTMLButtonElement) {
+            closeButton.click();
+          }
+        } catch (error) {
+          await PDS.toast('Unable to save draft right now. Please try again.', {
+            type: 'error'
+          });
+        } finally {
+          submitButton?.classList.remove('btn-working');
+        }
+      });
+
+      form.dataset.persistentToastBound = 'true';
     });
   }, 0);
 };
@@ -263,3 +357,32 @@ export const MarkdownForm = () => {
 };
 
 MarkdownForm.storyName = 'Markdown Format';
+
+export const PersistentToastLiveUpdate = () => {
+  bindPersistentToastDemo('.richtext-persistent-toast-form');
+
+  return html`
+    ${richtextStoryStyles}
+    <article class="card max-w-md stack-md">
+      <h3>Live save with persistent toast</h3>
+      <p class="text-muted">Submit to create a persistent toast, then watch it update while save steps complete.</p>
+      <form class="richtext-persistent-toast-form stack-md">
+        <label>
+          <span data-label>Draft Notes</span>
+          <pds-richtext
+            name="draft-notes"
+            format="markdown"
+            placeholder="Write a draft update..."
+            value="${markdownSample}"
+          ></pds-richtext>
+        </label>
+        <div class="flex gap-sm">
+          <button type="submit" class="btn-primary">Save Draft</button>
+          <button type="reset" class="btn-ghost">Reset</button>
+        </div>
+      </form>
+    </article>
+  `;
+};
+
+PersistentToastLiveUpdate.storyName = 'Persistent Toast Live Update';
