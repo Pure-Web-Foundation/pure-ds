@@ -345,8 +345,8 @@ export class PdsFab extends HTMLElement {
 
           :host([mode="inline"]) .fab.icon-only {
             /* Match compact icon-only geometry used by normal PDS buttons */
-            inline-size: max(36px, calc(var(--font-size-base) + (max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 2) + (var(--border-width-medium) * 2)));
-            block-size: max(36px, calc(var(--font-size-base) + (max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 2) + (var(--border-width-medium) * 2)));
+            inline-size: max(33px, calc(var(--font-size-base) + (max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 2) + (var(--border-width-medium) * 2)));
+            block-size: max(33px, calc(var(--font-size-base) + (max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 2) + (var(--border-width-medium) * 2)));
             min-inline-size: 0;
             min-block-size: 0;
             padding: 0;
