@@ -20,7 +20,7 @@ class AutoComplete extends EventTarget {
 
 		this.settings = {
 			emptyResultsText: "",
-			progressive: false,
+			progressive: true,
 			maxConcurrentCategories: 3,
 			categoryTimeoutMs: 0,
 			...settings,
@@ -221,12 +221,14 @@ class AutoComplete extends EventTarget {
 		}, 100);
 	}
 
-	clear() {
+	clear(_reason, options = {}) {
 		if (this.settings.debug) return;
 		if (!this.resultsDiv) return;
 
 		this.resultsDiv.innerHTML = "";
-		this.controller().hide("clear");
+		if (!options.preserveOpen) {
+			this.controller().hide("clear");
+		}
 
 		if (this.cacheTmr) clearTimeout(this.cacheTmr);
 		this.cacheTmr = setTimeout(() => {
@@ -298,7 +300,6 @@ class AutoComplete extends EventTarget {
 			hadPartial = true;
 			lastPartialSignature = this.resultsSignature(partialResults);
 
-			this.controller().clear("new-results-partial");
 			this.resultsHandler(partialResults, options);
 
 			this.input.dispatchEvent(
@@ -326,7 +327,6 @@ class AutoComplete extends EventTarget {
 
 		const finalSignature = this.resultsSignature(results);
 		if (!hadPartial || finalSignature !== lastPartialSignature) {
-			this.controller().clear("new-results");
 			this.resultsHandler(results, options);
 		}
 
