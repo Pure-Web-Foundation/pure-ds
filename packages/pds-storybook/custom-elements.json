@@ -225,6 +225,18 @@
               }
             },
             {
+              "name": "day-click",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "task-click",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
               "name": "month-rendered",
               "type": {
                 "text": "CustomEvent"
@@ -237,6 +249,14 @@
             {
               "description": "Dispatched when the visible month/year changes",
               "name": "pds-calendar#month-change"
+            },
+            {
+              "description": "Dispatched when a day cell is selected from the calendar grid",
+              "name": "pds-calendar#day-click"
+            },
+            {
+              "description": "Dispatched when a task item is clicked",
+              "name": "pds-calendar#task-click"
             }
           ],
           "attributes": [
@@ -1145,6 +1165,10 @@
             {
               "description": "Animation duration (default: 420ms)",
               "name": "--transition-duration"
+            },
+            {
+              "description": "FAB z-index when used inside pds-drawer (default: var(--z-popover))",
+              "name": "--z-fab-in-drawer"
             }
           ],
           "cssParts": [
@@ -1204,7 +1228,7 @@
             {
               "kind": "field",
               "name": "startAngle",
-              "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\r\nIf not specified, the angle is auto-detected based on the FAB's corner position:\r\n- Bottom-right: 180° (fly left/up)\r\n- Bottom-left: 315° (fly right/up)\r\n- Top-right: 225° (fly left/down)\r\n- Top-left: 45° (fly right/down)",
+              "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\r\nIf not specified, the angle is auto-detected based on the FAB's corner position:\r\n- Bottom-right: 180-� (fly left/up)\r\n- Bottom-left: 315-� (fly right/up)\r\n- Top-right: 225-� (fly left/down)\r\n- Top-left: 45-� (fly right/down)",
               "type": {
                 "text": "number"
               },
@@ -1213,10 +1237,39 @@
             },
             {
               "kind": "field",
+              "name": "behavior",
+              "description": "Interaction mode for satellite menu.\r\n- click: toggles satellites when main FAB is clicked\r\n- hover: opens on hover/focus and closes when pointer leaves safe area",
+              "type": {
+                "text": "'click'|'hover'"
+              },
+              "default": "click",
+              "attribute": "behavior"
+            },
+            {
+              "kind": "field",
+              "name": "mode",
+              "description": "Layout mode for host positioning.\r\n- fixed: FAB is anchored to viewport bottom-right\r\n- inline: FAB participates in normal document flow",
+              "type": {
+                "text": "'fixed'|'inline'"
+              },
+              "default": "fixed",
+              "attribute": "mode"
+            },
+            {
+              "kind": "field",
+              "name": "fabClass",
+              "description": "Space-separated class list forwarded to the internal button.\r\nUse this instead of host classes for btn-* and icon-only.",
+              "type": {
+                "text": "string"
+              },
+              "attribute": "fab-class"
+            },
+            {
+              "kind": "field",
               "name": "satellites",
               "description": "Array of satellite button configurations",
               "type": {
-                "text": "Array<{key: string, icon?: string, label?: string, action?: string}>"
+                "text": "Array<{key: string, icon?: string, iconColor?: string, bgColor?: string, iconSize?: string, label?: string, action?: string}>"
               }
             }
           ],
@@ -1258,12 +1311,38 @@
             },
             {
               "name": "start-angle",
-              "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\r\nIf not specified, the angle is auto-detected based on the FAB's corner position:\r\n- Bottom-right: 180° (fly left/up)\r\n- Bottom-left: 315° (fly right/up)\r\n- Top-right: 225° (fly left/down)\r\n- Top-left: 45° (fly right/down)",
+              "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\r\nIf not specified, the angle is auto-detected based on the FAB's corner position:\r\n- Bottom-right: 180-� (fly left/up)\r\n- Bottom-left: 315-� (fly right/up)\r\n- Top-right: 225-� (fly left/down)\r\n- Top-left: 45-� (fly right/down)",
               "type": {
                 "text": "number"
               },
               "default": "180 (or auto-detected)",
               "fieldName": "startAngle"
+            },
+            {
+              "name": "behavior",
+              "description": "Interaction mode for opening satellites (default: click)",
+              "type": {
+                "text": "\"click\"|\"hover\""
+              },
+              "default": "click",
+              "fieldName": "behavior"
+            },
+            {
+              "name": "mode",
+              "description": "Layout mode for FAB positioning (default: fixed)",
+              "type": {
+                "text": "\"fixed\"|\"inline\""
+              },
+              "default": "fixed",
+              "fieldName": "mode"
+            },
+            {
+              "name": "fab-class",
+              "description": "Space-separated class list forwarded to the internal button.\r\nUse this instead of host classes for btn-* and icon-only.",
+              "type": {
+                "text": "string"
+              },
+              "fieldName": "fabClass"
             }
           ],
           "superclass": {
@@ -4692,7 +4771,7 @@
                   "description": "Toast configuration",
                   "optional": true,
                   "type": {
-                    "text": "@param {\"information\"|\"success\"|\"warning\"|\"error\"} [options.type=\"information\"] - Toast type\n   * @param {number} [options.duration] - Duration in ms (auto-calculated if not provided)\n   * @param {boolean} [options.closable=true] - Whether toast can be closed manually\n   * @param {boolean} [options.persistent=false] - If true, toast doesn't auto-dismiss\n   * "
+                    "text": "@param {\"information\"|\"success\"|\"warning\"|\"error\"} [options.type=\"information\"] - Toast type\n    * @param {string} [options.title] - Optional heading text (falls back to type-based title when empty)\n   * @param {number} [options.duration] - Duration in ms (auto-calculated if not provided)\n   * @param {boolean} [options.closable=true] - Whether toast can be closed manually\n   * @param {boolean} [options.persistent=false] - If true, toast doesn't auto-dismiss\n   * @param {boolean} [options.returnToastElement=false] - If true, return the toast element instead of toast ID\n   * "
                   }
                 }
               ],
@@ -4700,7 +4779,27 @@
               "privacy": "public",
               "return": {
                 "type": {
-                  "text": "string"
+                  "text": "string|HTMLElement|null"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getToastElement",
+              "parameters": [
+                {
+                  "name": "toastId",
+                  "description": "Toast ID",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Get toast element by ID.",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "HTMLElement|null"
                 }
               }
             },
@@ -4724,6 +4823,12 @@
                   "name": "type",
                   "type": {
                     "text": "\"information\"|\"success\"|\"warning\"|\"error\""
+                  }
+                },
+                {
+                  "name": "title",
+                  "type": {
+                    "text": "string|null|undefined"
                   }
                 },
                 {

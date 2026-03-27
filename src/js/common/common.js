@@ -233,3 +233,77 @@ export function parseFragment(html, ...values) {
 export function parseHTML(html, ...values) {
   return parseFragment(html, ...values).childNodes;
 }
+
+export function throttle(fn, timeoutMs = 100) {
+  let handle;
+  return function throttled(...args) {
+    const fire = () => {
+      clearTimeout(handle);
+      fn(...args);
+    };
+    clearTimeout(handle);
+    handle = setTimeout(fire, timeoutMs);
+  };
+}
+
+export function enQueue(fn) {
+  setTimeout(fn, 0);
+}
+
+export function isUrl(str) {
+  try {
+    if (typeof str !== "string") return false;
+    if (str.indexOf("\n") !== -1 || str.indexOf(" ") !== -1) return false;
+    if (str.startsWith("#/")) return false;
+    const newUrl = new URL(str, window.location.origin);
+    return newUrl.protocol === "http:" || newUrl.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+export function withTimeout(promise, timeoutMs, label = "Operation") {
+  if (!timeoutMs || timeoutMs <= 0) return promise;
+
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error(`${label} timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+
+    Promise.resolve(promise)
+      .then((value) => {
+        clearTimeout(timeout);
+        resolve(value);
+      })
+      .catch((error) => {
+        clearTimeout(timeout);
+        reject(error);
+      });
+  });
+}
+
+export function escapeForRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+export function openCenteredWindow(url, width, height) {
+  const left = window.screen.width / 2 - width / 2;
+  const top = window.screen.height / 2 - height / 2;
+  return window.open(
+    url,
+    "",
+    `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=${width}, height=${height}, top=${top}, left=${left}`,
+  );
+}
+
+export function humanizeIdentifier(value) {
+  if (value == null) return "";
+  const input = String(value).trim();
+  if (!input) return "";
+
+  return input
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}

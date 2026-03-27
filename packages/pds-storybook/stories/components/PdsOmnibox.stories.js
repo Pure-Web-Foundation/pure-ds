@@ -1,6 +1,10 @@
 import { html, lazyProps } from "#pds/lit";
 import { PDS } from "#pds";
 import { countriesApiSettings } from "./omnibox-countries-api-settings.js";
+import {
+  realLifeAsyncOmniboxSettings,
+  realLifeAsyncOmniboxSettingsSource,
+} from "./omnibox-real-life-async-settings.js";
 
 const docsParameters = {
   description: {
@@ -777,6 +781,38 @@ export const SelectedItemActionHook = {
       source: {
         type: "code",
         code: selectedItemSettingsSource,
+      },
+    },
+  },
+};
+
+export const RealLifeProgressiveApis = {
+  name: "Real-Life Progressive APIs",
+  render: () => html`
+    <section class="card border-gradient">
+      <header>
+        <p>
+          This demo combines fast local categories with live API categories.
+          Type 2+ characters (or 3+ for books) and results will populate in
+          batches as categories resolve.
+        </p>
+        <small class="text-muted">
+          Data sources: REST Countries, Wikipedia OpenSearch, and Open Library.
+        </small>
+      </header>
+      <pds-omnibox
+        name="real-life-progressive"
+        placeholder="Try: netherlands, release, mike, or accessibility"
+        ${lazyProps({ settings: realLifeAsyncOmniboxSettings })}
+        data-settings-source=${realLifeAsyncOmniboxSettingsSource}
+      ></pds-omnibox>
+    </section>
+  `,
+  parameters: {
+    docs: {
+      source: {
+        type: "code",
+        code: realLifeAsyncOmniboxSettingsSource,
       },
     },
   },
