@@ -4,7 +4,7 @@ import { renderMarkdown } from './utils/markdown.js';
 import markdownContent from './getting-started.md?raw';
 
 export default {
-  title: 'About PDS/Getting Started',
+  title: 'PDS/General',
   parameters: {
     layout: 'fullscreen',
     pds: {

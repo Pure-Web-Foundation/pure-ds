@@ -40,7 +40,7 @@ const backdropStoryStyles = html`
 `;
 
 export default {
-  title: 'Utilities/Backdrop',
+  title: 'Primitives & Patterns/Backdrop',
   tags: ['layout', 'backdrop', 'modal', 'overlay', 'utilities'],
   parameters: {
     pds: {

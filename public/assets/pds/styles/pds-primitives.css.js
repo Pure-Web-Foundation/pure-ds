@@ -43,13 +43,27 @@ primitives.replaceSync(`@layer primitives {
     /* scrollbar-gutter: stable; */
   }
 
+  /* Disabled primitive (low specificity): usable on any element via [disabled] or aria-disabled. */
+  :where([disabled], [aria-disabled="true"]) {
+    opacity: var(--state-disabled-opacity, 0.7);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Also dim/disable labels that contain disabled controls. */
+  :where(label:has(:disabled), label:has([disabled])) {
+    opacity: var(--state-disabled-opacity, 0.7);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
   /* Button primitives */
   :where(button) {
     all: unset;
     box-sizing: border-box;
     font: inherit;
     color: var(--color-primary-contrast, white);
-    background: var(--color-primary-600);
+    background: var(--color-primary-fill);
     padding: var(--spacing-2) var(--spacing-4);
     border: 0;
     border-radius: var(--radius-md);
@@ -68,11 +82,11 @@ primitives.replaceSync(`@layer primitives {
 
   :where(button):hover:not(:disabled) {
     opacity: 0.9;
-    background-color: var(--color-primary-700);
+    background-color: var(--color-primary-fill-hover);
   }
 
   :where(button):focus-visible {
-    outline: 2px solid var(--color-primary-500);
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
     outline-offset: 2px;
   }
 
@@ -105,8 +119,8 @@ primitives.replaceSync(`@layer primitives {
   :where(select):focus-visible,
   :where(textarea):focus-visible {
     outline: none;
-    border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500) 30%, transparent);
+    border-color: var(--color-focus-ring, var(--color-primary-500));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
   }
 
   :where(input):disabled,
@@ -133,20 +147,30 @@ primitives.replaceSync(`@layer primitives {
 
   /* Link primitives */
   :where(a) {
-    color: var(--color-primary-text, var(--color-primary-600));
+    color: var(--color-link, var(--color-primary-text, var(--color-primary-600)));
     text-decoration: underline;
     text-underline-offset: 0.2em;
-    transition: opacity var(--transition-fast);
+    transition: color var(--transition-fast), opacity var(--transition-fast);
   }
 
   :where(a):hover {
-    opacity: 0.8;
+    color: var(--color-link-hover, var(--color-link, var(--color-primary-text, var(--color-primary-600))));
+    opacity: 0.9;
+  }
+
+  :where(a):visited {
+    color: var(--color-link-visited, var(--color-link, var(--color-primary-text, var(--color-primary-600))));
   }
 
   :where(a):focus-visible {
-    outline: 2px solid var(--color-primary-500);
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
     outline-offset: 2px;
     border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background: var(--color-selection-bg, var(--color-primary-text, var(--color-primary-600)));
+    color: var(--color-selection-text, var(--color-primary-contrast, #ffffff));
   }
 
   /* Form primitives */
@@ -206,23 +230,23 @@ primitives.replaceSync(`@layer primitives {
     }
 
     &:has(input[type="checkbox"]:checked)::before {
-      background: var(--color-primary-600);
-      border-color: var(--color-primary-600);
+      background: var(--color-primary-fill);
+      border-color: var(--color-primary-fill);
     }
 
     &:has(input[type="checkbox"]:focus)::before {
-      outline: 2px solid var(--color-primary-500);
+      outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
       outline-offset: 2px;
     }
 
     &:has(input[type="checkbox"]:not(:disabled)):hover::before {
-      border-color: var(--color-primary-600);
+      border-color: var(--color-primary-fill);
       background: var(--color-surface-subtle);
     }
 
     &:has(input[type="checkbox"]:checked:not(:disabled)):hover::before {
-      background: var(--color-primary-700);
-      border-color: var(--color-primary-700);
+      background: var(--color-primary-fill-hover);
+      border-color: var(--color-primary-fill-hover);
     }
 
     &:has(input[type="checkbox"]:disabled) {
@@ -392,13 +416,27 @@ export const primitivesCSS = `@layer primitives {
     /* scrollbar-gutter: stable; */
   }
 
+  /* Disabled primitive (low specificity): usable on any element via [disabled] or aria-disabled. */
+  :where([disabled], [aria-disabled="true"]) {
+    opacity: var(--state-disabled-opacity, 0.7);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Also dim/disable labels that contain disabled controls. */
+  :where(label:has(:disabled), label:has([disabled])) {
+    opacity: var(--state-disabled-opacity, 0.7);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
   /* Button primitives */
   :where(button) {
     all: unset;
     box-sizing: border-box;
     font: inherit;
     color: var(--color-primary-contrast, white);
-    background: var(--color-primary-600);
+    background: var(--color-primary-fill);
     padding: var(--spacing-2) var(--spacing-4);
     border: 0;
     border-radius: var(--radius-md);
@@ -417,11 +455,11 @@ export const primitivesCSS = `@layer primitives {
 
   :where(button):hover:not(:disabled) {
     opacity: 0.9;
-    background-color: var(--color-primary-700);
+    background-color: var(--color-primary-fill-hover);
   }
 
   :where(button):focus-visible {
-    outline: 2px solid var(--color-primary-500);
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
     outline-offset: 2px;
   }
 
@@ -454,8 +492,8 @@ export const primitivesCSS = `@layer primitives {
   :where(select):focus-visible,
   :where(textarea):focus-visible {
     outline: none;
-    border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500) 30%, transparent);
+    border-color: var(--color-focus-ring, var(--color-primary-500));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
   }
 
   :where(input):disabled,
@@ -482,20 +520,30 @@ export const primitivesCSS = `@layer primitives {
 
   /* Link primitives */
   :where(a) {
-    color: var(--color-primary-text, var(--color-primary-600));
+    color: var(--color-link, var(--color-primary-text, var(--color-primary-600)));
     text-decoration: underline;
     text-underline-offset: 0.2em;
-    transition: opacity var(--transition-fast);
+    transition: color var(--transition-fast), opacity var(--transition-fast);
   }
 
   :where(a):hover {
-    opacity: 0.8;
+    color: var(--color-link-hover, var(--color-link, var(--color-primary-text, var(--color-primary-600))));
+    opacity: 0.9;
+  }
+
+  :where(a):visited {
+    color: var(--color-link-visited, var(--color-link, var(--color-primary-text, var(--color-primary-600))));
   }
 
   :where(a):focus-visible {
-    outline: 2px solid var(--color-primary-500);
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
     outline-offset: 2px;
     border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background: var(--color-selection-bg, var(--color-primary-text, var(--color-primary-600)));
+    color: var(--color-selection-text, var(--color-primary-contrast, #ffffff));
   }
 
   /* Form primitives */
@@ -555,23 +603,23 @@ export const primitivesCSS = `@layer primitives {
     }
 
     &:has(input[type="checkbox"]:checked)::before {
-      background: var(--color-primary-600);
-      border-color: var(--color-primary-600);
+      background: var(--color-primary-fill);
+      border-color: var(--color-primary-fill);
     }
 
     &:has(input[type="checkbox"]:focus)::before {
-      outline: 2px solid var(--color-primary-500);
+      outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
       outline-offset: 2px;
     }
 
     &:has(input[type="checkbox"]:not(:disabled)):hover::before {
-      border-color: var(--color-primary-600);
+      border-color: var(--color-primary-fill);
       background: var(--color-surface-subtle);
     }
 
     &:has(input[type="checkbox"]:checked:not(:disabled)):hover::before {
-      background: var(--color-primary-700);
-      border-color: var(--color-primary-700);
+      background: var(--color-primary-fill-hover);
+      border-color: var(--color-primary-fill-hover);
     }
 
     &:has(input[type="checkbox"]:disabled) {

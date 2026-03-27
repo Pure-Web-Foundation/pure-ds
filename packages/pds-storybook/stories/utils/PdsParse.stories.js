@@ -14,7 +14,7 @@ preloadShiki();
 const sampleHtml = '<div class="card"><p>Hello PDS</p></div><span>World</span>';
 
 export default {
-  title: 'PDS/PDS Object',
+  title: 'PDS/PDS api',
   tags: ['autodocs', 'runtime', 'api', 'reference', 'utilities', 'pds-object', 'parse'],
   parameters: {
     pds: {

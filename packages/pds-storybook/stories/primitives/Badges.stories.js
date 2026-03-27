@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'Primitives/Badges & Pills',
+  title: 'Primitives & Patterns/Badges & Pills',
   tags: ['badge', 'pill', 'tag', 'chip', 'status', 'label', 'indicator'],
   parameters: {
     pds: {

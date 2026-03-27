@@ -150,7 +150,7 @@ styles.replaceSync(`@layer tokens {
   /* Semantic Text Colors */
   --color-text-primary: var(--color-gray-900);
   --color-text-secondary: var(--color-gray-600);
-  --color-text-muted: var(--color-gray-600);
+  --color-text-muted: var(--color-gray-500);
   --color-border: var(--color-gray-300);
   --color-input-bg: var(--color-surface-base);
   --color-input-disabled-bg: var(--color-gray-50);
@@ -158,7 +158,127 @@ styles.replaceSync(`@layer tokens {
   --color-code-bg: var(--color-gray-100);
   /* Interactive Colors - optimized for specific use cases */
   --color-primary-fill: #0b5e74; /* For button backgrounds with white text */
+  --color-primary-fill-hover: #0a5568;
+  --color-primary-fill-active: #094b5d;
   --color-primary-text: #0b5e74; /* For links and outline buttons on light surfaces */
+  --color-primary-text-hover: #0b5e74;
+  --color-primary-text-visited: #377989;
+  --color-primary-contrast: #ffffff;
+  --color-focus-ring: #0b5e74;
+  --color-selection-bg: #0b5e74;
+  --color-selection-text: #ffffff;
+  --color-link: var(--color-primary-text);
+  --color-link-hover: var(--color-primary-text-hover);
+  --color-link-visited: var(--color-primary-text-visited);
+  /* Accent Role Colors */
+  --color-accent-fill: #d61e53;
+  --color-accent-fill-hover: #c11b4b;
+  --color-accent-fill-active: #ab1842;
+  --color-accent-text: #aa1742;
+  --color-accent-text-hover: #aa1742;
+  /* Surface-Aware Accent Text Tokens */
+  --surface-base-accent-text: #aa1742;
+  --surface-base-accent-text-hover: #aa1742;
+  --surface-subtle-accent-text: #aa1742;
+  --surface-subtle-accent-text-hover: #aa1742;
+  --surface-elevated-accent-text: #aa1742;
+  --surface-elevated-accent-text-hover: #aa1742;
+  --surface-sunken-accent-text: #aa1742;
+  --surface-sunken-accent-text-hover: #aa1742;
+  --surface-overlay-accent-text: #aa1742;
+  --surface-overlay-accent-text-hover: #aa1742;
+  --surface-inverse-accent-text: #e54271;
+  --surface-inverse-accent-text-hover: #e85882;
+  /* Danger Role Colors */
+  --color-danger-fill: #ba1212;
+  --color-danger-fill-hover: #a71010;
+  --color-danger-fill-active: #950e0e;
+  --color-danger-text: #ba1212;
+  --color-danger-text-hover: #8b0e0e;
+  --color-danger-contrast: #ffffff;
+  /* Success Role Colors */
+  --color-success-fill: #0b740b;
+  --color-success-fill-hover: #0a680a;
+  --color-success-fill-active: #095d09;
+  --color-success-text: #0b740b;
+  --color-success-text-hover: #074607;
+  --color-success-contrast: #ffffff;
+  /* Warning Role Colors */
+  --color-warning-fill: #806000;
+  --color-warning-fill-hover: #735600;
+  --color-warning-fill-active: #664d00;
+  --color-warning-text: #806000;
+  --color-warning-text-hover: #664c00;
+  --color-warning-contrast: #ffffff;
+  /* Info Role Colors */
+  --color-info-fill: #0b5e74;
+  --color-info-fill-hover: #0a5568;
+  --color-info-fill-active: #094b5d;
+  --color-info-text: #0b5e74;
+  --color-info-text-hover: #0b5e74;
+  --color-info-contrast: #ffffff;
+  /* Surface-Aware Status Text Tokens */
+  --surface-base-success-text: #0b740b;
+  --surface-base-success-text-hover: #074607;
+  --surface-subtle-success-text: #0b740b;
+  --surface-subtle-success-text-hover: #074607;
+  --surface-elevated-success-text: #074607;
+  --surface-elevated-success-text-hover: #074607;
+  --surface-sunken-success-text: #074607;
+  --surface-sunken-success-text-hover: #074607;
+  --surface-overlay-success-text: #0b740b;
+  --surface-overlay-success-text-hover: #074607;
+  --surface-inverse-success-text: #10a210;
+  --surface-inverse-success-text-hover: #10a210;
+  --surface-base-warning-text: #806000;
+  --surface-base-warning-text-hover: #664c00;
+  --surface-subtle-warning-text: #664c00;
+  --surface-subtle-warning-text-hover: #664c00;
+  --surface-elevated-warning-text: #664c00;
+  --surface-elevated-warning-text-hover: #664c00;
+  --surface-sunken-warning-text: #664c00;
+  --surface-sunken-warning-text-hover: #664c00;
+  --surface-overlay-warning-text: #806000;
+  --surface-overlay-warning-text-hover: #664c00;
+  --surface-inverse-warning-text: #B38600;
+  --surface-inverse-warning-text-hover: #B38600;
+  --surface-base-info-text: #0b5e74;
+  --surface-base-info-text-hover: #0b5e74;
+  --surface-subtle-info-text: #0b5e74;
+  --surface-subtle-info-text-hover: #0b5e74;
+  --surface-elevated-info-text: #0b5e74;
+  --surface-elevated-info-text-hover: #0b5e74;
+  --surface-sunken-info-text: #0b5e74;
+  --surface-sunken-info-text-hover: #0b5e74;
+  --surface-overlay-info-text: #0b5e74;
+  --surface-overlay-info-text-hover: #0b5e74;
+  --surface-inverse-info-text: #15acd6;
+  --surface-inverse-info-text-hover: #15acd6;
+  --surface-base-danger-text: #ba1212;
+  --surface-base-danger-text-hover: #ba1212;
+  --surface-subtle-danger-text: #ba1212;
+  --surface-subtle-danger-text-hover: #ba1212;
+  --surface-elevated-danger-text: #ba1212;
+  --surface-elevated-danger-text-hover: #8b0e0e;
+  --surface-sunken-danger-text: #ba1212;
+  --surface-sunken-danger-text-hover: #8b0e0e;
+  --surface-overlay-danger-text: #ba1212;
+  --surface-overlay-danger-text-hover: #ba1212;
+  --surface-inverse-danger-text: #ef5d5d;
+  --surface-inverse-danger-text-hover: #ef5d5d;
+  /* Semantic Callout Display Tokens */
+  --color-success-display-bg: var(--color-success-50);
+  --color-success-display-border: var(--color-success-600);
+  --color-success-display-text: var(--color-success-900);
+  --color-info-display-bg: var(--color-info-50);
+  --color-info-display-border: var(--color-info-600);
+  --color-info-display-text: var(--color-info-900);
+  --color-warning-display-bg: var(--color-warning-50);
+  --color-warning-display-border: var(--color-warning-600);
+  --color-warning-display-text: var(--color-warning-900);
+  --color-danger-display-bg: var(--color-danger-50);
+  --color-danger-display-border: var(--color-danger-600);
+  --color-danger-display-text: var(--color-danger-900);
   /* Translucent Surface Tokens */
   --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);
   --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
@@ -345,16 +465,16 @@ styles.replaceSync(`@layer tokens {
     --color-secondary-700: #595e65;
     --color-secondary-800: #41454a;
     --color-secondary-900: #292c2f;
-    --color-accent-50: #3a0e1b;
-    --color-accent-100: #5b162a;
-    --color-accent-200: #7c1e3a;
-    --color-accent-300: #9c2749;
-    --color-accent-400: #ce2d5b;
-    --color-accent-500: #d53b68;
-    --color-accent-600: #dc5f84;
-    --color-accent-700: #e4839f;
-    --color-accent-800: #f4c1d0;
-    --color-accent-900: #f6d6e0;
+    --color-accent-50: #fbeaef;
+    --color-accent-100: #f8d3de;
+    --color-accent-200: #f4b2c5;
+    --color-accent-300: #ee85a4;
+    --color-accent-400: #e85882;
+    --color-accent-500: #e54271;
+    --color-accent-600: #d61e53;
+    --color-accent-700: #aa1742;
+    --color-accent-800: #7d1130;
+    --color-accent-900: #500b1f;
     --color-gray-50: #fafafa;
     --color-gray-100: #f1f2f3;
     --color-gray-200: #dee0e2;
@@ -365,46 +485,46 @@ styles.replaceSync(`@layer tokens {
     --color-gray-700: #4c5766;
     --color-gray-800: #2b323b;
     --color-gray-900: #15191e;
-    --color-success-50: #072207;
-    --color-success-100: #0b330b;
-    --color-success-200: #115411;
-    --color-success-300: #187618;
-    --color-success-400: #1da61d;
-    --color-success-500: #20b820;
-    --color-success-600: #2ad92a;
-    --color-success-700: #4fe14f;
-    --color-success-800: #94ee94;
-    --color-success-900: #c1f4c1;
-    --color-info-50: #071c22;
-    --color-info-100: #0b2a33;
-    --color-info-200: #0e3844;
-    --color-info-300: #114654;
-    --color-info-400: #145e72;
-    --color-info-500: #176d84;
-    --color-info-600: #1e8baa;
-    --color-info-700: #24a9ce;
-    --color-info-800: #5ac7e5;
-    --color-info-900: #87d4e9;
-    --color-warning-50: #251c04;
-    --color-warning-100: #372b06;
-    --color-warning-200: #493908;
-    --color-warning-300: #5c480a;
-    --color-warning-400: #8d6c0b;
-    --color-warning-500: #a07c0d;
-    --color-warning-600: #c89a10;
-    --color-warning-700: #ecb718;
-    --color-warning-800: #f6d05d;
-    --color-warning-900: #f6dc8e;
-    --color-danger-50: #220707;
-    --color-danger-100: #440e0e;
-    --color-danger-200: #651515;
-    --color-danger-300: #871c1c;
-    --color-danger-400: #b82121;
-    --color-danger-500: #ca2424;
-    --color-danger-600: #dd3e3e;
-    --color-danger-700: #e26262;
-    --color-danger-800: #f2aaaa;
-    --color-danger-900: #f6d5d5;
+    --color-success-50: #d3f8d3;
+    --color-success-100: #a4f3a4;
+    --color-success-200: #73f273;
+    --color-success-300: #44ed44;
+    --color-success-400: #16e816;
+    --color-success-500: #14d114;
+    --color-success-600: #10a210;
+    --color-success-700: #0b740b;
+    --color-success-800: #074607;
+    --color-success-900: #042f04;
+    --color-info-50: #95dbee;
+    --color-info-100: #65ceeb;
+    --color-info-200: #32c3eb;
+    --color-info-300: #15acd6;
+    --color-info-400: #1087a7;
+    --color-info-500: #0e7490;
+    --color-info-600: #0b5e74;
+    --color-info-700: #094b5d;
+    --color-info-800: #073846;
+    --color-info-900: #05252e;
+    --color-warning-50: #fae39f;
+    --color-warning-100: #fbd76a;
+    --color-warning-200: #ffcc33;
+    --color-warning-300: #ffbf00;
+    --color-warning-400: #cc9900;
+    --color-warning-500: #B38600;
+    --color-warning-600: #806000;
+    --color-warning-700: #664c00;
+    --color-warning-800: #4d3900;
+    --color-warning-900: #332600;
+    --color-danger-50: #fbe9e9;
+    --color-danger-100: #f6bbbb;
+    --color-danger-200: #f38b8b;
+    --color-danger-300: #ef5d5d;
+    --color-danger-400: #ea2e2e;
+    --color-danger-500: #e81717;
+    --color-danger-600: #ba1212;
+    --color-danger-700: #8b0e0e;
+    --color-danger-800: #5d0909;
+    --color-danger-900: #2e0505;
     /* Smart Surface Tokens (dark mode, context-aware) */
     --surface-base-bg: #16171a;
     --surface-base-text: #ffffff;
@@ -465,15 +585,135 @@ styles.replaceSync(`@layer tokens {
 
     --color-text-primary: var(--color-gray-100);
     --color-text-secondary: var(--color-gray-300);
-    --color-text-muted: var(--color-gray-600);
+    --color-text-muted: var(--color-gray-500);
     --color-border: var(--color-gray-700);
     --color-input-bg: var(--color-gray-800);
     --color-input-disabled-bg: var(--color-gray-900);
     --color-input-disabled-text: var(--color-gray-600);
     --color-code-bg: var(--color-gray-800);
     /* Interactive Colors - optimized for specific use cases (dark mode) */
-    --color-primary-fill: #036171; /* For button backgrounds with white text */
-    --color-primary-text: #06b6d4; /* For links and outline buttons on dark surfaces */
+    --color-primary-fill: #036171;
+    --color-primary-fill-hover: #0592ab;
+    --color-primary-fill-active: #04788c;
+    --color-primary-text: #06b6d4;
+    --color-primary-text-hover: #06b6d4;
+    --color-primary-text-visited: #0996af;
+    --color-primary-contrast: #ffffff;
+    --color-focus-ring: #058ba2;
+    --color-selection-bg: #06b6d4;
+    --color-selection-text: #000000;
+    --color-link: var(--color-primary-text);
+    --color-link-hover: var(--color-primary-text-hover);
+    --color-link-visited: var(--color-primary-text-visited);
+    /* Accent Role Colors (dark mode) */
+    --color-accent-fill: #d61e53;
+    --color-accent-fill-hover: #e3396a;
+    --color-accent-fill-active: #e1265c;
+    --color-accent-text: #e54271;
+    --color-accent-text-hover: #ee85a4;
+    /* Surface-Aware Accent Text Tokens (dark mode) */
+    --surface-base-accent-text: #e54271;
+    --surface-base-accent-text-hover: #e85882;
+    --surface-subtle-accent-text: #e54271;
+    --surface-subtle-accent-text-hover: #e85882;
+    --surface-elevated-accent-text: #e54271;
+    --surface-elevated-accent-text-hover: #e85882;
+    --surface-sunken-accent-text: #e54271;
+    --surface-sunken-accent-text-hover: #e85882;
+    --surface-overlay-accent-text: #e85882;
+    --surface-overlay-accent-text-hover: #ee85a4;
+    --surface-inverse-accent-text: #d61e53;
+    --surface-inverse-accent-text-hover: #aa1742;
+    /* Danger Role Colors (dark mode) */
+    --color-danger-fill: #ba1212;
+    --color-danger-fill-hover: #e41616;
+    --color-danger-fill-active: #ce1414;
+    --color-danger-text: #ef5d5d;
+    --color-danger-text-hover: #f38b8b;
+    --color-danger-contrast: #ffffff;
+    /* Success Role Colors (dark mode) */
+    --color-success-fill: #0b740b;
+    --color-success-fill-hover: #10a810;
+    --color-success-fill-active: #0d8c0d;
+    --color-success-text: #10a210;
+    --color-success-text-hover: #14d114;
+    --color-success-contrast: #ffffff;
+    /* Warning Role Colors (dark mode) */
+    --color-warning-fill: #806000;
+    --color-warning-fill-hover: #b98b00;
+    --color-warning-fill-active: #9b7400;
+    --color-warning-text: #B38600;
+    --color-warning-text-hover: #cc9900;
+    --color-warning-contrast: #ffffff;
+    /* Info Role Colors (dark mode) */
+    --color-info-fill: #0b5e74;
+    --color-info-fill-hover: #1089a8;
+    --color-info-fill-active: #0d728c;
+    --color-info-text: #15acd6;
+    --color-info-text-hover: #15acd6;
+    --color-info-contrast: #ffffff;
+    /* Surface-Aware Status Text Tokens (dark mode) */
+    --surface-base-success-text: #10a210;
+    --surface-base-success-text-hover: #10a210;
+    --surface-subtle-success-text: #10a210;
+    --surface-subtle-success-text-hover: #10a210;
+    --surface-elevated-success-text: #10a210;
+    --surface-elevated-success-text-hover: #10a210;
+    --surface-sunken-success-text: #10a210;
+    --surface-sunken-success-text-hover: #10a210;
+    --surface-overlay-success-text: #10a210;
+    --surface-overlay-success-text-hover: #10a210;
+    --surface-inverse-success-text: #0b740b;
+    --surface-inverse-success-text-hover: #0b740b;
+    --surface-base-warning-text: #B38600;
+    --surface-base-warning-text-hover: #B38600;
+    --surface-subtle-warning-text: #B38600;
+    --surface-subtle-warning-text-hover: #B38600;
+    --surface-elevated-warning-text: #B38600;
+    --surface-elevated-warning-text-hover: #B38600;
+    --surface-sunken-warning-text: #B38600;
+    --surface-sunken-warning-text-hover: #B38600;
+    --surface-overlay-warning-text: #B38600;
+    --surface-overlay-warning-text-hover: #B38600;
+    --surface-inverse-warning-text: #806000;
+    --surface-inverse-warning-text-hover: #806000;
+    --surface-base-info-text: #15acd6;
+    --surface-base-info-text-hover: #15acd6;
+    --surface-subtle-info-text: #1087a7;
+    --surface-subtle-info-text-hover: #15acd6;
+    --surface-elevated-info-text: #1087a7;
+    --surface-elevated-info-text-hover: #15acd6;
+    --surface-sunken-info-text: #15acd6;
+    --surface-sunken-info-text-hover: #15acd6;
+    --surface-overlay-info-text: #15acd6;
+    --surface-overlay-info-text-hover: #15acd6;
+    --surface-inverse-info-text: #0b5e74;
+    --surface-inverse-info-text-hover: #0b5e74;
+    --surface-base-danger-text: #ef5d5d;
+    --surface-base-danger-text-hover: #ef5d5d;
+    --surface-subtle-danger-text: #ef5d5d;
+    --surface-subtle-danger-text-hover: #ef5d5d;
+    --surface-elevated-danger-text: #ea2e2e;
+    --surface-elevated-danger-text-hover: #ef5d5d;
+    --surface-sunken-danger-text: #ef5d5d;
+    --surface-sunken-danger-text-hover: #ef5d5d;
+    --surface-overlay-danger-text: #ef5d5d;
+    --surface-overlay-danger-text-hover: #ef5d5d;
+    --surface-inverse-danger-text: #ba1212;
+    --surface-inverse-danger-text-hover: #ba1212;
+    /* Semantic Callout Display Tokens (dark mode) */
+    --color-success-display-bg: color-mix(in oklab, var(--color-success-400) 12%, var(--color-surface-base));
+    --color-success-display-border: var(--color-success-400);
+    --color-success-display-text: var(--color-success-100);
+    --color-info-display-bg: color-mix(in oklab, var(--color-info-400) 12%, var(--color-surface-base));
+    --color-info-display-border: var(--color-info-400);
+    --color-info-display-text: var(--color-info-100);
+    --color-warning-display-bg: color-mix(in oklab, var(--color-warning-400) 12%, var(--color-surface-base));
+    --color-warning-display-border: var(--color-warning-400);
+    --color-warning-display-text: var(--color-warning-100);
+    --color-danger-display-bg: color-mix(in oklab, var(--color-danger-400) 12%, var(--color-surface-base));
+    --color-danger-display-border: var(--color-danger-400);
+    --color-danger-display-text: var(--color-danger-100);
     /* Backdrop tokens - dark mode */
     --backdrop-bg: linear-gradient(
         135deg,
@@ -491,28 +731,28 @@ styles.replaceSync(`@layer tokens {
     /* Mesh Gradient Variables (Dark Mode) */
     --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, #07cbed 20%, transparent) 0px, transparent 50%),
       radial-gradient(at 97% 21%, color-mix(in oklab, #999ea5 16%, transparent) 0px, transparent 50%),
-      radial-gradient(at 52% 99%, color-mix(in oklab, #ce2d5b 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 52% 99%, color-mix(in oklab, #e85882 13%, transparent) 0px, transparent 50%),
       radial-gradient(at 10% 29%, color-mix(in oklab, #07cbed 10%, transparent) 0px, transparent 50%);
     
     --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, #999ea5 18%, transparent) 0px, transparent 50%),
       radial-gradient(at 80% 0%, color-mix(in oklab, #07cbed 14%, transparent) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, color-mix(in oklab, #ce2d5b 12%, transparent) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, color-mix(in oklab, #e85882 12%, transparent) 0px, transparent 50%),
       radial-gradient(at 80% 100%, color-mix(in oklab, #999ea5 10%, transparent) 0px, transparent 50%);
     
-    --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #ce2d5b 15%, transparent) 0px, transparent 50%),
+    --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #e85882 15%, transparent) 0px, transparent 50%),
       radial-gradient(at 85% 30%, color-mix(in oklab, #07cbed 17%, transparent) 0px, transparent 50%),
       radial-gradient(at 50% 80%, color-mix(in oklab, #999ea5 13%, transparent) 0px, transparent 50%),
-      radial-gradient(at 90% 90%, color-mix(in oklab, #ce2d5b 11%, transparent) 0px, transparent 50%);
+      radial-gradient(at 90% 90%, color-mix(in oklab, #e85882 11%, transparent) 0px, transparent 50%);
     
     --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, #07cbed 14%, transparent) 0px, transparent 50%),
       radial-gradient(at 20% 80%, color-mix(in oklab, #999ea5 16%, transparent) 0px, transparent 50%),
-      radial-gradient(at 90% 60%, color-mix(in oklab, #ce2d5b 12%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 60%, color-mix(in oklab, #e85882 12%, transparent) 0px, transparent 50%),
       radial-gradient(at 30% 40%, color-mix(in oklab, #07cbed 11%, transparent) 0px, transparent 50%);
     
     --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, #07cbed 17%, transparent) 0px, transparent 50%),
-      radial-gradient(at 10% 10%, color-mix(in oklab, #ce2d5b 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 10% 10%, color-mix(in oklab, #e85882 14%, transparent) 0px, transparent 50%),
       radial-gradient(at 90% 10%, color-mix(in oklab, #999ea5 13%, transparent) 0px, transparent 50%),
-      radial-gradient(at 50% 90%, color-mix(in oklab, #ce2d5b 10%, transparent) 0px, transparent 50%);
+      radial-gradient(at 50% 90%, color-mix(in oklab, #e85882 10%, transparent) 0px, transparent 50%);
              }
 
     }
@@ -550,16 +790,16 @@ html[data-theme="dark"] {
   --color-secondary-700: #595e65;
   --color-secondary-800: #41454a;
   --color-secondary-900: #292c2f;
-  --color-accent-50: #3a0e1b;
-  --color-accent-100: #5b162a;
-  --color-accent-200: #7c1e3a;
-  --color-accent-300: #9c2749;
-  --color-accent-400: #ce2d5b;
-  --color-accent-500: #d53b68;
-  --color-accent-600: #dc5f84;
-  --color-accent-700: #e4839f;
-  --color-accent-800: #f4c1d0;
-  --color-accent-900: #f6d6e0;
+  --color-accent-50: #fbeaef;
+  --color-accent-100: #f8d3de;
+  --color-accent-200: #f4b2c5;
+  --color-accent-300: #ee85a4;
+  --color-accent-400: #e85882;
+  --color-accent-500: #e54271;
+  --color-accent-600: #d61e53;
+  --color-accent-700: #aa1742;
+  --color-accent-800: #7d1130;
+  --color-accent-900: #500b1f;
   --color-gray-50: #fafafa;
   --color-gray-100: #f1f2f3;
   --color-gray-200: #dee0e2;
@@ -570,46 +810,46 @@ html[data-theme="dark"] {
   --color-gray-700: #4c5766;
   --color-gray-800: #2b323b;
   --color-gray-900: #15191e;
-  --color-success-50: #072207;
-  --color-success-100: #0b330b;
-  --color-success-200: #115411;
-  --color-success-300: #187618;
-  --color-success-400: #1da61d;
-  --color-success-500: #20b820;
-  --color-success-600: #2ad92a;
-  --color-success-700: #4fe14f;
-  --color-success-800: #94ee94;
-  --color-success-900: #c1f4c1;
-  --color-info-50: #071c22;
-  --color-info-100: #0b2a33;
-  --color-info-200: #0e3844;
-  --color-info-300: #114654;
-  --color-info-400: #145e72;
-  --color-info-500: #176d84;
-  --color-info-600: #1e8baa;
-  --color-info-700: #24a9ce;
-  --color-info-800: #5ac7e5;
-  --color-info-900: #87d4e9;
-  --color-warning-50: #251c04;
-  --color-warning-100: #372b06;
-  --color-warning-200: #493908;
-  --color-warning-300: #5c480a;
-  --color-warning-400: #8d6c0b;
-  --color-warning-500: #a07c0d;
-  --color-warning-600: #c89a10;
-  --color-warning-700: #ecb718;
-  --color-warning-800: #f6d05d;
-  --color-warning-900: #f6dc8e;
-  --color-danger-50: #220707;
-  --color-danger-100: #440e0e;
-  --color-danger-200: #651515;
-  --color-danger-300: #871c1c;
-  --color-danger-400: #b82121;
-  --color-danger-500: #ca2424;
-  --color-danger-600: #dd3e3e;
-  --color-danger-700: #e26262;
-  --color-danger-800: #f2aaaa;
-  --color-danger-900: #f6d5d5;
+  --color-success-50: #d3f8d3;
+  --color-success-100: #a4f3a4;
+  --color-success-200: #73f273;
+  --color-success-300: #44ed44;
+  --color-success-400: #16e816;
+  --color-success-500: #14d114;
+  --color-success-600: #10a210;
+  --color-success-700: #0b740b;
+  --color-success-800: #074607;
+  --color-success-900: #042f04;
+  --color-info-50: #95dbee;
+  --color-info-100: #65ceeb;
+  --color-info-200: #32c3eb;
+  --color-info-300: #15acd6;
+  --color-info-400: #1087a7;
+  --color-info-500: #0e7490;
+  --color-info-600: #0b5e74;
+  --color-info-700: #094b5d;
+  --color-info-800: #073846;
+  --color-info-900: #05252e;
+  --color-warning-50: #fae39f;
+  --color-warning-100: #fbd76a;
+  --color-warning-200: #ffcc33;
+  --color-warning-300: #ffbf00;
+  --color-warning-400: #cc9900;
+  --color-warning-500: #B38600;
+  --color-warning-600: #806000;
+  --color-warning-700: #664c00;
+  --color-warning-800: #4d3900;
+  --color-warning-900: #332600;
+  --color-danger-50: #fbe9e9;
+  --color-danger-100: #f6bbbb;
+  --color-danger-200: #f38b8b;
+  --color-danger-300: #ef5d5d;
+  --color-danger-400: #ea2e2e;
+  --color-danger-500: #e81717;
+  --color-danger-600: #ba1212;
+  --color-danger-700: #8b0e0e;
+  --color-danger-800: #5d0909;
+  --color-danger-900: #2e0505;
   /* Smart Surface Tokens (dark mode, context-aware) */
   --surface-base-bg: #16171a;
   --surface-base-text: #ffffff;
@@ -670,12 +910,135 @@ html[data-theme="dark"] {
 
   --color-text-primary: var(--color-gray-100);
   --color-text-secondary: var(--color-gray-300);
-  --color-text-muted: var(--color-gray-600);
+  --color-text-muted: var(--color-gray-500);
   --color-border: var(--color-gray-700);
   --color-input-bg: var(--color-gray-800);
   --color-input-disabled-bg: var(--color-gray-900);
   --color-input-disabled-text: var(--color-gray-600);
   --color-code-bg: var(--color-gray-800);
+  /* Interactive Colors - optimized for specific use cases (dark mode) */
+  --color-primary-fill: #036171;
+  --color-primary-fill-hover: #0592ab;
+  --color-primary-fill-active: #04788c;
+  --color-primary-text: #06b6d4;
+  --color-primary-text-hover: #06b6d4;
+  --color-primary-text-visited: #0996af;
+  --color-primary-contrast: #ffffff;
+  --color-focus-ring: #058ba2;
+  --color-selection-bg: #06b6d4;
+  --color-selection-text: #000000;
+  --color-link: var(--color-primary-text);
+  --color-link-hover: var(--color-primary-text-hover);
+  --color-link-visited: var(--color-primary-text-visited);
+  /* Accent Role Colors (dark mode) */
+  --color-accent-fill: #d61e53;
+  --color-accent-fill-hover: #e3396a;
+  --color-accent-fill-active: #e1265c;
+  --color-accent-text: #e54271;
+  --color-accent-text-hover: #ee85a4;
+  /* Surface-Aware Accent Text Tokens (dark mode) */
+  --surface-base-accent-text: #e54271;
+  --surface-base-accent-text-hover: #e85882;
+  --surface-subtle-accent-text: #e54271;
+  --surface-subtle-accent-text-hover: #e85882;
+  --surface-elevated-accent-text: #e54271;
+  --surface-elevated-accent-text-hover: #e85882;
+  --surface-sunken-accent-text: #e54271;
+  --surface-sunken-accent-text-hover: #e85882;
+  --surface-overlay-accent-text: #e85882;
+  --surface-overlay-accent-text-hover: #ee85a4;
+  --surface-inverse-accent-text: #d61e53;
+  --surface-inverse-accent-text-hover: #aa1742;
+  /* Danger Role Colors (dark mode) */
+  --color-danger-fill: #ba1212;
+  --color-danger-fill-hover: #e41616;
+  --color-danger-fill-active: #ce1414;
+  --color-danger-text: #ef5d5d;
+  --color-danger-text-hover: #f38b8b;
+  --color-danger-contrast: #ffffff;
+  /* Success Role Colors (dark mode) */
+  --color-success-fill: #0b740b;
+  --color-success-fill-hover: #10a810;
+  --color-success-fill-active: #0d8c0d;
+  --color-success-text: #10a210;
+  --color-success-text-hover: #14d114;
+  --color-success-contrast: #ffffff;
+  /* Warning Role Colors (dark mode) */
+  --color-warning-fill: #806000;
+  --color-warning-fill-hover: #b98b00;
+  --color-warning-fill-active: #9b7400;
+  --color-warning-text: #B38600;
+  --color-warning-text-hover: #cc9900;
+  --color-warning-contrast: #ffffff;
+  /* Info Role Colors (dark mode) */
+  --color-info-fill: #0b5e74;
+  --color-info-fill-hover: #1089a8;
+  --color-info-fill-active: #0d728c;
+  --color-info-text: #15acd6;
+  --color-info-text-hover: #15acd6;
+  --color-info-contrast: #ffffff;
+  /* Surface-Aware Status Text Tokens (dark mode) */
+  --surface-base-success-text: #10a210;
+  --surface-base-success-text-hover: #10a210;
+  --surface-subtle-success-text: #10a210;
+  --surface-subtle-success-text-hover: #10a210;
+  --surface-elevated-success-text: #10a210;
+  --surface-elevated-success-text-hover: #10a210;
+  --surface-sunken-success-text: #10a210;
+  --surface-sunken-success-text-hover: #10a210;
+  --surface-overlay-success-text: #10a210;
+  --surface-overlay-success-text-hover: #10a210;
+  --surface-inverse-success-text: #0b740b;
+  --surface-inverse-success-text-hover: #0b740b;
+  --surface-base-warning-text: #B38600;
+  --surface-base-warning-text-hover: #B38600;
+  --surface-subtle-warning-text: #B38600;
+  --surface-subtle-warning-text-hover: #B38600;
+  --surface-elevated-warning-text: #B38600;
+  --surface-elevated-warning-text-hover: #B38600;
+  --surface-sunken-warning-text: #B38600;
+  --surface-sunken-warning-text-hover: #B38600;
+  --surface-overlay-warning-text: #B38600;
+  --surface-overlay-warning-text-hover: #B38600;
+  --surface-inverse-warning-text: #806000;
+  --surface-inverse-warning-text-hover: #806000;
+  --surface-base-info-text: #15acd6;
+  --surface-base-info-text-hover: #15acd6;
+  --surface-subtle-info-text: #1087a7;
+  --surface-subtle-info-text-hover: #15acd6;
+  --surface-elevated-info-text: #1087a7;
+  --surface-elevated-info-text-hover: #15acd6;
+  --surface-sunken-info-text: #15acd6;
+  --surface-sunken-info-text-hover: #15acd6;
+  --surface-overlay-info-text: #15acd6;
+  --surface-overlay-info-text-hover: #15acd6;
+  --surface-inverse-info-text: #0b5e74;
+  --surface-inverse-info-text-hover: #0b5e74;
+  --surface-base-danger-text: #ef5d5d;
+  --surface-base-danger-text-hover: #ef5d5d;
+  --surface-subtle-danger-text: #ef5d5d;
+  --surface-subtle-danger-text-hover: #ef5d5d;
+  --surface-elevated-danger-text: #ea2e2e;
+  --surface-elevated-danger-text-hover: #ef5d5d;
+  --surface-sunken-danger-text: #ef5d5d;
+  --surface-sunken-danger-text-hover: #ef5d5d;
+  --surface-overlay-danger-text: #ef5d5d;
+  --surface-overlay-danger-text-hover: #ef5d5d;
+  --surface-inverse-danger-text: #ba1212;
+  --surface-inverse-danger-text-hover: #ba1212;
+  /* Semantic Callout Display Tokens (dark mode) */
+  --color-success-display-bg: color-mix(in oklab, var(--color-success-400) 12%, var(--color-surface-base));
+  --color-success-display-border: var(--color-success-400);
+  --color-success-display-text: var(--color-success-100);
+  --color-info-display-bg: color-mix(in oklab, var(--color-info-400) 12%, var(--color-surface-base));
+  --color-info-display-border: var(--color-info-400);
+  --color-info-display-text: var(--color-info-100);
+  --color-warning-display-bg: color-mix(in oklab, var(--color-warning-400) 12%, var(--color-surface-base));
+  --color-warning-display-border: var(--color-warning-400);
+  --color-warning-display-text: var(--color-warning-100);
+  --color-danger-display-bg: color-mix(in oklab, var(--color-danger-400) 12%, var(--color-surface-base));
+  --color-danger-display-border: var(--color-danger-400);
+  --color-danger-display-text: var(--color-danger-100);
   /* Backdrop tokens - dark mode */
   --backdrop-bg: linear-gradient(
       135deg,
@@ -694,28 +1057,28 @@ html[data-theme="dark"] {
   /* Mesh Gradient Backgrounds (Dark Mode) */
   --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, #07cbed 20%, transparent) 0px, transparent 50%),
     radial-gradient(at 97% 21%, color-mix(in oklab, #999ea5 16%, transparent) 0px, transparent 50%),
-    radial-gradient(at 52% 99%, color-mix(in oklab, #ce2d5b 13%, transparent) 0px, transparent 50%),
+    radial-gradient(at 52% 99%, color-mix(in oklab, #e85882 13%, transparent) 0px, transparent 50%),
     radial-gradient(at 10% 29%, color-mix(in oklab, #07cbed 10%, transparent) 0px, transparent 50%);
   
   --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, #999ea5 18%, transparent) 0px, transparent 50%),
     radial-gradient(at 80% 0%, color-mix(in oklab, #07cbed 14%, transparent) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, color-mix(in oklab, #ce2d5b 12%, transparent) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, color-mix(in oklab, #e85882 12%, transparent) 0px, transparent 50%),
     radial-gradient(at 80% 100%, color-mix(in oklab, #999ea5 10%, transparent) 0px, transparent 50%);
   
-  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #ce2d5b 15%, transparent) 0px, transparent 50%),
+  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #e85882 15%, transparent) 0px, transparent 50%),
     radial-gradient(at 85% 30%, color-mix(in oklab, #07cbed 17%, transparent) 0px, transparent 50%),
     radial-gradient(at 50% 80%, color-mix(in oklab, #999ea5 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 90%, color-mix(in oklab, #ce2d5b 11%, transparent) 0px, transparent 50%);
+    radial-gradient(at 90% 90%, color-mix(in oklab, #e85882 11%, transparent) 0px, transparent 50%);
   
   --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, #07cbed 14%, transparent) 0px, transparent 50%),
     radial-gradient(at 20% 80%, color-mix(in oklab, #999ea5 16%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 60%, color-mix(in oklab, #ce2d5b 12%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 60%, color-mix(in oklab, #e85882 12%, transparent) 0px, transparent 50%),
     radial-gradient(at 30% 40%, color-mix(in oklab, #07cbed 11%, transparent) 0px, transparent 50%);
   
   --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, #07cbed 17%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 10%, color-mix(in oklab, #ce2d5b 14%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 10%, color-mix(in oklab, #e85882 14%, transparent) 0px, transparent 50%),
     radial-gradient(at 90% 10%, color-mix(in oklab, #999ea5 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 90%, color-mix(in oklab, #ce2d5b 10%, transparent) 0px, transparent 50%);
+    radial-gradient(at 50% 90%, color-mix(in oklab, #e85882 10%, transparent) 0px, transparent 50%);
     }
 
 @layer primitives {
@@ -759,13 +1122,27 @@ html[data-theme="dark"] {
     /* scrollbar-gutter: stable; */
   }
 
+  /* Disabled primitive (low specificity): usable on any element via [disabled] or aria-disabled. */
+  :where([disabled], [aria-disabled="true"]) {
+    opacity: var(--state-disabled-opacity, 0.7);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Also dim/disable labels that contain disabled controls. */
+  :where(label:has(:disabled), label:has([disabled])) {
+    opacity: var(--state-disabled-opacity, 0.7);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
   /* Button primitives */
   :where(button) {
     all: unset;
     box-sizing: border-box;
     font: inherit;
     color: var(--color-primary-contrast, white);
-    background: var(--color-primary-600);
+    background: var(--color-primary-fill);
     padding: var(--spacing-2) var(--spacing-4);
     border: 0;
     border-radius: var(--radius-md);
@@ -784,11 +1161,11 @@ html[data-theme="dark"] {
 
   :where(button):hover:not(:disabled) {
     opacity: 0.9;
-    background-color: var(--color-primary-700);
+    background-color: var(--color-primary-fill-hover);
   }
 
   :where(button):focus-visible {
-    outline: 2px solid var(--color-primary-500);
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
     outline-offset: 2px;
   }
 
@@ -821,8 +1198,8 @@ html[data-theme="dark"] {
   :where(select):focus-visible,
   :where(textarea):focus-visible {
     outline: none;
-    border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500) 30%, transparent);
+    border-color: var(--color-focus-ring, var(--color-primary-500));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
   }
 
   :where(input):disabled,
@@ -849,20 +1226,30 @@ html[data-theme="dark"] {
 
   /* Link primitives */
   :where(a) {
-    color: var(--color-primary-text, var(--color-primary-600));
+    color: var(--color-link, var(--color-primary-text, var(--color-primary-600)));
     text-decoration: underline;
     text-underline-offset: 0.2em;
-    transition: opacity var(--transition-fast);
+    transition: color var(--transition-fast), opacity var(--transition-fast);
   }
 
   :where(a):hover {
-    opacity: 0.8;
+    color: var(--color-link-hover, var(--color-link, var(--color-primary-text, var(--color-primary-600))));
+    opacity: 0.9;
+  }
+
+  :where(a):visited {
+    color: var(--color-link-visited, var(--color-link, var(--color-primary-text, var(--color-primary-600))));
   }
 
   :where(a):focus-visible {
-    outline: 2px solid var(--color-primary-500);
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
     outline-offset: 2px;
     border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background: var(--color-selection-bg, var(--color-primary-text, var(--color-primary-600)));
+    color: var(--color-selection-text, var(--color-primary-contrast, #ffffff));
   }
 
   /* Form primitives */
@@ -922,23 +1309,23 @@ html[data-theme="dark"] {
     }
 
     &:has(input[type="checkbox"]:checked)::before {
-      background: var(--color-primary-600);
-      border-color: var(--color-primary-600);
+      background: var(--color-primary-fill);
+      border-color: var(--color-primary-fill);
     }
 
     &:has(input[type="checkbox"]:focus)::before {
-      outline: 2px solid var(--color-primary-500);
+      outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
       outline-offset: 2px;
     }
 
     &:has(input[type="checkbox"]:not(:disabled)):hover::before {
-      border-color: var(--color-primary-600);
+      border-color: var(--color-primary-fill);
       background: var(--color-surface-subtle);
     }
 
     &:has(input[type="checkbox"]:checked:not(:disabled)):hover::before {
-      background: var(--color-primary-700);
-      border-color: var(--color-primary-700);
+      background: var(--color-primary-fill-hover);
+      border-color: var(--color-primary-fill-hover);
     }
 
     &:has(input[type="checkbox"]:disabled) {
@@ -1073,7 +1460,7 @@ html[data-theme="dark"] {
 :where(blockquote) {
   margin: 0 0 var(--spacing-4) 0;
   padding: var(--spacing-6) var(--spacing-8);
-  border-left: calc(var(--border-width-thick) + var(--border-width-thin)) solid var(--color-primary-500);
+  border-left: calc(var(--border-width-thick) + var(--border-width-thin)) solid var(--color-link);
   background-color: var(--color-surface-elevated);
   border-radius: var(--radius-none);
   font-size: var(--font-size-lg);
@@ -1089,7 +1476,7 @@ html[data-theme="dark"] {
     margin-top: var(--spacing-4);
     font-size: var(--font-size-base);
     font-style: normal;
-    color: var(--color-primary-500);
+    color: var(--color-link);
   }
 }
 
@@ -1172,8 +1559,8 @@ html[data-theme="dark"] {
 }
 
 :where(mark) {
-  background-color: var(--color-warning-200);
-  color: var(--color-warning-900);
+  background-color: var(--color-warning-display-bg);
+  color: var(--color-warning-display-text);
   padding: 0 var(--spacing-1);
   border-radius: var(--radius-sm);
 }
@@ -1293,7 +1680,7 @@ fieldset {
       margin-bottom: 0;
       
       &:hover {
-        color: var(--color-primary-700);
+        color: var(--color-link-hover, var(--color-primary-text-hover));
       }
     }
 
@@ -1312,21 +1699,21 @@ fieldset {
       margin: 0;
       cursor: pointer;
       flex-shrink: 0;
-      accent-color: var(--color-primary-600);
+      accent-color: var(--color-primary-fill);
 
       &:focus-visible {
         outline: none;
 
         box-shadow:
-          0 0 0 2px var(--color-primary-500),
+          0 0 0 2px var(--color-focus-ring, var(--color-primary-500)),
           0 0 0 4px color-mix(in srgb,
-            var(--color-primary-500) 40%,
+            var(--color-focus-ring, var(--color-primary-500)) 40%,
             transparent
           );
       }
 
       &:checked {
-        background-color: var(--color-primary-600);
+        background-color: var(--color-primary-fill);
       }
       
     }
@@ -1404,7 +1791,7 @@ input, textarea, select {
   -webkit-appearance: none;
   
   &:focus {
-    border-color: var(--color-primary-500);
+    border-color: var(--color-focus-ring, var(--color-primary-500));
     background-color: var(--color-surface-base);
   }
   
@@ -1417,10 +1804,10 @@ input, textarea, select {
   }
   
   &:invalid {
-    border-color: var(--color-danger-500);
+    border-color: var(--color-danger-fill);
     
     &:focus {
-      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-danger-500) 30%, transparent);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-danger-fill) 30%, transparent);
     }
   }
 }
@@ -1455,11 +1842,11 @@ input[type="range"] {
     width: var(--range-thumb-size, 28px);
     height: var(--range-thumb-size, 28px);
     margin-top: calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2);
-    background: color-mix(in srgb, var(--color-primary-500) 15%, var(--color-surface-base));
+    background: color-mix(in srgb, var(--color-primary-fill) 15%, var(--color-surface-base));
     border-radius: 50%;
     box-shadow: var(--shadow-sm);
     cursor: grab;
-    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
+    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-fill) 30%, var(--color-border));
   }
 
   /* Mozilla track */
@@ -1473,10 +1860,10 @@ input[type="range"] {
   &::-moz-range-thumb {
     width: var(--range-thumb-size, 28px);
     height: var(--range-thumb-size, 28px);
-    background: color-mix(in srgb, var(--color-primary-500) 15%, var(--color-surface-base));
+    background: color-mix(in srgb, var(--color-primary-fill) 15%, var(--color-surface-base));
     border-radius: 50%;
     box-shadow: var(--shadow-sm);
-    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
+    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-fill) 30%, var(--color-border));
     transform: translateY(calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2));
   }
 
@@ -1484,39 +1871,39 @@ input[type="range"] {
   &:hover::-webkit-slider-thumb,
   &:focus-visible::-webkit-slider-thumb {
     cursor: grabbing;
-    background: var(--color-primary-500);
+    background: var(--color-primary-fill);
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    border-color: var(--color-primary-600);
+    border-color: var(--color-primary-fill-hover);
   }
 
   /* Active state for WebKit */
   &:active::-webkit-slider-thumb {
-    background: var(--color-primary-600);
+    background: var(--color-primary-fill-active);
   }
 
   /* Hover and focus states for Mozilla */
   &:hover::-moz-range-thumb,
   &:focus-visible::-moz-range-thumb {
-    background: var(--color-primary-500);
+    background: var(--color-primary-fill);
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    border-color: var(--color-primary-600);
+    border-color: var(--color-primary-fill-hover);
     cursor: grabbing;
   }
 
   /* Active state for Mozilla */
   &:active::-moz-range-thumb {
-    background: var(--color-primary-600);
+    background: var(--color-primary-fill-active);
   }
 }
 
 /* Focus style for container to match input focus */
 .range-container:focus-within {
-  border-color: var(--color-primary-500);  
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500) 30%, transparent);
+  border-color: var(--color-focus-ring, var(--color-primary-500));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
 }
 
 input[type="range"]:active::-moz-range-thumb {
-  background: var(--color-primary-600);
+  background: var(--color-primary-fill-active);
 }
 
 input[type="color"] {
@@ -1590,27 +1977,27 @@ input[type="color"] {
   
   &:hover {
     background-color: var(--color-surface-subtle);
-    border-color: var(--color-primary-500);
+    border-color: var(--color-primary-fill);
   }
 
   &:has(input[type="checkbox"]:checked),
   input[type="checkbox"]:checked + label:not(fieldset label):not(label[data-toggle]) {
-    background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
-    color: var(--color-primary-700);
-    border-color: var(--color-primary-500);
+    background-color: color-mix(in oklab, var(--color-primary-fill) 8%, transparent);
+    color: var(--color-primary-text);
+    border-color: var(--color-primary-fill);
     border-width: var(--border-width-medium);
     font-weight: var(--font-weight-semibold);
     
     &:hover {
-      background-color: color-mix(in oklab, var(--color-primary-500) 15%, transparent);
-      border-color: var(--color-primary-600);
+      background-color: color-mix(in oklab, var(--color-primary-fill) 15%, transparent);
+      border-color: var(--color-primary-fill);
     }
   }
 
   &:has(input[type="checkbox"]:focus),
   input[type="checkbox"]:focus + label:not(fieldset label):not(label[data-toggle]) {
     outline: none;
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
   }
 
   &:has(input[type="checkbox"]:disabled),
@@ -1642,6 +2029,7 @@ input[type="radio"]:not(fieldset input[type="radio"]) {
   opacity: 1;
   appearance: auto;
   -webkit-appearance: auto;
+  accent-color: var(--color-primary-fill);
 
   &:disabled {
     cursor: not-allowed;
@@ -1694,29 +2082,25 @@ fieldset[role="group"].buttons {
     
     &:hover {
       background-color: var(--color-surface-subtle);
-      border-color: var(--color-primary-500);
+      border-color: var(--color-primary-fill);
       color: var(--color-text-primary);
     }
 
-    &:has([disabled]) {
-      pointer-events: none;
-    }
-
     &:has(input:is([type="radio"], [type="checkbox"]):checked) {
-      background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
-      border-color: var(--color-primary-500);
+      background-color: color-mix(in oklab, var(--color-primary-fill) 8%, transparent);
+      border-color: var(--color-primary-fill);
       border-width: var(--border-width-medium);
       font-weight: var(--font-weight-semibold);
       
       &:hover {
-        background-color: color-mix(in oklab, var(--color-primary-500) 15%, transparent);
-        border-color: var(--color-primary-600);
+        background-color: color-mix(in oklab, var(--color-primary-fill) 15%, transparent);
+        border-color: var(--color-primary-fill-hover);
       }
     }
 
     &:has(input:is([type="radio"], [type="checkbox"]):focus) {
       outline: none;
-      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
     }
 
     &:has(input:is([type="radio"], [type="checkbox"]):disabled) {
@@ -1800,7 +2184,7 @@ label[data-toggle] {
   &:has(input[type="checkbox"]:checked) {
     &.with-icons .toggle-knob::before {
       content: "✓";
-      color: var(--color-primary-600);
+      color: var(--color-primary-contrast, white);
     }
 
     .toggle-switch {
@@ -1814,7 +2198,7 @@ label[data-toggle] {
 
   &:has(input[type="checkbox"]:focus) .toggle-switch,
   &:focus-visible .toggle-switch {
-    outline: 2px solid var(--color-primary-500);
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
     outline-offset: 2px;
   }
 
@@ -1932,8 +2316,8 @@ label[data-color] {
   }
 
   &:focus-within .color-control {
-    border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+    border-color: var(--color-focus-ring, var(--color-primary-500));
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
   }
 
   &:has(input[type="color"]:disabled) .color-control {
@@ -1968,18 +2352,23 @@ select {
 
 /* Button styling */
 button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
+  --btn-pad-y: max(calc(var(--spacing-1) * 1), var(--spacing-2));
+  --btn-target-h: max(30px, calc(var(--font-size-base) + (var(--btn-pad-y) * 2) + (var(--border-width-medium) * 2)));
   display: inline-flex;
   gap: var(--spacing-1);
   align-items: center;
   justify-content: center;
-  min-height: 30px;
-  padding: max(calc(var(--spacing-1) * 1), var(--spacing-2)) var(--spacing-6);
+  min-height: var(--btn-target-h);
+  height: var(--btn-target-h);
+  padding: var(--btn-pad-y) var(--spacing-6);
   border: var(--border-width-medium) solid transparent;
   border-radius: var(--radius-md);
+  box-sizing: border-box;
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   line-height: 1;
+  white-space: nowrap;
   cursor: pointer;
   transition: all var(--transition-fast);
   text-decoration: none;
@@ -1996,7 +2385,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
   }
   
   &:disabled {
@@ -2014,19 +2403,19 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   border-color: var(--color-primary-fill);
   
   &:hover {
-    background-color: color-mix(in oklab, var(--color-primary-fill) 90%, black 10%);
-    border-color: color-mix(in oklab, var(--color-primary-fill) 90%, black 10%);
+    background-color: var(--color-primary-fill-hover);
+    border-color: var(--color-primary-fill-hover);
     color: white;
   }
 
   &:active {
-    background-color: color-mix(in oklab, var(--color-primary-fill) 80%, black 20%);
-    border-color: color-mix(in oklab, var(--color-primary-fill) 80%, black 20%);
+    background-color: var(--color-primary-fill-active);
+    border-color: var(--color-primary-fill-active);
     color: white;
   }
   
   &:focus {
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
   }
   
   &:disabled {
@@ -2048,13 +2437,13 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 
 .btn-outline {
   background-color: transparent;
-  color: var(--color-primary-500);
-  border-color: var(--color-primary-500);
+  color: var(--color-link);
+  border-color: var(--color-link);
   
   &:hover {
-    background-color: var(--color-primary-500);
+    background-color: var(--color-primary-fill);
     color: var(--color-primary-contrast, #ffffff);
-    border-color: var(--color-primary-500);
+    border-color: var(--color-primary-fill);
 
     pds-icon {
       color: var(--color-primary-contrast, #ffffff);
@@ -2062,8 +2451,8 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   }
 
   &:active {
-    background-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
-    border-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
+    background-color: var(--color-primary-fill-active);
+    border-color: var(--color-primary-fill-active);
     color: var(--color-primary-contrast, #ffffff);
 
     pds-icon {
@@ -2079,31 +2468,31 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .btn-danger {
-  background-color: var(--color-danger-600);
+  background-color: var(--color-danger-fill);
   color: white;
-  border-color: var(--color-danger-600);
+  border-color: var(--color-danger-fill);
 
   &:hover {
-    background-color: color-mix(in oklab, var(--color-danger-600) 90%, black 10%);
-    border-color: color-mix(in oklab, var(--color-danger-600) 90%, black 10%);
+    background-color: var(--color-danger-fill-hover);
+    border-color: var(--color-danger-fill-hover);
     color: white;
   }
 
   &:active {
-    background-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
-    border-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
+    background-color: var(--color-danger-fill-active);
+    border-color: var(--color-danger-fill-active);
     color: white;
   }
 }
 
 .btn-danger.btn-outline {
   background-color: transparent;
-  color: var(--color-danger-600);
-  border-color: var(--color-danger-600);
+  color: var(--color-danger-fill);
+  border-color: var(--color-danger-fill);
 
   &:hover {
-    background-color: var(--color-danger-600);
-    border-color: var(--color-danger-600);
+    background-color: var(--color-danger-fill);
+    border-color: var(--color-danger-fill);
     color: white;
 
     pds-icon {
@@ -2112,8 +2501,8 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   }
 
   &:active {
-    background-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
-    border-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
+    background-color: var(--color-danger-fill-active);
+    border-color: var(--color-danger-fill-active);
     color: white;
 
     pds-icon {
@@ -2129,22 +2518,31 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .btn-sm {
-  padding: calc(max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 0.85) calc(var(--spacing-6) * 0.8);
+  --btn-pad-y: calc(max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 0.85);
+  --btn-target-h: max(calc(30px * 0.85), calc(var(--font-size-sm) + (var(--btn-pad-y) * 2) + (var(--border-width-medium) * 2)));
+  padding: var(--btn-pad-y) calc(var(--spacing-6) * 0.8);
   font-size: var(--font-size-sm);
-  min-height: calc(30px * 0.85);
+  min-height: var(--btn-target-h);
+  height: var(--btn-target-h);
 }
 
 .btn-xs {
-  padding: calc(max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 0.7) calc(var(--spacing-6) * 0.65);
+  --btn-pad-y: calc(max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 0.7);
+  --btn-target-h: max(calc(30px * 0.7), calc(var(--font-size-xs) + (var(--btn-pad-y) * 2) + (var(--border-width-medium) * 2)));
+  padding: var(--btn-pad-y) calc(var(--spacing-6) * 0.65);
   font-size: var(--font-size-xs);
-  min-height: calc(30px * 0.7);
+  min-height: var(--btn-target-h);
+  height: var(--btn-target-h);
 }
 
 
 .btn-lg {
-  padding: calc(max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 1.15) calc(var(--spacing-6) * 1.35);
+  --btn-pad-y: calc(max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 1.15);
+  --btn-target-h: max(calc(30px * 1.15), calc(var(--font-size-lg) + (var(--btn-pad-y) * 2) + (var(--border-width-medium) * 2)));
+  padding: var(--btn-pad-y) calc(var(--spacing-6) * 1.35);
   font-size: var(--font-size-lg);
-  min-height: calc(30px * 1.15);
+  min-height: var(--btn-target-h);
+  height: var(--btn-target-h);
 }
 
 /* Working/loading state for buttons */
@@ -2165,19 +2563,64 @@ a.btn-working {
 
 /* Skeleton loading animation */
 .skeleton {
+  --skeleton-base: color-mix(in oklab, var(--color-text-primary) 8%, transparent);
+  --skeleton-highlight: color-mix(in oklab, var(--color-text-primary) 16%, transparent);
+  --skeleton-child-offset: 0ms;
+  --skeleton-type-offset: 0ms;
+  --skeleton-parent-offset: 0ms;
+  --skeleton-delay: calc(
+    220ms +
+    var(--skeleton-child-offset) +
+    var(--skeleton-type-offset) +
+    var(--skeleton-parent-offset)
+  );
   background: linear-gradient(
     90deg,
-    color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%) 0%,
-    color-mix(in oklab, var(--color-surface-base) 85%, var(--color-text-primary) 15%) 50%,
-    color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%) 100%
+    var(--skeleton-base) 0%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 100%
   );
   background-size: 200% 100%;
-  animation: pds-skeleton 1.5s ease-in-out infinite;
+  animation:
+    pds-skeleton-fade-in 220ms ease-out both,
+    pds-skeleton 1.5s ease-in-out infinite var(--skeleton-delay);
   border-radius: var(--radius-sm);
   
   &::before {
     content: '\\00a0';
   }
+}
+
+/* Deterministic stagger so large skeleton groups do not animate in lockstep. */
+:where(.skeleton:nth-child(11n + 1)) { --skeleton-child-offset: 0ms; }
+:where(.skeleton:nth-child(11n + 2)) { --skeleton-child-offset: 17ms; }
+:where(.skeleton:nth-child(11n + 3)) { --skeleton-child-offset: 34ms; }
+:where(.skeleton:nth-child(11n + 4)) { --skeleton-child-offset: 51ms; }
+:where(.skeleton:nth-child(11n + 5)) { --skeleton-child-offset: 68ms; }
+:where(.skeleton:nth-child(11n + 6)) { --skeleton-child-offset: 85ms; }
+:where(.skeleton:nth-child(11n + 7)) { --skeleton-child-offset: 102ms; }
+:where(.skeleton:nth-child(11n + 8)) { --skeleton-child-offset: 119ms; }
+:where(.skeleton:nth-child(11n + 9)) { --skeleton-child-offset: 136ms; }
+:where(.skeleton:nth-child(11n + 10)) { --skeleton-child-offset: 153ms; }
+:where(.skeleton:nth-child(11n + 11)) { --skeleton-child-offset: 170ms; }
+
+:where(.skeleton:nth-of-type(7n + 1)) { --skeleton-type-offset: 0ms; }
+:where(.skeleton:nth-of-type(7n + 2)) { --skeleton-type-offset: 11ms; }
+:where(.skeleton:nth-of-type(7n + 3)) { --skeleton-type-offset: 22ms; }
+:where(.skeleton:nth-of-type(7n + 4)) { --skeleton-type-offset: 33ms; }
+:where(.skeleton:nth-of-type(7n + 5)) { --skeleton-type-offset: 44ms; }
+:where(.skeleton:nth-of-type(7n + 6)) { --skeleton-type-offset: 55ms; }
+:where(.skeleton:nth-of-type(7n + 7)) { --skeleton-type-offset: 66ms; }
+
+:where(*:nth-child(5n + 1) > .skeleton) { --skeleton-parent-offset: 0ms; }
+:where(*:nth-child(5n + 2) > .skeleton) { --skeleton-parent-offset: 9ms; }
+:where(*:nth-child(5n + 3) > .skeleton) { --skeleton-parent-offset: 18ms; }
+:where(*:nth-child(5n + 4) > .skeleton) { --skeleton-parent-offset: 27ms; }
+:where(*:nth-child(5n + 5) > .skeleton) { --skeleton-parent-offset: 36ms; }
+
+@keyframes pds-skeleton-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes pds-skeleton {
@@ -2392,25 +2835,25 @@ a.btn-working {
 }
 /* Variants: success/info/warning/danger mapped to tokens */
 .callout-success {
-  background-color: var(--color-success-50);
-  border-color: var(--color-success-600);
-  color: var(--color-success-900);
+  background-color: var(--color-success-display-bg);
+  border-color: var(--color-success-display-border);
+  color: var(--color-success-display-text);
 }
 .callout-info {
-  background-color: var(--color-info-50);
-  border-color: var(--color-info-600);
-  color: var(--color-info-900);
+  background-color: var(--color-info-display-bg);
+  border-color: var(--color-info-display-border);
+  color: var(--color-info-display-text);
 }
 .callout-warning {
-  background-color: var(--color-warning-50);
-  border-color: var(--color-warning-600);
-  color: var(--color-warning-900);
+  background-color: var(--color-warning-display-bg);
+  border-color: var(--color-warning-display-border);
+  color: var(--color-warning-display-text);
 }
 .callout-danger,
 .callout-error {
-  background-color: var(--color-danger-50);
-  border-color: var(--color-danger-600);
-  color: var(--color-danger-900);
+  background-color: var(--color-danger-display-bg);
+  border-color: var(--color-danger-display-border);
+  color: var(--color-danger-display-text);
 }
 
 .callout-title {
@@ -2593,12 +3036,11 @@ dialog {
 
 /*
  * Overlay safety valve:
- * Some controls (e.g. pds-daterange panel, data-dropdown menus) need to escape
+ * Some controls (e.g. pds-daterange panel) need to escape
  * the dialog bounds. Scope overflow visibility to custom dialogs that contain
  * those controls instead of enabling it for all dialogs.
  */
-dialog.dialog-custom:has(pds-daterange),
-dialog.dialog-custom:has([data-dropdown]) {
+dialog.dialog-custom:has(pds-daterange) {
   overflow: visible;
 }
 
@@ -2666,13 +3108,6 @@ dialog {
     padding: var(--spacing-3) var(--spacing-6);
     overflow-y: auto;
     overflow-x: visible;
-  }
-
-  /* Allow overlay menus (e.g. data-dropdown) to escape dialog-body clipping while open */
-  article:has([data-dropdown] > :last-child[aria-hidden="false"]),
-  form > article:has([data-dropdown] > :last-child[aria-hidden="false"]),
-  .dialog-body:has([data-dropdown] > :last-child[aria-hidden="false"]) {
-    overflow: visible;
   }
 
   article:has(pds-daterange),
@@ -2762,7 +3197,8 @@ dialog.dialog-full { width: calc(100vw - var(--spacing-8)); max-width: calc(100v
   dialog, dialog::backdrop { transition-duration: 0.01s !important; }
 }
 
-html:has(dialog[open]:modal) {
+html:has(dialog[open]:modal),
+html:has(pds-drawer[open]) {
  overflow: hidden;
  scrollbar-gutter: stable;
 }
@@ -2830,7 +3266,7 @@ html:has(dialog[open]:modal) {
   }
 
   &:focus-visible {
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
   }
 
   /* Chevron indicator */
@@ -2873,12 +3309,12 @@ html:has(dialog[open]:modal) {
 /* Basic dropdown host */
 nav[data-dropdown] {
   position: relative;
-  display: inline-block;
+  display: flex;
   padding: 0;
 
   & > :last-child {
     position: absolute;
-    padding: var(--spacing-2);
+    padding: 0 var(--spacing-2);
     margin: 0;
     background: var(--color-surface-overlay);
     border: var(--border-width-thin) solid var(--color-border);
@@ -2911,7 +3347,13 @@ nav[data-dropdown] {
     transition-behavior: allow-discrete;
   }
 
-  & > :last-child[aria-hidden="false"] {
+  & > :last-child[popover] {
+    inset: auto;
+    margin: 0;
+  }
+
+  & > :last-child[aria-hidden="false"],
+  & > :last-child:popover-open {
     display: inline-block;
     opacity: 1;
     visibility: visible;
@@ -2927,7 +3369,7 @@ nav[data-dropdown] {
   }
 
   menu li {
-    padding: var(--spacing-1) 0;
+    padding: var(--spacing-2) 0;
 
     & + li {
       border-top: var(--border-width-thin) solid var(--color-border);
@@ -2960,7 +3402,7 @@ nav[data-dropdown] {
     gap: var(--spacing-2);
 
     &.danger {
-      color: var(--color-danger-600);
+      color: var(--color-danger-text);
     }
   }
 
@@ -3013,7 +3455,8 @@ nav[data-dropdown] {
 }
 
 @starting-style {
-  nav[data-dropdown] > :last-child[aria-hidden="false"] {
+  nav[data-dropdown] > :last-child[aria-hidden="false"],
+  nav[data-dropdown] > :last-child:popover-open {
     opacity: 0;
   }
 }
@@ -3067,7 +3510,7 @@ pds-tabstrip {
       }
 
       &:focus-visible {
-        outline: var(--focus-ring-width, 2px) solid var(--color-primary-500);
+        outline: var(--focus-ring-width, 2px) solid var(--color-focus-ring, var(--color-primary-500));
         outline-offset: -2px;
         border-radius: var(--radius-sm);
         z-index: 1;
@@ -3075,14 +3518,14 @@ pds-tabstrip {
 
       /* Active tab */
       &[aria-current="page"] {
-        color: var(--color-primary-600);
+        color: var(--color-link);
         font-weight: var(--font-weight-semibold);
-        border-bottom-color: var(--color-primary-600);
+        border-bottom-color: var(--color-link);
 
         &:hover {
-          color: var(--color-primary-700);
-          border-bottom-color: var(--color-primary-700);
-          background-color: var(--color-primary-50);
+          color: var(--color-link-hover);
+          border-bottom-color: var(--color-link-hover);
+          background-color: color-mix(in oklab, var(--color-link) 10%, transparent);
         }
       }
     }
@@ -3269,12 +3712,8 @@ tbody {
 
 
 
-/* Callout dark mode adjustments */
+/* Dark mode component adjustments */
 html[data-theme="dark"] {
-  .callout-success { background-color: var(--color-success-50); border-color: var(--color-success-500); color: var(--color-success-900); }
-  .callout-info { background-color: var(--color-info-50); border-color: var(--color-info-500); color: var(--color-info-900); }
-  .callout-warning { background-color: var(--color-warning-50); border-color: var(--color-warning-500); color: var(--color-warning-900); }
-  .callout-danger, .callout-error { background-color: var(--color-danger-50); border-color: var(--color-danger-500); color: var(--color-danger-900); }
   img, video { opacity: 0.8; transition: opacity var(--transition-normal); }
   img:hover, video:hover { opacity: 1; }
 }
@@ -3305,13 +3744,13 @@ pds-icon {
 
 
 /* Icon color utilities */
-.icon-primary, pds-icon.primary { color: var(--color-primary-600); }
-.icon-secondary, pds-icon.secondary { color: var(--color-secondary-600); }
-.icon-accent, pds-icon.accent { color: var(--color-accent-600); }
-.icon-success, pds-icon.success { color: var(--color-success-600); }
-.icon-warning, pds-icon.warning { color: var(--color-warning-600); }
-.icon-danger, pds-icon.danger { color: var(--color-danger-600); }
-.icon-info, pds-icon.info { color: var(--color-info-600); }
+.icon-primary, pds-icon.primary { color: var(--color-primary-text); }
+.icon-secondary, pds-icon.secondary { color: var(--color-text-secondary); }
+.icon-accent, pds-icon.accent { color: var(--color-accent-text); }
+.icon-success, pds-icon.success { color: var(--color-success-text); }
+.icon-warning, pds-icon.warning { color: var(--color-warning-text); }
+.icon-danger, pds-icon.danger { color: var(--color-danger-text); }
+.icon-info, pds-icon.info { color: var(--color-info-text); }
 .icon-muted, pds-icon.muted { color: var(--color-text-muted); }
 .icon-subtle, pds-icon.subtle { color: var(--color-text-subtle); }
 
@@ -3741,13 +4180,13 @@ a.icon-only {
   
   /* btn-primary stays vibrant in any context */
   & .btn-primary {
-    background-color: var(--color-primary-500);
-    border-color: var(--color-primary-500);
+    background-color: var(--color-primary-fill);
+    border-color: var(--color-primary-fill);
     color: var(--color-primary-contrast, #ffffff);
     
     &:hover {
-      background-color: var(--color-primary-400);
-      border-color: var(--color-primary-400);
+      background-color: var(--color-primary-fill-hover);
+      border-color: var(--color-primary-fill-hover);
     }
   }
 }
@@ -3780,7 +4219,7 @@ html:not([data-theme="dark"]) .surface-inverse {
   }
   
   & a:not([class*="btn"]) {
-    color: var(--color-primary-300, #7dd3fc);
+    color: var(--color-link);
   }
 }
 
@@ -3812,7 +4251,7 @@ html[data-theme="dark"] .surface-inverse {
   }
   
   & a:not([class*="btn"]) {
-    color: var(--color-primary-600, #0284c7);
+    color: var(--color-link);
   }
 }
 
@@ -3908,9 +4347,9 @@ html[data-theme="dark"] .surface-inverse {
 }
 
 /* Touch device optimizations */
-@media (hover: none) and (pointer: coarse) {
+@media (pointer: coarse) {
   /* Touch devices - larger touch targets for interactive elements */
-  button, a, select, textarea,
+  select, textarea,
   input:not([type="radio"]):not([type="checkbox"]) {
     min-height: 44px;
     min-width: 44px;
@@ -3946,7 +4385,7 @@ html[data-theme="dark"] .surface-inverse {
   
   a {
     &:hover {
-      color: var(--color-primary-600);
+      color: var(--color-link-hover);
     }
   }
 }
@@ -4147,7 +4586,7 @@ export const stylesCSS = `@layer tokens {
   /* Semantic Text Colors */
   --color-text-primary: var(--color-gray-900);
   --color-text-secondary: var(--color-gray-600);
-  --color-text-muted: var(--color-gray-600);
+  --color-text-muted: var(--color-gray-500);
   --color-border: var(--color-gray-300);
   --color-input-bg: var(--color-surface-base);
   --color-input-disabled-bg: var(--color-gray-50);
@@ -4155,7 +4594,127 @@ export const stylesCSS = `@layer tokens {
   --color-code-bg: var(--color-gray-100);
   /* Interactive Colors - optimized for specific use cases */
   --color-primary-fill: #0b5e74; /* For button backgrounds with white text */
+  --color-primary-fill-hover: #0a5568;
+  --color-primary-fill-active: #094b5d;
   --color-primary-text: #0b5e74; /* For links and outline buttons on light surfaces */
+  --color-primary-text-hover: #0b5e74;
+  --color-primary-text-visited: #377989;
+  --color-primary-contrast: #ffffff;
+  --color-focus-ring: #0b5e74;
+  --color-selection-bg: #0b5e74;
+  --color-selection-text: #ffffff;
+  --color-link: var(--color-primary-text);
+  --color-link-hover: var(--color-primary-text-hover);
+  --color-link-visited: var(--color-primary-text-visited);
+  /* Accent Role Colors */
+  --color-accent-fill: #d61e53;
+  --color-accent-fill-hover: #c11b4b;
+  --color-accent-fill-active: #ab1842;
+  --color-accent-text: #aa1742;
+  --color-accent-text-hover: #aa1742;
+  /* Surface-Aware Accent Text Tokens */
+  --surface-base-accent-text: #aa1742;
+  --surface-base-accent-text-hover: #aa1742;
+  --surface-subtle-accent-text: #aa1742;
+  --surface-subtle-accent-text-hover: #aa1742;
+  --surface-elevated-accent-text: #aa1742;
+  --surface-elevated-accent-text-hover: #aa1742;
+  --surface-sunken-accent-text: #aa1742;
+  --surface-sunken-accent-text-hover: #aa1742;
+  --surface-overlay-accent-text: #aa1742;
+  --surface-overlay-accent-text-hover: #aa1742;
+  --surface-inverse-accent-text: #e54271;
+  --surface-inverse-accent-text-hover: #e85882;
+  /* Danger Role Colors */
+  --color-danger-fill: #ba1212;
+  --color-danger-fill-hover: #a71010;
+  --color-danger-fill-active: #950e0e;
+  --color-danger-text: #ba1212;
+  --color-danger-text-hover: #8b0e0e;
+  --color-danger-contrast: #ffffff;
+  /* Success Role Colors */
+  --color-success-fill: #0b740b;
+  --color-success-fill-hover: #0a680a;
+  --color-success-fill-active: #095d09;
+  --color-success-text: #0b740b;
+  --color-success-text-hover: #074607;
+  --color-success-contrast: #ffffff;
+  /* Warning Role Colors */
+  --color-warning-fill: #806000;
+  --color-warning-fill-hover: #735600;
+  --color-warning-fill-active: #664d00;
+  --color-warning-text: #806000;
+  --color-warning-text-hover: #664c00;
+  --color-warning-contrast: #ffffff;
+  /* Info Role Colors */
+  --color-info-fill: #0b5e74;
+  --color-info-fill-hover: #0a5568;
+  --color-info-fill-active: #094b5d;
+  --color-info-text: #0b5e74;
+  --color-info-text-hover: #0b5e74;
+  --color-info-contrast: #ffffff;
+  /* Surface-Aware Status Text Tokens */
+  --surface-base-success-text: #0b740b;
+  --surface-base-success-text-hover: #074607;
+  --surface-subtle-success-text: #0b740b;
+  --surface-subtle-success-text-hover: #074607;
+  --surface-elevated-success-text: #074607;
+  --surface-elevated-success-text-hover: #074607;
+  --surface-sunken-success-text: #074607;
+  --surface-sunken-success-text-hover: #074607;
+  --surface-overlay-success-text: #0b740b;
+  --surface-overlay-success-text-hover: #074607;
+  --surface-inverse-success-text: #10a210;
+  --surface-inverse-success-text-hover: #10a210;
+  --surface-base-warning-text: #806000;
+  --surface-base-warning-text-hover: #664c00;
+  --surface-subtle-warning-text: #664c00;
+  --surface-subtle-warning-text-hover: #664c00;
+  --surface-elevated-warning-text: #664c00;
+  --surface-elevated-warning-text-hover: #664c00;
+  --surface-sunken-warning-text: #664c00;
+  --surface-sunken-warning-text-hover: #664c00;
+  --surface-overlay-warning-text: #806000;
+  --surface-overlay-warning-text-hover: #664c00;
+  --surface-inverse-warning-text: #B38600;
+  --surface-inverse-warning-text-hover: #B38600;
+  --surface-base-info-text: #0b5e74;
+  --surface-base-info-text-hover: #0b5e74;
+  --surface-subtle-info-text: #0b5e74;
+  --surface-subtle-info-text-hover: #0b5e74;
+  --surface-elevated-info-text: #0b5e74;
+  --surface-elevated-info-text-hover: #0b5e74;
+  --surface-sunken-info-text: #0b5e74;
+  --surface-sunken-info-text-hover: #0b5e74;
+  --surface-overlay-info-text: #0b5e74;
+  --surface-overlay-info-text-hover: #0b5e74;
+  --surface-inverse-info-text: #15acd6;
+  --surface-inverse-info-text-hover: #15acd6;
+  --surface-base-danger-text: #ba1212;
+  --surface-base-danger-text-hover: #ba1212;
+  --surface-subtle-danger-text: #ba1212;
+  --surface-subtle-danger-text-hover: #ba1212;
+  --surface-elevated-danger-text: #ba1212;
+  --surface-elevated-danger-text-hover: #8b0e0e;
+  --surface-sunken-danger-text: #ba1212;
+  --surface-sunken-danger-text-hover: #8b0e0e;
+  --surface-overlay-danger-text: #ba1212;
+  --surface-overlay-danger-text-hover: #ba1212;
+  --surface-inverse-danger-text: #ef5d5d;
+  --surface-inverse-danger-text-hover: #ef5d5d;
+  /* Semantic Callout Display Tokens */
+  --color-success-display-bg: var(--color-success-50);
+  --color-success-display-border: var(--color-success-600);
+  --color-success-display-text: var(--color-success-900);
+  --color-info-display-bg: var(--color-info-50);
+  --color-info-display-border: var(--color-info-600);
+  --color-info-display-text: var(--color-info-900);
+  --color-warning-display-bg: var(--color-warning-50);
+  --color-warning-display-border: var(--color-warning-600);
+  --color-warning-display-text: var(--color-warning-900);
+  --color-danger-display-bg: var(--color-danger-50);
+  --color-danger-display-border: var(--color-danger-600);
+  --color-danger-display-text: var(--color-danger-900);
   /* Translucent Surface Tokens */
   --color-surface-translucent-25: color-mix(in oklab, var(--color-surface-subtle) 25%, transparent 75%);
   --color-surface-translucent-50: color-mix(in oklab, var(--color-surface-subtle) 50%, transparent 50%);
@@ -4342,16 +4901,16 @@ export const stylesCSS = `@layer tokens {
     --color-secondary-700: #595e65;
     --color-secondary-800: #41454a;
     --color-secondary-900: #292c2f;
-    --color-accent-50: #3a0e1b;
-    --color-accent-100: #5b162a;
-    --color-accent-200: #7c1e3a;
-    --color-accent-300: #9c2749;
-    --color-accent-400: #ce2d5b;
-    --color-accent-500: #d53b68;
-    --color-accent-600: #dc5f84;
-    --color-accent-700: #e4839f;
-    --color-accent-800: #f4c1d0;
-    --color-accent-900: #f6d6e0;
+    --color-accent-50: #fbeaef;
+    --color-accent-100: #f8d3de;
+    --color-accent-200: #f4b2c5;
+    --color-accent-300: #ee85a4;
+    --color-accent-400: #e85882;
+    --color-accent-500: #e54271;
+    --color-accent-600: #d61e53;
+    --color-accent-700: #aa1742;
+    --color-accent-800: #7d1130;
+    --color-accent-900: #500b1f;
     --color-gray-50: #fafafa;
     --color-gray-100: #f1f2f3;
     --color-gray-200: #dee0e2;
@@ -4362,46 +4921,46 @@ export const stylesCSS = `@layer tokens {
     --color-gray-700: #4c5766;
     --color-gray-800: #2b323b;
     --color-gray-900: #15191e;
-    --color-success-50: #072207;
-    --color-success-100: #0b330b;
-    --color-success-200: #115411;
-    --color-success-300: #187618;
-    --color-success-400: #1da61d;
-    --color-success-500: #20b820;
-    --color-success-600: #2ad92a;
-    --color-success-700: #4fe14f;
-    --color-success-800: #94ee94;
-    --color-success-900: #c1f4c1;
-    --color-info-50: #071c22;
-    --color-info-100: #0b2a33;
-    --color-info-200: #0e3844;
-    --color-info-300: #114654;
-    --color-info-400: #145e72;
-    --color-info-500: #176d84;
-    --color-info-600: #1e8baa;
-    --color-info-700: #24a9ce;
-    --color-info-800: #5ac7e5;
-    --color-info-900: #87d4e9;
-    --color-warning-50: #251c04;
-    --color-warning-100: #372b06;
-    --color-warning-200: #493908;
-    --color-warning-300: #5c480a;
-    --color-warning-400: #8d6c0b;
-    --color-warning-500: #a07c0d;
-    --color-warning-600: #c89a10;
-    --color-warning-700: #ecb718;
-    --color-warning-800: #f6d05d;
-    --color-warning-900: #f6dc8e;
-    --color-danger-50: #220707;
-    --color-danger-100: #440e0e;
-    --color-danger-200: #651515;
-    --color-danger-300: #871c1c;
-    --color-danger-400: #b82121;
-    --color-danger-500: #ca2424;
-    --color-danger-600: #dd3e3e;
-    --color-danger-700: #e26262;
-    --color-danger-800: #f2aaaa;
-    --color-danger-900: #f6d5d5;
+    --color-success-50: #d3f8d3;
+    --color-success-100: #a4f3a4;
+    --color-success-200: #73f273;
+    --color-success-300: #44ed44;
+    --color-success-400: #16e816;
+    --color-success-500: #14d114;
+    --color-success-600: #10a210;
+    --color-success-700: #0b740b;
+    --color-success-800: #074607;
+    --color-success-900: #042f04;
+    --color-info-50: #95dbee;
+    --color-info-100: #65ceeb;
+    --color-info-200: #32c3eb;
+    --color-info-300: #15acd6;
+    --color-info-400: #1087a7;
+    --color-info-500: #0e7490;
+    --color-info-600: #0b5e74;
+    --color-info-700: #094b5d;
+    --color-info-800: #073846;
+    --color-info-900: #05252e;
+    --color-warning-50: #fae39f;
+    --color-warning-100: #fbd76a;
+    --color-warning-200: #ffcc33;
+    --color-warning-300: #ffbf00;
+    --color-warning-400: #cc9900;
+    --color-warning-500: #B38600;
+    --color-warning-600: #806000;
+    --color-warning-700: #664c00;
+    --color-warning-800: #4d3900;
+    --color-warning-900: #332600;
+    --color-danger-50: #fbe9e9;
+    --color-danger-100: #f6bbbb;
+    --color-danger-200: #f38b8b;
+    --color-danger-300: #ef5d5d;
+    --color-danger-400: #ea2e2e;
+    --color-danger-500: #e81717;
+    --color-danger-600: #ba1212;
+    --color-danger-700: #8b0e0e;
+    --color-danger-800: #5d0909;
+    --color-danger-900: #2e0505;
     /* Smart Surface Tokens (dark mode, context-aware) */
     --surface-base-bg: #16171a;
     --surface-base-text: #ffffff;
@@ -4462,15 +5021,135 @@ export const stylesCSS = `@layer tokens {
 
     --color-text-primary: var(--color-gray-100);
     --color-text-secondary: var(--color-gray-300);
-    --color-text-muted: var(--color-gray-600);
+    --color-text-muted: var(--color-gray-500);
     --color-border: var(--color-gray-700);
     --color-input-bg: var(--color-gray-800);
     --color-input-disabled-bg: var(--color-gray-900);
     --color-input-disabled-text: var(--color-gray-600);
     --color-code-bg: var(--color-gray-800);
     /* Interactive Colors - optimized for specific use cases (dark mode) */
-    --color-primary-fill: #036171; /* For button backgrounds with white text */
-    --color-primary-text: #06b6d4; /* For links and outline buttons on dark surfaces */
+    --color-primary-fill: #036171;
+    --color-primary-fill-hover: #0592ab;
+    --color-primary-fill-active: #04788c;
+    --color-primary-text: #06b6d4;
+    --color-primary-text-hover: #06b6d4;
+    --color-primary-text-visited: #0996af;
+    --color-primary-contrast: #ffffff;
+    --color-focus-ring: #058ba2;
+    --color-selection-bg: #06b6d4;
+    --color-selection-text: #000000;
+    --color-link: var(--color-primary-text);
+    --color-link-hover: var(--color-primary-text-hover);
+    --color-link-visited: var(--color-primary-text-visited);
+    /* Accent Role Colors (dark mode) */
+    --color-accent-fill: #d61e53;
+    --color-accent-fill-hover: #e3396a;
+    --color-accent-fill-active: #e1265c;
+    --color-accent-text: #e54271;
+    --color-accent-text-hover: #ee85a4;
+    /* Surface-Aware Accent Text Tokens (dark mode) */
+    --surface-base-accent-text: #e54271;
+    --surface-base-accent-text-hover: #e85882;
+    --surface-subtle-accent-text: #e54271;
+    --surface-subtle-accent-text-hover: #e85882;
+    --surface-elevated-accent-text: #e54271;
+    --surface-elevated-accent-text-hover: #e85882;
+    --surface-sunken-accent-text: #e54271;
+    --surface-sunken-accent-text-hover: #e85882;
+    --surface-overlay-accent-text: #e85882;
+    --surface-overlay-accent-text-hover: #ee85a4;
+    --surface-inverse-accent-text: #d61e53;
+    --surface-inverse-accent-text-hover: #aa1742;
+    /* Danger Role Colors (dark mode) */
+    --color-danger-fill: #ba1212;
+    --color-danger-fill-hover: #e41616;
+    --color-danger-fill-active: #ce1414;
+    --color-danger-text: #ef5d5d;
+    --color-danger-text-hover: #f38b8b;
+    --color-danger-contrast: #ffffff;
+    /* Success Role Colors (dark mode) */
+    --color-success-fill: #0b740b;
+    --color-success-fill-hover: #10a810;
+    --color-success-fill-active: #0d8c0d;
+    --color-success-text: #10a210;
+    --color-success-text-hover: #14d114;
+    --color-success-contrast: #ffffff;
+    /* Warning Role Colors (dark mode) */
+    --color-warning-fill: #806000;
+    --color-warning-fill-hover: #b98b00;
+    --color-warning-fill-active: #9b7400;
+    --color-warning-text: #B38600;
+    --color-warning-text-hover: #cc9900;
+    --color-warning-contrast: #ffffff;
+    /* Info Role Colors (dark mode) */
+    --color-info-fill: #0b5e74;
+    --color-info-fill-hover: #1089a8;
+    --color-info-fill-active: #0d728c;
+    --color-info-text: #15acd6;
+    --color-info-text-hover: #15acd6;
+    --color-info-contrast: #ffffff;
+    /* Surface-Aware Status Text Tokens (dark mode) */
+    --surface-base-success-text: #10a210;
+    --surface-base-success-text-hover: #10a210;
+    --surface-subtle-success-text: #10a210;
+    --surface-subtle-success-text-hover: #10a210;
+    --surface-elevated-success-text: #10a210;
+    --surface-elevated-success-text-hover: #10a210;
+    --surface-sunken-success-text: #10a210;
+    --surface-sunken-success-text-hover: #10a210;
+    --surface-overlay-success-text: #10a210;
+    --surface-overlay-success-text-hover: #10a210;
+    --surface-inverse-success-text: #0b740b;
+    --surface-inverse-success-text-hover: #0b740b;
+    --surface-base-warning-text: #B38600;
+    --surface-base-warning-text-hover: #B38600;
+    --surface-subtle-warning-text: #B38600;
+    --surface-subtle-warning-text-hover: #B38600;
+    --surface-elevated-warning-text: #B38600;
+    --surface-elevated-warning-text-hover: #B38600;
+    --surface-sunken-warning-text: #B38600;
+    --surface-sunken-warning-text-hover: #B38600;
+    --surface-overlay-warning-text: #B38600;
+    --surface-overlay-warning-text-hover: #B38600;
+    --surface-inverse-warning-text: #806000;
+    --surface-inverse-warning-text-hover: #806000;
+    --surface-base-info-text: #15acd6;
+    --surface-base-info-text-hover: #15acd6;
+    --surface-subtle-info-text: #1087a7;
+    --surface-subtle-info-text-hover: #15acd6;
+    --surface-elevated-info-text: #1087a7;
+    --surface-elevated-info-text-hover: #15acd6;
+    --surface-sunken-info-text: #15acd6;
+    --surface-sunken-info-text-hover: #15acd6;
+    --surface-overlay-info-text: #15acd6;
+    --surface-overlay-info-text-hover: #15acd6;
+    --surface-inverse-info-text: #0b5e74;
+    --surface-inverse-info-text-hover: #0b5e74;
+    --surface-base-danger-text: #ef5d5d;
+    --surface-base-danger-text-hover: #ef5d5d;
+    --surface-subtle-danger-text: #ef5d5d;
+    --surface-subtle-danger-text-hover: #ef5d5d;
+    --surface-elevated-danger-text: #ea2e2e;
+    --surface-elevated-danger-text-hover: #ef5d5d;
+    --surface-sunken-danger-text: #ef5d5d;
+    --surface-sunken-danger-text-hover: #ef5d5d;
+    --surface-overlay-danger-text: #ef5d5d;
+    --surface-overlay-danger-text-hover: #ef5d5d;
+    --surface-inverse-danger-text: #ba1212;
+    --surface-inverse-danger-text-hover: #ba1212;
+    /* Semantic Callout Display Tokens (dark mode) */
+    --color-success-display-bg: color-mix(in oklab, var(--color-success-400) 12%, var(--color-surface-base));
+    --color-success-display-border: var(--color-success-400);
+    --color-success-display-text: var(--color-success-100);
+    --color-info-display-bg: color-mix(in oklab, var(--color-info-400) 12%, var(--color-surface-base));
+    --color-info-display-border: var(--color-info-400);
+    --color-info-display-text: var(--color-info-100);
+    --color-warning-display-bg: color-mix(in oklab, var(--color-warning-400) 12%, var(--color-surface-base));
+    --color-warning-display-border: var(--color-warning-400);
+    --color-warning-display-text: var(--color-warning-100);
+    --color-danger-display-bg: color-mix(in oklab, var(--color-danger-400) 12%, var(--color-surface-base));
+    --color-danger-display-border: var(--color-danger-400);
+    --color-danger-display-text: var(--color-danger-100);
     /* Backdrop tokens - dark mode */
     --backdrop-bg: linear-gradient(
         135deg,
@@ -4488,28 +5167,28 @@ export const stylesCSS = `@layer tokens {
     /* Mesh Gradient Variables (Dark Mode) */
     --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, #07cbed 20%, transparent) 0px, transparent 50%),
       radial-gradient(at 97% 21%, color-mix(in oklab, #999ea5 16%, transparent) 0px, transparent 50%),
-      radial-gradient(at 52% 99%, color-mix(in oklab, #ce2d5b 13%, transparent) 0px, transparent 50%),
+      radial-gradient(at 52% 99%, color-mix(in oklab, #e85882 13%, transparent) 0px, transparent 50%),
       radial-gradient(at 10% 29%, color-mix(in oklab, #07cbed 10%, transparent) 0px, transparent 50%);
     
     --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, #999ea5 18%, transparent) 0px, transparent 50%),
       radial-gradient(at 80% 0%, color-mix(in oklab, #07cbed 14%, transparent) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, color-mix(in oklab, #ce2d5b 12%, transparent) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, color-mix(in oklab, #e85882 12%, transparent) 0px, transparent 50%),
       radial-gradient(at 80% 100%, color-mix(in oklab, #999ea5 10%, transparent) 0px, transparent 50%);
     
-    --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #ce2d5b 15%, transparent) 0px, transparent 50%),
+    --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #e85882 15%, transparent) 0px, transparent 50%),
       radial-gradient(at 85% 30%, color-mix(in oklab, #07cbed 17%, transparent) 0px, transparent 50%),
       radial-gradient(at 50% 80%, color-mix(in oklab, #999ea5 13%, transparent) 0px, transparent 50%),
-      radial-gradient(at 90% 90%, color-mix(in oklab, #ce2d5b 11%, transparent) 0px, transparent 50%);
+      radial-gradient(at 90% 90%, color-mix(in oklab, #e85882 11%, transparent) 0px, transparent 50%);
     
     --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, #07cbed 14%, transparent) 0px, transparent 50%),
       radial-gradient(at 20% 80%, color-mix(in oklab, #999ea5 16%, transparent) 0px, transparent 50%),
-      radial-gradient(at 90% 60%, color-mix(in oklab, #ce2d5b 12%, transparent) 0px, transparent 50%),
+      radial-gradient(at 90% 60%, color-mix(in oklab, #e85882 12%, transparent) 0px, transparent 50%),
       radial-gradient(at 30% 40%, color-mix(in oklab, #07cbed 11%, transparent) 0px, transparent 50%);
     
     --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, #07cbed 17%, transparent) 0px, transparent 50%),
-      radial-gradient(at 10% 10%, color-mix(in oklab, #ce2d5b 14%, transparent) 0px, transparent 50%),
+      radial-gradient(at 10% 10%, color-mix(in oklab, #e85882 14%, transparent) 0px, transparent 50%),
       radial-gradient(at 90% 10%, color-mix(in oklab, #999ea5 13%, transparent) 0px, transparent 50%),
-      radial-gradient(at 50% 90%, color-mix(in oklab, #ce2d5b 10%, transparent) 0px, transparent 50%);
+      radial-gradient(at 50% 90%, color-mix(in oklab, #e85882 10%, transparent) 0px, transparent 50%);
              }
 
     }
@@ -4547,16 +5226,16 @@ html[data-theme="dark"] {
   --color-secondary-700: #595e65;
   --color-secondary-800: #41454a;
   --color-secondary-900: #292c2f;
-  --color-accent-50: #3a0e1b;
-  --color-accent-100: #5b162a;
-  --color-accent-200: #7c1e3a;
-  --color-accent-300: #9c2749;
-  --color-accent-400: #ce2d5b;
-  --color-accent-500: #d53b68;
-  --color-accent-600: #dc5f84;
-  --color-accent-700: #e4839f;
-  --color-accent-800: #f4c1d0;
-  --color-accent-900: #f6d6e0;
+  --color-accent-50: #fbeaef;
+  --color-accent-100: #f8d3de;
+  --color-accent-200: #f4b2c5;
+  --color-accent-300: #ee85a4;
+  --color-accent-400: #e85882;
+  --color-accent-500: #e54271;
+  --color-accent-600: #d61e53;
+  --color-accent-700: #aa1742;
+  --color-accent-800: #7d1130;
+  --color-accent-900: #500b1f;
   --color-gray-50: #fafafa;
   --color-gray-100: #f1f2f3;
   --color-gray-200: #dee0e2;
@@ -4567,46 +5246,46 @@ html[data-theme="dark"] {
   --color-gray-700: #4c5766;
   --color-gray-800: #2b323b;
   --color-gray-900: #15191e;
-  --color-success-50: #072207;
-  --color-success-100: #0b330b;
-  --color-success-200: #115411;
-  --color-success-300: #187618;
-  --color-success-400: #1da61d;
-  --color-success-500: #20b820;
-  --color-success-600: #2ad92a;
-  --color-success-700: #4fe14f;
-  --color-success-800: #94ee94;
-  --color-success-900: #c1f4c1;
-  --color-info-50: #071c22;
-  --color-info-100: #0b2a33;
-  --color-info-200: #0e3844;
-  --color-info-300: #114654;
-  --color-info-400: #145e72;
-  --color-info-500: #176d84;
-  --color-info-600: #1e8baa;
-  --color-info-700: #24a9ce;
-  --color-info-800: #5ac7e5;
-  --color-info-900: #87d4e9;
-  --color-warning-50: #251c04;
-  --color-warning-100: #372b06;
-  --color-warning-200: #493908;
-  --color-warning-300: #5c480a;
-  --color-warning-400: #8d6c0b;
-  --color-warning-500: #a07c0d;
-  --color-warning-600: #c89a10;
-  --color-warning-700: #ecb718;
-  --color-warning-800: #f6d05d;
-  --color-warning-900: #f6dc8e;
-  --color-danger-50: #220707;
-  --color-danger-100: #440e0e;
-  --color-danger-200: #651515;
-  --color-danger-300: #871c1c;
-  --color-danger-400: #b82121;
-  --color-danger-500: #ca2424;
-  --color-danger-600: #dd3e3e;
-  --color-danger-700: #e26262;
-  --color-danger-800: #f2aaaa;
-  --color-danger-900: #f6d5d5;
+  --color-success-50: #d3f8d3;
+  --color-success-100: #a4f3a4;
+  --color-success-200: #73f273;
+  --color-success-300: #44ed44;
+  --color-success-400: #16e816;
+  --color-success-500: #14d114;
+  --color-success-600: #10a210;
+  --color-success-700: #0b740b;
+  --color-success-800: #074607;
+  --color-success-900: #042f04;
+  --color-info-50: #95dbee;
+  --color-info-100: #65ceeb;
+  --color-info-200: #32c3eb;
+  --color-info-300: #15acd6;
+  --color-info-400: #1087a7;
+  --color-info-500: #0e7490;
+  --color-info-600: #0b5e74;
+  --color-info-700: #094b5d;
+  --color-info-800: #073846;
+  --color-info-900: #05252e;
+  --color-warning-50: #fae39f;
+  --color-warning-100: #fbd76a;
+  --color-warning-200: #ffcc33;
+  --color-warning-300: #ffbf00;
+  --color-warning-400: #cc9900;
+  --color-warning-500: #B38600;
+  --color-warning-600: #806000;
+  --color-warning-700: #664c00;
+  --color-warning-800: #4d3900;
+  --color-warning-900: #332600;
+  --color-danger-50: #fbe9e9;
+  --color-danger-100: #f6bbbb;
+  --color-danger-200: #f38b8b;
+  --color-danger-300: #ef5d5d;
+  --color-danger-400: #ea2e2e;
+  --color-danger-500: #e81717;
+  --color-danger-600: #ba1212;
+  --color-danger-700: #8b0e0e;
+  --color-danger-800: #5d0909;
+  --color-danger-900: #2e0505;
   /* Smart Surface Tokens (dark mode, context-aware) */
   --surface-base-bg: #16171a;
   --surface-base-text: #ffffff;
@@ -4667,12 +5346,135 @@ html[data-theme="dark"] {
 
   --color-text-primary: var(--color-gray-100);
   --color-text-secondary: var(--color-gray-300);
-  --color-text-muted: var(--color-gray-600);
+  --color-text-muted: var(--color-gray-500);
   --color-border: var(--color-gray-700);
   --color-input-bg: var(--color-gray-800);
   --color-input-disabled-bg: var(--color-gray-900);
   --color-input-disabled-text: var(--color-gray-600);
   --color-code-bg: var(--color-gray-800);
+  /* Interactive Colors - optimized for specific use cases (dark mode) */
+  --color-primary-fill: #036171;
+  --color-primary-fill-hover: #0592ab;
+  --color-primary-fill-active: #04788c;
+  --color-primary-text: #06b6d4;
+  --color-primary-text-hover: #06b6d4;
+  --color-primary-text-visited: #0996af;
+  --color-primary-contrast: #ffffff;
+  --color-focus-ring: #058ba2;
+  --color-selection-bg: #06b6d4;
+  --color-selection-text: #000000;
+  --color-link: var(--color-primary-text);
+  --color-link-hover: var(--color-primary-text-hover);
+  --color-link-visited: var(--color-primary-text-visited);
+  /* Accent Role Colors (dark mode) */
+  --color-accent-fill: #d61e53;
+  --color-accent-fill-hover: #e3396a;
+  --color-accent-fill-active: #e1265c;
+  --color-accent-text: #e54271;
+  --color-accent-text-hover: #ee85a4;
+  /* Surface-Aware Accent Text Tokens (dark mode) */
+  --surface-base-accent-text: #e54271;
+  --surface-base-accent-text-hover: #e85882;
+  --surface-subtle-accent-text: #e54271;
+  --surface-subtle-accent-text-hover: #e85882;
+  --surface-elevated-accent-text: #e54271;
+  --surface-elevated-accent-text-hover: #e85882;
+  --surface-sunken-accent-text: #e54271;
+  --surface-sunken-accent-text-hover: #e85882;
+  --surface-overlay-accent-text: #e85882;
+  --surface-overlay-accent-text-hover: #ee85a4;
+  --surface-inverse-accent-text: #d61e53;
+  --surface-inverse-accent-text-hover: #aa1742;
+  /* Danger Role Colors (dark mode) */
+  --color-danger-fill: #ba1212;
+  --color-danger-fill-hover: #e41616;
+  --color-danger-fill-active: #ce1414;
+  --color-danger-text: #ef5d5d;
+  --color-danger-text-hover: #f38b8b;
+  --color-danger-contrast: #ffffff;
+  /* Success Role Colors (dark mode) */
+  --color-success-fill: #0b740b;
+  --color-success-fill-hover: #10a810;
+  --color-success-fill-active: #0d8c0d;
+  --color-success-text: #10a210;
+  --color-success-text-hover: #14d114;
+  --color-success-contrast: #ffffff;
+  /* Warning Role Colors (dark mode) */
+  --color-warning-fill: #806000;
+  --color-warning-fill-hover: #b98b00;
+  --color-warning-fill-active: #9b7400;
+  --color-warning-text: #B38600;
+  --color-warning-text-hover: #cc9900;
+  --color-warning-contrast: #ffffff;
+  /* Info Role Colors (dark mode) */
+  --color-info-fill: #0b5e74;
+  --color-info-fill-hover: #1089a8;
+  --color-info-fill-active: #0d728c;
+  --color-info-text: #15acd6;
+  --color-info-text-hover: #15acd6;
+  --color-info-contrast: #ffffff;
+  /* Surface-Aware Status Text Tokens (dark mode) */
+  --surface-base-success-text: #10a210;
+  --surface-base-success-text-hover: #10a210;
+  --surface-subtle-success-text: #10a210;
+  --surface-subtle-success-text-hover: #10a210;
+  --surface-elevated-success-text: #10a210;
+  --surface-elevated-success-text-hover: #10a210;
+  --surface-sunken-success-text: #10a210;
+  --surface-sunken-success-text-hover: #10a210;
+  --surface-overlay-success-text: #10a210;
+  --surface-overlay-success-text-hover: #10a210;
+  --surface-inverse-success-text: #0b740b;
+  --surface-inverse-success-text-hover: #0b740b;
+  --surface-base-warning-text: #B38600;
+  --surface-base-warning-text-hover: #B38600;
+  --surface-subtle-warning-text: #B38600;
+  --surface-subtle-warning-text-hover: #B38600;
+  --surface-elevated-warning-text: #B38600;
+  --surface-elevated-warning-text-hover: #B38600;
+  --surface-sunken-warning-text: #B38600;
+  --surface-sunken-warning-text-hover: #B38600;
+  --surface-overlay-warning-text: #B38600;
+  --surface-overlay-warning-text-hover: #B38600;
+  --surface-inverse-warning-text: #806000;
+  --surface-inverse-warning-text-hover: #806000;
+  --surface-base-info-text: #15acd6;
+  --surface-base-info-text-hover: #15acd6;
+  --surface-subtle-info-text: #1087a7;
+  --surface-subtle-info-text-hover: #15acd6;
+  --surface-elevated-info-text: #1087a7;
+  --surface-elevated-info-text-hover: #15acd6;
+  --surface-sunken-info-text: #15acd6;
+  --surface-sunken-info-text-hover: #15acd6;
+  --surface-overlay-info-text: #15acd6;
+  --surface-overlay-info-text-hover: #15acd6;
+  --surface-inverse-info-text: #0b5e74;
+  --surface-inverse-info-text-hover: #0b5e74;
+  --surface-base-danger-text: #ef5d5d;
+  --surface-base-danger-text-hover: #ef5d5d;
+  --surface-subtle-danger-text: #ef5d5d;
+  --surface-subtle-danger-text-hover: #ef5d5d;
+  --surface-elevated-danger-text: #ea2e2e;
+  --surface-elevated-danger-text-hover: #ef5d5d;
+  --surface-sunken-danger-text: #ef5d5d;
+  --surface-sunken-danger-text-hover: #ef5d5d;
+  --surface-overlay-danger-text: #ef5d5d;
+  --surface-overlay-danger-text-hover: #ef5d5d;
+  --surface-inverse-danger-text: #ba1212;
+  --surface-inverse-danger-text-hover: #ba1212;
+  /* Semantic Callout Display Tokens (dark mode) */
+  --color-success-display-bg: color-mix(in oklab, var(--color-success-400) 12%, var(--color-surface-base));
+  --color-success-display-border: var(--color-success-400);
+  --color-success-display-text: var(--color-success-100);
+  --color-info-display-bg: color-mix(in oklab, var(--color-info-400) 12%, var(--color-surface-base));
+  --color-info-display-border: var(--color-info-400);
+  --color-info-display-text: var(--color-info-100);
+  --color-warning-display-bg: color-mix(in oklab, var(--color-warning-400) 12%, var(--color-surface-base));
+  --color-warning-display-border: var(--color-warning-400);
+  --color-warning-display-text: var(--color-warning-100);
+  --color-danger-display-bg: color-mix(in oklab, var(--color-danger-400) 12%, var(--color-surface-base));
+  --color-danger-display-border: var(--color-danger-400);
+  --color-danger-display-text: var(--color-danger-100);
   /* Backdrop tokens - dark mode */
   --backdrop-bg: linear-gradient(
       135deg,
@@ -4691,28 +5493,28 @@ html[data-theme="dark"] {
   /* Mesh Gradient Backgrounds (Dark Mode) */
   --background-mesh-01: radial-gradient(at 27% 37%, color-mix(in oklab, #07cbed 20%, transparent) 0px, transparent 50%),
     radial-gradient(at 97% 21%, color-mix(in oklab, #999ea5 16%, transparent) 0px, transparent 50%),
-    radial-gradient(at 52% 99%, color-mix(in oklab, #ce2d5b 13%, transparent) 0px, transparent 50%),
+    radial-gradient(at 52% 99%, color-mix(in oklab, #e85882 13%, transparent) 0px, transparent 50%),
     radial-gradient(at 10% 29%, color-mix(in oklab, #07cbed 10%, transparent) 0px, transparent 50%);
   
   --background-mesh-02: radial-gradient(at 40% 20%, color-mix(in oklab, #999ea5 18%, transparent) 0px, transparent 50%),
     radial-gradient(at 80% 0%, color-mix(in oklab, #07cbed 14%, transparent) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, color-mix(in oklab, #ce2d5b 12%, transparent) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, color-mix(in oklab, #e85882 12%, transparent) 0px, transparent 50%),
     radial-gradient(at 80% 100%, color-mix(in oklab, #999ea5 10%, transparent) 0px, transparent 50%);
   
-  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #ce2d5b 15%, transparent) 0px, transparent 50%),
+  --background-mesh-03: radial-gradient(at 15% 50%, color-mix(in oklab, #e85882 15%, transparent) 0px, transparent 50%),
     radial-gradient(at 85% 30%, color-mix(in oklab, #07cbed 17%, transparent) 0px, transparent 50%),
     radial-gradient(at 50% 80%, color-mix(in oklab, #999ea5 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 90%, color-mix(in oklab, #ce2d5b 11%, transparent) 0px, transparent 50%);
+    radial-gradient(at 90% 90%, color-mix(in oklab, #e85882 11%, transparent) 0px, transparent 50%);
   
   --background-mesh-04: radial-gradient(at 70% 15%, color-mix(in oklab, #07cbed 14%, transparent) 0px, transparent 50%),
     radial-gradient(at 20% 80%, color-mix(in oklab, #999ea5 16%, transparent) 0px, transparent 50%),
-    radial-gradient(at 90% 60%, color-mix(in oklab, #ce2d5b 12%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 60%, color-mix(in oklab, #e85882 12%, transparent) 0px, transparent 50%),
     radial-gradient(at 30% 40%, color-mix(in oklab, #07cbed 11%, transparent) 0px, transparent 50%);
   
   --background-mesh-05: radial-gradient(at 50% 50%, color-mix(in oklab, #07cbed 17%, transparent) 0px, transparent 50%),
-    radial-gradient(at 10% 10%, color-mix(in oklab, #ce2d5b 14%, transparent) 0px, transparent 50%),
+    radial-gradient(at 10% 10%, color-mix(in oklab, #e85882 14%, transparent) 0px, transparent 50%),
     radial-gradient(at 90% 10%, color-mix(in oklab, #999ea5 13%, transparent) 0px, transparent 50%),
-    radial-gradient(at 50% 90%, color-mix(in oklab, #ce2d5b 10%, transparent) 0px, transparent 50%);
+    radial-gradient(at 50% 90%, color-mix(in oklab, #e85882 10%, transparent) 0px, transparent 50%);
     }
 
 @layer primitives {
@@ -4756,13 +5558,27 @@ html[data-theme="dark"] {
     /* scrollbar-gutter: stable; */
   }
 
+  /* Disabled primitive (low specificity): usable on any element via [disabled] or aria-disabled. */
+  :where([disabled], [aria-disabled="true"]) {
+    opacity: var(--state-disabled-opacity, 0.7);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Also dim/disable labels that contain disabled controls. */
+  :where(label:has(:disabled), label:has([disabled])) {
+    opacity: var(--state-disabled-opacity, 0.7);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
   /* Button primitives */
   :where(button) {
     all: unset;
     box-sizing: border-box;
     font: inherit;
     color: var(--color-primary-contrast, white);
-    background: var(--color-primary-600);
+    background: var(--color-primary-fill);
     padding: var(--spacing-2) var(--spacing-4);
     border: 0;
     border-radius: var(--radius-md);
@@ -4781,11 +5597,11 @@ html[data-theme="dark"] {
 
   :where(button):hover:not(:disabled) {
     opacity: 0.9;
-    background-color: var(--color-primary-700);
+    background-color: var(--color-primary-fill-hover);
   }
 
   :where(button):focus-visible {
-    outline: 2px solid var(--color-primary-500);
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
     outline-offset: 2px;
   }
 
@@ -4818,8 +5634,8 @@ html[data-theme="dark"] {
   :where(select):focus-visible,
   :where(textarea):focus-visible {
     outline: none;
-    border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500) 30%, transparent);
+    border-color: var(--color-focus-ring, var(--color-primary-500));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
   }
 
   :where(input):disabled,
@@ -4846,20 +5662,30 @@ html[data-theme="dark"] {
 
   /* Link primitives */
   :where(a) {
-    color: var(--color-primary-text, var(--color-primary-600));
+    color: var(--color-link, var(--color-primary-text, var(--color-primary-600)));
     text-decoration: underline;
     text-underline-offset: 0.2em;
-    transition: opacity var(--transition-fast);
+    transition: color var(--transition-fast), opacity var(--transition-fast);
   }
 
   :where(a):hover {
-    opacity: 0.8;
+    color: var(--color-link-hover, var(--color-link, var(--color-primary-text, var(--color-primary-600))));
+    opacity: 0.9;
+  }
+
+  :where(a):visited {
+    color: var(--color-link-visited, var(--color-link, var(--color-primary-text, var(--color-primary-600))));
   }
 
   :where(a):focus-visible {
-    outline: 2px solid var(--color-primary-500);
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
     outline-offset: 2px;
     border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background: var(--color-selection-bg, var(--color-primary-text, var(--color-primary-600)));
+    color: var(--color-selection-text, var(--color-primary-contrast, #ffffff));
   }
 
   /* Form primitives */
@@ -4919,23 +5745,23 @@ html[data-theme="dark"] {
     }
 
     &:has(input[type="checkbox"]:checked)::before {
-      background: var(--color-primary-600);
-      border-color: var(--color-primary-600);
+      background: var(--color-primary-fill);
+      border-color: var(--color-primary-fill);
     }
 
     &:has(input[type="checkbox"]:focus)::before {
-      outline: 2px solid var(--color-primary-500);
+      outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
       outline-offset: 2px;
     }
 
     &:has(input[type="checkbox"]:not(:disabled)):hover::before {
-      border-color: var(--color-primary-600);
+      border-color: var(--color-primary-fill);
       background: var(--color-surface-subtle);
     }
 
     &:has(input[type="checkbox"]:checked:not(:disabled)):hover::before {
-      background: var(--color-primary-700);
-      border-color: var(--color-primary-700);
+      background: var(--color-primary-fill-hover);
+      border-color: var(--color-primary-fill-hover);
     }
 
     &:has(input[type="checkbox"]:disabled) {
@@ -5070,7 +5896,7 @@ html[data-theme="dark"] {
 :where(blockquote) {
   margin: 0 0 var(--spacing-4) 0;
   padding: var(--spacing-6) var(--spacing-8);
-  border-left: calc(var(--border-width-thick) + var(--border-width-thin)) solid var(--color-primary-500);
+  border-left: calc(var(--border-width-thick) + var(--border-width-thin)) solid var(--color-link);
   background-color: var(--color-surface-elevated);
   border-radius: var(--radius-none);
   font-size: var(--font-size-lg);
@@ -5086,7 +5912,7 @@ html[data-theme="dark"] {
     margin-top: var(--spacing-4);
     font-size: var(--font-size-base);
     font-style: normal;
-    color: var(--color-primary-500);
+    color: var(--color-link);
   }
 }
 
@@ -5169,8 +5995,8 @@ html[data-theme="dark"] {
 }
 
 :where(mark) {
-  background-color: var(--color-warning-200);
-  color: var(--color-warning-900);
+  background-color: var(--color-warning-display-bg);
+  color: var(--color-warning-display-text);
   padding: 0 var(--spacing-1);
   border-radius: var(--radius-sm);
 }
@@ -5290,7 +6116,7 @@ fieldset {
       margin-bottom: 0;
       
       &:hover {
-        color: var(--color-primary-700);
+        color: var(--color-link-hover, var(--color-primary-text-hover));
       }
     }
 
@@ -5309,21 +6135,21 @@ fieldset {
       margin: 0;
       cursor: pointer;
       flex-shrink: 0;
-      accent-color: var(--color-primary-600);
+      accent-color: var(--color-primary-fill);
 
       &:focus-visible {
         outline: none;
 
         box-shadow:
-          0 0 0 2px var(--color-primary-500),
+          0 0 0 2px var(--color-focus-ring, var(--color-primary-500)),
           0 0 0 4px color-mix(in srgb,
-            var(--color-primary-500) 40%,
+            var(--color-focus-ring, var(--color-primary-500)) 40%,
             transparent
           );
       }
 
       &:checked {
-        background-color: var(--color-primary-600);
+        background-color: var(--color-primary-fill);
       }
       
     }
@@ -5401,7 +6227,7 @@ input, textarea, select {
   -webkit-appearance: none;
   
   &:focus {
-    border-color: var(--color-primary-500);
+    border-color: var(--color-focus-ring, var(--color-primary-500));
     background-color: var(--color-surface-base);
   }
   
@@ -5414,10 +6240,10 @@ input, textarea, select {
   }
   
   &:invalid {
-    border-color: var(--color-danger-500);
+    border-color: var(--color-danger-fill);
     
     &:focus {
-      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-danger-500) 30%, transparent);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-danger-fill) 30%, transparent);
     }
   }
 }
@@ -5452,11 +6278,11 @@ input[type="range"] {
     width: var(--range-thumb-size, 28px);
     height: var(--range-thumb-size, 28px);
     margin-top: calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2);
-    background: color-mix(in srgb, var(--color-primary-500) 15%, var(--color-surface-base));
+    background: color-mix(in srgb, var(--color-primary-fill) 15%, var(--color-surface-base));
     border-radius: 50%;
     box-shadow: var(--shadow-sm);
     cursor: grab;
-    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
+    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-fill) 30%, var(--color-border));
   }
 
   /* Mozilla track */
@@ -5470,10 +6296,10 @@ input[type="range"] {
   &::-moz-range-thumb {
     width: var(--range-thumb-size, 28px);
     height: var(--range-thumb-size, 28px);
-    background: color-mix(in srgb, var(--color-primary-500) 15%, var(--color-surface-base));
+    background: color-mix(in srgb, var(--color-primary-fill) 15%, var(--color-surface-base));
     border-radius: 50%;
     box-shadow: var(--shadow-sm);
-    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-500) 30%, var(--color-border));
+    border: var(--border-width-thin) solid color-mix(in srgb, var(--color-primary-fill) 30%, var(--color-border));
     transform: translateY(calc((var(--range-track-height, 8px) - var(--range-thumb-size, 28px)) / 2));
   }
 
@@ -5481,39 +6307,39 @@ input[type="range"] {
   &:hover::-webkit-slider-thumb,
   &:focus-visible::-webkit-slider-thumb {
     cursor: grabbing;
-    background: var(--color-primary-500);
+    background: var(--color-primary-fill);
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    border-color: var(--color-primary-600);
+    border-color: var(--color-primary-fill-hover);
   }
 
   /* Active state for WebKit */
   &:active::-webkit-slider-thumb {
-    background: var(--color-primary-600);
+    background: var(--color-primary-fill-active);
   }
 
   /* Hover and focus states for Mozilla */
   &:hover::-moz-range-thumb,
   &:focus-visible::-moz-range-thumb {
-    background: var(--color-primary-500);
+    background: var(--color-primary-fill);
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    border-color: var(--color-primary-600);
+    border-color: var(--color-primary-fill-hover);
     cursor: grabbing;
   }
 
   /* Active state for Mozilla */
   &:active::-moz-range-thumb {
-    background: var(--color-primary-600);
+    background: var(--color-primary-fill-active);
   }
 }
 
 /* Focus style for container to match input focus */
 .range-container:focus-within {
-  border-color: var(--color-primary-500);  
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500) 30%, transparent);
+  border-color: var(--color-focus-ring, var(--color-primary-500));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
 }
 
 input[type="range"]:active::-moz-range-thumb {
-  background: var(--color-primary-600);
+  background: var(--color-primary-fill-active);
 }
 
 input[type="color"] {
@@ -5587,27 +6413,27 @@ input[type="color"] {
   
   &:hover {
     background-color: var(--color-surface-subtle);
-    border-color: var(--color-primary-500);
+    border-color: var(--color-primary-fill);
   }
 
   &:has(input[type="checkbox"]:checked),
   input[type="checkbox"]:checked + label:not(fieldset label):not(label[data-toggle]) {
-    background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
-    color: var(--color-primary-700);
-    border-color: var(--color-primary-500);
+    background-color: color-mix(in oklab, var(--color-primary-fill) 8%, transparent);
+    color: var(--color-primary-text);
+    border-color: var(--color-primary-fill);
     border-width: var(--border-width-medium);
     font-weight: var(--font-weight-semibold);
     
     &:hover {
-      background-color: color-mix(in oklab, var(--color-primary-500) 15%, transparent);
-      border-color: var(--color-primary-600);
+      background-color: color-mix(in oklab, var(--color-primary-fill) 15%, transparent);
+      border-color: var(--color-primary-fill);
     }
   }
 
   &:has(input[type="checkbox"]:focus),
   input[type="checkbox"]:focus + label:not(fieldset label):not(label[data-toggle]) {
     outline: none;
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
   }
 
   &:has(input[type="checkbox"]:disabled),
@@ -5639,6 +6465,7 @@ input[type="radio"]:not(fieldset input[type="radio"]) {
   opacity: 1;
   appearance: auto;
   -webkit-appearance: auto;
+  accent-color: var(--color-primary-fill);
 
   &:disabled {
     cursor: not-allowed;
@@ -5691,29 +6518,25 @@ fieldset[role="group"].buttons {
     
     &:hover {
       background-color: var(--color-surface-subtle);
-      border-color: var(--color-primary-500);
+      border-color: var(--color-primary-fill);
       color: var(--color-text-primary);
     }
 
-    &:has([disabled]) {
-      pointer-events: none;
-    }
-
     &:has(input:is([type="radio"], [type="checkbox"]):checked) {
-      background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
-      border-color: var(--color-primary-500);
+      background-color: color-mix(in oklab, var(--color-primary-fill) 8%, transparent);
+      border-color: var(--color-primary-fill);
       border-width: var(--border-width-medium);
       font-weight: var(--font-weight-semibold);
       
       &:hover {
-        background-color: color-mix(in oklab, var(--color-primary-500) 15%, transparent);
-        border-color: var(--color-primary-600);
+        background-color: color-mix(in oklab, var(--color-primary-fill) 15%, transparent);
+        border-color: var(--color-primary-fill-hover);
       }
     }
 
     &:has(input:is([type="radio"], [type="checkbox"]):focus) {
       outline: none;
-      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
     }
 
     &:has(input:is([type="radio"], [type="checkbox"]):disabled) {
@@ -5797,7 +6620,7 @@ label[data-toggle] {
   &:has(input[type="checkbox"]:checked) {
     &.with-icons .toggle-knob::before {
       content: "✓";
-      color: var(--color-primary-600);
+      color: var(--color-primary-contrast, white);
     }
 
     .toggle-switch {
@@ -5811,7 +6634,7 @@ label[data-toggle] {
 
   &:has(input[type="checkbox"]:focus) .toggle-switch,
   &:focus-visible .toggle-switch {
-    outline: 2px solid var(--color-primary-500);
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
     outline-offset: 2px;
   }
 
@@ -5929,8 +6752,8 @@ label[data-color] {
   }
 
   &:focus-within .color-control {
-    border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+    border-color: var(--color-focus-ring, var(--color-primary-500));
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
   }
 
   &:has(input[type="color"]:disabled) .color-control {
@@ -5965,18 +6788,23 @@ select {
 
 /* Button styling */
 button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
+  --btn-pad-y: max(calc(var(--spacing-1) * 1), var(--spacing-2));
+  --btn-target-h: max(30px, calc(var(--font-size-base) + (var(--btn-pad-y) * 2) + (var(--border-width-medium) * 2)));
   display: inline-flex;
   gap: var(--spacing-1);
   align-items: center;
   justify-content: center;
-  min-height: 30px;
-  padding: max(calc(var(--spacing-1) * 1), var(--spacing-2)) var(--spacing-6);
+  min-height: var(--btn-target-h);
+  height: var(--btn-target-h);
+  padding: var(--btn-pad-y) var(--spacing-6);
   border: var(--border-width-medium) solid transparent;
   border-radius: var(--radius-md);
+  box-sizing: border-box;
   font-family: var(--font-family-body);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   line-height: 1;
+  white-space: nowrap;
   cursor: pointer;
   transition: all var(--transition-fast);
   text-decoration: none;
@@ -5993,7 +6821,7 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
   }
   
   &:disabled {
@@ -6011,19 +6839,19 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   border-color: var(--color-primary-fill);
   
   &:hover {
-    background-color: color-mix(in oklab, var(--color-primary-fill) 90%, black 10%);
-    border-color: color-mix(in oklab, var(--color-primary-fill) 90%, black 10%);
+    background-color: var(--color-primary-fill-hover);
+    border-color: var(--color-primary-fill-hover);
     color: white;
   }
 
   &:active {
-    background-color: color-mix(in oklab, var(--color-primary-fill) 80%, black 20%);
-    border-color: color-mix(in oklab, var(--color-primary-fill) 80%, black 20%);
+    background-color: var(--color-primary-fill-active);
+    border-color: var(--color-primary-fill-active);
     color: white;
   }
   
   &:focus {
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
   }
   
   &:disabled {
@@ -6045,13 +6873,13 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 
 .btn-outline {
   background-color: transparent;
-  color: var(--color-primary-500);
-  border-color: var(--color-primary-500);
+  color: var(--color-link);
+  border-color: var(--color-link);
   
   &:hover {
-    background-color: var(--color-primary-500);
+    background-color: var(--color-primary-fill);
     color: var(--color-primary-contrast, #ffffff);
-    border-color: var(--color-primary-500);
+    border-color: var(--color-primary-fill);
 
     pds-icon {
       color: var(--color-primary-contrast, #ffffff);
@@ -6059,8 +6887,8 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   }
 
   &:active {
-    background-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
-    border-color: color-mix(in oklab, var(--color-primary-500) 80%, black 20%);
+    background-color: var(--color-primary-fill-active);
+    border-color: var(--color-primary-fill-active);
     color: var(--color-primary-contrast, #ffffff);
 
     pds-icon {
@@ -6076,31 +6904,31 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .btn-danger {
-  background-color: var(--color-danger-600);
+  background-color: var(--color-danger-fill);
   color: white;
-  border-color: var(--color-danger-600);
+  border-color: var(--color-danger-fill);
 
   &:hover {
-    background-color: color-mix(in oklab, var(--color-danger-600) 90%, black 10%);
-    border-color: color-mix(in oklab, var(--color-danger-600) 90%, black 10%);
+    background-color: var(--color-danger-fill-hover);
+    border-color: var(--color-danger-fill-hover);
     color: white;
   }
 
   &:active {
-    background-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
-    border-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
+    background-color: var(--color-danger-fill-active);
+    border-color: var(--color-danger-fill-active);
     color: white;
   }
 }
 
 .btn-danger.btn-outline {
   background-color: transparent;
-  color: var(--color-danger-600);
-  border-color: var(--color-danger-600);
+  color: var(--color-danger-fill);
+  border-color: var(--color-danger-fill);
 
   &:hover {
-    background-color: var(--color-danger-600);
-    border-color: var(--color-danger-600);
+    background-color: var(--color-danger-fill);
+    border-color: var(--color-danger-fill);
     color: white;
 
     pds-icon {
@@ -6109,8 +6937,8 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
   }
 
   &:active {
-    background-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
-    border-color: color-mix(in oklab, var(--color-danger-600) 80%, black 20%);
+    background-color: var(--color-danger-fill-active);
+    border-color: var(--color-danger-fill-active);
     color: white;
 
     pds-icon {
@@ -6126,22 +6954,31 @@ button, .btn, input[type="submit"], input[type="button"], input[type="reset"] {
 }
 
 .btn-sm {
-  padding: calc(max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 0.85) calc(var(--spacing-6) * 0.8);
+  --btn-pad-y: calc(max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 0.85);
+  --btn-target-h: max(calc(30px * 0.85), calc(var(--font-size-sm) + (var(--btn-pad-y) * 2) + (var(--border-width-medium) * 2)));
+  padding: var(--btn-pad-y) calc(var(--spacing-6) * 0.8);
   font-size: var(--font-size-sm);
-  min-height: calc(30px * 0.85);
+  min-height: var(--btn-target-h);
+  height: var(--btn-target-h);
 }
 
 .btn-xs {
-  padding: calc(max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 0.7) calc(var(--spacing-6) * 0.65);
+  --btn-pad-y: calc(max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 0.7);
+  --btn-target-h: max(calc(30px * 0.7), calc(var(--font-size-xs) + (var(--btn-pad-y) * 2) + (var(--border-width-medium) * 2)));
+  padding: var(--btn-pad-y) calc(var(--spacing-6) * 0.65);
   font-size: var(--font-size-xs);
-  min-height: calc(30px * 0.7);
+  min-height: var(--btn-target-h);
+  height: var(--btn-target-h);
 }
 
 
 .btn-lg {
-  padding: calc(max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 1.15) calc(var(--spacing-6) * 1.35);
+  --btn-pad-y: calc(max(calc(var(--spacing-1) * 1), var(--spacing-2)) * 1.15);
+  --btn-target-h: max(calc(30px * 1.15), calc(var(--font-size-lg) + (var(--btn-pad-y) * 2) + (var(--border-width-medium) * 2)));
+  padding: var(--btn-pad-y) calc(var(--spacing-6) * 1.35);
   font-size: var(--font-size-lg);
-  min-height: calc(30px * 1.15);
+  min-height: var(--btn-target-h);
+  height: var(--btn-target-h);
 }
 
 /* Working/loading state for buttons */
@@ -6162,19 +6999,64 @@ a.btn-working {
 
 /* Skeleton loading animation */
 .skeleton {
+  --skeleton-base: color-mix(in oklab, var(--color-text-primary) 8%, transparent);
+  --skeleton-highlight: color-mix(in oklab, var(--color-text-primary) 16%, transparent);
+  --skeleton-child-offset: 0ms;
+  --skeleton-type-offset: 0ms;
+  --skeleton-parent-offset: 0ms;
+  --skeleton-delay: calc(
+    220ms +
+    var(--skeleton-child-offset) +
+    var(--skeleton-type-offset) +
+    var(--skeleton-parent-offset)
+  );
   background: linear-gradient(
     90deg,
-    color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%) 0%,
-    color-mix(in oklab, var(--color-surface-base) 85%, var(--color-text-primary) 15%) 50%,
-    color-mix(in oklab, var(--color-surface-base) 92%, var(--color-text-primary) 8%) 100%
+    var(--skeleton-base) 0%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 100%
   );
   background-size: 200% 100%;
-  animation: pds-skeleton 1.5s ease-in-out infinite;
+  animation:
+    pds-skeleton-fade-in 220ms ease-out both,
+    pds-skeleton 1.5s ease-in-out infinite var(--skeleton-delay);
   border-radius: var(--radius-sm);
   
   &::before {
     content: '\\00a0';
   }
+}
+
+/* Deterministic stagger so large skeleton groups do not animate in lockstep. */
+:where(.skeleton:nth-child(11n + 1)) { --skeleton-child-offset: 0ms; }
+:where(.skeleton:nth-child(11n + 2)) { --skeleton-child-offset: 17ms; }
+:where(.skeleton:nth-child(11n + 3)) { --skeleton-child-offset: 34ms; }
+:where(.skeleton:nth-child(11n + 4)) { --skeleton-child-offset: 51ms; }
+:where(.skeleton:nth-child(11n + 5)) { --skeleton-child-offset: 68ms; }
+:where(.skeleton:nth-child(11n + 6)) { --skeleton-child-offset: 85ms; }
+:where(.skeleton:nth-child(11n + 7)) { --skeleton-child-offset: 102ms; }
+:where(.skeleton:nth-child(11n + 8)) { --skeleton-child-offset: 119ms; }
+:where(.skeleton:nth-child(11n + 9)) { --skeleton-child-offset: 136ms; }
+:where(.skeleton:nth-child(11n + 10)) { --skeleton-child-offset: 153ms; }
+:where(.skeleton:nth-child(11n + 11)) { --skeleton-child-offset: 170ms; }
+
+:where(.skeleton:nth-of-type(7n + 1)) { --skeleton-type-offset: 0ms; }
+:where(.skeleton:nth-of-type(7n + 2)) { --skeleton-type-offset: 11ms; }
+:where(.skeleton:nth-of-type(7n + 3)) { --skeleton-type-offset: 22ms; }
+:where(.skeleton:nth-of-type(7n + 4)) { --skeleton-type-offset: 33ms; }
+:where(.skeleton:nth-of-type(7n + 5)) { --skeleton-type-offset: 44ms; }
+:where(.skeleton:nth-of-type(7n + 6)) { --skeleton-type-offset: 55ms; }
+:where(.skeleton:nth-of-type(7n + 7)) { --skeleton-type-offset: 66ms; }
+
+:where(*:nth-child(5n + 1) > .skeleton) { --skeleton-parent-offset: 0ms; }
+:where(*:nth-child(5n + 2) > .skeleton) { --skeleton-parent-offset: 9ms; }
+:where(*:nth-child(5n + 3) > .skeleton) { --skeleton-parent-offset: 18ms; }
+:where(*:nth-child(5n + 4) > .skeleton) { --skeleton-parent-offset: 27ms; }
+:where(*:nth-child(5n + 5) > .skeleton) { --skeleton-parent-offset: 36ms; }
+
+@keyframes pds-skeleton-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes pds-skeleton {
@@ -6389,25 +7271,25 @@ a.btn-working {
 }
 /* Variants: success/info/warning/danger mapped to tokens */
 .callout-success {
-  background-color: var(--color-success-50);
-  border-color: var(--color-success-600);
-  color: var(--color-success-900);
+  background-color: var(--color-success-display-bg);
+  border-color: var(--color-success-display-border);
+  color: var(--color-success-display-text);
 }
 .callout-info {
-  background-color: var(--color-info-50);
-  border-color: var(--color-info-600);
-  color: var(--color-info-900);
+  background-color: var(--color-info-display-bg);
+  border-color: var(--color-info-display-border);
+  color: var(--color-info-display-text);
 }
 .callout-warning {
-  background-color: var(--color-warning-50);
-  border-color: var(--color-warning-600);
-  color: var(--color-warning-900);
+  background-color: var(--color-warning-display-bg);
+  border-color: var(--color-warning-display-border);
+  color: var(--color-warning-display-text);
 }
 .callout-danger,
 .callout-error {
-  background-color: var(--color-danger-50);
-  border-color: var(--color-danger-600);
-  color: var(--color-danger-900);
+  background-color: var(--color-danger-display-bg);
+  border-color: var(--color-danger-display-border);
+  color: var(--color-danger-display-text);
 }
 
 .callout-title {
@@ -6590,12 +7472,11 @@ dialog {
 
 /*
  * Overlay safety valve:
- * Some controls (e.g. pds-daterange panel, data-dropdown menus) need to escape
+ * Some controls (e.g. pds-daterange panel) need to escape
  * the dialog bounds. Scope overflow visibility to custom dialogs that contain
  * those controls instead of enabling it for all dialogs.
  */
-dialog.dialog-custom:has(pds-daterange),
-dialog.dialog-custom:has([data-dropdown]) {
+dialog.dialog-custom:has(pds-daterange) {
   overflow: visible;
 }
 
@@ -6663,13 +7544,6 @@ dialog {
     padding: var(--spacing-3) var(--spacing-6);
     overflow-y: auto;
     overflow-x: visible;
-  }
-
-  /* Allow overlay menus (e.g. data-dropdown) to escape dialog-body clipping while open */
-  article:has([data-dropdown] > :last-child[aria-hidden="false"]),
-  form > article:has([data-dropdown] > :last-child[aria-hidden="false"]),
-  .dialog-body:has([data-dropdown] > :last-child[aria-hidden="false"]) {
-    overflow: visible;
   }
 
   article:has(pds-daterange),
@@ -6759,7 +7633,8 @@ dialog.dialog-full { width: calc(100vw - var(--spacing-8)); max-width: calc(100v
   dialog, dialog::backdrop { transition-duration: 0.01s !important; }
 }
 
-html:has(dialog[open]:modal) {
+html:has(dialog[open]:modal),
+html:has(pds-drawer[open]) {
  overflow: hidden;
  scrollbar-gutter: stable;
 }
@@ -6827,7 +7702,7 @@ html:has(dialog[open]:modal) {
   }
 
   &:focus-visible {
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
   }
 
   /* Chevron indicator */
@@ -6870,12 +7745,12 @@ html:has(dialog[open]:modal) {
 /* Basic dropdown host */
 nav[data-dropdown] {
   position: relative;
-  display: inline-block;
+  display: flex;
   padding: 0;
 
   & > :last-child {
     position: absolute;
-    padding: var(--spacing-2);
+    padding: 0 var(--spacing-2);
     margin: 0;
     background: var(--color-surface-overlay);
     border: var(--border-width-thin) solid var(--color-border);
@@ -6908,7 +7783,13 @@ nav[data-dropdown] {
     transition-behavior: allow-discrete;
   }
 
-  & > :last-child[aria-hidden="false"] {
+  & > :last-child[popover] {
+    inset: auto;
+    margin: 0;
+  }
+
+  & > :last-child[aria-hidden="false"],
+  & > :last-child:popover-open {
     display: inline-block;
     opacity: 1;
     visibility: visible;
@@ -6924,7 +7805,7 @@ nav[data-dropdown] {
   }
 
   menu li {
-    padding: var(--spacing-1) 0;
+    padding: var(--spacing-2) 0;
 
     & + li {
       border-top: var(--border-width-thin) solid var(--color-border);
@@ -6957,7 +7838,7 @@ nav[data-dropdown] {
     gap: var(--spacing-2);
 
     &.danger {
-      color: var(--color-danger-600);
+      color: var(--color-danger-text);
     }
   }
 
@@ -7010,7 +7891,8 @@ nav[data-dropdown] {
 }
 
 @starting-style {
-  nav[data-dropdown] > :last-child[aria-hidden="false"] {
+  nav[data-dropdown] > :last-child[aria-hidden="false"],
+  nav[data-dropdown] > :last-child:popover-open {
     opacity: 0;
   }
 }
@@ -7064,7 +7946,7 @@ pds-tabstrip {
       }
 
       &:focus-visible {
-        outline: var(--focus-ring-width, 2px) solid var(--color-primary-500);
+        outline: var(--focus-ring-width, 2px) solid var(--color-focus-ring, var(--color-primary-500));
         outline-offset: -2px;
         border-radius: var(--radius-sm);
         z-index: 1;
@@ -7072,14 +7954,14 @@ pds-tabstrip {
 
       /* Active tab */
       &[aria-current="page"] {
-        color: var(--color-primary-600);
+        color: var(--color-link);
         font-weight: var(--font-weight-semibold);
-        border-bottom-color: var(--color-primary-600);
+        border-bottom-color: var(--color-link);
 
         &:hover {
-          color: var(--color-primary-700);
-          border-bottom-color: var(--color-primary-700);
-          background-color: var(--color-primary-50);
+          color: var(--color-link-hover);
+          border-bottom-color: var(--color-link-hover);
+          background-color: color-mix(in oklab, var(--color-link) 10%, transparent);
         }
       }
     }
@@ -7266,12 +8148,8 @@ tbody {
 
 
 
-/* Callout dark mode adjustments */
+/* Dark mode component adjustments */
 html[data-theme="dark"] {
-  .callout-success { background-color: var(--color-success-50); border-color: var(--color-success-500); color: var(--color-success-900); }
-  .callout-info { background-color: var(--color-info-50); border-color: var(--color-info-500); color: var(--color-info-900); }
-  .callout-warning { background-color: var(--color-warning-50); border-color: var(--color-warning-500); color: var(--color-warning-900); }
-  .callout-danger, .callout-error { background-color: var(--color-danger-50); border-color: var(--color-danger-500); color: var(--color-danger-900); }
   img, video { opacity: 0.8; transition: opacity var(--transition-normal); }
   img:hover, video:hover { opacity: 1; }
 }
@@ -7302,13 +8180,13 @@ pds-icon {
 
 
 /* Icon color utilities */
-.icon-primary, pds-icon.primary { color: var(--color-primary-600); }
-.icon-secondary, pds-icon.secondary { color: var(--color-secondary-600); }
-.icon-accent, pds-icon.accent { color: var(--color-accent-600); }
-.icon-success, pds-icon.success { color: var(--color-success-600); }
-.icon-warning, pds-icon.warning { color: var(--color-warning-600); }
-.icon-danger, pds-icon.danger { color: var(--color-danger-600); }
-.icon-info, pds-icon.info { color: var(--color-info-600); }
+.icon-primary, pds-icon.primary { color: var(--color-primary-text); }
+.icon-secondary, pds-icon.secondary { color: var(--color-text-secondary); }
+.icon-accent, pds-icon.accent { color: var(--color-accent-text); }
+.icon-success, pds-icon.success { color: var(--color-success-text); }
+.icon-warning, pds-icon.warning { color: var(--color-warning-text); }
+.icon-danger, pds-icon.danger { color: var(--color-danger-text); }
+.icon-info, pds-icon.info { color: var(--color-info-text); }
 .icon-muted, pds-icon.muted { color: var(--color-text-muted); }
 .icon-subtle, pds-icon.subtle { color: var(--color-text-subtle); }
 
@@ -7738,13 +8616,13 @@ a.icon-only {
   
   /* btn-primary stays vibrant in any context */
   & .btn-primary {
-    background-color: var(--color-primary-500);
-    border-color: var(--color-primary-500);
+    background-color: var(--color-primary-fill);
+    border-color: var(--color-primary-fill);
     color: var(--color-primary-contrast, #ffffff);
     
     &:hover {
-      background-color: var(--color-primary-400);
-      border-color: var(--color-primary-400);
+      background-color: var(--color-primary-fill-hover);
+      border-color: var(--color-primary-fill-hover);
     }
   }
 }
@@ -7777,7 +8655,7 @@ html:not([data-theme="dark"]) .surface-inverse {
   }
   
   & a:not([class*="btn"]) {
-    color: var(--color-primary-300, #7dd3fc);
+    color: var(--color-link);
   }
 }
 
@@ -7809,7 +8687,7 @@ html[data-theme="dark"] .surface-inverse {
   }
   
   & a:not([class*="btn"]) {
-    color: var(--color-primary-600, #0284c7);
+    color: var(--color-link);
   }
 }
 
@@ -7905,9 +8783,9 @@ html[data-theme="dark"] .surface-inverse {
 }
 
 /* Touch device optimizations */
-@media (hover: none) and (pointer: coarse) {
+@media (pointer: coarse) {
   /* Touch devices - larger touch targets for interactive elements */
-  button, a, select, textarea,
+  select, textarea,
   input:not([type="radio"]):not([type="checkbox"]) {
     min-height: 44px;
     min-width: 44px;
@@ -7943,7 +8821,7 @@ html[data-theme="dark"] .surface-inverse {
   
   a {
     &:hover {
-      color: var(--color-primary-600);
+      color: var(--color-link-hover);
     }
   }
 }

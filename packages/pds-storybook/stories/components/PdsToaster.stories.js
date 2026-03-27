@@ -95,7 +95,7 @@ export const Default = () => {
         <div class="stack-xs">
           <strong class="callout-title">More info on PDS toasters</strong>
           <div>
-            <a href="/?path=/story/pds-pds-object--pds-toast" target="_top">See PDS Object/PDS.toast() utility story</a>
+            <a href="/?path=/story/pds-pds-api--pds-toast" target="_top">See PDS api/PDS.toast() utility story</a>
           </div>
         </div>
       </div>

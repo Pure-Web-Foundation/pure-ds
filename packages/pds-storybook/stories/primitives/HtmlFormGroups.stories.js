@@ -10,7 +10,7 @@ const styles = html`
   </style>
 `;
 export default {
-  title: 'Primitives/Form Elements',
+  title: 'Primitives & Patterns/Form Elements',
   tags: ["grouping"],
   parameters: {
     pds: {

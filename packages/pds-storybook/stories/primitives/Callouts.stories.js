@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'Primitives/Callouts',
+  title: 'Primitives & Patterns/Callouts',
   tags: ['Callouts', 'notifications', 'feedback', 'colors', 'message', 'status', 'error', 'warning', 'success', 'info', 'danger'],
   parameters: {
     pds: {

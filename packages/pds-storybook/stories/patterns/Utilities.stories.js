@@ -12,7 +12,7 @@ const utilitiesStoryStyles = html`
 `;
 
 export default {
-  title: "Patterns/Utilities",
+  title: "Primitives & Patterns/Utilities",
   tags: ["utilities", "spacing", "layout", "gap"],
   parameters: {
     pds: {

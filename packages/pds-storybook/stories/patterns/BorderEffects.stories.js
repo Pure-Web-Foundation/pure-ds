@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'Patterns/Border Effects',
+  title: 'Primitives & Patterns/Border Effects',
   tags: ['border', 'gradient', 'glow', 'effect', 'decoration'],
   parameters: {
     pds: {

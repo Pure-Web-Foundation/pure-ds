@@ -1,7 +1,7 @@
 import { html } from "#pds/lit";
 
 export default {
-  title: "Primitives/Articles",
+  title: "Primitives & Patterns/Articles",
   tags: ["typography", "content", "article", "layout", "readability"],
   parameters: {
     pds: {

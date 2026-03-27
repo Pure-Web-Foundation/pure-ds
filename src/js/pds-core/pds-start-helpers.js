@@ -3,8 +3,23 @@
  * Kept separate to avoid pulling live-only logic into the base runtime bundle.
  */
 
-import { AutoDefiner as CoreAutoDefiner } from "pure-web/auto-definer";
 import { PDS } from "../pds-singleton.js";
+
+let __coreAutoDefinerCtorPromise = null;
+
+async function getCoreAutoDefinerCtor() {
+  if (!__coreAutoDefinerCtorPromise) {
+    __coreAutoDefinerCtorPromise = import("pure-web/auto-definer")
+      .then((mod) => mod?.AutoDefiner || mod?.default?.AutoDefiner || mod?.default)
+      .then((ctor) => {
+        if (typeof ctor !== "function") {
+          throw new Error("AutoDefiner constructor not found in pure-web/auto-definer");
+        }
+        return ctor;
+      });
+  }
+  return __coreAutoDefinerCtorPromise;
+}
 
 const __ABSOLUTE_URL_PATTERN__ = /^[a-z][a-z0-9+\-.]*:\/\//i;
 const __MODULE_URL__ = (() => {
@@ -357,7 +372,7 @@ export async function setupAutoDefinerAndEnhancers(options, { baseEnhancers = []
   // Setup AutoDefiner in browser context (it already observes shadow DOMs)
   let autoDefiner = null;
   if (typeof window !== "undefined" && typeof document !== "undefined") {
-    const AutoDefinerCtor = CoreAutoDefiner;
+    const AutoDefinerCtor = await getCoreAutoDefinerCtor();
 
     const defaultMapper = (tag) => {
       switch (tag) {

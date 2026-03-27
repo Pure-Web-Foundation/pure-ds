@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'Primitives/Tables',
+  title: 'Primitives & Patterns/Tables',
   tags: ['table', 'data', 'grid', 'tabular', 'responsive'],
   parameters: {
     pds: {

@@ -1,7 +1,7 @@
 import { html } from "#pds/lit";
 
 export default {
-  title: "Primitives/Cards",
+  title: "Primitives & Patterns/Cards",
   tags: ["cards", "layout", "spacing", "surface", "colors"],
   parameters: {
     pds: {

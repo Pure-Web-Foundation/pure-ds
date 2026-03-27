@@ -1,25 +1,548 @@
-function N(o){let t=Array.isArray(o?.strings)?o.strings:[],c=Array.isArray(o?.values)?o.values:[],m=new Set,$=[],w=/(\s)(\.[\w-]+)=["']?\s*$/,s=/(\s)(@[\w-]+)=["']?\s*$/,r=/(\s)(\?[\w-]+)=["']?\s*$/,u=/(\s)([\w:-]+)=["']?\s*$/,d=/=["']\s*$/,h=!1;for(let e=0;e<t.length;e+=1){let n=t[e]??"";if(h&&(n=n.replace(/^["']/,""),h=!1),e<c.length){let l=`pds-val-${e}`,b=n.match(w),p=n.match(s),f=n.match(r),C=n.match(u);if(b){let y=b[2].slice(1);h=d.test(t[e]??""),n=n.replace(w,`$1data-pds-bind-${e}="prop:${y}:${l}"`),m.add(e)}else if(p){let y=p[2].slice(1);h=d.test(t[e]??""),n=n.replace(s,`$1data-pds-bind-${e}="event:${y}:${l}"`),m.add(e)}else if(f){let y=f[2].slice(1);h=d.test(t[e]??""),n=n.replace(r,`$1data-pds-bind-${e}="boolean:${y}:${l}"`),m.add(e)}else if(C){let y=C[2];h=d.test(t[e]??""),n=n.replace(u,`$1data-pds-bind-${e}="attr:${y}:${l}"`),m.add(e)}}$.push(n),e<c.length&&!m.has(e)&&$.push(`<!--pds-val-${e}-->`)}let g=document.createElement("template");g.innerHTML=$.join("");let a=(e,n)=>{let l=e.parentNode;if(!l)return;if(n==null){l.removeChild(e);return}let b=p=>{if(p!=null){if(p instanceof Node){l.insertBefore(p,e);return}if(Array.isArray(p)){p.forEach(f=>b(f));return}l.insertBefore(document.createTextNode(String(p)),e)}};b(n),l.removeChild(e)},S=document.createTreeWalker(g.content,NodeFilter.SHOW_COMMENT),E=[];for(;S.nextNode();){let e=S.currentNode;e?.nodeValue?.startsWith("pds-val-")&&E.push(e)}return E.forEach(e=>{let n=Number(e.nodeValue.replace("pds-val-",""));a(e,c[n])}),g.content.querySelectorAll("*").forEach(e=>{[...e.attributes].forEach(n=>{if(!n.name.startsWith("data-pds-bind-"))return;let l=n.value.indexOf(":"),b=n.value.lastIndexOf(":");if(l<=0||b<=l){e.removeAttribute(n.name);return}let p=n.value.slice(0,l),f=n.value.slice(l+1,b),C=n.value.slice(b+1),y=Number(String(C).replace("pds-val-","")),v=c[y];if(!f||!Number.isInteger(y)){e.removeAttribute(n.name);return}p==="prop"?e[f]=v:p==="event"?(typeof v=="function"||v&&typeof v.handleEvent=="function")&&e.addEventListener(f,v):p==="boolean"?v?e.setAttribute(f,""):e.removeAttribute(f):p==="attr"&&(v==null||v===!1?e.removeAttribute(f):e.setAttribute(f,String(v))),e.removeAttribute(n.name)})}),g.content}var T=class extends EventTarget{constructor(){super(),this.mode=null,this.compiled=null,this.log=()=>{},this.logHandler=null}},F="__PURE_DS_PDS_SINGLETON__",L=typeof globalThis<"u"?globalThis:window,x=L?.[F],A=x&&typeof x.addEventListener=="function"?x:new T;L&&(L[F]=A);typeof A.log!="function"&&(A.log=(o="log",t,...c)=>{if(typeof console>"u")return;let m=typeof console[o]=="function"?console[o].bind(console):typeof console.log=="function"?console.log.bind(console):null;m&&(c.length>0?m(t,...c):m(t))});typeof A.logHandler!="function"&&(A.logHandler=null);function M(o,t){if(t==null)return;if(typeof t=="object"&&Array.isArray(t.strings)&&Array.isArray(t.values)){o.appendChild(N(t));return}if(t instanceof Node){o.appendChild(t);return}if(Array.isArray(t)){t.forEach(m=>M(o,m));return}let c=typeof t=="string"?t:String(t);o.appendChild(document.createTextNode(c))}function P(o){if(!o)return!0;let t=!0,c=r=>{if(!r||typeof r!="object")return"<unknown>";let u=r.tagName?String(r.tagName).toLowerCase():"node",d=r.id?`#${r.id}`:"",h=typeof r.getAttribute=="function"?r.getAttribute("name"):null,g=h?`[name="${h}"]`:"";return`${u}${d}${g}`},m=(r,u)=>{if(!r||typeof r.querySelectorAll!="function")return;let d=Array.from(r.querySelectorAll(":invalid"));if(!d.length)return;let h=d.map(g=>{let a=typeof g.validationMessage=="string"?g.validationMessage:"";return`${c(g)}${a?` \u2014 ${a}`:""}`});A.log("warn",`ask.validateDialogFormTree: invalid controls in ${u}:`,h)},$=(r,u)=>{try{let d=typeof r.reportValidity=="function"?r.reportValidity():r.checkValidity?.()??!0;return d||m(r,u),d}catch(d){return A.log("error",`ask.validateDialogFormTree: validation threw in ${u}`,d),!1}};t=$(o,"host dialog form")&&t;let w=Array.from(o.querySelectorAll("form"));for(let r of w){if(r===o)continue;t=$(r,`nested light DOM form ${c(r)}`)&&t}let s=Array.from(o.querySelectorAll("*"));for(let r of s){let u=r?.shadowRoot;if(!u)continue;let d=Array.from(u.querySelectorAll("form"));for(let h of d)t=$(h,`shadow form under ${c(r)}`)&&t}return t}function V(){let o=navigator.userAgent,t=/Safari/i.test(o),c=/(Chrome|Chromium|CriOS|FxiOS|EdgiOS|OPiOS|Opera)/i.test(o);return t&&!c}function k(o){if(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)return;let t=window.matchMedia?.("(max-width: 639px)").matches,c=o.classList.contains("dialog-no-scale-animation")?"pds-dialog-fade-enter":t?"pds-dialog-enter-mobile":"pds-dialog-enter";o.style.animation="none",o.offsetWidth,o.style.animation=`${c} var(--transition-normal) ease`,o.addEventListener("animationend",()=>{o.style.animation=""},{once:!0})}function D(o={}){return o?.liquidGlassEffects===!0}async function j(o,t={}){let c={title:"Confirm",type:"confirm",buttons:{ok:{name:"OK",primary:!0},cancel:{name:"Cancel",cancel:!0}}};t={...c,...t};let m=t.buttons&&typeof t.buttons=="object"?t.buttons:c.buttons,$=s=>{if(s==null)return{actionCode:"dismiss",actionKind:"dismiss",button:null};let r=m?.[s]??null,u=s==="ok"?"ok":s==="dismiss"?"dismiss":r?.cancel||s==="cancel"?"cancel":"custom";return{actionCode:s,actionKind:u,button:r}},w=s=>{if(typeof s>"u"||s===null||s===!0)return{allow:!0};if(s===!1)return{allow:!1};if(typeof s=="object"){let r=Object.prototype.hasOwnProperty.call(s,"result")||Object.prototype.hasOwnProperty.call(s,"value");return{allow:s.allow!==!1,hasResult:r,result:Object.prototype.hasOwnProperty.call(s,"result")?s.result:s.value}}return{allow:!!s}};return new Promise(s=>{let r=!1,u=(i,e,{shouldClose:n=!0}={})=>{if(!r&&(r=!0,s(i),!(!n||!e?.open)))try{e.close()}catch(l){A.log("warn","ask: dialog.close() failed",l)}},d=async i=>{if(i.actionKind!=="ok"||typeof t.beforeClose!="function")return{allow:!0};try{let e=await t.beforeClose(i);return w(e)}catch(e){return A.log("error","ask.beforeClose: validation failed",e),{allow:!1}}},h=({actionKind:i,form:e})=>i==="ok"?t.useForm&&e?new FormData(e):!0:!1,g=async({actionCode:i,form:e,submitter:n,originalEvent:l,bypassValidation:b=!1,shouldClose:p=!0})=>{if(r)return;let{actionKind:f,button:C}=$(i),y=e||a.querySelector("form")||null;if(t.useForm&&f==="ok"&&y&&!b&&!P(y))return;let v=h({actionKind:f,form:y}),O=await d({actionCode:i,actionKind:f,dialog:a,form:y,formData:t.useForm&&f==="ok"&&y?v:null,submitter:n,originalEvent:l,options:t,button:C,defaultResult:v});if(!O.allow)return;let q=O.hasResult?O.result:v;u(q,a,{shouldClose:p})},a=document.createElement("dialog");V()&&a.classList.add("dialog-no-scale-animation"),D(t)&&a.classList.add("liquid-glass"),t.size&&a.classList.add(`dialog-${t.size}`),t.type&&a.classList.add(`dialog-${t.type}`),t.class&&(Array.isArray(t.class)?a.classList.add(...t.class):a.classList.add(t.class)),t.maxHeight&&a.style.setProperty("--dialog-max-height",t.maxHeight);let S=Object.entries(m).map(([i,e])=>{let n=e.primary?"btn-primary btn-sm":"btn-outline btn-sm",l=e.cancel?"button":"submit",b=e.formNoValidate?" formnovalidate":"";return`<button type="${l}" class="${n}" value="${i}"${b}>${e.name}</button>`});if(t.useForm){let i=document.createElement("div");M(i,o);let e=i.querySelector("form");if(e){a.innerHTML=`
+// src/js/common/common.js
+function fragmentFromTemplateLike(templateLike) {
+  const strings = Array.isArray(templateLike?.strings) ? templateLike.strings : [];
+  const values = Array.isArray(templateLike?.values) ? templateLike.values : [];
+  const consumedValues = /* @__PURE__ */ new Set();
+  const htmlParts = [];
+  const propBindingPattern = /(\s)(\.[\w-]+)=["']?\s*$/;
+  const eventBindingPattern = /(\s)(@[\w-]+)=["']?\s*$/;
+  const booleanBindingPattern = /(\s)(\?[\w-]+)=["']?\s*$/;
+  const attrBindingPattern = /(\s)([\w:-]+)=["']?\s*$/;
+  const quotedBindingPattern = /=["']\s*$/;
+  let skipLeadingQuote = false;
+  for (let i = 0; i < strings.length; i += 1) {
+    let chunk = strings[i] ?? "";
+    if (skipLeadingQuote) {
+      chunk = chunk.replace(/^["']/, "");
+      skipLeadingQuote = false;
+    }
+    if (i < values.length) {
+      const marker = `pds-val-${i}`;
+      const propMatch = chunk.match(propBindingPattern);
+      const eventMatch = chunk.match(eventBindingPattern);
+      const boolMatch = chunk.match(booleanBindingPattern);
+      const attrMatch = chunk.match(attrBindingPattern);
+      if (propMatch) {
+        const propName = propMatch[2].slice(1);
+        skipLeadingQuote = quotedBindingPattern.test(strings[i] ?? "");
+        chunk = chunk.replace(
+          propBindingPattern,
+          `$1data-pds-bind-${i}="prop:${propName}:${marker}"`
+        );
+        consumedValues.add(i);
+      } else if (eventMatch) {
+        const eventName = eventMatch[2].slice(1);
+        skipLeadingQuote = quotedBindingPattern.test(strings[i] ?? "");
+        chunk = chunk.replace(
+          eventBindingPattern,
+          `$1data-pds-bind-${i}="event:${eventName}:${marker}"`
+        );
+        consumedValues.add(i);
+      } else if (boolMatch) {
+        const attrName = boolMatch[2].slice(1);
+        skipLeadingQuote = quotedBindingPattern.test(strings[i] ?? "");
+        chunk = chunk.replace(
+          booleanBindingPattern,
+          `$1data-pds-bind-${i}="boolean:${attrName}:${marker}"`
+        );
+        consumedValues.add(i);
+      } else if (attrMatch) {
+        const attrName = attrMatch[2];
+        skipLeadingQuote = quotedBindingPattern.test(strings[i] ?? "");
+        chunk = chunk.replace(
+          attrBindingPattern,
+          `$1data-pds-bind-${i}="attr:${attrName}:${marker}"`
+        );
+        consumedValues.add(i);
+      }
+    }
+    htmlParts.push(chunk);
+    if (i < values.length && !consumedValues.has(i)) {
+      htmlParts.push(`<!--pds-val-${i}-->`);
+    }
+  }
+  const tpl = document.createElement("template");
+  tpl.innerHTML = htmlParts.join("");
+  const replaceValueAtMarker = (markerNode, value) => {
+    const parent = markerNode.parentNode;
+    if (!parent)
+      return;
+    if (value == null) {
+      parent.removeChild(markerNode);
+      return;
+    }
+    const insertValue = (val) => {
+      if (val == null)
+        return;
+      if (val instanceof Node) {
+        parent.insertBefore(val, markerNode);
+        return;
+      }
+      if (Array.isArray(val)) {
+        val.forEach((item) => insertValue(item));
+        return;
+      }
+      parent.insertBefore(document.createTextNode(String(val)), markerNode);
+    };
+    insertValue(value);
+    parent.removeChild(markerNode);
+  };
+  const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_COMMENT);
+  const markers = [];
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    if (node?.nodeValue?.startsWith("pds-val-")) {
+      markers.push(node);
+    }
+  }
+  markers.forEach((node) => {
+    const index = Number(node.nodeValue.replace("pds-val-", ""));
+    replaceValueAtMarker(node, values[index]);
+  });
+  const elements = tpl.content.querySelectorAll("*");
+  elements.forEach((el) => {
+    [...el.attributes].forEach((attr) => {
+      if (!attr.name.startsWith("data-pds-bind-"))
+        return;
+      const firstColon = attr.value.indexOf(":");
+      const lastColon = attr.value.lastIndexOf(":");
+      if (firstColon <= 0 || lastColon <= firstColon) {
+        el.removeAttribute(attr.name);
+        return;
+      }
+      const kind = attr.value.slice(0, firstColon);
+      const bindingName = attr.value.slice(firstColon + 1, lastColon);
+      const markerValue = attr.value.slice(lastColon + 1);
+      const index = Number(String(markerValue).replace("pds-val-", ""));
+      const value = values[index];
+      if (!bindingName || !Number.isInteger(index)) {
+        el.removeAttribute(attr.name);
+        return;
+      }
+      if (kind === "prop") {
+        el[bindingName] = value;
+      } else if (kind === "event") {
+        if (typeof value === "function" || value && typeof value.handleEvent === "function") {
+          el.addEventListener(bindingName, value);
+        }
+      } else if (kind === "boolean") {
+        if (value) {
+          el.setAttribute(bindingName, "");
+        } else {
+          el.removeAttribute(bindingName);
+        }
+      } else if (kind === "attr") {
+        if (value == null || value === false) {
+          el.removeAttribute(bindingName);
+        } else {
+          el.setAttribute(bindingName, String(value));
+        }
+      }
+      el.removeAttribute(attr.name);
+    });
+  });
+  return tpl.content;
+}
+
+// src/js/pds-singleton.js
+var PDSBase = class extends EventTarget {
+  constructor() {
+    super();
+    this.mode = null;
+    this.compiled = null;
+    this.log = () => {
+    };
+    this.logHandler = null;
+  }
+};
+var PDS_SINGLETON_KEY = "__PURE_DS_PDS_SINGLETON__";
+var globalScope = typeof globalThis !== "undefined" ? globalThis : window;
+var existingPDS = globalScope?.[PDS_SINGLETON_KEY];
+var PDS = existingPDS && typeof existingPDS.addEventListener === "function" ? existingPDS : new PDSBase();
+if (globalScope) {
+  globalScope[PDS_SINGLETON_KEY] = PDS;
+}
+if (typeof PDS.log !== "function") {
+  PDS.log = (level = "log", message, ...data) => {
+    if (typeof console === "undefined")
+      return;
+    const method = typeof console[level] === "function" ? console[level].bind(console) : typeof console.log === "function" ? console.log.bind(console) : null;
+    if (!method)
+      return;
+    if (data.length > 0) {
+      method(message, ...data);
+    } else {
+      method(message);
+    }
+  };
+}
+if (typeof PDS.logHandler !== "function") {
+  PDS.logHandler = null;
+}
+
+// src/js/common/ask.js
+function appendMessageContent(container, message) {
+  if (message == null)
+    return;
+  if (typeof message === "object" && Array.isArray(message.strings) && Array.isArray(message.values)) {
+    container.appendChild(fragmentFromTemplateLike(message));
+    return;
+  }
+  if (message instanceof Node) {
+    container.appendChild(message);
+    return;
+  }
+  if (Array.isArray(message)) {
+    message.forEach((item) => appendMessageContent(container, item));
+    return;
+  }
+  const text = typeof message === "string" ? message : String(message);
+  container.appendChild(document.createTextNode(text));
+}
+function validateDialogFormTree(form) {
+  if (!form)
+    return true;
+  let valid = true;
+  const describeElement = (el) => {
+    if (!el || typeof el !== "object")
+      return "<unknown>";
+    const tag = el.tagName ? String(el.tagName).toLowerCase() : "node";
+    const id = el.id ? `#${el.id}` : "";
+    const name = typeof el.getAttribute === "function" ? el.getAttribute("name") : null;
+    const namePart = name ? `[name="${name}"]` : "";
+    return `${tag}${id}${namePart}`;
+  };
+  const reportInvalidControls = (root, scopeLabel) => {
+    if (!root || typeof root.querySelectorAll !== "function")
+      return;
+    const invalidControls = Array.from(root.querySelectorAll(":invalid"));
+    if (!invalidControls.length)
+      return;
+    const list = invalidControls.map((el) => {
+      const message = typeof el.validationMessage === "string" ? el.validationMessage : "";
+      return `${describeElement(el)}${message ? ` \u2014 ${message}` : ""}`;
+    });
+    PDS.log("warn", `ask.validateDialogFormTree: invalid controls in ${scopeLabel}:`, list);
+  };
+  const runValidity = (target, scopeLabel) => {
+    try {
+      const targetValid = typeof target.reportValidity === "function" ? target.reportValidity() : target.checkValidity?.() ?? true;
+      if (!targetValid) {
+        reportInvalidControls(target, scopeLabel);
+      }
+      return targetValid;
+    } catch (error) {
+      PDS.log("error", `ask.validateDialogFormTree: validation threw in ${scopeLabel}`, error);
+      return false;
+    }
+  };
+  valid = runValidity(form, "host dialog form") && valid;
+  const nestedLightDomForms = Array.from(form.querySelectorAll("form"));
+  for (const nestedForm of nestedLightDomForms) {
+    if (nestedForm === form)
+      continue;
+    const nestedValid = runValidity(nestedForm, `nested light DOM form ${describeElement(nestedForm)}`);
+    valid = nestedValid && valid;
+  }
+  const descendants = Array.from(form.querySelectorAll("*"));
+  for (const host of descendants) {
+    const root = host?.shadowRoot;
+    if (!root)
+      continue;
+    const nestedForms = Array.from(root.querySelectorAll("form"));
+    for (const nestedForm of nestedForms) {
+      const nestedValid = runValidity(
+        nestedForm,
+        `shadow form under ${describeElement(host)}`
+      );
+      valid = nestedValid && valid;
+    }
+  }
+  return valid;
+}
+function isSafariBrowser() {
+  const userAgent = navigator.userAgent;
+  const isSafariEngine = /Safari/i.test(userAgent);
+  const isOtherBrowser = /(Chrome|Chromium|CriOS|FxiOS|EdgiOS|OPiOS|Opera)/i.test(userAgent);
+  return isSafariEngine && !isOtherBrowser;
+}
+function playDialogEnterAnimation(dialog) {
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+    return;
+  }
+  const isMobile = window.matchMedia?.("(max-width: 639px)").matches;
+  const animationName = dialog.classList.contains("dialog-no-scale-animation") ? "pds-dialog-fade-enter" : isMobile ? "pds-dialog-enter-mobile" : "pds-dialog-enter";
+  dialog.style.animation = "none";
+  void dialog.offsetWidth;
+  dialog.style.animation = `${animationName} var(--transition-normal) ease`;
+  dialog.addEventListener("animationend", () => {
+    dialog.style.animation = "";
+  }, { once: true });
+}
+function shouldUseLiquidGlass(options = {}) {
+  return options?.liquidGlassEffects === true;
+}
+async function ask(message, options = {}) {
+  const defaults = {
+    title: "Confirm",
+    type: "confirm",
+    // 'alert', 'confirm', 'custom'
+    buttons: {
+      ok: { name: "OK", primary: true },
+      cancel: { name: "Cancel", cancel: true }
+    }
+  };
+  options = { ...defaults, ...options };
+  const buttonConfigs = options.buttons && typeof options.buttons === "object" ? options.buttons : defaults.buttons;
+  const resolveActionMeta = (actionCode) => {
+    if (actionCode == null) {
+      return {
+        actionCode: "dismiss",
+        actionKind: "dismiss",
+        button: null
+      };
+    }
+    const button = buttonConfigs?.[actionCode] ?? null;
+    const actionKind = actionCode === "ok" ? "ok" : actionCode === "dismiss" ? "dismiss" : button?.cancel || actionCode === "cancel" ? "cancel" : "custom";
+    return {
+      actionCode,
+      actionKind,
+      button
+    };
+  };
+  const normalizeBeforeCloseResult = (result) => {
+    if (typeof result === "undefined" || result === null || result === true) {
+      return { allow: true };
+    }
+    if (result === false) {
+      return { allow: false };
+    }
+    if (typeof result === "object") {
+      const hasResult = Object.prototype.hasOwnProperty.call(result, "result") || Object.prototype.hasOwnProperty.call(result, "value");
+      return {
+        allow: result.allow !== false,
+        hasResult,
+        result: Object.prototype.hasOwnProperty.call(result, "result") ? result.result : result.value
+      };
+    }
+    return { allow: Boolean(result) };
+  };
+  return new Promise((resolve) => {
+    let settled = false;
+    const settle = (value, dialog2, { shouldClose = true } = {}) => {
+      if (settled)
+        return;
+      settled = true;
+      resolve(value);
+      if (!shouldClose || !dialog2?.open) {
+        return;
+      }
+      try {
+        dialog2.close();
+      } catch (error) {
+        PDS.log("warn", "ask: dialog.close() failed", error);
+      }
+    };
+    const runBeforeClose = async (context) => {
+      if (context.actionKind !== "ok" || typeof options.beforeClose !== "function") {
+        return { allow: true };
+      }
+      try {
+        const beforeCloseResult = await options.beforeClose(context);
+        return normalizeBeforeCloseResult(beforeCloseResult);
+      } catch (error) {
+        PDS.log("error", "ask.beforeClose: validation failed", error);
+        return { allow: false };
+      }
+    };
+    const resolveDefaultResult = ({ actionKind, form }) => {
+      if (actionKind === "ok") {
+        if (options.useForm && form) {
+          return new FormData(form);
+        }
+        return true;
+      }
+      return false;
+    };
+    const attemptResolve = async ({
+      actionCode,
+      form,
+      submitter,
+      originalEvent,
+      bypassValidation = false,
+      shouldClose = true
+    }) => {
+      if (settled)
+        return;
+      const { actionKind, button } = resolveActionMeta(actionCode);
+      const activeForm = form || dialog.querySelector("form") || null;
+      if (options.useForm && actionKind === "ok" && activeForm && !bypassValidation) {
+        const valid = validateDialogFormTree(activeForm);
+        if (!valid) {
+          return;
+        }
+      }
+      const defaultResult = resolveDefaultResult({
+        actionKind,
+        form: activeForm
+      });
+      const guard = await runBeforeClose({
+        actionCode,
+        actionKind,
+        dialog,
+        form: activeForm,
+        formData: options.useForm && actionKind === "ok" && activeForm ? defaultResult : null,
+        submitter,
+        originalEvent,
+        options,
+        button,
+        defaultResult
+      });
+      if (!guard.allow) {
+        return;
+      }
+      const result = guard.hasResult ? guard.result : defaultResult;
+      settle(result, dialog, { shouldClose });
+    };
+    const dialog = document.createElement("dialog");
+    if (isSafariBrowser()) {
+      dialog.classList.add("dialog-no-scale-animation");
+    }
+    if (shouldUseLiquidGlass(options))
+      dialog.classList.add("liquid-glass");
+    if (options.size) {
+      dialog.classList.add(`dialog-${options.size}`);
+    }
+    if (options.type) {
+      dialog.classList.add(`dialog-${options.type}`);
+    }
+    if (options.class) {
+      if (Array.isArray(options.class)) {
+        dialog.classList.add(...options.class);
+      } else {
+        dialog.classList.add(options.class);
+      }
+    }
+    if (options.maxHeight) {
+      dialog.style.setProperty("--dialog-max-height", options.maxHeight);
+    }
+    const buttons = Object.entries(buttonConfigs).map(([code, obj]) => {
+      const btnClass = obj.primary ? "btn-primary btn-sm" : "btn-outline btn-sm";
+      const btnType = obj.cancel ? "button" : "submit";
+      const formNoValidate = obj.formNoValidate ? " formnovalidate" : "";
+      return `<button type="${btnType}" class="${btnClass}" value="${code}"${formNoValidate}>${obj.name}</button>`;
+    });
+    if (options.useForm) {
+      const tempContainer = document.createElement("div");
+      appendMessageContent(tempContainer, message);
+      const form = tempContainer.querySelector("form");
+      if (form) {
+        dialog.innerHTML = /*html*/
+        `
           <header>
-            <h2>${t.title}</h2>
+            <h2>${options.title}</h2>
           </header>
-        `;let n=document.createElement("article");for(n.className="dialog-body";e.firstChild;)n.appendChild(e.firstChild);e.appendChild(n);let l=document.createElement("footer");l.innerHTML=S.join(""),e.appendChild(l),a.appendChild(e)}else a.innerHTML=`
+        `;
+        const article = document.createElement("article");
+        article.className = "dialog-body";
+        while (form.firstChild) {
+          article.appendChild(form.firstChild);
+        }
+        form.appendChild(article);
+        const footer = document.createElement("footer");
+        footer.innerHTML = buttons.join("");
+        form.appendChild(footer);
+        dialog.appendChild(form);
+      } else {
+        dialog.innerHTML = /*html*/
+        `
           <header>
-            <h2>${t.title}</h2>
+            <h2>${options.title}</h2>
           </header>
           <article id="msg-container"></article>
           <footer>
-            ${S.join("")}
+            ${buttons.join("")}
           </footer>
-        `,a.querySelector("#msg-container").appendChild(i)}else{a.innerHTML=`
+        `;
+        const article = dialog.querySelector("#msg-container");
+        article.appendChild(tempContainer);
+      }
+    } else {
+      dialog.innerHTML = /*html*/
+      `
         <form method="dialog">
           <header>
-            <h2>${t.title}</h2>
+            <h2>${options.title}</h2>
           </header>
           
           <article id="msg-container"></article>
           
           <footer>
-            ${S.join("")}
+            ${buttons.join("")}
           </footer>
         </form>
-      `;let i=a.querySelector("#msg-container");M(i,o)}a.addEventListener("click",i=>{let e=i.target.closest('button[value="cancel"]');e&&g({actionCode:"cancel",form:a.querySelector("form"),submitter:e,originalEvent:i})});let E=()=>{let i=a.querySelector("form");if(i){if(i.dataset.askSubmitBound==="true")return;i.dataset.askSubmitBound="true",i.addEventListener("submit",e=>{e.preventDefault();let n=e.submitter?.value??(t.useForm?"ok":void 0),l=!!e.submitter?.hasAttribute("formnovalidate");g({actionCode:n,form:i,submitter:e.submitter,originalEvent:e,bypassValidation:l})})}else requestAnimationFrame(E)};a.addEventListener("cancel",i=>{i.preventDefault(),g({actionCode:"dismiss",form:a.querySelector("form"),originalEvent:i})}),a.addEventListener("close",()=>{r||u(!1,a,{shouldClose:!1}),setTimeout(()=>a.remove(),200)}),document.body.appendChild(a),requestAnimationFrame(E),typeof t.rendered=="function"&&t.rendered(a),a.showModal(),requestAnimationFrame(()=>k(a))})}export{j as ask};
+      `;
+      const article = dialog.querySelector("#msg-container");
+      appendMessageContent(article, message);
+    }
+    dialog.addEventListener("click", (e) => {
+      const btn = e.target.closest('button[value="cancel"]');
+      if (btn) {
+        attemptResolve({
+          actionCode: "cancel",
+          form: dialog.querySelector("form"),
+          submitter: btn,
+          originalEvent: e
+        });
+      }
+    });
+    const setupFormListener = () => {
+      const form = dialog.querySelector("form");
+      if (form) {
+        if (form.dataset.askSubmitBound === "true") {
+          return;
+        }
+        form.dataset.askSubmitBound = "true";
+        form.addEventListener("submit", (event) => {
+          event.preventDefault();
+          const submitValue = event.submitter?.value ?? (options.useForm ? "ok" : void 0);
+          const bypassValidation = Boolean(event.submitter?.hasAttribute("formnovalidate"));
+          attemptResolve({
+            actionCode: submitValue,
+            form,
+            submitter: event.submitter,
+            originalEvent: event,
+            bypassValidation
+          });
+        });
+      } else {
+        requestAnimationFrame(setupFormListener);
+      }
+    };
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      attemptResolve({
+        actionCode: "dismiss",
+        form: dialog.querySelector("form"),
+        originalEvent: event
+      });
+    });
+    dialog.addEventListener("close", () => {
+      if (!settled) {
+        settle(false, dialog, { shouldClose: false });
+      }
+      setTimeout(() => dialog.remove(), 200);
+    });
+    document.body.appendChild(dialog);
+    requestAnimationFrame(setupFormListener);
+    if (typeof options.rendered === "function") {
+      options.rendered(dialog);
+    }
+    dialog.showModal();
+    requestAnimationFrame(() => playDialogEnterAnimation(dialog));
+  });
+}
+export {
+  ask
+};
+//# sourceMappingURL=pds-ask.js.map

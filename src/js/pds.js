@@ -77,6 +77,7 @@ import {
   resolveThemePreference,
 } from "./pds-core/pds-theme-utils.js";
 import { configurePDSLogger, pdsLog } from "./common/pds-log.js";
+import { State, createReactiveComponent, bindState } from "./pds-reactive.js";
 
 let __autoCompletePromise = null;
 let __askPromise = null;
@@ -646,6 +647,15 @@ PDS.parse = parse;
 export const html = common.parseFragment;
 PDS.html = html;
 
+/** Reactive state container for building reactive components */
+PDS.State = State;
+
+// /** Create a reactive component with automatic re-rendering */
+// PDS.createReactiveComponent = createReactiveComponent;
+
+/** Bind state to DOM elements for auto-updating */
+PDS.bindState = bindState;
+
 /** Create a constructable CSSStyleSheet from a CSS string */
 PDS.createStylesheet = createStylesheet;
 
@@ -1184,4 +1194,7 @@ export {
   setLocale,
   getLocalizationState,
   createJSONLocalization,
+  State,
+  createReactiveComponent,
+  bindState,
 };

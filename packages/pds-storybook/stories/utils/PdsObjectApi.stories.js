@@ -260,7 +260,7 @@ const makeCard = ({
 };
 
 export default {
-  title: 'PDS/PDS Object',
+  title: 'PDS/PDS api',
   tags: ['autodocs', 'runtime', 'api', 'reference', 'utilities', 'pds-object'],
   parameters: {
     pds: {

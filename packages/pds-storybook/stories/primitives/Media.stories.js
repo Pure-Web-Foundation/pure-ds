@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'Primitives/Media Elements',
+  title: 'Primitives & Patterns/Media Elements',
   tags: ['media', 'image', 'figure', 'gallery', 'video', 'responsive'],
   parameters: {
     pds: {

@@ -144,7 +144,35 @@
         },
         {
           "name": "start-angle",
-          "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\r\nIf not specified, the angle is auto-detected based on the FAB's corner position:\r\n- Bottom-right: 180° (fly left/up)\r\n- Bottom-left: 315° (fly right/up)\r\n- Top-right: 225° (fly left/down)\r\n- Top-left: 45° (fly right/down)"
+          "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\r\nIf not specified, the angle is auto-detected based on the FAB's corner position:\r\n- Bottom-right: 180-� (fly left/up)\r\n- Bottom-left: 315-� (fly right/up)\r\n- Top-right: 225-� (fly left/down)\r\n- Top-left: 45-� (fly right/down)"
+        },
+        {
+          "name": "behavior",
+          "description": "Interaction mode for opening satellites (default: click)",
+          "values": [
+            {
+              "name": "click"
+            },
+            {
+              "name": "hover"
+            }
+          ]
+        },
+        {
+          "name": "mode",
+          "description": "Layout mode for FAB positioning (default: fixed)",
+          "values": [
+            {
+              "name": "fixed"
+            },
+            {
+              "name": "inline"
+            }
+          ]
+        },
+        {
+          "name": "fab-class",
+          "description": "Space-separated class list forwarded to the internal button.\r\nUse this instead of host classes for btn-* and icon-only."
         }
       ]
     },

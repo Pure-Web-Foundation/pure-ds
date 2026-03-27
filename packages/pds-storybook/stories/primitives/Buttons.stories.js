@@ -1,7 +1,7 @@
 import { html } from 'lit';
 
 export default {
-  title: 'Primitives/Buttons',
+  title: 'Primitives & Patterns/Buttons',
   tags: ['buttons', 'interaction'],
   parameters: {
     pds: {

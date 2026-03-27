@@ -23,6 +23,9 @@ preloadShiki();
 window.toastFormData = toastFormData;
 
 let pdsCodeLoadPromise = null;
+let pdsStoryObserver = null;
+let pdsStoryObserverContainer = null;
+let pdsStoryAdoptTimeout = null;
 
 async function ensurePdsCodeLoaded() {
   if (typeof customElements !== 'undefined' && customElements.get('pds-code')) {
@@ -527,23 +530,15 @@ const withPDS = (story, context) => {
     // DON'T re-adopt if they already have styles - this preserves component internal stylesheets
     for (const { root, host } of shadowRoots) {
       try {
+        if (root.__pdsLayersAdopted === true) {
+          continue;
+        }
+
         const currentSheets = root.adoptedStyleSheets || [];
-        
-        // Check if this shadow root already has PDS sheets
-        const hasPDSSheets = currentSheets.some(sheet => {
-          try {
-            // Check if it's a PDS sheet by looking for PDS-specific selectors
-            return Array.from(sheet.cssRules || []).some(rule => 
-              rule.selectorText?.includes(':where') || 
-              rule.cssText?.includes('--color-') ||
-              rule.cssText?.includes('--spacing-')
-            );
-          } catch {
-            return false;
-          }
-        });
+        const hasPDSSheets = currentSheets.some(sheet => sheet?._pds === true);
         
         if (hasPDSSheets && currentSheets.length > 0) {
+          root.__pdsLayersAdopted = true;
           //console.log(`⏭️  <${host.toLowerCase()}> already has ${currentSheets.length} sheets - skipping`);
           continue;
         }
@@ -556,6 +551,7 @@ const withPDS = (story, context) => {
         
         // Adopt full layer stack: primitives, components, utilities
         await PDS.adoptLayers(root, ['primitives', 'components', 'utilities'], existingSheets);
+        root.__pdsLayersAdopted = true;
         
         //console.log(`✅ Adopted layers for <${host.toLowerCase()}> (now ${root.adoptedStyleSheets.length} sheets)`);
       } catch (err) {
@@ -578,34 +574,33 @@ const withPDS = (story, context) => {
   setTimeout(adoptAllShadowStyles, 100);
   setTimeout(adoptAllShadowStyles, 300);
   
-  // Re-adopt on any DOM changes (for re-renders) with debouncing
-  let adoptTimeout;
+  // Re-adopt on DOM tree changes with a single managed observer
   setTimeout(() => {
     const container = document.querySelector('#storybook-root');
-    if (container && !container._pdsObserver) {
+    if (container) {
+      if (pdsStoryObserver && pdsStoryObserverContainer !== container) {
+        pdsStoryObserver.disconnect();
+        pdsStoryObserver = null;
+      }
+
+      pdsStoryObserverContainer = container;
+
+      if (pdsStoryObserver) {
+        return;
+      }
+
       const debouncedAdopt = () => {
-        clearTimeout(adoptTimeout);
-        adoptTimeout = setTimeout(() => {
-          console.log('🔄 DOM changed - re-adopting primitives');
+        clearTimeout(pdsStoryAdoptTimeout);
+        pdsStoryAdoptTimeout = setTimeout(() => {
           adoptAllShadowStyles();
-        }, 100); // Increased debounce to 100ms
+        }, 120);
       };
       
-      const observer = new MutationObserver(debouncedAdopt);
-      observer.observe(container, { 
+      pdsStoryObserver = new MutationObserver(debouncedAdopt);
+      pdsStoryObserver.observe(container, {
         childList: true, 
         subtree: true,
-        attributes: true,
-        characterData: true // Also watch text changes
       });
-      container._pdsObserver = observer;
-      
-      // Also re-adopt periodically as fallback (every 1 second)
-      setInterval(() => {
-        if (document.contains(container)) {
-          adoptAllShadowStyles();
-        }
-      }, 1000);
     }
   }, 100);
   
@@ -1712,45 +1707,28 @@ const preview = {
       storySort: {
         method: 'alphabetical',
         order: [
-          'About PDS',
-          ['What Is PDS', 'Getting Started'],
           'PDS',
           [
-            'About PDS',
-            ['What Is PDS', 'Getting Started'],
-            'Foundations',
-            ['Colors', 'Typography', 'HTML Defaults', 'Icons', 'Spacing', 'Smart Surfaces'],
-            'Primitives',
-            ['Buttons', 'Forms', 'Form Groups', 'Alerts', 'Badges', 'Cards', 'Articles', 'Tables', 'Media', 'Accordion'],
-            'Layout',
-            ['Overview', 'System'],
-            'Utilities',
-            ['Grid System'],
-            'Patterns',
-            ['Border Effects', 'Utilities'],
-            'Enhancements',
-            ['Mesh Gradients', 'Interactive States', 'Toggles', 'Dropdowns', 'Range Sliders', 'Required Fields'],
-            'Components',
-            ['*'],
-            'Reference'
+            'General',
+            ['Docs', 'Getting Started', 'What Is PDS'],
+            'DOM Building',
+            ['Docs', 'Using the html template marker'],
+            'State Management',
+            ['Docs', '*'],
+            'PDS api',
+            ['Docs', '*'],
+            '*'
           ],
-          'About PDS',
-          ['What is PDS', 'Getting Started'],
           'Foundations',
-          ['Colors', 'Typography', 'HTML Defaults', 'Icons', 'Spacing', 'Smart Surfaces'],
-          'Primitives',
-          ['Buttons', 'Forms', 'Form Groups', 'Alerts', 'Badges', 'Cards', 'Articles', 'Tables', 'Media', 'Accordion'],
-          'Layout',
-          ['Overview', 'System'],
-          'Utilities',
-          ['Grid System'],
-          'Patterns',
-          ['Border Effects', 'Utilities'],
+          ['*'],
+          'Primitives & Patterns',
+          ['*'],
           'Enhancements',
-          ['Mesh Gradients', 'Interactive States', 'Toggles', 'Dropdowns', 'Range Sliders', 'Required Fields'],
+          ['*'],
           'Components',
           ['*'],
           'Reference',
+          ['*'],
           '*'
         ]
       }

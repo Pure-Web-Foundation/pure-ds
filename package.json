@@ -89,7 +89,6 @@
     "CSS-INTELLISENSE-QUICK-REF.md"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node esbuild-dev.js",
     "prebuild": "npm run types",
     "build": "node esbuild-build.js",

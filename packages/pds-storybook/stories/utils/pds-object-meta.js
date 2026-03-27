@@ -34,7 +34,8 @@ const BASE_PDS_TAGS = [
   'pds-enums',
   'pds-ask',
   'pds-toast',
-  'pds-parse'
+  'pds-parse',
+  'pds-html'
 ];
 
 export const pdsObjectDocsParameters = docsParameters;

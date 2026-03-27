@@ -69,7 +69,7 @@ await new Promise((resolve) => setTimeout(resolve, 1200));
 done?.querySelector('.callout-close')?.click();`;
 
 export default {
-  title: 'PDS/PDS Object',
+  title: 'PDS/PDS api',
   tags: ['autodocs', 'runtime', 'api', 'reference', 'utilities', 'pds-object', 'notifications', 'toast', 'feedback'],
   parameters: {
     pds: {

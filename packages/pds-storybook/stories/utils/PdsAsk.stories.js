@@ -238,7 +238,7 @@ const result = await PDS.ask(
 );`;
 
 export default {
-  title: 'PDS/PDS Object',
+  title: 'PDS/PDS api',
   tags: ['autodocs', 'runtime', 'api', 'reference', 'utilities', 'pds-object', 'interaction', 'dialogs', 'forms', 'modal', 'dialog', 'alert', 'confirm', 'prompt', 'popup', 'overlay'],
   parameters: {
     pds: {

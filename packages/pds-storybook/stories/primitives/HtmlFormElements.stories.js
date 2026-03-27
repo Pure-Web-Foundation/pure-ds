@@ -9,7 +9,7 @@ const formsStoryStyles = html`
 `;
 
 export default {
-  title: 'Primitives/Form Elements',
+  title: 'Primitives & Patterns/Form Elements',
   tags: ['buttons', 'forms'],
   parameters: {
     pds: {
