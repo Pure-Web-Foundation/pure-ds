@@ -643,11 +643,11 @@ PDS.adoptPrimitives = adoptPrimitives;
 export const parse = common.parseHTML;
 PDS.parse = parse;
 
-/** Parse HTML or tagged templates into a DocumentFragment */
+/** Experimental: parse HTML or tagged templates into a DocumentFragment */
 export const html = common.parseFragment;
 PDS.html = html;
 
-/** Reactive state container for building reactive components */
+/** Experimental reactive state container for building reactive components */
 PDS.State = State;
 
 // /** Create a reactive component with automatic re-rendering */

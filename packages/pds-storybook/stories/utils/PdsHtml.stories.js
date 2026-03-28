@@ -3,6 +3,8 @@ import { getCurrentTheme, preloadShiki, renderCodeBlock } from './shiki.js';
 
 preloadShiki();
 
+const experimentalBadgeHTML = '<span class="badge badge-warning">Experimental</span>';
+
 const verboseVanillaCode = `const state = { count: 0, saving: false, showTips: false };
 
 const save = async () => {
@@ -224,6 +226,10 @@ const createMergedCard = () => {
   section.innerHTML = `
     <header>
       <h3>html template marker</h3>
+      <div class="flex gap-sm items-center">
+        ${experimentalBadgeHTML}
+        <small class="text-muted">API shape and binding semantics may evolve while we validate the pattern.</small>
+      </div>
       <small class="text-muted">
         Build Lit-style templates in plain JavaScript — no Lit dependency required.
       </small>
@@ -273,7 +279,7 @@ export default {
     },
     docs: {
       description: {
-        component: 'Build DOM with the html template marker using vanilla JavaScript, including Lit-style bindings without a Lit dependency.'
+        component: 'Experimental API. Build DOM with the html template marker using vanilla JavaScript, including Lit-style bindings without a Lit dependency.'
       }
     }
   }

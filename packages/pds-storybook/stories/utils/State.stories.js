@@ -124,9 +124,14 @@ state.saving++;  // Updates button state
 
 export default {
   title: 'PDS/State Management',
-  tags: ['utilities', 'reactive', 'state'],
+  tags: ['utilities', 'reactive', 'state', 'experimental'],
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        component: 'Experimental API. Reactive state helpers for manual render loops, automatic re-rendering, partial binding updates, and state change events.'
+      }
+    },
   },
 };
 
@@ -137,6 +142,10 @@ export const BasicStatePattern = {
 
     div.appendChild(html`
       <div class="stack-sm text-muted">
+        <div class="flex gap-sm items-center">
+          <span class="badge badge-warning">Experimental</span>
+          <small class="text-muted">State APIs are still evolving and may change.</small>
+        </div>
         <p><strong>State Class:</strong> A reactive proxy wrapper that fires custom events on property mutations.</p>
         <p><code>state.on('change:propertyName', handler)</code> listens for specific property changes.</p>
         <p><code>state.on('change', handler)</code> listens for any property change.</p>
@@ -155,6 +164,10 @@ export const ManualRenderApproach = {
 
     div.appendChild(html`
       <div class="stack-sm text-muted">
+        <div class="flex gap-sm items-center">
+          <span class="badge badge-warning">Experimental</span>
+          <small class="text-muted">State APIs are still evolving and may change.</small>
+        </div>
         <p><strong>Manual Render Approach:</strong> You call <code>render()</code> when state changes, or use <code>state.on('change', render)</code>.</p>
         <p>This gives you full control over when and what gets re-rendered.</p>
       </div>
@@ -220,6 +233,10 @@ export const AutomaticRenderApproach = {
 
     div.appendChild(html`
       <div class="stack-sm text-muted">
+        <div class="flex gap-sm items-center">
+          <span class="badge badge-warning">Experimental</span>
+          <small class="text-muted">State APIs are still evolving and may change.</small>
+        </div>
         <p><strong>Automatic Render Approach:</strong> Use <code>createReactiveComponent()</code> to auto-render on state changes.</p>
         <p>Every state mutation triggers a re-render — no manual <code>render()</code> calls needed!</p>
       </div>
@@ -276,6 +293,10 @@ export const BindStatePartialUpdates = {
 
     div.appendChild(html`
       <div class="stack-sm text-muted">
+        <div class="flex gap-sm items-center">
+          <span class="badge badge-warning">Experimental</span>
+          <small class="text-muted">State APIs are still evolving and may change.</small>
+        </div>
         <p><strong>Bind State Approach:</strong> Use <code>bindState()</code> for partial, surgery updates without full re-renders.</p>
         <p>Perfect when you want to update specific elements without re-rendering the entire component.</p>
       </div>
@@ -350,6 +371,10 @@ export const EventListeningPattern = {
 
     div.appendChild(html`
       <div class="stack-sm text-muted">
+        <div class="flex gap-sm items-center">
+          <span class="badge badge-warning">Experimental</span>
+          <small class="text-muted">State APIs are still evolving and may change.</small>
+        </div>
         <p><strong>Event Listening:</strong> State emits two types of custom events:</p>
         <ul class="stack-xs">
           <li><code>'change'</code> — Fired for any property change. Detail: { property, value, oldValue, state }</li>

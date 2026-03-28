@@ -244,7 +244,14 @@ const runtimeSurfaceRows = [
   {
     member: 'PDS.html(html | template)',
     type: 'method',
+    status: 'Experimental',
     description: 'Parses HTML strings or tagged templates into a DocumentFragment so callers can appendChild() directly. Also available as named export `html` from #pds.'
+  },
+  {
+    member: 'PDS.State',
+    type: 'property',
+    status: 'Experimental',
+    description: 'Reactive state container that emits change events on property mutations. Also available as named export `State` from #pds.'
   },
   {
     member: 'PDS.adoptLayers(root, layers, sheets)',
@@ -407,7 +414,12 @@ function renderTable(rows, columns) {
   const body = rows
     .map((row) => {
       const cells = columns
-        .map((column) => `<td>${escapeHTML(row[column.key] ?? '')}</td>`)
+        .map((column) => {
+          if (typeof column.render === 'function') {
+            return `<td>${column.render(row)}</td>`;
+          }
+          return `<td>${escapeHTML(row[column.key] ?? '')}</td>`;
+        })
         .join('');
       return `<tr>${cells}</tr>`;
     })
@@ -431,6 +443,13 @@ const pdsObjectDocsHtml = `
     ${renderTable(runtimeSurfaceRows, [
       { key: 'member', label: 'Member' },
       { key: 'type', label: 'Kind' },
+      {
+        key: 'status',
+        label: 'Status',
+        render: (row) => row.status
+          ? `<span class="badge badge-warning">${escapeHTML(row.status)}</span>`
+          : 'Stable'
+      },
       { key: 'description', label: 'Description' }
     ])}
   </section>
