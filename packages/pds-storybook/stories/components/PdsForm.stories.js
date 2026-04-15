@@ -891,6 +891,64 @@ export const WithInitialData = {
   },
 };
 
+export const OtpVerificationFlow = {
+  name: "OTP Verification Flow",
+  render: () => {
+    const schema = {
+      type: "object",
+      properties: {
+        email: {
+          type: "string",
+          format: "email",
+          title: "Email address",
+          examples: ["marc@example.com"],
+        },
+        otp: {
+          type: "string",
+          title: "Verification code",
+          description: "Enter the 6-digit code we sent to your email address.",
+          maxLength: 6,
+          pattern: "\\d{6}",
+          examples: ["123456"],
+        },
+      },
+      required: ["email", "otp"],
+    };
+
+    const uiSchema = {
+      "/email": {
+        "ui:icon": "envelope",
+        "ui:iconPosition": "start",
+        "ui:autocomplete": "email",
+      },
+      "/otp": {
+        "ui:autocomplete": "one-time-code",
+        "ui:placeholder": "123456",
+      },
+    };
+
+    const values = {
+      email: "marc@example.com",
+    };
+
+    return html`
+      <div class="stack-md max-w-sm">
+        <small class="text-muted">
+          This shows the OTP enhancer working through <code>pds-form</code> using
+          <code>"ui:autocomplete": "one-time-code"</code> on the <code>/otp</code> field.
+        </small>
+        <pds-form
+          data-required
+          .jsonSchema=${schema}
+          .uiSchema=${uiSchema}
+          .values=${values}
+          @pw:submit=${(e) => toastFormData(e.detail)}
+        ></pds-form>
+      </div>
+    `;
+  },
+};
+
 export const WithTogglesSwitches = {
   name: "Toggles & Switches",
   render: () => {

@@ -1,0 +1,340 @@
+---
+// PDS Playground — Monaco editor + pds-render preview
+// Full-screen, no Starlight layout
+
+const PRESETS = [
+  'default','ocean-breeze','midnight-steel','neural-glow','paper-and-ink',
+  'sunset-paradise','retro-wave','forest-canopy','ruby-elegance','desert-dawn',
+  'contrast-pro','pastel-play','brutalist-tech','zen-garden','fitness-pro',
+  'travel-market','mobility-app','fintech-secure','social-feed','enterprise-dash',
+];
+
+const STARTER_HTML = `<!-- PDS Playground — edit HTML, CSS, or JS and see live results -->
+
+<div class="card" style="max-width:380px">
+  <h3>PDS Playground</h3>
+  <p class="text-muted">Live preview with full PDS support.</p>
+
+  <div class="flex gap-sm" style="margin-top:1rem">
+    <button class="btn-primary">Primary</button>
+    <button class="btn-secondary">Secondary</button>
+    <button class="btn-danger">Danger</button>
+  </div>
+</div>
+
+<div class="card surface-2" style="max-width:380px;margin-top:1rem">
+  <h4>Badges &amp; tokens</h4>
+  <p class="text-sm" style="color:var(--color-muted)">Tokens like <code>--color-primary</code> work everywhere.</p>
+  <div class="flex gap-xs" style="margin-top:.75rem">
+    <span class="badge">Default</span>
+    <span class="badge badge-success">Success</span>
+    <span class="badge badge-warning">Warning</span>
+    <span class="badge badge-danger">Danger</span>
+  </div>
+</div>`;
+
+const STARTER_CSS = `/* Custom CSS — runs inside the PDS sandbox */
+
+/* Example: override a token for this sandbox only */
+/* :root { --color-primary: oklch(55% 0.2 280); } */
+
+.demo-box {
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+}`;
+
+const STARTER_JS = `// JS module — runs after PDS is initialized
+// 'PDS' is available globally inside the sandbox
+
+// Example: show a toast on load
+// await PDS.toast('Playground ready!', { type: 'success' });
+
+// Example: handle button clicks
+document.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    await PDS.toast(\`Clicked: \${btn.textContent}\`, { type: 'info' });
+  });
+});`;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playground — Pure Design System</title>
+
+  <!-- Guard: prevent Vite/bundler AMD globals from conflicting with Monaco's AMD loader -->
+  <script is:inline>
+    // Monaco's AMD loader checks `typeof define === 'function'` — if Vite has injected a
+    // broken define, clear it so Monaco sets up its own AMD system cleanly.
+    if (typeof define !== 'undefined' && !define.amd) { window.define = undefined; }
+  </script>
+
+  <!-- Monaco Editor from CDN — is:inline prevents Astro/Vite from adding type="module",
+       which would make `this` undefined at top-level and crash Monaco's AMD self-registration -->
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs/loader.js" is:inline></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #1e1e2e;
+      --bg2: #181825;
+      --bg3: #313244;
+      --border: #45475a;
+      --text: #cdd6f4;
+      --text-muted: #6c7086;
+      --accent: #cba6f7;
+      --blue: #89b4fa;
+      --green: #a6e3a1;
+      --yellow: #f9e2af;
+      --header-h: 42px;
+      --tab-h: 36px;
+      --status-h: 24px;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    /* ── Layout ── */
+    .pg { display: flex; flex-direction: column; height: 100dvh; }
+
+    /* ── Header ── */
+    .pg-header {
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0 1rem;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .pg-logo { color: var(--accent); font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
+    .pg-logo span { color: var(--text); font-weight: 400; }
+    .pg-back { color: var(--blue); text-decoration: none; font-size: 0.8rem; }
+    .pg-back:hover { text-decoration: underline; }
+    .pg-sep { color: var(--border); }
+    .spacer { flex: 1; }
+
+    .pg-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .pg-label { color: var(--text-muted); font-size: 0.75rem; }
+    .pg-select, .pg-btn {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg3);
+      color: var(--text);
+      cursor: pointer;
+      line-height: 1.4;
+    }
+    .pg-select:hover, .pg-btn:hover { background: var(--border); }
+    .pg-btn-icon { padding: 0.2rem 0.4rem; font-size: 0.9rem; }
+
+    /* ── Pane split ── */
+    .pg-main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* ── Editor side ── */
+    .pg-editor-side {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+      min-width: 0;
+    }
+
+    /* ── Tabs ── */
+    .pg-tabs {
+      height: var(--tab-h);
+      display: flex;
+      align-items: stretch;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .pg-tab {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0 1rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      border-right: 1px solid var(--border);
+      background: none;
+      transition: color 0.1s, border-color 0.1s;
+      user-select: none;
+    }
+    .pg-tab:hover { color: var(--text); }
+    .pg-tab.active { color: var(--text); border-bottom-color: var(--accent); }
+    .pg-tab .tab-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .pg-tab[data-lang="html"] .tab-dot { background: #f38ba8; }
+    .pg-tab[data-lang="css"] .tab-dot  { background: #89dceb; }
+    .pg-tab[data-lang="js"] .tab-dot   { background: var(--yellow); }
+
+    /* ── Monaco container ── */
+    .pg-monaco {
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ── Preview side ── */
+    .pg-preview-side {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .pg-preview-header {
+      height: var(--tab-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 0.75rem;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      font-size: 0.75rem;
+    }
+    .pg-preview-label { color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .pg-preset-badge { color: var(--accent); font-weight: 600; }
+
+    .pg-preview-frame {
+      flex: 1;
+      display: block;
+      width: 100%;
+      min-height: 0;
+    }
+    pds-render {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ── Status bar ── */
+    .pg-status {
+      height: var(--status-h);
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 0 1rem;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    #pg-msg { color: var(--green); }
+    #pg-msg.warn { color: var(--yellow); }
+    #pg-msg.err  { color: #f38ba8; }
+  </style>
+</head>
+<body>
+
+<div class="pg">
+
+  <header class="pg-header">
+    <span class="pg-logo">PDS <span>Playground</span></span>
+    <span class="pg-sep">|</span>
+    <a href="/" class="pg-back">← Docs</a>
+    <div class="spacer"></div>
+    <div class="pg-controls">
+      <span class="pg-label">Theme</span>
+      <button class="pg-btn pg-btn-icon" id="pg-theme-btn" title="Toggle dark/light">☀️</button>
+      <span class="pg-label">Preset</span>
+      <select class="pg-select" id="pg-preset" title="Choose PDS preset">
+        {PRESETS.map(p => <option value={p}>{p}</option>)}
+      </select>
+      <span class="pg-sep">|</span>
+      <button class="pg-btn" id="pg-reset" title="Reset to starter code">Reset</button>
+      <button class="pg-btn" id="pg-copy" title="Copy current tab's code">Copy</button>
+      <button class="pg-btn" id="pg-share" title="Share (copy URL with code)">Share</button>
+    </div>
+  </header>
+
+  <div class="pg-main">
+
+    <!-- Editor -->
+    <div class="pg-editor-side">
+      <div class="pg-tabs">
+        <button class="pg-tab active" data-lang="html">
+          <span class="tab-dot"></span> HTML
+        </button>
+        <button class="pg-tab" data-lang="css">
+          <span class="tab-dot"></span> CSS
+        </button>
+        <button class="pg-tab" data-lang="js">
+          <span class="tab-dot"></span> JS
+        </button>
+      </div>
+      <div class="pg-monaco" id="pg-monaco"></div>
+    </div>
+
+    <!-- Preview -->
+    <div class="pg-preview-side">
+      <div class="pg-preview-header">
+        <span class="pg-preview-label">Live Preview</span>
+        <span class="pg-preset-badge" id="pg-preset-badge">default</span>
+      </div>
+      <!-- pds-render: src-base injected by JS after DOM ready -->
+      <pds-render
+        id="pg-render"
+        theme="light"
+        preset="default"
+        height="100%"
+        padding="1.5rem"
+        bordered
+      ></pds-render>
+    </div>
+
+  </div>
+
+  <div class="pg-status">
+    <span id="pg-msg">Ready</span>
+    <span id="pg-chars">0 chars</span>
+    <span id="pg-tab-indicator">HTML</span>
+    <span style="margin-left:auto">
+      Pure Design System ·
+      <a href="/components/pds-render/" style="color:var(--blue)">pds-render docs</a> ·
+      <a href="/getting-started/" style="color:var(--blue)">Docs</a>
+    </span>
+  </div>
+
+</div>
+
+<!-- Load pds-render component -->
+<script src="/assets/pds/components/pds-render.js" type="module"></script>
+
+<!-- Pass Astro server-side data to the classic (AMD-compatible) script below -->
+<script type="application/json" id="pg-data" set:html={JSON.stringify({ STARTER_HTML, STARTER_CSS, STARTER_JS, PRESETS })}></script>
+
+<!-- playground.js lives in public/assets/ — bypasses Vite entirely, runs as a
+     classic script so Monaco's AMD require() global from loader.js is available -->
+<script src="/assets/playground.js" is:inline></script>
+
+</body>
+</html>

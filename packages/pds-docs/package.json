@@ -1,0 +1,33 @@
+{
+  "name": "@pure-ds/docs",
+  "version": "0.7.60",
+  "description": "Pure Design System documentation site (docs.pure-ds.com)",
+  "type": "module",
+  "scripts": {
+    "dev": "npm run build-docs-data && npm run generate-pages && npm run copy-pds-assets && astro dev",
+    "build": "npm run build-docs-data && npm run generate-pages && npm run copy-pds-assets && astro build",
+    "build-docs-data": "node --no-warnings=ExperimentalWarning scripts/build-docs-data.mjs",
+    "generate-pages": "node --no-warnings=ExperimentalWarning scripts/generate-pages.mjs",
+    "copy-pds-assets": "node --no-warnings=ExperimentalWarning scripts/copy-pds-assets.mjs",
+    "preview": "astro preview",
+    "pds:build": "pds-build",
+    "pds:import": "pds-import",
+    "pds:mcp:server": "pds-mcp-server",
+    "pds:mcp:health": "pds-mcp-health",
+    "pds:mcp:eval": "pds-mcp-eval",
+    "pds:build-icons": "pds-build-icons",
+    "pds:bootstrap": "pds-bootstrap"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "0.37.7",
+    "astro": "^5.0.0",
+    "zod": "^3.25.76"
+  },
+  "peerDependencies": {
+    "@pure-ds/core": "^0.7.60"
+  },
+  "imports": {
+    "#pds": "@pure-ds/core",
+    "#pds/lit": "@pure-ds/core/lit"
+  }
+}

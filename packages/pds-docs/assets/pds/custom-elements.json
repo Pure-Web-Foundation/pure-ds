@@ -1,0 +1,5697 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-calendar.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Simple class for efficient HTML string building",
+          "name": "HTMLBuilder",
+          "members": [
+            {
+              "kind": "method",
+              "name": "add",
+              "parameters": [
+                {
+                  "name": "htmlPart",
+                  "type": {
+                    "text": "String"
+                  }
+                }
+              ],
+              "description": "Adds a string to the builder"
+            },
+            {
+              "kind": "method",
+              "name": "toHTML",
+              "description": "Returns the built-up string, optionally using the given container for enclosing.",
+              "return": {
+                "type": {
+                  "text": "String"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsCalendar",
+          "cssProperties": [
+            {
+              "description": "Calendar background color",
+              "name": "--surface-bg"
+            },
+            {
+              "description": "Border color for calendar elements",
+              "name": "--surface-border"
+            },
+            {
+              "description": "Secondary text color",
+              "name": "--surface-text-secondary"
+            },
+            {
+              "description": "Primary color for events and highlights",
+              "name": "--color-primary-500"
+            },
+            {
+              "description": "Warning event color",
+              "name": "--color-warning-500"
+            },
+            {
+              "description": "Danger event color",
+              "name": "--color-danger-500"
+            },
+            {
+              "description": "Info event color",
+              "name": "--color-info-500"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "The main container for the calendar",
+              "name": "calendar-container"
+            },
+            {
+              "description": "The header containing month name and navigation",
+              "name": "calendar-header"
+            },
+            {
+              "description": "The grid container for the calendar days",
+              "name": "calendar"
+            },
+            {
+              "description": "Individual day cells",
+              "name": "day"
+            },
+            {
+              "description": "Event items within days",
+              "name": "task"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "date",
+              "description": "Gets or sets the current date being displayed",
+              "parameters": [
+                {
+                  "description": "Date string or Date object",
+                  "name": "value",
+                  "type": {
+                    "text": "String|Date"
+                  }
+                }
+              ],
+              "return": {
+                "type": {
+                  "text": "Date"
+                }
+              },
+              "type": {
+                "text": "Date"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "name"
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "required"
+            },
+            {
+              "kind": "field",
+              "name": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "compact"
+            },
+            {
+              "kind": "field",
+              "name": "value"
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity"
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity"
+            },
+            {
+              "kind": "method",
+              "name": "focus",
+              "parameters": [
+                {
+                  "name": "options"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "serializeDate"
+            },
+            {
+              "kind": "method",
+              "name": "updateFormState"
+            },
+            {
+              "kind": "method",
+              "name": "refresh",
+              "description": "Refreshes the calendar display",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "dateHelper",
+              "default": "new DateHelper()"
+            }
+          ],
+          "events": [
+            {
+              "name": "month-change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "day-click",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "task-click",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "month-rendered",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "description": "Dispatched after the calendar month is rendered with event fill capability",
+              "name": "pds-calendar#month-rendered"
+            },
+            {
+              "description": "Dispatched when the visible month/year changes",
+              "name": "pds-calendar#month-change"
+            },
+            {
+              "description": "Dispatched when a day cell is selected from the calendar grid",
+              "name": "pds-calendar#day-click"
+            },
+            {
+              "description": "Dispatched when a task item is clicked",
+              "name": "pds-calendar#task-click"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "date",
+              "type": {
+                "text": "String"
+              },
+              "description": "The date to display (defaults to current date). Accepts any valid date string"
+            },
+            {
+              "name": "required"
+            },
+            {
+              "name": "name"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "compact"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-calendar",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HTMLBuilder",
+          "declaration": {
+            "name": "HTMLBuilder",
+            "module": "public/assets/pds/components/pds-calendar.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-calendar",
+          "declaration": {
+            "name": "PdsCalendar",
+            "module": "public/assets/pds/components/pds-calendar.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-code.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PDSCode",
+          "members": [
+            {
+              "kind": "field",
+              "name": "code"
+            },
+            {
+              "kind": "method",
+              "name": "setCode",
+              "parameters": [
+                {
+                  "name": "value"
+                },
+                {
+                  "name": "{ lang, theme }",
+                  "default": "{}"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "captureInitialText"
+            },
+            {
+              "kind": "method",
+              "name": "ensureCodeFromContent"
+            },
+            {
+              "kind": "method",
+              "name": "startTextObserver"
+            },
+            {
+              "kind": "method",
+              "name": "stopTextObserver"
+            },
+            {
+              "kind": "field",
+              "name": "_code",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_capturedInitialText",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_renderToken",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "_textObserver",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "code"
+            },
+            {
+              "name": "lang"
+            },
+            {
+              "name": "theme"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-code",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "PDSCode",
+          "declaration": {
+            "name": "PDSCode",
+            "module": "public/assets/pds/components/pds-code.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-code",
+          "declaration": {
+            "name": "PDSCode",
+            "module": "public/assets/pds/components/pds-code.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-daterange.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsDateRange",
+          "cssParts": [
+            {
+              "description": "The button used to open/close the date range panel.",
+              "name": "trigger"
+            },
+            {
+              "description": "The dropdown panel containing calendars and actions.",
+              "name": "panel"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "method",
+              "name": "ensureCalendarsReady"
+            },
+            {
+              "kind": "method",
+              "name": "setCalendarDate",
+              "parameters": [
+                {
+                  "name": "calendar"
+                },
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "String"
+              },
+              "description": "Form field name."
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "Boolean"
+              },
+              "description": "Whether the field is required."
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "Boolean"
+              },
+              "description": "Whether the control is disabled."
+            },
+            {
+              "kind": "field",
+              "name": "displayFormat",
+              "type": {
+                "text": "String"
+              },
+              "description": "Button date text format."
+            },
+            {
+              "kind": "field",
+              "name": "startDate",
+              "type": {
+                "text": "Date|null"
+              },
+              "description": "Start date value."
+            },
+            {
+              "kind": "field",
+              "name": "endDate",
+              "type": {
+                "text": "Date|null"
+              },
+              "description": "End date value."
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "String"
+              },
+              "description": "Serialized range value as ISO interval: `YYYY-MM-DD/YYYY-MM-DD`."
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity"
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity"
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "bindEvents"
+            },
+            {
+              "kind": "method",
+              "name": "bindCalendar",
+              "parameters": [
+                {
+                  "name": "calendar"
+                },
+                {
+                  "name": "side"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "handleOutsideClick",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "togglePanel"
+            },
+            {
+              "kind": "method",
+              "name": "openPanel"
+            },
+            {
+              "kind": "method",
+              "name": "closePanel"
+            },
+            {
+              "kind": "method",
+              "name": "isOpen"
+            },
+            {
+              "kind": "method",
+              "name": "toDayStart",
+              "parameters": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "toMonthStart",
+              "parameters": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "addMonths",
+              "parameters": [
+                {
+                  "name": "value"
+                },
+                {
+                  "name": "monthDelta"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "parseDate",
+              "parameters": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "serializeDate",
+              "parameters": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "parseRangeValue",
+              "parameters": [
+                {
+                  "name": "rawValue"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "isRangeComplete"
+            },
+            {
+              "kind": "method",
+              "name": "formatDisplayDate",
+              "parameters": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "buildRangeEventsForMonth",
+              "parameters": [
+                {
+                  "name": "year"
+                },
+                {
+                  "name": "month"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "applyRangeSelection",
+              "parameters": [
+                {
+                  "name": "pickedDate"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "enforceMinimumGap"
+            },
+            {
+              "kind": "method",
+              "name": "positionCalendars"
+            },
+            {
+              "kind": "method",
+              "name": "refreshHighlights"
+            },
+            {
+              "kind": "method",
+              "name": "syncUI"
+            },
+            {
+              "kind": "method",
+              "name": "reflectValueAttribute"
+            },
+            {
+              "kind": "method",
+              "name": "applyDisabledState"
+            },
+            {
+              "kind": "method",
+              "name": "updateFormState"
+            },
+            {
+              "kind": "method",
+              "name": "dispatchRangeChange"
+            }
+          ],
+          "events": [
+            {
+              "name": "range-change",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Fired whenever range selection changes."
+            },
+            {
+              "name": "change",
+              "type": {
+                "text": "Event"
+              },
+              "description": "Native-like change event fired alongside `range-change`."
+            }
+          ],
+          "attributes": [
+            {
+              "name": "name",
+              "type": {
+                "text": "String"
+              },
+              "description": "Form field name used during form submission."
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "Boolean"
+              },
+              "description": "Requires both start and end dates to be selected."
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "Boolean"
+              },
+              "description": "Disables interaction and closes the panel when active."
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "String"
+              },
+              "description": "Serialized range value as ISO interval: `YYYY-MM-DD/YYYY-MM-DD`."
+            },
+            {
+              "name": "display-format",
+              "type": {
+                "text": "String"
+              },
+              "description": "Button date text format. Default is `d MMM yy`."
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-daterange",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-daterange",
+          "declaration": {
+            "name": "PdsDateRange",
+            "module": "public/assets/pds/components/pds-daterange.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-drawer.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsDrawer",
+          "cssProperties": [
+            {
+              "description": "Animation duration (default: var(--transition-normal))",
+              "name": "--drawer-duration"
+            },
+            {
+              "description": "Animation easing function (default: var(--easing-emphasized))",
+              "name": "--drawer-easing"
+            },
+            {
+              "description": "Maximum height when position is top/bottom (default: 70vh)",
+              "name": "--drawer-max-height"
+            },
+            {
+              "description": "Minimum height when position is top/bottom (default: auto)",
+              "name": "--drawer-min-height"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "The semi-transparent backdrop overlay",
+              "name": "backdrop"
+            },
+            {
+              "description": "The drawer panel container",
+              "name": "panel"
+            },
+            {
+              "description": "The drawer header section",
+              "name": "header"
+            },
+            {
+              "description": "The close button",
+              "name": "close-button"
+            },
+            {
+              "description": "The drag handle indicator",
+              "name": "grab-handle"
+            },
+            {
+              "description": "The drawer content section",
+              "name": "content"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Header content for the drawer",
+              "name": "drawer-header"
+            },
+            {
+              "description": "Main content of the drawer",
+              "name": "drawer-content"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "description": "Controls whether the drawer is open or closed",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "position",
+              "description": "Position of the drawer relative to the viewport",
+              "type": {
+                "text": "\"bottom\" | \"top\" | \"left\" | \"right\""
+              },
+              "default": "\"bottom\"",
+              "attribute": "position"
+            },
+            {
+              "kind": "field",
+              "name": "drag",
+              "description": "Controls drag interaction behavior",
+              "type": {
+                "text": "\"header\" | \"none\""
+              },
+              "default": "\"header\"",
+              "attribute": "drag"
+            },
+            {
+              "kind": "field",
+              "name": "maxHeight",
+              "description": "Maximum height for top/bottom positioned drawers (CSS value)",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"70vh\"",
+              "attribute": "max-height"
+            },
+            {
+              "kind": "field",
+              "name": "minHeight",
+              "description": "Minimum height for top/bottom positioned drawers (CSS value)",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"auto\"",
+              "attribute": "min-height"
+            },
+            {
+              "kind": "field",
+              "name": "showClose",
+              "description": "Whether to show the close button in the header",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "show-close"
+            },
+            {
+              "kind": "method",
+              "name": "openDrawer",
+              "description": "Opens the drawer",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "closeDrawer",
+              "description": "Closes the drawer",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "toggleDrawer",
+              "description": "Toggles the drawer open/closed state",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "show",
+              "parameters": [
+                {
+                  "name": "htmlContent",
+                  "description": "The main content to display",
+                  "type": {
+                    "text": "any|HTMLElement|string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Configuration options",
+                  "optional": true,
+                  "type": {
+                    "text": "@param {any|HTMLElement|string} [options.header] - Header content\n   * @param {\"bottom\"|\"top\"|\"left\"|\"right\"} [options.position] - Drawer position\n   * @param {string} [options.maxHeight] - Maximum height (CSS value)\n   * @param {string} [options.minHeight] - Minimum height (CSS value)\n   * @param {boolean} [options.showClose] - Show close button\n   * @param {boolean} [options.waitForMedia=true] - Wait for images/videos to load\n   * @param {number} [options.mediaTimeout=500] - Media load timeout in ms\n   * "
+                  }
+                }
+              ],
+              "description": "Configure and open the drawer in one call",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "Promise<this>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setContent",
+              "parameters": [
+                {
+                  "name": "bodyContent",
+                  "description": "Content for the drawer body",
+                  "type": {
+                    "text": "any|HTMLElement|string"
+                  }
+                },
+                {
+                  "name": "headerContent",
+                  "default": "null",
+                  "description": "Optional header content",
+                  "type": {
+                    "text": "any|HTMLElement|string"
+                  },
+                  "optional": true
+                }
+              ],
+              "description": "Set the content of the drawer",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "clearContent",
+              "description": "Clear drawer content (removes all slotted content)",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "_open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_position",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"bottom\""
+            },
+            {
+              "kind": "field",
+              "name": "_drag",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"header\""
+            },
+            {
+              "kind": "field",
+              "name": "_maxHeight",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_minHeight",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_showClose",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when the drawer opens or closes",
+              "name": "toggle"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "description": "Controls whether the drawer is open or closed",
+              "type": {
+                "text": "boolean"
+              },
+              "fieldName": "open"
+            },
+            {
+              "name": "position",
+              "description": "Position of the drawer relative to the viewport",
+              "type": {
+                "text": "\"bottom\" | \"top\" | \"left\" | \"right\""
+              },
+              "default": "\"bottom\"",
+              "fieldName": "position"
+            },
+            {
+              "name": "drag",
+              "description": "Controls drag interaction behavior",
+              "type": {
+                "text": "\"header\" | \"none\""
+              },
+              "default": "\"header\"",
+              "fieldName": "drag"
+            },
+            {
+              "name": "max-height",
+              "description": "Maximum height for top/bottom positioned drawers (CSS value)",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"70vh\"",
+              "fieldName": "maxHeight"
+            },
+            {
+              "name": "min-height",
+              "description": "Minimum height for top/bottom positioned drawers (CSS value)",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"auto\"",
+              "fieldName": "minHeight"
+            },
+            {
+              "name": "show-close",
+              "description": "Whether to show the close button in the header",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "showClose"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-drawer",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-drawer",
+          "declaration": {
+            "name": "PdsDrawer",
+            "module": "public/assets/pds/components/pds-drawer.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-fab.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Floating Action Button (FAB) with expandable satellite actions",
+          "name": "PdsFab",
+          "cssProperties": [
+            {
+              "description": "Size of the main FAB button (default: 64px)",
+              "name": "--fab-size"
+            },
+            {
+              "description": "Background color of the main FAB (default: var(--color-primary-600))",
+              "name": "--fab-bg"
+            },
+            {
+              "description": "Foreground color of the main FAB (default: white)",
+              "name": "--fab-fg"
+            },
+            {
+              "description": "Size of satellite buttons (default: 48px)",
+              "name": "--sat-size"
+            },
+            {
+              "description": "Background color of satellites (default: var(--color-surface-elevated))",
+              "name": "--sat-bg"
+            },
+            {
+              "description": "Foreground color of satellites (default: var(--color-text-primary))",
+              "name": "--sat-fg"
+            },
+            {
+              "description": "Distance of satellites from main FAB (default: 100px)",
+              "name": "--radius"
+            },
+            {
+              "description": "Animation duration (default: 420ms)",
+              "name": "--transition-duration"
+            },
+            {
+              "description": "FAB z-index when used inside pds-drawer (default: var(--z-popover))",
+              "name": "--z-fab-in-drawer"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "The main FAB button",
+              "name": "fab"
+            },
+            {
+              "description": "Individual satellite buttons",
+              "name": "satellite"
+            },
+            {
+              "description": "Satellite button labels",
+              "name": "label"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Main FAB button content (typically an icon or avatar)",
+              "name": ""
+            },
+            {
+              "description": "Override individual satellite button content",
+              "name": "satellite-{key}"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "description": "Controls whether the FAB is expanded",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "radius",
+              "description": "Distance in pixels from the main FAB to satellites",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "attribute": "radius"
+            },
+            {
+              "kind": "field",
+              "name": "spread",
+              "description": "Arc angle in degrees for satellite distribution",
+              "type": {
+                "text": "number"
+              },
+              "default": "90",
+              "attribute": "spread"
+            },
+            {
+              "kind": "field",
+              "name": "startAngle",
+              "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\r\nIf not specified, the angle is auto-detected based on the FAB's corner position:\r\n- Bottom-right: 180-� (fly left/up)\r\n- Bottom-left: 315-� (fly right/up)\r\n- Top-right: 225-� (fly left/down)\r\n- Top-left: 45-� (fly right/down)",
+              "type": {
+                "text": "number"
+              },
+              "default": "180 (or auto-detected)",
+              "attribute": "start-angle"
+            },
+            {
+              "kind": "field",
+              "name": "behavior",
+              "description": "Interaction mode for satellite menu.\r\n- click: toggles satellites when main FAB is clicked\r\n- hover: opens on hover/focus and closes when pointer leaves safe area",
+              "type": {
+                "text": "'click'|'hover'"
+              },
+              "default": "click",
+              "attribute": "behavior"
+            },
+            {
+              "kind": "field",
+              "name": "mode",
+              "description": "Layout mode for host positioning.\r\n- fixed: FAB is anchored to viewport bottom-right\r\n- inline: FAB participates in normal document flow",
+              "type": {
+                "text": "'fixed'|'inline'"
+              },
+              "default": "fixed",
+              "attribute": "mode"
+            },
+            {
+              "kind": "field",
+              "name": "fabClass",
+              "description": "Space-separated class list forwarded to the internal button.\r\nUse this instead of host classes for btn-* and icon-only.",
+              "type": {
+                "text": "string"
+              },
+              "attribute": "fab-class"
+            },
+            {
+              "kind": "field",
+              "name": "satellites",
+              "description": "Array of satellite button configurations",
+              "type": {
+                "text": "Array<{key: string, icon?: string, iconColor?: string, bgColor?: string, iconSize?: string, label?: string, action?: string}>"
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "satellite-click",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Fired when a satellite button is clicked"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "description": "Controls whether the FAB is expanded",
+              "type": {
+                "text": "boolean"
+              },
+              "fieldName": "open"
+            },
+            {
+              "name": "radius",
+              "description": "Distance in pixels from the main FAB to satellites",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "fieldName": "radius"
+            },
+            {
+              "name": "spread",
+              "description": "Arc angle in degrees for satellite distribution",
+              "type": {
+                "text": "number"
+              },
+              "default": "90",
+              "fieldName": "spread"
+            },
+            {
+              "name": "start-angle",
+              "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\r\nIf not specified, the angle is auto-detected based on the FAB's corner position:\r\n- Bottom-right: 180-� (fly left/up)\r\n- Bottom-left: 315-� (fly right/up)\r\n- Top-right: 225-� (fly left/down)\r\n- Top-left: 45-� (fly right/down)",
+              "type": {
+                "text": "number"
+              },
+              "default": "180 (or auto-detected)",
+              "fieldName": "startAngle"
+            },
+            {
+              "name": "behavior",
+              "description": "Interaction mode for opening satellites (default: click)",
+              "type": {
+                "text": "\"click\"|\"hover\""
+              },
+              "default": "click",
+              "fieldName": "behavior"
+            },
+            {
+              "name": "mode",
+              "description": "Layout mode for FAB positioning (default: fixed)",
+              "type": {
+                "text": "\"fixed\"|\"inline\""
+              },
+              "default": "fixed",
+              "fieldName": "mode"
+            },
+            {
+              "name": "fab-class",
+              "description": "Space-separated class list forwarded to the internal button.\r\nUse this instead of host classes for btn-* and icon-only.",
+              "type": {
+                "text": "string"
+              },
+              "fieldName": "fabClass"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-fab",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "PdsFab",
+          "declaration": {
+            "name": "PdsFab",
+            "module": "public/assets/pds/components/pds-fab.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-fab",
+          "declaration": {
+            "name": "PdsFab",
+            "module": "public/assets/pds/components/pds-fab.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-form.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "<pds-form>\n\nForm Actions:\nBy default, the form includes Submit and Reset buttons inside the <form> element.\n\nUsage options:\n1. Default buttons:\n   <pds-form .jsonSchema=${schema}></pds-form>\n\n2. Customize labels:\n   <pds-form .jsonSchema=${schema} submit-label=\"Save\" reset-label=\"Clear\"></pds-form>\n\n3. Hide reset button:\n   <pds-form .jsonSchema=${schema} hide-reset></pds-form>\n\n4. Add extra buttons (slot):\n   <pds-form .jsonSchema=${schema}>\n     <button type=\"button\" slot=\"actions\"",
+          "name": "SchemaForm",
+          "members": [
+            {
+              "kind": "method",
+              "name": "defineRenderer",
+              "parameters": [
+                {
+                  "name": "widgetKey"
+                },
+                {
+                  "name": "fn"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "useValidator",
+              "parameters": [
+                {
+                  "name": "fn"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getValuesFlat"
+            },
+            {
+              "kind": "method",
+              "name": "serialize"
+            },
+            {
+              "kind": "method",
+              "name": "submit"
+            },
+            {
+              "kind": "method",
+              "name": "reset"
+            },
+            {
+              "kind": "field",
+              "name": "jsonSchema",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "attribute": "json-schema"
+            },
+            {
+              "kind": "field",
+              "name": "uiSchema",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "attribute": "ui-schema"
+            },
+            {
+              "kind": "field",
+              "name": "options",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "attribute": "options"
+            },
+            {
+              "kind": "field",
+              "name": "values",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "attribute": "values"
+            },
+            {
+              "kind": "field",
+              "name": "method",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"post\"",
+              "attribute": "method"
+            },
+            {
+              "kind": "field",
+              "name": "hideActions",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "hide-actions"
+            },
+            {
+              "kind": "field",
+              "name": "submitLabel",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "attribute": "submit-label"
+            },
+            {
+              "kind": "field",
+              "name": "resetLabel",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "attribute": "reset-label"
+            },
+            {
+              "kind": "field",
+              "name": "hideReset",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "hide-reset"
+            },
+            {
+              "kind": "field",
+              "name": "hideLegend",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "hide-legend"
+            },
+            {
+              "kind": "field",
+              "name": "action",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "attribute": "action"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "hideSubmit",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "hide-submit"
+            }
+          ],
+          "events": [
+            {
+              "name": "name",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "json-schema",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "fieldName": "jsonSchema"
+            },
+            {
+              "name": "ui-schema",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "fieldName": "uiSchema"
+            },
+            {
+              "name": "options",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "fieldName": "options"
+            },
+            {
+              "name": "values",
+              "type": {
+                "text": "object"
+              },
+              "default": "undefined",
+              "fieldName": "values"
+            },
+            {
+              "name": "action",
+              "type": {
+                "text": "string"
+              },
+              "fieldName": "action"
+            },
+            {
+              "name": "method",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"post\"",
+              "fieldName": "method"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "fieldName": "disabled"
+            },
+            {
+              "name": "hide-actions",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "hideActions"
+            },
+            {
+              "name": "submit-label",
+              "type": {
+                "text": "string"
+              },
+              "fieldName": "submitLabel"
+            },
+            {
+              "name": "reset-label",
+              "type": {
+                "text": "string"
+              },
+              "fieldName": "resetLabel"
+            },
+            {
+              "name": "hide-reset",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "hideReset"
+            },
+            {
+              "name": "hide-submit",
+              "type": {
+                "text": "boolean"
+              },
+              "fieldName": "hideSubmit"
+            },
+            {
+              "name": "hide-legend",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "hideLegend"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "module": "/public/assets/pds/components/pds-form.js"
+          },
+          "tagName": "pds-form",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SchemaForm",
+          "declaration": {
+            "name": "SchemaForm",
+            "module": "public/assets/pds/components/pds-form.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-form",
+          "declaration": {
+            "name": "SchemaForm",
+            "module": "public/assets/pds/components/pds-form.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-icon.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "SVG Icon Web Component",
+          "name": "SvgIcon",
+          "members": [
+            {
+              "kind": "field",
+              "name": "spritePromises",
+              "static": true,
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "inlineSprites",
+              "static": true,
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "externalIconCache",
+              "static": true,
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "externalIconPromises",
+              "static": true,
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "externalPathDebugLogged",
+              "static": true,
+              "default": "new Set()"
+            },
+            {
+              "kind": "field",
+              "name": "instances",
+              "static": true,
+              "default": "new Set()"
+            },
+            {
+              "kind": "method",
+              "name": "spriteAvailable",
+              "description": "Check if sprite sheet is available",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "fetchExternalIcon",
+              "static": true,
+              "parameters": [
+                {
+                  "name": "iconName",
+                  "description": "The icon name (without .svg extension)",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "basePath"
+                }
+              ],
+              "description": "Fetch an external SVG icon and cache it",
+              "return": {
+                "type": {
+                  "text": "Promise<boolean>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureInlineSprite",
+              "static": true,
+              "parameters": [
+                {
+                  "name": "spriteURL"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "notifyInstances",
+              "static": true
+            },
+            {
+              "kind": "field",
+              "name": "_currentIcon",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_pendingIcon",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_morphing",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_morphTimer",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_templateReady",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_stackEl",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_svgOldEl",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_svgNewEl",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_iconOldGroupEl",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_iconNewGroupEl",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "icon",
+              "type": {
+                "text": "string"
+              },
+              "description": "Icon name from the sprite sheet"
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "string|number"
+              },
+              "description": "Icon size in pixels or named size (xs, sm, md, lg, xl, 2xl)"
+            },
+            {
+              "name": "color",
+              "type": {
+                "text": "string"
+              },
+              "description": "Icon color (CSS color value, default: currentColor)"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Accessible label for the icon (adds role=\"img\")"
+            },
+            {
+              "name": "rotate",
+              "type": {
+                "text": "number"
+              },
+              "description": "Rotation angle in degrees"
+            },
+            {
+              "name": "morph",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Morph the icon when the icon name changes"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Override sprite sheet path",
+              "name": "sprite"
+            },
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Force fallback icon rendering",
+              "name": "no-sprite"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-icon",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SvgIcon",
+          "declaration": {
+            "name": "SvgIcon",
+            "module": "public/assets/pds/components/pds-icon.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-icon",
+          "declaration": {
+            "name": "SvgIcon",
+            "module": "public/assets/pds/components/pds-icon.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-live-converter.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "COMPONENT_TAG",
+          "type": {
+            "text": "string"
+          },
+          "default": "\"pds-live-converter\""
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsLiveConverter",
+          "members": [
+            {
+              "kind": "method",
+              "name": "setResult",
+              "parameters": [
+                {
+                  "name": "result"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_render"
+            },
+            {
+              "kind": "field",
+              "name": "result",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "COMPONENT_TAG",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "COMPONENT_TAG",
+          "declaration": {
+            "name": "PdsLiveConverter",
+            "module": "public/assets/pds/components/pds-live-converter.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-live-edit.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "EDITOR_TAG",
+          "type": {
+            "text": "string"
+          },
+          "default": "\"pds-live-edit\""
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsLiveEdit",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_teardown"
+            },
+            {
+              "kind": "method",
+              "name": "_enableInteractiveEditing"
+            },
+            {
+              "kind": "method",
+              "name": "_disableInteractiveEditing",
+              "parameters": [
+                {
+                  "name": "options",
+                  "default": "{}"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setInteractiveEditingEnabled",
+              "parameters": [
+                {
+                  "name": "enabled",
+                  "default": "true"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "isInteractiveEditingEnabled"
+            },
+            {
+              "kind": "method",
+              "name": "_handleThemeChanged"
+            },
+            {
+              "kind": "method",
+              "name": "_refreshQuickFormForTheme"
+            },
+            {
+              "kind": "method",
+              "name": "_refreshDrawerConfigFormForTheme"
+            },
+            {
+              "kind": "method",
+              "name": "_handleMouseOver",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_handleMouseOut",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_findEditableTarget",
+              "parameters": [
+                {
+                  "name": "node"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_showForTarget",
+              "parameters": [
+                {
+                  "name": "target"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_removeActiveUI"
+            },
+            {
+              "kind": "method",
+              "name": "_addDocumentListeners"
+            },
+            {
+              "kind": "method",
+              "name": "_removeDocumentListeners"
+            },
+            {
+              "kind": "method",
+              "name": "_handleDocumentKeydown",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_scheduleClose"
+            },
+            {
+              "kind": "method",
+              "name": "_clearCloseTimer"
+            },
+            {
+              "kind": "method",
+              "name": "_addRepositionListeners"
+            },
+            {
+              "kind": "method",
+              "name": "_removeRepositionListeners"
+            },
+            {
+              "kind": "method",
+              "name": "_repositionDropdown"
+            },
+            {
+              "kind": "method",
+              "name": "_positionDropdown",
+              "parameters": [
+                {
+                  "name": "target"
+                },
+                {
+                  "name": "dropdown"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_handleMouseMove",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_addMouseMoveListener"
+            },
+            {
+              "kind": "method",
+              "name": "_removeMouseMoveListener"
+            },
+            {
+              "kind": "method",
+              "name": "_addMouseOverListener"
+            },
+            {
+              "kind": "method",
+              "name": "_removeMouseOverListener"
+            },
+            {
+              "kind": "method",
+              "name": "_watchDropdownState"
+            },
+            {
+              "kind": "method",
+              "name": "_unwatchDropdownState"
+            },
+            {
+              "kind": "method",
+              "name": "_watchDropdownState"
+            },
+            {
+              "kind": "method",
+              "name": "_unwatchDropdownState"
+            },
+            {
+              "kind": "method",
+              "name": "_isPointerWithinSafeZone"
+            },
+            {
+              "kind": "method",
+              "name": "_buildDropdown",
+              "parameters": [
+                {
+                  "name": "target"
+                },
+                {
+                  "name": "quickPaths"
+                },
+                {
+                  "name": "hints"
+                },
+                {
+                  "name": "debug"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_renderQuickForm",
+              "parameters": [
+                {
+                  "name": "container"
+                },
+                {
+                  "name": "footer"
+                },
+                {
+                  "name": "paths"
+                },
+                {
+                  "name": "design"
+                },
+                {
+                  "name": "hints"
+                },
+                {
+                  "name": "target"
+                },
+                {
+                  "name": "quickPaths"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_buildQuickModeDropdown"
+            },
+            {
+              "kind": "method",
+              "name": "_buildQuickModeContent"
+            },
+            {
+              "kind": "method",
+              "name": "createSharedQuickModeMenuItem"
+            },
+            {
+              "kind": "method",
+              "name": "_openDrawer",
+              "parameters": [
+                {
+                  "name": "target"
+                },
+                {
+                  "name": "quickPaths"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_handleExport",
+              "parameters": [
+                {
+                  "name": "format"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_ensureLiveCanvasContainer"
+            },
+            {
+              "kind": "method",
+              "name": "_injectTemplateIntoCanvas",
+              "parameters": [
+                {
+                  "name": "template"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "openDesignSettings"
+            },
+            {
+              "kind": "method",
+              "name": "resetConfig"
+            },
+            {
+              "kind": "method",
+              "name": "openImportDetailsFromToast",
+              "parameters": [
+                {
+                  "name": "options",
+                  "default": "{}"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_endLiveEditSessionAfterImport"
+            },
+            {
+              "kind": "method",
+              "name": "_applyImportResult",
+              "parameters": [
+                {
+                  "name": "result"
+                },
+                {
+                  "name": "options",
+                  "default": "{}"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_handleFormSubmit",
+              "parameters": [
+                {
+                  "name": "event"
+                },
+                {
+                  "name": "form"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_handleUndo"
+            },
+            {
+              "kind": "field",
+              "name": "_boundMouseOver"
+            },
+            {
+              "kind": "field",
+              "name": "_boundMouseOut"
+            },
+            {
+              "kind": "field",
+              "name": "_boundMouseMove"
+            },
+            {
+              "kind": "field",
+              "name": "_boundReposition"
+            },
+            {
+              "kind": "field",
+              "name": "_activeTarget",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_activeDropdown",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_holdOpen",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_closeTimer",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_drawer",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_selectors",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_lastPointer",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_boundDocKeydown"
+            },
+            {
+              "kind": "field",
+              "name": "_connected",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_undoStack",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "_dropdownMenuOpen",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_dropdownObserver",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_boundThemeChanged"
+            },
+            {
+              "kind": "field",
+              "name": "_themeRefreshInFlight",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_drawerConfigFormContainer",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_drawerConfigFooter",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_interactiveEditingEnabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "_interactionListenersAttached",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            }
+          ],
+          "events": [
+            {
+              "name": "pds:live-edit:disable",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "EDITOR_TAG",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "EDITOR_TAG",
+          "declaration": {
+            "name": "PdsLiveEdit",
+            "module": "public/assets/pds/components/pds-live-edit.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-live-importer.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "COMPONENT_TAG",
+          "type": {
+            "text": "string"
+          },
+          "default": "\"pds-live-importer\""
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsLiveImporter",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_render"
+            },
+            {
+              "kind": "method",
+              "name": "_toast",
+              "parameters": [
+                {
+                  "name": "message"
+                },
+                {
+                  "name": "type",
+                  "default": "\"information\""
+                },
+                {
+                  "name": "options",
+                  "default": "{}"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_openLatestHistoryMetadata",
+              "parameters": [
+                {
+                  "name": "options",
+                  "default": "{}"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_ensureHistoryDialog"
+            },
+            {
+              "kind": "method",
+              "name": "_buildHistoryDetailsHtml",
+              "parameters": [
+                {
+                  "name": "entry"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_openHistoryDetailsDialog",
+              "parameters": [
+                {
+                  "name": "historyId"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_copyActiveHistoryToClipboard"
+            },
+            {
+              "kind": "method",
+              "name": "openHistoryDetailsByMeta",
+              "parameters": [
+                {
+                  "name": "options",
+                  "default": "{}"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_renderHistory"
+            },
+            {
+              "kind": "method",
+              "name": "_loadHistory"
+            },
+            {
+              "kind": "method",
+              "name": "_clearHistory"
+            },
+            {
+              "kind": "method",
+              "name": "_getHistoryEntry",
+              "parameters": [
+                {
+                  "name": "historyId"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_applyHistoryResult",
+              "parameters": [
+                {
+                  "name": "historyId"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_reimportHistoryItem",
+              "parameters": [
+                {
+                  "name": "historyId"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_persistImportHistory",
+              "parameters": [
+                {
+                  "name": "{ sourceType, importMode, result }"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_buildDiagnosticsMessage",
+              "parameters": [
+                {
+                  "name": "result"
+                },
+                {
+                  "name": "sourceType"
+                },
+                {
+                  "name": "fileName"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_buildDiagnosticsToastHtml",
+              "parameters": [
+                {
+                  "name": "result"
+                },
+                {
+                  "name": "sourceType"
+                },
+                {
+                  "name": "fileName"
+                },
+                {
+                  "name": "importMode"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_loadSources"
+            },
+            {
+              "kind": "method",
+              "name": "_setSelectedFile",
+              "parameters": [
+                {
+                  "name": "file"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_updateSelectionUI"
+            },
+            {
+              "kind": "method",
+              "name": "_runImport",
+              "parameters": [
+                {
+                  "name": "_options",
+                  "default": "{}"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "_sources",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "_selectedFile",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_selectedText",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_selectedSourceType",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_selectedImportMode",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"convert-only\""
+            },
+            {
+              "kind": "field",
+              "name": "_isImporting",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_history",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "_isHistoryLoading",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_historyDialog",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_activeHistoryDialogEntry",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            }
+          ],
+          "events": [
+            {
+              "name": "pds:live-import:result",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "COMPONENT_TAG",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "COMPONENT_TAG",
+          "declaration": {
+            "name": "PdsLiveImporter",
+            "module": "public/assets/pds/components/pds-live-importer.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-live-template-canvas.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "COMPONENT_TAG",
+          "type": {
+            "text": "string"
+          },
+          "default": "\"pds-live-template-canvas\""
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsLiveTemplateCanvas",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_renderShell"
+            },
+            {
+              "kind": "method",
+              "name": "_loadTemplates"
+            },
+            {
+              "kind": "method",
+              "name": "_updateDescription"
+            },
+            {
+              "kind": "method",
+              "name": "_applyTemplate"
+            },
+            {
+              "kind": "field",
+              "name": "_templates",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "_selectedTemplateId",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            }
+          ],
+          "events": [
+            {
+              "name": "pds:live-template:inject",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "COMPONENT_TAG",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "COMPONENT_TAG",
+          "declaration": {
+            "name": "PdsLiveTemplateCanvas",
+            "module": "public/assets/pds/components/pds-live-template-canvas.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-locale.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Locale switcher component.\r\n\r\nThe component only persists canonical 5-letter locale tags (`xx-YY`),\r\nfor example `en-US` and `nl-NL`.",
+          "name": "PdsLocale",
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity"
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity"
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "readonly": true,
+              "type": {
+                "text": "HTMLFormElement|null"
+              },
+              "description": "Associated form element."
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "readonly": true,
+              "type": {
+                "text": "NodeListOf<HTMLLabelElement>|null"
+              },
+              "description": "Associated labels."
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "readonly": true,
+              "type": {
+                "text": "string"
+              },
+              "description": "Form control type."
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "readonly": true,
+              "type": {
+                "text": "ValidityState|null"
+              },
+              "description": "Current validity state."
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "readonly": true,
+              "type": {
+                "text": "string"
+              },
+              "description": "Current validation message."
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "readonly": true,
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Whether the control participates in validation."
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name."
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Selected canonical locale tag (`xx-YY`)."
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Whether a value is required."
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Whether interaction is disabled."
+            },
+            {
+              "kind": "field",
+              "name": "mode",
+              "type": {
+                "text": "\"compact\"|\"full\""
+              },
+              "description": "Label display mode."
+            },
+            {
+              "kind": "method",
+              "name": "whenReady",
+              "description": "Resolves once the first availability check is complete.",
+              "return": {
+                "type": {
+                  "text": "Promise<boolean>"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "available",
+              "description": "Whether locale switching is currently available.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "refresh",
+              "description": "Re-detect available locales and re-render.",
+              "return": {
+                "type": {
+                  "text": "Promise<boolean>"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "input",
+              "type": {
+                "text": "Event"
+              },
+              "description": "Native-like input event when user selection changes."
+            },
+            {
+              "name": "change",
+              "type": {
+                "text": "Event"
+              },
+              "description": "Native-like change event when user selection changes."
+            },
+            {
+              "name": "pds-locale:ready",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Emitted after locale availability is resolved."
+            },
+            {
+              "description": "Emitted after a new locale is selected.",
+              "name": "pds:locale:changed"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name used during submit."
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Selected canonical locale tag (`xx-YY`)."
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Requires a locale value for validity."
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables interaction and omits form value."
+            },
+            {
+              "name": "mode",
+              "type": {
+                "text": "\"compact\"|\"full\""
+              },
+              "description": "Label display mode. In `compact`, the UI shows 2-letter aliases and puts the full Intl language name in the `title` attribute. In `full`, it renders the full Intl language name as the visible label.",
+              "default": "\"compact\""
+            },
+            {
+              "name": "data-label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Accessible label for the locale radio group."
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-locale",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-locale",
+          "declaration": {
+            "name": "PdsLocale",
+            "module": "public/assets/pds/components/pds-locale.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-omnibox.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsOmnibox",
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "settings"
+            },
+            {
+              "kind": "field",
+              "name": "name"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "value"
+            },
+            {
+              "kind": "field",
+              "name": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "required"
+            },
+            {
+              "kind": "field",
+              "name": "autocomplete"
+            },
+            {
+              "kind": "field",
+              "name": "icon"
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity"
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity"
+            }
+          ],
+          "events": [
+            {
+              "name": "input",
+              "type": {
+                "text": "Event"
+              }
+            },
+            {
+              "name": "change",
+              "type": {
+                "text": "Event"
+              }
+            },
+            {
+              "name": "suggestions-updated",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "name"
+            },
+            {
+              "name": "placeholder"
+            },
+            {
+              "name": "value"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "required"
+            },
+            {
+              "name": "autocomplete"
+            },
+            {
+              "name": "icon"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-omnibox",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "PdsOmnibox",
+          "declaration": {
+            "name": "PdsOmnibox",
+            "module": "public/assets/pds/components/pds-omnibox.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-omnibox",
+          "declaration": {
+            "name": "PdsOmnibox",
+            "module": "public/assets/pds/components/pds-omnibox.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-rating.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Star-based rating input that participates in native HTML forms.",
+          "name": "PdsRating",
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "min",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "readonly": true,
+              "type": {
+                "text": "number"
+              },
+              "description": "Minimum rating value (always 0)"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "number|string"
+                  }
+                }
+              ],
+              "type": {
+                "text": "number"
+              },
+              "description": "Maximum rating value and rendered star count"
+            },
+            {
+              "kind": "field",
+              "name": "step",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "readonly": true,
+              "type": {
+                "text": "number"
+              },
+              "description": "Step size used for keyboard and pointer input (always 0.5)"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "number|string"
+                  }
+                }
+              ],
+              "type": {
+                "text": "number"
+              },
+              "description": "Current rating value"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "string|null|undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name"
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "return": {
+                "type": {
+                  "text": "HTMLFormElement|null"
+                }
+              },
+              "readonly": true,
+              "type": {
+                "text": "HTMLFormElement|null"
+              },
+              "description": "Associated form element"
+            },
+            {
+              "kind": "field",
+              "name": "color",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "string|null|undefined"
+                  }
+                }
+              ],
+              "type": {
+                "text": "string"
+              },
+              "description": "Active star color override"
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "readonly": true,
+              "type": {
+                "text": "string"
+              },
+              "description": "Form control type (`range`)"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "return": {
+                "type": {
+                  "text": "ValidityState"
+                }
+              },
+              "readonly": true,
+              "type": {
+                "text": "ValidityState"
+              },
+              "description": "Current validity state"
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "readonly": true,
+              "type": {
+                "text": "string"
+              },
+              "description": "Current validation message"
+            },
+            {
+              "kind": "field",
+              "name": "willValidate",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "readonly": true,
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Whether the element is eligible for validation"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disabled state"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Required state"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Read-only state"
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
+              "description": "Runs constraint validation.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity",
+              "description": "Runs constraint validation and reports the result to the user agent.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback",
+              "description": "Restores default value during parent form reset.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "string|File|FormData|null"
+                  }
+                }
+              ],
+              "description": "Restores state from browser session history/form restore.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "innerHTML",
+              "default": "`\r\n      <style>\r\n        :host {\r\n          --rating-star-size: var(--spacing-lg);\r\n          --rating-star-gap: var(--spacing-2xs);\r\n          --rating-star-off: var(--color-text-muted);\r\n          --rating-star-on: var(--color-warning-500);\r\n          --rating-focus: var(--color-primary-500);\r\n          --rating-fill-pct: 0%;\r\n          display: inline-block;\r\n          inline-size: fit-content;\r\n          max-inline-size: 100%;\r\n          touch-action: none;\r\n        }\r\n\r\n        .wrap {\r\n          position: relative;\r\n          display: inline-grid;\r\n          gap: var(--spacing-2xs);\r\n          align-items: center;\r\n          justify-items: start;\r\n          min-block-size: calc(var(--rating-star-size) + var(--spacing-xs));\r\n        }\r\n\r\n        .interactive {\r\n          display: inline-grid;\r\n          place-items: center start;\r\n          inline-size: 100%;\r\n          cursor: pointer;\r\n          user-select: none;\r\n          -webkit-tap-highlight-color: transparent;\r\n          touch-action: pan-x;\r\n        }\r\n\r\n        :host([disabled]) .interactive,\r\n        :host([readonly]) .interactive {\r\n          cursor: default;\r\n        }\r\n\r\n        :host([disabled]) {\r\n          opacity: 0.5;\r\n        }\r\n\r\n        .stars {\r\n          display: block;\r\n          inline-size: auto;\r\n          block-size: var(--rating-star-size);\r\n          overflow: visible;\r\n          transition: transform 220ms ease, opacity 220ms ease;\r\n        }\r\n\r\n        :host([data-in-view=\"false\"]) .stars {\r\n          opacity: 0;\r\n          transform: translateY(var(--spacing-xs)) scale(0.98);\r\n        }\r\n\r\n        :host([data-in-view=\"true\"]) .stars {\r\n          opacity: 1;\r\n          transform: translateY(0) scale(1);\r\n        }\r\n\r\n        input[type=\"range\"] {\r\n          position: absolute !important;\r\n          inset-inline-start: 0 !important;\r\n          inset-block-start: 0 !important;\r\n          inline-size: 1px !important;\r\n          block-size: 1px !important;\r\n          min-inline-size: 1px !important;\r\n          min-block-size: 1px !important;\r\n          margin: -1px !important;\r\n          border: 0 !important;\r\n          padding: 0 !important;\r\n          opacity: 0 !important;\r\n          overflow: hidden !important;\r\n          clip: rect(0 0 0 0) !important;\r\n          clip-path: inset(50%) !important;\r\n          white-space: nowrap !important;\r\n          appearance: none !important;\r\n          -webkit-appearance: none !important;\r\n          pointer-events: none !important;\r\n        }\r\n\r\n        :host(:focus-within) .interactive {\r\n          outline: 2px solid var(--rating-focus);\r\n          outline-offset: var(--spacing-3xs);\r\n          border-radius: var(--radius-sm);\r\n        }\r\n\r\n        @media (prefers-reduced-motion: reduce) {\r\n          .stars {\r\n            transition: none;\r\n          }\r\n        }\r\n      </style>\r\n\r\n      <div class=\"wrap\" part=\"control\">\r\n        <div class=\"interactive\" part=\"interactive\" aria-hidden=\"true\">\r\n          <svg class=\"stars\" part=\"stars\" focusable=\"false\" aria-hidden=\"true\"></svg>\r\n        </div>\r\n        <input class=\"native-input\" type=\"range\" />\r\n      </div>\r\n    `"
+            }
+          ],
+          "events": [
+            {
+              "name": "input",
+              "type": {
+                "text": "Event"
+              },
+              "description": "Fired when the value changes via pointer or keyboard interaction"
+            },
+            {
+              "name": "change",
+              "type": {
+                "text": "Event"
+              },
+              "description": "Fired after input when the value commit completes"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "description": "Maximum rating value and rendered star count (minimum 1, default 5)"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "description": "Current rating value (snapped to 0.5 increments)"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables keyboard/pointer interaction and form submission value"
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Marks the rating as required for form validation"
+            },
+            {
+              "name": "readonly",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Makes the rating non-editable while still focusable"
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name used when submitting the rating"
+            },
+            {
+              "name": "color",
+              "type": {
+                "text": "string"
+              },
+              "description": "Optional active star color (CSS color value)"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-rating",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-rating",
+          "declaration": {
+            "name": "PdsRating",
+            "module": "public/assets/pds/components/pds-rating.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-richtext.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "RichText",
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "description": "Update the form field name.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "description": "Set the placeholder text.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "description": "Enable or disable user input.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "description": "Toggle required validation.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "submitOnEnter",
+              "description": "Enable or disable submit-on-enter behaviour.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "spellcheck",
+              "description": "Toggle native spell checking support.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "toolbar",
+              "description": "Show or hide the formatting toolbar.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "description": "Change the output format for future values.",
+              "return": {
+                "type": {
+                  "text": "\"html\"|\"markdown\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "description": "Update the editor value programmatically.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "description": "Reference to the associated HTMLFormElement, when applicable.",
+              "return": {
+                "type": {
+                  "text": "HTMLFormElement|null"
+                }
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
+              "description": "Run native form validation against the control.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity",
+              "description": "Report validity using the browser's built-in UI.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_submitOnEnter",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_toolbar",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "_spellcheck",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "_value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_placeholder",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_required",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_format",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"html\""
+            }
+          ],
+          "events": [
+            {
+              "name": "input",
+              "type": {
+                "text": "InputEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "name"
+            },
+            {
+              "name": "placeholder"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "required"
+            },
+            {
+              "name": "submit-on-enter"
+            },
+            {
+              "name": "spellcheck"
+            },
+            {
+              "name": "toolbar"
+            },
+            {
+              "name": "value"
+            },
+            {
+              "name": "format"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-richtext",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RichText",
+          "declaration": {
+            "name": "RichText",
+            "module": "public/assets/pds/components/pds-richtext.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-richtext",
+          "declaration": {
+            "name": "RichText",
+            "module": "public/assets/pds/components/pds-richtext.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-scrollrow.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsScrollrow",
+          "members": [
+            {
+              "kind": "field",
+              "name": "label",
+              "description": "Update the accessible label and optional fallback heading text.",
+              "return": {
+                "type": {
+                  "text": "string|null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "val",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "snap",
+              "description": "Adjust the scroll snap alignment.",
+              "return": {
+                "type": {
+                  "text": "\"start\"|\"center\""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "val",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "tileMin",
+              "description": "Minimum tile size applied to slotted content.",
+              "return": {
+                "type": {
+                  "text": "string|null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "val",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "tileMax",
+              "description": "Maximum tile size applied to slotted content.",
+              "return": {
+                "type": {
+                  "text": "string|null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "val",
+                  "type": {
+                    "text": "string|null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "doPage",
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ],
+              "description": "Scroll the viewport by roughly one page in the indicated direction."
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label"
+            },
+            {
+              "name": "snap"
+            },
+            {
+              "name": "tile-min"
+            },
+            {
+              "name": "tile-max"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-scrollrow",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-scrollrow",
+          "declaration": {
+            "name": "PdsScrollrow",
+            "module": "public/assets/pds/components/pds-scrollrow.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-splitpanel.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsSplitpanel",
+          "cssProperties": [
+            {
+              "description": "Width of the left panel in horizontal layout.",
+              "name": "--left-width"
+            },
+            {
+              "description": "Color of the splitter bar.",
+              "name": "--color-border"
+            },
+            {
+              "description": "Background color of the left panel in mobile view.",
+              "name": "--color-surface-base"
+            },
+            {
+              "description": "Transition duration for the mobile panel animation.",
+              "name": "--transition-fast"
+            },
+            {
+              "description": "Positioning spacing for the mobile toggle button.",
+              "name": "--spacing-4"
+            },
+            {
+              "description": "Padding for the mobile toggle button.",
+              "name": "--spacing-1"
+            },
+            {
+              "description": "Padding for the mobile toggle button.",
+              "name": "--spacing-2"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "The mobile toggle button.",
+              "name": "toggle"
+            },
+            {
+              "description": "The draggable splitter bar between panels.",
+              "name": "splitter"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Content for the left (or top) panel.",
+              "name": "left"
+            },
+            {
+              "description": "Content for the right (or bottom) panel.",
+              "name": "right"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "layout",
+              "type": {
+                "text": "String"
+              },
+              "description": "Gets or sets the layout direction."
+            },
+            {
+              "kind": "field",
+              "name": "defaultSplit",
+              "type": {
+                "text": "String"
+              },
+              "description": "Gets or sets the default split size."
+            },
+            {
+              "kind": "field",
+              "name": "breakpoint",
+              "type": {
+                "text": "Number"
+              },
+              "description": "Gets or sets the mobile breakpoint."
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "Boolean"
+              },
+              "description": "Gets or sets the open state of the mobile panel."
+            },
+            {
+              "kind": "method",
+              "name": "_render"
+            },
+            {
+              "kind": "method",
+              "name": "_adoptStyles"
+            },
+            {
+              "kind": "method",
+              "name": "updateLayout",
+              "description": "Updates the layout based on the current viewport width and breakpoint.\nToggles mobile mode and adjusts panel styles."
+            },
+            {
+              "kind": "method",
+              "name": "startDragging",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "drag",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "stopDragging"
+            },
+            {
+              "kind": "method",
+              "name": "toggleMobileView",
+              "description": "Toggles the visibility of the primary panel in mobile view."
+            },
+            {
+              "kind": "method",
+              "name": "closeMobileView",
+              "description": "Closes the primary panel in mobile view."
+            },
+            {
+              "kind": "method",
+              "name": "_updateToggleButton"
+            },
+            {
+              "kind": "field",
+              "name": "_layout",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"horizontal\""
+            },
+            {
+              "kind": "field",
+              "name": "_defaultSplit",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"450px\""
+            },
+            {
+              "kind": "field",
+              "name": "_breakpoint",
+              "type": {
+                "text": "number"
+              },
+              "default": "1024"
+            },
+            {
+              "kind": "field",
+              "name": "_open"
+            },
+            {
+              "kind": "field",
+              "name": "isDragging",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_onResize"
+            },
+            {
+              "kind": "field",
+              "name": "_onMouseMove"
+            },
+            {
+              "kind": "field",
+              "name": "_onMouseUp"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "layout",
+              "type": {
+                "text": "String"
+              },
+              "description": "The layout direction of the panels. Can be \"horizontal\" or \"vertical\". Defaults to \"horizontal\"."
+            },
+            {
+              "name": "defaultsplit",
+              "type": {
+                "text": "String"
+              },
+              "description": "The initial size of the primary (left/top) panel. Defaults to \"450px\"."
+            },
+            {
+              "name": "breakpoint",
+              "type": {
+                "text": "Number"
+              },
+              "description": "The viewport width in pixels below which the component switches to mobile view. Defaults to 1024."
+            },
+            {
+              "name": "open",
+              "type": {
+                "text": "Boolean"
+              },
+              "description": "Controls the visibility of the primary panel in mobile view."
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-splitpanel",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-splitpanel",
+          "declaration": {
+            "name": "PdsSplitpanel",
+            "module": "public/assets/pds/components/pds-splitpanel.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-tabstrip.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "A tab panel used as a child of `<pds-tabstrip>`. Each panel becomes a tab\nwith its button label derived from the `label` attribute.",
+          "name": "TabPanel",
+          "slots": [
+            {
+              "description": "Content displayed when this tab is active",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "section",
+              "description": "The inner `<section>` that exposes the panel region semantics.",
+              "return": {
+                "type": {
+                  "text": "HTMLElement|null"
+                }
+              },
+              "readonly": true
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Label text displayed on the tab button",
+              "name": "label"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Unique identifier for the panel (auto-generated if not provided)",
+              "name": "id"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-tabpanel",
+          "customElement": true
+        },
+        {
+          "kind": "class",
+          "description": "Tab navigation component that displays content in switchable panels.\n\nUse `<pds-tabpanel>` children with a `label` attribute to define each tab.\nThe component auto-generates navigation buttons and handles URL hash synchronization.",
+          "name": "TabStrip",
+          "cssProperties": [
+            {
+              "description": "Color of the active tab indicator underline",
+              "name": "--color-accent-400"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "Navigation container comprising the clickable tab buttons",
+              "name": "tabs"
+            }
+          ],
+          "slots": [
+            {
+              "description": "One or more `<pds-tabpanel>` elements, each with a `label` attribute",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "innerHTML",
+              "default": "`\n      <style>\n        :host{display:block}\n        nav{\n          position:relative; display:inline-flex; gap:.5rem; align-items:flex-end;\n          \n          --pad-x:.5rem; --pad-y:.25rem;\n        }\n        nav a{\n          color: currentColor;\n          display:inline-block; padding:var(--pad-y) var(--pad-x);\n          text-decoration:none; line-height:1.2; border-bottom:2px solid transparent;\n          cursor:pointer;\n        }\n        nav a[aria-current=\"page\"]{ font-weight:600; }\n        nav a:focus-visible{ outline:auto; outline-offset:2px; }\n        .inkbar{\n          position:absolute; inset-inline-start:0; bottom:-1px; height:2px; width:0;\n          transform:translateX(0); transition:transform .25s ease, width .25s ease;\n          background-color: var(--color-accent-400); pointer-events:none;\n        }\n      </style>\n      <nav part=\"tabs\"></nav>\n      <slot></slot>\n    `"
+            }
+          ],
+          "events": [
+            {
+              "name": "tabchange",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Fired when the active tab changes. Detail: `{ oldTab: string|null, newTab: string }`"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Accessible label announced for the tablist (default: \"Tabs\")",
+              "name": "label"
+            },
+            {
+              "type": {
+                "text": "string"
+              },
+              "description": "Identifier of the currently active panel (synced with the location hash)",
+              "name": "selected"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-tabstrip",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-tabpanel",
+          "declaration": {
+            "name": "TabPanel",
+            "module": "public/assets/pds/components/pds-tabstrip.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-tabstrip",
+          "declaration": {
+            "name": "TabStrip",
+            "module": "public/assets/pds/components/pds-tabstrip.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-tags.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Form-associated multi-select tags control built on top of `pds-omnibox`.\r\n\r\nUsers select suggestions from the omnibox and each selection is rendered as a removable\r\nchip. The component keeps selection state synchronized across:\r\n- the `value` attribute (comma-separated ids)\r\n- the `value` property (`string[]`)\r\n- form value via ElementInternals\r\n\r\nThe `options` object uses the same structure as `pds-omnibox.settings`.\r\nSee `pds-omnibox` JSDoc for the full options schema.\r\nBefore applying it, the component deep-merges internal defaults:\r\n- `hideCategory: true`\r\n- `itemGrid: \"0 1fr 0\"`\r\n- `iconHandler: () => \"\"`\r\n\r\nWhen `required` is set, at least one selected value is required for validity.",
+          "name": "PdsTags",
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "name"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "options",
+              "type": {
+                "text": "PdsOmniboxSettings|null"
+              },
+              "description": "Omnibox options object (see `pds-omnibox.js` typedef)"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "Selected option ids (array form)"
+            },
+            {
+              "kind": "field",
+              "name": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "required"
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity"
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity"
+            }
+          ],
+          "events": [
+            {
+              "name": "input",
+              "type": {
+                "text": "Event"
+              },
+              "description": "Fired whenever selection changes"
+            },
+            {
+              "name": "change",
+              "type": {
+                "text": "Event"
+              },
+              "description": "Fired whenever selection changes"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name; selected values are submitted under this name"
+            },
+            {
+              "name": "placeholder",
+              "type": {
+                "text": "string"
+              },
+              "description": "Placeholder shown in omnibox input (default: \"Search tags...\")"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Comma-separated selected item ids"
+            },
+            {
+              "name": "options",
+              "type": {
+                "text": "string"
+              },
+              "description": "JSON object with the same shape as `pds-omnibox.settings`"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables omnibox interaction and chip remove actions"
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Requires at least one selected value for validity"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-tags",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-tags",
+          "declaration": {
+            "name": "PdsTags",
+            "module": "public/assets/pds/components/pds-tags.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-theme.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsTheme",
+          "members": [],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-theme",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-theme",
+          "declaration": {
+            "name": "PdsTheme",
+            "module": "public/assets/pds/components/pds-theme.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-toaster.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "AppToaster",
+          "cssProperties": [
+            {
+              "description": "Z-index for toast positioning (default: 9999)",
+              "name": "--z-notification"
+            },
+            {
+              "description": "Animation duration for toasts",
+              "name": "--transition-normal"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Toast messages are dynamically added to the shadow DOM",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "method",
+              "name": "toast",
+              "parameters": [
+                {
+                  "name": "message",
+                  "description": "The message to display",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Toast configuration",
+                  "optional": true,
+                  "type": {
+                    "text": "@param {\"information\"|\"success\"|\"warning\"|\"error\"} [options.type=\"information\"] - Toast type\n    * @param {string} [options.title] - Optional heading text (falls back to type-based title when empty)\n   * @param {number} [options.duration] - Duration in ms (auto-calculated if not provided)\n   * @param {boolean} [options.closable=true] - Whether toast can be closed manually\n   * @param {boolean} [options.persistent=false] - If true, toast doesn't auto-dismiss\n   * @param {boolean} [options.returnToastElement=false] - If true, return the toast element instead of toast ID\n   * "
+                  }
+                }
+              ],
+              "description": "Display a toast notification",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "string|HTMLElement|null"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getToastElement",
+              "parameters": [
+                {
+                  "name": "toastId",
+                  "description": "Toast ID",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Get toast element by ID.",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "HTMLElement|null"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "createToastElement",
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "message",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "type",
+                  "type": {
+                    "text": "\"information\"|\"success\"|\"warning\"|\"error\""
+                  }
+                },
+                {
+                  "name": "title",
+                  "type": {
+                    "text": "string|null|undefined"
+                  }
+                },
+                {
+                  "name": "closable",
+                  "type": {
+                    "text": "boolean"
+                  }
+                },
+                {
+                  "name": "duration",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "persistent",
+                  "type": {
+                    "text": "boolean"
+                  }
+                },
+                {
+                  "name": "html",
+                  "default": "false"
+                },
+                {
+                  "name": "action",
+                  "default": "null"
+                }
+              ],
+              "description": "Build a DOM node representing a single toast notification.",
+              "return": {
+                "type": {
+                  "text": "HTMLElement"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "dismissToast",
+              "parameters": [
+                {
+                  "name": "toastId",
+                  "description": "The ID of the toast to dismiss",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Dismiss a toast by ID",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "dismissAll",
+              "description": "Close all active toasts."
+            },
+            {
+              "kind": "method",
+              "name": "toastSuccess",
+              "parameters": [
+                {
+                  "name": "message",
+                  "description": "The message to display",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Toast configuration options",
+                  "optional": true,
+                  "type": {
+                    "text": "Object"
+                  }
+                }
+              ],
+              "description": "Display a success toast",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "toastWarning",
+              "parameters": [
+                {
+                  "name": "message",
+                  "description": "The message to display",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Toast configuration options",
+                  "optional": true,
+                  "type": {
+                    "text": "Object"
+                  }
+                }
+              ],
+              "description": "Display a warning toast",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "toastError",
+              "parameters": [
+                {
+                  "name": "message",
+                  "description": "The message to display",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Toast configuration options",
+                  "optional": true,
+                  "type": {
+                    "text": "Object"
+                  }
+                }
+              ],
+              "description": "Display an error toast",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "toastInfo",
+              "parameters": [
+                {
+                  "name": "message",
+                  "description": "The message to display",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Toast configuration options",
+                  "optional": true,
+                  "type": {
+                    "text": "Object"
+                  }
+                }
+              ],
+              "description": "Display an information toast",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "toasts",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "activeToastKeys",
+              "default": "new Set()"
+            },
+            {
+              "kind": "field",
+              "name": "activeToastIdsByKey",
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "activeToastKeysById",
+              "default": "new Map()"
+            }
+          ],
+          "events": [
+            {
+              "description": "Global event for creating toasts",
+              "name": "pds:toast"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-toaster",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "AppToaster",
+          "declaration": {
+            "name": "AppToaster",
+            "module": "public/assets/pds/components/pds-toaster.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-toaster",
+          "declaration": {
+            "name": "AppToaster",
+            "module": "public/assets/pds/components/pds-toaster.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-treeview.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsTreeview",
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback"
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "settings",
+              "description": "Current runtime settings for data loading and behavior.",
+              "type": {
+                "text": "PdsTreeviewOptions"
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "PdsTreeviewOptions|null|undefined"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "options",
+              "description": "Alias for `settings`.",
+              "type": {
+                "text": "PdsTreeviewOptions"
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "PdsTreeviewOptions|null|undefined"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "description": "Form field name used when participating in form submission.",
+              "type": {
+                "text": "string"
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string|null|undefined"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "description": "Selected value for single-select mode.",
+              "type": {
+                "text": "string"
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string|null|undefined"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "values",
+              "description": "Selected values in multiselect mode.",
+              "type": {
+                "text": "string[]"
+              },
+              "parameters": [
+                {
+                  "name": "values",
+                  "type": {
+                    "text": "Array<string|number>|null|undefined"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "description": "Disables interactions when true.",
+              "type": {
+                "text": "boolean"
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "description": "Requires at least one selected node for form validity.",
+              "type": {
+                "text": "boolean"
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "displayOnly",
+              "description": "Read-only presentation mode; disables selection and form value syncing.",
+              "type": {
+                "text": "boolean"
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "expandedAll",
+              "description": "Expands all branch nodes after data load.",
+              "type": {
+                "text": "boolean"
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "multiselect",
+              "description": "Selection mode.\r\n\r\n- `off`: single select\r\n- `checkboxes`: persistent multiselect with checkboxes\r\n- `auto`: touch/coarse pointer gets checkbox mode",
+              "type": {
+                "text": "\"off\"|\"checkboxes\"|\"auto\""
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "\"off\"|\"checkboxes\"|\"auto\"|string|null|undefined"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "selectedNode",
+              "description": "First selected node (or active selected node in multiselect).",
+              "type": {
+                "text": "PdsTreeviewNode|null"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "selectedNodes",
+              "description": "All selected nodes.",
+              "type": {
+                "text": "PdsTreeviewNode[]"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "getSelectedNode",
+              "description": "Backward-compatible accessor for `selectedNode`.",
+              "return": {
+                "type": {
+                  "text": "PdsTreeviewNode|null"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getSelectedNodes",
+              "description": "Backward-compatible accessor for `selectedNodes`.",
+              "return": {
+                "type": {
+                  "text": "PdsTreeviewNode[]"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "refresh",
+              "description": "Reloads tree data from settings/source and re-renders the component.",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "expandAll",
+              "description": "Expands every currently indexed branch node.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "collapseAll",
+              "description": "Collapses every expanded branch node.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "selectById",
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Selects a node by node id.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "selectByValue",
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string|number|null|undefined"
+                  }
+                }
+              ],
+              "description": "Selects the first node whose `value` matches.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "selectByValues",
+              "parameters": [
+                {
+                  "name": "values",
+                  "type": {
+                    "text": "Array<string|number>"
+                  }
+                }
+              ],
+              "description": "Selects multiple nodes by value.\r\n\r\nIn single-select mode, only the first resolved value is selected.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
+              "description": "Runs form-associated validity checks.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity",
+              "description": "Runs and reports form-associated validity checks.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "focus",
+              "parameters": [
+                {
+                  "name": "options",
+                  "optional": true,
+                  "type": {
+                    "text": "FocusOptions"
+                  }
+                }
+              ],
+              "description": "Focuses the active/selected row, or first visible row as fallback.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "treeview-load",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "treeview-error",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "node-toggle",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "node-load",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "node-load-error",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "node-select",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "input",
+              "type": {
+                "text": "Event"
+              }
+            },
+            {
+              "name": "change",
+              "type": {
+                "text": "Event"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "name"
+            },
+            {
+              "name": "value"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "required"
+            },
+            {
+              "name": "display-only"
+            },
+            {
+              "name": "expanded-all"
+            },
+            {
+              "name": "multiselect"
+            },
+            {
+              "name": "src"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-treeview",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "PdsTreeview",
+          "declaration": {
+            "name": "PdsTreeview",
+            "module": "public/assets/pds/components/pds-treeview.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-treeview",
+          "declaration": {
+            "name": "PdsTreeview",
+            "module": "public/assets/pds/components/pds-treeview.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-upload.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Drag-and-drop file uploader that participates in native forms.",
+          "name": "UploadArea",
+          "members": [
+            {
+              "kind": "method",
+              "name": "formAssociatedCallback",
+              "description": "Invoked when the element becomes associated with a `<form>`."
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "parameters": [
+                {
+                  "name": "disabled",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "description": "Sync disabled state across internal controls when the host form toggles."
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback",
+              "description": "Clear selected files when the host form resets."
+            },
+            {
+              "kind": "method",
+              "name": "formStateRestoreCallback",
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "File[]"
+                  }
+                }
+              ],
+              "description": "Restore previously submitted files during BFCache or session restores."
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "description": "Value is derived from the selected files and cannot be set manually.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "val",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
+              "description": "Run constraint validation leveraging ElementInternals.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity",
+              "description": "Report validity issues using the browser UI.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "clear",
+              "description": "Clear all selected files and update the UI accordingly."
+            },
+            {
+              "kind": "method",
+              "name": "getFiles",
+              "description": "Retrieve a shallow copy of the current file selection.",
+              "return": {
+                "type": {
+                  "text": "File[]"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "clear",
+              "description": "Remove all files and emit a change notification."
+            }
+          ],
+          "events": [
+            {
+              "name": "files-changed",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "accept",
+              "type": {
+                "text": "string"
+              },
+              "description": "Comma separated list of accepted MIME types and file extensions"
+            },
+            {
+              "name": "multiple",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Allows selecting more than one file"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Disables interaction with the drop zone and button"
+            },
+            {
+              "name": "max-files",
+              "type": {
+                "text": "number"
+              },
+              "description": "Optional cap on the number of files the user may select"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-upload",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-upload",
+          "declaration": {
+            "name": "UploadArea",
+            "module": "public/assets/pds/components/pds-upload.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UploadArea",
+            "module": "public/assets/pds/components/pds-upload.js"
+          }
+        }
+      ]
+    }
+  ]
+}

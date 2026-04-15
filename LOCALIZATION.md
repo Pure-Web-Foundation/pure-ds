@@ -81,6 +81,23 @@ document.body.innerHTML = `
 
 Both calls are identical. Translation is decided by nearest `lang` scope.
 
+If you use message codes instead of source strings, provide a source-locale bundle too and opt into loading it:
+
+```javascript
+const localization = PDS.createJSONLocalization({
+  locale: "en",
+  locales: ["en", "nl"],
+  loadDefaultLocale: true,
+  aliases: {
+    en: ["en-US", "en"],
+    nl: ["nl-NL", "nl"],
+  },
+  basePath: "/assets/locales",
+});
+```
+
+With `loadDefaultLocale: true`, PDS will also fetch the default/source bundle, so `msg("my-long-string-code")` can resolve in English as well as translated locales.
+
 ## How Context Resolution Works
 
 When `msg()` resolves a key, PDS chooses locale in this order:
@@ -187,6 +204,7 @@ From `#pds` root:
 
 - `msg()` is synchronous by design.
 - On first encounter of a new locale, text may briefly render fallback content, then update once the locale bundle loads.
+- If you use code keys for the source locale, preload that locale with `await loadLocale("en-US")` or `await loadLocale("en")` before first render when you need immediate source-copy output.
 - For immediate guarantees, preload with `loadLocale("xx")` before rendering that locale scope.
 
 ## Missing Translation Warnings

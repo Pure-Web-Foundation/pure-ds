@@ -1,0 +1,8 @@
+/* docs.pure-ds.com — custom styles layered on top of Starlight */
+
+/* Inherit PDS token names for consistency in the docs themselves */
+:root {
+  /* Map Starlight accent to PDS primary color if PDS is loaded */
+  --sl-color-accent: var(--color-primary, #2563eb);
+  --sl-color-accent-high: var(--color-primary-hover, #1d4ed8);
+}

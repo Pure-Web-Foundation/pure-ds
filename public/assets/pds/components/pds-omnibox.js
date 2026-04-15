@@ -217,7 +217,7 @@ export class PdsOmnibox extends HTMLElement {
     this.#root.innerHTML = `
 			<div class="ac-container input-icon">
 				<pds-icon morph icon="${DEFAULT_ICON}"></pds-icon>
-        <input class="ac-input" type="search" placeholder="${msg(DEFAULT_PLACEHOLDER)}" autocomplete="off" />
+        <input class="ac-input" part="input" type="search" placeholder="${msg(DEFAULT_PLACEHOLDER)}" autocomplete="off" />
 			</div>
 		`;
 
@@ -278,6 +278,8 @@ export class PdsOmnibox extends HTMLElement {
 
 					.ac-input {
 						width: 100%;
+						padding-top: var(--ac-input-vertical-padding, inherit);
+            padding-bottom: var(--ac-input-vertical-padding, inherit);
 					}
 
 					.ac-suggestion {

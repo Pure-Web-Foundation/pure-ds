@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(find /d/Code/pure/pure-ds -type f \\\\\\(-name .storybook.config.* -o -name .storybook \\\\\\))",
+      "Bash(xargs ls:*)",
+      "Read(//d/Code/pure/pure-ds/**)"
     ]
   }
 }

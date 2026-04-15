@@ -1,0 +1,75 @@
+---
+title: Getting Started
+description: Install and configure Pure Design System in your project.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+Pure Design System (PDS) is a **standards-first, configuration-driven** design system built on the [Pure Web Manifesto](https://pureweb.dev/manifesto): *"The browser is the framework."*
+
+- Zero framework dependencies — Web Platform APIs only
+- Configuration-driven CSS: `pds.config.js` generates all tokens, scales, and semantics
+- Progressive enhancement: semantic HTML → `data-*` enhancements → `pds-*` web components
+- Lazy-loaded web components — never bundled by your project
+
+## Install
+
+<Steps>
+
+1. **Install the package**
+
+   ```sh
+   npm install @pure-ds/core
+   ```
+
+   On install, PDS automatically:
+   - Creates a starter `pds.config.js`
+   - Configures the MCP server for VS Code and Cursor (`.vscode/mcp.json`, `.cursor/mcp.json`)
+   - Copies AI guidance files (`.github/copilot-instructions.md`, `.cursorrules`)
+
+2. **Run the build**
+
+   ```sh
+   npm run pds:build
+   ```
+
+   This generates static assets (CSS, components) into your web root.
+
+3. **Add to your HTML**
+
+   ```html
+   <link rel="stylesheet" href="/assets/pds/pds.css">
+   <script type="importmap">
+   {
+     "imports": {
+       "#pds": "/assets/pds/core.js",
+       "#pds/lit": "/assets/pds/external/lit.js"
+     }
+   }
+   </script>
+   <script type="module">
+     import { PDS } from '#pds';
+   </script>
+   ```
+
+4. **Start building**
+
+   Use the [Tokens](/tokens/color), [Primitives](/primitives/), [Enhancements](/enhancements/), and [Components](/components/) reference to find what you need.
+
+   The AI MCP server is running — ask your AI agent to use `get_best_match` before generating any PDS code.
+
+</Steps>
+
+## Architecture overview
+
+```
+pds.config.js
+    ↓ generates
+CSS tokens + utility classes   (Layer 1 — always prefer this)
+    +
+data-* enhancers               (Layer 2 — when JS behavior is needed)
+    +
+pds-* Web Components           (Layer 3 — only when lower layers can't)
+    +
+MCP server                     (Layer 4 — AI agent support)
+```

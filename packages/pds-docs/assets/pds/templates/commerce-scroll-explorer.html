@@ -1,0 +1,115 @@
+<section class="stack-lg" aria-label="Commerce Scroll Explorer">
+  <header class="card surface-elevated stack-sm border-gradient border-glow">
+    <div class="flex justify-between items-center gap-sm">
+      <div class="stack-xs">
+        <h2>Commerce Scroll Explorer</h2>
+        <p class="text-muted">Quickly inspect color, spacing, and typography impact across product UI patterns.</p>
+      </div>
+      <nav data-dropdown class="align-right" data-mode="auto">
+        <button class="btn-outline btn-sm">
+          <pds-icon icon="list" size="sm"></pds-icon>
+          Actions
+        </button>
+        <menu>
+          <li><a href="#refresh"><pds-icon icon="arrow-right" size="sm"></pds-icon>Refresh feed</a></li>
+          <li><a href="#publish"><pds-icon icon="rocket" size="sm"></pds-icon>Publish</a></li>
+          <li><a href="#share"><pds-icon icon="share" size="sm"></pds-icon>Share</a></li>
+        </menu>
+      </nav>
+    </div>
+    <div class="flex gap-sm flex-wrap">
+      <button class="btn-primary">Primary CTA</button>
+      <button class="btn-secondary">Secondary CTA</button>
+      <button class="btn-outline">Outline CTA</button>
+      <button class="btn-primary btn-working" type="button" aria-live="polite">Working State</button>
+    </div>
+  </header>
+
+  <section class="stack-sm">
+    <h3>Featured products (pds-scrollrow)</h3>
+    <pds-scrollrow snap="start" tile-min="250px" tile-max="320px">
+      <article class="card surface-base stack-sm border-gradient">
+        <img class="img-gallery" src="https://picsum.photos/280/200?random=401" alt="Starter Kit product" loading="lazy" />
+        <h4>Aurora Headphones</h4>
+        <p class="text-muted">Wireless studio sound with all-day comfort.</p>
+        <div class="flex justify-between items-center">
+          <strong>$89</strong>
+          <button class="btn-primary btn-sm">Add</button>
+        </div>
+      </article>
+      <article class="card surface-elevated stack-sm border-glow">
+        <img class="img-gallery" src="https://picsum.photos/280/200?random=402" alt="Growth Bundle product" loading="lazy" />
+        <h4>Trail Pro Backpack</h4>
+        <p class="text-muted">Weather-ready carry with modular compartments.</p>
+        <div class="flex justify-between items-center">
+          <strong>$119</strong>
+          <button class="btn-primary btn-sm">Add</button>
+        </div>
+      </article>
+      <article class="card surface-subtle stack-sm">
+        <img class="img-gallery" src="https://picsum.photos/280/200?random=403" alt="Scale Pack product" loading="lazy" />
+        <h4>DeskLight Mini</h4>
+        <p class="text-muted">Adaptive brightness for focused workspaces.</p>
+        <div class="flex justify-between items-center">
+          <strong>$69</strong>
+          <button class="btn-primary btn-sm">Add</button>
+        </div>
+      </article>
+      <article class="card surface-overlay stack-sm border-gradient">
+        <img class="img-gallery" src="https://picsum.photos/280/200?random=404" alt="Premium Suite product" loading="lazy" />
+        <h4>Urban Runner</h4>
+        <p class="text-muted">High-cushion sneakers for city commutes.</p>
+        <div class="flex justify-between items-center">
+          <strong>$149</strong>
+          <button class="btn-primary btn-sm">Add</button>
+        </div>
+      </article>
+      <article class="card surface-base stack-sm">
+        <img class="img-gallery" src="https://picsum.photos/280/200?random=405" alt="Insight Add-on product" loading="lazy" />
+        <h4>Ceramic Brew Set</h4>
+        <p class="text-muted">Minimal pour-over set for smooth mornings.</p>
+        <div class="flex justify-between items-center">
+          <strong>$54</strong>
+          <button class="btn-primary btn-sm">Add</button>
+        </div>
+      </article>
+    </pds-scrollrow>
+  </section>
+
+  <section class="grid grid-auto-md gap-md">
+    <article class="card surface-sunken stack-sm">
+      <h4>Interactive states</h4>
+      <p class="text-muted">Hover/focus/active contrast check.</p>
+      <div class="flex gap-sm flex-wrap">
+        <button class="btn-primary btn-sm">Hover</button>
+        <button class="btn-secondary btn-sm">Focus</button>
+        <button class="btn-outline btn-sm">Active</button>
+      </div>
+    </article>
+    <article class="card surface-elevated stack-sm border-glow">
+      <h4>Context card</h4>
+      <blockquote>
+        “Tuning one token should visibly cascade through typography, spacing, and component depth.”
+      </blockquote>
+      <small class="text-muted">Design QA principle</small>
+    </article>
+  </section>
+
+  <section class="card surface-base stack-sm">
+    <h3>Quick FAQ (Accordion)</h3>
+    <section class="accordion" aria-label="Commerce FAQ">
+      <details>
+        <summary id="commerce-faq-1">How do prices react to typography scale changes?</summary>
+        <div role="region" aria-labelledby="commerce-faq-1">
+          <p>Headings, labels, and price emphasis adapt via global type and spacing tokens.</p>
+        </div>
+      </details>
+      <details>
+        <summary id="commerce-faq-2">What should I watch when changing surface settings?</summary>
+        <div role="region" aria-labelledby="commerce-faq-2">
+          <p>Check card boundaries, elevation readability, and icon contrast in light/dark themes.</p>
+        </div>
+      </details>
+    </section>
+  </section>
+</section>

@@ -584,12 +584,24 @@ function getToolSchema() {
     },
     {
       name: 'validate_pds_snippet',
-      description: 'Validate HTML snippet for unknown classes, tokens, and pds-* tags against SSoT.',
+      description: 'Validate HTML snippet for unknown classes, tokens, and pds-* tags against SSoT. Also flags anti-patterns: inline style attributes, <style> injection, and browser dialog calls.',
       inputSchema: {
         type: 'object',
         required: ['html'],
         properties: {
           html: { type: 'string', description: 'HTML snippet to validate.' },
+        },
+      },
+    },
+    {
+      name: 'get_best_match',
+      description: 'Given a UI intent (e.g. "dropdown nav menu", "spinner button", "accordion"), returns ranked PDS matches across all layers: web components (pds-*) > data-* enhancers > CSS primitives/utilities. Use this FIRST when deciding which PDS element to use.',
+      inputSchema: {
+        type: 'object',
+        required: ['intent'],
+        properties: {
+          intent: { type: 'string', description: 'UI intent or concept, e.g. "dropdown menu in a nav", "collapsible sections", "loading spinner on a button".' },
+          limit: { type: 'number', minimum: 1, maximum: 20, default: 8 },
         },
       },
     },
@@ -866,11 +878,25 @@ async function handleGetComponentApi(ctx, args = {}) {
     }
   }
 
+  const components = declarations.slice(0, limit).map((comp) => {
+    // Components with CSS parts use shadow DOM — surface the adoptLayers requirement
+    const hasShadowDom = comp.cssParts && comp.cssParts.length > 0;
+    return {
+      ...comp,
+      ...(hasShadowDom
+        ? {
+            shadowDomNote:
+              'This component uses a shadow DOM. When extending or wrapping it in a custom element, call PDS.adoptLayers(this) in the constructor to inherit all PDS adopted stylesheets. NEVER inject <style> blocks into shadow DOM.',
+          }
+        : {}),
+    };
+  });
+
   return {
     ssoTRoot: normalizePath(ctx.ssoTRoot),
     source: normalizePath(path.relative(ctx.ssoTRoot, ctx.files.customElements)),
     totalMatches: declarations.length,
-    components: declarations.slice(0, limit),
+    components,
   };
 }
 
@@ -982,9 +1008,43 @@ async function handleValidateSnippet(ctx, args = {}) {
   const unknownTokens = [...usedTokens].filter((token) => !knownTokens.has(token));
   const unknownComponents = [...usedComponents].filter((tag) => !knownComponents.has(tag));
 
+  // Anti-pattern detection
+  const antiPatterns = [];
+
+  // Inline style attributes
+  if (/\bstyle\s*=\s*["'][^"']+["']/.test(html)) {
+    antiPatterns.push({
+      rule: 'no-inline-styles',
+      message: 'Inline style attributes detected. Use CSS custom property tokens (var(--token-name)) instead.',
+      fix: 'Replace style="..." with CSS custom properties. Use get_tokens to find the right token.',
+    });
+  }
+
+  // <style> tag injection (especially dangerous in shadow DOM)
+  if (/<style[\s>]/i.test(html)) {
+    antiPatterns.push({
+      rule: 'no-style-injection',
+      message: '<style> tag detected. In PDS web components, always use PDS.adoptLayers(this) in the constructor — never inject <style> blocks.',
+      fix: 'Remove <style> and call PDS.adoptLayers(this) in the shadow root constructor.',
+    });
+  }
+
+  // Browser dialog calls
+  if (/\b(alert|confirm|prompt)\s*\(/.test(html)) {
+    antiPatterns.push({
+      rule: 'no-browser-dialogs',
+      message: 'Browser dialog (alert/confirm/prompt) detected.',
+      fix: 'Use PDS.toast() for notifications and PDS.ask() for confirmations/prompts.',
+    });
+  }
+
+  const hasAntiPatterns = antiPatterns.length > 0;
+  const valid = unknownClasses.length === 0 && unknownTokens.length === 0 && unknownComponents.length === 0 && !hasAntiPatterns;
+
   return {
     ssoTRoot: normalizePath(ctx.ssoTRoot),
-    valid: unknownClasses.length === 0 && unknownTokens.length === 0 && unknownComponents.length === 0,
+    valid,
+    antiPatterns,
     unknown: {
       classes: unknownClasses.map((className) => ({
         name: className,
@@ -1002,6 +1062,92 @@ async function handleValidateSnippet(ctx, args = {}) {
   };
 }
 
+async function handleGetBestMatch(ctx, args = {}) {
+  const intent = String(args.intent || '').trim();
+  if (!intent) throw new Error('The "intent" argument is required.');
+  const limit = Math.min(Math.max(Number(args.limit || 8), 1), 20);
+  const needle = normalize(intent);
+
+  const [ontology, enhancerMeta, customElements] = await Promise.all([
+    getOntology(ctx),
+    getEnhancerMeta(ctx),
+    getCustomElements(ctx),
+  ]);
+
+  const results = [];
+
+  // Layer 3: web components
+  for (const moduleEntry of customElements.modules || []) {
+    for (const declaration of moduleEntry.declarations || []) {
+      if (!declaration.customElement || !declaration.tagName) continue;
+      const hay = normalize(`${declaration.tagName} ${declaration.description || ''}`);
+      if (!hay.includes(needle)) continue;
+      results.push({
+        layer: 3,
+        type: 'web-component',
+        selector: declaration.tagName,
+        description: declaration.description || '',
+        usage: `<${declaration.tagName}></${declaration.tagName}>`,
+        note: 'Use get_component_api for full API details.',
+      });
+    }
+  }
+
+  // Layer 2: data-* enhancers
+  for (const item of enhancerMeta) {
+    const hay = normalize(`${item.selector} ${item.description || ''}`);
+    if (!hay.includes(needle)) continue;
+    results.push({
+      layer: 2,
+      type: 'enhancer',
+      selector: item.selector,
+      description: item.description || '',
+      usage: item.demoHtml || item.selector,
+      note: 'Use get_enhancer_metadata for full details and demo HTML.',
+    });
+  }
+
+  // Layer 1: primitives and layout patterns
+  const ontologyGroups = [
+    ...(ontology.primitives || []),
+    ...(ontology.layoutPatterns || []),
+    ...(ontology.components || []),
+  ];
+  for (const item of ontologyGroups) {
+    const hay = normalize(`${item.name || ''} ${item.description || ''} ${(item.selectors || []).join(' ')}`);
+    if (!hay.includes(needle)) continue;
+    const firstSelector = (item.selectors || [])[0] || '';
+    const firstClass = getSelectorClasses(firstSelector)[0] || firstSelector;
+    results.push({
+      layer: 1,
+      type: item.category || 'primitive',
+      selector: firstSelector,
+      description: item.description || '',
+      usage: firstClass ? `<element class="${firstClass}">...</element>` : firstSelector,
+      note: 'Use find_utility_class for all selectors in this group.',
+    });
+  }
+
+  // Sort layer desc, deduplicate by selector
+  const seen = new Set();
+  const ranked = results
+    .sort((a, b) => b.layer - a.layer)
+    .filter((item) => {
+      if (!item.selector || seen.has(item.selector)) return false;
+      seen.add(item.selector);
+      return true;
+    })
+    .slice(0, limit);
+
+  return {
+    ssoTRoot: normalizePath(ctx.ssoTRoot),
+    intent,
+    layerGuide: 'Prefer the LOWEST sufficient layer: Layer 1 (CSS primitive/utility) > Layer 2 (data-* enhancer) > Layer 3 (pds-* web component). Only escalate when the lower layer cannot satisfy the requirement.',
+    totalMatches: ranked.length,
+    matches: ranked,
+  };
+}
+
 const TOOL_HANDLERS = {
   get_tokens: handleGetTokens,
   find_utility_class: handleFindUtilityClass,
@@ -1010,6 +1156,7 @@ const TOOL_HANDLERS = {
   get_enhancer_metadata: handleGetEnhancerMetadata,
   get_config_relations: handleGetConfigRelations,
   validate_pds_snippet: handleValidateSnippet,
+  get_best_match: handleGetBestMatch,
 };
 
 export function getPdsMcpTools() {

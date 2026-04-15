@@ -221,6 +221,7 @@ function buildCandidateLocales({ locale, effectiveLocale, defaultLocale, aliases
  *   locale?: string,
  *   locales?: string[],
  *   basePath?: string,
+ *   loadDefaultLocale?: boolean,
  *   aliases?: Record<string, string[]>,
  *   requestInit?: RequestInit,
  *   cache?: Map<string, Record<string, string | { content?: string }>>,
@@ -239,6 +240,7 @@ export function createJSONLocalization(options = {}) {
   const defaultLocale = normalizeLocaleTag(options?.locale || "en") || "en";
   const locales = toLocaleList(options?.locales, defaultLocale);
   const localeSet = new Set(locales);
+  const loadDefaultLocale = options?.loadDefaultLocale === true;
   const aliases = normalizeAliasMap(options?.aliases || {});
   const aliasLookup = createAliasLookup({ aliases, localeSet });
   const cache = options?.cache instanceof Map ? options.cache : new Map();
@@ -261,7 +263,7 @@ export function createJSONLocalization(options = {}) {
       return cache.get(effectiveLocale) || {};
     }
 
-    if (effectiveLocale === defaultLocale) {
+    if (effectiveLocale === defaultLocale && !loadDefaultLocale) {
       const defaultBundle = {};
       cache.set(effectiveLocale, defaultBundle);
       return defaultBundle;

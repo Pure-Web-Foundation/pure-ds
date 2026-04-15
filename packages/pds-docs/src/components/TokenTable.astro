@@ -1,0 +1,67 @@
+---
+/**
+ * Renders all tokens for a given group with live color swatches.
+ * Usage: <TokenTable group="color" />
+ */
+import allTokens from '../../docs-data/tokens.json';
+
+interface Props {
+  group: string;
+}
+
+const { group } = Astro.props;
+const tokens = (allTokens as any)[group] || [];
+
+function isColor(value: string | null) {
+  if (!value) return false;
+  return /^#|^rgb|^hsl|^oklch/.test(value.trim());
+}
+---
+
+{tokens.length > 0 ? (
+  <table>
+    <thead>
+      <tr>
+        <th>Token</th>
+        <th>Value</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      {tokens.map((t: any) => (
+        <tr>
+          <td><code>{t.name}</code></td>
+          <td>
+            {t.value ? (
+              <span class="token-value">
+                {isColor(t.value) && (
+                  <span class="color-swatch" style={`background: ${t.value};`} aria-hidden="true"></span>
+                )}
+                <code>{t.value}</code>
+              </span>
+            ) : <em>—</em>}
+          </td>
+          <td>{t.description}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+) : (
+  <p><em>No tokens found for group <code>{group}</code>.</em></p>
+)}
+
+<style>
+  .token-value {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .color-swatch {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 3px;
+    border: 1px solid var(--sl-color-gray-5);
+    flex-shrink: 0;
+  }
+</style>

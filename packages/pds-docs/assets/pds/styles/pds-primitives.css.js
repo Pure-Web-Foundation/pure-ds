@@ -1,0 +1,749 @@
+// Pure Design System - primitives
+// Auto-generated - do not edit directly
+
+export const primitives = new CSSStyleSheet();
+primitives.replaceSync(`@layer primitives {
+  /* Base HTML reset */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  :where(html) {
+    interpolate-size: allow-keywords;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-base);
+    line-height: var(--font-line-height-normal);
+    color: var(--color-text-primary);
+    background-color: var(--color-surface-base);
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    tab-size: 4;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  }
+
+  :where(dialog){
+    background-color: transparent;
+    min-width: 320px;
+    border: none;
+  }
+
+  :where(body) {
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+    min-height: 100vh;
+    min-height: var(--layout-min-height, 100vh);
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  :where(body.drawer-open) {
+    /* overflow: hidden; */
+    /* scrollbar-gutter: stable; */
+  }
+
+  /* Disabled primitive (low specificity): usable on any element via [disabled] or aria-disabled. */
+  :where([disabled], [aria-disabled="true"]) {
+    opacity: var(--state-disabled-opacity, 0.7);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Also dim/disable labels that contain disabled controls. */
+  :where(label:has(:disabled), label:has([disabled])) {
+    opacity: var(--state-disabled-opacity, 0.7);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Button primitives */
+  :where(button) {
+    all: unset;
+    box-sizing: border-box;
+    font: inherit;
+    color: var(--color-primary-contrast, white);
+    background: var(--color-primary-fill);
+    padding: var(--spacing-2) var(--spacing-4);
+    border: 0;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: opacity var(--transition-fast), background-color var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    min-height: 44px;
+    touch-action: manipulation;
+    user-select: none;
+  }
+
+  :where(button):hover:not(:disabled) {
+    opacity: 0.9;
+    background-color: var(--color-primary-fill-hover);
+  }
+
+  :where(button):focus-visible {
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
+    outline-offset: 2px;
+  }
+
+  :where(button):disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  :where(button):active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  /* Input primitives */
+  :where(input:not([type="radio"]):not([type="checkbox"]):not([type="range"]):not([type="color"])),
+  :where(select),
+  :where(textarea) {
+    font: inherit;
+    color: var(--color-text-primary);
+    background: var(--color-input-bg);
+    border: var(--border-width-thin) solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-2) var(--spacing-3);
+    min-height: 40px;
+    width: 100%;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    appearance: none;
+  }
+
+  :where(input):focus-visible,
+  :where(select):focus-visible,
+  :where(textarea):focus-visible {
+    outline: none;
+    border-color: var(--color-focus-ring, var(--color-primary-500));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
+  }
+
+  :where(input):disabled,
+  :where(select):disabled,
+  :where(textarea):disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: var(--color-input-disabled-bg);
+  }
+
+  /* Harmonized placeholder styling */
+  :where(input)::placeholder,
+  :where(textarea)::placeholder,
+  :where(pds-richtext)::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+    font-weight: var(--font-weight-normal);
+  }
+
+  :where(textarea) {
+    min-height: 80px;
+    resize: vertical;
+  }
+
+  /* Link primitives */
+  :where(a) {
+    color: var(--color-link, var(--color-primary-text, var(--color-primary-600)));
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    transition: color var(--transition-fast), opacity var(--transition-fast);
+  }
+
+  :where(a):hover {
+    color: var(--color-link-hover, var(--color-link, var(--color-primary-text, var(--color-primary-600))));
+    opacity: 0.9;
+  }
+
+  :where(a):visited {
+    color: var(--color-link-visited, var(--color-link, var(--color-primary-text, var(--color-primary-600))));
+  }
+
+  :where(a):focus-visible {
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background: var(--color-selection-bg, var(--color-primary-text, var(--color-primary-600)));
+    color: var(--color-selection-text, var(--color-primary-contrast, #ffffff));
+  }
+
+  /* Form primitives */
+  :where(label) {
+    display: block;
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--spacing-2);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+  }
+
+  /* Checkbox enhancement - visually hide native input but keep accessible
+     Excludes button-style checkboxes in fieldsets and special containers */
+  :where(
+    label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"])
+  ) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-left: calc(var(--spacing-5) + var(--spacing-3));
+
+    input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: var(--spacing-5);
+      height: var(--spacing-5);
+      border: var(--border-width-medium) solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface-base);
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    &:has(input[type="checkbox"]:checked)::after {
+      content: "";
+      position: absolute;
+      left: var(--spacing-2);
+      top: 50%;
+      transform: translateY(-60%) rotate(45deg);
+      width: var(--spacing-1-5);
+      height: var(--spacing-3);
+      border: solid var(--color-primary-contrast, white);
+      border-width: 0 2px 2px 0;
+    }
+
+    &:has(input[type="checkbox"]:checked)::before {
+      background: var(--color-primary-fill);
+      border-color: var(--color-primary-fill);
+    }
+
+    &:has(input[type="checkbox"]:focus)::before {
+      outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
+      outline-offset: 2px;
+    }
+
+    &:has(input[type="checkbox"]:not(:disabled)):hover::before {
+      border-color: var(--color-primary-fill);
+      background: var(--color-surface-subtle);
+    }
+
+    &:has(input[type="checkbox"]:checked:not(:disabled)):hover::before {
+      background: var(--color-primary-fill-hover);
+      border-color: var(--color-primary-fill-hover);
+    }
+
+    &:has(input[type="checkbox"]:disabled) {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  :where(fieldset) {
+    border: none;
+  }
+
+  :where(legend) {
+    display: block;
+    font-weight: var(--font-weight-semibold);
+    padding: 0;
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3) 0;
+    border: none;
+    line-height: var(--font-line-height-tight);
+    font-size: var(--font-size-lg);
+    background: transparent; /* avoid browser default notch behavior */
+    width: auto;
+    box-sizing: border-box;
+  }
+
+  
+  /* List primitives */
+  :where(ul, ol) {
+    padding-left: var(--spacing-6);
+    margin: var(--spacing-3) 0;
+  }
+
+  :where(li) {
+    margin: var(--spacing-1) 0;
+  }
+
+  /* Typography primitives */
+  :where(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-family-headings);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--font-line-height-tight);
+    margin: var(--spacing-4) 0 var(--spacing-3) 0;
+    color: var(--color-text-primary);
+    word-wrap: break-word;
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+
+  /* Mobile-first heading sizes */
+  :where(h1) { font-size: var(--font-size-2xl); }
+  :where(h2) { font-size: var(--font-size-xl); }
+  :where(h3) { font-size: var(--font-size-lg); }
+  :where(h4) { font-size: var(--font-size-base); }
+  :where(h5) { font-size: var(--font-size-sm); }
+  :where(h6) { font-size: var(--font-size-xs); }
+
+  /* Scale up on larger screens */
+  @media (min-width: 640px) {
+    :where(h1) { font-size: var(--font-size-3xl); }
+    :where(h2) { font-size: var(--font-size-2xl); }
+    :where(h3) { font-size: var(--font-size-xl); }
+    :where(h4) { font-size: var(--font-size-lg); }
+    :where(h5) { font-size: var(--font-size-base); }
+    :where(h6) { font-size: var(--font-size-sm); }
+  }
+
+  :where(p) {
+    margin: var(--spacing-3) 0;
+    line-height: var(--font-line-height-relaxed);
+    color: var(--color-text-primary);
+  }
+
+  /* Code primitives */
+  :where(code) {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.9em;
+    background: var(--color-surface-muted);
+    padding: 0.2em 0.4em;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+  }
+
+  :where(pre) {
+    font-family: var(--font-family-mono, monospace);
+    background: var(--color-surface-muted);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin: var(--spacing-4) 0;
+  }
+
+  :where(pre code) {
+    background: none;
+    padding: 0;
+  }
+
+  /* Media primitives */
+  :where(img, video) {    
+    border-radius: var(--radius-sm);
+  }
+
+  :where(img:not([height]):not([width]), video:not([height]):not([width])) {
+    height: auto;
+    max-width: 100%;   
+  }
+
+  :where(figure) {
+    margin: 0 0 var(--spacing-6) 0;
+  }
+
+  :where(figcaption) {
+    margin-top: var(--spacing-3);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-relaxed);
+  }
+
+  
+  :where([hidden]) {
+    display: none !important;
+  }
+}
+
+`);
+
+export const primitivesCSS = `@layer primitives {
+  /* Base HTML reset */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  :where(html) {
+    interpolate-size: allow-keywords;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-base);
+    line-height: var(--font-line-height-normal);
+    color: var(--color-text-primary);
+    background-color: var(--color-surface-base);
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    tab-size: 4;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  }
+
+  :where(dialog){
+    background-color: transparent;
+    min-width: 320px;
+    border: none;
+  }
+
+  :where(body) {
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+    min-height: 100vh;
+    min-height: var(--layout-min-height, 100vh);
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  :where(body.drawer-open) {
+    /* overflow: hidden; */
+    /* scrollbar-gutter: stable; */
+  }
+
+  /* Disabled primitive (low specificity): usable on any element via [disabled] or aria-disabled. */
+  :where([disabled], [aria-disabled="true"]) {
+    opacity: var(--state-disabled-opacity, 0.7);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Also dim/disable labels that contain disabled controls. */
+  :where(label:has(:disabled), label:has([disabled])) {
+    opacity: var(--state-disabled-opacity, 0.7);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Button primitives */
+  :where(button) {
+    all: unset;
+    box-sizing: border-box;
+    font: inherit;
+    color: var(--color-primary-contrast, white);
+    background: var(--color-primary-fill);
+    padding: var(--spacing-2) var(--spacing-4);
+    border: 0;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: opacity var(--transition-fast), background-color var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    min-height: 44px;
+    touch-action: manipulation;
+    user-select: none;
+  }
+
+  :where(button):hover:not(:disabled) {
+    opacity: 0.9;
+    background-color: var(--color-primary-fill-hover);
+  }
+
+  :where(button):focus-visible {
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
+    outline-offset: 2px;
+  }
+
+  :where(button):disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  :where(button):active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  /* Input primitives */
+  :where(input:not([type="radio"]):not([type="checkbox"]):not([type="range"]):not([type="color"])),
+  :where(select),
+  :where(textarea) {
+    font: inherit;
+    color: var(--color-text-primary);
+    background: var(--color-input-bg);
+    border: var(--border-width-thin) solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-2) var(--spacing-3);
+    min-height: 40px;
+    width: 100%;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    appearance: none;
+  }
+
+  :where(input):focus-visible,
+  :where(select):focus-visible,
+  :where(textarea):focus-visible {
+    outline: none;
+    border-color: var(--color-focus-ring, var(--color-primary-500));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus-ring, var(--color-primary-500)) 30%, transparent);
+  }
+
+  :where(input):disabled,
+  :where(select):disabled,
+  :where(textarea):disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: var(--color-input-disabled-bg);
+  }
+
+  /* Harmonized placeholder styling */
+  :where(input)::placeholder,
+  :where(textarea)::placeholder,
+  :where(pds-richtext)::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+    font-weight: var(--font-weight-normal);
+  }
+
+  :where(textarea) {
+    min-height: 80px;
+    resize: vertical;
+  }
+
+  /* Link primitives */
+  :where(a) {
+    color: var(--color-link, var(--color-primary-text, var(--color-primary-600)));
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    transition: color var(--transition-fast), opacity var(--transition-fast);
+  }
+
+  :where(a):hover {
+    color: var(--color-link-hover, var(--color-link, var(--color-primary-text, var(--color-primary-600))));
+    opacity: 0.9;
+  }
+
+  :where(a):visited {
+    color: var(--color-link-visited, var(--color-link, var(--color-primary-text, var(--color-primary-600))));
+  }
+
+  :where(a):focus-visible {
+    outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background: var(--color-selection-bg, var(--color-primary-text, var(--color-primary-600)));
+    color: var(--color-selection-text, var(--color-primary-contrast, #ffffff));
+  }
+
+  /* Form primitives */
+  :where(label) {
+    display: block;
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--spacing-2);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+  }
+
+  /* Checkbox enhancement - visually hide native input but keep accessible
+     Excludes button-style checkboxes in fieldsets and special containers */
+  :where(
+    label:not(fieldset label, .checkbox-container label, [data-toggle]):has(input[type="checkbox"])
+  ) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-left: calc(var(--spacing-5) + var(--spacing-3));
+
+    input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: var(--spacing-5);
+      height: var(--spacing-5);
+      border: var(--border-width-medium) solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface-base);
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    &:has(input[type="checkbox"]:checked)::after {
+      content: "";
+      position: absolute;
+      left: var(--spacing-2);
+      top: 50%;
+      transform: translateY(-60%) rotate(45deg);
+      width: var(--spacing-1-5);
+      height: var(--spacing-3);
+      border: solid var(--color-primary-contrast, white);
+      border-width: 0 2px 2px 0;
+    }
+
+    &:has(input[type="checkbox"]:checked)::before {
+      background: var(--color-primary-fill);
+      border-color: var(--color-primary-fill);
+    }
+
+    &:has(input[type="checkbox"]:focus)::before {
+      outline: 2px solid var(--color-focus-ring, var(--color-primary-500));
+      outline-offset: 2px;
+    }
+
+    &:has(input[type="checkbox"]:not(:disabled)):hover::before {
+      border-color: var(--color-primary-fill);
+      background: var(--color-surface-subtle);
+    }
+
+    &:has(input[type="checkbox"]:checked:not(:disabled)):hover::before {
+      background: var(--color-primary-fill-hover);
+      border-color: var(--color-primary-fill-hover);
+    }
+
+    &:has(input[type="checkbox"]:disabled) {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  :where(fieldset) {
+    border: none;
+  }
+
+  :where(legend) {
+    display: block;
+    font-weight: var(--font-weight-semibold);
+    padding: 0;
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3) 0;
+    border: none;
+    line-height: var(--font-line-height-tight);
+    font-size: var(--font-size-lg);
+    background: transparent; /* avoid browser default notch behavior */
+    width: auto;
+    box-sizing: border-box;
+  }
+
+  
+  /* List primitives */
+  :where(ul, ol) {
+    padding-left: var(--spacing-6);
+    margin: var(--spacing-3) 0;
+  }
+
+  :where(li) {
+    margin: var(--spacing-1) 0;
+  }
+
+  /* Typography primitives */
+  :where(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-family-headings);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--font-line-height-tight);
+    margin: var(--spacing-4) 0 var(--spacing-3) 0;
+    color: var(--color-text-primary);
+    word-wrap: break-word;
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+
+  /* Mobile-first heading sizes */
+  :where(h1) { font-size: var(--font-size-2xl); }
+  :where(h2) { font-size: var(--font-size-xl); }
+  :where(h3) { font-size: var(--font-size-lg); }
+  :where(h4) { font-size: var(--font-size-base); }
+  :where(h5) { font-size: var(--font-size-sm); }
+  :where(h6) { font-size: var(--font-size-xs); }
+
+  /* Scale up on larger screens */
+  @media (min-width: 640px) {
+    :where(h1) { font-size: var(--font-size-3xl); }
+    :where(h2) { font-size: var(--font-size-2xl); }
+    :where(h3) { font-size: var(--font-size-xl); }
+    :where(h4) { font-size: var(--font-size-lg); }
+    :where(h5) { font-size: var(--font-size-base); }
+    :where(h6) { font-size: var(--font-size-sm); }
+  }
+
+  :where(p) {
+    margin: var(--spacing-3) 0;
+    line-height: var(--font-line-height-relaxed);
+    color: var(--color-text-primary);
+  }
+
+  /* Code primitives */
+  :where(code) {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.9em;
+    background: var(--color-surface-muted);
+    padding: 0.2em 0.4em;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+  }
+
+  :where(pre) {
+    font-family: var(--font-family-mono, monospace);
+    background: var(--color-surface-muted);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin: var(--spacing-4) 0;
+  }
+
+  :where(pre code) {
+    background: none;
+    padding: 0;
+  }
+
+  /* Media primitives */
+  :where(img, video) {    
+    border-radius: var(--radius-sm);
+  }
+
+  :where(img:not([height]):not([width]), video:not([height]):not([width])) {
+    height: auto;
+    max-width: 100%;   
+  }
+
+  :where(figure) {
+    margin: 0 0 var(--spacing-6) 0;
+  }
+
+  :where(figcaption) {
+    margin-top: var(--spacing-3);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-relaxed);
+  }
+
+  
+  :where([hidden]) {
+    display: none !important;
+  }
+}
+
+`;

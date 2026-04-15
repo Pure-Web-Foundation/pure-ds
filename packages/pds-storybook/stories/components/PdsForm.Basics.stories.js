@@ -7,6 +7,7 @@ export default {
 export const SimpleForm = FormStories.SimpleForm;
 export const ComplexForm = FormStories.ComplexForm;
 export const WithInitialData = FormStories.WithInitialData;
+export const OtpVerificationFlow = FormStories.OtpVerificationFlow;
 export const WithTogglesSwitches = FormStories.WithTogglesSwitches;
 export const WithRangeSliders = FormStories.WithRangeSliders;
 export const WithIcons = FormStories.WithIcons;

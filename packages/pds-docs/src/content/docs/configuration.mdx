@@ -1,0 +1,36 @@
+---
+title: Configuration
+description: Configure Pure Design System via pds.config.js.
+---
+
+PDS is configured through `pds.config.js` in your project root. All CSS — tokens, scales, surfaces, states — is generated from this file.
+
+## Minimal config
+
+```js
+export const config = {
+  mode: 'live',
+  preset: 'default',
+};
+```
+
+## Full options
+
+```js
+export const config = {
+  mode: 'live',           // 'live' | 'static'
+  liveEdit: true,         // enable live config editing in browser
+  preset: 'default',      // built-in token preset
+
+  localization: {
+    locale: 'en-US',
+    locales: ['en-US', 'nl-NL'],
+  },
+
+  autoDefine: {
+    predefine: ['pds-icon', 'pds-drawer', 'pds-toaster'],
+  },
+};
+```
+
+After changing `pds.config.js`, run `npm run pds:build` to regenerate static assets.

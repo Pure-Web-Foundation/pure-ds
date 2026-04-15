@@ -1,0 +1,16 @@
+dist/
+.astro/
+node_modules/
+docs-data/
+public/assets/pds/
+# Generated pages are rebuilt by CI — don't commit them
+src/content/docs/components/
+src/content/docs/tokens/
+src/content/docs/primitives/
+src/content/docs/enhancements/
+# Hand-authored pages are committed (negation rules must come after the ignore):
+!src/content/docs/getting-started.mdx
+!src/content/docs/installation.mdx
+!src/content/docs/configuration.mdx
+!src/content/docs/guides/
+!src/content/docs/guides/**

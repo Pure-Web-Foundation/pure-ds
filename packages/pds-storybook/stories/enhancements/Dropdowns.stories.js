@@ -42,6 +42,8 @@ const dropdownStoryStyles = html`
       bottom: 10px;
       right: 10px;
     }
+
+    
   </style>
 `;
 
@@ -587,6 +589,7 @@ export const BasicDropdown = () => html`
   </nav>
 `;
 
+
 export const RightAligned = () => html`
   ${enhancementHeader('dropdown', {
     selector: '.align-right',
@@ -687,6 +690,47 @@ export const DropUp = () => html`
     </nav>
   </div>
 `;
+
+export const SplitButtonDefaultAction = () => html`
+  ${dropdownStoryStyles}
+  ${enhancementHeader('dropdown', {
+    selector: '.split-button',
+    description: 'Use `.split-button` on `nav[data-dropdown]` to render a split-button: the first `<li>` (or `<li data-default>`) becomes the primary left action, and the right caret button opens the menu.'
+  })}
+  <section>
+    <nav data-dropdown class="split-button">
+      <button
+        type="button"
+        class="btn-primary"
+        data-dropdown-toggle
+        aria-label="Open additional create actions"
+      >
+        <pds-icon icon="caret-down" size="xs" aria-hidden="true"></pds-icon>
+      </button>
+      <menu>
+        <li>
+          <a @click=${(e) => {e.preventDefault();}} href="#create-post" data-dropdown-close>
+            <pds-icon icon="plus" size="sm" aria-hidden="true"></pds-icon>
+            New post
+          </a>
+        </li>
+        <li>
+          <a href="#create-page" data-dropdown-close>
+            <pds-icon icon="file-plus" size="sm" aria-hidden="true"></pds-icon>
+            New page
+          </a>
+        </li>
+        <li>
+          <a href="#duplicate" data-dropdown-close>
+            <pds-icon icon="copy" size="sm" aria-hidden="true"></pds-icon>
+            Duplicate current
+          </a>
+        </li>
+      </menu>
+    </nav>
+  </section>
+`;
+
 
 export const BackgroundImageLiquidGlass = () => html`
   ${dropdownStoryStyles}

@@ -2607,6 +2607,8 @@ presets.default = {
         "clipboard",
         "magic-wand",
         "sparkle",
+        "corners-out",
+        "corners-in"
       ],
       communication: [
         "envelope",

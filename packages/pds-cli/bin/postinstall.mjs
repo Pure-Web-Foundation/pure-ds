@@ -11,6 +11,7 @@ import { createHash } from 'crypto';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { buildStarterPdsConfig } from './templates/starter-templates.js';
+import { setupMcpConfig } from '../lib/setup-mcp-config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '../../../');
@@ -278,6 +279,18 @@ async function copyCopilotInstructions(consumerRoot) {
 }
 
 /**
+ * Auto-configure MCP server for AI IDE integrations (VS Code + Cursor)
+ */
+async function ensureMcpConfig(consumerRoot) {
+  try {
+    await setupMcpConfig(consumerRoot, { silent: true });
+    console.log('🔌 MCP server configured (.vscode/mcp.json, .cursor/mcp.json)');
+  } catch (e) {
+    console.warn('⚠️  Could not configure MCP server:', e?.message || e);
+  }
+}
+
+/**
  * Discover the web root directory using common patterns
  */
 async function discoverWebRoot(baseDir) {
@@ -422,6 +435,9 @@ async function copyPdsAssets() {
 
     // Copy Copilot instructions to consumer project
     await copyCopilotInstructions(consumerRoot);
+
+    // Auto-configure MCP server for AI IDE integrations
+    await ensureMcpConfig(consumerRoot);
 
     // Proactively add build & build-icons scripts to consumer package.json (still helpful)
     await ensureBuildScript(consumerRoot);

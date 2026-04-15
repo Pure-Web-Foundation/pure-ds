@@ -7,6 +7,7 @@ const enhancementMap = {
   dropdown: defaultPDSEnhancerMetadata.find(e => e.selector === 'nav[data-dropdown]'),
   toggle: defaultPDSEnhancerMetadata.find(e => e.selector === 'label[data-toggle]'),
   colorInput: defaultPDSEnhancerMetadata.find(e => e.selector === 'label[data-color]'),
+  otp: defaultPDSEnhancerMetadata.find(e => e.selector === 'input[autocomplete="one-time-code"]'),
   range: defaultPDSEnhancerMetadata.find(e => e.selector === 'input[type="range"]'),
   required: defaultPDSEnhancerMetadata.find(e => e.selector === 'form[data-required]'),
   openGroup: defaultPDSEnhancerMetadata.find(e => e.selector === 'fieldset[role=group][data-open]'),

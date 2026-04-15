@@ -2,6 +2,84 @@ import { html } from "#pds/lit";
 import { PDS } from "#pds";
 import { presets, PDS_CONFIG_RELATIONS } from "@pds-src/js/pds-core/pds-config.js";
 
+// Ensure pds-render is available for the PresetGallery story
+if (typeof document !== 'undefined' && !customElements.get?.('pds-render')) {
+  const s = document.createElement('script');
+  s.src = '/assets/pds/components/pds-render.js';
+  document.head.appendChild(s);
+}
+
+// Showcase HTML rendered inside each preset thumbnail.
+// Responsive via a <style> block — adapts layout for mobile (375 px) and desktop (1280 px) viewports.
+const PRESET_SHOWCASE_HTML = `<style>
+  html,body{height:100%;overflow:hidden}
+  .sc-wrap{height:100%;display:flex;flex-direction:column;overflow:hidden}
+  .sc-main{flex:1;overflow:hidden;padding:1.25rem 1.5rem}
+  .sc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1.125rem}
+  .sc-bottom{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+  @media(max-width:500px){
+    .sc-stats{grid-template-columns:1fr 1fr}
+    .sc-bottom{grid-template-columns:1fr}
+  }
+</style>
+<div class="sc-wrap">
+  <nav style="display:flex;justify-content:space-between;align-items:center;padding:.75rem 1.5rem;border-bottom:1px solid var(--surface-border);background:var(--surface-raised-bg,var(--surface-bg));flex-shrink:0">
+    <strong style="font-size:1rem;color:var(--color-primary-text)">Acme Dashboard</strong>
+    <div style="display:flex;gap:.625rem;align-items:center">
+      <span class="badge badge-success">Online</span>
+      <div style="width:1.875rem;height:1.875rem;border-radius:50%;background:var(--color-primary-500,#0e7490);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#fff;flex-shrink:0">JD</div>
+    </div>
+  </nav>
+  <div class="sc-main">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap">
+      <div>
+        <h2 style="margin:0 0 .25rem;font-size:1.25rem">Welcome back, Jane</h2>
+        <p style="margin:0;font-size:.875rem;color:var(--surface-text-secondary,#666)">Here&apos;s what&apos;s happening today</p>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-shrink:0">
+        <button class="btn-primary btn-sm">New report</button>
+        <button class="btn-outline btn-sm">Export</button>
+      </div>
+    </div>
+    <div class="sc-stats">
+      <div class="card" style="padding:.875rem"><p style="margin:0 0 .2rem;font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--surface-text-muted,#888)">Revenue</p><p style="margin:0 0 .375rem;font-size:1.375rem;font-weight:700;color:var(--color-primary-text,inherit)">$48.2k</p><div style="display:flex;align-items:center;gap:.375rem"><span class="badge badge-success">+12%</span><span style="font-size:.75rem;color:var(--surface-text-muted)">vs last mo</span></div></div>
+      <div class="card" style="padding:.875rem"><p style="margin:0 0 .2rem;font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--surface-text-muted,#888)">Users</p><p style="margin:0 0 .375rem;font-size:1.375rem;font-weight:700">12,840</p><div style="display:flex;align-items:center;gap:.375rem"><span class="badge badge-info">+5.3%</span><span style="font-size:.75rem;color:var(--surface-text-muted)">this week</span></div></div>
+      <div class="card" style="padding:.875rem"><p style="margin:0 0 .2rem;font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--surface-text-muted,#888)">Uptime</p><p style="margin:0 0 .375rem;font-size:1.375rem;font-weight:700">99.9%</p><div style="display:flex;align-items:center;gap:.375rem"><span class="badge badge-warning">&minus;0.4%</span><span style="font-size:.75rem;color:var(--surface-text-muted)">30-day</span></div></div>
+    </div>
+    <div class="card" style="padding:.875rem;margin-bottom:.875rem">
+      <h3 style="margin:0 0 .625rem;font-size:.9375rem;font-weight:600">Q4 Targets</h3>
+      <div style="display:flex;flex-direction:column;gap:.5rem">
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:.25rem"><span style="font-size:.875rem">Revenue</span><span style="font-size:.875rem;font-weight:600;color:var(--color-primary-text)">78%</span></div><div style="height:6px;background:var(--surface-border,#e2e8f0);border-radius:3px;overflow:hidden"><div style="height:100%;width:78%;background:var(--color-primary-500,#0e7490)"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:.25rem"><span style="font-size:.875rem">New users</span><span style="font-size:.875rem;font-weight:600;color:var(--color-success-fill,#16a34a)">54%</span></div><div style="height:6px;background:var(--surface-border,#e2e8f0);border-radius:3px;overflow:hidden"><div style="height:100%;width:54%;background:var(--color-success-fill,#16a34a)"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:.25rem"><span style="font-size:.875rem">Support SLA</span><span style="font-size:.875rem;font-weight:600">92%</span></div><div style="height:6px;background:var(--surface-border,#e2e8f0);border-radius:3px;overflow:hidden"><div style="height:100%;width:92%;background:var(--color-info-fill,#0ea5e9)"></div></div></div>
+      </div>
+    </div>
+    <div class="sc-bottom">
+      <div class="card" style="padding:.875rem">
+        <h3 style="margin:0 0 .5rem;font-size:.9375rem;font-weight:600">Recent Activity</h3>
+        <div style="display:flex;flex-direction:column">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--surface-border)"><div><p style="margin:0;font-size:.875rem;font-weight:500">New signup</p><p style="margin:0;font-size:.75rem;color:var(--surface-text-muted)">2 min ago</p></div><span class="badge badge-success">Live</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--surface-border)"><div><p style="margin:0;font-size:.875rem;font-weight:500">Payment received</p><p style="margin:0;font-size:.75rem;color:var(--surface-text-muted)">15 min ago</p></div><span class="badge badge-primary">$299</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--surface-border)"><div><p style="margin:0;font-size:.875rem;font-weight:500">System alert</p><p style="margin:0;font-size:.75rem;color:var(--surface-text-muted)">1 hr ago</p></div><span class="badge badge-danger">Critical</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0"><div><p style="margin:0;font-size:.875rem;font-weight:500">Report generated</p><p style="margin:0;font-size:.75rem;color:var(--surface-text-muted)">3 hr ago</p></div><span class="badge badge-secondary">Done</span></div>
+        </div>
+      </div>
+      <div class="card" style="padding:.875rem">
+        <h3 style="margin:0 0 .625rem;font-size:.9375rem;font-weight:600">Quick Contact</h3>
+        <div style="display:flex;flex-direction:column;gap:.5rem">
+          <label style="display:flex;flex-direction:column;gap:.25rem"><span data-label>Full name</span><input type="text" placeholder="Jane Smith"></label>
+          <label style="display:flex;flex-direction:column;gap:.25rem"><span data-label>Email</span><input type="email" placeholder="jane@company.com"></label>
+          <label style="display:flex;flex-direction:column;gap:.25rem"><span data-label>Message</span><textarea rows="2" placeholder="How can we help?" style="resize:none"></textarea></label>
+          <button class="btn-primary btn-sm">Send message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>`;
+
+// Module-level state: current viewport mode for the gallery toggle
+let _galleryViewport = 'desktop';
+
 const COLOR_STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
 const SCALE_NAMES = ["primary", "secondary", "gray", "accent", "success", "warning", "danger", "info"];
 const ROLE_FAMILIES = ["primary", "success", "warning", "danger", "info"];
@@ -945,52 +1023,85 @@ export const PresetGallery = {
   render: () => {
     const entries = sortPresetEntries(Object.entries(presets));
 
+    // Read current env from the document so theme/locale toolbar changes propagate
+    const currentTheme  = document.body?.getAttribute('data-theme')
+                        || document.documentElement?.getAttribute('data-theme')
+                        || 'light';
+    const currentLocale = document.documentElement?.getAttribute('lang') || 'en';
+
+    const gridClass = _galleryViewport === 'desktop' ? 'grid gap-lg grid-auto-lg' : 'grid gap-md grid-auto-md';
+
+    const setViewport = (vp) => {
+      if (_galleryViewport === vp) return;
+      _galleryViewport = vp;
+      document.querySelectorAll('pds-render[data-gallery-render]').forEach(el => {
+        el.setAttribute('viewport', vp);
+        if (vp === 'desktop') {
+          el.setAttribute('aspect-ratio', '4/3');
+          el.removeAttribute('height');
+        } else {
+          el.removeAttribute('aspect-ratio');
+          el.setAttribute('height', '420px');
+        }
+      });
+      const grid = document.querySelector('[data-gallery-grid]');
+      if (grid) grid.className = vp === 'desktop' ? 'grid gap-lg grid-auto-lg' : 'grid gap-md grid-auto-md';
+      document.querySelectorAll('[data-gallery-vp]').forEach(btn => {
+        btn.className = btn.dataset.galleryVp === vp ? 'btn-primary btn-sm' : 'btn-outline btn-sm';
+      });
+    };
+
     return html`
       ${walkthroughStyles}
       <section class="section stack-lg">
         <header>
-          <h3>Current Presets in Source</h3>
+          <h3>Preset Gallery</h3>
           <small class="text-muted">
-            This gallery is generated from <code>Object.entries(presets)</code>, so new presets appear automatically and removed presets disappear.
+            Live page thumbnails — auto-generated from <code>Object.entries(presets)</code>.
+            Theme and locale follow the toolbar. Toggle viewport to preview mobile vs desktop.
           </small>
         </header>
 
-        <div class="grid gap-md grid-auto-md">
-          ${entries.map(([presetId, preset]) => {
-            const paletteKeys = ["primary", "secondary", "accent", "background", "success", "warning", "danger", "info"];
-            const palette = paletteKeys
-              .filter((key) => typeof preset?.colors?.[key] === "string")
-              .map((key) => ({ key, value: preset.colors[key] }));
+        <div class="flex gap-sm">
+          <button
+            class=${_galleryViewport === 'desktop' ? 'btn-primary btn-sm' : 'btn-outline btn-sm'}
+            data-gallery-vp="desktop"
+            @click=${() => setViewport('desktop')}
+          >Desktop</button>
+          <button
+            class=${_galleryViewport === 'mobile' ? 'btn-primary btn-sm' : 'btn-outline btn-sm'}
+            data-gallery-vp="mobile"
+            @click=${() => setViewport('mobile')}
+          >Mobile</button>
+        </div>
 
-            return html`
-              <article class="card stack-sm">
-                <header class="flex justify-between items-baseline gap-sm">
-                  <h4>${preset?.name || presetId}</h4>
-                  <small class="text-muted">${presetId}</small>
-                </header>
-
-                <p class="text-muted">${preset?.description || "No description provided."}</p>
-
-                <div class="flex flex-wrap gap-sm">
-                  ${(preset?.tags || []).map((tag) => html`<span class="story-colors-preset-swatch">${tag}</span>`)}
-                </div>
-
-                <small class="text-muted">Theme support: ${getThemeSupportLabel(preset)}</small>
-
-                <div class="story-colors-preset-swatches">
-                  ${palette.map(({ key, value }) => html`
-                    <div
-                      class="story-colors-preset-swatch"
-                      style=${`--swatch-color: ${value}; --swatch-text: ${chooseReadableTextColor(value, "var(--surface-text)")}`}
-                      title=${`${key}: ${value}`}
-                    >
-                      ${key}
-                    </div>
-                  `)}
-                </div>
-              </article>
-            `;
-          })}
+        <div class=${gridClass} data-gallery-grid>
+          ${entries.map(([presetId, preset]) => html`
+            <div class="stack-xs">
+              <div style="border-radius:var(--radius-md,6px);overflow:hidden;border:1px solid var(--surface-border);box-shadow:var(--shadow-md)">
+                <pds-render
+                  data-gallery-render
+                  resizable
+                  preset=${presetId}
+                  theme=${currentTheme}
+                  locale=${currentLocale}
+                  viewport=${_galleryViewport}
+                  aspect-ratio=${_galleryViewport === 'desktop' ? '4/3' : ''}
+                  height=${_galleryViewport === 'mobile' ? '420px' : ''}
+                  padding="0"
+                  .html=${PRESET_SHOWCASE_HTML}
+                ></pds-render>
+              </div>
+              <div class="flex justify-between items-baseline gap-sm">
+                <strong>${preset?.name || presetId}</strong>
+                <small class="text-muted">${presetId}</small>
+              </div>
+              ${preset?.description ? html`<p class="text-muted" style="font-size:.8rem;margin:0">${preset.description}</p>` : ''}
+              <div class="flex flex-wrap gap-xs">
+                ${(preset?.tags || []).map((tag) => html`<span class="badge">${tag}</span>`)}
+              </div>
+            </div>
+          `)}
         </div>
       </section>
     `;

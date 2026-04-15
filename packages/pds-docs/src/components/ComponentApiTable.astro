@@ -1,0 +1,86 @@
+---
+/**
+ * Renders a full API table for a pds-* web component from docs-data/components.json.
+ * Usage: <ComponentApiTable tagName="pds-form" />
+ */
+import components from '../../docs-data/components.json';
+
+interface Props {
+  tagName: string;
+}
+
+const { tagName } = Astro.props;
+const component = components.find((c: any) => c.tagName === tagName);
+---
+
+{component ? (
+  <div class="component-api-table">
+    {component.attributes?.length > 0 && (
+      <>
+        <h3>Attributes</h3>
+        <table>
+          <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            {component.attributes.map((a: any) => (
+              <tr>
+                <td><code>{a.name}</code></td>
+                <td><code>{a.type || 'string'}</code></td>
+                <td>{a.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </>
+    )}
+    {component.events?.length > 0 && (
+      <>
+        <h3>Events</h3>
+        <table>
+          <thead><tr><th>Name</th><th>Description</th></tr></thead>
+          <tbody>
+            {component.events.map((e: any) => (
+              <tr>
+                <td><code>{e.name}</code></td>
+                <td>{e.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </>
+    )}
+    {component.slots?.length > 0 && (
+      <>
+        <h3>Slots</h3>
+        <table>
+          <thead><tr><th>Name</th><th>Description</th></tr></thead>
+          <tbody>
+            {component.slots.map((s: any) => (
+              <tr>
+                <td><code>{s.name || '(default)'}</code></td>
+                <td>{s.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </>
+    )}
+    {component.cssParts?.length > 0 && (
+      <>
+        <h3>CSS Parts</h3>
+        <table>
+          <thead><tr><th>Part</th><th>Description</th></tr></thead>
+          <tbody>
+            {component.cssParts.map((p: any) => (
+              <tr>
+                <td><code>::part({p.name})</code></td>
+                <td>{p.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </>
+    )}
+  </div>
+) : (
+  <p><em>Component <code>{tagName}</code> not found in docs-data.</em></p>
+)}

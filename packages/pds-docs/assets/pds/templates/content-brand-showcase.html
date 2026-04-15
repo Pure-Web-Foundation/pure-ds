@@ -1,0 +1,110 @@
+<section class="stack-lg" aria-label="Content and Brand Showcase">
+  <header class="card surface-inverse stack-sm border-gradient">
+    <h2>Content & Brand Showcase</h2>
+    <p>Evaluate typography rhythm, semantic content, callouts, and surface contrast as design tokens evolve.</p>
+  </header>
+
+  <article class="card surface-inverse border-gradient stack-md text-center items-center">
+    <header class="stack-xs text-center items-center">
+      <h2>Brand Direction Hero</h2>
+      <p class="text-muted">A quick visual anchor to evaluate typography, contrast, and surface behavior at a glance.</p>
+    </header>
+    <img class="img-gallery" src="https://picsum.photos/1200/520?random=510" alt="Abstract brand hero graphic" loading="lazy" />
+  </article>
+
+  <section class="grid grid-auto-md gap-md">
+    <article class="card surface-base stack-md">
+      <h3>Editorial card</h3>
+      <p class="text-muted">Body copy and supporting text should stay readable under all palette settings.</p>
+      <blockquote>
+        “A robust design canvas makes early-stage tuning possible before product UIs are complete.”
+      </blockquote>
+      <p>
+        Teams can compare heading scale, line-height, and color contrast in realistic content blocks without
+        waiting for full feature implementation.
+      </p>
+      <div class="flex gap-sm">
+        <button class="btn-primary">Read article</button>
+        <button class="btn-outline">Bookmark</button>
+      </div>
+    </article>
+
+    <article class="card surface-elevated stack-md border-glow">
+      <h3>Smart surfaces stack</h3>
+      <div class="card surface-subtle stack-sm">
+        <h4>Subtle level</h4>
+        <p class="text-muted">Text and icon contrast adapts to surface context.</p>
+        <div class="card surface-overlay stack-sm">
+          <h5>Overlay level</h5>
+          <p>Nested surfaces help evaluate depth and hierarchy consistency.</p>
+          <div class="card surface-sunken stack-xs">
+            <small>Sunken level for inset content and metadata.</small>
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <section class="grid grid-auto-md gap-md">
+    <article class="card surface-base stack-sm">
+      <h3>Category dropdown</h3>
+      <nav data-dropdown data-mode="auto">
+        <button class="btn-secondary">
+          <pds-icon icon="list" size="sm"></pds-icon>
+          Content categories
+        </button>
+        <menu>
+          <li><a href="#news">News</a></li>
+          <li><a href="#guides">Guides</a></li>
+          <li><a href="#case-studies">Case studies</a></li>
+          <li><a href="#announcements">Announcements</a></li>
+        </menu>
+      </nav>
+    </article>
+
+    <article class="card surface-subtle stack-sm border-gradient">
+      <h3>Quick response form</h3>
+      <form data-required class="stack-sm">
+        <label>
+          <span data-label>Topic</span>
+          <input type="text" required placeholder="What should we publish next?" />
+        </label>
+        <label>
+          <span data-label>Priority</span>
+          <select>
+            <option>Low</option>
+            <option>Normal</option>
+            <option>High</option>
+          </select>
+        </label>
+        <button class="btn-primary" type="submit">Send feedback</button>
+      </form>
+    </article>
+  </section>
+
+  <section class="card surface-base stack-sm">
+    <h3>Guidance accordion</h3>
+    <section class="accordion" aria-label="Content guidance">
+      <details>
+        <summary id="guide-voice">Voice & tone</summary>
+        <div role="region" aria-labelledby="guide-voice" class="stack-xs">
+          <p>Headlines should feel clear and confident while body copy remains concise and friendly.</p>
+        </div>
+      </details>
+      <details>
+        <summary id="guide-contrast">Contrast checks</summary>
+        <div role="region" aria-labelledby="guide-contrast" class="stack-xs">
+          <p>Validate quote blocks, muted labels, and border effects in both light and dark themes.</p>
+        </div>
+      </details>
+      <details>
+        <summary id="guide-interaction">Interaction cues</summary>
+        <div role="region" aria-labelledby="guide-interaction" class="flex gap-sm flex-wrap">
+          <button class="btn-primary btn-sm">Primary</button>
+          <button class="btn-secondary btn-sm">Secondary</button>
+          <button class="btn-outline btn-sm">Outline</button>
+        </div>
+      </details>
+    </section>
+  </section>
+</section>

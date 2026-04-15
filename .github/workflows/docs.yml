@@ -1,0 +1,65 @@
+name: Deploy docs.pure-ds.com
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/js/pds-core/**'
+      - 'custom-elements.json'
+      - 'public/assets/pds/**'
+      - 'packages/pds-storybook/scripts/**'
+      - 'packages/pds-docs/**'
+      - '*.md'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install monorepo dependencies
+        run: npm ci
+
+      - name: Install pds-docs dependencies
+        run: npm ci
+        working-directory: packages/pds-docs
+
+      - name: Build docs data from SSoT
+        run: npm run build-docs-data
+        working-directory: packages/pds-docs
+
+      - name: Generate Starlight pages
+        run: npm run generate-pages
+        working-directory: packages/pds-docs
+
+      - name: Build Astro site
+        run: npm run build
+        working-directory: packages/pds-docs
+        env:
+          # Pass site URL for canonical links
+          SITE: https://docs.pure-ds.com
+
+      # Uncomment and configure one of these deployment steps:
+
+      # Cloudflare Pages
+      # - name: Deploy to Cloudflare Pages
+      #   uses: cloudflare/pages-action@v1
+      #   with:
+      #     apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      #     accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      #     projectName: pure-ds-docs
+      #     directory: packages/pds-docs/dist
+
+      # Vercel
+      # - name: Deploy to Vercel
+      #   uses: amondnet/vercel-action@v25
+      #   with:
+      #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
+      #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+      #     vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+      #     working-directory: packages/pds-docs

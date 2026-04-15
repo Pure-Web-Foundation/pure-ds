@@ -1647,7 +1647,7 @@ export class SchemaForm extends LitElement {
     // Fallback text input
     this.#renderers.set(
       "*",
-      ({ id, path, value, attrs, set }) => html`
+      ({ id, path, value, attrs, set, ui }) => html`
         <input
           id=${id}
           name=${path}
@@ -1660,7 +1660,7 @@ export class SchemaForm extends LitElement {
           ?readonly=${!!attrs.readOnly}
           ?disabled=${!!attrs.disabled}
           ?required=${!!attrs.required}
-          autocomplete=${ifDefined(attrs.autocomplete)}
+          autocomplete=${ifDefined(ui?.["ui:autocomplete"] ?? attrs.autocomplete)}
           @input=${(e) => set(e.target.value)}
         />
       `
@@ -1681,7 +1681,7 @@ export class SchemaForm extends LitElement {
           ?readonly=${!!attrs.readOnly}
           ?disabled=${!!attrs.disabled}
           ?required=${!!attrs.required}
-          autocomplete=${ifDefined(attrs.autocomplete)}
+          autocomplete=${ifDefined(ui?.["ui:autocomplete"] ?? attrs.autocomplete)}
           list=${ifDefined(ui?.["ui:datalist"] ? `${id}-datalist` : attrs.list)}
           @input=${(e) => set(e.target.value)}
         />

@@ -1,0 +1,155 @@
+---
+/**
+ * Renders a live PDS example using <pds-render> — theme + preset controls included.
+ * Usage: <LiveExample html={`<button class="btn-primary">Click</button>`} />
+ */
+
+const PRESETS = [
+  'default','ocean-breeze','midnight-steel','neural-glow','paper-and-ink',
+  'sunset-paradise','retro-wave','forest-canopy','ruby-elegance','desert-dawn',
+  'contrast-pro','pastel-play','brutalist-tech','zen-garden','fitness-pro',
+  'travel-market','mobility-app','fintech-secure','social-feed','enterprise-dash',
+];
+
+interface Props {
+  html: string;
+  css?: string;
+  height?: string;
+  id?: string;
+}
+
+const { html, css = '', height = '160px', id = Math.random().toString(36).slice(2) } = Astro.props;
+---
+
+<div class="live-example" data-id={id}>
+  <div class="le-toolbar">
+    <span class="le-label">Live preview</span>
+    <div class="le-controls">
+      <select class="le-preset" title="Preset" aria-label="Change preset">
+        {PRESETS.map(p => <option value={p}>{p}</option>)}
+      </select>
+      <button class="le-theme" title="Toggle dark/light">☀️</button>
+      <a class="le-open-playground" title="Open in Playground">⚡</a>
+    </div>
+  </div>
+  <div class="le-preview">
+    <pds-render
+      class="le-renderer"
+      theme="light"
+      preset="default"
+      height={height}
+      padding="1rem"
+    ></pds-render>
+  </div>
+  <details class="le-source">
+    <summary>Source</summary>
+    <pre><code>{html}</code></pre>
+  </details>
+</div>
+
+<script src="/assets/pds/components/pds-render.js" type="module"></script>
+
+<script define:vars={{ id, html, css }}>
+(function() {
+  const container = document.querySelector(`[data-id="${id}"]`);
+  if (!container) return;
+
+  const renderer  = container.querySelector('.le-renderer');
+  const themeBtn  = container.querySelector('.le-theme');
+  const presetSel = container.querySelector('.le-preset');
+  const pgLink    = container.querySelector('.le-open-playground');
+
+  // pds-render.js is type="module" (deferred) — may not be registered yet when this
+  // inline script runs. Wait before setting properties or they shadow the class setters.
+  customElements.whenDefined('pds-render').then(() => {
+    renderer.css  = css;
+    renderer.html = html;
+  });
+
+  // Build playground share link
+  const payload = btoa(encodeURIComponent(JSON.stringify({ html, css, js: '' })));
+  pgLink.href = `/playground/?code=${payload}`;
+  pgLink.target = '_blank';
+
+  let theme = 'light';
+
+  themeBtn.addEventListener('click', () => {
+    theme = theme === 'light' ? 'dark' : 'light';
+    themeBtn.textContent = theme === 'dark' ? '🌙' : '☀️';
+    renderer.setAttribute('theme', theme);
+  });
+
+  presetSel.addEventListener('change', () => {
+    renderer.setAttribute('preset', presetSel.value);
+  });
+
+  // Sync with Starlight's own dark mode
+  new MutationObserver(() => {
+    const sl = document.documentElement.dataset.theme;
+    if (sl && sl !== theme) {
+      theme = sl;
+      themeBtn.textContent = theme === 'dark' ? '🌙' : '☀️';
+      renderer.setAttribute('theme', theme);
+    }
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+})();
+</script>
+
+<style>
+  .live-example {
+    border: 1px solid var(--sl-color-gray-5, #ddd);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-block: 1.25rem;
+  }
+  .le-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.3rem 0.6rem;
+    background: var(--sl-color-gray-6, #f4f4f5);
+    border-bottom: 1px solid var(--sl-color-gray-5, #ddd);
+    gap: 0.5rem;
+  }
+  .le-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--sl-color-gray-3, #888);
+    font-weight: 500;
+  }
+  .le-controls { display: flex; align-items: center; gap: 0.35rem; }
+  .le-preset {
+    font-size: 0.72rem;
+    padding: 0.1rem 0.35rem;
+    border: 1px solid var(--sl-color-gray-4, #ccc);
+    border-radius: 4px;
+    background: var(--sl-color-bg, #fff);
+    color: var(--sl-color-text, #111);
+    cursor: pointer;
+    max-width: 150px;
+  }
+  .le-theme, .le-open-playground {
+    background: none;
+    border: 1px solid var(--sl-color-gray-4, #ccc);
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    text-decoration: none;
+    color: inherit;
+  }
+  .le-open-playground { color: var(--sl-color-text-accent, #4f46e5); font-size: 0.78rem; }
+  .le-preview { background: #fff; }
+  pds-render.le-renderer { display: block; }
+  .le-source summary {
+    cursor: pointer;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.75rem;
+    background: var(--sl-color-gray-6, #f4f4f5);
+    border-top: 1px solid var(--sl-color-gray-5, #ddd);
+    user-select: none;
+  }
+  .le-source pre { margin: 0; border-radius: 0; max-height: 280px; overflow: auto; }
+</style>

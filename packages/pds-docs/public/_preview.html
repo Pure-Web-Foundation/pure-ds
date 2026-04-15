@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/assets/pds/pds.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "#pds": "/assets/pds/core.js",
+      "#pds/lit": "/assets/pds/external/lit.js"
+    }
+  }
+  </script>
+  <style>
+    body {
+      margin: 1rem;
+      min-height: calc(100vh - 2rem);
+      font-family: var(--font-sans, system-ui, sans-serif);
+      background: var(--color-surface, #fff);
+      color: var(--color-on-surface, #111);
+    }
+  </style>
+</head>
+<body>
+<script type="module">
+  import { PDS } from '#pds';
+
+  // Apply URL params on initial load (for static iframe src usage)
+  const params = new URLSearchParams(location.search);
+  const initialTheme = params.get('theme') || 'light';
+  const initialPreset = params.get('preset') || 'default';
+  const initialHtml = params.get('html') ? decodeURIComponent(params.get('html')) : null;
+
+  document.documentElement.setAttribute('data-theme', initialTheme);
+
+  // Start PDS in live mode (no pds.config.js in this iframe context)
+  try {
+    await PDS.start({ mode: 'live', preset: 'default' });
+  } catch {}
+
+  async function applyPreset(preset) {
+    if (preset && preset !== 'default') {
+      try { await PDS.applyLivePreset(preset, { persist: false }); } catch {}
+    }
+  }
+
+  async function init() {
+    await applyPreset(initialPreset);
+    if (initialHtml) {
+      document.body.innerHTML = initialHtml;
+    }
+  }
+
+  init();
+
+  // postMessage API for live updates from parent (LiveExample + Playground)
+  window.addEventListener('message', async (e) => {
+    if (!e.data || typeof e.data !== 'object') return;
+
+    if (e.data.type === 'pds:render') {
+      document.body.innerHTML = e.data.html || '';
+    }
+    if (e.data.type === 'pds:theme') {
+      document.documentElement.setAttribute('data-theme', e.data.value);
+      PDS.theme = e.data.value;
+    }
+    if (e.data.type === 'pds:preset') {
+      await applyPreset(e.data.value);
+    }
+  });
+
+  // Notify parent when ready
+  window.parent.postMessage({ type: 'pds:ready' }, '*');
+</script>
+</body>
+</html>

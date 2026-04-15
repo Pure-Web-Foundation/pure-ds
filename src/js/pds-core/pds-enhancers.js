@@ -18,6 +18,7 @@ const enhancerDefinitions = [
   { selector: "nav[data-dropdown]" },
   { selector: "label[data-toggle]" },
   { selector: "label[data-color]" },
+  { selector: 'input[autocomplete="one-time-code"]' },
   { selector: 'input[type="range"]' },
   { selector: "form[data-required]" },
   { selector: "fieldset[role=group][data-open]" },
@@ -54,6 +55,7 @@ function enhanceDropdown(elem) {
   if (elem.dataset.enhancedDropdown) return;
   elem.dataset.enhancedDropdown = "true";
   const menu = elem.lastElementChild;
+  const usesDefaultAction = elem.classList.contains("split-button");
 
   if (!menu) return;
 
@@ -87,7 +89,65 @@ function enhanceDropdown(elem) {
     trigger.setAttribute("aria-haspopup", "true");
     trigger.setAttribute("aria-controls", menu.id);
     trigger.setAttribute("aria-expanded", "false");
+    trigger.setAttribute("popovertarget", menu.id);
   }
+
+  const resolveDefaultItem = () => {
+    if (!usesDefaultAction || !isMenu) return null;
+    return menu.querySelector(":scope > li[data-default]") || menu.querySelector(":scope > li");
+  };
+
+  const resolveDefaultAction = (item) => {
+    if (!item) return null;
+    return item.querySelector(":scope > a, :scope > button") || item.firstElementChild;
+  };
+
+  const createOrResolveDefaultButton = () => {
+    if (!usesDefaultAction || !trigger) return null;
+    let button = elem.querySelector(":scope > [data-dropdown-default]");
+    if (button) return button;
+    button = document.createElement("button");
+    button.setAttribute("type", "button");
+    button.setAttribute("data-dropdown-default", "");
+    button.className = trigger.className;
+    elem.insertBefore(button, trigger);
+    return button;
+  };
+
+  const syncDefaultButton = (button, action) => {
+    if (!button || !action) return;
+
+    button.replaceChildren(...Array.from(action.childNodes).map((node) => node.cloneNode(true)));
+
+    const label =
+      action.getAttribute("aria-label") ||
+      action.textContent?.replace(/\s+/g, " ").trim() ||
+      msg("Default action");
+    button.setAttribute("aria-label", label);
+    button.title = label;
+  };
+
+  const setupDefaultAction = () => {
+    if (!usesDefaultAction) return;
+    const defaultButton = createOrResolveDefaultButton();
+    const defaultItem = resolveDefaultItem();
+    const defaultAction = resolveDefaultAction(defaultItem);
+    if (!defaultButton || !defaultAction) return;
+
+    syncDefaultButton(defaultButton, defaultAction);
+
+    const executeDefault = () => {
+      if (!defaultAction) return;
+      if (typeof defaultAction.click === "function") {
+        defaultAction.click();
+      }
+    };
+
+    defaultButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      executeDefault();
+    });
+  };
 
   if (!supportsPopover) {
     const warnKey = "__PDS_DROPDOWN_POPOVER_WARNED__";
@@ -99,6 +159,8 @@ function enhanceDropdown(elem) {
     }
     return;
   }
+
+  setupDefaultAction();
 
   menu.setAttribute("popover", "auto");
 
@@ -165,6 +227,8 @@ function enhanceDropdown(elem) {
   };
 
   const resolveAlign = () => {
+    if (usesDefaultAction) return "right";
+
     const align = (
       elem.getAttribute("data-align") ||
       elem.getAttribute("data-dropdown-align") ||
@@ -301,6 +365,7 @@ function enhanceDropdown(elem) {
 
   let configChangedHandler = null;
   let configRepositionFrame = null;
+
   const bindConfigChanged = () => {
     if (configChangedHandler || typeof document === "undefined") return;
     configChangedHandler = () => {
@@ -344,7 +409,8 @@ function enhanceDropdown(elem) {
     syncClosedState();
     unbindReposition();
     unbindConfigChanged();
-    clearFloatingMenuPosition();
+    // Don't clear position styles on close - they'll be overwritten on next open
+    // and clearing them during close animation causes a visual flash
   });
 
   const openMenu = () => {
@@ -378,10 +444,12 @@ function enhanceDropdown(elem) {
     closeMenu();
   });
 
-  trigger?.addEventListener("click", (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    toggleMenu();
+  // Set direction/align before popover opens (for CSS animations)
+  menu.addEventListener("beforetoggle", (event) => {
+    if (event.newState === "open") {
+      elem.dataset.dropdownDirection = resolveDirection();
+      elem.dataset.dropdownAlign = resolveAlign();
+    }
   });
 
   elem.addEventListener("keydown", (event) => {
@@ -504,6 +572,197 @@ function enhanceColorInput(elem) {
 
   input.addEventListener("input", setResolved, { passive: true });
   input.addEventListener("change", setResolved, { passive: true });
+}
+
+function enhanceOneTimeCodeInput(elem) {
+  if (elem.dataset.enhancedOneTimeCode) return;
+  elem.dataset.enhancedOneTimeCode = "true";
+
+  const configuredLength = Number.parseInt(
+    elem.getAttribute("data-otp-length") || elem.getAttribute("maxlength") || "6",
+    10,
+  );
+  const length = Number.isFinite(configuredLength) && configuredLength > 0 ? configuredLength : 6;
+  const autoSubmit = elem.getAttribute("data-otp-autosubmit") !== "false";
+  const allowAlphanumeric = elem.getAttribute("data-otp-format") === "alphanumeric";
+  const statusId =
+    elem.getAttribute("data-otp-status-id") ||
+    `${elem.id || `otp-${Math.random().toString(36).slice(2, 9)}`}-status`;
+
+  const normalizeValue = (value) => {
+    const compact = String(value || "").replace(/\s+/g, "");
+    const filtered = allowAlphanumeric
+      ? compact.replace(/[^0-9a-z]/gi, "")
+      : compact.replace(/\D+/g, "");
+    return filtered.slice(0, length);
+  };
+
+  elem.classList.add("input-otp");
+  elem.dataset.otpLength = String(length);
+  elem.dataset.otpComplete = "false";
+  elem.style.setProperty("--otp-digits", String(length));
+  elem.style.setProperty("--_otp-digit", "0");
+
+  if (!elem.hasAttribute("type") || elem.getAttribute("type")?.toLowerCase() === "number") {
+    elem.setAttribute("type", "text");
+  }
+  elem.setAttribute("maxlength", String(length));
+  if (!elem.hasAttribute("inputmode")) {
+    elem.setAttribute("inputmode", allowAlphanumeric ? "text" : "numeric");
+  }
+  if (!elem.hasAttribute("enterkeyhint")) {
+    elem.setAttribute("enterkeyhint", "done");
+  }
+  if (!elem.hasAttribute("autocapitalize")) {
+    elem.setAttribute("autocapitalize", "off");
+  }
+  if (!elem.hasAttribute("spellcheck")) {
+    elem.setAttribute("spellcheck", "false");
+  }
+  if (!elem.hasAttribute("pattern")) {
+    elem.setAttribute(
+      "pattern",
+      allowAlphanumeric ? `[0-9A-Za-z]{${length}}` : `\\d{${length}}`,
+    );
+  }
+  if (!elem.hasAttribute("aria-label") && !elem.labels?.length) {
+    elem.setAttribute("aria-label", msg("One-time code"));
+  }
+
+  const form = elem.form || elem.closest("form");
+  let autoSubmitPending = false;
+  let status = null;
+
+  const syncActiveDigit = () => {
+    const selectionStart =
+      typeof elem.selectionStart === "number" ? elem.selectionStart : elem.value.length;
+    const clamped = Math.max(0, Math.min(selectionStart, Math.max(length - 1, 0)));
+    elem.style.setProperty("--_otp-digit", String(clamped));
+  };
+
+  const syncScrollPosition = () => {
+    if (typeof elem.scrollLeft === "number") {
+      elem.scrollLeft = 0;
+    }
+  };
+
+  if (typeof document !== "undefined") {
+    status = document.getElementById(statusId);
+    if (!status) {
+      status = document.createElement("span");
+      status.id = statusId;
+      status.className = "otp-status";
+      status.setAttribute("aria-live", "polite");
+      status.setAttribute("aria-atomic", "true");
+      elem.insertAdjacentElement("afterend", status);
+    }
+
+    const describedBy = new Set(
+      (elem.getAttribute("aria-describedby") || "")
+        .split(/\s+/)
+        .filter(Boolean),
+    );
+    describedBy.add(statusId);
+    elem.setAttribute("aria-describedby", Array.from(describedBy).join(" "));
+  }
+
+  const updateStatus = () => {
+    if (!status) return;
+    const count = elem.value.length;
+    status.textContent =
+      count === 0
+        ? msg("Enter the verification code")
+        : count >= length
+          ? msg("Code complete")
+          : `${count}/${length}`;
+  };
+
+  const attemptSubmit = () => {
+    if (!autoSubmit || autoSubmitPending || !form) return;
+    if (typeof form.checkValidity === "function" && !form.checkValidity()) return;
+    autoSubmitPending = true;
+    requestAnimationFrame(() => {
+      autoSubmitPending = false;
+      const submitSelector = elem.getAttribute("data-otp-submit-selector");
+      const submitter = submitSelector ? form.querySelector(submitSelector) : undefined;
+      if (typeof form.requestSubmit === "function") {
+        form.requestSubmit(submitter || undefined);
+      } else {
+        form.submit();
+      }
+    });
+  };
+
+  const syncValue = (nextValue, { dispatchChange = false } = {}) => {
+    const normalized = normalizeValue(nextValue);
+    if (elem.value !== normalized) {
+      elem.value = normalized;
+    }
+
+    const isComplete = normalized.length === length;
+    elem.dataset.otpComplete = isComplete ? "true" : "false";
+    updateStatus();
+    syncActiveDigit();
+    syncScrollPosition();
+
+    if (dispatchChange) {
+      elem.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    if (isComplete) {
+      attemptSubmit();
+    }
+  };
+
+  elem.addEventListener("beforeinput", (event) => {
+    if (event.defaultPrevented) return;
+    if (event.inputType?.startsWith("delete")) return;
+    if (typeof event.data !== "string" || event.data.length === 0) return;
+
+    const normalized = normalizeValue(event.data);
+    if (!normalized && event.data.trim()) {
+      event.preventDefault();
+    }
+  });
+
+  elem.addEventListener("input", () => {
+    syncValue(elem.value);
+    try {
+      const end = elem.value.length;
+      elem.setSelectionRange(end, end);
+    } catch {
+      // Ignore selection API issues on unsupported input modes
+    }
+    syncActiveDigit();
+    syncScrollPosition();
+  });
+
+  ["focus", "click", "keyup", "select"].forEach((eventName) => {
+    elem.addEventListener(eventName, () => {
+      requestAnimationFrame(() => {
+        syncActiveDigit();
+        syncScrollPosition();
+      });
+    });
+  });
+
+  elem.addEventListener("paste", (event) => {
+    const pasted = event.clipboardData?.getData("text") || "";
+    if (!pasted) return;
+
+    event.preventDefault();
+    elem.value = normalizeValue(pasted);
+    elem.dispatchEvent(new Event("input", { bubbles: true }));
+    elem.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+
+  elem.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && elem.value.length === length) {
+      attemptSubmit();
+    }
+  });
+
+  syncValue(elem.value);
 }
 
 function enhanceRange(elem) {
@@ -831,6 +1090,7 @@ const enhancerRunners = new Map([
   ["nav[data-dropdown]", enhanceDropdown],
   ["label[data-toggle]", enhanceToggle],
   ["label[data-color]", enhanceColorInput],
+  ['input[autocomplete="one-time-code"]', enhanceOneTimeCodeInput],
   ['input[type="range"]', enhanceRange],
   ["form[data-required]", enhanceRequired],
   ["fieldset[role=group][data-open]", enhanceOpenGroup],
