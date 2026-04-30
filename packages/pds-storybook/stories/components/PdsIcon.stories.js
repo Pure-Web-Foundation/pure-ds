@@ -72,6 +72,27 @@ export default {
   }
 };
 
+// ─── FontAwesome CDN fallback handler ─────────────────────────────────────
+
+const FA_CDN_HREF = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css';
+
+function handleFaFallback(e) {
+  e.preventDefault();
+  if (!document.querySelector('link[data-pds-fa-cdn]')) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.setAttribute('data-pds-fa-cdn', '');
+    link.href = FA_CDN_HREF;
+    document.head.appendChild(link);
+  }
+  const pdsIcon = e.detail.element;
+  [...pdsIcon.children].filter(n => n.slot === 'fallback').forEach(n => n.remove());
+  const i = document.createElement('i');
+  i.slot = 'fallback';
+  i.className = `fa-solid fa-${e.detail.icon}`;
+  pdsIcon.appendChild(i);
+}
+
 export const Default = {
   name: 'Interactive Playground',
   parameters: {
@@ -117,4 +138,86 @@ export const Default = {
     label: '',
     rotate: 0
   }
+};
+
+/**
+ * When `pds-icon` cannot find the requested icon in the sprite sheet it fires
+ * an **`icon-not-found`** event (`bubbles: true`, `composed: true`, `cancelable: true`).
+ *
+ * Calling `event.preventDefault()` suppresses the built-in "missing" circle
+ * placeholder. You can then append any element with `slot="fallback"` to the
+ * `pds-icon` and it will be rendered in its place.
+ *
+ * This story loads Font Awesome 6 from a CDN and maps unknown icon names to
+ * FA solid icons.
+ *
+ * ```js
+ * // One-time: load FA CSS
+ * const link = document.createElement('link');
+ * link.rel = 'stylesheet';
+ * link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css';
+ * document.head.appendChild(link);
+ *
+ * // Listen — works across any shadow-DOM boundary because the event is composed
+ * container.addEventListener('icon-not-found', (e) => {
+ *   e.preventDefault();                        // suppress built-in placeholder
+ *   const i = document.createElement('i');
+ *   i.slot = 'fallback';                       // targets <slot name="fallback">
+ *   i.className = `fa-solid fa-${e.detail.icon}`;
+ *   e.detail.element.appendChild(i);           // e.detail.element = the pds-icon
+ * });
+ * ```
+ *
+ * > **Note** — Use `e.detail.element` rather than `e.target`: because the event
+ * > is `composed`, `e.target` gets retargeted to the nearest shadow host when
+ * > observed from outside a shadow boundary.
+ */
+export const FontAwesomeFallback = {
+  name: 'CDN Fallback (Font Awesome)',
+  parameters: {
+    docs: {
+      description: {
+        story: `
+\`pds-icon\` fires **\`icon-not-found\`** (bubbling, composed, cancelable) when an icon
+is absent from the sprite sheet. Call \`event.preventDefault()\` to suppress the
+built-in placeholder, then inject any element into \`<slot name="fallback">\` on
+\`event.detail.element\`.
+
+\`\`\`js
+container.addEventListener('icon-not-found', (e) => {
+  e.preventDefault();
+  const i = document.createElement('i');
+  i.slot = 'fallback';
+  i.className = \`fa-solid fa-\${e.detail.icon}\`;
+  e.detail.element.appendChild(i);
+});
+\`\`\`
+
+> **Tip**: Load your CDN stylesheet once in the handler (guard with \`document.querySelector('link[data-...]')\`)
+> so repeated events don't create duplicate \`<link>\` tags.
+        `
+      }
+    }
+  },
+  render: () => html`
+    <div class="stack-md" @icon-not-found=${handleFaFallback}>
+      <p class="text-muted">
+        The icons below are <strong>not</strong> in the PDS sprite sheet.
+        The <code>icon-not-found</code> event fires and this demo loads them
+        from Font Awesome 6 via CDN.
+      </p>
+      <div class="flex gap-md align-items-center flex-wrap">
+        <pds-icon icon="mug-hot" size="lg" label="Coffee"></pds-icon>
+        <pds-icon icon="rocket" size="lg" label="Rocket"></pds-icon>
+        <pds-icon icon="dragon" size="lg" label="Dragon"></pds-icon>
+        <pds-icon icon="shield-halved" size="lg" label="Shield"></pds-icon>
+        <pds-icon icon="person-running" size="lg" label="Running"></pds-icon>
+        <pds-icon icon="pizza-slice" size="lg" label="Pizza"></pds-icon>
+      </div>
+      <p class="text-muted" style="font-size: var(--text-sm)">
+        <em>If icons above show as placeholders, Font Awesome may be blocked
+        by a network policy or ad blocker.</em>
+      </p>
+    </div>
+  `
 };

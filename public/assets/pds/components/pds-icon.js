@@ -13,6 +13,12 @@ import { PDS } from "#pds";
  * @attr {number} rotate - Rotation angle in degrees
  * @attr {boolean} no-sprite - Force fallback icon rendering
  * @attr {boolean} morph - Morph the icon when the icon name changes
+ *
+ * @fires {CustomEvent} icon-not-found - Dispatched (bubbling, composed, cancelable) when the
+ *   requested icon is not found in the sprite sheet or any configured external source.
+ *   Call `event.preventDefault()` to suppress the built-in "missing" placeholder.
+ *   Inject a fallback by appending a child with `slot="fallback"` to `event.detail.element`.
+ *   Detail: `{ icon: string, element: HTMLElement }`
  * 
  * @example
  * <pds-icon icon="house"></pds-icon>
@@ -243,11 +249,49 @@ export class SvgIcon extends HTMLElement {
       }
     }
 
-    // If icon not found in sprite (or we're using fallback), try external icon
-    // Skip external fetch for known fallback icons
-    // IMPORTANT: Don't try external icons while sprite is still loading
+    // If icon is missing from the sprite, allow consumers to intercept before
+    // default external-path lookup kicks in.
     const hasFallback = SvgIcon.#fallbackIcons.hasOwnProperty(icon);
+    let iconMissingHandled = false;
     if (spriteIconNotFound && !hasFallback && !spriteStillLoading) {
+      if (icon !== this._lastNotFoundIcon) {
+        this._lastNotFoundIcon = icon;
+        const notFoundEvent = new CustomEvent('icon-not-found', {
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+          detail: { icon, element: this }
+        });
+        iconMissingHandled = !this.dispatchEvent(notFoundEvent);
+        console.debug('[pds-icon] icon-not-found dispatched', {
+          icon,
+          handled: iconMissingHandled,
+          host: this
+        });
+        this.toggleAttribute('data-icon-not-found', iconMissingHandled);
+      } else {
+        iconMissingHandled = this.hasAttribute('data-icon-not-found');
+        console.debug('[pds-icon] icon-not-found reuse state', {
+          icon,
+          handled: iconMissingHandled,
+          host: this
+        });
+      }
+    } else if (this._lastNotFoundIcon) {
+      this._lastNotFoundIcon = null;
+      this.removeAttribute('data-icon-not-found');
+    }
+
+    // If icon not found in sprite (or we're using fallback), try external icon
+    // only when no handler intercepted the missing-icon event.
+    // Skip external fetch for known fallback icons.
+    // IMPORTANT: Don't try external icons while sprite is still loading.
+    if (spriteIconNotFound && !hasFallback && !spriteStillLoading && !iconMissingHandled) {
+      console.debug('[pds-icon] trying external icon path', {
+        icon,
+        externalIconBasePath,
+        host: this
+      });
       const cacheKey = SvgIcon.getExternalIconCacheKey(icon, externalIconBasePath);
       const cached = SvgIcon.externalIconCache.get(cacheKey);
       if (cached) {
@@ -266,8 +310,21 @@ export class SvgIcon extends HTMLElement {
     }
 
     // If sprite icon not found and external didn't work, use fallback
-    if (spriteIconNotFound && !useExternalIcon) {
+    if (spriteIconNotFound && !useExternalIcon && !iconMissingHandled) {
       useFallback = true;
+    }
+
+    if (iconMissingHandled) {
+      console.debug('[pds-icon] default missing icon behavior suppressed', {
+        icon,
+        host: this
+      });
+    }
+
+    // Keep this flag in sync when icon eventually resolves (for example after
+    // external icon fetch succeeds).
+    if (useExternalIcon && this.hasAttribute('data-icon-not-found')) {
+      this.removeAttribute('data-icon-not-found');
     }
     
     // Build transform string for rotation
@@ -284,6 +341,7 @@ export class SvgIcon extends HTMLElement {
       let useFallbackLocal = this.hasAttribute('no-sprite') || !this.spriteAvailable();
       let spriteIconNotFoundLocal = false;
       let spriteStillLoadingLocal = false;
+      const suppressDefaultMissingLocal = this.hasAttribute('data-icon-not-found') && iconName === attrIcon;
 
       if (!useFallbackLocal && typeof window !== 'undefined' && spriteHref) {
         try {
@@ -313,7 +371,7 @@ export class SvgIcon extends HTMLElement {
       }
 
       const hasFallbackLocal = SvgIcon.#fallbackIcons.hasOwnProperty(iconName);
-      if (spriteIconNotFoundLocal && !hasFallbackLocal && !spriteStillLoadingLocal) {
+      if (spriteIconNotFoundLocal && !hasFallbackLocal && !spriteStillLoadingLocal && !suppressDefaultMissingLocal) {
         const cacheKey = SvgIcon.getExternalIconCacheKey(iconName, externalIconBasePath);
         const cached = SvgIcon.externalIconCache.get(cacheKey);
         if (cached) {
@@ -329,7 +387,7 @@ export class SvgIcon extends HTMLElement {
         }
       }
 
-      if (spriteIconNotFoundLocal && !useExternalIconLocal) {
+      if (spriteIconNotFoundLocal && !useExternalIconLocal && !suppressDefaultMissingLocal) {
         useFallbackLocal = true;
       }
 
@@ -493,6 +551,14 @@ export class SvgIcon extends HTMLElement {
             animation: none;
           }
         }
+
+        slot[name="fallback"] { display: none; }
+        :host([data-icon-not-found]) .icon-stack { display: none; }
+        :host([data-icon-not-found]) slot[name="fallback"] {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
       </style>
       <span class="icon-stack">
         <svg class="pds-icon layer-old" aria-hidden="true">
@@ -502,6 +568,7 @@ export class SvgIcon extends HTMLElement {
           <g id="icon-group-new"></g>
         </svg>
       </span>
+      <slot name="fallback"></slot>
     `;
 
     this._stackEl = this.shadowRoot.querySelector('.icon-stack');

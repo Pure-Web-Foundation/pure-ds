@@ -468,10 +468,13 @@ class PdsTags extends HTMLElement {
 			categories[categoryName] = {
 				...categoryConfig,
 				getItems: async (options) => {
+					const optionSearch = String(options?.search ?? "");
 					const liveSearch = String(this.#omnibox?.value || "");
+					const effectiveSearch = optionSearch || liveSearch;
+					const normalizedSearch = effectiveSearch.trim().toLowerCase();
 					const forwardedOptions = {
 						...(options && typeof options === "object" ? options : {}),
-						search: liveSearch,
+						search: effectiveSearch,
 					};
 
 					const incoming = typeof sourceGetItems === "function"
@@ -485,11 +488,16 @@ class PdsTags extends HTMLElement {
 					}
 
 					const selected = this.#selectedIds;
-					const filtered = normalized.filter((item) => !selected.has(item.id));
+					const filtered = normalized.filter((item) => {
+						if (selected.has(item.id)) return false;
+						return this.#matchesQuery(item, normalizedSearch);
+					});
 
 					this.#debug("settings.getItems", {
 						categoryName,
 						liveSearch,
+						effectiveSearch,
+						normalizedSearch,
 						incomingCount: normalized.length,
 						selected: Array.from(selected),
 						returnedCount: filtered.length,
@@ -562,6 +570,10 @@ class PdsTags extends HTMLElement {
 	#renderChips() {
 		if (!this.#chips || !this.#empty) return;
 
+		const sourceIconHandler = typeof this.#sourceSettings?.iconHandler === "function"
+			? this.#sourceSettings.iconHandler
+			: null;
+
 		const selectedItems = Array.from(this.#selectedIds).map((id) => {
 			const fromCache = this.#selectedItems.get(id);
 			if (fromCache) return fromCache;
@@ -581,7 +593,25 @@ class PdsTags extends HTMLElement {
 			chip.className = "btn-secondary btn-sm";
 			chip.part = "chip";
 			chip.dataset.tagId = item.id;
-			chip.innerHTML = /* html */ `${item.text} <pds-icon icon="x" size="xs" aria-hidden="true"></pds-icon>`;
+			if (item.icon) {
+				chip.style.display = "grid";
+				chip.style.gridTemplateColumns = "1rem 1fr 1rem";
+				chip.style.alignItems = "center";
+				chip.style.gap = "var(--spacing-1)";
+			} else {
+				chip.style.removeProperty("display");
+				chip.style.removeProperty("grid-template-columns");
+				chip.style.removeProperty("align-items");
+				chip.style.removeProperty("gap");
+			}
+			const leadIcon = item.icon
+				? (
+					sourceIconHandler
+						? String(sourceIconHandler(item) ?? "")
+						: `<pds-icon icon="${String(item.icon).replace(/"/g, "&quot;")}" size="xs" aria-hidden="true"></pds-icon>`
+				)
+				: "";
+			chip.innerHTML = /* html */ `${leadIcon}${item.text}<pds-icon icon="x" size="xs" aria-hidden="true"></pds-icon>`;
 			chip.disabled = this.disabled;
 			chip.setAttribute("aria-label", msg(str`Remove ${item.text}`));
 			chip.addEventListener("click", () => {

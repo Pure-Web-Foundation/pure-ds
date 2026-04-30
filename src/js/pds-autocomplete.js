@@ -282,8 +282,9 @@ class AutoComplete extends EventTarget {
 	async inputHandler(event) {
 		if (this.cacheTmr) clearTimeout(this.cacheTmr);
 
+		const currentSearch = String(this.input?.value ?? event?.target?.value ?? "");
 		const options = {
-			search: event.target.value,
+			search: currentSearch,
 			categories: this.categories,
 		};
 

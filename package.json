@@ -1,7 +1,7 @@
 {
   "name": "@pure-ds/core",
   "shortname": "pds",
-  "version": "0.7.69",
+  "version": "0.7.70",
   "description": "Why develop a Design System when you can generate one?",
   "repository": {
     "type": "git",
