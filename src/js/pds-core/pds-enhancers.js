@@ -284,7 +284,24 @@ function enhanceDropdown(elem) {
       "overflow",
     ].forEach((prop) => menu.style.removeProperty(prop));
   };
-  
+
+  const isInsideTransformedAncestor = () => {
+    let current = elem.parentElement;
+    while (current && current !== document.body && current !== document.documentElement) {
+      const style = getComputedStyle(current);
+      if (
+        style.transform !== "none" ||
+        style.perspective !== "none" ||
+        style.filter !== "none" ||
+        style.backdropFilter !== "none"
+      ) {
+        return true;
+      }
+      current = current.parentElement;
+    }
+    return false;
+  };
+
   const positionPopoverMenu = () => {
     if (!isPopoverOpen()) return;
 
@@ -409,6 +426,11 @@ function enhanceDropdown(elem) {
     syncClosedState();
     unbindReposition();
     unbindConfigChanged();
+    if (isInsideTransformedAncestor()) {
+      // Popovers leave top-layer on close. Inside transformed ancestors,
+      // `position: fixed` can re-resolve against that ancestor and visually jump.
+      clearFloatingMenuPosition();
+    }
     // Don't clear position styles on close - they'll be overwritten on next open
     // and clearing them during close animation causes a visual flash
   });
@@ -449,6 +471,19 @@ function enhanceDropdown(elem) {
     if (event.newState === "open") {
       elem.dataset.dropdownDirection = resolveDirection();
       elem.dataset.dropdownAlign = resolveAlign();
+      return;
+    }
+
+    // Start close state immediately so close transitions do not depend on
+    // stale open-state attributes while leaving the top layer.
+    syncClosedState();
+    unbindReposition();
+    unbindConfigChanged();
+
+    if (isInsideTransformedAncestor()) {
+      // In transformed ancestors (e.g. faceted story wrappers), closing popovers
+      // can briefly resolve fixed positioning to the ancestor and visually jump.
+      clearFloatingMenuPosition();
     }
   });
 

@@ -84,6 +84,7 @@ class AutoComplete extends EventTarget {
 			throttle(this.inputHandler.bind(this), this.settings.throttleInputMs ?? 300),
 		)
 			.on("focus", this.focusHandler.bind(this))
+			.on("mousedown", this.mouseDownHandler.bind(this))
 			.on("focusout", this.blurHandler.bind(this))
 			.on("keyup", this.keyUpHandler.bind(this))
 			.on("keydown", this.keyDownHandler.bind(this));
@@ -236,6 +237,50 @@ class AutoComplete extends EventTarget {
 		}, 5 * 60 * 1000);
 	}
 
+	dismissSuggestions(reason = "dismiss") {
+		if (this.aborter) {
+			this.aborter.abort();
+		}
+
+		// Invalidate any in-flight result handlers so stale async responses cannot reopen suggestions.
+		this.requestToken += 1;
+		this.container.classList.remove("search-running");
+		this.results = [];
+		this.rowIndex = -1;
+		this.acItems = [];
+		this.controller().clear(reason);
+	}
+
+	isSuggestionsOpen() {
+		return this.resultsDiv?.classList?.contains("ac-active") === true;
+	}
+
+	retriggerSuggestions(event) {
+		if (this.isSuggestionsOpen()) return;
+		if (this.container.classList.contains("search-running")) return;
+
+		const hasFocus =
+			document.activeElement === this.input || this.input?.matches?.(":focus") === true;
+		if (!hasFocus) return;
+
+		this.suggest(this.input.value, event);
+	}
+
+	mouseDownHandler(event) {
+		if (this.isSuggestionsOpen()) return;
+
+		const hasFocus =
+			document.activeElement === this.input || this.input?.matches?.(":focus") === true;
+		if (hasFocus) {
+			this.retriggerSuggestions(event);
+			return;
+		}
+
+		setTimeout(() => {
+			this.retriggerSuggestions({ target: this.input, type: "mousedown" });
+		}, 0);
+	}
+
 	show() {
 		if (!this.resultsDiv.classList.contains("ac-active")) {
 			const viewBounds = this.getViewBounds();
@@ -352,7 +397,18 @@ class AutoComplete extends EventTarget {
 				event.stopPropagation();
 				event.preventDefault();
 				break;
+			case "Escape":
+				event.stopPropagation();
+				event.preventDefault();
+				this.dismissSuggestions("escape");
+				break;
 			case "ArrowDown":
+				if (!this.isSuggestionsOpen()) {
+					event.stopPropagation();
+					event.preventDefault();
+					this.retriggerSuggestions(event);
+					break;
+				}
 				enQueue(() => this.moveResult(1));
 				break;
 			case "ArrowUp":
@@ -366,7 +422,7 @@ class AutoComplete extends EventTarget {
 	keyUpHandler(event) {
 		switch (event.key) {
 			case "Escape":
-				this.controller().hide("escape");
+				this.dismissSuggestions("escape");
 				break;
 			case "Enter":
 				if (this.getSelectedDiv()) {

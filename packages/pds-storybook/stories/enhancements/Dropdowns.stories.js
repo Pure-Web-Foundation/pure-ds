@@ -506,12 +506,13 @@ function initFacetedSearchStory(storyId, initialFacet) {
     }
 
     facetMap.set(groupKey, [optionKey]);
-    renderState();
     dispatchFacetChange();
 
     const panel = optionButton.closest("[data-facet-group]")?.querySelector("[data-facet-panel]");
     if (panel && typeof panel.hidePopover === "function") {
       panel.hidePopover();
+    } else {
+      renderState();
     }
   });
 
@@ -542,6 +543,13 @@ function initFacetedSearchStory(storyId, initialFacet) {
         if (group.multi) {
           commitDraft(groupKey);
         }
+
+        // Defer visual state updates one frame so close transitions do not jump
+        // when summary text or layout changes in the same close cycle.
+        requestAnimationFrame(() => {
+          renderState();
+        });
+        return;
       }
 
       renderState();
