@@ -35,7 +35,8 @@ class PdsDrawer extends HTMLElement {
   #raf = 0;
   #currentFraction = 0; // 0=open, 1=closed
   #resizeObs = null;
-  #openAnimationController = null;
+  #motionLayer = null;
+  #activeAnimations = [];
   #lastFocused = null;
   #focusTrapActive = false;
   #titleId = `pds-drawer-title-${PdsDrawer.#idCounter++}`;
@@ -186,10 +187,9 @@ class PdsDrawer extends HTMLElement {
       case "open":
         this._open = this.hasAttribute("open");
         if (this._open) {
-          this.#queueOpenAnimation();
+          void this.#animateTo(0);
         } else {
-          this.#cancelPendingOpenAnimation();
-          this.#animateTo(1);
+          void this.#animateTo(1);
         }
         this.#syncAria();
         this.#syncFocusTrap();
@@ -237,18 +237,20 @@ class PdsDrawer extends HTMLElement {
     this.shadowRoot.innerHTML = /*html*/`
       <div class="backdrop" part="backdrop"></div>
       <div class="layer" id="layer" aria-hidden="true">
-        <aside part="panel" tabindex="-1">
-          <header part="header">
-            <button class="close-btn" part="close-button" aria-label="Close drawer" hidden>
-              <pds-icon icon="x" size="sm"></pds-icon>
-            </button>
-            <slot name="drawer-header"></slot>
-            <div class="grab-handle" part="grab-handle" aria-hidden="true"></div>
-          </header>
-          <div part="content">
-            <slot name="drawer-content"></slot>
-          </div>
-        </aside>
+        <div class="motion-layer" part="motion">
+          <aside part="panel" tabindex="-1">
+            <header part="header">
+              <button class="close-btn" part="close-button" aria-label="Close drawer" hidden>
+                <pds-icon icon="x" size="sm"></pds-icon>
+              </button>
+              <slot name="drawer-header"></slot>
+              <div class="grab-handle" part="grab-handle" aria-hidden="true"></div>
+            </header>
+            <div part="content">
+              <slot name="drawer-content"></slot>
+            </div>
+          </aside>
+        </div>
       </div>
     `;
 
@@ -280,7 +282,7 @@ class PdsDrawer extends HTMLElement {
         /* Layer container */
         .layer {
           position: fixed; left: 0; right: 0; width: 100%; max-width: 100%;
-          contain: layout paint style; will-change: transform;
+          contain: layout paint style;
           z-index: var(--z-drawer);
           display: flex; align-items: flex-end;
           pointer-events: none; visibility: hidden;
@@ -299,6 +301,15 @@ class PdsDrawer extends HTMLElement {
         :host([position="left"]) .layer { left: 0; right: auto; }
         :host([position="right"]) .layer { right: 0; left: auto; }
 
+        /* Motion layer — only this element is animated */
+        .motion-layer {
+          width: 100%;
+          contain: layout paint style;
+          will-change: transform;
+        }
+        :host([position="left"]) .motion-layer,
+        :host([position="right"]) .motion-layer { height: 100%; }
+
         /* Panel */
         aside {
           display: flex; flex-direction: column;
@@ -309,7 +320,7 @@ class PdsDrawer extends HTMLElement {
           width: 100%; max-width: 100%;
           margin: 0;
           border-radius: var(--drawer-radius, var(--radius-lg));
-          overflow: visible; contain: layout style; will-change: transform;
+          overflow: visible; contain: layout style;
           touch-action: none;
           outline: none;
         }
@@ -369,6 +380,7 @@ class PdsDrawer extends HTMLElement {
 
     // References
     this.#aside = this.shadowRoot.querySelector("aside");
+    this.#motionLayer = this.shadowRoot.querySelector(".motion-layer");
     this.#applyFraction(this.open ? 0 : 1, false);
     this.#syncAria();
     this.#renderCloseButtonVisibility();
@@ -417,7 +429,7 @@ class PdsDrawer extends HTMLElement {
     window.removeEventListener("resize", this.#recalc);
     this.#resizeObs?.disconnect();
     cancelAnimationFrame(this.#raf);
-    this.#cancelPendingOpenAnimation();
+    this.#cancelAnimations();
   }
 
   // Public API
@@ -626,6 +638,8 @@ class PdsDrawer extends HTMLElement {
     this.#lastY = p.y;
     this.#lastTS = performance.now();
     this.#velocity = 0;
+    // Cancel any in-progress WAAPI animation and sync fraction from visual state
+    this.#cancelAnimations();
     this.#startFraction = this.#currentFraction;
 
     // Capture pointer so dragging continues outside the element
@@ -704,67 +718,66 @@ class PdsDrawer extends HTMLElement {
   };
 
   // Helpers
-  #cancelPendingOpenAnimation() {
-    if (!this.#openAnimationController) return;
-    this.#openAnimationController.abort();
-    this.#openAnimationController = null;
-  }
 
-  #queueOpenAnimation() {
-    const aside = this.#aside;
-    if (!aside) return;
-
-    this.#cancelPendingOpenAnimation();
-    const controller = new AbortController();
-    this.#openAnimationController = controller;
-
-    this.#applyFraction(1, false);
-    void aside.offsetHeight; // Force layout to register the closed state
-
-    this.#whenReadyForOpen(controller.signal)
-      .then(() => {
-        if (controller.signal.aborted) return;
-        this.#animateTo(0);
-      })
-      .finally(() => {
-        if (this.#openAnimationController === controller) {
-          this.#openAnimationController = null;
-        }
-      });
-  }
-
-  async #whenReadyForOpen(signal) {
-    await this.#nextFrame(signal);
-    await this.#nextFrame(signal);
-    await this.#waitForIdle(signal);
-  }
-
-  #nextFrame(signal) {
-    if (signal?.aborted) return Promise.resolve();
-    return new Promise((resolve) => {
-      const id = requestAnimationFrame(() => resolve());
-      signal?.addEventListener("abort", () => {
-        cancelAnimationFrame(id);
-        resolve();
-      }, { once: true });
-    });
-  }
-
-  #waitForIdle(signal) {
-    if (signal?.aborted) return Promise.resolve();
-    if (typeof window.requestIdleCallback === "function") {
-      return new Promise((resolve) => {
-        const idleId = window.requestIdleCallback(() => resolve());
-        signal?.addEventListener("abort", () => {
-          if (typeof window.cancelIdleCallback === "function") {
-            window.cancelIdleCallback(idleId);
-          }
-          resolve();
-        }, { once: true });
-      });
+  /** Compute a CSS transform string for a given fraction (0=open, 1=closed). */
+  #getTransformForFraction(fraction) {
+    if (this._position === "bottom" || this._position === "top") {
+      const yPct = this._position === "bottom" ? fraction * 100 : -fraction * 100;
+      return `translateY(${yPct}%)`;
     }
-    // Fallback: wait for another frame as a lightweight idle approximation
-    return this.#nextFrame(signal);
+    const xPct = this._position === "right" ? fraction * 100 : -fraction * 100;
+    return `translateX(${xPct}%)`;
+  }
+
+  /** Resolved animation duration in ms, respecting prefers-reduced-motion. */
+  get #motionDuration() {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return 1;
+    const style = getComputedStyle(this);
+    const raw = style.getPropertyValue("--drawer-duration").trim()
+      || style.getPropertyValue("--transition-normal").trim();
+    if (raw) {
+      const ms = raw.endsWith("ms") ? parseFloat(raw)
+        : raw.endsWith("s") ? parseFloat(raw) * 1000 : NaN;
+      if (!isNaN(ms) && ms > 0) return ms;
+    }
+    return 240;
+  }
+
+  /** Resolved animation easing function. */
+  get #motionEasing() {
+    const style = getComputedStyle(this);
+    return style.getPropertyValue("--drawer-easing").trim()
+      || style.getPropertyValue("--easing-emphasized").trim()
+      || "cubic-bezier(0.25,1,0.5,1)";
+  }
+
+  /**
+   * Cancel any active WAAPI animations, preserving the current visual position
+   * as an inline style and syncing #currentFraction from it.
+   */
+  #cancelAnimations() {
+    if (this.#activeAnimations.length === 0) return;
+    const motionLayer = this.#motionLayer;
+    if (motionLayer) {
+      // Capture the current animated position before cancelling
+      const matrix = new DOMMatrix(getComputedStyle(motionLayer).transform);
+      const isVertical = this._position === "bottom" || this._position === "top";
+      if (isVertical) {
+        const height = this.#drawerHeight || 1;
+        this.#currentFraction = this.#clamp(Math.abs(matrix.m42) / height, 0, 1);
+      } else {
+        const width = this.#drawerWidth || 1;
+        this.#currentFraction = this.#clamp(Math.abs(matrix.m41) / width, 0, 1);
+      }
+    }
+    for (const animation of this.#activeAnimations) {
+      animation.cancel();
+    }
+    this.#activeAnimations = [];
+    // Commit fraction as inline percentage transform (removes matrix form)
+    if (motionLayer) {
+      motionLayer.style.transform = this.#getTransformForFraction(this.#currentFraction);
+    }
   }
 
   async #waitForMedia(maxTimeout = 500) {
@@ -804,19 +817,13 @@ class PdsDrawer extends HTMLElement {
     return Math.min(hi, Math.max(lo, v));
   }
 
-  #applyFraction(f, withTransition) {
+  #applyFraction(f, _withTransition) {
     this.#currentFraction = this.#clamp(f, 0, 1);
-    const t = withTransition ? `transform var(--_dur) var(--_easing)` : "none";
-    const aside = this.#aside;
-    if (!aside) return;
-    aside.style.transition = t;
-    if (this._position === "bottom" || this._position === "top") {
-      const yPct = this._position === "bottom" ? this.#currentFraction * 100 : -this.#currentFraction * 100;
-      aside.style.transform = `translateY(${yPct}%)`;
-    } else {
-      const xPct = this._position === "right" ? this.#currentFraction * 100 : -this.#currentFraction * 100;
-      aside.style.transform = `translateX(${xPct}%)`;
-    }
+    const motionLayer = this.#motionLayer;
+    if (!motionLayer) return;
+    // Always use direct style during drag — no CSS transition
+    motionLayer.style.transition = "none";
+    motionLayer.style.transform = this.#getTransformForFraction(this.#currentFraction);
   }
 
   // Whether to show the close icon button
@@ -837,46 +844,51 @@ class PdsDrawer extends HTMLElement {
     }
   }
 
-  #animateTo(targetFraction) {
-    const aside = this.#aside;
-    if (!aside) return;
-    
+  /**
+   * Animate the motion layer to targetFraction (0 = open, 1 = closed) using WAAPI.
+   * Cancels any in-progress animation first, preserving the current visual position.
+   * Updates the open/closed state after the animation completes when driven by drag.
+   */
+  async #animateTo(targetFraction) {
+    const motionLayer = this.#motionLayer;
+    if (!motionLayer) return;
+
     const clamped = this.#clamp(targetFraction, 0, 1);
-    const isOpening = clamped < this.#currentFraction;
-    
-    // On mobile, ensure the browser recognizes the starting position before animating
-    // This fixes the missing transition when opening
-    if (isOpening) {
-      // First, ensure we're at the closed position without transition
-      aside.style.transition = 'none';
-      if (this._position === "bottom" || this._position === "top") {
-        const startPct = this._position === "bottom" ? this.#currentFraction * 100 : -this.#currentFraction * 100;
-        aside.style.transform = `translateY(${startPct}%)`;
-      } else {
-        const startPct = this._position === "right" ? this.#currentFraction * 100 : -this.#currentFraction * 100;
-        aside.style.transform = `translateX(${startPct}%)`;
-      }
-      // Force reflow to ensure starting position is applied
-      void aside.offsetHeight;
-    }
-    
-    // Now apply transition and animate to target
-    aside.style.transition = `transform var(--_dur) var(--_easing)`;
+
+    // Cancel any in-progress animation, capturing visual position
+    this.#cancelAnimations();
+
+    // fromTransform is the inline style set by #cancelAnimations or #applyFraction
+    const fromTransform = motionLayer.style.transform
+      || this.#getTransformForFraction(this.#currentFraction);
+    const toTransform = this.#getTransformForFraction(clamped);
+
+    const animation = motionLayer.animate(
+      [{ transform: fromTransform }, { transform: toTransform }],
+      { duration: this.#motionDuration, easing: this.#motionEasing, fill: "forwards" }
+    );
+
+    this.#activeAnimations = [animation];
     this.#currentFraction = clamped;
-    if (this._position === "bottom" || this._position === "top") {
-      const yPct = this._position === "bottom" ? clamped * 100 : -clamped * 100;
-      aside.style.transform = `translateY(${yPct}%)`;
-    } else {
-      const xPct = this._position === "right" ? clamped * 100 : -clamped * 100;
-      aside.style.transform = `translateX(${xPct}%)`;
+
+    try {
+      await animation.finished;
+    } catch {
+      // Animation was cancelled — leave state as-is
+      return;
     }
 
-    // Update the `open` property based on the target fraction
+    // Commit final position as inline style and clear WAAPI fill
+    motionLayer.style.transform = toTransform;
+    animation.cancel();
+    this.#activeAnimations = [];
+
+    // Sync open state (needed when finishing a drag-to-close or drag-to-open)
     const isOpen = clamped === 0;
     if (this._open !== isOpen) {
-      // Avoid recursion: just sync internal and attribute
       this._open = isOpen;
       this.toggleAttribute("open", isOpen);
+      if (!isOpen) document.body.classList.remove("drawer-open");
       this.#syncAria();
       this.#syncFocusTrap();
     }
