@@ -816,6 +816,9 @@ export class PdsOmnibox extends HTMLElement {
 
   #getComposedParent(node) {
     if (!node) return null;
+    // Follow slot distribution (flat tree) so transforms inside host shadow DOMs
+    // (e.g. pds-drawer's .motion-layer) are detected by #getFixedContainingBlock.
+    if (node.assignedSlot) return node.assignedSlot;
     if (node.parentElement) return node.parentElement;
     const root = node.getRootNode?.();
     if (root && root.host) return root.host;
@@ -846,7 +849,14 @@ export class PdsOmnibox extends HTMLElement {
   #shouldUseFixedSuggestionOverlay(container) {
     if (!container) return false;
 
-    // Always prefer viewport overlay positioning so results are not clipped by
+    // When a transformed ancestor is present (e.g. pds-drawer's .motion-layer),
+    // `position: fixed` resolves relative to that ancestor instead of the viewport,
+    // causing the suggestion popup to render off-screen. Fall back to
+    // container-relative (position: absolute) positioning in that case.
+    const containingBlock = this.#getFixedContainingBlock(container);
+    if (containingBlock) return false;
+
+    // Otherwise prefer viewport overlay positioning so results are not clipped by
     // parent overflow containers (for example dialog bodies or drawers).
     return true;
   }
