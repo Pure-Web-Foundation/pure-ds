@@ -341,11 +341,22 @@ class PdsDrawer extends HTMLElement {
         }
 
         header {
-          position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+          position: relative;
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          grid-template-areas:
+            "grab grab"
+            "title close";
+          align-items: center;
+          column-gap: var(--spacing-2);
+          row-gap: var(--spacing-2);
+          padding-inline: var(--spacing-2);
+          padding-block: var(--spacing-2);
           min-block-size: var(--drawer-header-min-hit, var(--control-min-height, var(--spacing-10)));
         }
         .grab-handle {
-          order: -1; /* Put grab handle first (top) by default */
+          grid-area: grab;
+          justify-self: center;
           inline-size: var(--drawer-handle-width, var(--size-9, var(--spacing-9)));
           block-size: var(--drawer-handle-height, var(--size-1, var(--spacing-1)));
           border-radius: var(--drawer-handle-radius, var(--radius-full));
@@ -353,10 +364,20 @@ class PdsDrawer extends HTMLElement {
           opacity: 0.9; pointer-events: none; user-select: none;
         }
         :host([position="left"]) .grab-handle, :host([position="right"]) .grab-handle { display:none; }
-        :host([position="top"]) .grab-handle { order: 1; } /* Put grab handle last (bottom visually) for top position */
+        :host([position="top"]) header {
+          grid-template-areas:
+            "title close"
+            "grab grab";
+        }
+        :host([position="left"]) header,
+        :host([position="right"]) header {
+          grid-template-areas: "title close";
+        }
 
         .close-btn {
-          position: absolute; right: var(--spacing-2); top: 50%; transform: translateY(-50%);
+          grid-area: close;
+          justify-self: end;
+          position: relative;
           display: inline-flex; align-items: center; justify-content: center;
           width: var(--size-8, var(--spacing-8)); height: var(--size-8, var(--spacing-8));
           border-radius: var(--radius-sm);
@@ -364,7 +385,13 @@ class PdsDrawer extends HTMLElement {
         }
         .close-btn:hover { opacity: 0.85; }
         .close-btn:focus { outline: var(--focus-outline, none); }
-        ::slotted([slot="drawer-header"]) { inline-size: 100%; display: block; min-block-size: var(--drawer-header-min-hit, var(--control-min-height, var(--spacing-10))); }
+        ::slotted([slot="drawer-header"]) {
+          grid-area: title;
+          min-inline-size: 0;
+          inline-size: 100%;
+          display: block;
+          min-block-size: var(--drawer-header-min-hit, var(--control-min-height, var(--spacing-10)));
+        }
 
         [part="content"] { flex: 1; min-height: 0; overflow: auto; -webkit-overflow-scrolling: touch; contain: layout paint style; }
 

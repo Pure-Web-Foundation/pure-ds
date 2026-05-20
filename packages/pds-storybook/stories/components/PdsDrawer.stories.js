@@ -933,3 +933,80 @@ export const DetailDrawer = () => {
 
 DetailDrawer.storyName = 'Detail Panel';
 
+export const ShowApiCustomHeaderStress = () => {
+  setTimeout(() => {
+    const btn = document.querySelector('#open-show-api-drawer');
+    const drawer = document.querySelector('#show-api-drawer');
+
+    if (btn && drawer) {
+      btn.onclick = async () => {
+        await drawer.show(
+          `
+            <div class="stack-md">
+              <article class="card">
+                <h4>Context</h4>
+                <p>
+                  This scenario intentionally uses the <strong>show()</strong> API with an oversized custom
+                  header to verify that slotted header content never collides with the internal close button.
+                </p>
+              </article>
+              <article class="card surface-elevated">
+                <h4>Expected Result</h4>
+                <p>
+                  Header text wraps naturally and keeps a clear, non-overlapping lane for the close control.
+                </p>
+              </article>
+            </div>
+          `,
+          {
+            position: 'right',
+            showClose: true,
+            header: `
+              <div class="stack-xs">
+                <h2>
+                  Extremely Long Custom Header: Regional Preventive Care Guidelines,
+                  Seasonal Supplementation Recommendations, and Personalized Lifestyle Context
+                </h2>
+                <p class="text-muted">
+                  Additional explanatory subheading text is deliberately verbose to stress wrapping behavior near
+                  the close control.
+                </p>
+              </div>
+            `
+          }
+        );
+      };
+    }
+  }, 0);
+
+  return html`
+    <div>
+      <header class="card surface-elevated stack-md">
+        <h2>show() API Custom Header Stress Test</h2>
+        <p>
+          Opens a right-side drawer through <strong>show()</strong> with intentionally long header text.
+          Use this story to validate close-button separation with slotted custom header content.
+        </p>
+        <button id="open-show-api-drawer" class="btn-primary">
+          <pds-icon icon="sidebar" rotate="180"></pds-icon>
+          <span>Open Drawer via show()</span>
+        </button>
+      </header>
+
+      <main>
+        <article class="card stack-sm">
+          <h3>Why This Exists</h3>
+          <p>
+            The previous implementation could allow custom header content to overlap the close button
+            when text volume increased.
+          </p>
+        </article>
+      </main>
+
+      <pds-drawer id="show-api-drawer" position="right"></pds-drawer>
+    </div>
+  `;
+};
+
+ShowApiCustomHeaderStress.storyName = 'show() Long Custom Header';
+
