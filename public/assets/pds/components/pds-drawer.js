@@ -240,7 +240,7 @@ class PdsDrawer extends HTMLElement {
         <div class="motion-layer" part="motion">
           <aside part="panel" tabindex="-1">
             <header part="header">
-              <button class="close-btn" part="close-button" aria-label="Close drawer" hidden>
+              <button class="close-btn icon-only" part="close-button" aria-label="Close drawer" hidden>
                 <pds-icon icon="x" size="sm"></pds-icon>
               </button>
               <slot name="drawer-header"></slot>
