@@ -347,7 +347,7 @@ export class SvgIcon extends HTMLElement {
     // always around the icon's own centre regardless of coordinate space.
     const buildTransform = (rot, viewBox) => {
       if (rot === "0") return "";
-      const parts = (viewBox || "0 0 256 256").split(/[\s,]+/).map(Number);
+      const parts = (viewBox || "0 0 256 256").trim().split(/[\s,]+/).map(Number);
       if (parts.length === 4 && parts.every(Number.isFinite)) {
         const cx = parts[0] + parts[2] / 2;
         const cy = parts[1] + parts[3] / 2;
