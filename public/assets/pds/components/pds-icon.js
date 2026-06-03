@@ -343,8 +343,18 @@ export class SvgIcon extends HTMLElement {
       this.removeAttribute("data-icon-not-found");
     }
 
-    // Build transform string for rotation
-    const transform = rotate !== "0" ? `rotate(${rotate} 128 128)` : "";
+    // Build transform string for rotation, using viewBox center so rotation is
+    // always around the icon's own centre regardless of coordinate space.
+    const buildTransform = (rot, viewBox) => {
+      if (rot === "0") return "";
+      const parts = (viewBox || "0 0 256 256").split(/[\s,]+/).map(Number);
+      if (parts.length === 4 && parts.every(Number.isFinite)) {
+        const cx = parts[0] + parts[2] / 2;
+        const cy = parts[1] + parts[3] / 2;
+        return `rotate(${rot} ${cx} ${cy})`;
+      }
+      return `rotate(${rot} 128 128)`;
+    };
     const defaultViewBox = "0 0 256 256";
 
     const resolveIconData = (iconName) => {
@@ -529,9 +539,9 @@ export class SvgIcon extends HTMLElement {
 
     this._svgOldEl.setAttribute("aria-hidden", "true");
 
-    this._iconOldGroupEl.setAttribute("transform", transform);
+    this._iconOldGroupEl.setAttribute("transform", buildTransform(rotate, currentData.viewBox));
     this._iconOldGroupEl.innerHTML = currentData.symbolMarkup;
-    this._iconNewGroupEl.setAttribute("transform", transform);
+    this._iconNewGroupEl.setAttribute("transform", buildTransform(rotate, nextData.viewBox));
     this._iconNewGroupEl.innerHTML = nextData.symbolMarkup;
   }
 
