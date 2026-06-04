@@ -618,12 +618,12 @@ export class SvgIcon extends HTMLElement {
           justify-content: center;
         }
       </style>
-      <span class="icon-stack">
-        <svg class="pds-icon layer-old" aria-hidden="true">
-          <g id="icon-group-old"></g>
+      <span class="icon-stack" part="stack">
+        <svg class="pds-icon layer-old" aria-hidden="true" part="icon-old">
+          <g id="icon-group-old" part="group-old"></g>
         </svg>
-        <svg class="pds-icon layer-new" aria-hidden="true">
-          <g id="icon-group-new"></g>
+        <svg class="pds-icon layer-new" aria-hidden="true" part="icon-new">
+          <g id="icon-group-new" part="group-new"></g>
         </svg>
       </span>
       <slot name="fallback"></slot>
