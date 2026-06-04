@@ -384,6 +384,14 @@
               "description": "copy icon"
             },
             {
+              "name": "corners-in",
+              "description": "corners-in icon"
+            },
+            {
+              "name": "corners-out",
+              "description": "corners-out icon"
+            },
+            {
               "name": "credit-card",
               "description": "credit-card icon"
             },
@@ -901,6 +909,60 @@
         {
           "name": "color",
           "description": "Optional active star color (CSS color value)"
+        }
+      ]
+    },
+    {
+      "name": "pds-render",
+      "description": "PdsRender component",
+      "attributes": [
+        {
+          "name": "theme",
+          "description": ""
+        },
+        {
+          "name": "preset",
+          "description": ""
+        },
+        {
+          "name": "height",
+          "description": ""
+        },
+        {
+          "name": "aspect-ratio",
+          "description": ""
+        },
+        {
+          "name": "src-base",
+          "description": ""
+        },
+        {
+          "name": "padding",
+          "description": ""
+        },
+        {
+          "name": "background",
+          "description": ""
+        },
+        {
+          "name": "zoom",
+          "description": ""
+        },
+        {
+          "name": "viewport",
+          "description": ""
+        },
+        {
+          "name": "locale",
+          "description": ""
+        },
+        {
+          "name": "resizable",
+          "description": ""
+        },
+        {
+          "name": "expanded",
+          "description": ""
         }
       ]
     },

@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-03-26T08:26:11.707Z",
+  "exportedAt": "2026-06-02T07:57:49.566Z",
   "staticRoot": "/assets/pds/",
   "presetId": "default",
   "preset": "Default",
@@ -226,7 +226,9 @@
             "cursor-click",
             "clipboard",
             "magic-wand",
-            "sparkle"
+            "sparkle",
+            "corners-out",
+            "corners-in"
           ],
           "communication": [
             "envelope",
@@ -5353,7 +5355,9 @@
               "cursor-click",
               "clipboard",
               "magic-wand",
-              "sparkle"
+              "sparkle",
+              "corners-out",
+              "corners-in"
             ],
             "communication": [
               "envelope",

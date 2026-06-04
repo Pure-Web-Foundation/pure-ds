@@ -1715,12 +1715,6 @@
             },
             {
               "kind": "field",
-              "name": "externalPathDebugLogged",
-              "static": true,
-              "default": "new Set()"
-            },
-            {
-              "kind": "field",
               "name": "instances",
               "static": true,
               "default": "new Set()"
@@ -1853,6 +1847,15 @@
                 "text": "null"
               },
               "default": "null"
+            }
+          ],
+          "events": [
+            {
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Dispatched (bubbling, composed, cancelable) when the requested icon is not found in the sprite sheet or any configured external source. Call `event.preventDefault()` to suppress the built-in \"missing\" placeholder. Inject a fallback by appending a child with `slot=\"fallback\"` to `event.detail.element`. Detail: `{ icon: string, element: HTMLElement }`",
+              "name": "icon-not-found"
             }
           ],
           "attributes": [
@@ -3707,6 +3710,278 @@
           "declaration": {
             "name": "PdsRating",
             "module": "public/assets/pds/components/pds-rating.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "public/assets/pds/components/pds-render.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PdsRender",
+          "members": [
+            {
+              "kind": "field",
+              "name": "html"
+            },
+            {
+              "kind": "field",
+              "name": "css"
+            },
+            {
+              "kind": "field",
+              "name": "js"
+            },
+            {
+              "kind": "method",
+              "name": "setContent",
+              "parameters": [
+                {
+                  "name": "content",
+                  "default": "{}",
+                  "description": "Content payload with any combination of html/css/js.",
+                  "type": {
+                    "text": "PdsRenderContent"
+                  }
+                },
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "description": "Content update options.",
+                  "optional": true,
+                  "type": {
+                    "text": "PdsRenderSetContentOptions"
+                  }
+                }
+              ],
+              "description": "Batch update iframe content using the public component contract.\r\nPrefer this method when applying multiple fields at once."
+            },
+            {
+              "kind": "field",
+              "name": "expanded"
+            },
+            {
+              "kind": "method",
+              "name": "reload"
+            },
+            {
+              "kind": "method",
+              "name": "_renderShadow"
+            },
+            {
+              "kind": "method",
+              "name": "_cacheShadowRefs"
+            },
+            {
+              "kind": "method",
+              "name": "_adoptStyles"
+            },
+            {
+              "kind": "method",
+              "name": "_applyExpandedState",
+              "parameters": [
+                {
+                  "name": "expanded"
+                },
+                {
+                  "name": "options",
+                  "default": "{}"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_syncExpandedControls"
+            },
+            {
+              "kind": "method",
+              "name": "_setBodyScrollLocked",
+              "parameters": [
+                {
+                  "name": "locked"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_effectiveZoom"
+            },
+            {
+              "kind": "method",
+              "name": "_applyZoom"
+            },
+            {
+              "kind": "method",
+              "name": "_toggleExpanded",
+              "parameters": [
+                {
+                  "name": "force"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_resolveSrcBase"
+            },
+            {
+              "kind": "method",
+              "name": "_buildSrcdoc"
+            },
+            {
+              "kind": "method",
+              "name": "_post",
+              "parameters": [
+                {
+                  "name": "msg"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_send",
+              "parameters": [
+                {
+                  "name": "msg"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "_html",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_css",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_js",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_ready",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_iframeReady",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_pendingMessages",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "_bodyOverflow",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_adoptPromise",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_state",
+              "default": "new State({ expanded: this.hasAttribute(\"expanded\") }, this)"
+            },
+            {
+              "kind": "field",
+              "name": "_messageHandler"
+            },
+            {
+              "kind": "field",
+              "name": "_escHandler"
+            },
+            {
+              "kind": "field",
+              "name": "_root"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "theme"
+            },
+            {
+              "name": "preset"
+            },
+            {
+              "name": "height"
+            },
+            {
+              "name": "aspect-ratio"
+            },
+            {
+              "name": "src-base"
+            },
+            {
+              "name": "padding"
+            },
+            {
+              "name": "background"
+            },
+            {
+              "name": "zoom"
+            },
+            {
+              "name": "viewport"
+            },
+            {
+              "name": "locale"
+            },
+            {
+              "name": "resizable"
+            },
+            {
+              "name": "expanded"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "pds-render",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "pds-render",
+          "declaration": {
+            "name": "PdsRender",
+            "module": "public/assets/pds/components/pds-render.js"
           }
         }
       ]
