@@ -52,6 +52,9 @@ export class RichText extends HTMLElement {
   #displayValue = "";
   #showdownPromise = null;
   #warnedMarkdownFallback = false;
+  #pendingInitialValue = null;
+  #initialValueHydrated = false;
+  #userInteracted = false;
 
   static formAssociated = true;
 
@@ -76,12 +79,13 @@ export class RichText extends HTMLElement {
     this._submitOnEnter = false;
     this._toolbar = true;
     this._spellcheck = true;
-    this._value = ""; // form submission value (HTML or Markdown)
+    this._value = this.getAttribute("value") || ""; // form submission value (HTML or Markdown)
     this._placeholder = "";
     this._disabled = false;
     this._required = false;
     this._format = "html";
     this.#displayValue = "";
+    this.#pendingInitialValue = this._value;
   }
 
   // Property accessors (reflective where needed)
@@ -234,6 +238,7 @@ export class RichText extends HTMLElement {
    */
   set value(v) {
     const next = v ?? "";
+    this.#cachePendingInitialValue(next);
     if (next === this._value) {
       this.#reflectValueAttribute(this._value);
       if (!this.#isSyncingFromEditor) {
@@ -278,8 +283,7 @@ export class RichText extends HTMLElement {
         break;
       case "value":
         if (this.#isReflectingValue) break;
-        this._value = newV || "";
-        if (!this.#isSyncingFromEditor) this.#updateEditorFromValue();
+        this.value = newV || "";
         break;
       case "format":
         this.#applyFormat(newV);
@@ -333,11 +337,78 @@ export class RichText extends HTMLElement {
    * @returns {Promise<void>}
    */
   async connectedCallback() {
+    this.#upgradeProperty("value");
+    this.#upgradeProperty("format");
+    this.#upgradeProperty("placeholder");
+    this.#upgradeProperty("disabled");
+    this.#upgradeProperty("required");
+    this.#upgradeProperty("submitOnEnter");
+    this.#upgradeProperty("spellcheck");
+    this.#upgradeProperty("toolbar");
+    this.#hydrateInitialValueState();
     this.#render();
     await this.#adoptStyles();
     if (this._format === "markdown") await this.#ensureShowdown();
     else this.#ensureShowdown();
-    this.#updateEditorFromValue({ reflect: true, updateForm: true, forceDisplayRefresh: true });
+    this.#replayPendingInitialValue({ forceDisplayRefresh: true });
+  }
+
+  #upgradeProperty(name) {
+    if (!Object.prototype.hasOwnProperty.call(this, name)) return;
+    const value = this[name];
+    delete this[name];
+    this[name] = value;
+  }
+
+  #cachePendingInitialValue(value) {
+    if (this.#initialValueHydrated || this.#isSyncingFromEditor) return;
+    this.#pendingInitialValue = value;
+  }
+
+  #hydrateInitialValueState() {
+    if (this.#initialValueHydrated) return;
+    if (this.#pendingInitialValue == null) {
+      this.#pendingInitialValue = this._value || this.getAttribute("value") || "";
+    }
+    if (this.#pendingInitialValue == null) return;
+    this._value = this.#pendingInitialValue;
+    this.#updateEditorFromValue({
+      reflect: true,
+      updateForm: true,
+      forceDisplayRefresh: false,
+      skipIfUserInteracted: true,
+    });
+  }
+
+  #replayPendingInitialValue(options = {}) {
+    if (this.#initialValueHydrated) return;
+    const pending = this.#pendingInitialValue;
+    this.#initialValueHydrated = true;
+    this.#pendingInitialValue = null;
+    if (pending == null) {
+      this.#updateEditorFromValue({
+        reflect: true,
+        updateForm: true,
+        forceDisplayRefresh: true,
+        skipIfUserInteracted: true,
+      });
+      return;
+    }
+    if (this.#shouldSkipHydrationApply()) return;
+    this._value = pending;
+    this.#updateEditorFromValue({
+      reflect: true,
+      updateForm: true,
+      forceDisplayRefresh: true,
+      skipIfUserInteracted: true,
+      ...options,
+    });
+  }
+
+  #shouldSkipHydrationApply() {
+    if (this.#userInteracted) return true;
+    if (!this.#editorDiv || !this.shadowRoot) return false;
+    return this.shadowRoot.activeElement === this.#editorDiv;
   }
 
   async #adoptStyles() {
@@ -571,6 +642,7 @@ export class RichText extends HTMLElement {
 
   // Input -> update cleaned value for form submission
   #onInput = () => {
+    this.#userInteracted = true;
     this.#syncValue();
   };
 
@@ -891,11 +963,16 @@ export class RichText extends HTMLElement {
   }
 
   #updateEditorFromValue(options = {}) {
+    const { skipIfUserInteracted = false } = options;
+    if (skipIfUserInteracted && this.#shouldSkipHydrationApply()) return;
     if (
       this._format === "markdown" &&
       (!this.#converter || !this.#loadedShowdown)
     ) {
-      this.#ensureShowdown().then(() => this.#applyValueToEditor(options));
+      this.#ensureShowdown().then(() => {
+        if (skipIfUserInteracted && this.#shouldSkipHydrationApply()) return;
+        this.#applyValueToEditor(options);
+      });
       return;
     }
     this.#applyValueToEditor(options);
