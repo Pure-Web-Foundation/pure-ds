@@ -302,3 +302,75 @@ export const SingleExpandAccordion = () => html`
 `;
 
 SingleExpandAccordion.storyName = 'Settings Accordion';
+
+export const AccordionInvalidFieldFocusRegression = () => html`
+  ${enhancementHeader('accordion')}
+  <div class="card max-w-xl">
+    <h2>Accordion Invalid Focus Regression</h2>
+    <p>
+      Submit without filling <strong>Event Details</strong>. The closed accordion
+      section should open and focus the invalid editor field.
+    </p>
+
+    <pds-form
+      data-required
+      .jsonSchema=${{
+        type: 'object',
+        title: 'Event Report',
+        properties: {
+          overview: {
+            type: 'object',
+            title: 'Overview',
+            properties: {
+              eventType: {
+                type: 'string',
+                title: 'Event Type',
+                oneOf: [
+                  { const: 'conference', title: 'Conference' },
+                  { const: 'webinar', title: 'Webinar' },
+                  { const: 'meetup', title: 'Meetup' },
+                ],
+                default: 'conference',
+              },
+            },
+          },
+          general: {
+            type: 'object',
+            title: 'General',
+            properties: {
+              details: {
+                type: 'string',
+                title: 'Event Details',
+                description: 'Describe the event in detail.',
+                examples: ['Describe the event in detail...'],
+              },
+              followUp: {
+                type: 'string',
+                title: 'Follow-up Notes',
+                examples: ['Optional follow-up actions'],
+              },
+            },
+            required: ['details'],
+          },
+        },
+      }}
+      .uiSchema=${{
+        'ui:layout': 'accordion',
+        'ui:layoutOptions': {
+          openFirst: true,
+        },
+        '/general/details': {
+          'ui:widget': 'richtext',
+          'ui:options': {
+            toolbar: 'minimal',
+          },
+        },
+        '/general/followUp': {
+          'ui:widget': 'textarea',
+        },
+      }}
+    ></pds-form>
+  </div>
+`;
+
+AccordionInvalidFieldFocusRegression.storyName = 'Accordion With hidden Invalid Field';

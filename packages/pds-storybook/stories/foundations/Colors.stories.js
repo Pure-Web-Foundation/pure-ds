@@ -5,6 +5,7 @@ import { presets, PDS_CONFIG_RELATIONS } from "@pds-src/js/pds-core/pds-config.j
 // Ensure pds-render is available for the PresetGallery story
 if (typeof document !== 'undefined' && !customElements.get?.('pds-render')) {
   const s = document.createElement('script');
+  s.type = 'module';
   s.src = '/assets/pds/components/pds-render.js';
   document.head.appendChild(s);
 }

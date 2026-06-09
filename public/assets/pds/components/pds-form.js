@@ -728,6 +728,7 @@ export class SchemaForm extends LitElement {
         ?data-required=${this.hasAttribute("data-required")}
         method=${m}
         action=${this.action ?? nothing}
+        novalidate
         @submit=${this.#onSubmit}
         @reset=${this.#onReset}
         ?disabled=${this.disabled}
@@ -2287,11 +2288,84 @@ export class SchemaForm extends LitElement {
   }
 
   // ===== Form submit =====
+  #openAccordionForField(field) {
+    if (!(field instanceof HTMLElement)) return null;
+
+    const detailsStack = [];
+    let current = field.closest("details");
+    while (current instanceof HTMLDetailsElement) {
+      detailsStack.push(current);
+      current = current.parentElement?.closest("details") || null;
+    }
+
+    detailsStack.reverse().forEach((details) => {
+      details.open = true;
+    });
+
+    return field;
+  }
+
+  #getFirstInvalidControl(form) {
+    if (!(form instanceof HTMLFormElement)) return null;
+    const invalidCandidates = Array.from(form.querySelectorAll(":invalid"));
+
+    const namedCandidate = invalidCandidates.find((candidate) => {
+      if (!(candidate instanceof HTMLElement)) return false;
+      if (candidate === form) return false;
+      const name = candidate.getAttribute("name")?.trim();
+      return !!name;
+    });
+    if (namedCandidate instanceof HTMLElement) return namedCandidate;
+
+    return (
+      invalidCandidates.find((candidate) => {
+        if (!(candidate instanceof HTMLElement)) return false;
+        if (candidate === form) return false;
+        return candidate.tagName !== "FIELDSET";
+      }) || null
+    );
+  }
+
+  #reportFirstInvalidField(form) {
+    const invalidField = this.#getFirstInvalidControl(form);
+    if (!(invalidField instanceof HTMLElement)) {
+      return !!form?.reportValidity();
+    }
+
+    this.#openAccordionForField(invalidField);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const focusInvalidField = () => {
+          if (typeof invalidField.focus === "function") {
+            invalidField.focus({ preventScroll: true });
+          }
+        };
+
+        focusInvalidField();
+        if (typeof invalidField.reportValidity === "function") {
+          invalidField.reportValidity();
+          requestAnimationFrame(() => focusInvalidField());
+          return;
+        }
+        form?.reportValidity();
+        requestAnimationFrame(() => focusInvalidField());
+      });
+    });
+
+    return false;
+  }
+
   async #onSubmit(e) {
     if (e) e.preventDefault?.();
     const form = this.renderRoot?.querySelector("form");
     let nativeValid = true;
-    if (form) nativeValid = form.checkValidity();
+    if (form) {
+      nativeValid = form.checkValidity();
+      if (!nativeValid) {
+        this.#reportFirstInvalidField(form);
+      }
+    }
 
     let schemaValid = { valid: true };
     if (this.#validator) {
