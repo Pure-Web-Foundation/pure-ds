@@ -11,6 +11,7 @@ import { PDS } from "#pds";
  * @attr {string} label - Accessible label for the icon (adds role="img")
  * @attr {string} sprite - Override sprite sheet path
  * @attr {number} rotate - Rotation angle in degrees
+ * @attr {string} flip - Flip the icon: "horizontal" or (starting with) "h", "vertical" or (starting with) "v", "both" or (starting with) "b"
  * @attr {boolean} no-sprite - Force fallback icon rendering
  * @attr {boolean} morph - Morph the icon when the icon name changes
  *
@@ -34,6 +35,7 @@ export class SvgIcon extends HTMLElement {
     "color",
     "label",
     "rotate",
+    "flip",
     "morph",
   ];
   static #configListenersAttached = false;
@@ -194,6 +196,9 @@ export class SvgIcon extends HTMLElement {
     const label = this.getAttribute("label");
     const spriteOverride = this.getAttribute("sprite");
     const rotate = this.getAttribute("rotate") || "0";
+    const flipAttr = (this.getAttribute("flip") || "").trim().toLowerCase();
+    const flipH = flipAttr.startsWith("h") || flipAttr.startsWith("b");
+    const flipV = flipAttr.startsWith("v") || flipAttr.startsWith("b");
 
     // Parse size - can be number (px) or named size (xs, sm, md, lg, xl, 2xl, 3xl)
     const pdsEnums = PDS?.enums || null;
@@ -343,17 +348,28 @@ export class SvgIcon extends HTMLElement {
       this.removeAttribute("data-icon-not-found");
     }
 
-    // Build transform string for rotation, using viewBox center so rotation is
-    // always around the icon's own centre regardless of coordinate space.
+    // Build transform string for rotation and/or flip, using viewBox center.
     const buildTransform = (rot, viewBox) => {
-      if (rot === "0") return "";
-      const parts = (viewBox || "0 0 256 256").trim().split(/[\s,]+/).map(Number);
-      if (parts.length === 4 && parts.every(Number.isFinite)) {
-        const cx = parts[0] + parts[2] / 2;
-        const cy = parts[1] + parts[3] / 2;
-        return `rotate(${rot} ${cx} ${cy})`;
+      const parts = String(viewBox ?? "0 0 256 256")
+        .split(/[\s,]+/)
+        .map(Number);
+      const [vx, vy, vw, vh] = (parts.length === 4 && parts.every(Number.isFinite))
+        ? parts
+        : [0, 0, 256, 256];
+      const cx = vx + vw / 2;
+      const cy = vy + vh / 2;
+      const transforms = [];
+      if (rot !== "0") {
+        transforms.push(`rotate(${rot} ${cx} ${cy})`);
       }
-      return `rotate(${rot} 128 128)`;
+      if (flipH || flipV) {
+        const sx = flipH ? -1 : 1;
+        const sy = flipV ? -1 : 1;
+        const tx = flipH ? 2 * cx : 0;
+        const ty = flipV ? 2 * cy : 0;
+        transforms.push(`translate(${tx} ${ty}) scale(${sx} ${sy})`);
+      }
+      return transforms.join(" ");
     };
     const defaultViewBox = "0 0 256 256";
 
