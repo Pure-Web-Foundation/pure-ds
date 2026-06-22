@@ -60,7 +60,11 @@ class AutoComplete extends EventTarget {
 	attach() {
 		this.resultsDiv = document.createElement("div");
 		this.resultsDiv.title = "";
-		this.part = "suggestions"
+attach() {
+  this.resultsDiv = document.createElement("div");
+  this.resultsDiv.title = "";
+  this.resultsDiv.part = "suggestions";
+  this.resultsDiv.classList.add(cssClasses.result);
 		this.resultsDiv.classList.add(cssClasses.result);
 		if (this.container.offsetWidth > 100) {
 			this.resultsDiv.style.width = `${this.container.offsetWidth}px`;
