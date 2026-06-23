@@ -313,7 +313,7 @@ class PdsTags extends HTMLElement {
 			<div class="stack-sm" part="wrap">
 				<div class="chips" part="chips" aria-live="polite"></div>
 				<span class="empty" part="empty">${msg("No tags selected.")}</span>
-				<pds-omnibox part="omnibox" exportparts="input, suggestions, item"></pds-omnibox>
+				<pds-omnibox part="omnibox"></pds-omnibox>
 			</div>
 		`;
 

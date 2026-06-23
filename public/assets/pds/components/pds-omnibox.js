@@ -22,10 +22,6 @@
  * @element pds-omnibox
  * @formAssociated
  *
- * @csspart input - The search input element
- * @csspart suggestions - The autocomplete results container (added dynamically by AutoComplete)
- * @csspart item - Each individual autocomplete result row (added dynamically by AutoComplete)
- *
  * @attr {string} name - Form field name for submitted data
  * @attr {string} placeholder - Placeholder text for the search input
  * @attr {string} value - Current input value
