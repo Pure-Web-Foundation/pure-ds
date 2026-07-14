@@ -60,6 +60,7 @@ class AutoComplete extends EventTarget {
 	attach() {
 		this.resultsDiv = document.createElement("div");
 		this.resultsDiv.title = "";
+		this.resultsDiv.setAttribute("part", "suggestions");
 		this.resultsDiv.classList.add(cssClasses.result);
 		if (this.container.offsetWidth > 100) {
 			this.resultsDiv.style.width = `${this.container.offsetWidth}px`;
@@ -488,7 +489,7 @@ class AutoComplete extends EventTarget {
 		const singleItemTemplate = (catHandler, item) => {
 			const categoryLabel = this.formatCategoryLabel(item.category);
 			return `
-			<div title="${item.tooltip || ""}" data-index="${index}" class="${`${cssClasses.item} cat-${item.category} ${item.class ?? ""}`.trim()}"${item.style ? ` style="${item.style}"` : ""}>
+			<div title="${item.tooltip || ""}" data-index="${index}" part="item" class="${`${cssClasses.item} cat-${item.category} ${item.class ?? ""}`.trim()}"${item.style ? ` style="${item.style}"` : ""}>
 				${this.handleImageOrIcon(item)}
 				<span class="text">${this.formatResultItem(item, options, catHandler)}</span>
 				${!this.settings.hideCategory ? `<span class="category">${categoryLabel}</span>` : ""}
