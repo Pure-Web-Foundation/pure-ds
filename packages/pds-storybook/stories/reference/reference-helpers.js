@@ -1,6 +1,6 @@
 import { html, nothing } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import showdown from 'showdown';
+import { marked } from 'marked';
 import { highlight as shikiHighlight, escapeHtml as shikiEscapeHtml } from '../utils/shiki.js';
 
 // Lazy-loaded storybook dependencies to avoid build-time import issues
@@ -51,17 +51,15 @@ if (typeof document !== 'undefined') {
   ensureReferenceHelperStyles();
 }
 
-const markdown = new showdown.Converter({
-  tables: true,
-  simplifiedAutoLink: true,
-  ghCodeBlocks: true,
-  simpleLineBreaks: true
+marked.setOptions({
+  gfm: true,
+  breaks: true
 });
 
 export function renderMarkdown(text) {
   if (!text) return nothing;
   if (typeof text !== 'string') text = String(text);
-  const htmlOutput = markdown.makeHtml(text);
+  const htmlOutput = marked.parse(text);
   if (!htmlOutput || typeof htmlOutput !== 'string') return nothing;
   return unsafeHTML(htmlOutput);
 }

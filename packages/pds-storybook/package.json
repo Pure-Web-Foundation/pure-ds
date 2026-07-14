@@ -1,6 +1,6 @@
 {
   "name": "@pure-ds/storybook",
-  "version": "0.7.71",
+  "version": "0.7.81",
   "description": "Storybook showcase for Pure Design System with live configuration",
   "type": "module",
   "private": false,
@@ -35,22 +35,31 @@
     "storybook:dev": "npm run storybook",
     "storybook:build": "npm run build-storybook",
     "pds:build": "pds-build",
-    "pds:build-icons": "pds-build-icons"
+    "pds:build-icons": "pds-build-icons",
+    "pds:import": "pds-import",
+    "pds:mcp:server": "pds-mcp-server",
+    "pds:mcp:health": "pds-mcp-health",
+    "pds:mcp:eval": "pds-mcp-eval",
+    "pds:bootstrap": "pds-bootstrap"
   },
   "peerDependencies": {
-    "@pure-ds/core": "^0.7.71"
+    "@pure-ds/core": "^0.7.81"
   },
   "dependencies": {
     "@custom-elements-manifest/analyzer": "^0.11.0",
-    "@storybook/addon-docs": "^8.3.0",
-    "@storybook/addon-essentials": "^8.3.0",
-    "@storybook/addon-links": "^8.3.0",
-    "@storybook/blocks": "^8.3.0",
-    "@storybook/web-components": "^8.3.0",
-    "@storybook/web-components-vite": "^8.3.0",
+    "@storybook/addon-docs": "^8.6.18",
+    "@storybook/addon-essentials": "^8.6.18",
+    "@storybook/addon-links": "^8.6.18",
+    "@storybook/blocks": "^8.6.18",
+    "@storybook/web-components": "^8.6.18",
+    "@storybook/web-components-vite": "^8.6.18",
     "lit": "^3.3.1",
-    "showdown": "^2.1.0",
-    "storybook": "^8.3.0",
+    "marked": "^15.0.12",
+    "storybook": "^8.6.18",
     "vite": "^5.4.0"
+  },
+  "imports": {
+    "#pds": "@pure-ds/core",
+    "#pds/lit": "@pure-ds/core/lit"
   }
 }

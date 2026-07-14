@@ -1,12 +1,11 @@
 import { html, nothing } from "#pds/lit";
 import { createComponentDocsPage } from "../reference/reference-docs.js";
-import showdown from "showdown";
+import { marked } from "marked";
 import { countriesApiSettings } from "./omnibox-countries-api-settings.js";
 
-const markdownConverter = new showdown.Converter({ 
-  tables: true,
-  ghCompatibleHeaderId: true,
-  customizedHeaderId: true
+marked.setOptions({
+  gfm: true,
+  breaks: false
 });
 
 const optionsReferenceMarkdown = `
@@ -659,8 +658,8 @@ See the examples below to get started, or check the [primitive forms](/story/pri
   page: createComponentDocsPage("pds-form", {
     hideStories: true,
     additionalContent: 
-      markdownConverter.makeHtml(optionsReferenceMarkdown) +
-      markdownConverter.makeHtml(uiSchemaReferenceMarkdown),
+      marked.parse(optionsReferenceMarkdown) +
+      marked.parse(uiSchemaReferenceMarkdown),
   }),
   toc: true,
 };

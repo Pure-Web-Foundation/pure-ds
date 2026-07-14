@@ -3,20 +3,15 @@
  * Converts markdown to HTML with properly highlighted code blocks
  */
 
-import Showdown from 'showdown';
+import { marked } from 'marked';
 import { loadShiki, highlight, getCurrentTheme, escapeHtml, preloadShiki } from './shiki.js';
 
 // Pre-load Shiki in background
 preloadShiki();
 
-// Create base Showdown converter
-const baseConverter = new Showdown.Converter({
-  tables: true,
-  strikethrough: true,
-  tasklists: true,
-  ghCodeBlocks: true,
-  simplifiedAutoLink: true,
-  emoji: true
+marked.setOptions({
+  gfm: true,
+  breaks: false
 });
 
 /**
@@ -26,7 +21,7 @@ const baseConverter = new Showdown.Converter({
  */
 export async function renderMarkdown(markdown) {
   // First pass: convert markdown to HTML
-  const html = baseConverter.makeHtml(markdown);
+  const html = await marked.parse(markdown ?? '');
   const container = document.createElement('div');
   container.innerHTML = html;
 
@@ -64,5 +59,5 @@ function decodeHtmlEntities(text) {
  * Use this when you don't need syntax highlighting or can't use async
  */
 export function renderMarkdownSync(markdown) {
-  return baseConverter.makeHtml(markdown);
+  return marked.parse(markdown ?? '');
 }
