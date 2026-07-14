@@ -592,6 +592,7 @@ export class RichText extends HTMLElement {
     this.#editorDiv.addEventListener("paste", this.#onPaste);
     this.#editorDiv.addEventListener("keydown", this.#onKeyDown);
     this.#editorDiv.addEventListener("input", this.#onInput);
+    this.#editorDiv.addEventListener("blur", this.#onBlur);
     // Toolbar buttons
     this.shadowRoot.querySelectorAll(".tbtn").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -644,6 +645,15 @@ export class RichText extends HTMLElement {
   #onInput = () => {
     this.#userInteracted = true;
     this.#syncValue();
+  };
+
+  #onBlur = () => {
+    if (!this.#editorDiv) return;
+    // Apply the normalized/sanitized HTML now that the user has left the field, so the
+    // displayed content matches the stored value. Safe here: no active caret.
+    if (this.#editorDiv.innerHTML !== this.#displayValue) {
+      this.#editorDiv.innerHTML = this.#displayValue;
+    }
   };
 
   // Paste as plain text
@@ -767,7 +777,15 @@ export class RichText extends HTMLElement {
     this.value = nextValue;
     this.#isSyncingFromEditor = false;
     this.#displayValue = html;
-    if (this.#editorDiv.innerHTML !== html) {
+
+    const editorHasFocus =
+      this.#editorDiv === (this.shadowRoot?.activeElement ?? null) ||
+      this.#editorDiv === document.activeElement;
+
+    // Do NOT touch the live DOM while the user is typing in it — reassigning innerHTML
+    // collapses the selection to offset 0 and jumps the caret. The sanitized value is
+    // still stored above (this.value / setFormValue); the visible DOM is normalized on blur.
+    if (!editorHasFocus && this.#editorDiv.innerHTML !== html) {
       this.#editorDiv.innerHTML = html;
     }
     this.#internals.setFormValue(nextValue);
