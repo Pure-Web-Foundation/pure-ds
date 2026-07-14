@@ -182,7 +182,7 @@ class TabStrip extends HTMLElement {
 
   #syncFromUrl(initial = false) {
     if (!this.#panels.length) return;
-    const hashId = (location.hash || "").slice(1);
+    const [hashId = ""] = location.hash.slice(1).split(/([/?&#].*)/);
     const exists = this.#panels.some((p) => p.id === hashId);
     const next = exists
       ? hashId
