@@ -28,6 +28,8 @@ function __createLocalizationState() {
     reconcileInFlight: false,
     reconcileDirty: false,
     selfWrittenTextNodes: new WeakSet(),
+    textNodeValueMap: new WeakMap(),
+    attributeValueMap: new WeakMap(),
     requestedKeys: new Set(),
     textNodeKeyMap: new WeakMap(),
     attributeKeyMap: new WeakMap(),
@@ -282,6 +284,18 @@ function __rebuildMessageValueIndex() {
   __localizationState.messageValueToKeys = index;
 }
 
+/**
+ * Wholesale-replaces the text/attribute skip caches. Called whenever the
+ * decision __localizeTextNode/__localizeAttribute made for a node could now
+ * be different even though the node's own value hasn't changed: a locale
+ * bundle arrived or changed, the effective locale scope changed (a `lang`
+ * mutation), or the default locale changed via setLocale().
+ */
+function __invalidateValueCaches() {
+  __localizationState.textNodeValueMap = new WeakMap();
+  __localizationState.attributeValueMap = new WeakMap();
+}
+
 function __setLocaleMessages(locale, messages) {
   const normalizedLocale = __resolveLocaleCandidate(locale);
   __localizationState.messagesByLocale.set(
@@ -289,12 +303,38 @@ function __setLocaleMessages(locale, messages) {
     __normalizeMessages(messages)
   );
   __rebuildMessageValueIndex();
+  __invalidateValueCaches();
+  // Loading a locale bundle can happen mid-pass, on demand, for a node the
+  // tree walker hasn't reached yet -- or, if two nodes share a locale scope
+  // that wasn't loaded yet, for a node that has already been processed and
+  // is otherwise done for this pass. Scheduling here (a no-op-to-dirty if a
+  // pass is already in flight) is what gives that earlier node another
+  // chance instead of leaving it permanently cached on a fallback value.
+  __scheduleReconcile();
 }
 
+/**
+ * Registers a key as one msg()/str() has asked for, returning whether it was
+ * newly added.
+ *
+ * A text node visited before its key was registered gets cached in
+ * textNodeValueMap as "nothing to do here" (see __localizeTextNode). Without
+ * invalidating on a genuinely new key, that cached decision would never be
+ * revisited, so server-rendered text whose key a later-mounted component
+ * registers via msg() would never localize.
+ */
 function __registerRequestedKey(key) {
-  if (typeof key === "string" && key.length > 0) {
-    __localizationState.requestedKeys.add(key);
+  if (typeof key !== "string" || key.length === 0) {
+    return false;
   }
+
+  if (__localizationState.requestedKeys.has(key)) {
+    return false;
+  }
+
+  __localizationState.requestedKeys.add(key);
+  __invalidateValueCaches();
+  return true;
 }
 
 function __indexTranslatedValue(key, value) {
@@ -689,6 +729,7 @@ function __setTextNodeValue(textNode, nextValue) {
     __localizationState.selfWrittenTextNodes.add(textNode);
     textNode.nodeValue = nextValue;
   }
+  __localizationState.textNodeValueMap.set(textNode, nextValue);
 }
 
 async function __localizeTextNode(textNode) {
@@ -701,8 +742,14 @@ async function __localizeTextNode(textNode) {
     return;
   }
 
-  const { leading, core, trailing } = __splitTextWhitespace(textNode.nodeValue);
+  const currentValue = textNode.nodeValue;
+  if (__localizationState.textNodeValueMap.get(textNode) === currentValue) {
+    return;
+  }
+
+  const { leading, core, trailing } = __splitTextWhitespace(currentValue);
   if (!core) {
+    __localizationState.textNodeValueMap.set(textNode, currentValue);
     return;
   }
 
@@ -714,6 +761,7 @@ async function __localizeTextNode(textNode) {
   if (!key) {
     const segmentMatch = __findRequestedSubsegmentForText(core);
     if (!segmentMatch) {
+      __localizationState.textNodeValueMap.set(textNode, currentValue);
       return;
     }
 
@@ -841,6 +889,28 @@ function __getElementAttributeKeyMap(element) {
   return map;
 }
 
+function __getElementAttributeValueMap(element) {
+  let map = __localizationState.attributeValueMap.get(element);
+  if (!map) {
+    map = new Map();
+    __localizationState.attributeValueMap.set(element, map);
+  }
+  return map;
+}
+
+/**
+ * Single write path for a localized attribute. No self-write filtering is
+ * needed here (unlike __setTextNodeValue): `lang` is not one of the
+ * localizable attributes, and the observer's attributeFilter is ["lang"], so
+ * a write here is structurally unobservable to it.
+ */
+function __setElementAttributeValue(element, attrName, nextValue) {
+  if (element.getAttribute(attrName) !== nextValue) {
+    element.setAttribute(attrName, nextValue);
+  }
+  __getElementAttributeValueMap(element).set(attrName, nextValue);
+}
+
 async function __localizeAttribute(element, attrName) {
   if (!element || typeof element.getAttribute !== "function") {
     return;
@@ -848,6 +918,11 @@ async function __localizeAttribute(element, attrName) {
 
   const rawValue = element.getAttribute(attrName);
   if (typeof rawValue !== "string" || !rawValue.length) {
+    return;
+  }
+
+  const valueMap = __getElementAttributeValueMap(element);
+  if (valueMap.get(attrName) === rawValue) {
     return;
   }
 
@@ -861,6 +936,7 @@ async function __localizeAttribute(element, attrName) {
   if (!key) {
     const segmentMatch = __findRequestedSubsegmentForText(rawValue);
     if (!segmentMatch) {
+      valueMap.set(attrName, rawValue);
       return;
     }
 
@@ -877,10 +953,7 @@ async function __localizeAttribute(element, attrName) {
       translatedText +
       rawValue.slice(segmentMatch.end);
 
-    if (localizedValue !== rawValue) {
-      element.setAttribute(attrName, localizedValue);
-    }
-
+    __setElementAttributeValue(element, attrName, localizedValue);
     keyMap.set(attrName, segmentMatch.key);
     return;
   }
@@ -896,9 +969,7 @@ async function __localizeAttribute(element, attrName) {
     ? __replacePlaceholders(translated, (index) => values[index])
     : translated;
 
-  if (translatedText !== rawValue) {
-    element.setAttribute(attrName, translatedText);
-  }
+  __setElementAttributeValue(element, attrName, translatedText);
 }
 
 async function __localizeRequestedAttributes(elements) {
@@ -1021,13 +1092,26 @@ function __attachLangObserver() {
     // ever assigns nodeValue or setAttribute on existing nodes -- so they
     // always count as external.
     let externalMutation = false;
+    let langMutated = false;
+
     for (const record of records) {
       if (record.type === "characterData") {
         if (__localizationState.selfWrittenTextNodes.delete(record.target)) {
           continue;
         }
+      } else if (record.type === "attributes") {
+        // attributeFilter below is ["lang"], so any "attributes" record IS a
+        // lang change. The scope a node resolves its locale from can now
+        // differ even though the node's own value hasn't -- e.g. a subtree
+        // whose ancestor gained or lost `lang` -- so the skip caches can no
+        // longer be trusted.
+        langMutated = true;
       }
       externalMutation = true;
+    }
+
+    if (langMutated) {
+      __invalidateValueCaches();
     }
 
     if (externalMutation) {
@@ -1171,6 +1255,7 @@ export function configureLocalization(config = null) {
   __localizationState.requestedKeys.clear();
   __localizationState.textNodeKeyMap = new WeakMap();
   __localizationState.attributeKeyMap = new WeakMap();
+  __invalidateValueCaches();
   __localizationState.valueToKeys.clear();
   __localizationState.messageValueToKeys.clear();
   __localizationState.missingWarnings.clear();
@@ -1226,6 +1311,12 @@ export async function setLocale(locale, { load = true } = {}) {
   if (load) {
     await __loadLocaleInternal(__localizationState.defaultLocale, "set-default");
   }
+  // For an ALREADY-loaded bundle, __loadLocaleInternal returns early and
+  // __setLocaleMessages never runs, so nothing would otherwise invalidate the
+  // skip caches -- making a switch to a previously-visited locale a silent
+  // no-op. Explicit here, rather than relying on __setLocaleMessages, because
+  // that early-return path is exactly the case that needs covering.
+  __invalidateValueCaches();
   __scheduleReconcile();
   return __localizationState.defaultLocale;
 }
@@ -1258,10 +1349,17 @@ export const msg = (template, options = {}) => {
   }
 
   const key = String(template);
-  __registerRequestedKey(key);
+  const isNewKey = __registerRequestedKey(key);
   const translated = __resolveTranslation(key, [], options, null);
 
+  // Gated on isNewKey, not just "was this called": DOM changes are already
+  // covered by the MutationObserver, so a repeat msg() call for an
+  // already-registered key has nothing new to reconcile. Without this gate, a
+  // render-heavy app calling msg() for the same keys on every render would
+  // mark every in-flight pass dirty continuously, turning the reconciler's
+  // "did not settle" warning into noise.
   if (
+    isNewKey &&
     !options?.element &&
     !options?.scope &&
     !options?.host &&

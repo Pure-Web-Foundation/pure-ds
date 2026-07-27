@@ -462,4 +462,61 @@ test("a node already showing another locale's translated value is retranslated v
   }
 });
 
+test("a settled pass does not re-translate unchanged text nodes or attributes", async () => {
+  const { dom } = installDom(`<p>Hello</p><p>Goodbye</p><button title="Hello">Hello</button>`);
+
+  try {
+    const { provider, stats } = bundleProvider(NL_DE);
+    configureLocalization({ locale: "nl", provider });
+    msg("Hello");
+    msg("Goodbye");
+
+    await flush();
+    assert.equal(dom.window.document.querySelector("p").textContent, "Hallo");
+
+    const translateCallsAtSettle = stats.translateCalls;
+
+    // Unrelated: forces exactly one more pass, but touches no localizable
+    // node or attribute. Before the skip cache, every pass re-translated
+    // every localizable node/attribute regardless of whether anything about
+    // it had changed.
+    dom.window.document.body.appendChild(dom.window.document.createElement("span"));
+    await flush();
+
+    assert.equal(
+      stats.translateCalls,
+      translateCallsAtSettle,
+      "expected no translate() calls for nodes that have not changed"
+    );
+  } finally {
+    teardownDom();
+  }
+});
+
+test("a key registered after a node was first visited is still localized", async () => {
+  const { dom } = installDom(`<p>Other</p><p id="target">Hello</p>`);
+
+  try {
+    const { provider } = bundleProvider(NL_DE);
+    configureLocalization({ locale: "nl", provider });
+
+    // Registers a key so requestedKeys is non-empty (the pass does not bail
+    // at the empty-registry guard), and settles -- caching a NEGATIVE
+    // decision for the still-unregistered "Hello" text.
+    msg("Other");
+    await flush();
+    assert.equal(dom.window.document.getElementById("target").textContent, "Hello");
+
+    // Only now does something register "Hello". Without invalidating the
+    // skip cache on a newly registered key, this node's cached "nothing to
+    // do here" from the pass above would never be revisited.
+    msg("Hello");
+    await flush();
+
+    assert.equal(dom.window.document.getElementById("target").textContent, "Hallo");
+  } finally {
+    teardownDom();
+  }
+});
+
 export { installDom, teardownDom, flush, captureLogs, bundleProvider, NL_DE, DEBOUNCE_MS };
