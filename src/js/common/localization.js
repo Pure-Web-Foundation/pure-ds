@@ -1175,11 +1175,23 @@ function __resolveTranslation(key, values = [], options = {}, template = null) {
     locale: requestedLocale,
     defaultLocale: __localizationState.defaultLocale,
     messages: targetMessages,
-    messagesByLocale: Object.fromEntries(
-      Array.from(__localizationState.messagesByLocale.entries())
-    ),
     template,
   };
+
+  // __resolveTranslation runs once per localizable node per pass, plus once
+  // per msg() call, so materializing every loaded locale's messages here
+  // unconditionally is O(locales x nodes) allocation for providers that never
+  // read this field -- the common case, since most read only `messages`
+  // (the already-resolved target locale) or `key`. A lazy getter defers that
+  // cost to providers that actually access it; enumerable/configurable keeps
+  // spread, Object.keys, and JSON.stringify seeing and correctly resolving it.
+  Object.defineProperty(context, "messagesByLocale", {
+    enumerable: true,
+    configurable: true,
+    get() {
+      return Object.fromEntries(__localizationState.messagesByLocale.entries());
+    },
+  });
 
   let translated;
   const localeLoaded = Boolean(resolvedMessages);

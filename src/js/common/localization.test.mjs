@@ -548,4 +548,43 @@ test("the translated-value index is capped", async () => {
   }
 });
 
+test("the translate context's messagesByLocale is computed lazily", async () => {
+  installDom(``);
+  const originalFromEntries = Object.fromEntries;
+  let fromEntriesCalls = 0;
+  Object.fromEntries = (...args) => {
+    fromEntriesCalls += 1;
+    return originalFromEntries(...args);
+  };
+
+  try {
+    // __resolveTranslation runs once per localizable node per pass, plus once
+    // per msg() call, so a provider that never reads messagesByLocale --
+    // the common case, most read only `messages` or `key` -- must never pay
+    // for materializing it.
+    configureLocalization({
+      locale: "nl",
+      messages: { Hello: "Hallo" },
+      provider: { translate: ({ messages, key }) => messages?.[key] },
+    });
+    assert.equal(msg("Hello"), "Hallo");
+    assert.equal(fromEntriesCalls, 0, "expected messagesByLocale to never be materialized");
+
+    // A provider that DOES read it must still see correct, current data --
+    // the getter defers the cost, it must not change the result.
+    configureLocalization({
+      locale: "nl",
+      messages: { Hello: "Hallo" },
+      provider: {
+        translate: ({ messagesByLocale, key, locale }) => messagesByLocale[locale]?.[key],
+      },
+    });
+    assert.equal(msg("Hello"), "Hallo");
+    assert.equal(fromEntriesCalls, 1, "expected exactly one materialization for the one access");
+  } finally {
+    Object.fromEntries = originalFromEntries;
+    teardownDom();
+  }
+});
+
 export { installDom, teardownDom, flush, captureLogs, bundleProvider, NL_DE, DEBOUNCE_MS };
