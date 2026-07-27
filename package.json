@@ -76,6 +76,7 @@
     "src/js/pds.js",
     "src/js/pds-singleton.js",
     "src/js/common/",
+    "!src/js/**/*.test.mjs",
     "src/js/pds-live-manager/",
     "src/js/pds-core/",
     "custom-elements.json",
