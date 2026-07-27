@@ -48,15 +48,28 @@ function installDom(bodyHtml) {
   install("Node", window.Node);
   install("Element", window.Element);
 
-  // __collectDetectedLocales is the only caller of document.querySelectorAll
-  // with the "[lang]" selector, and it runs exactly once per reconcile pass, so
-  // wrapping it counts passes without any seam in production code.
+  // __collectDetectedLocales always calls document.querySelectorAll("[lang]")
+  // exactly once per reconcile pass (the shadow-scoped scan added alongside
+  // __collectLocalizationRoots calls querySelectorAll on shadow roots
+  // instead, so it does not add to this count), so wrapping it counts passes
+  // without any seam in production code.
   const originalQuerySelectorAll = window.document.querySelectorAll.bind(window.document);
-  const counter = { passes: 0 };
+  const counter = { passes: 0, starSelects: 0 };
   window.document.querySelectorAll = (selector) => {
     if (selector === "[lang]") counter.passes += 1;
     return originalQuerySelectorAll(selector);
   };
+
+  // __collectLocalizationRoots is the only caller of a bare `"*"` selector,
+  // via Element/ShadowRoot.prototype.querySelectorAll, once per root per
+  // pass. Counting it here is what pins the snapshot-sharing refactor.
+  for (const proto of [window.Element.prototype, window.ShadowRoot.prototype]) {
+    const original = proto.querySelectorAll;
+    proto.querySelectorAll = function (selector) {
+      if (selector === "*") counter.starSelects += 1;
+      return original.call(this, selector);
+    };
+  }
 
   __installedDom = {
     dom,
@@ -331,6 +344,87 @@ test("the reconciler's own write does not trigger a redundant extra pass", async
     // And it must stay settled -- no perpetual retriggering off its own writes.
     await flush(DEBOUNCE_MS * 6);
     assert.equal(counter.passes, 1);
+  } finally {
+    teardownDom();
+  }
+});
+
+test("a lang attribute inside a shadow root is detected without being pruned every pass", async () => {
+  const { dom } = installDom(`<div id="host"></div>`);
+  const shadow = dom.window.document.getElementById("host").attachShadow({ mode: "open" });
+  shadow.innerHTML = `<p lang="de">Hello</p>`;
+
+  try {
+    const loadCalls = [];
+    configureLocalization({
+      locale: "nl",
+      provider: {
+        loadLocale: ({ locale }) => {
+          loadCalls.push(locale);
+          return NL_DE[locale] || {};
+        },
+      },
+    });
+    msg("Hello");
+
+    await flush();
+    // __localizeTextNode loads "de" on demand for this node regardless of
+    // __collectDetectedLocales, via __resolveContextLocale resolving `lang`
+    // through the shadow boundary -- so this alone doesn't distinguish the
+    // fix. What it exposes is __pruneUndetectedLocales: without scanning
+    // roots too, document.querySelectorAll("[lang]") cannot see this
+    // shadow-internal attribute, "de" is absent from detectedLocales, and it
+    // gets deleted from messagesByLocale at the end of every single pass --
+    // forcing a re-fetch on every subsequent pass that touches this node.
+    assert.equal(shadow.querySelector("p").textContent, "Guten Tag");
+
+    const deLoadsAfterSettling = loadCalls.filter((l) => l === "de").length;
+
+    // Force a second, genuine pass with nothing about the shadow content
+    // changed, so any further "de" load can only be the prune-and-reload bug.
+    dom.window.document.body.appendChild(dom.window.document.createElement("hr"));
+    await flush();
+
+    assert.equal(
+      loadCalls.filter((l) => l === "de").length,
+      deLoadsAfterSettling,
+      "expected the de bundle to stay loaded, not be pruned and re-fetched"
+    );
+  } finally {
+    teardownDom();
+  }
+});
+
+test("each reconcile pass takes one element snapshot per root", async () => {
+  const { dom, counter } = installDom(`<p>Hello</p><div id="host"></div>`);
+  const shadow = dom.window.document
+    .getElementById("host")
+    .attachShadow({ mode: "open" });
+  shadow.innerHTML = `<span title="Goodbye">Hello</span>`;
+
+  try {
+    const { provider } = bundleProvider(NL_DE);
+    configureLocalization({ locale: "nl", provider });
+    msg("Hello");
+    msg("Goodbye");
+
+    await flush();
+    assert.equal(dom.window.document.querySelector("p").textContent, "Hallo");
+
+    const starSelectsAtSettle = counter.starSelects;
+    const passesAtSettle = counter.passes;
+
+    // One unrelated external mutation forces exactly one more pass over the
+    // same two roots (body + the shadow root). Before sharing one snapshot
+    // between the text-node and attribute walks, this cost 3 querySelectorAll
+    // ("*") calls per root (1 in the text-node walk's shadow discovery, 1 in
+    // the attribute walk's own shadow discovery, 1 in the attribute walk's
+    // element loop) -- 6 for 2 roots. After, it costs 1 per root -- 2.
+    dom.window.document.body.appendChild(dom.window.document.createElement("hr"));
+    await flush();
+
+    assert.equal(counter.passes, passesAtSettle + 1);
+    assert.equal(counter.starSelects - starSelectsAtSettle, 2);
   } finally {
     teardownDom();
   }

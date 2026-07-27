@@ -406,7 +406,7 @@ function __resolveContextLocale(options = {}) {
   return __localizationState.defaultLocale;
 }
 
-function __collectDetectedLocales() {
+function __collectDetectedLocales(roots = []) {
   const detected = new Set([__localizationState.defaultLocale]);
 
   if (typeof document === "undefined") {
@@ -418,11 +418,27 @@ function __collectDetectedLocales() {
     detected.add(__resolveLocaleCandidate(rootLang));
   }
 
-  const nodes = document.querySelectorAll?.("[lang]") || [];
-  for (const node of nodes) {
-    const lang = __normalizeLocale(node.getAttribute("lang"));
-    if (lang) {
-      detected.add(__resolveLocaleCandidate(lang));
+  const addLangFrom = (scanRoot) => {
+    const nodes = scanRoot?.querySelectorAll?.("[lang]") || [];
+    for (const node of nodes) {
+      const lang = __normalizeLocale(node.getAttribute("lang"));
+      if (lang) {
+        detected.add(__resolveLocaleCandidate(lang));
+      }
+    }
+  };
+
+  addLangFrom(document);
+
+  // document.querySelectorAll does not pierce shadow boundaries, but
+  // __resolveContextLocale can resolve a `lang` set inside one (via
+  // closest("[lang]") on a shadow-internal element). Without this, a
+  // shadow-scoped locale gets loaded once and then pruned again on every
+  // subsequent pass, since __pruneUndetectedLocales only keeps locales this
+  // function reports.
+  for (const root of roots) {
+    if (root && root !== document) {
+      addLangFrom(root);
     }
   }
 
@@ -685,17 +701,28 @@ async function __localizeTextNode(textNode) {
   __setTextNodeValue(textNode, nextText);
 }
 
-async function __localizeRequestedTextNodes() {
-  if (typeof document === "undefined" || __localizationState.requestedKeys.size === 0) {
-    return;
+/**
+ * Snapshots every localization root (document.body plus every shadow root
+ * reachable from it) and every element in those roots, in one walk.
+ *
+ * Previously __localizeRequestedTextNodes and __localizeRequestedAttributes
+ * each independently rediscovered the shadow-root list via their own
+ * querySelectorAll("*"), and __localizeRequestedAttributes did it a second
+ * time for its own element loop -- three full-tree element snapshots per
+ * pass where one suffices.
+ */
+function __collectLocalizationRoots() {
+  if (typeof document === "undefined") {
+    return { roots: [], elements: [] };
   }
 
   const root = document.body || document.documentElement;
-  if (!root || typeof document.createTreeWalker !== "function") {
-    return;
+  if (!root) {
+    return { roots: [], elements: [] };
   }
 
   const roots = [];
+  const elements = [];
   const seenRoots = new Set();
 
   const addRoot = (candidateRoot) => {
@@ -715,13 +742,27 @@ async function __localizeRequestedTextNodes() {
       continue;
     }
 
-    const elements = currentRoot.querySelectorAll("*");
-    for (const element of elements) {
+    const rootElements = currentRoot.querySelectorAll("*");
+    for (const element of rootElements) {
+      elements.push(element);
+
       const shadowRoot = element?.shadowRoot;
       if (shadowRoot) {
         addRoot(shadowRoot);
       }
     }
+  }
+
+  return { roots, elements };
+}
+
+async function __localizeRequestedTextNodes(roots) {
+  if (
+    typeof document === "undefined" ||
+    __localizationState.requestedKeys.size === 0 ||
+    typeof document.createTreeWalker !== "function"
+  ) {
+    return;
   }
 
   const nodes = [];
@@ -807,66 +848,38 @@ async function __localizeAttribute(element, attrName) {
   }
 }
 
-async function __localizeRequestedAttributes() {
+async function __localizeRequestedAttributes(elements) {
   if (typeof document === "undefined" || __localizationState.requestedKeys.size === 0) {
     return;
   }
 
-  const root = document.body || document.documentElement;
-  if (!root) {
-    return;
-  }
-
-  const roots = [];
-  const seenRoots = new Set();
-
-  const addRoot = (candidateRoot) => {
-    if (!candidateRoot || seenRoots.has(candidateRoot)) {
-      return;
-    }
-
-    seenRoots.add(candidateRoot);
-    roots.push(candidateRoot);
-  };
-
-  addRoot(root);
-
-  for (let index = 0; index < roots.length; index += 1) {
-    const currentRoot = roots[index];
-    if (!currentRoot || typeof currentRoot.querySelectorAll !== "function") {
-      continue;
-    }
-
-    const elements = currentRoot.querySelectorAll("*");
-    for (const element of elements) {
-      const shadowRoot = element?.shadowRoot;
-      if (shadowRoot) {
-        addRoot(shadowRoot);
-      }
-    }
-  }
-
-  for (const scanRoot of roots) {
-    if (!scanRoot || typeof scanRoot.querySelectorAll !== "function") {
-      continue;
-    }
-
-    const elements = scanRoot.querySelectorAll("*");
-    for (const element of elements) {
-      for (const attrName of __LOCALIZABLE_ATTRIBUTES) {
-        if (element.hasAttribute(attrName)) {
-          await __localizeAttribute(element, attrName);
-        }
+  for (const element of elements) {
+    for (const attrName of __LOCALIZABLE_ATTRIBUTES) {
+      if (element.hasAttribute(attrName)) {
+        await __localizeAttribute(element, attrName);
       }
     }
   }
 }
 
 async function __reconcileLocalization() {
-  const detectedLocales = __collectDetectedLocales();
+  // Collecting roots/elements walks the whole tree, so skip it entirely when
+  // there is nothing registered to localize -- matching the bail-out
+  // __localizeRequestedTextNodes/__localizeRequestedAttributes each used to
+  // do independently.
+  const hasRequestedKeys = __localizationState.requestedKeys.size > 0;
+  const { roots, elements } = hasRequestedKeys
+    ? __collectLocalizationRoots()
+    : { roots: [], elements: [] };
+
+  const detectedLocales = __collectDetectedLocales(roots);
   await __ensureDetectedLocalesLoaded(detectedLocales);
-  await __localizeRequestedTextNodes();
-  await __localizeRequestedAttributes();
+
+  if (hasRequestedKeys) {
+    await __localizeRequestedTextNodes(roots);
+    await __localizeRequestedAttributes(elements);
+  }
+
   __pruneUndetectedLocales(detectedLocales);
 }
 
