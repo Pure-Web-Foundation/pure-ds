@@ -211,4 +211,104 @@ test("a lang attribute change re-localizes nodes that have already settled", asy
   }
 });
 
+test("reconcile passes are serialized while one is in flight", async () => {
+  const { dom, counter } = installDom(`<p>Hello</p>`);
+
+  try {
+    let releaseLoad;
+    const loadGate = new Promise((resolve) => {
+      releaseLoad = resolve;
+    });
+
+    configureLocalization({
+      locale: "nl",
+      provider: {
+        loadLocale: async ({ locale }) => {
+          if (locale === "nl") await loadGate;
+          return NL_DE[locale] || {};
+        },
+      },
+    });
+    msg("Hello");
+
+    // Let the debounced timer fire once; the pass then hangs inside
+    // __ensureDetectedLocalesLoaded, awaiting loadGate.
+    await flush(DEBOUNCE_MS * 2);
+    const passesWhileHanging = counter.passes;
+    assert.equal(passesWhileHanging, 1);
+
+    // Each mutation is spaced beyond the debounce window, so every one of
+    // them genuinely fires its own timer callback. Before serialization each
+    // of those un-awaited calls started its own concurrent document walk.
+    for (let i = 0; i < 5; i += 1) {
+      dom.window.document.body.appendChild(dom.window.document.createElement("span"));
+      await flush(DEBOUNCE_MS * 1.5);
+    }
+    assert.equal(
+      counter.passes,
+      passesWhileHanging,
+      "a pass must not start while one is already in flight"
+    );
+
+    releaseLoad();
+    await flush(DEBOUNCE_MS * 8);
+
+    // Serialization must not drop the work the coalesced mutations asked for.
+    assert.ok(counter.passes <= 3, `expected a small, bounded number of passes, got ${counter.passes}`);
+    assert.equal(dom.window.document.querySelector("p").textContent, "Hallo");
+  } finally {
+    teardownDom();
+  }
+});
+
+test("non-settling localization warns and reschedules the remainder", async () => {
+  const { dom } = installDom(`<p>Hello</p>`);
+  const logs = captureLogs();
+
+  try {
+    let translateCalls = 0;
+    configureLocalization({
+      locale: "nl",
+      provider: {
+        // Every call appends a fresh, localizable node, so no pass can ever
+        // observe a settled DOM -- this is the pathological case the pass
+        // cap exists for.
+        translate: ({ key, messages }) => {
+          translateCalls += 1;
+          if (translateCalls <= 40) {
+            const churn = dom.window.document.createElement("p");
+            churn.textContent = "Hello";
+            dom.window.document.body.appendChild(churn);
+          }
+          return messages?.[key] ?? NL_DE.nl[key];
+        },
+        loadLocale: ({ locale }) => NL_DE[locale] || {},
+      },
+    });
+    msg("Hello");
+
+    // Sample right as the cap is hit, not after the DOM has fully settled --
+    // otherwise the rescheduled window's work has already happened and there
+    // is nothing left to observe growing.
+    let sawWarning = false;
+    for (let i = 0; i < 10 && !sawWarning; i += 1) {
+      await flush(DEBOUNCE_MS);
+      sawWarning = logs.some(([level, message]) => level === "warn" && /did not settle/.test(message));
+    }
+    assert.ok(sawWarning, "expected a warning once the pass cap was hit");
+
+    const translateCallsAtWarning = translateCalls;
+    await flush(DEBOUNCE_MS * 2);
+
+    // The cap bounds latency per scheduling window, not total work: proof
+    // that the remainder was rescheduled rather than silently dropped.
+    assert.ok(
+      translateCalls > translateCallsAtWarning,
+      "expected work to continue in the rescheduled window"
+    );
+  } finally {
+    teardownDom();
+  }
+});
+
 export { installDom, teardownDom, flush, captureLogs, bundleProvider, NL_DE, DEBOUNCE_MS };

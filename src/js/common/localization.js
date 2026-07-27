@@ -1,6 +1,8 @@
 import { pdsLog } from "./pds-log.js";
 
 const __DEFAULT_LOCALE__ = "en";
+const __RECONCILE_DEBOUNCE_MS = 16;
+const __MAX_RECONCILE_PASSES = 5;
 
 /**
  * Key under which the one true localization state lives on the global scope.
@@ -23,6 +25,8 @@ function __createLocalizationState() {
     loadingByLocale: new Map(),
     observer: null,
     reconcileTimer: null,
+    reconcileInFlight: false,
+    reconcileDirty: false,
     requestedKeys: new Set(),
     textNodeKeyMap: new WeakMap(),
     attributeKeyMap: new WeakMap(),
@@ -852,8 +856,48 @@ async function __reconcileLocalization() {
   __pruneUndetectedLocales(detectedLocales);
 }
 
+/**
+ * Runs reconcile passes until the DOM settles or a cap is hit, serializing
+ * against `__scheduleReconcile` via `reconcileInFlight` so that mutations
+ * arriving mid-pass coalesce into `reconcileDirty` instead of starting a
+ * second concurrent pass. Without this latch, `__scheduleReconcile`'s
+ * un-awaited call to `__reconcileLocalization` let passes stack without
+ * bound under a busy MutationObserver.
+ */
+async function __runReconcilePasses() {
+  __localizationState.reconcileInFlight = true;
+  let passes = 0;
+
+  try {
+    do {
+      __localizationState.reconcileDirty = false;
+      passes += 1;
+      await __reconcileLocalization();
+    } while (__localizationState.reconcileDirty && passes < __MAX_RECONCILE_PASSES);
+  } finally {
+    __localizationState.reconcileInFlight = false;
+  }
+
+  // No work is dropped by the cap: a still-dirty state re-schedules for the
+  // next debounce window instead of settling silently, and there is no await
+  // between clearing the latch above and this check, so nothing else can run
+  // in between and observe a false "settled" state.
+  if (__localizationState.reconcileDirty) {
+    pdsLog(
+      "warn",
+      `[i18n] Localization did not settle after ${__MAX_RECONCILE_PASSES} reconcile passes; continuing in the next scheduling window.`
+    );
+    __scheduleReconcile();
+  }
+}
+
 function __scheduleReconcile() {
   if (typeof window === "undefined") {
+    return;
+  }
+
+  __localizationState.reconcileDirty = true;
+  if (__localizationState.reconcileInFlight) {
     return;
   }
 
@@ -863,8 +907,10 @@ function __scheduleReconcile() {
 
   __localizationState.reconcileTimer = setTimeout(() => {
     __localizationState.reconcileTimer = null;
-    __reconcileLocalization();
-  }, 16);
+    __runReconcilePasses().catch((error) => {
+      pdsLog("error", "[i18n] Localization reconcile pass failed.", error);
+    });
+  }, __RECONCILE_DEBOUNCE_MS);
 }
 
 function __attachLangObserver() {
