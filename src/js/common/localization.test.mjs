@@ -519,4 +519,33 @@ test("a key registered after a node was first visited is still localized", async
   }
 });
 
+test("the translated-value index is capped", async () => {
+  installDom(``);
+
+  try {
+    configureLocalization({
+      locale: "nl",
+      provider: {
+        translate: ({ key }) => `translated-${key}`,
+      },
+    });
+
+    for (let index = 0; index < 1500; index += 1) {
+      msg(`key-${index}`);
+    }
+
+    assert.ok(
+      getLocalizationState().indexedValueCount <= 1000,
+      `expected the index to stay capped, got ${getLocalizationState().indexedValueCount}`
+    );
+
+    // Eviction is FIFO by insertion order, so the most recently indexed value
+    // must still resolve correctly -- proving the cap doesn't corrupt lookups
+    // for what it keeps, only drops what it evicts.
+    assert.equal(msg("key-1499"), "translated-key-1499");
+  } finally {
+    teardownDom();
+  }
+});
+
 export { installDom, teardownDom, flush, captureLogs, bundleProvider, NL_DE, DEBOUNCE_MS };

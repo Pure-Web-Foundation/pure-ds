@@ -3,6 +3,7 @@ import { pdsLog } from "./pds-log.js";
 const __DEFAULT_LOCALE__ = "en";
 const __RECONCILE_DEBOUNCE_MS = 16;
 const __MAX_RECONCILE_PASSES = 5;
+const __MAX_INDEXED_VALUES = 1000;
 
 /**
  * Key under which the one true localization state lives on the global scope.
@@ -347,11 +348,29 @@ function __indexTranslatedValue(key, value) {
     return;
   }
 
-  if (!__localizationState.valueToKeys.has(translatedValue)) {
-    __localizationState.valueToKeys.set(translatedValue, new Set());
+  const index = __localizationState.valueToKeys;
+  let keys = index.get(translatedValue);
+
+  if (!keys) {
+    // FIFO eviction on Map insertion order -- a `while`, not an `if`, so a
+    // lowered cap still converges. Without this the index (and the O(index)
+    // per-node scan in __findRequestedSubsegmentForText) grows for the
+    // lifetime of a session. Accepted trade-off: __findRequestedSubsegmentForText
+    // reads only this index, not messageValueToKeys, so evicting a value can
+    // silently stop a subsegment match from firing once the cap is exceeded.
+    while (index.size >= __MAX_INDEXED_VALUES) {
+      const oldest = index.keys().next();
+      if (oldest.done) {
+        break;
+      }
+      index.delete(oldest.value);
+    }
+
+    keys = new Set();
+    index.set(translatedValue, keys);
   }
 
-  __localizationState.valueToKeys.get(translatedValue).add(key);
+  keys.add(key);
 }
 
 function __getLocaleMessages(locale) {
@@ -1216,6 +1235,7 @@ export function getLocalizationState() {
     messages: { ...(defaultBundle?.messages || {}) },
     loadedLocales: Array.from(__localizationState.messagesByLocale.keys()),
     hasProvider: Boolean(__localizationState.provider),
+    indexedValueCount: __localizationState.valueToKeys.size,
   };
 }
 
