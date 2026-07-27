@@ -90,6 +90,7 @@
   ],
   "scripts": {
     "dev": "node esbuild-dev.js",
+    "test": "node --test src/js/common/localization-resource-provider.test.mjs src/js/common/localization.shared-state.test.mjs",
     "prebuild": "npm run types",
     "build": "node esbuild-build.js",
     "types": "tsc -p tsconfig.json && node scripts/sync-types.mjs",
