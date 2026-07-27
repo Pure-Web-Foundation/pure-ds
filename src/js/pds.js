@@ -978,7 +978,12 @@ async function start(config) {
     if (localizationConfig) {
       await __loadLocalizationRuntime();
       configureLocalization(localizationConfig);
-    } else {
+    } else if (!__getLocalizationRuntimeSync()) {
+      // With no runtime loaded this usefully resets __fallbackLocalizationState
+      // and touches no shared state. With a runtime loaded it would forward to
+      // the real configureLocalization and tear down a working provider -- and
+      // since that state is realm-wide, every copy of the runtime on the page
+      // would lose its configuration at once.
       configureLocalization(null);
     }
 
