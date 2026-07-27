@@ -32,6 +32,7 @@ function __createLocalizationState() {
     textNodeKeyMap: new WeakMap(),
     attributeKeyMap: new WeakMap(),
     valueToKeys: new Map(),
+    messageValueToKeys: new Map(),
     missingWarnings: new Set(),
     configureCount: 0,
   };
@@ -247,12 +248,47 @@ function __localeVariants(locale) {
   return [normalized, base];
 }
 
+/**
+ * Rebuilds the authoritative value -> requested-key(s) index from every
+ * loaded locale bundle. Replaces the map wholesale rather than patching it in
+ * place, since a removed or changed key can't be found to unindex without
+ * rescanning anyway.
+ *
+ * This is what __findRequestedKeyForText's third tier reads instead of its
+ * former nested "for each requested key, for each loaded locale" scan.
+ */
+function __rebuildMessageValueIndex() {
+  const index = new Map();
+
+  for (const messages of __localizationState.messagesByLocale.values()) {
+    if (!messages) {
+      continue;
+    }
+
+    for (const [key, value] of Object.entries(messages)) {
+      if (typeof value !== "string" || !value.length) {
+        continue;
+      }
+
+      let keys = index.get(value);
+      if (!keys) {
+        keys = new Set();
+        index.set(value, keys);
+      }
+      keys.add(key);
+    }
+  }
+
+  __localizationState.messageValueToKeys = index;
+}
+
 function __setLocaleMessages(locale, messages) {
   const normalizedLocale = __resolveLocaleCandidate(locale);
   __localizationState.messagesByLocale.set(
     normalizedLocale,
     __normalizeMessages(messages)
   );
+  __rebuildMessageValueIndex();
 }
 
 function __registerRequestedKey(key) {
@@ -452,10 +488,20 @@ async function __ensureDetectedLocalesLoaded(detectedLocales) {
 }
 
 function __pruneUndetectedLocales(detectedLocales) {
+  let removedAny = false;
+
   for (const loadedLocale of Array.from(__localizationState.messagesByLocale.keys())) {
     if (!detectedLocales.has(loadedLocale)) {
       __localizationState.messagesByLocale.delete(loadedLocale);
+      removedAny = true;
     }
+  }
+
+  // Guarded on removedAny: this runs at the end of every pass, and in steady
+  // state nothing is removed, so an unconditional rebuild here would redo the
+  // full-index scan on every settle for no reason.
+  if (removedAny) {
+    __rebuildMessageValueIndex();
   }
 }
 
@@ -563,10 +609,17 @@ function __findRequestedKeyForText(coreText) {
     return coreText;
   }
 
-  const loadedEntries = Array.from(__localizationState.messagesByLocale.entries());
-  for (const key of __localizationState.requestedKeys) {
-    for (const [, messages] of loadedEntries) {
-      if (messages && messages[key] === coreText) {
+  // Formerly an O(requestedKeys x loaded locales) scan re-run for every text
+  // node on every pass; __rebuildMessageValueIndex keeps this map current
+  // instead. A tie (two requested keys sharing one locale's translated
+  // value) can pick a different key than the old insertion-order scan did,
+  // but whichever key is chosen translates back to this same coreText, so the
+  // rendered output is unaffected -- only textNodeKeyMap/attributeKeyMap
+  // bookkeeping could differ.
+  const messageKeys = __localizationState.messageValueToKeys.get(coreText);
+  if (messageKeys) {
+    for (const key of messageKeys) {
+      if (__localizationState.requestedKeys.has(key)) {
         return key;
       }
     }
@@ -1119,6 +1172,7 @@ export function configureLocalization(config = null) {
   __localizationState.textNodeKeyMap = new WeakMap();
   __localizationState.attributeKeyMap = new WeakMap();
   __localizationState.valueToKeys.clear();
+  __localizationState.messageValueToKeys.clear();
   __localizationState.missingWarnings.clear();
 
   if (!config || typeof config !== "object") {

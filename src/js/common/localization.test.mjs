@@ -430,4 +430,36 @@ test("each reconcile pass takes one element snapshot per root", async () => {
   }
 });
 
+test("a node already showing another locale's translated value is retranslated via the message-value index", async () => {
+  // The div's own text ("not a key") matches nothing and is left alone; its
+  // sole purpose is to get "fr" detected and loaded. Crucially, no node in
+  // this test is ever translated under "fr" during this session, so
+  // valueToKeys (the observed-translation index) never learns that "Bonjour"
+  // maps to "Hello" -- only the message-defined index, rebuilt from the
+  // loaded fr bundle itself, can find it. This is a characterization: tier 3
+  // of __findRequestedKeyForText is unchanged behavior, only its
+  // implementation moved from an O(requestedKeys x locales) scan to a map
+  // lookup, so this must stay green both before and after that refactor.
+  const { dom } = installDom(
+    `<div lang="fr" style="display:none">not a key</div><p id="target">Bonjour</p>`
+  );
+
+  try {
+    configureLocalization({
+      locale: "nl",
+      provider: {
+        loadLocale: ({ locale }) =>
+          ({ nl: { Hello: "Hallo" }, fr: { Hello: "Bonjour" } })[locale] || {},
+      },
+    });
+    msg("Hello");
+
+    await flush();
+
+    assert.equal(dom.window.document.getElementById("target").textContent, "Hallo");
+  } finally {
+    teardownDom();
+  }
+});
+
 export { installDom, teardownDom, flush, captureLogs, bundleProvider, NL_DE, DEBOUNCE_MS };
