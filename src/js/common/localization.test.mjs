@@ -311,4 +311,29 @@ test("non-settling localization warns and reschedules the remainder", async () =
   }
 });
 
+test("the reconciler's own write does not trigger a redundant extra pass", async () => {
+  const { dom, counter } = installDom(`<p>Hello</p>`);
+
+  try {
+    const { provider } = bundleProvider(NL_DE);
+    configureLocalization({ locale: "nl", provider });
+    msg("Hello");
+
+    await flush(DEBOUNCE_MS * 6);
+    assert.equal(dom.window.document.querySelector("p").textContent, "Hallo");
+
+    // The write that settles the DOM produces exactly one characterData
+    // record. Before the self-write filter, that record was indistinguishable
+    // from an external mutation and unconditionally scheduled a second,
+    // entirely wasted full-document pass -- deterministically 2, not 1.
+    assert.equal(counter.passes, 1, `expected exactly one pass once settled, got ${counter.passes}`);
+
+    // And it must stay settled -- no perpetual retriggering off its own writes.
+    await flush(DEBOUNCE_MS * 6);
+    assert.equal(counter.passes, 1);
+  } finally {
+    teardownDom();
+  }
+});
+
 export { installDom, teardownDom, flush, captureLogs, bundleProvider, NL_DE, DEBOUNCE_MS };

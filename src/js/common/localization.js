@@ -27,6 +27,7 @@ function __createLocalizationState() {
     reconcileTimer: null,
     reconcileInFlight: false,
     reconcileDirty: false,
+    selfWrittenTextNodes: new WeakSet(),
     requestedKeys: new Set(),
     textNodeKeyMap: new WeakMap(),
     attributeKeyMap: new WeakMap(),
@@ -604,6 +605,23 @@ function __findRequestedSubsegmentForText(coreText) {
   return bestMatch;
 }
 
+/**
+ * Single write path for localized text. The characterData observer on
+ * document.documentElement sees every nodeValue assignment the reconciler
+ * makes, including its own, so a write recorded here is filtered back out in
+ * __attachLangObserver's callback instead of retriggering another pass.
+ *
+ * Added to the set only when a write actually happens -- an entry added on a
+ * no-op write would sit there and swallow the NEXT genuine external mutation
+ * to that node instead of this one.
+ */
+function __setTextNodeValue(textNode, nextValue) {
+  if (textNode.nodeValue !== nextValue) {
+    __localizationState.selfWrittenTextNodes.add(textNode);
+    textNode.nodeValue = nextValue;
+  }
+}
+
 async function __localizeTextNode(textNode) {
   if (!textNode || textNode.nodeType !== 3) {
     return;
@@ -648,9 +666,7 @@ async function __localizeTextNode(textNode) {
       core.slice(segmentMatch.end);
     const localizedText = `${leading}${localizedCore}${trailing}`;
 
-    if (localizedText !== textNode.nodeValue) {
-      textNode.nodeValue = localizedText;
-    }
+    __setTextNodeValue(textNode, localizedText);
     return;
   }
 
@@ -666,9 +682,7 @@ async function __localizeTextNode(textNode) {
     : translated;
   const nextText = `${leading}${translatedText}${trailing}`;
 
-  if (nextText !== textNode.nodeValue) {
-    textNode.nodeValue = nextText;
-  }
+  __setTextNodeValue(textNode, nextText);
 }
 
 async function __localizeRequestedTextNodes() {
@@ -930,8 +944,29 @@ function __attachLangObserver() {
     return;
   }
 
-  const observer = new MutationObserver(() => {
-    __scheduleReconcile();
+  const observer = new MutationObserver((records) => {
+    // A characterData record whose target is in selfWrittenTextNodes is the
+    // reconciler observing its own write. Consuming it here (rather than just
+    // checking it) is what stops that write from retriggering the very next
+    // pass -- without this the reconciler could livelock on any translation
+    // whose messages are not fixpoints (e.g. two keys translating to each
+    // other's source text). "attributes" (lang, per attributeFilter below)
+    // and "childList" records are never self-inflicted -- the reconciler only
+    // ever assigns nodeValue or setAttribute on existing nodes -- so they
+    // always count as external.
+    let externalMutation = false;
+    for (const record of records) {
+      if (record.type === "characterData") {
+        if (__localizationState.selfWrittenTextNodes.delete(record.target)) {
+          continue;
+        }
+      }
+      externalMutation = true;
+    }
+
+    if (externalMutation) {
+      __scheduleReconcile();
+    }
   });
 
   observer.observe(document.documentElement, {
