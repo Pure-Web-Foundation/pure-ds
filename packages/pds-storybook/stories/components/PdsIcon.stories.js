@@ -29,6 +29,38 @@ const componentDescription = `The \`<pds-icon>\` web component renders SVG icons
 <pds-icon icon="star" size="lg" color="var(--color-warning-text)"></pds-icon>
 <pds-icon icon="check" color="var(--color-success-text)"></pds-icon>
 \`\`\`
+
+---
+
+## Shadow Parts
+
+Style internals from outside the shadow root using \`::part()\`:
+
+| Part | Description |
+|------|-------------|
+| \`stack\` | Wrapper span that layers the two SVGs |
+| \`icon-old\` | Outgoing SVG layer (used during transitions) |
+| \`icon-new\` | Incoming SVG layer (current icon) |
+| \`group-old\` | Inner \`<g>\` of the outgoing layer |
+| \`group-new\` | Inner \`<g>\` of the incoming layer |
+
+\`\`\`css
+/* Change stroke color — icons use stroke:currentColor */
+pds-icon.my-icon::part(icon-new) {
+  color: var(--color-accent);
+}
+/* Drop shadow on the wrapper span to avoid SVG viewBox clipping */
+pds-icon.my-icon::part(stack) {
+  display: inline-block;
+  filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.5));
+}
+/* Flip an arrow icon */
+pds-icon.my-icon::part(stack) {
+  display: inline-block;
+  transform: rotate(180deg);
+}
+\`\`\`
+> **Tip:** Phosphor icons use \`stroke: currentColor\`, not \`fill\`. Use \`color\` on \`::part(icon-new)\` for stroke color, and \`filter\`/\`transform\` on \`::part(stack)\` for shadow and rotation.
 `;
 
 const docsParameters = {
@@ -138,6 +170,88 @@ export const Default = {
     label: '',
     rotate: 0
   }
+};
+
+/**
+ * `pds-icon` exposes five shadow parts for external CSS customization via `::part()`.
+ * This story demonstrates coloring each layer independently and adding a drop shadow.
+ */
+export const ShadowParts = {
+  name: 'Shadow Parts (::part())',
+  parameters: {
+    docs: {
+      description: {
+        story: `
+\`pds-icon\` exposes five shadow parts you can target with \`::part()\` from outside the shadow root.
+
+| Part | Description |
+|------|-------------|
+| \`stack\` | Wrapper span that layers the two SVGs |
+| \`icon-old\` | Outgoing SVG layer |
+| \`icon-new\` | Incoming SVG layer (current icon) |
+| \`group-old\` | Inner \`<g>\` of the outgoing layer |
+| \`group-new\` | Inner \`<g>\` of the incoming layer |
+
+> **Note:** Phosphor icons use \`stroke: currentColor\`. Set \`color\` on \`::part(icon-new)\`
+> to change the stroke color. Apply \`filter: drop-shadow()\` to \`::part(stack)\`
+> (not \`::part(icon-new)\`) to avoid SVG viewBox clipping of the shadow.
+
+\`\`\`css
+/* Change stroke color — icons use stroke:currentColor */
+pds-icon::part(icon-new) {
+  color: var(--color-accent);
+}
+
+/* Drop shadow on the wrapper span to avoid SVG viewBox clipping */
+pds-icon::part(stack) {
+  display: inline-block;
+  filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.5));
+}
+
+/* Flip an arrow icon 180° */
+pds-icon::part(stack) {
+  display: inline-block;
+  transform: rotate(180deg);
+}
+\`\`\`
+        `
+      }
+    }
+  },
+  render: () => html`
+    <style>
+      /* Phosphor icons use stroke:currentColor — set 'color' to change the stroke */
+      .icon-parts-color::part(icon-new) {
+        color: var(--color-accent, hotpink);
+      }
+      /* Apply drop-shadow to ::part(stack) (the wrapper span) to avoid SVG viewBox clipping */
+      .icon-parts-shadow::part(stack) {
+        display: inline-block;
+        filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.55));
+      }
+      .icon-parts-rotated::part(stack) {
+        display: inline-block;
+        transform: rotate(180deg);
+      }
+    </style>
+    <div class="flex gap-xl align-items-center flex-wrap">
+      <div class="stack-xs text-center">
+        <pds-icon class="icon-parts-color" icon="heart" size="xl"></pds-icon>
+        <p class="text-muted">accent color via <code>color</code> property</p>
+        <code>::part(icon-new)</code>
+      </div>
+      <div class="stack-xs text-center">
+        <pds-icon class="icon-parts-shadow" icon="star" size="xl"></pds-icon>
+        <p class="text-muted">drop shadow via <code>filter</code> on the stack wrapper</p>
+        <code>::part(stack)</code>
+      </div>
+      <div class="stack-xs text-center">
+        <pds-icon class="icon-parts-rotated" icon="arrow-right" size="xl"></pds-icon>
+        <p class="text-muted">flipped 180° → arrow-left via <code>transform</code></p>
+        <code>::part(stack)</code>
+      </div>
+    </div>
+  `
 };
 
 /**

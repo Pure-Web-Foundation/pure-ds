@@ -51,6 +51,37 @@ Examples:
 
 The component points to the sprite at `/assets/pds/icons/icons.svg` by default.
 
+## Shadow Parts (CSS Customization)
+
+`<pds-icon>` exposes the following shadow parts so you can style its internals with `::part()` from outside the shadow root:
+
+| Part | Element | Description |
+|------|---------|-------------|
+| `stack` | `<span class="icon-stack">` | Wrapper that stacks the two SVG layers |
+| `icon-old` | `<svg class="layer-old">` | The outgoing SVG layer (used during icon transitions) |
+| `icon-new` | `<svg class="layer-new">` | The incoming SVG layer (current icon) |
+| `group-old` | `<g>` inside `icon-old` | Inner group of the outgoing layer |
+| `group-new` | `<g>` inside `icon-new` | Inner group of the incoming layer |
+
+Example — Phosphor icons use `stroke: currentColor`, so set `color` on `::part(icon-new)` to change the stroke, and apply `filter`/`transform` to `::part(stack)` to avoid SVG viewBox clipping:
+
+```css
+/* Change stroke color */
+pds-icon.my-icon::part(icon-new) {
+  color: var(--color-accent);
+}
+/* Drop shadow on the wrapper span (avoids SVG viewBox clipping) */
+pds-icon.my-icon::part(stack) {
+  display: inline-block;
+  filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.5));
+}
+/* Flip an arrow icon 180° */
+pds-icon.my-icon::part(stack) {
+  display: inline-block;
+  transform: rotate(180deg);
+}
+```
+
 ## Notes
 
 - The component includes a minimal set of inline fallbacks for a few critical icons so UIs remain usable if the sprite fails to load.

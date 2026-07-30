@@ -3,7 +3,11 @@ import { PDS } from '#pds';
 
 const docsParameters = {
   description: {
-    component: 'Rich text editor with markdown support and formatting toolbar. Provide a #showdown import-map entry for best performance; set format="markdown" to keep submitted values as Markdown.'
+    component: `Rich text editor with markdown support and formatting toolbar. Provide a #showdown import-map entry for best performance; set format="markdown" to keep submitted values as Markdown.
+
+**Content synchronization** — the editor syncs its value to the component on every \`input\` event.
+On \`blur\` the displayed HTML is normalized and written back to the \`contenteditable\` area so the
+stored value always matches what is shown, without risking a caret-jump while the user is still typing.`
   }
 };
 
@@ -386,3 +390,41 @@ export const PersistentToastLiveUpdate = () => {
 };
 
 PersistentToastLiveUpdate.storyName = 'Persistent Toast Live Update';
+
+export const BlurSync = () => html`
+  ${richtextStoryStyles}
+  <div class="stack-md max-w-md">
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <pds-icon icon="info" size="md"></pds-icon>
+      </span>
+      <div class="stack-xs">
+        <strong class="callout-title">On-blur content normalization</strong>
+        <p>
+          The editor syncs its value on every <code>input</code> event. When focus leaves the
+          editor (<code>blur</code>), the stored HTML is written back to the
+          <code>contenteditable</code> area so the displayed content exactly matches the
+          normalized value — without causing a caret jump while the user is still typing.
+        </p>
+      </div>
+    </div>
+    <pds-richtext
+      id="blur-sync-editor"
+      placeholder="Type something, then click outside to trigger on-blur normalization..."
+    ></pds-richtext>
+    <div class="card surface-subtle stack-xs">
+      <strong>Stored value (<code>editor.value</code>)</strong>
+      <pre id="blur-sync-output" style="white-space:pre-wrap;word-break:break-all;font-size:var(--font-size-sm)">—</pre>
+    </div>
+    <script type="module">
+      const editor = document.getElementById('blur-sync-editor');
+      const output = document.getElementById('blur-sync-output');
+      if (editor && output) {
+        editor.addEventListener('input', () => { output.textContent = editor.value || '—'; });
+        editor.addEventListener('blur', () => { output.textContent = editor.value || '—'; });
+      }
+    </script>
+  </div>
+`;
+
+BlurSync.storyName = 'On-Blur Content Sync';

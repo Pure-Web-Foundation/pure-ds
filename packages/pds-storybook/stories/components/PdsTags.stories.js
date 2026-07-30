@@ -535,7 +535,17 @@ const tvMazeOptionsSource = `const options = {
 
 const docsParameters = {
   description: {
-    component: "Compound multi-select built with pds-omnibox. Select/unselect values from suggestions and manage them as tags.",
+    component: `Compound multi-select built with pds-omnibox. Select/unselect values from suggestions and manage them as tags.
+
+\`pds-tags\` forwards the inner \`pds-omnibox\` shadow parts outward via
+\`exportparts="input, suggestions, item"\`, so you can style those internals with
+\`::part()\` on the \`pds-tags\` element itself:
+
+\`\`\`css
+pds-tags::part(input)       { border-radius: var(--radius-full); }
+pds-tags::part(suggestions) { border: 2px solid var(--color-primary); }
+pds-tags::part(item)        { border-radius: var(--radius-md); }
+\`\`\``,
   },
 };
 

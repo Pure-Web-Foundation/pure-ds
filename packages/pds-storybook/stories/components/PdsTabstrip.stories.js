@@ -2,7 +2,11 @@ import { html } from "#pds/lit";
 
 const docsParameters = {
   description: {
-    component: "Accessible tab interface with keyboard navigation",
+    component: `Accessible tab interface with keyboard navigation and URL hash deep-linking.
+
+Deep-link to a specific tab by navigating to \`#tabId\`. The component correctly
+handles edge cases where the hash contains additional query segments such as
+\`#tabId?foo=true\` or \`#tabId&bar=1\` — only the leading identifier is used.`,
   },
 };
 
@@ -259,4 +263,40 @@ export const Default = () => html`
       </div>
     </pds-tabpanel>
   </pds-tabstrip>
+`;
+
+/**
+ * Demonstrates URL hash deep-linking. Navigate to `#analytics` or `#settings`
+ * to jump straight to that tab. The component handles edge cases such as
+ * `#analytics?foo=true` correctly — the extra query portion is stripped so the
+ * tab is still located.
+ */
+export const DeepLinking = () => html`
+  ${tabstripStoryStyles}
+  <div class="stack-md">
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <pds-icon icon="info" size="md"></pds-icon>
+      </span>
+      <div class="stack-xs">
+        <strong class="callout-title">URL Hash Deep-Linking</strong>
+        <p>
+          Add <code>#analytics</code> or <code>#settings</code> to the page URL to land
+          directly on that tab. Works even when the hash contains extra segments like
+          <code>#analytics?ref=email</code>.
+        </p>
+      </div>
+    </div>
+    <pds-tabstrip label="Deep-link demo">
+      <pds-tabpanel id="overview" label="Overview">
+        <p>This is the <strong>Overview</strong> tab. Navigate to <code>#analytics</code> or <code>#settings</code> in the URL bar.</p>
+      </pds-tabpanel>
+      <pds-tabpanel id="analytics" label="Analytics">
+        <p>You deep-linked to <strong>Analytics</strong>. The URL hash resolved correctly even if it contained extra query parameters.</p>
+      </pds-tabpanel>
+      <pds-tabpanel id="settings" label="Settings">
+        <p>You deep-linked to <strong>Settings</strong>.</p>
+      </pds-tabpanel>
+    </pds-tabstrip>
+  </div>
 `;

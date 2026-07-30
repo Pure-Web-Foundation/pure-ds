@@ -18,6 +18,27 @@ const settingsReferenceHtml = `
     <code>pds-omnibox</code> relies on a <code>settings</code> object to configure
     autocomplete categories, item rendering, and behaviors.
   </p>
+  <h3 id="css-parts">CSS Shadow Parts</h3>
+  <p>
+    Style internals from outside the shadow root using <code>::part()</code>:
+  </p>
+  <table>
+    <thead><tr><th>Part</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>input</code></td><td>The search input element</td></tr>
+      <tr><td><code>suggestions</code></td><td>The autocomplete results container</td></tr>
+      <tr><td><code>item</code></td><td>Each individual autocomplete result row</td></tr>
+    </tbody>
+  </table>
+  <pre><code class="language-css">pds-omnibox::part(input) {
+  border-radius: var(--radius-full);
+}
+/* ::part(suggestions) stays in the DOM when closed — avoid persistent borders.
+   Style ::part(item) for per-row customization instead. */
+pds-omnibox::part(item) {
+  border-radius: var(--radius-md);
+  transition: background 150ms;
+}</code></pre>
   <h3 id="settings-structure">Settings Structure</h3>
   <pre><code class="language-js">const settings = {
   hideCategory: false,
@@ -816,4 +837,63 @@ export const RealLifeProgressiveApis = {
       },
     },
   },
+};
+
+export const ShadowParts = {
+  name: 'Shadow Parts (::part())',
+  parameters: {
+    docs: {
+      description: {
+        story: `
+\`pds-omnibox\` exposes three shadow parts you can target with \`::part()\` from outside the shadow root.
+
+| Part | Description |
+|------|-------------|
+| \`input\` | The search \`<input>\` element |
+| \`suggestions\` | The autocomplete results container (always in the DOM, even when closed) |
+| \`item\` | Each individual result row |
+
+\`\`\`css
+pds-omnibox::part(input) {
+  border-radius: var(--radius-full);   /* pill-shaped input */
+}
+/* Avoid persistent border/shadow on ::part(suggestions) — the container stays
+   in the DOM when closed and will paint even at zero height.
+   Style ::part(item) for per-row customization instead. */
+pds-omnibox::part(item) {
+  border-radius: var(--radius-md);
+  transition: background 150ms;
+}
+\`\`\`
+
+> **pds-tags** also forwards these parts via \`exportparts="input, suggestions, item"\` so
+> the same \`::part()\` selectors work on \`pds-tags\` too.
+        `
+      }
+    }
+  },
+  render: () => html`
+    <style>
+      .omnibox-parts-demo::part(input) {
+        border-radius: var(--radius-full);
+      }
+      .omnibox-parts-demo::part(item) {
+        border-radius: var(--radius-md);
+        transition: background var(--duration-fast, 150ms);
+      }
+    </style>
+    <div class="stack-sm">
+      <p class="text-muted">
+        The search input has a pill-shaped border and each suggestion item has rounded corners —
+        styled exclusively via <code>::part(input)</code> and <code>::part(item)</code>.
+        Type to open the panel and see the item styling.
+      </p>
+      <pds-omnibox
+        class="omnibox-parts-demo"
+        name="parts-demo"
+        placeholder="Type to see styled suggestions..."
+        ${lazyProps({ settings: toastSettings })}
+      ></pds-omnibox>
+    </div>
+  `
 };
