@@ -119,6 +119,55 @@ This enables island behavior without special framework integration.
 
 This keeps runtime memory proportional to actively used languages.
 
+## Shared State Across Bundle Copies
+
+Localization state -- the provider, loaded bundles, requested keys, and the
+DOM observer -- lives on a single object shared by every copy of the
+localization runtime in a page, not per module instance. Several
+`@pure-ds/core` bundles (`core/pds-localization.js`, `core/pds-enhancers.js`,
+`core/pds-manager.js`) inline the same localization code, and a consumer's own
+app bundle may include a further copy; without sharing, only whichever copy
+received `configureLocalization()` would actually work, and every `msg()` call
+in the others would return its raw key.
+
+Consequences worth knowing:
+
+- A page cannot host two *independently configured* localization scopes --
+  the last `configureLocalization()` call wins, and a debug-level log records
+  when that happens more than once.
+- Exactly one `MutationObserver` runs per page, regardless of how many
+  bundle copies are loaded.
+- **All copies of `@pure-ds/core` in a page must be the same version, and at
+  least the version this was introduced in.** An older copy keeps private
+  state and does not participate in the shared runtime -- so a page that
+  mixes a stale cached bundle (e.g. from a CDN, a pinned `managerURL`, or an
+  un-synced web root) with a current one will see the older bug pattern for
+  that copy specifically.
+- Iframes and workers each have their own realm and their own `document`, so
+  they correctly get their own, independent localization state.
+
+## Reconciliation
+
+Localization writes to the DOM in **reconcile passes**, debounced 16ms after
+a `msg()` call registers a new key or the DOM mutates. A pass:
+
+- only re-examines a text node or attribute whose value has changed since it
+  was last visited (a locale bundle loading, a `lang` change, or a newly
+  registered key invalidates that cache);
+- ignores its own writes when deciding whether to schedule another pass, so
+  settling never costs an extra, wasted full-document walk;
+- runs at most 5 times in a row before yielding; if the DOM still hasn't
+  settled after 5 passes (for example, a `translate()` implementation that
+  keeps producing different output), PDS logs a warning and continues in the
+  next scheduling window rather than blocking indefinitely.
+
+`getLocalizationState()` includes `indexedValueCount`, the size of the
+internal value-to-key index used to recognize already-translated text. This
+index is capped (currently 1000 entries, FIFO eviction) so long sessions
+don't grow it without bound; exact-key matches are unaffected by eviction,
+but a very large, long-running page may occasionally miss recognizing an
+older *subsegment* match once its value has been evicted.
+
 ## Live Editor Language Selector
 
 In live mode (`liveEdit: true`), quick settings can show a **Language** selector.

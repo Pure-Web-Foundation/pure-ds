@@ -44,6 +44,10 @@ const copyManagerToCorePlugin = {
         const enhancersDest = path.join(coreDir, "pds-enhancers.js");
         await copyFile(enhancersSrc, enhancersDest);
 
+        const localizationSrc = path.join(process.cwd(), "public", "assets", "js", "pds-localization.js");
+        const localizationDest = path.join(coreDir, "pds-localization.js");
+        await copyFile(localizationSrc, localizationDest);
+
       } catch (err) {
         console.warn("[pds] Failed to copy PDS runtime assets to public/assets/pds:", err.message);
       }
@@ -52,7 +56,11 @@ const copyManagerToCorePlugin = {
 };
 
 const config = {
-  entryPoints: ["src/js/lit.js", "src/js/app.js", "src/js/pds.js", "src/js/pds-manager.js", "src/js/pds-autocomplete.js", "src/js/pds-ask.js", "src/js/pds-toast.js", "src/js/pds-enhancers.js"],
+  // Must match esbuild-build.js. Omitting src/js/pds-localization.js here meant
+  // `npm run dev` served the stale committed public/assets/pds/core copy, so a
+  // freshly built pds-enhancers.js ran against a different localization runtime
+  // than the one receiving configureLocalization().
+  entryPoints: ["src/js/lit.js", "src/js/app.js", "src/js/pds.js", "src/js/pds-manager.js", "src/js/pds-autocomplete.js", "src/js/pds-ask.js", "src/js/pds-toast.js", "src/js/pds-enhancers.js", "src/js/pds-localization.js"],
   plugins: [rebuildNotifyPlugin(), copyManagerToCorePlugin],
   platform: "browser", 
   target: "es2022", 
