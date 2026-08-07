@@ -1,1 +1,1713 @@
-var gt=new Set(["log","warn","error","debug","info"]),ht="__PURE_DS_PDS_SINGLETON__",Q=null,tt=null;function nt(){try{let e=(typeof globalThis<"u"?globalThis:window)?.[ht];if(e&&typeof e=="object")return e}catch{return null}return null}function bt(t){return!t||typeof t!="object"?null:{mode:t.mode==="live"||t.mode==="static"?t.mode:null,debug:t.debug===!0,thisArg:t.thisArg}}function yt(t){if(typeof t!="string")return"log";let e=t.toLowerCase();return gt.has(e)?e:"log"}function mt(){if(typeof tt=="function")try{let e=bt(tt());if(e)return e}catch{}let t=nt();if(t){let e=t?.mode||t?.compiled?.mode||(t?.registry?.isLive?"live":"static"),n=(t?.debug||t?.currentConfig?.debug||t?.currentConfig?.design?.debug||t?.compiled?.debug||t?.compiled?.design?.debug||!1)===!0;return{mode:e,debug:n,thisArg:t}}return{mode:null,debug:!1}}function vt(){if(typeof Q=="function")try{let e=Q();if(typeof e=="function")return e}catch{}let t=nt();return typeof t?.logHandler=="function"?t.logHandler:null}function et(t,e,...n){if(typeof console>"u")return;let o=typeof console[t]=="function"?console[t].bind(console):typeof console.log=="function"?console.log.bind(console):null;o&&(n.length>0?o(e,...n):o(e))}function Lt(t,e){let n=e?.debug===!0;return!(e?.mode==="static"&&!n||!n&&t!=="error"&&t!=="warn")}function ot(t="log",e,...n){let o=yt(t),r=mt(),s=vt();if(s)try{s.call(r?.thisArg,o,e,...n);return}catch(a){et("error","Custom log handler failed:",a)}Lt(o,r)&&et(o,e,...n)}var wt="en",u={defaultLocale:wt,provider:null,messagesByLocale:new Map,loadingByLocale:new Map,observer:null,reconcileTimer:null,requestedKeys:new Set,textNodeKeyMap:new WeakMap,attributeKeyMap:new WeakMap,valueToKeys:new Map,missingWarnings:new Set},At=["title","placeholder","aria-label","aria-description","aria-placeholder","aria-roledescription","alt","label"],Et=t=>!!t&&typeof t!="string"&&typeof t=="object"&&"strTag"in t;function S(t){return String(t||"").trim().toLowerCase()}function _t(t){let e=S(t);return e?e.split("-")[0]||e:""}function q(t){let e=S(t);if(!e)return u.defaultLocale;let n=u.provider?.resolveLocale;if(typeof n=="function"){let o=S(n(t));if(o)return o}return e}function xt(t){let e="";for(let n=0;n<=t.length-1;n+=1)e+=t[n],n<t.length-1&&(e+=`{${n}}`);return e}function O(t,e){return String(t).replace(/\{(\d+)\}/g,(n,o)=>e(Number(o)))}function j(t){if(!t||typeof t!="object")return{};let e={};for(let[n,o]of Object.entries(t)){if(typeof o=="string"){e[n]=o;continue}o&&typeof o=="object"&&typeof o.content=="string"&&(e[n]=o.content)}return e}function St(t){let e=S(t);if(!e)return[u.defaultLocale];let n=_t(e);return!n||n===e?[e]:[e,n]}function rt(t,e){let n=q(t);u.messagesByLocale.set(n,j(e))}function it(t){typeof t=="string"&&t.length>0&&u.requestedKeys.add(t)}function at(t,e){if(typeof t!="string"||!t.length)return;let n=typeof e=="string"?e:String(e||"");n.length&&(u.valueToKeys.has(n)||u.valueToKeys.set(n,new Set),u.valueToKeys.get(n).add(t))}function B(t){let e=St(t);for(let n of e)if(u.messagesByLocale.has(n))return{locale:n,messages:u.messagesByLocale.get(n)};return null}async function P(t,e="explicit"){let n=q(t),o=B(n);if(o)return o.messages;let r=n;if(u.loadingByLocale.has(r))return u.loadingByLocale.get(r);if(!u.provider)return{};let s=u.provider.loadLocale||u.provider.setLocale||null;if(typeof s!="function")return{};let a={locale:n,defaultLocale:u.defaultLocale,reason:e,loadedLocales:Array.from(u.messagesByLocale.keys()),messages:{...B(n)?.messages||{}},load:e==="set-default"||e==="explicit-load"},i;try{i=s(a)}catch{return{}}if(i&&typeof i.then=="function"){let c=i.then(g=>{let f=j(g);return rt(n,f),f}).catch(()=>({})).finally(()=>{u.loadingByLocale.delete(r)});return u.loadingByLocale.set(r,c),c}let d=j(i);return rt(n,d),d}function Ct(t){if(!t||typeof t!="object")return"";let n=typeof Element<"u"&&t instanceof Element||t?.nodeType===1?t:null;if(!n)return"";if(n.hasAttribute?.("lang"))return S(n.getAttribute("lang"));let o=n.closest?.("[lang]");return o&&o.getAttribute?S(o.getAttribute("lang")):""}function R(t={}){if(typeof t?.lang=="string"&&t.lang.trim())return q(t.lang);let e=t?.element||t?.scope||t?.host||t?.contextElement||null,n=Ct(e);if(n)return q(n);if(typeof document<"u"&&document.documentElement){let o=S(document.documentElement.getAttribute("lang"));if(o)return q(o)}return u.defaultLocale}function Mt(){let t=new Set([u.defaultLocale]);if(typeof document>"u")return t;let e=S(document.documentElement?.getAttribute?.("lang"));e&&t.add(q(e));let n=document.querySelectorAll?.("[lang]")||[];for(let o of n){let r=S(o.getAttribute("lang"));r&&t.add(q(r))}return t}async function Tt(t){for(let e of t)await P(e,"lang-detected")}function qt(t){for(let e of Array.from(u.messagesByLocale.keys()))t.has(e)||u.messagesByLocale.delete(e)}function kt(t){let e=String(t||""),n=(e.match(/^\s*/)||[""])[0],o=(e.match(/\s*$/)||[""])[0],r=n.length,s=e.length-o.length,a=s>=r?e.slice(r,s):"";return{leading:n,core:a,trailing:o}}function st(t){return String(t||"").replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}function Ot(t,e){let n=typeof t=="string"?t:String(t||""),o=typeof e=="string"?e:String(e||""),r=/\{(\d+)\}/g,s=Array.from(n.matchAll(r));if(!s.length)return n===o?[]:null;let a=[],i="^",d=0;for(let f of s){let b=f.index??0;i+=st(n.slice(d,b)),i+="([\\s\\S]*?)",a.push(Number(f[1])),d=b+f[0].length}i+=st(n.slice(d)),i+="$";let c=new RegExp(i).exec(o);if(!c)return null;let g=[];for(let f=1;f<c.length;f+=1){let b=a[f-1],y=c[f];if(Object.prototype.hasOwnProperty.call(g,b)&&g[b]!==y)return null;g[b]=y}return g}function V(t,e){if(typeof t!="string"||!t.length)return[];let n=[t];for(let[,o]of u.messagesByLocale.entries()){let r=o?.[t];typeof r=="string"&&r.length&&n.push(r)}for(let o of n){let r=Ot(o,e);if(r)return r}return[]}function ct(t){if(!t)return null;let e=u.valueToKeys.get(t);if(e&&e.size>0){for(let o of e)if(u.requestedKeys.has(o))return o}if(u.requestedKeys.has(t))return t;let n=Array.from(u.messagesByLocale.entries());for(let o of u.requestedKeys)for(let[,r]of n)if(r&&r[o]===t)return o;return null}function lt(t){if(!t)return null;let e=null;for(let[n,o]of u.valueToKeys.entries()){if(typeof n!="string"||!n.length||n===t)continue;let r=t.indexOf(n);if(r!==-1)for(let s of o){if(!u.requestedKeys.has(s))continue;let a=V(s,n),i={key:s,matchedText:n,start:r,end:r+n.length,values:a};(!e||i.matchedText.length>e.matchedText.length)&&(e=i);break}}return e}async function Pt(t){if(!t||t.nodeType!==3)return;let e=t.parentElement||null;if(!e)return;let{leading:n,core:o,trailing:r}=kt(t.nodeValue);if(!o)return;let s=u.textNodeKeyMap.get(t)||null;if((!s||!u.requestedKeys.has(s))&&(s=ct(o)),!s){let f=lt(o);if(!f)return;let b=R({element:e});await P(b,"text-node");let y=D(f.key,f.values,{element:e},null),w=f.values.length?O(y,E=>f.values[E]):y,p=o.slice(0,f.start)+w+o.slice(f.end),L=`${n}${p}${r}`;L!==t.nodeValue&&(t.nodeValue=L);return}u.textNodeKeyMap.set(t,s);let a=R({element:e});await P(a,"text-node");let i=V(s,o),d=D(s,i,{element:e},null),c=i.length?O(d,f=>i[f]):d,g=`${n}${c}${r}`;g!==t.nodeValue&&(t.nodeValue=g)}async function Dt(){if(typeof document>"u"||u.requestedKeys.size===0)return;let t=document.body||document.documentElement;if(!t||typeof document.createTreeWalker!="function")return;let e=[],n=new Set,o=s=>{!s||n.has(s)||(n.add(s),e.push(s))};o(t);for(let s=0;s<e.length;s+=1){let a=e[s];if(!a||typeof a.querySelectorAll!="function")continue;let i=a.querySelectorAll("*");for(let d of i){let c=d?.shadowRoot;c&&o(c)}}let r=[];for(let s of e){let a=document.createTreeWalker(s,NodeFilter.SHOW_TEXT);for(;a.nextNode();)r.push(a.currentNode)}for(let s of r)await Pt(s)}function Bt(t){let e=u.attributeKeyMap.get(t);return e||(e=new Map,u.attributeKeyMap.set(t,e)),e}async function Rt(t,e){if(!t||typeof t.getAttribute!="function")return;let n=t.getAttribute(e);if(typeof n!="string"||!n.length)return;let o=Bt(t),r=o.get(e)||null;if((!r||!u.requestedKeys.has(r))&&(r=ct(n)),!r){let c=lt(n);if(!c)return;let g=R({element:t});await P(g,"attribute");let f=D(c.key,c.values,{element:t},null),b=c.values.length?O(f,w=>c.values[w]):f,y=n.slice(0,c.start)+b+n.slice(c.end);y!==n&&t.setAttribute(e,y),o.set(e,c.key);return}o.set(e,r);let s=R({element:t});await P(s,"attribute");let a=V(r,n),i=D(r,a,{element:t},null),d=a.length?O(i,c=>a[c]):i;d!==n&&t.setAttribute(e,d)}async function zt(){if(typeof document>"u"||u.requestedKeys.size===0)return;let t=document.body||document.documentElement;if(!t)return;let e=[],n=new Set,o=r=>{!r||n.has(r)||(n.add(r),e.push(r))};o(t);for(let r=0;r<e.length;r+=1){let s=e[r];if(!s||typeof s.querySelectorAll!="function")continue;let a=s.querySelectorAll("*");for(let i of a){let d=i?.shadowRoot;d&&o(d)}}for(let r of e){if(!r||typeof r.querySelectorAll!="function")continue;let s=r.querySelectorAll("*");for(let a of s)for(let i of At)a.hasAttribute(i)&&await Rt(a,i)}}async function Kt(){let t=Mt();await Tt(t),await Dt(),await zt(),qt(t)}function $t(){typeof window>"u"||(u.reconcileTimer&&clearTimeout(u.reconcileTimer),u.reconcileTimer=setTimeout(()=>{u.reconcileTimer=null,Kt()},16))}function D(t,e=[],n={},o=null){let r=R(n),s=B(r);s||P(r,"msg");let a=B(r)?.messages||{},i=B(u.defaultLocale)?.messages||{},d={key:t,values:e,options:n,locale:r,defaultLocale:u.defaultLocale,messages:a,messagesByLocale:Object.fromEntries(Array.from(u.messagesByLocale.entries())),template:o},c,g=!!s,f=r===u.defaultLocale;typeof u.provider?.translate=="function"&&(c=u.provider.translate(d));let b=null;if(c==null&&(c=a[t]),c==null&&(c=i[t],b=c==null?null:"default"),c==null&&(c=t,b="key"),g&&!f&&b){let w=`${r}::${t}`;u.missingWarnings.has(w)||(u.missingWarnings.add(w),ot("warn",`[i18n] Missing translation for locale "${r}" and key "${t}"; using ${b} fallback.`))}let y=typeof c=="string"?c:String(c);if(at(t,y),Array.isArray(e)&&e.length>0){let w=O(y,p=>e[p]);w!==y&&at(t,w)}return y}var It=(t,e,n={})=>{let o=xt(t);it(o);let r=D(o,e,n,{strings:t,values:e});return O(r,s=>e[s])};var M=(t,e={})=>{if(!t)return"";if(Et(t))return It(t.strings,t.values,e);let n=String(t);it(n);let o=D(n,[],e,null);return!e?.element&&!e?.scope&&!e?.host&&!e?.contextElement&&!e?.lang&&$t(),o};var Wt=[{selector:".accordion"},{selector:"nav[data-dropdown]"},{selector:"label[data-toggle]"},{selector:"label[data-color]"},{selector:'input[autocomplete="one-time-code"]'},{selector:'input[type="range"]'},{selector:"form[data-required]"},{selector:"fieldset[role=group][data-open]"},{selector:"[data-clip]"},{selector:"button, a[class*='btn-']"}];function Ft(t){t.dataset.enhancedAccordion||(t.dataset.enhancedAccordion="true",t.addEventListener("toggle",e=>{e.target.open&&e.target.parentElement===t&&t.querySelectorAll(":scope > details[open]").forEach(n=>{n!==e.target&&(n.open=!1)})},!0))}function jt(t){if(t.dataset.enhancedDropdown)return;t.dataset.enhancedDropdown="true";let e=t.lastElementChild,n=t.classList.contains("split-button");if(!e)return;let o=t.querySelector("[data-dropdown-toggle]")||t.querySelector("button"),r=typeof HTMLElement<"u"&&"showPopover"in HTMLElement.prototype&&"hidePopover"in HTMLElement.prototype;o&&!o.hasAttribute("type")&&o.setAttribute("type","button"),e.id||(e.id=`dropdown-${Math.random().toString(36).slice(2,9)}`);let s=e.tagName?.toLowerCase()==="menu",a=8;s&&!e.hasAttribute("role")&&e.setAttribute("role","menu"),e.hasAttribute("aria-hidden")||e.setAttribute("aria-hidden","true"),o&&(o.setAttribute("aria-haspopup","true"),o.setAttribute("aria-controls",e.id),o.setAttribute("aria-expanded","false"),o.setAttribute("popovertarget",e.id));let i=()=>!n||!s?null:e.querySelector(":scope > li[data-default]")||e.querySelector(":scope > li"),d=l=>l?l.querySelector(":scope > a, :scope > button")||l.firstElementChild:null,c=()=>{if(!n||!o)return null;let l=t.querySelector(":scope > [data-dropdown-default]");return l||(l=document.createElement("button"),l.setAttribute("type","button"),l.setAttribute("data-dropdown-default",""),l.className=o.className,t.insertBefore(l,o),l)},g=(l,h)=>{if(!l||!h)return;l.replaceChildren(...Array.from(h.childNodes).map(v=>v.cloneNode(!0)));let m=h.getAttribute("aria-label")||h.textContent?.replace(/\s+/g," ").trim()||M("Default action");l.setAttribute("aria-label",m),l.title=m},f=()=>{if(!n)return;let l=c(),h=i(),m=d(h);if(!l||!m)return;g(l,m);let v=()=>{m&&typeof m.click=="function"&&m.click()};l.addEventListener("click",A=>{A.preventDefault(),v()})};if(!r){let l="__PDS_DROPDOWN_POPOVER_WARNED__";globalThis[l]||(globalThis[l]=!0,console.warn("[PDS] nav[data-dropdown] requires the Popover API. Add a popover polyfill (recommended: @oddbird/popover-polyfill) for browsers without support."));return}f(),e.setAttribute("popover","auto");let b=()=>{let l=e.getAttribute("style");e.style.visibility="hidden",e.style.display="inline-block",e.style.pointerEvents="none";let h=e.getBoundingClientRect(),m=Math.max(e.offsetWidth||0,e.scrollWidth||0,h.width||0,1),v=Math.max(e.offsetHeight||0,e.scrollHeight||0,h.height||0,1);return l===null?e.removeAttribute("style"):e.setAttribute("style",l),{width:m,height:v}},y=()=>{try{return e.matches(":popover-open")}catch{return!1}},w=()=>{e.setAttribute("aria-hidden","true"),o?.setAttribute("aria-expanded","false")},p=()=>{e.setAttribute("aria-hidden","false"),o?.setAttribute("aria-expanded","true")},L=()=>{let l=(t.getAttribute("data-direction")||t.getAttribute("data-dropdown-direction")||t.getAttribute("data-mode")||"auto").toLowerCase();if(l==="up"||l==="down")return l;let h=(o||t).getBoundingClientRect(),{height:m}=b(),v=Math.max(0,window.innerHeight-h.bottom),A=Math.max(0,h.top),x=v>=m,_=A>=m;return x&&!_?"down":_&&!x?"up":x&&_?"down":A>v?"up":"down"},E=()=>{if(n)return"right";let l=(t.getAttribute("data-align")||t.getAttribute("data-dropdown-align")||"auto").toLowerCase();if(l==="left"||l==="right"||l==="start"||l==="end")return l==="start"?"left":l==="end"?"right":l;let h=(o||t).getBoundingClientRect(),{width:m}=b(),v=Math.max(0,window.innerWidth-h.left),A=Math.max(0,h.right),x=v>=m,_=A>=m;return x&&!_?"left":_&&!x?"right":x&&_?"left":A>v?"right":"left"},z=(l,h=8)=>{let m=getComputedStyle(t).getPropertyValue(l).trim();if(!m)return h;let v=document.createElement("span");v.style.position="fixed",v.style.visibility="hidden",v.style.pointerEvents="none",v.style.height=m,document.body.appendChild(v);let A=Number.parseFloat(getComputedStyle(v).height);return v.remove(),Number.isFinite(A)?A:h},N=()=>{["position","left","top","right","bottom","margin-top","margin-bottom","max-width","max-inline-size","max-height","overflow"].forEach(l=>e.style.removeProperty(l))},H=()=>{let l=t.parentElement;for(;l&&l!==document.body&&l!==document.documentElement;){let h=getComputedStyle(l);if(h.transform!=="none"||h.perspective!=="none"||h.filter!=="none"||h.backdropFilter!=="none")return!0;l=l.parentElement}return!1},K=()=>{if(!y())return;let l=(o||t).getBoundingClientRect(),h=window.visualViewport,m=h?.width||document.documentElement?.clientWidth||window.innerWidth,v=h?.height||document.documentElement?.clientHeight||window.innerHeight,A=h?.offsetLeft||0,x=h?.offsetTop||0,_=Math.max(1,m-a*2),pt=Math.max(1,v-a*2);e.style.maxWidth=`${Math.round(_)}px`,e.style.maxInlineSize=`${Math.round(_)}px`,e.style.maxHeight=`${Math.round(pt)}px`,e.style.overflow="auto";let{width:W,height:Z}=b(),X=z("--spacing-2",8),Y=L(),J=E();t.dataset.dropdownDirection=Y,t.dataset.dropdownAlign=J;let $=J==="right"?l.right-W:l.left;W>=_-1?$=A+a:$=Math.max(A+a,Math.min($,A+m-W-a));let F=Y==="up"?l.top-X-Z:l.bottom+X;F=Math.max(x+a,Math.min(F,x+v-Z-a)),Object.assign(e.style,{position:"fixed",left:`${Math.round($)}px`,top:`${Math.round(F)}px`,right:"auto",bottom:"auto",marginTop:"0",marginBottom:"0"})},C=null,ut=()=>{C||(C=()=>K(),window.addEventListener("resize",C),window.addEventListener("scroll",C,!0))},U=()=>{C&&(window.removeEventListener("resize",C),window.removeEventListener("scroll",C,!0),C=null)},k=null,T=null,dt=()=>{k||typeof document>"u"||(k=()=>{y()&&(t.dataset.dropdownDirection=L(),t.dataset.dropdownAlign=E(),T!==null&&cancelAnimationFrame(T),T=requestAnimationFrame(()=>{T=null,y()&&K()}))},document.addEventListener("pds:config-changed",k))},G=()=>{!k||typeof document>"u"||(document.removeEventListener("pds:config-changed",k),k=null,T!==null&&(cancelAnimationFrame(T),T=null))};e.addEventListener("toggle",l=>{if(l.newState==="open"){p(),K(),ut(),dt();return}w(),U(),G(),H()&&N()});let ft=()=>{y()||(t.dataset.dropdownDirection=L(),t.dataset.dropdownAlign=E(),e.showPopover(),requestAnimationFrame(()=>K()))},I=()=>{y()&&e.hidePopover()},te=()=>{y()?I():ft()};w(),e.addEventListener("click",l=>{let h=l.target instanceof Element?l.target:l.target?.parentElement;h&&h.closest("[data-dropdown-close]")&&I()}),e.addEventListener("beforetoggle",l=>{if(l.newState==="open"){t.dataset.dropdownDirection=L(),t.dataset.dropdownAlign=E();return}w(),U(),G(),H()&&N()}),t.addEventListener("keydown",l=>{l.key==="Escape"&&(I(),o?.focus())})}function Vt(t){if(t.dataset.enhancedToggle)return;t.dataset.enhancedToggle="true";let e=t.querySelector('input[type="checkbox"]');if(!e)return;t.hasAttribute("tabindex")||t.setAttribute("tabindex","0"),t.setAttribute("role","switch"),t.setAttribute("aria-checked",e.checked?"true":"false");let n=document.createElement("span");n.className="toggle-switch",n.setAttribute("role","presentation"),n.setAttribute("aria-hidden","true");let o=document.createElement("span");o.className="toggle-knob",n.appendChild(o),t.insertBefore(n,e.nextSibling);let r=()=>{t.setAttribute("aria-checked",e.checked?"true":"false")},s=()=>{e.disabled||(e.checked=!e.checked,r(),e.dispatchEvent(new Event("input",{bubbles:!0})),e.dispatchEvent(new Event("change",{bubbles:!0})))};t.addEventListener("click",a=>{a.preventDefault(),s()}),t.addEventListener("keydown",a=>{(a.key===" "||a.key==="Enter")&&(a.preventDefault(),s())}),e.addEventListener("change",r)}function Nt(t){if(t.dataset.enhancedColorInput)return;let e=t.querySelector('input[type="color"]');if(!e)return;t.dataset.enhancedColorInput="true";let n=t.querySelector(":scope > .color-control"),o=t.querySelector(":scope > .color-control > .color-swatch"),r=t.querySelector(":scope > .color-control > output");n||(n=document.createElement("span"),n.className="color-control",e.before(n)),o||(o=document.createElement("span"),o.className="color-swatch",n.appendChild(o)),e.parentElement!==o&&o.appendChild(e),r||(r=document.createElement("output"),n.appendChild(r));let s=()=>{if(e.dataset.colorUnset==="1"){r.value="",r.textContent=M("not set"),n.dataset.value="",n.dataset.unset="1",o.dataset.unset="1";return}r.value=e.value,r.textContent=e.value,n.dataset.value=e.value,delete n.dataset.unset,delete o.dataset.unset};s();let a=()=>{e.dataset.colorUnset==="1"&&(e.dataset.colorUnset="0"),s()};e.addEventListener("input",a,{passive:!0}),e.addEventListener("change",a,{passive:!0})}function Ht(t){if(t.dataset.enhancedOneTimeCode)return;t.dataset.enhancedOneTimeCode="true";let e=Number.parseInt(t.getAttribute("data-otp-length")||t.getAttribute("maxlength")||"6",10),n=Number.isFinite(e)&&e>0?e:6,o=t.getAttribute("data-otp-autosubmit")!=="false",r=t.getAttribute("data-otp-format")==="alphanumeric",s=t.getAttribute("data-otp-status-id")||`${t.id||`otp-${Math.random().toString(36).slice(2,9)}`}-status`,a=p=>{let L=String(p||"").replace(/\s+/g,"");return(r?L.replace(/[^0-9a-z]/gi,""):L.replace(/\D+/g,"")).slice(0,n)};t.classList.add("input-otp"),t.dataset.otpLength=String(n),t.dataset.otpComplete="false",t.style.setProperty("--otp-digits",String(n)),t.style.setProperty("--_otp-digit","0"),(!t.hasAttribute("type")||t.getAttribute("type")?.toLowerCase()==="number")&&t.setAttribute("type","text"),t.setAttribute("maxlength",String(n)),t.hasAttribute("inputmode")||t.setAttribute("inputmode",r?"text":"numeric"),t.hasAttribute("enterkeyhint")||t.setAttribute("enterkeyhint","done"),t.hasAttribute("autocapitalize")||t.setAttribute("autocapitalize","off"),t.hasAttribute("spellcheck")||t.setAttribute("spellcheck","false"),t.hasAttribute("pattern")||t.setAttribute("pattern",r?`[0-9A-Za-z]{${n}}`:`\\d{${n}}`),!t.hasAttribute("aria-label")&&!t.labels?.length&&t.setAttribute("aria-label",M("One-time code"));let i=t.form||t.closest("form"),d=!1,c=null,g=()=>{let p=typeof t.selectionStart=="number"?t.selectionStart:t.value.length,L=Math.max(0,Math.min(p,Math.max(n-1,0)));t.style.setProperty("--_otp-digit",String(L))},f=()=>{typeof t.scrollLeft=="number"&&(t.scrollLeft=0)};if(typeof document<"u"){c=document.getElementById(s),c||(c=document.createElement("span"),c.id=s,c.className="otp-status",c.setAttribute("aria-live","polite"),c.setAttribute("aria-atomic","true"),t.insertAdjacentElement("afterend",c));let p=new Set((t.getAttribute("aria-describedby")||"").split(/\s+/).filter(Boolean));p.add(s),t.setAttribute("aria-describedby",Array.from(p).join(" "))}let b=()=>{if(!c)return;let p=t.value.length;c.textContent=p===0?M("Enter the verification code"):p>=n?M("Code complete"):`${p}/${n}`},y=()=>{!o||d||!i||typeof i.checkValidity=="function"&&!i.checkValidity()||(d=!0,requestAnimationFrame(()=>{d=!1;let p=t.getAttribute("data-otp-submit-selector"),L=p?i.querySelector(p):void 0;typeof i.requestSubmit=="function"?i.requestSubmit(L||void 0):i.submit()}))},w=(p,{dispatchChange:L=!1}={})=>{let E=a(p);t.value!==E&&(t.value=E);let z=E.length===n;t.dataset.otpComplete=z?"true":"false",b(),g(),f(),L&&t.dispatchEvent(new Event("change",{bubbles:!0})),z&&y()};t.addEventListener("beforeinput",p=>{if(p.defaultPrevented||p.inputType?.startsWith("delete")||typeof p.data!="string"||p.data.length===0)return;!a(p.data)&&p.data.trim()&&p.preventDefault()}),t.addEventListener("input",()=>{w(t.value);try{let p=t.value.length;t.setSelectionRange(p,p)}catch{}g(),f()}),["focus","click","keyup","select"].forEach(p=>{t.addEventListener(p,()=>{requestAnimationFrame(()=>{g(),f()})})}),t.addEventListener("paste",p=>{let L=p.clipboardData?.getData("text")||"";L&&(p.preventDefault(),t.value=a(L),t.dispatchEvent(new Event("input",{bubbles:!0})),t.dispatchEvent(new Event("change",{bubbles:!0})))}),t.addEventListener("keydown",p=>{p.key==="Enter"&&t.value.length===n&&y()}),w(t.value)}function Ut(t){if(t.dataset.enhancedRange)return;let e=a=>{if(t.dataset.enhancedRangeProgrammatic)return;t.dataset.enhancedRangeProgrammatic="1";let i=Object.getOwnPropertyDescriptor(Object.getPrototypeOf(t),"value")||Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"value");i?.get&&i?.set&&Object.defineProperty(t,"value",{configurable:!0,enumerable:i.enumerable,get(){return i.get.call(this)},set(c){i.set.call(this,c),a()}}),new MutationObserver(c=>{c.some(f=>{let b=f.attributeName;return b==="value"||b==="min"||b==="max"})&&a()}).observe(t,{attributes:!0,attributeFilter:["value","min","max"]})},n=t.closest("label"),o=n?.classList.contains("range-output"),r=t.id||`range-${Math.random().toString(36).substring(2,11)}`,s=`${r}-output`;if(t.id=r,o){let a=n.querySelector("span");if(a&&!a.classList.contains("range-output-wrapper")){let i=a.getAttribute("data-range-label")||n.getAttribute("data-range-label")||"",d=document.createElement("span");d.className="range-output-wrapper",d.style.display="flex",d.style.justifyContent="space-between",d.style.alignItems="center";let c=document.createElement("span");c.textContent=i||a.textContent,d.appendChild(c);let g=document.createElement("output");g.id=s,g.setAttribute("for",r),g.style.color="var(--surface-text-secondary, var(--color-text-secondary))",g.style.fontSize="0.875rem",g.textContent=t.value,d.appendChild(g),a.textContent="",a.appendChild(d);let f=()=>{g.textContent=t.value};t.addEventListener("input",f),t.addEventListener("change",f),e(f),f()}}else{let a=t.closest(".range-container");a||(a=document.createElement("div"),a.className="range-container",t.parentNode?.insertBefore(a,t),a.appendChild(t)),a.style.position="relative";let i=document.createElement("output");i.id=s,i.setAttribute("for",r),i.className="range-bubble",i.setAttribute("aria-live","polite"),a.appendChild(i);let d=()=>{let f=parseFloat(t.min)||0,b=parseFloat(t.max)||100,y=parseFloat(t.value),w=(y-f)/(b-f);i.style.left=`calc(${w*100}% )`,i.textContent=String(y)},c=()=>i.classList.add("visible"),g=()=>i.classList.remove("visible");t.addEventListener("input",d),t.addEventListener("pointerdown",c),t.addEventListener("pointerup",g),t.addEventListener("pointerleave",g),t.addEventListener("focus",c),t.addEventListener("blur",g),t.addEventListener("change",d),e(d),d()}t.dataset.enhancedRange="1"}function Gt(t){if(t.dataset.enhancedRequired)return;t.dataset.enhancedRequired="true";let e=n=>{let o;if(n.closest("[role$=group]")?o=n.closest("[role$=group]").querySelector("legend"):o=n.closest("label"),!o||o.querySelector(".required-asterisk"))return;let r=document.createElement("span");r.classList.add("required-asterisk"),r.textContent="*",r.style.marginLeft="4px";let s=o.querySelector("span, [data-label]");if(s)s.appendChild(r);else{let i=o.querySelector("input, select, textarea");i?o.insertBefore(r,i):o.appendChild(r)}let a=n.closest("form");if(a&&!a.querySelector(".required-legend")){let i=document.createElement("small");i.classList.add("required-legend"),i.textContent=M("* Required fields"),a.insertBefore(i,a.querySelector(".form-actions")||a.lastElementChild)}};t.querySelectorAll("[required]").forEach(n=>{e(n)})}function Zt(t){if(t.dataset.enhancedOpenGroup)return;t.dataset.enhancedOpenGroup="true",t.classList.add("flex","flex-wrap","buttons");let e=document.createElement("input");e.type="text",e.placeholder=M("Add item..."),e.classList.add("input-text","input-sm"),e.style.width="auto";let n=()=>t.querySelector('input[type="radio"], input[type="checkbox"]');t.appendChild(e),e.addEventListener("keydown",o=>{if(o.key==="Enter"||o.key==="Tab"){let r=e.value.trim();if(r){o.preventDefault();let s=n(),a=s?.type==="radio"?"radio":"checkbox",i=`open-group-${Math.random().toString(36).substring(2,11)}`,d=document.createElement("label"),c=document.createElement("span");c.setAttribute("data-label",""),c.textContent=r;let g=document.createElement("input");g.type=a,g.name=s?.name||t.getAttribute("data-name")||"open-group",g.value=r,g.id=i,d.appendChild(c),d.appendChild(g),t.insertBefore(d,e),e.value=""}}else if(o.key==="Backspace"&&e.value===""){o.preventDefault();let r=t.querySelectorAll("label");r.length>0&&r[r.length-1].remove()}})}function Xt(t){if(t.dataset.enhancedClip)return;t.dataset.enhancedClip="true",t.hasAttribute("tabindex")||t.setAttribute("tabindex","0"),t.hasAttribute("role")||t.setAttribute("role","button");let e=()=>{let o=t.getAttribute("data-clip-open")==="true";t.setAttribute("aria-expanded",o?"true":"false")},n=()=>{let o=t.getAttribute("data-clip-open")==="true";t.setAttribute("data-clip-open",o?"false":"true"),e()};t.addEventListener("click",o=>{o.defaultPrevented||n()}),t.addEventListener("keydown",o=>{(o.key===" "||o.key==="Enter")&&(o.preventDefault(),n())}),e()}function Yt(t){if(t.dataset.enhancedBtnWorking)return;t.dataset.enhancedBtnWorking="true";let e=null,n=!1;new MutationObserver(r=>{r.forEach(s=>{if(s.attributeName==="class"){let a=t.classList.contains("btn-working"),i=t.querySelector("pds-icon");if(a)if(i)e||(e=i.getAttribute("icon")),i.setAttribute("icon","circle-notch");else{let d=document.createElement("pds-icon");d.setAttribute("icon","circle-notch"),d.setAttribute("size","sm"),t.insertBefore(d,t.firstChild),n=!0}else s.oldValue?.includes("btn-working")&&i&&(n?(i.remove(),n=!1):e&&(i.setAttribute("icon",e),e=null))}})}).observe(t,{attributes:!0,attributeFilter:["class"],attributeOldValue:!0})}var Jt=new Map([[".accordion",Ft],["nav[data-dropdown]",jt],["label[data-toggle]",Vt],["label[data-color]",Nt],['input[autocomplete="one-time-code"]',Ht],['input[type="range"]',Ut],["form[data-required]",Gt],["fieldset[role=group][data-open]",Zt],["[data-clip]",Xt],["button, a[class*='btn-']",Yt]]),Qt=Wt.map(t=>({...t,run:Jt.get(t.selector)||(()=>{})}));export{Qt as defaultPDSEnhancers};
+// src/js/common/pds-log.js
+var __SUPPORTED_LOG_LEVELS = /* @__PURE__ */ new Set(["log", "warn", "error", "debug", "info"]);
+var __PDS_SINGLETON_KEY = "__PURE_DS_PDS_SINGLETON__";
+var __logProvider = null;
+var __contextProvider = null;
+function __resolveGlobalPDS() {
+  try {
+    const scope = typeof globalThis !== "undefined" ? globalThis : window;
+    const candidate = scope?.[__PDS_SINGLETON_KEY];
+    if (candidate && typeof candidate === "object") {
+      return candidate;
+    }
+  } catch (error) {
+    return null;
+  }
+  return null;
+}
+function __normalizeContext(context) {
+  if (!context || typeof context !== "object") {
+    return null;
+  }
+  return {
+    mode: context.mode === "live" || context.mode === "static" ? context.mode : null,
+    debug: context.debug === true,
+    thisArg: context.thisArg
+  };
+}
+function __normalizeLevel(level) {
+  if (typeof level !== "string")
+    return "log";
+  const normalized = level.toLowerCase();
+  return __SUPPORTED_LOG_LEVELS.has(normalized) ? normalized : "log";
+}
+function __resolveContext() {
+  if (typeof __contextProvider === "function") {
+    try {
+      const configuredContext = __normalizeContext(__contextProvider());
+      if (configuredContext) {
+        return configuredContext;
+      }
+    } catch (error) {
+    }
+  }
+  const globalPDS = __resolveGlobalPDS();
+  if (globalPDS) {
+    const mode = globalPDS?.mode || globalPDS?.compiled?.mode || (globalPDS?.registry?.isLive ? "live" : "static");
+    const debug = (globalPDS?.debug || globalPDS?.currentConfig?.debug || globalPDS?.currentConfig?.design?.debug || globalPDS?.compiled?.debug || globalPDS?.compiled?.design?.debug || false) === true;
+    return {
+      mode,
+      debug,
+      thisArg: globalPDS
+    };
+  }
+  return { mode: null, debug: false };
+}
+function __resolveLogger() {
+  if (typeof __logProvider === "function") {
+    try {
+      const logger = __logProvider();
+      if (typeof logger === "function") {
+        return logger;
+      }
+    } catch (error) {
+    }
+  }
+  const globalPDS = __resolveGlobalPDS();
+  if (typeof globalPDS?.logHandler === "function") {
+    return globalPDS.logHandler;
+  }
+  return null;
+}
+function __consoleLog(level, message, ...data) {
+  if (typeof console === "undefined")
+    return;
+  const method = typeof console[level] === "function" ? console[level].bind(console) : typeof console.log === "function" ? console.log.bind(console) : null;
+  if (!method)
+    return;
+  if (data.length > 0) {
+    method(message, ...data);
+  } else {
+    method(message);
+  }
+}
+function __shouldUseConsoleFallback(level, context) {
+  const debugEnabled = context?.debug === true;
+  const staticMode = context?.mode === "static";
+  if (staticMode && !debugEnabled) {
+    return false;
+  }
+  if (!debugEnabled && level !== "error" && level !== "warn") {
+    return false;
+  }
+  return true;
+}
+function pdsLog(level = "log", message, ...data) {
+  const normalizedLevel = __normalizeLevel(level);
+  const context = __resolveContext();
+  const customLogger = __resolveLogger();
+  if (customLogger) {
+    try {
+      customLogger.call(context?.thisArg, normalizedLevel, message, ...data);
+      return;
+    } catch (error) {
+      __consoleLog("error", "Custom log handler failed:", error);
+    }
+  }
+  if (!__shouldUseConsoleFallback(normalizedLevel, context)) {
+    return;
+  }
+  __consoleLog(normalizedLevel, message, ...data);
+}
+
+// src/js/common/localization.js
+var __DEFAULT_LOCALE__ = "en";
+var __localizationState = {
+  defaultLocale: __DEFAULT_LOCALE__,
+  provider: null,
+  messagesByLocale: /* @__PURE__ */ new Map(),
+  loadingByLocale: /* @__PURE__ */ new Map(),
+  observer: null,
+  reconcileTimer: null,
+  requestedKeys: /* @__PURE__ */ new Set(),
+  textNodeKeyMap: /* @__PURE__ */ new WeakMap(),
+  attributeKeyMap: /* @__PURE__ */ new WeakMap(),
+  valueToKeys: /* @__PURE__ */ new Map(),
+  missingWarnings: /* @__PURE__ */ new Set()
+};
+var __LOCALIZABLE_ATTRIBUTES = [
+  "title",
+  "placeholder",
+  "aria-label",
+  "aria-description",
+  "aria-placeholder",
+  "aria-roledescription",
+  "alt",
+  "label"
+];
+var __isStrTagged = (val) => Boolean(val) && typeof val !== "string" && typeof val === "object" && "strTag" in val;
+function __normalizeLocale(locale) {
+  return String(locale || "").trim().toLowerCase();
+}
+function __toBaseLocale(locale) {
+  const normalized = __normalizeLocale(locale);
+  if (!normalized)
+    return "";
+  return normalized.split("-")[0] || normalized;
+}
+function __resolveLocaleCandidate(locale) {
+  const normalized = __normalizeLocale(locale);
+  if (!normalized) {
+    return __localizationState.defaultLocale;
+  }
+  const resolveLocale = __localizationState.provider?.resolveLocale;
+  if (typeof resolveLocale === "function") {
+    const resolved = __normalizeLocale(resolveLocale(locale));
+    if (resolved) {
+      return resolved;
+    }
+  }
+  return normalized;
+}
+function __collateStrings(strings) {
+  let result = "";
+  for (let index = 0; index <= strings.length - 1; index += 1) {
+    result += strings[index];
+    if (index < strings.length - 1) {
+      result += `{${index}}`;
+    }
+  }
+  return result;
+}
+function __replacePlaceholders(input, callback) {
+  return String(input).replace(/\{(\d+)\}/g, (_match, index) => callback(Number(index)));
+}
+function __normalizeMessages(messages) {
+  if (!messages || typeof messages !== "object") {
+    return {};
+  }
+  const normalized = {};
+  for (const [key, value] of Object.entries(messages)) {
+    if (typeof value === "string") {
+      normalized[key] = value;
+      continue;
+    }
+    if (value && typeof value === "object" && typeof value.content === "string") {
+      normalized[key] = value.content;
+    }
+  }
+  return normalized;
+}
+function __localeVariants(locale) {
+  const normalized = __normalizeLocale(locale);
+  if (!normalized) {
+    return [__localizationState.defaultLocale];
+  }
+  const base = __toBaseLocale(normalized);
+  if (!base || base === normalized) {
+    return [normalized];
+  }
+  return [normalized, base];
+}
+function __setLocaleMessages(locale, messages) {
+  const normalizedLocale = __resolveLocaleCandidate(locale);
+  __localizationState.messagesByLocale.set(
+    normalizedLocale,
+    __normalizeMessages(messages)
+  );
+}
+function __registerRequestedKey(key) {
+  if (typeof key === "string" && key.length > 0) {
+    __localizationState.requestedKeys.add(key);
+  }
+}
+function __indexTranslatedValue(key, value) {
+  if (typeof key !== "string" || !key.length) {
+    return;
+  }
+  const translatedValue = typeof value === "string" ? value : String(value || "");
+  if (!translatedValue.length) {
+    return;
+  }
+  if (!__localizationState.valueToKeys.has(translatedValue)) {
+    __localizationState.valueToKeys.set(translatedValue, /* @__PURE__ */ new Set());
+  }
+  __localizationState.valueToKeys.get(translatedValue).add(key);
+}
+function __getLocaleMessages(locale) {
+  const variants = __localeVariants(locale);
+  for (const candidate of variants) {
+    if (__localizationState.messagesByLocale.has(candidate)) {
+      return {
+        locale: candidate,
+        messages: __localizationState.messagesByLocale.get(candidate)
+      };
+    }
+  }
+  return null;
+}
+async function __loadLocaleInternal(locale, reason = "explicit") {
+  const targetLocale = __resolveLocaleCandidate(locale);
+  const existing = __getLocaleMessages(targetLocale);
+  if (existing) {
+    return existing.messages;
+  }
+  const loadingKey = targetLocale;
+  if (__localizationState.loadingByLocale.has(loadingKey)) {
+    return __localizationState.loadingByLocale.get(loadingKey);
+  }
+  if (!__localizationState.provider) {
+    return {};
+  }
+  const loader = __localizationState.provider.loadLocale || __localizationState.provider.setLocale || null;
+  if (typeof loader !== "function") {
+    return {};
+  }
+  const context = {
+    locale: targetLocale,
+    defaultLocale: __localizationState.defaultLocale,
+    reason,
+    loadedLocales: Array.from(__localizationState.messagesByLocale.keys()),
+    messages: {
+      ...__getLocaleMessages(targetLocale)?.messages || {}
+    },
+    load: reason === "set-default" || reason === "explicit-load"
+  };
+  let result;
+  try {
+    result = loader(context);
+  } catch {
+    return {};
+  }
+  if (result && typeof result.then === "function") {
+    const promise = result.then((value) => {
+      const normalized2 = __normalizeMessages(value);
+      __setLocaleMessages(targetLocale, normalized2);
+      return normalized2;
+    }).catch(() => ({})).finally(() => {
+      __localizationState.loadingByLocale.delete(loadingKey);
+    });
+    __localizationState.loadingByLocale.set(loadingKey, promise);
+    return promise;
+  }
+  const normalized = __normalizeMessages(result);
+  __setLocaleMessages(targetLocale, normalized);
+  return normalized;
+}
+function __resolveLocaleFromElementScope(element) {
+  if (!element || typeof element !== "object") {
+    return "";
+  }
+  const canUseElementCtor = typeof Element !== "undefined";
+  const el = canUseElementCtor && element instanceof Element ? element : element?.nodeType === 1 ? element : null;
+  if (!el) {
+    return "";
+  }
+  if (el.hasAttribute?.("lang")) {
+    return __normalizeLocale(el.getAttribute("lang"));
+  }
+  const scoped = el.closest?.("[lang]");
+  if (scoped && scoped.getAttribute) {
+    return __normalizeLocale(scoped.getAttribute("lang"));
+  }
+  return "";
+}
+function __resolveContextLocale(options = {}) {
+  if (typeof options?.lang === "string" && options.lang.trim()) {
+    return __resolveLocaleCandidate(options.lang);
+  }
+  const scopeElement = options?.element || options?.scope || options?.host || options?.contextElement || null;
+  const scopedLocale = __resolveLocaleFromElementScope(scopeElement);
+  if (scopedLocale) {
+    return __resolveLocaleCandidate(scopedLocale);
+  }
+  if (typeof document !== "undefined" && document.documentElement) {
+    const rootLocale = __normalizeLocale(document.documentElement.getAttribute("lang"));
+    if (rootLocale) {
+      return __resolveLocaleCandidate(rootLocale);
+    }
+  }
+  return __localizationState.defaultLocale;
+}
+function __collectDetectedLocales() {
+  const detected = /* @__PURE__ */ new Set([__localizationState.defaultLocale]);
+  if (typeof document === "undefined") {
+    return detected;
+  }
+  const rootLang = __normalizeLocale(document.documentElement?.getAttribute?.("lang"));
+  if (rootLang) {
+    detected.add(__resolveLocaleCandidate(rootLang));
+  }
+  const nodes = document.querySelectorAll?.("[lang]") || [];
+  for (const node of nodes) {
+    const lang = __normalizeLocale(node.getAttribute("lang"));
+    if (lang) {
+      detected.add(__resolveLocaleCandidate(lang));
+    }
+  }
+  return detected;
+}
+async function __ensureDetectedLocalesLoaded(detectedLocales) {
+  for (const locale of detectedLocales) {
+    await __loadLocaleInternal(locale, "lang-detected");
+  }
+}
+function __pruneUndetectedLocales(detectedLocales) {
+  for (const loadedLocale of Array.from(__localizationState.messagesByLocale.keys())) {
+    if (!detectedLocales.has(loadedLocale)) {
+      __localizationState.messagesByLocale.delete(loadedLocale);
+    }
+  }
+}
+function __splitTextWhitespace(value) {
+  const input = String(value || "");
+  const leading = (input.match(/^\s*/) || [""])[0];
+  const trailing = (input.match(/\s*$/) || [""])[0];
+  const start = leading.length;
+  const end = input.length - trailing.length;
+  const core = end >= start ? input.slice(start, end) : "";
+  return { leading, core, trailing };
+}
+function __escapeRegExp(value) {
+  return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+function __extractValuesFromTemplate(template, text) {
+  const inputTemplate = typeof template === "string" ? template : String(template || "");
+  const inputText = typeof text === "string" ? text : String(text || "");
+  const placeholderPattern = /\{(\d+)\}/g;
+  const matches = Array.from(inputTemplate.matchAll(placeholderPattern));
+  if (!matches.length) {
+    return inputTemplate === inputText ? [] : null;
+  }
+  const placeholderOrder = [];
+  let pattern = "^";
+  let lastIndex = 0;
+  for (const match of matches) {
+    const matchIndex = match.index ?? 0;
+    pattern += __escapeRegExp(inputTemplate.slice(lastIndex, matchIndex));
+    pattern += "([\\s\\S]*?)";
+    placeholderOrder.push(Number(match[1]));
+    lastIndex = matchIndex + match[0].length;
+  }
+  pattern += __escapeRegExp(inputTemplate.slice(lastIndex));
+  pattern += "$";
+  const result = new RegExp(pattern).exec(inputText);
+  if (!result) {
+    return null;
+  }
+  const values = [];
+  for (let groupIndex = 1; groupIndex < result.length; groupIndex += 1) {
+    const placeholderIndex = placeholderOrder[groupIndex - 1];
+    const extractedValue = result[groupIndex];
+    if (Object.prototype.hasOwnProperty.call(values, placeholderIndex) && values[placeholderIndex] !== extractedValue) {
+      return null;
+    }
+    values[placeholderIndex] = extractedValue;
+  }
+  return values;
+}
+function __resolveTemplateValuesForText(key, text) {
+  if (typeof key !== "string" || !key.length) {
+    return [];
+  }
+  const templates = [key];
+  for (const [, messages] of __localizationState.messagesByLocale.entries()) {
+    const candidate = messages?.[key];
+    if (typeof candidate === "string" && candidate.length) {
+      templates.push(candidate);
+    }
+  }
+  for (const template of templates) {
+    const extracted = __extractValuesFromTemplate(template, text);
+    if (extracted) {
+      return extracted;
+    }
+  }
+  return [];
+}
+function __findRequestedKeyForText(coreText) {
+  if (!coreText) {
+    return null;
+  }
+  const indexedKeys = __localizationState.valueToKeys.get(coreText);
+  if (indexedKeys && indexedKeys.size > 0) {
+    for (const key of indexedKeys) {
+      if (__localizationState.requestedKeys.has(key)) {
+        return key;
+      }
+    }
+  }
+  if (__localizationState.requestedKeys.has(coreText)) {
+    return coreText;
+  }
+  const loadedEntries = Array.from(__localizationState.messagesByLocale.entries());
+  for (const key of __localizationState.requestedKeys) {
+    for (const [, messages] of loadedEntries) {
+      if (messages && messages[key] === coreText) {
+        return key;
+      }
+    }
+  }
+  return null;
+}
+function __findRequestedSubsegmentForText(coreText) {
+  if (!coreText) {
+    return null;
+  }
+  let bestMatch = null;
+  for (const [indexedValue, indexedKeys] of __localizationState.valueToKeys.entries()) {
+    if (typeof indexedValue !== "string" || !indexedValue.length) {
+      continue;
+    }
+    if (indexedValue === coreText) {
+      continue;
+    }
+    const start = coreText.indexOf(indexedValue);
+    if (start === -1) {
+      continue;
+    }
+    for (const key of indexedKeys) {
+      if (!__localizationState.requestedKeys.has(key)) {
+        continue;
+      }
+      const values = __resolveTemplateValuesForText(key, indexedValue);
+      const candidate = {
+        key,
+        matchedText: indexedValue,
+        start,
+        end: start + indexedValue.length,
+        values
+      };
+      if (!bestMatch || candidate.matchedText.length > bestMatch.matchedText.length) {
+        bestMatch = candidate;
+      }
+      break;
+    }
+  }
+  return bestMatch;
+}
+async function __localizeTextNode(textNode) {
+  if (!textNode || textNode.nodeType !== 3) {
+    return;
+  }
+  const parentElement = textNode.parentElement || null;
+  if (!parentElement) {
+    return;
+  }
+  const { leading, core, trailing } = __splitTextWhitespace(textNode.nodeValue);
+  if (!core) {
+    return;
+  }
+  let key = __localizationState.textNodeKeyMap.get(textNode) || null;
+  if (!key || !__localizationState.requestedKeys.has(key)) {
+    key = __findRequestedKeyForText(core);
+  }
+  if (!key) {
+    const segmentMatch = __findRequestedSubsegmentForText(core);
+    if (!segmentMatch) {
+      return;
+    }
+    const scopedLocale2 = __resolveContextLocale({ element: parentElement });
+    await __loadLocaleInternal(scopedLocale2, "text-node");
+    const translated2 = __resolveTranslation(
+      segmentMatch.key,
+      segmentMatch.values,
+      { element: parentElement },
+      null
+    );
+    const translatedText2 = segmentMatch.values.length ? __replacePlaceholders(translated2, (index) => segmentMatch.values[index]) : translated2;
+    const localizedCore = core.slice(0, segmentMatch.start) + translatedText2 + core.slice(segmentMatch.end);
+    const localizedText = `${leading}${localizedCore}${trailing}`;
+    if (localizedText !== textNode.nodeValue) {
+      textNode.nodeValue = localizedText;
+    }
+    return;
+  }
+  __localizationState.textNodeKeyMap.set(textNode, key);
+  const scopedLocale = __resolveContextLocale({ element: parentElement });
+  await __loadLocaleInternal(scopedLocale, "text-node");
+  const values = __resolveTemplateValuesForText(key, core);
+  const translated = __resolveTranslation(key, values, { element: parentElement }, null);
+  const translatedText = values.length ? __replacePlaceholders(translated, (index) => values[index]) : translated;
+  const nextText = `${leading}${translatedText}${trailing}`;
+  if (nextText !== textNode.nodeValue) {
+    textNode.nodeValue = nextText;
+  }
+}
+async function __localizeRequestedTextNodes() {
+  if (typeof document === "undefined" || __localizationState.requestedKeys.size === 0) {
+    return;
+  }
+  const root = document.body || document.documentElement;
+  if (!root || typeof document.createTreeWalker !== "function") {
+    return;
+  }
+  const roots = [];
+  const seenRoots = /* @__PURE__ */ new Set();
+  const addRoot = (candidateRoot) => {
+    if (!candidateRoot || seenRoots.has(candidateRoot)) {
+      return;
+    }
+    seenRoots.add(candidateRoot);
+    roots.push(candidateRoot);
+  };
+  addRoot(root);
+  for (let index = 0; index < roots.length; index += 1) {
+    const currentRoot = roots[index];
+    if (!currentRoot || typeof currentRoot.querySelectorAll !== "function") {
+      continue;
+    }
+    const elements = currentRoot.querySelectorAll("*");
+    for (const element of elements) {
+      const shadowRoot = element?.shadowRoot;
+      if (shadowRoot) {
+        addRoot(shadowRoot);
+      }
+    }
+  }
+  const nodes = [];
+  for (const scanRoot of roots) {
+    const walker = document.createTreeWalker(scanRoot, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      nodes.push(walker.currentNode);
+    }
+  }
+  for (const node of nodes) {
+    await __localizeTextNode(node);
+  }
+}
+function __getElementAttributeKeyMap(element) {
+  let map = __localizationState.attributeKeyMap.get(element);
+  if (!map) {
+    map = /* @__PURE__ */ new Map();
+    __localizationState.attributeKeyMap.set(element, map);
+  }
+  return map;
+}
+async function __localizeAttribute(element, attrName) {
+  if (!element || typeof element.getAttribute !== "function") {
+    return;
+  }
+  const rawValue = element.getAttribute(attrName);
+  if (typeof rawValue !== "string" || !rawValue.length) {
+    return;
+  }
+  const keyMap = __getElementAttributeKeyMap(element);
+  let key = keyMap.get(attrName) || null;
+  if (!key || !__localizationState.requestedKeys.has(key)) {
+    key = __findRequestedKeyForText(rawValue);
+  }
+  if (!key) {
+    const segmentMatch = __findRequestedSubsegmentForText(rawValue);
+    if (!segmentMatch) {
+      return;
+    }
+    const scopedLocale2 = __resolveContextLocale({ element });
+    await __loadLocaleInternal(scopedLocale2, "attribute");
+    const translated2 = __resolveTranslation(segmentMatch.key, segmentMatch.values, { element }, null);
+    const translatedText2 = segmentMatch.values.length ? __replacePlaceholders(translated2, (index) => segmentMatch.values[index]) : translated2;
+    const localizedValue = rawValue.slice(0, segmentMatch.start) + translatedText2 + rawValue.slice(segmentMatch.end);
+    if (localizedValue !== rawValue) {
+      element.setAttribute(attrName, localizedValue);
+    }
+    keyMap.set(attrName, segmentMatch.key);
+    return;
+  }
+  keyMap.set(attrName, key);
+  const scopedLocale = __resolveContextLocale({ element });
+  await __loadLocaleInternal(scopedLocale, "attribute");
+  const values = __resolveTemplateValuesForText(key, rawValue);
+  const translated = __resolveTranslation(key, values, { element }, null);
+  const translatedText = values.length ? __replacePlaceholders(translated, (index) => values[index]) : translated;
+  if (translatedText !== rawValue) {
+    element.setAttribute(attrName, translatedText);
+  }
+}
+async function __localizeRequestedAttributes() {
+  if (typeof document === "undefined" || __localizationState.requestedKeys.size === 0) {
+    return;
+  }
+  const root = document.body || document.documentElement;
+  if (!root) {
+    return;
+  }
+  const roots = [];
+  const seenRoots = /* @__PURE__ */ new Set();
+  const addRoot = (candidateRoot) => {
+    if (!candidateRoot || seenRoots.has(candidateRoot)) {
+      return;
+    }
+    seenRoots.add(candidateRoot);
+    roots.push(candidateRoot);
+  };
+  addRoot(root);
+  for (let index = 0; index < roots.length; index += 1) {
+    const currentRoot = roots[index];
+    if (!currentRoot || typeof currentRoot.querySelectorAll !== "function") {
+      continue;
+    }
+    const elements = currentRoot.querySelectorAll("*");
+    for (const element of elements) {
+      const shadowRoot = element?.shadowRoot;
+      if (shadowRoot) {
+        addRoot(shadowRoot);
+      }
+    }
+  }
+  for (const scanRoot of roots) {
+    if (!scanRoot || typeof scanRoot.querySelectorAll !== "function") {
+      continue;
+    }
+    const elements = scanRoot.querySelectorAll("*");
+    for (const element of elements) {
+      for (const attrName of __LOCALIZABLE_ATTRIBUTES) {
+        if (element.hasAttribute(attrName)) {
+          await __localizeAttribute(element, attrName);
+        }
+      }
+    }
+  }
+}
+async function __reconcileLocalization() {
+  const detectedLocales = __collectDetectedLocales();
+  await __ensureDetectedLocalesLoaded(detectedLocales);
+  await __localizeRequestedTextNodes();
+  await __localizeRequestedAttributes();
+  __pruneUndetectedLocales(detectedLocales);
+}
+function __scheduleReconcile() {
+  if (typeof window === "undefined") {
+    return;
+  }
+  if (__localizationState.reconcileTimer) {
+    clearTimeout(__localizationState.reconcileTimer);
+  }
+  __localizationState.reconcileTimer = setTimeout(() => {
+    __localizationState.reconcileTimer = null;
+    __reconcileLocalization();
+  }, 16);
+}
+function __resolveTranslation(key, values = [], options = {}, template = null) {
+  const requestedLocale = __resolveContextLocale(options);
+  const resolvedMessages = __getLocaleMessages(requestedLocale);
+  if (!resolvedMessages) {
+    __loadLocaleInternal(requestedLocale, "msg");
+  }
+  const targetMessages = __getLocaleMessages(requestedLocale)?.messages || {};
+  const defaultMessages = __getLocaleMessages(__localizationState.defaultLocale)?.messages || {};
+  const context = {
+    key,
+    values,
+    options,
+    locale: requestedLocale,
+    defaultLocale: __localizationState.defaultLocale,
+    messages: targetMessages,
+    messagesByLocale: Object.fromEntries(
+      Array.from(__localizationState.messagesByLocale.entries())
+    ),
+    template
+  };
+  let translated;
+  const localeLoaded = Boolean(resolvedMessages);
+  const isDefaultLocale = requestedLocale === __localizationState.defaultLocale;
+  if (typeof __localizationState.provider?.translate === "function") {
+    translated = __localizationState.provider.translate(context);
+  }
+  let fallbackKind = null;
+  if (translated === void 0 || translated === null) {
+    translated = targetMessages[key];
+  }
+  if (translated === void 0 || translated === null) {
+    translated = defaultMessages[key];
+    fallbackKind = translated === void 0 || translated === null ? null : "default";
+  }
+  if (translated === void 0 || translated === null) {
+    translated = key;
+    fallbackKind = "key";
+  }
+  if (localeLoaded && !isDefaultLocale && fallbackKind) {
+    const warningKey = `${requestedLocale}::${key}`;
+    if (!__localizationState.missingWarnings.has(warningKey)) {
+      __localizationState.missingWarnings.add(warningKey);
+      pdsLog(
+        "warn",
+        `[i18n] Missing translation for locale "${requestedLocale}" and key "${key}"; using ${fallbackKind} fallback.`
+      );
+    }
+  }
+  const resolved = typeof translated === "string" ? translated : String(translated);
+  __indexTranslatedValue(key, resolved);
+  if (Array.isArray(values) && values.length > 0) {
+    const materialized = __replacePlaceholders(resolved, (index) => values[index]);
+    if (materialized !== resolved) {
+      __indexTranslatedValue(key, materialized);
+    }
+  }
+  return resolved;
+}
+var joinStringsAndValues = (strings, values, options = {}) => {
+  const messageKey = __collateStrings(strings);
+  __registerRequestedKey(messageKey);
+  const translated = __resolveTranslation(messageKey, values, options, {
+    strings,
+    values
+  });
+  return __replacePlaceholders(translated, (index) => values[index]);
+};
+var msg = (template, options = {}) => {
+  if (!template) {
+    return "";
+  }
+  if (__isStrTagged(template)) {
+    return joinStringsAndValues(template.strings, template.values, options);
+  }
+  const key = String(template);
+  __registerRequestedKey(key);
+  const translated = __resolveTranslation(key, [], options, null);
+  if (!options?.element && !options?.scope && !options?.host && !options?.contextElement && !options?.lang) {
+    __scheduleReconcile();
+  }
+  return translated;
+};
+
+// src/js/pds-core/pds-enhancers.js
+var enhancerDefinitions = [
+  { selector: ".accordion" },
+  { selector: "nav[data-dropdown]" },
+  { selector: "label[data-toggle]" },
+  { selector: "label[data-color]" },
+  { selector: 'input[autocomplete="one-time-code"]' },
+  { selector: 'input[type="range"]' },
+  { selector: "form[data-required]" },
+  { selector: "fieldset[role=group][data-open]" },
+  { selector: "[data-clip]" },
+  { selector: "button, a[class*='btn-']" }
+];
+function enhanceAccordion(elem) {
+  if (elem.dataset.enhancedAccordion)
+    return;
+  elem.dataset.enhancedAccordion = "true";
+  elem.addEventListener(
+    "toggle",
+    (event) => {
+      if (event.target.open && event.target.parentElement === elem) {
+        elem.querySelectorAll(":scope > details[open]").forEach((details) => {
+          if (details !== event.target) {
+            details.open = false;
+          }
+        });
+      }
+    },
+    true
+  );
+}
+function enhanceDropdown(elem) {
+  if (elem.dataset.enhancedDropdown)
+    return;
+  elem.dataset.enhancedDropdown = "true";
+  const menu = elem.lastElementChild;
+  const usesDefaultAction = elem.classList.contains("split-button");
+  if (!menu)
+    return;
+  const trigger = elem.querySelector("[data-dropdown-toggle]") || elem.querySelector("button");
+  const supportsPopover = typeof HTMLElement !== "undefined" && "showPopover" in HTMLElement.prototype && "hidePopover" in HTMLElement.prototype;
+  if (trigger && !trigger.hasAttribute("type")) {
+    trigger.setAttribute("type", "button");
+  }
+  if (!menu.id) {
+    menu.id = `dropdown-${Math.random().toString(36).slice(2, 9)}`;
+  }
+  const isMenu = menu.tagName?.toLowerCase() === "menu";
+  const VIEWPORT_PADDING = 8;
+  if (isMenu && !menu.hasAttribute("role")) {
+    menu.setAttribute("role", "menu");
+  }
+  if (!menu.hasAttribute("aria-hidden")) {
+    menu.setAttribute("aria-hidden", "true");
+  }
+  if (trigger) {
+    trigger.setAttribute("aria-haspopup", "true");
+    trigger.setAttribute("aria-controls", menu.id);
+    trigger.setAttribute("aria-expanded", "false");
+    trigger.setAttribute("popovertarget", menu.id);
+  }
+  const resolveDefaultItem = () => {
+    if (!usesDefaultAction || !isMenu)
+      return null;
+    return menu.querySelector(":scope > li[data-default]") || menu.querySelector(":scope > li");
+  };
+  const resolveDefaultAction = (item) => {
+    if (!item)
+      return null;
+    return item.querySelector(":scope > a, :scope > button") || item.firstElementChild;
+  };
+  const createOrResolveDefaultButton = () => {
+    if (!usesDefaultAction || !trigger)
+      return null;
+    let button = elem.querySelector(":scope > [data-dropdown-default]");
+    if (button)
+      return button;
+    button = document.createElement("button");
+    button.setAttribute("type", "button");
+    button.setAttribute("data-dropdown-default", "");
+    button.className = trigger.className;
+    elem.insertBefore(button, trigger);
+    return button;
+  };
+  const syncDefaultButton = (button, action) => {
+    if (!button || !action)
+      return;
+    button.replaceChildren(...Array.from(action.childNodes).map((node) => node.cloneNode(true)));
+    const label = action.getAttribute("aria-label") || action.textContent?.replace(/\s+/g, " ").trim() || msg("Default action");
+    button.setAttribute("aria-label", label);
+    button.title = label;
+  };
+  const setupDefaultAction = () => {
+    if (!usesDefaultAction)
+      return;
+    const defaultButton = createOrResolveDefaultButton();
+    const defaultItem = resolveDefaultItem();
+    const defaultAction = resolveDefaultAction(defaultItem);
+    if (!defaultButton || !defaultAction)
+      return;
+    syncDefaultButton(defaultButton, defaultAction);
+    const executeDefault = () => {
+      if (!defaultAction)
+        return;
+      if (typeof defaultAction.click === "function") {
+        defaultAction.click();
+      }
+    };
+    defaultButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      executeDefault();
+    });
+  };
+  if (!supportsPopover) {
+    const warnKey = "__PDS_DROPDOWN_POPOVER_WARNED__";
+    if (!globalThis[warnKey]) {
+      globalThis[warnKey] = true;
+      console.warn(
+        "[PDS] nav[data-dropdown] requires the Popover API. Add a popover polyfill (recommended: @oddbird/popover-polyfill) for browsers without support."
+      );
+    }
+    return;
+  }
+  setupDefaultAction();
+  menu.setAttribute("popover", "auto");
+  const measureMenuSize = () => {
+    const previousStyle = menu.getAttribute("style");
+    menu.style.visibility = "hidden";
+    menu.style.display = "inline-block";
+    menu.style.pointerEvents = "none";
+    const rect = menu.getBoundingClientRect();
+    const width = Math.max(menu.offsetWidth || 0, menu.scrollWidth || 0, rect.width || 0, 1);
+    const height = Math.max(
+      menu.offsetHeight || 0,
+      menu.scrollHeight || 0,
+      rect.height || 0,
+      1
+    );
+    if (previousStyle === null) {
+      menu.removeAttribute("style");
+    } else {
+      menu.setAttribute("style", previousStyle);
+    }
+    return { width, height };
+  };
+  const isPopoverOpen = () => {
+    try {
+      return menu.matches(":popover-open");
+    } catch {
+      return false;
+    }
+  };
+  const syncClosedState = () => {
+    menu.setAttribute("aria-hidden", "true");
+    trigger?.setAttribute("aria-expanded", "false");
+  };
+  const syncOpenState = () => {
+    menu.setAttribute("aria-hidden", "false");
+    trigger?.setAttribute("aria-expanded", "true");
+  };
+  const resolveDirection = () => {
+    const mode = (elem.getAttribute("data-direction") || elem.getAttribute("data-dropdown-direction") || elem.getAttribute("data-mode") || "auto").toLowerCase();
+    if (mode === "up" || mode === "down")
+      return mode;
+    const anchorRect = (trigger || elem).getBoundingClientRect();
+    const { height: menuHeight } = measureMenuSize();
+    const spaceBelow = Math.max(0, window.innerHeight - anchorRect.bottom);
+    const spaceAbove = Math.max(0, anchorRect.top);
+    const fitsDown = spaceBelow >= menuHeight;
+    const fitsUp = spaceAbove >= menuHeight;
+    if (fitsDown && !fitsUp)
+      return "down";
+    if (fitsUp && !fitsDown)
+      return "up";
+    if (fitsDown && fitsUp)
+      return "down";
+    return spaceAbove > spaceBelow ? "up" : "down";
+  };
+  const resolveAlign = () => {
+    if (usesDefaultAction)
+      return "right";
+    const align = (elem.getAttribute("data-align") || elem.getAttribute("data-dropdown-align") || "auto").toLowerCase();
+    if (align === "left" || align === "right" || align === "start" || align === "end") {
+      return align === "start" ? "left" : align === "end" ? "right" : align;
+    }
+    const anchorRect = (trigger || elem).getBoundingClientRect();
+    const { width: menuWidth } = measureMenuSize();
+    const spaceForLeftAligned = Math.max(0, window.innerWidth - anchorRect.left);
+    const spaceForRightAligned = Math.max(0, anchorRect.right);
+    const fitsLeft = spaceForLeftAligned >= menuWidth;
+    const fitsRight = spaceForRightAligned >= menuWidth;
+    if (fitsLeft && !fitsRight)
+      return "left";
+    if (fitsRight && !fitsLeft)
+      return "right";
+    if (fitsLeft && fitsRight)
+      return "left";
+    return spaceForRightAligned > spaceForLeftAligned ? "right" : "left";
+  };
+  const readLengthToken = (tokenName, fallback = 8) => {
+    const raw = getComputedStyle(elem).getPropertyValue(tokenName).trim();
+    if (!raw)
+      return fallback;
+    const probe = document.createElement("span");
+    probe.style.position = "fixed";
+    probe.style.visibility = "hidden";
+    probe.style.pointerEvents = "none";
+    probe.style.height = raw;
+    document.body.appendChild(probe);
+    const parsed = Number.parseFloat(getComputedStyle(probe).height);
+    probe.remove();
+    return Number.isFinite(parsed) ? parsed : fallback;
+  };
+  const clearFloatingMenuPosition = () => {
+    [
+      "position",
+      "left",
+      "top",
+      "right",
+      "bottom",
+      "margin-top",
+      "margin-bottom",
+      "max-width",
+      "max-inline-size",
+      "max-height",
+      "overflow"
+    ].forEach((prop) => menu.style.removeProperty(prop));
+  };
+  const isInsideTransformedAncestor = () => {
+    let current = elem.parentElement;
+    while (current && current !== document.body && current !== document.documentElement) {
+      const style = getComputedStyle(current);
+      if (style.transform !== "none" || style.perspective !== "none" || style.filter !== "none" || style.backdropFilter !== "none") {
+        return true;
+      }
+      current = current.parentElement;
+    }
+    return false;
+  };
+  const positionPopoverMenu = () => {
+    if (!isPopoverOpen())
+      return;
+    const anchorRect = (trigger || elem).getBoundingClientRect();
+    const viewport = window.visualViewport;
+    const viewportWidth = viewport?.width || document.documentElement?.clientWidth || window.innerWidth;
+    const viewportHeight = viewport?.height || document.documentElement?.clientHeight || window.innerHeight;
+    const viewportOffsetLeft = viewport?.offsetLeft || 0;
+    const viewportOffsetTop = viewport?.offsetTop || 0;
+    const maxMenuWidth = Math.max(1, viewportWidth - VIEWPORT_PADDING * 2);
+    const maxMenuHeight = Math.max(1, viewportHeight - VIEWPORT_PADDING * 2);
+    menu.style.maxWidth = `${Math.round(maxMenuWidth)}px`;
+    menu.style.maxInlineSize = `${Math.round(maxMenuWidth)}px`;
+    menu.style.maxHeight = `${Math.round(maxMenuHeight)}px`;
+    menu.style.overflow = "auto";
+    const { width: menuWidth, height: menuHeight } = measureMenuSize();
+    const spacing = readLengthToken("--spacing-2", 8);
+    const direction = resolveDirection();
+    const align = resolveAlign();
+    elem.dataset.dropdownDirection = direction;
+    elem.dataset.dropdownAlign = align;
+    let left = align === "right" ? anchorRect.right - menuWidth : anchorRect.left;
+    if (menuWidth >= maxMenuWidth - 1) {
+      left = viewportOffsetLeft + VIEWPORT_PADDING;
+    } else {
+      left = Math.max(
+        viewportOffsetLeft + VIEWPORT_PADDING,
+        Math.min(
+          left,
+          viewportOffsetLeft + viewportWidth - menuWidth - VIEWPORT_PADDING
+        )
+      );
+    }
+    let top = direction === "up" ? anchorRect.top - spacing - menuHeight : anchorRect.bottom + spacing;
+    top = Math.max(
+      viewportOffsetTop + VIEWPORT_PADDING,
+      Math.min(
+        top,
+        viewportOffsetTop + viewportHeight - menuHeight - VIEWPORT_PADDING
+      )
+    );
+    Object.assign(menu.style, {
+      position: "fixed",
+      left: `${Math.round(left)}px`,
+      top: `${Math.round(top)}px`,
+      right: "auto",
+      bottom: "auto",
+      marginTop: "0",
+      marginBottom: "0"
+    });
+  };
+  let repositionHandler = null;
+  const bindReposition = () => {
+    if (repositionHandler)
+      return;
+    repositionHandler = () => positionPopoverMenu();
+    window.addEventListener("resize", repositionHandler);
+    window.addEventListener("scroll", repositionHandler, true);
+  };
+  const unbindReposition = () => {
+    if (!repositionHandler)
+      return;
+    window.removeEventListener("resize", repositionHandler);
+    window.removeEventListener("scroll", repositionHandler, true);
+    repositionHandler = null;
+  };
+  let configChangedHandler = null;
+  let configRepositionFrame = null;
+  const bindConfigChanged = () => {
+    if (configChangedHandler || typeof document === "undefined")
+      return;
+    configChangedHandler = () => {
+      if (!isPopoverOpen())
+        return;
+      elem.dataset.dropdownDirection = resolveDirection();
+      elem.dataset.dropdownAlign = resolveAlign();
+      if (configRepositionFrame !== null) {
+        cancelAnimationFrame(configRepositionFrame);
+      }
+      configRepositionFrame = requestAnimationFrame(() => {
+        configRepositionFrame = null;
+        if (!isPopoverOpen())
+          return;
+        positionPopoverMenu();
+      });
+    };
+    document.addEventListener("pds:config-changed", configChangedHandler);
+  };
+  const unbindConfigChanged = () => {
+    if (!configChangedHandler || typeof document === "undefined")
+      return;
+    document.removeEventListener("pds:config-changed", configChangedHandler);
+    configChangedHandler = null;
+    if (configRepositionFrame !== null) {
+      cancelAnimationFrame(configRepositionFrame);
+      configRepositionFrame = null;
+    }
+  };
+  menu.addEventListener("toggle", (event) => {
+    const isOpen = event.newState === "open";
+    if (isOpen) {
+      syncOpenState();
+      positionPopoverMenu();
+      bindReposition();
+      bindConfigChanged();
+      return;
+    }
+    syncClosedState();
+    unbindReposition();
+    unbindConfigChanged();
+    if (isInsideTransformedAncestor()) {
+      clearFloatingMenuPosition();
+    }
+  });
+  const openMenu = () => {
+    if (isPopoverOpen())
+      return;
+    elem.dataset.dropdownDirection = resolveDirection();
+    elem.dataset.dropdownAlign = resolveAlign();
+    menu.showPopover();
+    requestAnimationFrame(() => positionPopoverMenu());
+  };
+  const closeMenu = () => {
+    if (!isPopoverOpen())
+      return;
+    menu.hidePopover();
+  };
+  const toggleMenu = () => {
+    if (isPopoverOpen()) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  };
+  syncClosedState();
+  menu.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+    if (!target)
+      return;
+    if (!target.closest("[data-dropdown-close]"))
+      return;
+    closeMenu();
+  });
+  menu.addEventListener("beforetoggle", (event) => {
+    if (event.newState === "open") {
+      elem.dataset.dropdownDirection = resolveDirection();
+      elem.dataset.dropdownAlign = resolveAlign();
+      return;
+    }
+    syncClosedState();
+    unbindReposition();
+    unbindConfigChanged();
+    if (isInsideTransformedAncestor()) {
+      clearFloatingMenuPosition();
+    }
+  });
+  elem.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeMenu();
+      trigger?.focus();
+    }
+  });
+}
+function enhanceToggle(elem) {
+  if (elem.dataset.enhancedToggle)
+    return;
+  elem.dataset.enhancedToggle = "true";
+  const checkbox = elem.querySelector('input[type="checkbox"]');
+  if (!checkbox)
+    return;
+  if (!elem.hasAttribute("tabindex")) {
+    elem.setAttribute("tabindex", "0");
+  }
+  elem.setAttribute("role", "switch");
+  elem.setAttribute("aria-checked", checkbox.checked ? "true" : "false");
+  const toggleSwitch = document.createElement("span");
+  toggleSwitch.className = "toggle-switch";
+  toggleSwitch.setAttribute("role", "presentation");
+  toggleSwitch.setAttribute("aria-hidden", "true");
+  const knob = document.createElement("span");
+  knob.className = "toggle-knob";
+  toggleSwitch.appendChild(knob);
+  elem.insertBefore(toggleSwitch, checkbox.nextSibling);
+  const updateAria = () => {
+    elem.setAttribute("aria-checked", checkbox.checked ? "true" : "false");
+  };
+  const toggle = () => {
+    if (checkbox.disabled)
+      return;
+    checkbox.checked = !checkbox.checked;
+    updateAria();
+    checkbox.dispatchEvent(new Event("input", { bubbles: true }));
+    checkbox.dispatchEvent(new Event("change", { bubbles: true }));
+  };
+  elem.addEventListener("click", (event) => {
+    event.preventDefault();
+    toggle();
+  });
+  elem.addEventListener("keydown", (event) => {
+    if (event.key === " " || event.key === "Enter") {
+      event.preventDefault();
+      toggle();
+    }
+  });
+  checkbox.addEventListener("change", updateAria);
+}
+function enhanceColorInput(elem) {
+  if (elem.dataset.enhancedColorInput)
+    return;
+  const input = elem.querySelector('input[type="color"]');
+  if (!input)
+    return;
+  elem.dataset.enhancedColorInput = "true";
+  let control = elem.querySelector(":scope > .color-control");
+  let swatch = elem.querySelector(":scope > .color-control > .color-swatch");
+  let output = elem.querySelector(":scope > .color-control > output");
+  if (!control) {
+    control = document.createElement("span");
+    control.className = "color-control";
+    input.before(control);
+  }
+  if (!swatch) {
+    swatch = document.createElement("span");
+    swatch.className = "color-swatch";
+    control.appendChild(swatch);
+  }
+  if (input.parentElement !== swatch) {
+    swatch.appendChild(input);
+  }
+  if (!output) {
+    output = document.createElement("output");
+    control.appendChild(output);
+  }
+  const sync = () => {
+    const isUnset = input.dataset.colorUnset === "1";
+    if (isUnset) {
+      output.value = "";
+      output.textContent = msg("not set");
+      control.dataset.value = "";
+      control.dataset.unset = "1";
+      swatch.dataset.unset = "1";
+      return;
+    }
+    output.value = input.value;
+    output.textContent = input.value;
+    control.dataset.value = input.value;
+    delete control.dataset.unset;
+    delete swatch.dataset.unset;
+  };
+  sync();
+  const setResolved = () => {
+    if (input.dataset.colorUnset === "1") {
+      input.dataset.colorUnset = "0";
+    }
+    sync();
+  };
+  input.addEventListener("input", setResolved, { passive: true });
+  input.addEventListener("change", setResolved, { passive: true });
+}
+function enhanceOneTimeCodeInput(elem) {
+  if (elem.dataset.enhancedOneTimeCode)
+    return;
+  elem.dataset.enhancedOneTimeCode = "true";
+  const configuredLength = Number.parseInt(
+    elem.getAttribute("data-otp-length") || elem.getAttribute("maxlength") || "6",
+    10
+  );
+  const length = Number.isFinite(configuredLength) && configuredLength > 0 ? configuredLength : 6;
+  const autoSubmit = elem.getAttribute("data-otp-autosubmit") !== "false";
+  const allowAlphanumeric = elem.getAttribute("data-otp-format") === "alphanumeric";
+  const statusId = elem.getAttribute("data-otp-status-id") || `${elem.id || `otp-${Math.random().toString(36).slice(2, 9)}`}-status`;
+  const normalizeValue = (value) => {
+    const compact = String(value || "").replace(/\s+/g, "");
+    const filtered = allowAlphanumeric ? compact.replace(/[^0-9a-z]/gi, "") : compact.replace(/\D+/g, "");
+    return filtered.slice(0, length);
+  };
+  elem.classList.add("input-otp");
+  elem.dataset.otpLength = String(length);
+  elem.dataset.otpComplete = "false";
+  elem.style.setProperty("--otp-digits", String(length));
+  elem.style.setProperty("--_otp-digit", "0");
+  if (!elem.hasAttribute("type") || elem.getAttribute("type")?.toLowerCase() === "number") {
+    elem.setAttribute("type", "text");
+  }
+  elem.setAttribute("maxlength", String(length));
+  if (!elem.hasAttribute("inputmode")) {
+    elem.setAttribute("inputmode", allowAlphanumeric ? "text" : "numeric");
+  }
+  if (!elem.hasAttribute("enterkeyhint")) {
+    elem.setAttribute("enterkeyhint", "done");
+  }
+  if (!elem.hasAttribute("autocapitalize")) {
+    elem.setAttribute("autocapitalize", "off");
+  }
+  if (!elem.hasAttribute("spellcheck")) {
+    elem.setAttribute("spellcheck", "false");
+  }
+  if (!elem.hasAttribute("pattern")) {
+    elem.setAttribute(
+      "pattern",
+      allowAlphanumeric ? `[0-9A-Za-z]{${length}}` : `\\d{${length}}`
+    );
+  }
+  if (!elem.hasAttribute("aria-label") && !elem.labels?.length) {
+    elem.setAttribute("aria-label", msg("One-time code"));
+  }
+  const form = elem.form || elem.closest("form");
+  let autoSubmitPending = false;
+  let status = null;
+  const syncActiveDigit = () => {
+    const selectionStart = typeof elem.selectionStart === "number" ? elem.selectionStart : elem.value.length;
+    const clamped = Math.max(0, Math.min(selectionStart, Math.max(length - 1, 0)));
+    elem.style.setProperty("--_otp-digit", String(clamped));
+  };
+  const syncScrollPosition = () => {
+    if (typeof elem.scrollLeft === "number") {
+      elem.scrollLeft = 0;
+    }
+  };
+  if (typeof document !== "undefined") {
+    status = document.getElementById(statusId);
+    if (!status) {
+      status = document.createElement("span");
+      status.id = statusId;
+      status.className = "otp-status";
+      status.setAttribute("aria-live", "polite");
+      status.setAttribute("aria-atomic", "true");
+      elem.insertAdjacentElement("afterend", status);
+    }
+    const describedBy = new Set(
+      (elem.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean)
+    );
+    describedBy.add(statusId);
+    elem.setAttribute("aria-describedby", Array.from(describedBy).join(" "));
+  }
+  const updateStatus = () => {
+    if (!status)
+      return;
+    const count = elem.value.length;
+    status.textContent = count === 0 ? msg("Enter the verification code") : count >= length ? msg("Code complete") : `${count}/${length}`;
+  };
+  const attemptSubmit = () => {
+    if (!autoSubmit || autoSubmitPending || !form)
+      return;
+    if (typeof form.checkValidity === "function" && !form.checkValidity())
+      return;
+    autoSubmitPending = true;
+    requestAnimationFrame(() => {
+      autoSubmitPending = false;
+      const submitSelector = elem.getAttribute("data-otp-submit-selector");
+      const submitter = submitSelector ? form.querySelector(submitSelector) : void 0;
+      if (typeof form.requestSubmit === "function") {
+        form.requestSubmit(submitter || void 0);
+      } else {
+        form.submit();
+      }
+    });
+  };
+  const syncValue = (nextValue, { dispatchChange = false } = {}) => {
+    const normalized = normalizeValue(nextValue);
+    if (elem.value !== normalized) {
+      elem.value = normalized;
+    }
+    const isComplete = normalized.length === length;
+    elem.dataset.otpComplete = isComplete ? "true" : "false";
+    updateStatus();
+    syncActiveDigit();
+    syncScrollPosition();
+    if (dispatchChange) {
+      elem.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    if (isComplete) {
+      attemptSubmit();
+    }
+  };
+  elem.addEventListener("beforeinput", (event) => {
+    if (event.defaultPrevented)
+      return;
+    if (event.inputType?.startsWith("delete"))
+      return;
+    if (typeof event.data !== "string" || event.data.length === 0)
+      return;
+    const normalized = normalizeValue(event.data);
+    if (!normalized && event.data.trim()) {
+      event.preventDefault();
+    }
+  });
+  elem.addEventListener("input", () => {
+    syncValue(elem.value);
+    try {
+      const end = elem.value.length;
+      elem.setSelectionRange(end, end);
+    } catch {
+    }
+    syncActiveDigit();
+    syncScrollPosition();
+  });
+  ["focus", "click", "keyup", "select"].forEach((eventName) => {
+    elem.addEventListener(eventName, () => {
+      requestAnimationFrame(() => {
+        syncActiveDigit();
+        syncScrollPosition();
+      });
+    });
+  });
+  elem.addEventListener("paste", (event) => {
+    const pasted = event.clipboardData?.getData("text") || "";
+    if (!pasted)
+      return;
+    event.preventDefault();
+    elem.value = normalizeValue(pasted);
+    elem.dispatchEvent(new Event("input", { bubbles: true }));
+    elem.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  elem.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && elem.value.length === length) {
+      attemptSubmit();
+    }
+  });
+  syncValue(elem.value);
+}
+function enhanceRange(elem) {
+  if (elem.dataset.enhancedRange)
+    return;
+  const wireProgrammaticUpdates = (updateFn) => {
+    if (elem.dataset.enhancedRangeProgrammatic)
+      return;
+    elem.dataset.enhancedRangeProgrammatic = "1";
+    const descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(elem), "value") || Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
+    if (descriptor?.get && descriptor?.set) {
+      Object.defineProperty(elem, "value", {
+        configurable: true,
+        enumerable: descriptor.enumerable,
+        get() {
+          return descriptor.get.call(this);
+        },
+        set(nextValue) {
+          descriptor.set.call(this, nextValue);
+          updateFn();
+        }
+      });
+    }
+    const attrObserver = new MutationObserver((mutations) => {
+      const shouldUpdate = mutations.some((mutation) => {
+        const attr = mutation.attributeName;
+        return attr === "value" || attr === "min" || attr === "max";
+      });
+      if (shouldUpdate)
+        updateFn();
+    });
+    attrObserver.observe(elem, {
+      attributes: true,
+      attributeFilter: ["value", "min", "max"]
+    });
+  };
+  const label = elem.closest("label");
+  const hasRangeOutputClass = label?.classList.contains("range-output");
+  const inputId = elem.id || `range-${Math.random().toString(36).substring(2, 11)}`;
+  const outputId = `${inputId}-output`;
+  elem.id = inputId;
+  if (hasRangeOutputClass) {
+    const labelSpan = label.querySelector("span");
+    if (labelSpan && !labelSpan.classList.contains("range-output-wrapper")) {
+      const explicitRangeLabel = labelSpan.getAttribute("data-range-label") || label.getAttribute("data-range-label") || "";
+      const wrapper = document.createElement("span");
+      wrapper.className = "range-output-wrapper";
+      wrapper.style.display = "flex";
+      wrapper.style.justifyContent = "space-between";
+      wrapper.style.alignItems = "center";
+      const textSpan = document.createElement("span");
+      textSpan.textContent = explicitRangeLabel || labelSpan.textContent;
+      wrapper.appendChild(textSpan);
+      const output = document.createElement("output");
+      output.id = outputId;
+      output.setAttribute("for", inputId);
+      output.style.color = "var(--surface-text-secondary, var(--color-text-secondary))";
+      output.style.fontSize = "0.875rem";
+      output.textContent = elem.value;
+      wrapper.appendChild(output);
+      labelSpan.textContent = "";
+      labelSpan.appendChild(wrapper);
+      const updateOutput = () => {
+        output.textContent = elem.value;
+      };
+      elem.addEventListener("input", updateOutput);
+      elem.addEventListener("change", updateOutput);
+      wireProgrammaticUpdates(updateOutput);
+      updateOutput();
+    }
+  } else {
+    let container = elem.closest(".range-container");
+    if (!container) {
+      container = document.createElement("div");
+      container.className = "range-container";
+      elem.parentNode?.insertBefore(container, elem);
+      container.appendChild(elem);
+    }
+    container.style.position = "relative";
+    const bubble = document.createElement("output");
+    bubble.id = outputId;
+    bubble.setAttribute("for", inputId);
+    bubble.className = "range-bubble";
+    bubble.setAttribute("aria-live", "polite");
+    container.appendChild(bubble);
+    const updateBubble = () => {
+      const min = parseFloat(elem.min) || 0;
+      const max = parseFloat(elem.max) || 100;
+      const value = parseFloat(elem.value);
+      const pct = (value - min) / (max - min);
+      bubble.style.left = `calc(${pct * 100}% )`;
+      bubble.textContent = String(value);
+    };
+    const show = () => bubble.classList.add("visible");
+    const hide = () => bubble.classList.remove("visible");
+    elem.addEventListener("input", updateBubble);
+    elem.addEventListener("pointerdown", show);
+    elem.addEventListener("pointerup", hide);
+    elem.addEventListener("pointerleave", hide);
+    elem.addEventListener("focus", show);
+    elem.addEventListener("blur", hide);
+    elem.addEventListener("change", updateBubble);
+    wireProgrammaticUpdates(updateBubble);
+    updateBubble();
+  }
+  elem.dataset.enhancedRange = "1";
+}
+function enhanceRequired(elem) {
+  if (elem.dataset.enhancedRequired)
+    return;
+  elem.dataset.enhancedRequired = "true";
+  const enhanceRequiredField = (input) => {
+    let label;
+    if (input.closest("[role$=group]")) {
+      label = input.closest("[role$=group]").querySelector("legend");
+    } else {
+      label = input.closest("label");
+    }
+    if (!label)
+      return;
+    if (label.querySelector(".required-asterisk"))
+      return;
+    const asterisk = document.createElement("span");
+    asterisk.classList.add("required-asterisk");
+    asterisk.textContent = "*";
+    asterisk.style.marginLeft = "4px";
+    const labelText = label.querySelector("span, [data-label]");
+    if (labelText) {
+      labelText.appendChild(asterisk);
+    } else {
+      const field = label.querySelector("input, select, textarea");
+      if (field) {
+        label.insertBefore(asterisk, field);
+      } else {
+        label.appendChild(asterisk);
+      }
+    }
+    const form = input.closest("form");
+    if (form && !form.querySelector(".required-legend")) {
+      const legend = document.createElement("small");
+      legend.classList.add("required-legend");
+      legend.textContent = msg("* Required fields");
+      form.insertBefore(
+        legend,
+        form.querySelector(".form-actions") || form.lastElementChild
+      );
+    }
+  };
+  elem.querySelectorAll("[required]").forEach((input) => {
+    enhanceRequiredField(input);
+  });
+}
+function enhanceOpenGroup(elem) {
+  if (elem.dataset.enhancedOpenGroup)
+    return;
+  elem.dataset.enhancedOpenGroup = "true";
+  elem.classList.add("flex", "flex-wrap", "buttons");
+  const addInput = document.createElement("input");
+  addInput.type = "text";
+  addInput.placeholder = msg("Add item...");
+  addInput.classList.add("input-text", "input-sm");
+  addInput.style.width = "auto";
+  const getFirstInput = () => elem.querySelector('input[type="radio"], input[type="checkbox"]');
+  elem.appendChild(addInput);
+  addInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === "Tab") {
+      const value = addInput.value.trim();
+      if (value) {
+        event.preventDefault();
+        const firstInput = getFirstInput();
+        const type = firstInput?.type === "radio" ? "radio" : "checkbox";
+        const id = `open-group-${Math.random().toString(36).substring(2, 11)}`;
+        const label = document.createElement("label");
+        const span = document.createElement("span");
+        span.setAttribute("data-label", "");
+        span.textContent = value;
+        const input = document.createElement("input");
+        input.type = type;
+        input.name = firstInput?.name || elem.getAttribute("data-name") || "open-group";
+        input.value = value;
+        input.id = id;
+        label.appendChild(span);
+        label.appendChild(input);
+        elem.insertBefore(label, addInput);
+        addInput.value = "";
+      }
+    } else if (event.key === "Backspace" && addInput.value === "") {
+      event.preventDefault();
+      const labels = elem.querySelectorAll("label");
+      if (labels.length > 0) {
+        const lastLabel = labels[labels.length - 1];
+        lastLabel.remove();
+      }
+    }
+  });
+}
+function enhanceClip(elem) {
+  if (elem.dataset.enhancedClip)
+    return;
+  elem.dataset.enhancedClip = "true";
+  if (!elem.hasAttribute("tabindex")) {
+    elem.setAttribute("tabindex", "0");
+  }
+  if (!elem.hasAttribute("role")) {
+    elem.setAttribute("role", "button");
+  }
+  const syncAria = () => {
+    const isOpen = elem.getAttribute("data-clip-open") === "true";
+    elem.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  };
+  const toggleOpen = () => {
+    const isOpen = elem.getAttribute("data-clip-open") === "true";
+    elem.setAttribute("data-clip-open", isOpen ? "false" : "true");
+    syncAria();
+  };
+  elem.addEventListener("click", (event) => {
+    if (event.defaultPrevented)
+      return;
+    toggleOpen();
+  });
+  elem.addEventListener("keydown", (event) => {
+    if (event.key === " " || event.key === "Enter") {
+      event.preventDefault();
+      toggleOpen();
+    }
+  });
+  syncAria();
+}
+function enhanceButtonWorking(elem) {
+  if (elem.dataset.enhancedBtnWorking)
+    return;
+  elem.dataset.enhancedBtnWorking = "true";
+  let originalIcon = null;
+  let addedIcon = false;
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === "class") {
+        const hasWorking = elem.classList.contains("btn-working");
+        const icon = elem.querySelector("pds-icon");
+        if (hasWorking) {
+          if (icon) {
+            if (!originalIcon) {
+              originalIcon = icon.getAttribute("icon");
+            }
+            icon.setAttribute("icon", "circle-notch");
+          } else {
+            const newIcon = document.createElement("pds-icon");
+            newIcon.setAttribute("icon", "circle-notch");
+            newIcon.setAttribute("size", "sm");
+            elem.insertBefore(newIcon, elem.firstChild);
+            addedIcon = true;
+          }
+        } else if (mutation.oldValue?.includes("btn-working")) {
+          if (icon) {
+            if (addedIcon) {
+              icon.remove();
+              addedIcon = false;
+            } else if (originalIcon) {
+              icon.setAttribute("icon", originalIcon);
+              originalIcon = null;
+            }
+          }
+        }
+      }
+    });
+  });
+  observer.observe(elem, {
+    attributes: true,
+    attributeFilter: ["class"],
+    attributeOldValue: true
+  });
+}
+var enhancerRunners = /* @__PURE__ */ new Map([
+  [".accordion", enhanceAccordion],
+  ["nav[data-dropdown]", enhanceDropdown],
+  ["label[data-toggle]", enhanceToggle],
+  ["label[data-color]", enhanceColorInput],
+  ['input[autocomplete="one-time-code"]', enhanceOneTimeCodeInput],
+  ['input[type="range"]', enhanceRange],
+  ["form[data-required]", enhanceRequired],
+  ["fieldset[role=group][data-open]", enhanceOpenGroup],
+  ["[data-clip]", enhanceClip],
+  ["button, a[class*='btn-']", enhanceButtonWorking]
+]);
+var defaultPDSEnhancers = enhancerDefinitions.map((meta) => ({
+  ...meta,
+  run: enhancerRunners.get(meta.selector) || (() => {
+  })
+}));
+export {
+  defaultPDSEnhancers
+};
+//# sourceMappingURL=pds-enhancers.js.map

@@ -1,7 +1,1003 @@
-function D(o){let t=Array.isArray(o?.strings)?o.strings:[],e=Array.isArray(o?.values)?o.values:[],s=new Set,r=[],i=/(\s)(\.[\w-]+)=["']?\s*$/,n=/(\s)(@[\w-]+)=["']?\s*$/,l=/(\s)(\?[\w-]+)=["']?\s*$/,u=/(\s)([\w:-]+)=["']?\s*$/,d=/=["']\s*$/,f=!1;for(let a=0;a<t.length;a+=1){let h=t[a]??"";if(f&&(h=h.replace(/^["']/,""),f=!1),a<e.length){let m=`pds-val-${a}`,x=h.match(i),y=h.match(n),v=h.match(l),S=h.match(u);if(x){let w=x[2].slice(1);f=d.test(t[a]??""),h=h.replace(i,`$1data-pds-bind-${a}="prop:${w}:${m}"`),s.add(a)}else if(y){let w=y[2].slice(1);f=d.test(t[a]??""),h=h.replace(n,`$1data-pds-bind-${a}="event:${w}:${m}"`),s.add(a)}else if(v){let w=v[2].slice(1);f=d.test(t[a]??""),h=h.replace(l,`$1data-pds-bind-${a}="boolean:${w}:${m}"`),s.add(a)}else if(S){let w=S[2];f=d.test(t[a]??""),h=h.replace(u,`$1data-pds-bind-${a}="attr:${w}:${m}"`),s.add(a)}}r.push(h),a<e.length&&!s.has(a)&&r.push(`<!--pds-val-${a}-->`)}let p=document.createElement("template");p.innerHTML=r.join("");let c=(a,h)=>{let m=a.parentNode;if(!m)return;if(h==null){m.removeChild(a);return}let x=y=>{if(y!=null){if(y instanceof Node){m.insertBefore(y,a);return}if(Array.isArray(y)){y.forEach(v=>x(v));return}m.insertBefore(document.createTextNode(String(y)),a)}};x(h),m.removeChild(a)},g=document.createTreeWalker(p.content,NodeFilter.SHOW_COMMENT),b=[];for(;g.nextNode();){let a=g.currentNode;a?.nodeValue?.startsWith("pds-val-")&&b.push(a)}return b.forEach(a=>{let h=Number(a.nodeValue.replace("pds-val-",""));c(a,e[h])}),p.content.querySelectorAll("*").forEach(a=>{[...a.attributes].forEach(h=>{if(!h.name.startsWith("data-pds-bind-"))return;let m=h.value.indexOf(":"),x=h.value.lastIndexOf(":");if(m<=0||x<=m){a.removeAttribute(h.name);return}let y=h.value.slice(0,m),v=h.value.slice(m+1,x),S=h.value.slice(x+1),w=Number(String(S).replace("pds-val-","")),$=e[w];if(!v||!Number.isInteger(w)){a.removeAttribute(h.name);return}y==="prop"?a[v]=$:y==="event"?(typeof $=="function"||$&&typeof $.handleEvent=="function")&&a.addEventListener(v,$):y==="boolean"?$?a.setAttribute(v,""):a.removeAttribute(v):y==="attr"&&($==null||$===!1?a.removeAttribute(v):a.setAttribute(v,String($))),a.removeAttribute(h.name)})}),p.content}function q(o,...t){if(Array.isArray(o)&&Object.prototype.hasOwnProperty.call(o,"raw"))return D({strings:Array.from(o),values:t});if(Array.isArray(o?.strings)&&Array.isArray(o?.values))return D({strings:o.strings,values:o.values});let s=document.createElement("template");return s.innerHTML=String(o??""),s.content}function A(o,...t){return q(o,...t).childNodes}function k(o,t=100){let e;return function(...r){let i=()=>{clearTimeout(e),o(...r)};clearTimeout(e),e=setTimeout(i,t)}}function I(o){setTimeout(o,0)}function P(o){try{if(typeof o!="string"||o.indexOf(`
-`)!==-1||o.indexOf(" ")!==-1||o.startsWith("#/"))return!1;let t=new URL(o,window.location.origin);return t.protocol==="http:"||t.protocol==="https:"}catch{return!1}}function H(o,t,e="Operation"){return!t||t<=0?o:new Promise((s,r)=>{let i=setTimeout(()=>{r(new Error(`${e} timed out after ${t}ms`))},t);Promise.resolve(o).then(n=>{clearTimeout(i),s(n)}).catch(n=>{clearTimeout(i),r(n)})})}function L(o){return String(o).replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}function O(o,t,e){let s=window.screen.width/2-t/2,r=window.screen.height/2-e/2;return window.open(o,"",`toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=${t}, height=${e}, top=${r}, left=${s}`)}function M(o){if(o==null)return"";let t=String(o).trim();return t?t.replace(/([a-z0-9])([A-Z])/g,"$1 $2").replace(/[_-]+/g," ").replace(/\s+/g," ").trim():""}var E={result:"ac-suggestion",item:"ac-itm"};function C(o){return String(o??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#39;")}function R(o){return String(o??"").replace(/[^a-zA-Z0-9_-]/g,"-")}function j(o){return o==null?"":String(o).split(/\s+/).map(t=>R(t)).filter(Boolean).join(" ")}function z(o){if(o==null)return"";let t=String(o).trim();return!t||/[<>{}]/.test(t)||/(?:expression\s*\(|javascript\s*:|@import\b)/i.test(t)||!/^[-a-zA-Z\s0-9:;#,.()%!]*$/.test(t)?"":t}var N=class o extends EventTarget{constructor(t,e,s={}){super(),this.settings={emptyResultsText:"",progressive:!0,maxConcurrentCategories:3,categoryTimeoutMs:0,...s},this.container=t,this.input=e,this.input.setAttribute("autocomplete","off"),this.categories=s.categories||{},this.caches=new Map,this.rowIndex=-1,this.results=[],this.requestToken=0,I(this.attach.bind(this))}static connect(t,e){let s=t.target;if(!s._autoComplete){if(!e?.categories)throw Error("Missing autocomplete settings");s._autoComplete=new o(s.parentNode,s,e),t.type==="focus"&&setTimeout(()=>{s._autoComplete.focusHandler(t)},100)}return s._autoComplete}on(t,e){return this.input.addEventListener(t,e),this}attach(){this.resultsDiv=document.createElement("div"),this.resultsDiv.title="",this.resultsDiv.setAttribute("part","suggestions"),this.resultsDiv.classList.add(E.result),this.container.offsetWidth>100&&(this.resultsDiv.style.width=`${this.container.offsetWidth}px`),this.resultsDiv.addEventListener("mousedown",this.resultClick.bind(this)),this.container.classList.add("ac-container"),this.input.classList.add("ac-input");let t=getComputedStyle(this.input);this.container.style.setProperty("--ac-bg-default",t.backgroundColor),this.container.style.setProperty("--ac-color-default",t.color);let e=t.accentColor;e!=="auto"&&this.container.style.setProperty("--ac-accent-color",e),(this.container?.shadowRoot??this.container).appendChild(this.resultsDiv),this.controller().clear("attach"),this.on("input",k(this.inputHandler.bind(this),this.settings.throttleInputMs??300)).on("focus",this.focusHandler.bind(this)).on("mousedown",this.mouseDownHandler.bind(this)).on("focusout",this.blurHandler.bind(this)).on("keyup",this.keyUpHandler.bind(this)).on("keydown",this.keyDownHandler.bind(this))}controller(){let t=this.internalController();return typeof this.settings.controller=="function"&&(t=this.settings.controller(this)??t),t}internalController(){return{show:this.show.bind(this),hide:this.hide.bind(this),clear:this.clear.bind(this),empty:()=>{}}}moveResult(t){this.controller().show();let e=this.acItems?.length??0;if(!e)return;this.rowIndex=this.rowIndex+t,this.rowIndex<=0?this.rowIndex=0:this.rowIndex>e-1&&(this.rowIndex=0);for(let r of this.acItems)r.classList.remove("selected");let s=this.getSelectedDiv();s?(s.classList.add("selected"),s.scrollIntoView({behavior:"smooth",block:"end",inline:"nearest"})):this.focusHandler({target:this.input})}getSelectedDiv(){return this.resultsDiv?.querySelector(`div:nth-child(${this.rowIndex+1})`)}selectResult(t){let e=t||this.getSelectedDiv();if(!e)return;let s=Number.parseInt(e.getAttribute("data-index"),10);this.resultClicked=!0;let r=Number.isInteger(s)?this.results[s]:null;if(!r)return;let i=this.categories[r.category]??{},n=typeof i.action=="function"?i.action:this.setText.bind(this);i.newTab&&(this.tabWindow=O("about:blank",960,700));let l={...r,search:this.input.value,selectedItem:e};e.classList.add("ac-active"),setTimeout(()=>{this.controller().hide("result-selected"),typeof l.action=="function"?l.action(l):(n(l),i.newTab&&this.tabWindow&&(l.url?this.tabWindow.location.href=l.url:this.tabWindow.close())),this.input.dispatchEvent(new Event("change",{bubbles:!0})),this.controller().clear("result-selected");let u=new Event("result-selected");u.detail=l,this.input.dispatchEvent(u)},0)}setText(t){let e=!1;this.input?(this.input.value=t.text,e=!0):this.container?.autoCompleteInput?(this.container.autoCompleteInput.value=t.text,e=!0):"value"in this.container&&(this.container.value=t.text,e=!0),e&&this.input&&this.input.dispatchEvent(new Event("input",{bubbles:!0})),this.controller().hide("settext")}resultClick(t){this.selectResult(t.target.closest(`.${E.item}`))}blurHandler(){setTimeout(()=>{this.resultClicked||this.controller().clear("blurred"),this.resultClicked=!1},100)}clear(t,e={}){this.settings.debug||this.resultsDiv&&(this.resultsDiv.innerHTML="",e.preserveOpen||this.controller().hide("clear"),this.cacheTmr&&clearTimeout(this.cacheTmr),this.cacheTmr=setTimeout(()=>{this.caches.clear()},5*60*1e3))}dismissSuggestions(t="dismiss"){this.aborter&&this.aborter.abort(),this.requestToken+=1,this.container.classList.remove("search-running"),this.results=[],this.rowIndex=-1,this.acItems=[],this.controller().clear(t)}isSuggestionsOpen(){return this.resultsDiv?.classList?.contains("ac-active")===!0}retriggerSuggestions(t){this.isSuggestionsOpen()||this.container.classList.contains("search-running")||!(document.activeElement===this.input||this.input?.matches?.(":focus")===!0)||this.suggest(this.input.value,t)}mouseDownHandler(t){if(this.isSuggestionsOpen())return;if(document.activeElement===this.input||this.input?.matches?.(":focus")===!0){this.retriggerSuggestions(t);return}setTimeout(()=>{this.retriggerSuggestions({target:this.input,type:"mousedown"})},0)}show(){if(!this.resultsDiv.classList.contains("ac-active")){let t=this.getViewBounds();this.resultsDiv.style.position="absolute",t.rect.width>100&&(this.resultsDiv.style.width=`${t.rect.width}px`),this.settings.direction=this.settings.direction??t.suggestedDirection,this.resultsDiv.setAttribute("data-direction",this.settings.direction),this.settings.direction==="up"?(this.resultsDiv.style.top="unset",this.resultsDiv.style.bottom=`${t.rect.height+20}px`,this.rowIndex=this.acItems.length):(this.resultsDiv.style.bottom="unset",this.resultsDiv.style.top=`${t.rect.height}px`,this.rowIndex=-1),this.resultsDiv.style.maxWidth="unset",this.resultsDiv.classList.toggle("ac-active",!0)}}getViewBounds(){let t=this.input.getBoundingClientRect();return{rect:t,suggestedDirection:t.top+t.height+500>window.innerHeight?"up":"down"}}hide(){this.resultsDiv.classList.toggle("ac-active",!1)}empty(){this.resultsDiv.innerHTML="";let t=document.createElement("div");t.className="ac-empty",t.textContent=String(this.settings.emptyResultsText??""),this.resultsDiv.appendChild(t),this.controller().show()}async inputHandler(t){this.cacheTmr&&clearTimeout(this.cacheTmr);let s={search:String(this.input?.value??t?.target?.value??""),categories:this.categories},r=this.requestToken+1,i=this.settings.progressive===!0,n="",l=!1;this.container.classList.add("search-running");let u=(p,c={})=>{!i||c.token!==this.requestToken||(l=!0,n=this.resultsSignature(p),this.resultsHandler(p,s),this.input.dispatchEvent(new CustomEvent("results:partial",{detail:{results:p,token:c.token,pending:c.pending??0,completed:c.completed??0,settled:c.settled??!1}})))},d=await this.getItems(s,t,{onProgress:u,forceToken:r}).catch(()=>[]);if(r!==this.requestToken){this.container.classList.remove("search-running");return}let f=this.resultsSignature(d);(!l||f!==n)&&this.resultsHandler(d,s),this.input.dispatchEvent(new CustomEvent("results:complete",{detail:{results:d,token:r,pending:0,completed:Object.keys(this.categories||{}).length,settled:!0}})),this.container.classList.remove("search-running")}keyDownHandler(t){switch(t.key){case"Enter":t.stopPropagation(),t.preventDefault();break;case"Escape":t.stopPropagation(),t.preventDefault(),this.dismissSuggestions("escape");break;case"ArrowDown":if(!this.isSuggestionsOpen()){t.stopPropagation(),t.preventDefault(),this.retriggerSuggestions(t);break}I(()=>this.moveResult(1));break;case"ArrowUp":I(()=>this.moveResult(-1));break;default:break}}keyUpHandler(t){switch(t.key){case"Escape":this.dismissSuggestions("escape");break;case"Enter":this.getSelectedDiv()&&(this.container.preventEnter=!0,t.stopPropagation(),t.preventDefault(),this.selectResult(),setTimeout(()=>{this.container.preventEnter=!1},10));break;default:break}}focusHandler(t){this.controller().clear("focus"),this.suggest(t.target.value,t)}suggest(t,e){this.input.focus();let s={suggest:!0,search:t||"",categories:this.categories};this.getItems(s,e).then(r=>{this.input.dispatchEvent(new CustomEvent("show-results",{detail:{results:r}})),this.resultsHandler(r,s)})}sort(t,e){return t.sort((s,r)=>{let i=e.categories[s.category],n=e.categories[r.category],l=typeof i.sortIndex=="function"?i.sortIndex(e):i.sortIndex??0;return(typeof n.sortIndex=="function"?n.sortIndex(e):n.sortIndex??0)>l?1:-1})}resultsHandler(t,e){this.results=t,this.rowIndex=-1,this.resultsDiv.innerHTML="";let s=0,r=(i,n)=>{let l=this.formatCategoryLabel(n.category),u=C(n.tooltip||""),d=R(n.category||""),f=j(n.class??""),p=z(n.style),c=p?` style="${C(p)}"`:"",g=C(l);return`
-			<div title="${u}" data-index="${s}" part="item" class="${`${E.item} cat-${d} ${f}`.trim()}"${c}>
-				${this.handleImageOrIcon(n)}
-				<span class="text">${this.formatResultItem(n,e,i)}</span>
-				${this.settings.hideCategory?"":`<span class="category">${g}</span>`}
-			</div>`};t.forEach(i=>{let n=e.categories[i.category]||{};if(i.element)this.resultsDiv.appendChild(i.element);else{let u=A(r(n,typeof i=="string"?{text:i}:i)),d=Array.from(u).find(f=>f&&f.nodeType===Node.ELEMENT_NODE);d&&this.resultsDiv.appendChild(d)}s+=1}),t.length?(this.acItems=this.resultsDiv.querySelectorAll(".ac-itm"),this.controller().show()):e.search.length&&this.controller().empty()}handleImageOrIcon(t){return t.image?`<img src="${C(t.image)}"/>`:typeof this.settings.iconHandler=="function"?this.settings.iconHandler(t):`<svg-icon icon="${C(t.icon)}"></svg-icon>`}formatResultItem(t,e,s){let r=typeof t=="string"?{text:t}:t,i=C(e.search||""),n=C(r.text||"");e.search&&(n=n.replace("%search%",i)),n=this.highlight(n,e.search);let l=C(r.description||"");if(l){let u=e.search?l.replace("%search%",i):l;n=`<div>${n}</div><small>${u}</small>`}return s.format&&(n=s.format({item:r,result:n,options:e})),n}formatCategoryLabel(t){return this.settings.humanizeCategoryLabels===!1?t||"":M(t||"")}highlight(t,e){if(!e)return t;try{let s=new RegExp(`(${L(e)})`,"gi");return t.replace(s,'<span class="txt-hl">$1</span>')}catch{return t}}resultsSignature(t){return!Array.isArray(t)||t.length===0?"":t.map(e=>!e||typeof e!="object"?String(e):`${e.category??""}|${e.id??""}|${e.value??""}|${e.text??""}`).join("||")}getCacheKey(t){let e=this.settings.locale||document?.documentElement?.lang||navigator?.language||"",s=String(t?.search??"").trim().toLowerCase(),r=Object.keys(t?.categories||{}).join(",");return`${e}::${s}::${r}`}async getItems(t,e,s={}){this.aborter&&this.aborter.abort();let r=s.forceToken||this.requestToken+1;this.requestToken=r;let i=this.getCacheKey(t);if(this.settings.cache!==!1&&this.caches.has(i)){let c=this.caches.get(i);return typeof s.onProgress=="function"&&s.onProgress(c,{token:r,pending:0,completed:Object.keys(t.categories||{}).length,settled:!0}),c}this.aborter=new AbortController,this.aborterSignal=this.aborter.signal;let n=this.items,l=this.settings.map,u=c=>typeof c=="string"?{text:c}:c,d=c=>l?c.map(g=>({text:g[l]})):c.map(g=>u(g)),f=c=>(this.settings.max&&this.settings.max>0&&(c.length=this.settings.max),c),p=c=>{let g=this.sort(c,t);return this.settings.cache!==!1&&this.caches.set(i,g),g};if(P(n)){if(this.settings.minlength>0&&(!t.search||t.search.length<this.settings.minlength))return p([]);let c=this.formatSearch(n,t),g=await fetch(c,{signal:this.aborterSignal});if(g.status!==200)throw Error(`HTTP error ${g.status} - ${c}`);let T=d(await g.json()).filter(a=>this.isMatch(t,a));return p(f(T))}if(Array.isArray(n)){let c=!0;return this.items=n.map(g=>typeof g=="string"?{text:g}:(c=!1,g)),c&&this.container.classList.add("simple"),p(f(d(this.items)))}if(typeof n=="function"){t.control=this.container;let c=this.settings.progressive===!0,g=await this.items(t,e,{progressive:c,token:r,onProgress:s.onProgress});return p(d(g))}return Promise.resolve(n.apply(this,t)).then(c=>p(c))}async runCategorySearch(t,e,s){let r=Number(this.settings.categoryTimeoutMs||0),i={...t,signal:this.aborterSignal};try{let n=await H(Promise.resolve(s.getItems(i)),r,`Category "${e}"`);return(Array.isArray(n)?n:[]).map(u=>{let d=typeof u=="string"?{text:u}:u;return d.category=e,d})}catch(n){return console.warn(`Error loading items for omniBox category '${e}'.`,n),[]}}async runCategoriesSequentially(t,e,s={}){let r=[],i=0;for(let[n,l]of e){let u=l||{};if(u.trigger=u.trigger??(()=>!0),u.getItems=u.getItems??(()=>[]),t.results=r,!u.trigger(t)){i+=1;continue}let d=await this.runCategorySearch(t,n,u);if(this.aborterSignal?.aborted)return r;if(r=r.concat(d),i+=1,typeof s.onProgress=="function"&&this.requestToken===s.token){let f=this.sort([...r],t);s.onProgress(f,{token:s.token,pending:Math.max(0,e.length-i),completed:i,settled:i===e.length})}}return r}async runCategoriesProgressive(t,e,s={}){let r=Math.max(1,Number(this.settings.maxConcurrentCategories||3)),i=[];for(let[c,g]of e){let b=g||{};b.trigger=b.trigger??(()=>!0),b.getItems=b.getItems??(()=>[]),t.results=[],b.trigger(t)&&i.push([c,b])}if(!i.length)return[];let n=0,l=0,u=[],d=async()=>{for(;n<i.length;){let c=n;n+=1;let[g,b]=i[c],T=await this.runCategorySearch(t,g,b);if(this.aborterSignal?.aborted)return;if(u.push(...T),l+=1,typeof s.onProgress=="function"&&this.requestToken===s.token){let a=this.sort([...u],t);s.onProgress(a,{token:s.token,pending:Math.max(0,i.length-l),completed:l,settled:l===i.length})}}},f=[],p=Math.min(r,i.length);for(let c=0;c<p;c+=1)f.push(d());return await Promise.all(f),u}async items(t,e,s={}){t.results=[],t.signal=this.aborterSignal;let r=Object.entries(t.categories||{});return r.length?s.progressive?this.runCategoriesProgressive(t,r,s):this.runCategoriesSequentially(t,r,s):[]}formatSearch(t,e){return t.indexOf("%search%")?t.replace("%search%",e.search||""):`${t}?${this.createQueryParam(e)}`}createQueryParam(t){let e=t.suggest?"&suggest=true":"";return`q=${t.text}${e}`}isMatch(t,e){return e.text?.indexOf("%search%")>=0?!0:t.search?e.text?.toLowerCase().indexOf(t.search.toLowerCase())>=0:t.suggest}static textFilter(t,e){return function(r){if(!t.search)return!0;if(r.hidden)return!1;let n=(e?r[e]:r).match(new RegExp(t.search,"gi"));return n||(r.config?.tags?r.config.tags.some(l=>l.match(new RegExp(t.search,"gi"))):!1)}}};export{N as AutoComplete};
+// src/js/common/common.js
+function fragmentFromTemplateLike(templateLike) {
+  const strings = Array.isArray(templateLike?.strings) ? templateLike.strings : [];
+  const values = Array.isArray(templateLike?.values) ? templateLike.values : [];
+  const consumedValues = /* @__PURE__ */ new Set();
+  const htmlParts = [];
+  const propBindingPattern = /(\s)(\.[\w-]+)=["']?\s*$/;
+  const eventBindingPattern = /(\s)(@[\w-]+)=["']?\s*$/;
+  const booleanBindingPattern = /(\s)(\?[\w-]+)=["']?\s*$/;
+  const attrBindingPattern = /(\s)([\w:-]+)=["']?\s*$/;
+  const quotedBindingPattern = /=["']\s*$/;
+  let skipLeadingQuote = false;
+  for (let i = 0; i < strings.length; i += 1) {
+    let chunk = strings[i] ?? "";
+    if (skipLeadingQuote) {
+      chunk = chunk.replace(/^["']/, "");
+      skipLeadingQuote = false;
+    }
+    if (i < values.length) {
+      const marker = `pds-val-${i}`;
+      const propMatch = chunk.match(propBindingPattern);
+      const eventMatch = chunk.match(eventBindingPattern);
+      const boolMatch = chunk.match(booleanBindingPattern);
+      const attrMatch = chunk.match(attrBindingPattern);
+      if (propMatch) {
+        const propName = propMatch[2].slice(1);
+        skipLeadingQuote = quotedBindingPattern.test(strings[i] ?? "");
+        chunk = chunk.replace(
+          propBindingPattern,
+          `$1data-pds-bind-${i}="prop:${propName}:${marker}"`
+        );
+        consumedValues.add(i);
+      } else if (eventMatch) {
+        const eventName = eventMatch[2].slice(1);
+        skipLeadingQuote = quotedBindingPattern.test(strings[i] ?? "");
+        chunk = chunk.replace(
+          eventBindingPattern,
+          `$1data-pds-bind-${i}="event:${eventName}:${marker}"`
+        );
+        consumedValues.add(i);
+      } else if (boolMatch) {
+        const attrName = boolMatch[2].slice(1);
+        skipLeadingQuote = quotedBindingPattern.test(strings[i] ?? "");
+        chunk = chunk.replace(
+          booleanBindingPattern,
+          `$1data-pds-bind-${i}="boolean:${attrName}:${marker}"`
+        );
+        consumedValues.add(i);
+      } else if (attrMatch) {
+        const attrName = attrMatch[2];
+        skipLeadingQuote = quotedBindingPattern.test(strings[i] ?? "");
+        chunk = chunk.replace(
+          attrBindingPattern,
+          `$1data-pds-bind-${i}="attr:${attrName}:${marker}"`
+        );
+        consumedValues.add(i);
+      }
+    }
+    htmlParts.push(chunk);
+    if (i < values.length && !consumedValues.has(i)) {
+      htmlParts.push(`<!--pds-val-${i}-->`);
+    }
+  }
+  const tpl = document.createElement("template");
+  tpl.innerHTML = htmlParts.join("");
+  const replaceValueAtMarker = (markerNode, value) => {
+    const parent = markerNode.parentNode;
+    if (!parent)
+      return;
+    if (value == null) {
+      parent.removeChild(markerNode);
+      return;
+    }
+    const insertValue = (val) => {
+      if (val == null)
+        return;
+      if (val instanceof Node) {
+        parent.insertBefore(val, markerNode);
+        return;
+      }
+      if (Array.isArray(val)) {
+        val.forEach((item) => insertValue(item));
+        return;
+      }
+      parent.insertBefore(document.createTextNode(String(val)), markerNode);
+    };
+    insertValue(value);
+    parent.removeChild(markerNode);
+  };
+  const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_COMMENT);
+  const markers = [];
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    if (node?.nodeValue?.startsWith("pds-val-")) {
+      markers.push(node);
+    }
+  }
+  markers.forEach((node) => {
+    const index = Number(node.nodeValue.replace("pds-val-", ""));
+    replaceValueAtMarker(node, values[index]);
+  });
+  const elements = tpl.content.querySelectorAll("*");
+  elements.forEach((el) => {
+    [...el.attributes].forEach((attr) => {
+      if (!attr.name.startsWith("data-pds-bind-"))
+        return;
+      const firstColon = attr.value.indexOf(":");
+      const lastColon = attr.value.lastIndexOf(":");
+      if (firstColon <= 0 || lastColon <= firstColon) {
+        el.removeAttribute(attr.name);
+        return;
+      }
+      const kind = attr.value.slice(0, firstColon);
+      const bindingName = attr.value.slice(firstColon + 1, lastColon);
+      const markerValue = attr.value.slice(lastColon + 1);
+      const index = Number(String(markerValue).replace("pds-val-", ""));
+      const value = values[index];
+      if (!bindingName || !Number.isInteger(index)) {
+        el.removeAttribute(attr.name);
+        return;
+      }
+      if (kind === "prop") {
+        el[bindingName] = value;
+      } else if (kind === "event") {
+        if (typeof value === "function" || value && typeof value.handleEvent === "function") {
+          el.addEventListener(bindingName, value);
+        }
+      } else if (kind === "boolean") {
+        if (value) {
+          el.setAttribute(bindingName, "");
+        } else {
+          el.removeAttribute(bindingName);
+        }
+      } else if (kind === "attr") {
+        if (value == null || value === false) {
+          el.removeAttribute(bindingName);
+        } else {
+          el.setAttribute(bindingName, String(value));
+        }
+      }
+      el.removeAttribute(attr.name);
+    });
+  });
+  return tpl.content;
+}
+function parseFragment(html, ...values) {
+  const isTaggedTemplate = Array.isArray(html) && Object.prototype.hasOwnProperty.call(html, "raw");
+  if (isTaggedTemplate) {
+    return fragmentFromTemplateLike({ strings: Array.from(html), values });
+  }
+  if (Array.isArray(html?.strings) && Array.isArray(html?.values)) {
+    return fragmentFromTemplateLike({ strings: html.strings, values: html.values });
+  }
+  const tpl = document.createElement("template");
+  tpl.innerHTML = String(html ?? "");
+  return tpl.content;
+}
+function parseHTML(html, ...values) {
+  return parseFragment(html, ...values).childNodes;
+}
+function throttle(fn, timeoutMs = 100) {
+  let handle;
+  return function throttled(...args) {
+    const fire = () => {
+      clearTimeout(handle);
+      fn(...args);
+    };
+    clearTimeout(handle);
+    handle = setTimeout(fire, timeoutMs);
+  };
+}
+function enQueue(fn) {
+  setTimeout(fn, 0);
+}
+function isUrl(str) {
+  try {
+    if (typeof str !== "string")
+      return false;
+    if (str.indexOf("\n") !== -1 || str.indexOf(" ") !== -1)
+      return false;
+    if (str.startsWith("#/"))
+      return false;
+    const newUrl = new URL(str, window.location.origin);
+    return newUrl.protocol === "http:" || newUrl.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+function withTimeout(promise, timeoutMs, label = "Operation") {
+  if (!timeoutMs || timeoutMs <= 0)
+    return promise;
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error(`${label} timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+    Promise.resolve(promise).then((value) => {
+      clearTimeout(timeout);
+      resolve(value);
+    }).catch((error) => {
+      clearTimeout(timeout);
+      reject(error);
+    });
+  });
+}
+function escapeForRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+function openCenteredWindow(url, width, height) {
+  const left = window.screen.width / 2 - width / 2;
+  const top = window.screen.height / 2 - height / 2;
+  return window.open(
+    url,
+    "",
+    `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=${width}, height=${height}, top=${top}, left=${left}`
+  );
+}
+function humanizeIdentifier(value) {
+  if (value == null)
+    return "";
+  const input = String(value).trim();
+  if (!input)
+    return "";
+  return input.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
+}
+
+// src/js/pds-autocomplete.js
+var cssClasses = {
+  result: "ac-suggestion",
+  item: "ac-itm"
+};
+function escapeHtml(value) {
+  return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;");
+}
+function sanitizeClassToken(value) {
+  return String(value ?? "").replace(/[^a-zA-Z0-9_-]/g, "-");
+}
+function sanitizeClassList(value) {
+  if (value == null)
+    return "";
+  return String(value).split(/\s+/).map((token) => sanitizeClassToken(token)).filter(Boolean).join(" ");
+}
+function sanitizeInlineStyle(value) {
+  if (value == null)
+    return "";
+  const style = String(value).trim();
+  if (!style)
+    return "";
+  if (/[<>{}]/.test(style))
+    return "";
+  if (/(?:expression\s*\(|javascript\s*:|@import\b)/i.test(style))
+    return "";
+  if (!/^[-a-zA-Z\s0-9:;#,.()%!]*$/.test(style))
+    return "";
+  return style;
+}
+var AutoComplete = class _AutoComplete extends EventTarget {
+  constructor(parent, textInput, settings = {}) {
+    super();
+    this.settings = {
+      emptyResultsText: "",
+      progressive: true,
+      maxConcurrentCategories: 3,
+      categoryTimeoutMs: 0,
+      ...settings
+    };
+    this.container = parent;
+    this.input = textInput;
+    this.input.setAttribute("autocomplete", "off");
+    this.categories = settings.categories || {};
+    this.caches = /* @__PURE__ */ new Map();
+    this.rowIndex = -1;
+    this.results = [];
+    this.requestToken = 0;
+    enQueue(this.attach.bind(this));
+  }
+  static connect(event, options) {
+    const input = event.target;
+    if (!input._autoComplete) {
+      if (!options?.categories)
+        throw Error("Missing autocomplete settings");
+      input._autoComplete = new _AutoComplete(input.parentNode, input, options);
+      if (event.type === "focus") {
+        setTimeout(() => {
+          input._autoComplete.focusHandler(event);
+        }, 100);
+      }
+    }
+    return input._autoComplete;
+  }
+  on(a, b) {
+    this.input.addEventListener(a, b);
+    return this;
+  }
+  attach() {
+    this.resultsDiv = document.createElement("div");
+    this.resultsDiv.title = "";
+    this.resultsDiv.setAttribute("part", "suggestions");
+    this.resultsDiv.classList.add(cssClasses.result);
+    if (this.container.offsetWidth > 100) {
+      this.resultsDiv.style.width = `${this.container.offsetWidth}px`;
+    }
+    this.resultsDiv.addEventListener("mousedown", this.resultClick.bind(this));
+    this.container.classList.add("ac-container");
+    this.input.classList.add("ac-input");
+    const inputStyle = getComputedStyle(this.input);
+    this.container.style.setProperty("--ac-bg-default", inputStyle.backgroundColor);
+    this.container.style.setProperty("--ac-color-default", inputStyle.color);
+    const accentColor = inputStyle.accentColor;
+    if (accentColor !== "auto") {
+      this.container.style.setProperty("--ac-accent-color", accentColor);
+    }
+    (this.container?.shadowRoot ?? this.container).appendChild(this.resultsDiv);
+    this.controller().clear("attach");
+    this.on(
+      "input",
+      throttle(this.inputHandler.bind(this), this.settings.throttleInputMs ?? 300)
+    ).on("focus", this.focusHandler.bind(this)).on("mousedown", this.mouseDownHandler.bind(this)).on("focusout", this.blurHandler.bind(this)).on("keyup", this.keyUpHandler.bind(this)).on("keydown", this.keyDownHandler.bind(this));
+  }
+  controller() {
+    let controller = this.internalController();
+    if (typeof this.settings.controller === "function") {
+      controller = this.settings.controller(this) ?? controller;
+    }
+    return controller;
+  }
+  internalController() {
+    return {
+      show: this.show.bind(this),
+      hide: this.hide.bind(this),
+      clear: this.clear.bind(this),
+      empty: () => {
+      }
+    };
+  }
+  moveResult(add) {
+    this.controller().show();
+    const length = this.acItems?.length ?? 0;
+    if (!length)
+      return;
+    this.rowIndex = this.rowIndex + add;
+    if (this.rowIndex <= 0) {
+      this.rowIndex = 0;
+    } else if (this.rowIndex > length - 1) {
+      this.rowIndex = 0;
+    }
+    for (const resultItem of this.acItems) {
+      resultItem.classList.remove("selected");
+    }
+    const selected = this.getSelectedDiv();
+    if (selected) {
+      selected.classList.add("selected");
+      selected.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+        inline: "nearest"
+      });
+    } else {
+      this.focusHandler({ target: this.input });
+    }
+  }
+  getSelectedDiv() {
+    return this.resultsDiv?.querySelector(`div:nth-child(${this.rowIndex + 1})`);
+  }
+  selectResult(div) {
+    const selectedItem = div || this.getSelectedDiv();
+    if (!selectedItem)
+      return;
+    const index = Number.parseInt(selectedItem.getAttribute("data-index"), 10);
+    this.resultClicked = true;
+    const result = Number.isInteger(index) ? this.results[index] : null;
+    if (!result)
+      return;
+    const handlingCategory = this.categories[result.category] ?? {};
+    const categoryAction = typeof handlingCategory.action === "function" ? handlingCategory.action : this.setText.bind(this);
+    if (handlingCategory.newTab) {
+      this.tabWindow = openCenteredWindow("about:blank", 960, 700);
+    }
+    const options = {
+      ...result,
+      search: this.input.value,
+      selectedItem
+    };
+    selectedItem.classList.add("ac-active");
+    setTimeout(() => {
+      this.controller().hide("result-selected");
+      if (typeof options.action === "function") {
+        options.action(options);
+      } else {
+        categoryAction(options);
+        if (handlingCategory.newTab && this.tabWindow) {
+          if (options.url) {
+            this.tabWindow.location.href = options.url;
+          } else {
+            this.tabWindow.close();
+          }
+        }
+      }
+      this.input.dispatchEvent(new Event("change", { bubbles: true }));
+      this.controller().clear("result-selected");
+      const event = new Event("result-selected");
+      event.detail = options;
+      this.input.dispatchEvent(event);
+    }, 0);
+  }
+  setText(options) {
+    let didSet = false;
+    if (this.input) {
+      this.input.value = options.text;
+      didSet = true;
+    } else if (this.container?.autoCompleteInput) {
+      this.container.autoCompleteInput.value = options.text;
+      didSet = true;
+    } else if ("value" in this.container) {
+      this.container.value = options.text;
+      didSet = true;
+    }
+    if (didSet && this.input) {
+      this.input.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+    this.controller().hide("settext");
+  }
+  resultClick(event) {
+    this.selectResult(event.target.closest(`.${cssClasses.item}`));
+  }
+  blurHandler() {
+    setTimeout(() => {
+      if (!this.resultClicked)
+        this.controller().clear("blurred");
+      this.resultClicked = false;
+    }, 100);
+  }
+  clear(_reason, options = {}) {
+    if (this.settings.debug)
+      return;
+    if (!this.resultsDiv)
+      return;
+    this.resultsDiv.innerHTML = "";
+    if (!options.preserveOpen) {
+      this.controller().hide("clear");
+    }
+    if (this.cacheTmr)
+      clearTimeout(this.cacheTmr);
+    this.cacheTmr = setTimeout(() => {
+      this.caches.clear();
+    }, 5 * 60 * 1e3);
+  }
+  dismissSuggestions(reason = "dismiss") {
+    if (this.aborter) {
+      this.aborter.abort();
+    }
+    this.requestToken += 1;
+    this.container.classList.remove("search-running");
+    this.results = [];
+    this.rowIndex = -1;
+    this.acItems = [];
+    this.controller().clear(reason);
+  }
+  isSuggestionsOpen() {
+    return this.resultsDiv?.classList?.contains("ac-active") === true;
+  }
+  retriggerSuggestions(event) {
+    if (this.isSuggestionsOpen())
+      return;
+    if (this.container.classList.contains("search-running"))
+      return;
+    const hasFocus = document.activeElement === this.input || this.input?.matches?.(":focus") === true;
+    if (!hasFocus)
+      return;
+    this.suggest(this.input.value, event);
+  }
+  mouseDownHandler(event) {
+    if (this.isSuggestionsOpen())
+      return;
+    const hasFocus = document.activeElement === this.input || this.input?.matches?.(":focus") === true;
+    if (hasFocus) {
+      this.retriggerSuggestions(event);
+      return;
+    }
+    setTimeout(() => {
+      this.retriggerSuggestions({ target: this.input, type: "mousedown" });
+    }, 0);
+  }
+  show() {
+    if (!this.resultsDiv.classList.contains("ac-active")) {
+      const viewBounds = this.getViewBounds();
+      this.resultsDiv.style.position = "absolute";
+      if (viewBounds.rect.width > 100) {
+        this.resultsDiv.style.width = `${viewBounds.rect.width}px`;
+      }
+      this.settings.direction = this.settings.direction ?? viewBounds.suggestedDirection;
+      this.resultsDiv.setAttribute("data-direction", this.settings.direction);
+      if (this.settings.direction === "up") {
+        this.resultsDiv.style.top = "unset";
+        this.resultsDiv.style.bottom = `${viewBounds.rect.height + 20}px`;
+        this.rowIndex = this.acItems.length;
+      } else {
+        this.resultsDiv.style.bottom = "unset";
+        this.resultsDiv.style.top = `${viewBounds.rect.height}px`;
+        this.rowIndex = -1;
+      }
+      this.resultsDiv.style.maxWidth = "unset";
+      this.resultsDiv.classList.toggle("ac-active", true);
+    }
+  }
+  getViewBounds() {
+    const rect = this.input.getBoundingClientRect();
+    return {
+      rect,
+      suggestedDirection: rect.top + rect.height + 500 > window.innerHeight ? "up" : "down"
+    };
+  }
+  hide() {
+    this.resultsDiv.classList.toggle("ac-active", false);
+  }
+  empty() {
+    this.resultsDiv.innerHTML = "";
+    const emptyElement = document.createElement("div");
+    emptyElement.className = "ac-empty";
+    emptyElement.textContent = String(this.settings.emptyResultsText ?? "");
+    this.resultsDiv.appendChild(emptyElement);
+    this.controller().show();
+  }
+  async inputHandler(event) {
+    if (this.cacheTmr)
+      clearTimeout(this.cacheTmr);
+    const currentSearch = String(this.input?.value ?? event?.target?.value ?? "");
+    const options = {
+      search: currentSearch,
+      categories: this.categories
+    };
+    const token = this.requestToken + 1;
+    const progressive = this.settings.progressive === true;
+    let lastPartialSignature = "";
+    let hadPartial = false;
+    this.container.classList.add("search-running");
+    const onProgress = (partialResults, metadata = {}) => {
+      if (!progressive || metadata.token !== this.requestToken)
+        return;
+      hadPartial = true;
+      lastPartialSignature = this.resultsSignature(partialResults);
+      this.resultsHandler(partialResults, options);
+      this.input.dispatchEvent(
+        new CustomEvent("results:partial", {
+          detail: {
+            results: partialResults,
+            token: metadata.token,
+            pending: metadata.pending ?? 0,
+            completed: metadata.completed ?? 0,
+            settled: metadata.settled ?? false
+          }
+        })
+      );
+    };
+    const results = await this.getItems(options, event, {
+      onProgress,
+      forceToken: token
+    }).catch(() => []);
+    if (token !== this.requestToken) {
+      this.container.classList.remove("search-running");
+      return;
+    }
+    const finalSignature = this.resultsSignature(results);
+    if (!hadPartial || finalSignature !== lastPartialSignature) {
+      this.resultsHandler(results, options);
+    }
+    this.input.dispatchEvent(
+      new CustomEvent("results:complete", {
+        detail: {
+          results,
+          token,
+          pending: 0,
+          completed: Object.keys(this.categories || {}).length,
+          settled: true
+        }
+      })
+    );
+    this.container.classList.remove("search-running");
+  }
+  keyDownHandler(event) {
+    switch (event.key) {
+      case "Enter":
+        event.stopPropagation();
+        event.preventDefault();
+        break;
+      case "Escape":
+        event.stopPropagation();
+        event.preventDefault();
+        this.dismissSuggestions("escape");
+        break;
+      case "ArrowDown":
+        if (!this.isSuggestionsOpen()) {
+          event.stopPropagation();
+          event.preventDefault();
+          this.retriggerSuggestions(event);
+          break;
+        }
+        enQueue(() => this.moveResult(1));
+        break;
+      case "ArrowUp":
+        enQueue(() => this.moveResult(-1));
+        break;
+      default:
+        break;
+    }
+  }
+  keyUpHandler(event) {
+    switch (event.key) {
+      case "Escape":
+        this.dismissSuggestions("escape");
+        break;
+      case "Enter":
+        if (this.getSelectedDiv()) {
+          this.container.preventEnter = true;
+          event.stopPropagation();
+          event.preventDefault();
+          this.selectResult();
+          setTimeout(() => {
+            this.container.preventEnter = false;
+          }, 10);
+        }
+        break;
+      default:
+        break;
+    }
+  }
+  focusHandler(event) {
+    this.controller().clear("focus");
+    this.suggest(event.target.value, event);
+  }
+  suggest(value, event) {
+    this.input.focus();
+    const options = {
+      suggest: true,
+      search: value || "",
+      categories: this.categories
+    };
+    this.getItems(options, event).then((results) => {
+      this.input.dispatchEvent(
+        new CustomEvent("show-results", {
+          detail: { results }
+        })
+      );
+      this.resultsHandler(results, options);
+    });
+  }
+  sort(results, options) {
+    return results.sort((a, b) => {
+      const aCat = options.categories[a.category];
+      const bCat = options.categories[b.category];
+      const aIndex = typeof aCat.sortIndex === "function" ? aCat.sortIndex(options) : aCat.sortIndex ?? 0;
+      const bIndex = typeof bCat.sortIndex === "function" ? bCat.sortIndex(options) : bCat.sortIndex ?? 0;
+      return bIndex > aIndex ? 1 : -1;
+    });
+  }
+  resultsHandler(results, options) {
+    this.results = results;
+    this.rowIndex = -1;
+    this.resultsDiv.innerHTML = "";
+    let index = 0;
+    const singleItemTemplate = (catHandler, item) => {
+      const categoryLabel = this.formatCategoryLabel(item.category);
+      const safeTooltip = escapeHtml(item.tooltip || "");
+      const safeCategoryClass = sanitizeClassToken(item.category || "");
+      const safeExtraClass = sanitizeClassList(item.class ?? "");
+      const safeStyle = sanitizeInlineStyle(item.style);
+      const styleAttr = safeStyle ? ` style="${escapeHtml(safeStyle)}"` : "";
+      const safeCategoryLabel = escapeHtml(categoryLabel);
+      return `
+			<div title="${safeTooltip}" data-index="${index}" part="item" class="${`${cssClasses.item} cat-${safeCategoryClass} ${safeExtraClass}`.trim()}"${styleAttr}>
+				${this.handleImageOrIcon(item)}
+				<span class="text">${this.formatResultItem(item, options, catHandler)}</span>
+				${!this.settings.hideCategory ? `<span class="category">${safeCategoryLabel}</span>` : ""}
+			</div>`;
+    };
+    results.forEach((item) => {
+      const categoryHandler = options.categories[item.category] || {};
+      if (item.element) {
+        this.resultsDiv.appendChild(item.element);
+      } else {
+        const normalized = typeof item === "string" ? { text: item } : item;
+        const parsedNodes = parseHTML(singleItemTemplate(categoryHandler, normalized));
+        const resultElement = Array.from(parsedNodes).find(
+          (node) => node && node.nodeType === Node.ELEMENT_NODE
+        );
+        if (resultElement) {
+          this.resultsDiv.appendChild(resultElement);
+        }
+      }
+      index += 1;
+    });
+    if (results.length) {
+      this.acItems = this.resultsDiv.querySelectorAll(".ac-itm");
+      this.controller().show();
+    } else if (options.search.length) {
+      this.controller().empty();
+    }
+  }
+  handleImageOrIcon(item) {
+    if (item.image) {
+      return `<img src="${escapeHtml(item.image)}"/>`;
+    }
+    if (typeof this.settings.iconHandler === "function") {
+      return this.settings.iconHandler(item);
+    }
+    return `<svg-icon icon="${escapeHtml(item.icon)}"></svg-icon>`;
+  }
+  formatResultItem(item, options, catHandler) {
+    const normalized = typeof item === "string" ? { text: item } : item;
+    const safeSearchText = escapeHtml(options.search || "");
+    let result = escapeHtml(normalized.text || "");
+    if (options.search) {
+      result = result.replace("%search%", safeSearchText);
+    }
+    result = this.highlight(result, options.search);
+    const safeDescription = escapeHtml(normalized.description || "");
+    if (safeDescription) {
+      const descriptionWithPlaceholder = options.search ? safeDescription.replace("%search%", safeSearchText) : safeDescription;
+      result = `<div>${result}</div><small>${descriptionWithPlaceholder}</small>`;
+    }
+    if (catHandler.format) {
+      result = catHandler.format({
+        item: normalized,
+        result,
+        options
+      });
+    }
+    return result;
+  }
+  formatCategoryLabel(category) {
+    if (this.settings.humanizeCategoryLabels === false) {
+      return category || "";
+    }
+    return humanizeIdentifier(category || "");
+  }
+  highlight(str, find) {
+    if (!find)
+      return str;
+    try {
+      const reg = new RegExp(`(${escapeForRegExp(find)})`, "gi");
+      return str.replace(reg, '<span class="txt-hl">$1</span>');
+    } catch {
+      return str;
+    }
+  }
+  resultsSignature(list) {
+    if (!Array.isArray(list) || list.length === 0)
+      return "";
+    return list.map((item) => {
+      if (!item || typeof item !== "object")
+        return String(item);
+      return `${item.category ?? ""}|${item.id ?? ""}|${item.value ?? ""}|${item.text ?? ""}`;
+    }).join("||");
+  }
+  getCacheKey(options) {
+    const locale = this.settings.locale || document?.documentElement?.lang || navigator?.language || "";
+    const query = String(options?.search ?? "").trim().toLowerCase();
+    const categories = Object.keys(options?.categories || {}).join(",");
+    return `${locale}::${query}::${categories}`;
+  }
+  async getItems(options, event, hooks = {}) {
+    if (this.aborter) {
+      this.aborter.abort();
+    }
+    const token = hooks.forceToken || this.requestToken + 1;
+    this.requestToken = token;
+    const cacheKey = this.getCacheKey(options);
+    if (this.settings.cache !== false && this.caches.has(cacheKey)) {
+      const cached = this.caches.get(cacheKey);
+      if (typeof hooks.onProgress === "function") {
+        hooks.onProgress(cached, {
+          token,
+          pending: 0,
+          completed: Object.keys(options.categories || {}).length,
+          settled: true
+        });
+      }
+      return cached;
+    }
+    this.aborter = new AbortController();
+    this.aborterSignal = this.aborter.signal;
+    const source = this.items;
+    const prop = this.settings.map;
+    const normalizeItem = (item) => {
+      if (typeof item === "string")
+        return { text: item };
+      return item;
+    };
+    const map = (list) => {
+      if (!prop) {
+        return list.map((item) => normalizeItem(item));
+      }
+      return list.map((item) => ({ text: item[prop] }));
+    };
+    const max = (list) => {
+      if (this.settings.max && this.settings.max > 0) {
+        list.length = this.settings.max;
+      }
+      return list;
+    };
+    const settle = (data) => {
+      const sorted = this.sort(data, options);
+      if (this.settings.cache !== false) {
+        this.caches.set(cacheKey, sorted);
+      }
+      return sorted;
+    };
+    if (isUrl(source)) {
+      if (this.settings.minlength > 0) {
+        if (!options.search || options.search.length < this.settings.minlength) {
+          return settle([]);
+        }
+      }
+      const url = this.formatSearch(source, options);
+      const response = await fetch(url, { signal: this.aborterSignal });
+      if (response.status !== 200) {
+        throw Error(`HTTP error ${response.status} - ${url}`);
+      }
+      const items = map(await response.json());
+      const filtered = items.filter((item) => this.isMatch(options, item));
+      return settle(max(filtered));
+    }
+    if (Array.isArray(source)) {
+      let simple = true;
+      this.items = source.map((item) => {
+        if (typeof item === "string")
+          return { text: item };
+        simple = false;
+        return item;
+      });
+      if (simple) {
+        this.container.classList.add("simple");
+      }
+      return settle(max(map(this.items)));
+    }
+    if (typeof source === "function") {
+      options.control = this.container;
+      const progressive = this.settings.progressive === true;
+      const items = await this.items(options, event, {
+        progressive,
+        token,
+        onProgress: hooks.onProgress
+      });
+      return settle(map(items));
+    }
+    return Promise.resolve(source.apply(this, options)).then(
+      (resolved) => settle(resolved)
+    );
+  }
+  async runCategorySearch(options, categoryName, categoryHandler) {
+    const timeoutMs = Number(this.settings.categoryTimeoutMs || 0);
+    const callOptions = {
+      ...options,
+      signal: this.aborterSignal
+    };
+    try {
+      const result = await withTimeout(
+        Promise.resolve(categoryHandler.getItems(callOptions)),
+        timeoutMs,
+        `Category "${categoryName}"`
+      );
+      const list = Array.isArray(result) ? result : [];
+      return list.map((item) => {
+        const normalized = typeof item === "string" ? { text: item } : item;
+        normalized.category = categoryName;
+        return normalized;
+      });
+    } catch (error) {
+      console.warn(`Error loading items for omniBox category '${categoryName}'.`, error);
+      return [];
+    }
+  }
+  async runCategoriesSequentially(options, entries, hooks = {}) {
+    let allResults = [];
+    let completed = 0;
+    for (const [categoryName, originalHandler] of entries) {
+      const categoryHandler = originalHandler || {};
+      categoryHandler.trigger = categoryHandler.trigger ?? (() => true);
+      categoryHandler.getItems = categoryHandler.getItems ?? (() => []);
+      options.results = allResults;
+      if (!categoryHandler.trigger(options)) {
+        completed += 1;
+        continue;
+      }
+      const categoryResults = await this.runCategorySearch(
+        options,
+        categoryName,
+        categoryHandler
+      );
+      if (this.aborterSignal?.aborted) {
+        return allResults;
+      }
+      allResults = allResults.concat(categoryResults);
+      completed += 1;
+      if (typeof hooks.onProgress === "function" && this.requestToken === hooks.token) {
+        const partial = this.sort([...allResults], options);
+        hooks.onProgress(partial, {
+          token: hooks.token,
+          pending: Math.max(0, entries.length - completed),
+          completed,
+          settled: completed === entries.length
+        });
+      }
+    }
+    return allResults;
+  }
+  async runCategoriesProgressive(options, entries, hooks = {}) {
+    const maxConcurrency = Math.max(1, Number(this.settings.maxConcurrentCategories || 3));
+    const enabledEntries = [];
+    for (const [categoryName, originalHandler] of entries) {
+      const categoryHandler = originalHandler || {};
+      categoryHandler.trigger = categoryHandler.trigger ?? (() => true);
+      categoryHandler.getItems = categoryHandler.getItems ?? (() => []);
+      options.results = [];
+      if (categoryHandler.trigger(options)) {
+        enabledEntries.push([categoryName, categoryHandler]);
+      }
+    }
+    if (!enabledEntries.length) {
+      return [];
+    }
+    let index = 0;
+    let completed = 0;
+    const allResults = [];
+    const worker = async () => {
+      while (index < enabledEntries.length) {
+        const currentIndex = index;
+        index += 1;
+        const [categoryName, categoryHandler] = enabledEntries[currentIndex];
+        const categoryResults = await this.runCategorySearch(
+          options,
+          categoryName,
+          categoryHandler
+        );
+        if (this.aborterSignal?.aborted)
+          return;
+        allResults.push(...categoryResults);
+        completed += 1;
+        if (typeof hooks.onProgress === "function" && this.requestToken === hooks.token) {
+          const partial = this.sort([...allResults], options);
+          hooks.onProgress(partial, {
+            token: hooks.token,
+            pending: Math.max(0, enabledEntries.length - completed),
+            completed,
+            settled: completed === enabledEntries.length
+          });
+        }
+      }
+    };
+    const workers = [];
+    const workerCount = Math.min(maxConcurrency, enabledEntries.length);
+    for (let i = 0; i < workerCount; i += 1) {
+      workers.push(worker());
+    }
+    await Promise.all(workers);
+    return allResults;
+  }
+  async items(options, _event, hooks = {}) {
+    options.results = [];
+    options.signal = this.aborterSignal;
+    const entries = Object.entries(options.categories || {});
+    if (!entries.length)
+      return [];
+    if (!hooks.progressive) {
+      return this.runCategoriesSequentially(options, entries, hooks);
+    }
+    return this.runCategoriesProgressive(options, entries, hooks);
+  }
+  formatSearch(url, options) {
+    if (url.indexOf("%search%")) {
+      return url.replace("%search%", options.search || "");
+    }
+    return `${url}?${this.createQueryParam(options)}`;
+  }
+  createQueryParam(options) {
+    const suggest = options.suggest ? "&suggest=true" : "";
+    return `q=${options.text}${suggest}`;
+  }
+  isMatch(options, item) {
+    if (item.text?.indexOf("%search%") >= 0)
+      return true;
+    return options.search ? item.text?.toLowerCase().indexOf(options.search.toLowerCase()) >= 0 : options.suggest;
+  }
+  static textFilter(options, propertyName) {
+    return function textFilterPredicate(item) {
+      if (!options.search)
+        return true;
+      if (item.hidden)
+        return false;
+      const prop = propertyName ? item[propertyName] : item;
+      const isMatch = prop.match(new RegExp(options.search, "gi"));
+      if (isMatch)
+        return isMatch;
+      if (item.config?.tags) {
+        return item.config.tags.some((tag) => tag.match(new RegExp(options.search, "gi")));
+      }
+      return false;
+    };
+  }
+};
+export {
+  AutoComplete
+};
+//# sourceMappingURL=pds-autocomplete.js.map
