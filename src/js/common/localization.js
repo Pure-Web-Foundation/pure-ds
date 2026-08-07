@@ -2,19 +2,111 @@ import { pdsLog } from "./pds-log.js";
 
 const __DEFAULT_LOCALE__ = "en";
 
-const __localizationState = {
-  defaultLocale: __DEFAULT_LOCALE__,
-  provider: null,
-  messagesByLocale: new Map(),
-  loadingByLocale: new Map(),
-  observer: null,
-  reconcileTimer: null,
-  requestedKeys: new Set(),
-  textNodeKeyMap: new WeakMap(),
-  attributeKeyMap: new WeakMap(),
-  valueToKeys: new Map(),
-  missingWarnings: new Set(),
-};
+/**
+ * Key under which the one true localization state lives on the global scope.
+ *
+ * The string is duplicated rather than imported, matching how `pds-log.js`
+ * reaches `__PURE_DS_PDS_SINGLETON__`: modules under `common/` are leaf
+ * utilities and must not depend on `pds-singleton.js`. Importing it would also
+ * give `import "@pure-ds/core/localization"` the side effect of instantiating
+ * the PDS singleton, and would make this bundle -- which is loaded dynamically
+ * and may evaluate before, after, or entirely without `pds.js` -- depend on
+ * load order.
+ */
+const __LOCALIZATION_STATE_KEY = "__PURE_DS_LOCALIZATION_STATE__";
+
+function __createLocalizationState() {
+  return {
+    defaultLocale: __DEFAULT_LOCALE__,
+    provider: null,
+    messagesByLocale: new Map(),
+    loadingByLocale: new Map(),
+    observer: null,
+    reconcileTimer: null,
+    requestedKeys: new Set(),
+    textNodeKeyMap: new WeakMap(),
+    attributeKeyMap: new WeakMap(),
+    valueToKeys: new Map(),
+    missingWarnings: new Set(),
+    configureCount: 0,
+  };
+}
+
+/**
+ * Backfill fields an older copy of this module may not have created.
+ *
+ * Must test with `in`, never `||=` or `??=`: `provider`, `observer` and
+ * `reconcileTimer` are legitimately falsy, so a truthiness test would clobber
+ * live values -- including, once the reconciler serializes its passes, the
+ * in-flight latch that makes concurrent copies safe.
+ */
+function __adoptLocalizationState(existingState) {
+  const defaults = __createLocalizationState();
+  for (const field of Object.keys(defaults)) {
+    if (!(field in existingState)) {
+      existingState[field] = defaults[field];
+    }
+  }
+  return existingState;
+}
+
+function __resolveGlobalScope() {
+  try {
+    if (typeof globalThis !== "undefined") return globalThis;
+    if (typeof window !== "undefined") return window;
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+/**
+ * Resolve the single source of truth for localization state, shared by every
+ * copy of this module in the realm.
+ *
+ * Several `@pure-ds/core` bundles statically inline this file
+ * (`pds-localization.js`, `pds-enhancers.js`, `pds-manager.js`) and a consumer
+ * may bundle a further copy, so module-level state would fork: only the copy
+ * that receives `configureLocalization()` would work, and every `msg()` call in
+ * the others would return its raw key. Two configured copies would run two
+ * MutationObservers over one document, each seeing the other's writes as
+ * external mutations.
+ *
+ * INVARIANT: the state OBJECT identity is never replaced -- only its fields are
+ * mutated. Every access in this file goes through `__localizationState.<field>`,
+ * so a field reassignment (as `configureLocalization` does for the key maps) is
+ * immediately visible to all copies. Never reassign `__localizationState`, and
+ * never destructure a field into a module-level binding: either re-forks the
+ * state silently.
+ *
+ * Fields are append-only, because the object is a contract across versions. If
+ * a breaking shape change is ever needed, change the KEY rather than the shape
+ * -- refusing to adopt an older-shaped state would recreate the fork this
+ * exists to remove.
+ */
+function __resolveLocalizationState() {
+  const scope = __resolveGlobalScope();
+  if (!scope) {
+    return __createLocalizationState();
+  }
+
+  const existingState = scope[__LOCALIZATION_STATE_KEY];
+  if (existingState && typeof existingState === "object") {
+    return __adoptLocalizationState(existingState);
+  }
+
+  const createdState = __createLocalizationState();
+  try {
+    scope[__LOCALIZATION_STATE_KEY] = createdState;
+  } catch {
+    // Frozen or sealed global (hardened realms, some CSP shims): degrade to
+    // per-copy state, which is the pre-fix behaviour. Never throw from module
+    // evaluation.
+  }
+  return createdState;
+}
+
+const __localizationState = __resolveLocalizationState();
 
 const __LOCALIZABLE_ATTRIBUTES = [
   "title",
@@ -780,9 +872,12 @@ function __attachLangObserver() {
     return;
   }
 
+  // Exactly one observer must exist per realm, however many copies of this
+  // module are loaded. Re-creating it on every configure would swap a working
+  // observer for an identical one and open a window in which mutations are
+  // missed, so an already-attached observer is left alone.
   if (__localizationState.observer) {
-    __localizationState.observer.disconnect();
-    __localizationState.observer = null;
+    return;
   }
 
   if (typeof MutationObserver !== "function") {
@@ -802,6 +897,13 @@ function __attachLangObserver() {
   });
 
   __localizationState.observer = observer;
+}
+
+function __detachLangObserver() {
+  if (__localizationState.observer) {
+    __localizationState.observer.disconnect();
+    __localizationState.observer = null;
+  }
 }
 
 function __resolveTranslation(key, values = [], options = {}, template = null) {
@@ -887,10 +989,29 @@ export function getLocalizationState() {
 }
 
 export function configureLocalization(config = null) {
-  if (__localizationState.observer) {
-    __localizationState.observer.disconnect();
-    __localizationState.observer = null;
+  // The state is shared across every copy of this module in the realm, so a
+  // second call tears down the first caller's configuration. That is the
+  // documented contract, but it is also the likeliest cause of a "my provider
+  // disappeared" report, so make it visible.
+  __localizationState.configureCount += 1;
+  if (__localizationState.configureCount > 1) {
+    const incomingLocale =
+      typeof config?.locale === "string" && config.locale.trim()
+        ? config.locale
+        : __DEFAULT_LOCALE__;
+    pdsLog(
+      "debug",
+      `[i18n] configureLocalization() call #${__localizationState.configureCount} replaces the previous configuration (incoming locale "${incomingLocale}"${
+        config ? "" : ", resetting to defaults"
+      }).`
+    );
   }
+
+  // The observer is deliberately NOT disconnected here. It is realm-wide and
+  // idempotent (see __attachLangObserver), and it observes only `lang` plus
+  // structure -- nothing that the configuration changes. MutationObserver
+  // callbacks are microtasks and reconcile is a macrotask, so neither can
+  // interleave with this synchronous reset.
   if (__localizationState.reconcileTimer) {
     clearTimeout(__localizationState.reconcileTimer);
     __localizationState.reconcileTimer = null;
@@ -907,6 +1028,11 @@ export function configureLocalization(config = null) {
   __localizationState.missingWarnings.clear();
 
   if (!config || typeof config !== "object") {
+    // A reset leaves nothing to reconcile for, and this path never reaches
+    // __attachLangObserver, so the observer must be torn down here or it would
+    // keep running a document-wide "[lang]" query on every mutation batch for
+    // the rest of the page's life.
+    __detachLangObserver();
     return getLocalizationState();
   }
 
