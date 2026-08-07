@@ -207,7 +207,27 @@ const inFormSettingsSource = `const settings = {
   <button class="btn-primary" type="submit">Submit</button>
 </form>`;
 
-const countriesApiSettingsSource = `const settings = {
+const countriesApiSettingsSource = `const countries = [
+    { id: "AR", text: "Argentina", icon: "globe" },
+    { id: "AU", text: "Australia", icon: "globe" },
+    { id: "BR", text: "Brazil", icon: "globe" },
+    { id: "CA", text: "Canada", icon: "globe" },
+    { id: "CN", text: "China", icon: "globe" },
+    { id: "FR", text: "France", icon: "globe" },
+    { id: "DE", text: "Germany", icon: "globe" },
+    { id: "IN", text: "India", icon: "globe" },
+    { id: "JP", text: "Japan", icon: "globe" },
+    { id: "MX", text: "Mexico", icon: "globe" },
+    { id: "NL", text: "Netherlands", icon: "globe" },
+    { id: "NZ", text: "New Zealand", icon: "globe" },
+    { id: "ES", text: "Spain", icon: "globe" },
+    { id: "SE", text: "Sweden", icon: "globe" },
+    { id: "CH", text: "Switzerland", icon: "globe" },
+    { id: "GB", text: "United Kingdom", icon: "globe" },
+    { id: "US", text: "United States", icon: "globe" },
+  ];
+
+const settings = {
   hideCategory: true,
   itemGrid: "0 1fr 0",
   iconHandler: () => '',
@@ -233,7 +253,6 @@ const countriesApiSettingsSource = `const settings = {
       getItems: async (options) => {
         const q = (options.search || "").trim().toLowerCase();
         if (!q) return [];
-        const countries = await loadCountries();
         return countries
           .filter((item) => item.text.toLowerCase().includes(q))
           .slice(0, 30);

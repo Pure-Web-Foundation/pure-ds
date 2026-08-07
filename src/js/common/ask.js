@@ -1,6 +1,15 @@
 import { fragmentFromTemplateLike } from "./common.js";
 import { PDS } from "../pds-singleton.js";
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 /**
  * Get the current page title for dialogs
  */
@@ -339,12 +348,14 @@ export async function ask(message, options = {}) {
       dialog.style.setProperty('--dialog-max-height', options.maxHeight);
     }
 
+    const safeTitle = escapeHtml(options.title);
+
     // Build button elements
     const buttons = Object.entries(buttonConfigs).map(([code, obj]) => {
       const btnClass = obj.primary ? "btn-primary btn-sm" : "btn-outline btn-sm";
       const btnType = obj.cancel ? "button" : "submit";
       const formNoValidate = obj.formNoValidate ? " formnovalidate" : "";
-      return `<button type="${btnType}" class="${btnClass}" value="${code}"${formNoValidate}>${obj.name}</button>`;
+      return `<button type="${btnType}" class="${btnClass}" value="${escapeHtml(code)}"${formNoValidate}>${escapeHtml(obj.name)}</button>`;
     });
 
     // Create PDS-compliant dialog structure
@@ -360,7 +371,7 @@ export async function ask(message, options = {}) {
         // Build dialog structure with form as direct child for proper flex layout
         dialog.innerHTML = /*html*/ `
           <header>
-            <h2>${options.title}</h2>
+            <h2>${safeTitle}</h2>
           </header>
         `;
         
@@ -383,7 +394,7 @@ export async function ask(message, options = {}) {
         // No form found, use standard article structure
         dialog.innerHTML = /*html*/ `
           <header>
-            <h2>${options.title}</h2>
+            <h2>${safeTitle}</h2>
           </header>
           <article id="msg-container"></article>
           <footer>
@@ -397,7 +408,7 @@ export async function ask(message, options = {}) {
       dialog.innerHTML = /*html*/ `
         <form method="dialog">
           <header>
-            <h2>${options.title}</h2>
+            <h2>${safeTitle}</h2>
           </header>
           
           <article id="msg-container"></article>

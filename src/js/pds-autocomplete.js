@@ -14,6 +14,38 @@ const cssClasses = {
 	item: "ac-itm",
 };
 
+function escapeHtml(value) {
+	return String(value ?? "")
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/\"/g, "&quot;")
+		.replace(/'/g, "&#39;");
+}
+
+function sanitizeClassToken(value) {
+	return String(value ?? "").replace(/[^a-zA-Z0-9_-]/g, "-");
+}
+
+function sanitizeClassList(value) {
+	if (value == null) return "";
+	return String(value)
+		.split(/\s+/)
+		.map((token) => sanitizeClassToken(token))
+		.filter(Boolean)
+		.join(" ");
+}
+
+function sanitizeInlineStyle(value) {
+	if (value == null) return "";
+	const style = String(value).trim();
+	if (!style) return "";
+	if (/[<>{}]/.test(style)) return "";
+	if (/(?:expression\s*\(|javascript\s*:|@import\b)/i.test(style)) return "";
+	if (!/^[-a-zA-Z\s0-9:;#,.()%!]*$/.test(style)) return "";
+	return style;
+}
+
 class AutoComplete extends EventTarget {
 	constructor(parent, textInput, settings = {}) {
 		super();
@@ -321,7 +353,11 @@ class AutoComplete extends EventTarget {
 	}
 
 	empty() {
-		this.resultsDiv.innerHTML = `<div class="ac-empty">${this.settings.emptyResultsText}</div>`;
+		this.resultsDiv.innerHTML = "";
+		const emptyElement = document.createElement("div");
+		emptyElement.className = "ac-empty";
+		emptyElement.textContent = String(this.settings.emptyResultsText ?? "");
+		this.resultsDiv.appendChild(emptyElement);
 		this.controller().show();
 	}
 
@@ -488,11 +524,17 @@ class AutoComplete extends EventTarget {
 		let index = 0;
 		const singleItemTemplate = (catHandler, item) => {
 			const categoryLabel = this.formatCategoryLabel(item.category);
+			const safeTooltip = escapeHtml(item.tooltip || "");
+			const safeCategoryClass = sanitizeClassToken(item.category || "");
+			const safeExtraClass = sanitizeClassList(item.class ?? "");
+			const safeStyle = sanitizeInlineStyle(item.style);
+			const styleAttr = safeStyle ? ` style="${escapeHtml(safeStyle)}"` : "";
+			const safeCategoryLabel = escapeHtml(categoryLabel);
 			return `
-			<div title="${item.tooltip || ""}" data-index="${index}" part="item" class="${`${cssClasses.item} cat-${item.category} ${item.class ?? ""}`.trim()}"${item.style ? ` style="${item.style}"` : ""}>
+			<div title="${safeTooltip}" data-index="${index}" part="item" class="${`${cssClasses.item} cat-${safeCategoryClass} ${safeExtraClass}`.trim()}"${styleAttr}>
 				${this.handleImageOrIcon(item)}
 				<span class="text">${this.formatResultItem(item, options, catHandler)}</span>
-				${!this.settings.hideCategory ? `<span class="category">${categoryLabel}</span>` : ""}
+				${!this.settings.hideCategory ? `<span class="category">${safeCategoryLabel}</span>` : ""}
 			</div>`;
 		};
 
@@ -523,24 +565,28 @@ class AutoComplete extends EventTarget {
 
 	handleImageOrIcon(item) {
 		if (item.image) {
-			return `<img src="${item.image}"/>`;
+			return `<img src="${escapeHtml(item.image)}"/>`;
 		}
 		if (typeof this.settings.iconHandler === "function") {
 			return this.settings.iconHandler(item);
 		}
-		return `<svg-icon icon="${item.icon}"></svg-icon>`;
+		return `<svg-icon icon="${escapeHtml(item.icon)}"></svg-icon>`;
 	}
 
 	formatResultItem(item, options, catHandler) {
 		const normalized = typeof item === "string" ? { text: item } : item;
-		let result = normalized.text;
+		const safeSearchText = escapeHtml(options.search || "");
+		let result = escapeHtml(normalized.text || "");
 		if (options.search) {
-			result = result.replace("%search%", options.search);
-			normalized.description = normalized.description?.replace("%search%", options.search);
+			result = result.replace("%search%", safeSearchText);
 		}
 		result = this.highlight(result, options.search);
-		if (normalized.description) {
-			result = `<div>${result}</div><small>${normalized.description}</small>`;
+		const safeDescription = escapeHtml(normalized.description || "");
+		if (safeDescription) {
+			const descriptionWithPlaceholder = options.search
+				? safeDescription.replace("%search%", safeSearchText)
+				: safeDescription;
+			result = `<div>${result}</div><small>${descriptionWithPlaceholder}</small>`;
 		}
 		if (catHandler.format) {
 			result = catHandler.format({
