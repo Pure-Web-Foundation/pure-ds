@@ -2144,7 +2144,7 @@ async function start(config) {
     if (localizationConfig) {
       await __loadLocalizationRuntime();
       configureLocalization(localizationConfig);
-    } else {
+    } else if (!__getLocalizationRuntimeSync()) {
       configureLocalization(null);
     }
     let startResult;

@@ -112,19 +112,69 @@ function pdsLog(level = "log", message, ...data) {
 
 // src/js/common/localization.js
 var __DEFAULT_LOCALE__ = "en";
-var __localizationState = {
-  defaultLocale: __DEFAULT_LOCALE__,
-  provider: null,
-  messagesByLocale: /* @__PURE__ */ new Map(),
-  loadingByLocale: /* @__PURE__ */ new Map(),
-  observer: null,
-  reconcileTimer: null,
-  requestedKeys: /* @__PURE__ */ new Set(),
-  textNodeKeyMap: /* @__PURE__ */ new WeakMap(),
-  attributeKeyMap: /* @__PURE__ */ new WeakMap(),
-  valueToKeys: /* @__PURE__ */ new Map(),
-  missingWarnings: /* @__PURE__ */ new Set()
-};
+var __RECONCILE_DEBOUNCE_MS = 16;
+var __MAX_RECONCILE_PASSES = 5;
+var __MAX_INDEXED_VALUES = 1e3;
+var __LOCALIZATION_STATE_KEY = "__PURE_DS_LOCALIZATION_STATE__";
+function __createLocalizationState() {
+  return {
+    defaultLocale: __DEFAULT_LOCALE__,
+    provider: null,
+    messagesByLocale: /* @__PURE__ */ new Map(),
+    loadingByLocale: /* @__PURE__ */ new Map(),
+    observer: null,
+    reconcileTimer: null,
+    reconcileInFlight: false,
+    reconcileDirty: false,
+    selfWrittenTextNodes: /* @__PURE__ */ new WeakSet(),
+    textNodeValueMap: /* @__PURE__ */ new WeakMap(),
+    attributeValueMap: /* @__PURE__ */ new WeakMap(),
+    requestedKeys: /* @__PURE__ */ new Set(),
+    textNodeKeyMap: /* @__PURE__ */ new WeakMap(),
+    attributeKeyMap: /* @__PURE__ */ new WeakMap(),
+    valueToKeys: /* @__PURE__ */ new Map(),
+    messageValueToKeys: /* @__PURE__ */ new Map(),
+    missingWarnings: /* @__PURE__ */ new Set(),
+    configureCount: 0
+  };
+}
+function __adoptLocalizationState(existingState) {
+  const defaults = __createLocalizationState();
+  for (const field of Object.keys(defaults)) {
+    if (!(field in existingState)) {
+      existingState[field] = defaults[field];
+    }
+  }
+  return existingState;
+}
+function __resolveGlobalScope() {
+  try {
+    if (typeof globalThis !== "undefined")
+      return globalThis;
+    if (typeof window !== "undefined")
+      return window;
+  } catch {
+    return null;
+  }
+  return null;
+}
+function __resolveLocalizationState() {
+  const scope = __resolveGlobalScope();
+  if (!scope) {
+    return __createLocalizationState();
+  }
+  const existingState = scope[__LOCALIZATION_STATE_KEY];
+  if (existingState && typeof existingState === "object") {
+    return __adoptLocalizationState(existingState);
+  }
+  const createdState = __createLocalizationState();
+  try {
+    scope[__LOCALIZATION_STATE_KEY] = createdState;
+  } catch {
+  }
+  return createdState;
+}
+var __localizationState = __resolveLocalizationState();
 var __LOCALIZABLE_ATTRIBUTES = [
   "title",
   "placeholder",
@@ -199,17 +249,50 @@ function __localeVariants(locale) {
   }
   return [normalized, base];
 }
+function __rebuildMessageValueIndex() {
+  const index = /* @__PURE__ */ new Map();
+  for (const messages of __localizationState.messagesByLocale.values()) {
+    if (!messages) {
+      continue;
+    }
+    for (const [key, value] of Object.entries(messages)) {
+      if (typeof value !== "string" || !value.length) {
+        continue;
+      }
+      let keys = index.get(value);
+      if (!keys) {
+        keys = /* @__PURE__ */ new Set();
+        index.set(value, keys);
+      }
+      keys.add(key);
+    }
+  }
+  __localizationState.messageValueToKeys = index;
+}
+function __invalidateValueCaches() {
+  __localizationState.textNodeValueMap = /* @__PURE__ */ new WeakMap();
+  __localizationState.attributeValueMap = /* @__PURE__ */ new WeakMap();
+}
 function __setLocaleMessages(locale, messages) {
   const normalizedLocale = __resolveLocaleCandidate(locale);
   __localizationState.messagesByLocale.set(
     normalizedLocale,
     __normalizeMessages(messages)
   );
+  __rebuildMessageValueIndex();
+  __invalidateValueCaches();
+  __scheduleReconcile();
 }
 function __registerRequestedKey(key) {
-  if (typeof key === "string" && key.length > 0) {
-    __localizationState.requestedKeys.add(key);
+  if (typeof key !== "string" || key.length === 0) {
+    return false;
   }
+  if (__localizationState.requestedKeys.has(key)) {
+    return false;
+  }
+  __localizationState.requestedKeys.add(key);
+  __invalidateValueCaches();
+  return true;
 }
 function __indexTranslatedValue(key, value) {
   if (typeof key !== "string" || !key.length) {
@@ -219,10 +302,20 @@ function __indexTranslatedValue(key, value) {
   if (!translatedValue.length) {
     return;
   }
-  if (!__localizationState.valueToKeys.has(translatedValue)) {
-    __localizationState.valueToKeys.set(translatedValue, /* @__PURE__ */ new Set());
+  const index = __localizationState.valueToKeys;
+  let keys = index.get(translatedValue);
+  if (!keys) {
+    while (index.size >= __MAX_INDEXED_VALUES) {
+      const oldest = index.keys().next();
+      if (oldest.done) {
+        break;
+      }
+      index.delete(oldest.value);
+    }
+    keys = /* @__PURE__ */ new Set();
+    index.set(translatedValue, keys);
   }
-  __localizationState.valueToKeys.get(translatedValue).add(key);
+  keys.add(key);
 }
 function __getLocaleMessages(locale) {
   const variants = __localeVariants(locale);
@@ -319,7 +412,7 @@ function __resolveContextLocale(options = {}) {
   }
   return __localizationState.defaultLocale;
 }
-function __collectDetectedLocales() {
+function __collectDetectedLocales(roots = []) {
   const detected = /* @__PURE__ */ new Set([__localizationState.defaultLocale]);
   if (typeof document === "undefined") {
     return detected;
@@ -328,11 +421,19 @@ function __collectDetectedLocales() {
   if (rootLang) {
     detected.add(__resolveLocaleCandidate(rootLang));
   }
-  const nodes = document.querySelectorAll?.("[lang]") || [];
-  for (const node of nodes) {
-    const lang = __normalizeLocale(node.getAttribute("lang"));
-    if (lang) {
-      detected.add(__resolveLocaleCandidate(lang));
+  const addLangFrom = (scanRoot) => {
+    const nodes = scanRoot?.querySelectorAll?.("[lang]") || [];
+    for (const node of nodes) {
+      const lang = __normalizeLocale(node.getAttribute("lang"));
+      if (lang) {
+        detected.add(__resolveLocaleCandidate(lang));
+      }
+    }
+  };
+  addLangFrom(document);
+  for (const root of roots) {
+    if (root && root !== document) {
+      addLangFrom(root);
     }
   }
   return detected;
@@ -343,10 +444,15 @@ async function __ensureDetectedLocalesLoaded(detectedLocales) {
   }
 }
 function __pruneUndetectedLocales(detectedLocales) {
+  let removedAny = false;
   for (const loadedLocale of Array.from(__localizationState.messagesByLocale.keys())) {
     if (!detectedLocales.has(loadedLocale)) {
       __localizationState.messagesByLocale.delete(loadedLocale);
+      removedAny = true;
     }
+  }
+  if (removedAny) {
+    __rebuildMessageValueIndex();
   }
 }
 function __splitTextWhitespace(value) {
@@ -430,10 +536,10 @@ function __findRequestedKeyForText(coreText) {
   if (__localizationState.requestedKeys.has(coreText)) {
     return coreText;
   }
-  const loadedEntries = Array.from(__localizationState.messagesByLocale.entries());
-  for (const key of __localizationState.requestedKeys) {
-    for (const [, messages] of loadedEntries) {
-      if (messages && messages[key] === coreText) {
+  const messageKeys = __localizationState.messageValueToKeys.get(coreText);
+  if (messageKeys) {
+    for (const key of messageKeys) {
+      if (__localizationState.requestedKeys.has(key)) {
         return key;
       }
     }
@@ -476,6 +582,13 @@ function __findRequestedSubsegmentForText(coreText) {
   }
   return bestMatch;
 }
+function __setTextNodeValue(textNode, nextValue) {
+  if (textNode.nodeValue !== nextValue) {
+    __localizationState.selfWrittenTextNodes.add(textNode);
+    textNode.nodeValue = nextValue;
+  }
+  __localizationState.textNodeValueMap.set(textNode, nextValue);
+}
 async function __localizeTextNode(textNode) {
   if (!textNode || textNode.nodeType !== 3) {
     return;
@@ -484,8 +597,13 @@ async function __localizeTextNode(textNode) {
   if (!parentElement) {
     return;
   }
-  const { leading, core, trailing } = __splitTextWhitespace(textNode.nodeValue);
+  const currentValue = textNode.nodeValue;
+  if (__localizationState.textNodeValueMap.get(textNode) === currentValue) {
+    return;
+  }
+  const { leading, core, trailing } = __splitTextWhitespace(currentValue);
   if (!core) {
+    __localizationState.textNodeValueMap.set(textNode, currentValue);
     return;
   }
   let key = __localizationState.textNodeKeyMap.get(textNode) || null;
@@ -495,6 +613,7 @@ async function __localizeTextNode(textNode) {
   if (!key) {
     const segmentMatch = __findRequestedSubsegmentForText(core);
     if (!segmentMatch) {
+      __localizationState.textNodeValueMap.set(textNode, currentValue);
       return;
     }
     const scopedLocale2 = __resolveContextLocale({ element: parentElement });
@@ -508,9 +627,7 @@ async function __localizeTextNode(textNode) {
     const translatedText2 = segmentMatch.values.length ? __replacePlaceholders(translated2, (index) => segmentMatch.values[index]) : translated2;
     const localizedCore = core.slice(0, segmentMatch.start) + translatedText2 + core.slice(segmentMatch.end);
     const localizedText = `${leading}${localizedCore}${trailing}`;
-    if (localizedText !== textNode.nodeValue) {
-      textNode.nodeValue = localizedText;
-    }
+    __setTextNodeValue(textNode, localizedText);
     return;
   }
   __localizationState.textNodeKeyMap.set(textNode, key);
@@ -520,19 +637,18 @@ async function __localizeTextNode(textNode) {
   const translated = __resolveTranslation(key, values, { element: parentElement }, null);
   const translatedText = values.length ? __replacePlaceholders(translated, (index) => values[index]) : translated;
   const nextText = `${leading}${translatedText}${trailing}`;
-  if (nextText !== textNode.nodeValue) {
-    textNode.nodeValue = nextText;
-  }
+  __setTextNodeValue(textNode, nextText);
 }
-async function __localizeRequestedTextNodes() {
-  if (typeof document === "undefined" || __localizationState.requestedKeys.size === 0) {
-    return;
+function __collectLocalizationRoots() {
+  if (typeof document === "undefined") {
+    return { roots: [], elements: [] };
   }
   const root = document.body || document.documentElement;
-  if (!root || typeof document.createTreeWalker !== "function") {
-    return;
+  if (!root) {
+    return { roots: [], elements: [] };
   }
   const roots = [];
+  const elements = [];
   const seenRoots = /* @__PURE__ */ new Set();
   const addRoot = (candidateRoot) => {
     if (!candidateRoot || seenRoots.has(candidateRoot)) {
@@ -547,13 +663,20 @@ async function __localizeRequestedTextNodes() {
     if (!currentRoot || typeof currentRoot.querySelectorAll !== "function") {
       continue;
     }
-    const elements = currentRoot.querySelectorAll("*");
-    for (const element of elements) {
+    const rootElements = currentRoot.querySelectorAll("*");
+    for (const element of rootElements) {
+      elements.push(element);
       const shadowRoot = element?.shadowRoot;
       if (shadowRoot) {
         addRoot(shadowRoot);
       }
     }
+  }
+  return { roots, elements };
+}
+async function __localizeRequestedTextNodes(roots) {
+  if (typeof document === "undefined" || __localizationState.requestedKeys.size === 0 || typeof document.createTreeWalker !== "function") {
+    return;
   }
   const nodes = [];
   for (const scanRoot of roots) {
@@ -574,12 +697,30 @@ function __getElementAttributeKeyMap(element) {
   }
   return map;
 }
+function __getElementAttributeValueMap(element) {
+  let map = __localizationState.attributeValueMap.get(element);
+  if (!map) {
+    map = /* @__PURE__ */ new Map();
+    __localizationState.attributeValueMap.set(element, map);
+  }
+  return map;
+}
+function __setElementAttributeValue(element, attrName, nextValue) {
+  if (element.getAttribute(attrName) !== nextValue) {
+    element.setAttribute(attrName, nextValue);
+  }
+  __getElementAttributeValueMap(element).set(attrName, nextValue);
+}
 async function __localizeAttribute(element, attrName) {
   if (!element || typeof element.getAttribute !== "function") {
     return;
   }
   const rawValue = element.getAttribute(attrName);
   if (typeof rawValue !== "string" || !rawValue.length) {
+    return;
+  }
+  const valueMap = __getElementAttributeValueMap(element);
+  if (valueMap.get(attrName) === rawValue) {
     return;
   }
   const keyMap = __getElementAttributeKeyMap(element);
@@ -590,6 +731,7 @@ async function __localizeAttribute(element, attrName) {
   if (!key) {
     const segmentMatch = __findRequestedSubsegmentForText(rawValue);
     if (!segmentMatch) {
+      valueMap.set(attrName, rawValue);
       return;
     }
     const scopedLocale2 = __resolveContextLocale({ element });
@@ -597,9 +739,7 @@ async function __localizeAttribute(element, attrName) {
     const translated2 = __resolveTranslation(segmentMatch.key, segmentMatch.values, { element }, null);
     const translatedText2 = segmentMatch.values.length ? __replacePlaceholders(translated2, (index) => segmentMatch.values[index]) : translated2;
     const localizedValue = rawValue.slice(0, segmentMatch.start) + translatedText2 + rawValue.slice(segmentMatch.end);
-    if (localizedValue !== rawValue) {
-      element.setAttribute(attrName, localizedValue);
-    }
+    __setElementAttributeValue(element, attrName, localizedValue);
     keyMap.set(attrName, segmentMatch.key);
     return;
   }
@@ -609,64 +749,57 @@ async function __localizeAttribute(element, attrName) {
   const values = __resolveTemplateValuesForText(key, rawValue);
   const translated = __resolveTranslation(key, values, { element }, null);
   const translatedText = values.length ? __replacePlaceholders(translated, (index) => values[index]) : translated;
-  if (translatedText !== rawValue) {
-    element.setAttribute(attrName, translatedText);
-  }
+  __setElementAttributeValue(element, attrName, translatedText);
 }
-async function __localizeRequestedAttributes() {
+async function __localizeRequestedAttributes(elements) {
   if (typeof document === "undefined" || __localizationState.requestedKeys.size === 0) {
     return;
   }
-  const root = document.body || document.documentElement;
-  if (!root) {
-    return;
-  }
-  const roots = [];
-  const seenRoots = /* @__PURE__ */ new Set();
-  const addRoot = (candidateRoot) => {
-    if (!candidateRoot || seenRoots.has(candidateRoot)) {
-      return;
-    }
-    seenRoots.add(candidateRoot);
-    roots.push(candidateRoot);
-  };
-  addRoot(root);
-  for (let index = 0; index < roots.length; index += 1) {
-    const currentRoot = roots[index];
-    if (!currentRoot || typeof currentRoot.querySelectorAll !== "function") {
-      continue;
-    }
-    const elements = currentRoot.querySelectorAll("*");
-    for (const element of elements) {
-      const shadowRoot = element?.shadowRoot;
-      if (shadowRoot) {
-        addRoot(shadowRoot);
-      }
-    }
-  }
-  for (const scanRoot of roots) {
-    if (!scanRoot || typeof scanRoot.querySelectorAll !== "function") {
-      continue;
-    }
-    const elements = scanRoot.querySelectorAll("*");
-    for (const element of elements) {
-      for (const attrName of __LOCALIZABLE_ATTRIBUTES) {
-        if (element.hasAttribute(attrName)) {
-          await __localizeAttribute(element, attrName);
-        }
+  for (const element of elements) {
+    for (const attrName of __LOCALIZABLE_ATTRIBUTES) {
+      if (element.hasAttribute(attrName)) {
+        await __localizeAttribute(element, attrName);
       }
     }
   }
 }
 async function __reconcileLocalization() {
-  const detectedLocales = __collectDetectedLocales();
+  const hasRequestedKeys = __localizationState.requestedKeys.size > 0;
+  const { roots, elements } = hasRequestedKeys ? __collectLocalizationRoots() : { roots: [], elements: [] };
+  const detectedLocales = __collectDetectedLocales(roots);
   await __ensureDetectedLocalesLoaded(detectedLocales);
-  await __localizeRequestedTextNodes();
-  await __localizeRequestedAttributes();
+  if (hasRequestedKeys) {
+    await __localizeRequestedTextNodes(roots);
+    await __localizeRequestedAttributes(elements);
+  }
   __pruneUndetectedLocales(detectedLocales);
+}
+async function __runReconcilePasses() {
+  __localizationState.reconcileInFlight = true;
+  let passes = 0;
+  try {
+    do {
+      __localizationState.reconcileDirty = false;
+      passes += 1;
+      await __reconcileLocalization();
+    } while (__localizationState.reconcileDirty && passes < __MAX_RECONCILE_PASSES);
+  } finally {
+    __localizationState.reconcileInFlight = false;
+  }
+  if (__localizationState.reconcileDirty) {
+    pdsLog(
+      "warn",
+      `[i18n] Localization did not settle after ${__MAX_RECONCILE_PASSES} reconcile passes; continuing in the next scheduling window.`
+    );
+    __scheduleReconcile();
+  }
 }
 function __scheduleReconcile() {
   if (typeof window === "undefined") {
+    return;
+  }
+  __localizationState.reconcileDirty = true;
+  if (__localizationState.reconcileInFlight) {
     return;
   }
   if (__localizationState.reconcileTimer) {
@@ -674,8 +807,10 @@ function __scheduleReconcile() {
   }
   __localizationState.reconcileTimer = setTimeout(() => {
     __localizationState.reconcileTimer = null;
-    __reconcileLocalization();
-  }, 16);
+    __runReconcilePasses().catch((error) => {
+      pdsLog("error", "[i18n] Localization reconcile pass failed.", error);
+    });
+  }, __RECONCILE_DEBOUNCE_MS);
 }
 function __resolveTranslation(key, values = [], options = {}, template = null) {
   const requestedLocale = __resolveContextLocale(options);
@@ -692,11 +827,15 @@ function __resolveTranslation(key, values = [], options = {}, template = null) {
     locale: requestedLocale,
     defaultLocale: __localizationState.defaultLocale,
     messages: targetMessages,
-    messagesByLocale: Object.fromEntries(
-      Array.from(__localizationState.messagesByLocale.entries())
-    ),
     template
   };
+  Object.defineProperty(context, "messagesByLocale", {
+    enumerable: true,
+    configurable: true,
+    get() {
+      return Object.fromEntries(__localizationState.messagesByLocale.entries());
+    }
+  });
   let translated;
   const localeLoaded = Boolean(resolvedMessages);
   const isDefaultLocale = requestedLocale === __localizationState.defaultLocale;
@@ -752,9 +891,9 @@ var msg = (template, options = {}) => {
     return joinStringsAndValues(template.strings, template.values, options);
   }
   const key = String(template);
-  __registerRequestedKey(key);
+  const isNewKey = __registerRequestedKey(key);
   const translated = __resolveTranslation(key, [], options, null);
-  if (!options?.element && !options?.scope && !options?.host && !options?.contextElement && !options?.lang) {
+  if (isNewKey && !options?.element && !options?.scope && !options?.host && !options?.contextElement && !options?.lang) {
     __scheduleReconcile();
   }
   return translated;
