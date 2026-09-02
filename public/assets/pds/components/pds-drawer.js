@@ -282,7 +282,11 @@ class PdsDrawer extends HTMLElement {
         /* Layer container */
         .layer {
           position: fixed; left: 0; right: 0; width: 100%; max-width: 100%;
-          contain: layout paint style;
+          /* No paint containment: it clips descendants to the padding box, which here
+             equals the panel's border box, so --drawer-shadow never painted. Layout
+             containment alone still establishes a containing block and a stacking
+             context, so nothing shifts. */
+          contain: layout style;
           z-index: var(--z-drawer);
           display: flex; align-items: flex-end;
           pointer-events: none; visibility: hidden;
@@ -311,7 +315,8 @@ class PdsDrawer extends HTMLElement {
         /* Motion layer — only this element is animated */
         .motion-layer {
           width: 100%;
-          contain: layout paint style;
+          /* Paint containment dropped here for the same reason as on .layer. */
+          contain: layout style;
           will-change: transform;
         }
         :host([position="left"]) .motion-layer,
