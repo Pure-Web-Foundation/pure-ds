@@ -288,7 +288,14 @@ class PdsDrawer extends HTMLElement {
           pointer-events: none; visibility: hidden;
           transition: visibility 0s var(--_dur);
         }
-        :host([open]) .layer { pointer-events: auto; visibility: visible; transition-delay: 0s; }
+        /* .layer spans the full viewport and sits at --z-drawer (1050), above the
+           backdrop's --z-modal (1040). Giving it pointer-events:auto made it eat every
+           click beside the panel, so #onBackdropClick never fired. Put the hit area on
+           the panel itself: a descendant with pointer-events:auto inside an ancestor
+           with pointer-events:none
+           still receives events. */
+        :host([open]) .layer { visibility: visible; transition-delay: 0s; }
+        :host([open]) aside { pointer-events: auto; }
         :host([position="bottom"]) .layer { bottom: 0; height: auto; }
         :host([position="top"]) .layer { top: 0; height: auto; align-items: flex-start; }
 
