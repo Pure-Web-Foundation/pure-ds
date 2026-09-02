@@ -435,7 +435,10 @@ class PdsDrawer extends HTMLElement {
 
     // Resize observers
     this.#resizeObs = new ResizeObserver(this.#recalc);
+    // Observe both: the panel drives the motion layer's auto height, and the motion
+    // layer is what #recalc actually measures.
     this.#resizeObs.observe(this.#aside);
+    if (this.#motionLayer) this.#resizeObs.observe(this.#motionLayer);
     window.addEventListener("resize", this.#recalc, { passive: true });
     if (window.visualViewport) window.visualViewport.addEventListener("resize", this.#recalc, { passive: true });
 
@@ -737,8 +740,15 @@ class PdsDrawer extends HTMLElement {
   };
 
   #recalc = () => {
-    if (!this.#aside) return;
-    const rect = this.#aside.getBoundingClientRect();
+    // Measure the MOTION LAYER, not the panel. #getTransformForFraction applies
+    // translateX/Y(±100%) to .motion-layer, and percentage translations resolve
+    // against the transformed element's own border box — so the extent that feeds
+    // the drag fraction math and the matrix→fraction recovery in #cancelAnimations
+    // must be the motion layer's box. The two are equal while the panel fills the
+    // motion layer; they stop being equal as soon as sizing or inset decouples them.
+    const motionLayer = this.#motionLayer;
+    if (!motionLayer) return;
+    const rect = motionLayer.getBoundingClientRect();
     this.#drawerHeight = rect.height || 0;
     this.#drawerWidth = rect.width || 0;
     this.#applyFraction(this.#currentFraction, false);
