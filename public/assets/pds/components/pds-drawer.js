@@ -257,13 +257,46 @@ class PdsDrawer extends HTMLElement {
     // Adopt PDS layers + component stylesheet
     const componentStyles = PDS.createStylesheet(/*css*/ `
       @layer pds-drawer {
-        :host { position: fixed; inset: 0; display: contents; contain: layout style size; }
+        /* The host generates no principal box (display: contents), so position, inset
+           and contain on it were all inert. contain: size in particular is a landmine
+           for anyone who later reaches for the host to do geometry. */
+        :host { display: contents; }
 
         /* Timing tokens */
         :host { --_dur: var(--drawer-duration, var(--transition-normal)); }
         :host { --_easing: var(--drawer-easing, var(--easing-emphasized, cubic-bezier(0.25,1,0.5,1))); }
 
-        ::slotted(*) { 
+        /* Geometry tokens.
+           --_w-cap   max share of the viewport on the inline axis. A PERCENTAGE, not vw:
+                      html:has(pds-drawer[open]) forces scrollbar-gutter: stable, so vw
+                      overshoots the available width by the reserved gutter, misaligning
+                      the panel while open and flashing a scrollbar on close. Percentages
+                      resolve against the initial containing block, which excludes it.
+           --_w-step  the width step. min() of the two means the panel is sized in rem
+                      but self-clamps to the viewport, matching the house idiom.
+           --_inset   gap from the viewport edges. Applied as PADDING on .motion-layer,
+                      never as a margin on the panel: a block-axis margin collapses out
+                      of the motion layer's auto height and would leave a sliver of
+                      drawer on screen after closing.
+           --_r-*     per-corner radius switches. */
+        :host {
+          --_w-cap: 100%;
+          --_w-step: 50rem;
+          --_inset: 0px;
+          --_r: var(--drawer-radius, var(--radius-lg));
+          --_r-tl: var(--_r); --_r-tr: var(--_r); --_r-br: var(--_r); --_r-bl: var(--_r);
+        }
+
+        /* Side drawers: keep a backdrop gutter, narrower default, fill the block axis. */
+        :host([position="left"]), :host([position="right"]) {
+          --_w-cap: 90%;
+          --_w-step: 28rem;
+          --_panel-block: 100%;
+          --_aside-block: 100%;
+          --_aside-max-block: 100dvh;
+        }
+
+        ::slotted(*) {
           padding: var(--spacing-4);
           background-color: var(--color-surface-overlay);
         }
@@ -277,80 +310,80 @@ class PdsDrawer extends HTMLElement {
           transition: opacity var(--_dur) var(--_easing), visibility 0s var(--_dur);
           z-index: var(--z-modal);
         }
-        :host([open]) .backdrop { opacity: var(--backdrop-opacity); pointer-events: auto; visibility: visible; transition-delay: 0s; }
+        :host([open]) .backdrop { opacity: var(--backdrop-opacity, 1); pointer-events: auto; visibility: visible; transition-delay: 0s; }
 
-        /* Layer container */
+        /* Layer: a full-viewport frame pinned to the position edge, for ALL four
+           positions. It does the ALIGNMENT and nothing else. It NEVER captures pointer
+           events, so the backdrop stays clickable beside the panel, and it carries no
+           paint containment, which used to clip the panel's box-shadow. */
         .layer {
-          position: fixed; left: 0; right: 0; width: 100%; max-width: 100%;
-          /* No paint containment: it clips descendants to the padding box, which here
-             equals the panel's border box, so --drawer-shadow never painted. Layout
-             containment alone still establishes a containing block and a stacking
-             context, so nothing shifts. */
+          position: fixed; left: 0; right: 0;
           contain: layout style;
           z-index: var(--z-drawer);
-          display: flex; align-items: flex-end;
+          display: flex;
+          justify-content: center;
+          align-items: stretch;
           pointer-events: none; visibility: hidden;
           transition: visibility 0s var(--_dur);
         }
-        /* .layer spans the full viewport and sits at --z-drawer (1050), above the
-           backdrop's --z-modal (1040). Giving it pointer-events:auto made it eat every
-           click beside the panel, so #onBackdropClick never fired. Put the hit area on
-           the panel itself: a descendant with pointer-events:auto inside an ancestor
-           with pointer-events:none
-           still receives events. */
         :host([open]) .layer { visibility: visible; transition-delay: 0s; }
-        :host([open]) aside { pointer-events: auto; }
-        :host([position="bottom"]) .layer { bottom: 0; height: auto; }
-        :host([position="top"]) .layer { top: 0; height: auto; align-items: flex-start; }
+        :host([open]) aside  { pointer-events: auto; }
 
-        /* Left/Right layout */
-        :host([position="left"]) .layer, :host([position="right"]) .layer {
-          top: 0; bottom: 0; translate: none;
-          width: var(--drawer-width, min(90vw, 28rem));
-          max-width: var(--drawer-width, min(90vw, 28rem));
-        }
-        :host([position="left"]) .layer { left: 0; right: auto; }
-        :host([position="right"]) .layer { right: 0; left: auto; }
+        :host([position="bottom"]) .layer { bottom: 0; top: auto; height: auto; align-items: flex-end; }
+        :host([position="top"])    .layer { top: 0; bottom: auto; height: auto; align-items: flex-start; }
+        :host([position="left"]) .layer,
+        :host([position="right"]) .layer { top: 0; bottom: 0; }
+        :host([position="left"])  .layer { justify-content: flex-start; }
+        :host([position="right"]) .layer { justify-content: flex-end; }
 
-        /* Motion layer — only this element is animated */
+        /* Motion layer - the only animated element. #getTransformForFraction applies
+           translateX/Y(+/-100%) HERE, and percentage translations resolve against this
+           element's own border box, so its footprint must equal the panel's footprint
+           (including any inset) and #recalc must measure THIS element. Size and inset
+           therefore live here and nowhere else: on .layer they would shrink the frame
+           and make flex alignment impossible, and on the panel they would decouple the
+           visible panel from the transformed box. */
         .motion-layer {
-          width: 100%;
-          /* Paint containment dropped here for the same reason as on .layer. */
+          flex: 0 0 auto;
+          min-inline-size: 0;
+          inline-size: var(--drawer-width, min(var(--_w-cap), var(--_w-step)));
+          max-inline-size: 100%;
+          block-size: var(--_panel-block, auto);
+          padding: var(--_inset);
           contain: layout style;
           will-change: transform;
         }
-        :host([position="left"]) .motion-layer,
-        :host([position="right"]) .motion-layer { height: 100%; }
 
-        /* Panel */
+        /* Panel - carries the surface. */
         aside {
           display: flex; flex-direction: column;
           background: var(--drawer-bg, var(--color-surface-overlay, Canvas));
           box-shadow: var(--drawer-shadow, var(--shadow-xl));
-          max-height: var(--drawer-max-height, 70vh);
-          min-height: var(--drawer-min-height, auto);
-          width: 100%; max-width: 100%;
+          block-size: var(--_aside-block, auto);
+          /* The nesting is required: the maxHeight setter writes --drawer-max-height as
+             an inline style on the PANEL, not on the host, so the lookup has to sit in
+             the fallback slot of a declaration on the panel to keep resolving. */
+          max-block-size: var(--_aside-max-block, var(--drawer-max-height, 70vh));
+          min-block-size: var(--drawer-min-height, auto);
+          inline-size: 100%; max-inline-size: 100%;
           margin: 0;
-          border-radius: var(--drawer-radius, var(--radius-lg));
-          overflow: visible; contain: layout style;
+          border-radius: var(--_r-tl) var(--_r-tr) var(--_r-br) var(--_r-bl);
+          /* clip, not hidden: it creates no scroll container, so the browser cannot
+             scroll-on-focus and hide the header. Unconditional, because ::slotted(*)
+             paints an opaque background flush to the panel's square box and pokes a
+             square ear past each rounded corner otherwise. */
+          overflow: clip;
+          contain: layout style;
           touch-action: none;
           outline: none;
         }
-        :host([position="bottom"]) aside {
-          border-bottom-left-radius: 0; border-bottom-right-radius: 0;
-        }
-        :host([position="top"]) aside {
-          flex-direction: column-reverse;
-          border-top-left-radius: 0; border-top-right-radius: 0;
-        }
-        :host([position="left"]) aside {
-          border-top-left-radius: 0; border-bottom-left-radius: 0;
-          max-height: 100vh; height: 100%; width: 100%;
-        }
-        :host([position="right"]) aside {
-          border-top-right-radius: 0; border-bottom-right-radius: 0;
-          max-height: 100vh; height: 100%; width: 100%;
-        }
+        :host([position="top"]) aside { flex-direction: column-reverse; }
+
+        /* Flatten the corners on the edge the drawer is attached to. */
+        :host([position="bottom"]) { --_r-bl: 0; --_r-br: 0; }
+        :host([position="top"])    { --_r-tl: 0; --_r-tr: 0; }
+        :host([position="left"])   { --_r-tl: 0; --_r-bl: 0; }
+        :host([position="right"])  { --_r-tr: 0; --_r-br: 0; }
 
         header {
           position: relative;
@@ -407,11 +440,6 @@ class PdsDrawer extends HTMLElement {
 
         [part="content"] { flex: 1; min-height: 0; overflow: auto; -webkit-overflow-scrolling: touch; contain: layout paint style; }
 
-        main { overflow: auto; -webkit-overflow-scrolling: touch; contain: layout paint style; transition: height var(--_dur) var(--_easing); }
-
-        @media (min-width: 800px) {
-          aside { width: 100%; max-width: 800px; margin-inline: auto; border-radius: var(--drawer-radius, var(--radius-lg)); overflow: hidden; }
-        }
       }
     `);
 
@@ -694,7 +722,6 @@ class PdsDrawer extends HTMLElement {
     cancelAnimationFrame(this.#raf);
     this.style.userSelect = "none";
     document.documentElement.style.cursor = "grabbing";
-    this.shadowRoot.querySelector("main")?.style.setProperty("overflow", "hidden");
   };
 
   #onPointerMove = (e) => {
@@ -724,7 +751,6 @@ class PdsDrawer extends HTMLElement {
     this.#isDragging = false;
   this.style.userSelect = "";
     document.documentElement.style.cursor = "";
-  this.shadowRoot.querySelector("main")?.style.removeProperty("overflow");
 
     //const isVertical = this.position === "bottom" || this.position === "top";
     const dir = this.position === "bottom" || this.position === "right" ? 1 : -1;
