@@ -142,7 +142,7 @@ class PdsDrawer extends HTMLElement {
     return this._position;
   }
   set position(val) {
-    const v = String(val || "bottom");
+    const v = this.#normalizeEnum(val, DRAWER_POSITIONS, "position", "bottom");
     if (this._position === v) return;
     this._position = v;
     this.setAttribute("position", v);
@@ -316,11 +316,20 @@ class PdsDrawer extends HTMLElement {
         this.#syncAria();
         this.#syncFocusTrap();
         break;
-      case "position":
-        this._position = value || "bottom";
+      case "position": {
+        this._position = this.#normalizeEnum(value, DRAWER_POSITIONS, "position", "bottom");
+        // position is the one attribute that must be reflected back when it falls back.
+        // It has no meaningful "unset" state, every rule is keyed on :host([position=...]),
+        // and an unmatched value would leave .layer with no edge anchored at all. The
+        // guard is what keeps this from looping: setAttribute fires this callback again
+        // even when the value is unchanged.
+        if (this.getAttribute("position") !== this._position) {
+          this.setAttribute("position", this._position);
+        }
         this.#applyFraction(this.#currentFraction, false);
         this.#renderCloseButtonVisibility();
         break;
+      }
       case "drag":
         this._drag = value || "header";
         break;
