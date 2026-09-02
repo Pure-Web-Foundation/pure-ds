@@ -565,24 +565,39 @@ Attributes:
 
 **`<pds-drawer>`** - Slide-out panels
 ```html
-<pds-drawer id="menu" position="left">
-  <h2 slot="header">Menu</h2>
-  <nav>...</nav>
+<pds-drawer id="menu" position="left" size="sm">
+  <h2 slot="drawer-header">Menu</h2>
+  <nav slot="drawer-content">...</nav>
 </pds-drawer>
 
-<button onclick="document.getElementById('menu').open()">
+<button onclick="document.getElementById('menu').openDrawer()">
   Open Menu
 </button>
 ```
 
+Slots:
+- `drawer-header` - Header content
+- `drawer-content` - Body content
+
 Attributes:
-- `position` - left/right/top/bottom
+- `position` - left/right/top/bottom (default: bottom)
+- `size` - xs/sm/md/lg/xl/2xl/3xl/4xl/full. Unset resolves to `lg` for top/bottom, `sm` for left/right
+- `align` - start/center/end/stretch. Placement along the attachment edge, so `position="bottom" align="end"` is the bottom-right corner. Unset resolves to `center` for top/bottom, `stretch` for left/right
+- `corners` - auto/flush/rounded/square (default: auto, which flattens only the attachment edge)
+- `inset` - Boolean, floats the drawer away from the viewport edges. Implies rounded corners
 - `open` - Boolean, controls visibility
+- `drag` - header/none, drag-to-dismiss affordance (default: header)
+- `max-height` - Maximum panel height (CSS value)
+- `min-height` - Minimum panel height (CSS value)
+- `show-close` - Boolean, shows the close button in the header
 
 Methods:
-- `open()` - Show drawer
-- `close()` - Hide drawer
-- `toggle()` - Toggle visibility
+- `openDrawer()` - Show drawer
+- `closeDrawer()` - Hide drawer
+- `toggleDrawer()` - Toggle visibility
+- `show(content, options)` - Set content and open in one call
+
+Note: `open` is a property, not a method — use `openDrawer()`, or set `drawer.open = true`.
 
 **`<pds-tabstrip>`** - Accessible tab interface
 ```html

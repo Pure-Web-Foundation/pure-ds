@@ -30,6 +30,25 @@ export default {
       control: 'select',
       options: ['left', 'right', 'top', 'bottom'],
       description: 'Edge to slide from'
+    },
+    size: {
+      control: 'select',
+      options: ['', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', 'full'],
+      description: 'Width preset. Empty resolves to lg for top/bottom, sm for left/right'
+    },
+    align: {
+      control: 'select',
+      options: ['', 'start', 'center', 'end', 'stretch'],
+      description: 'Placement along the attachment edge. Empty resolves to center for top/bottom, stretch for left/right'
+    },
+    corners: {
+      control: 'select',
+      options: ['', 'auto', 'flush', 'rounded', 'square'],
+      description: 'Which corners round off. auto flattens the attachment edge only'
+    },
+    inset: {
+      control: 'boolean',
+      description: 'Float the drawer away from the viewport edges. Implies rounded corners'
     }
   }
 };
@@ -1010,3 +1029,145 @@ export const ShowApiCustomHeaderStress = () => {
 
 ShowApiCustomHeaderStress.storyName = 'show() Long Custom Header';
 
+
+/**
+ * Every placement the new attributes make reachable: the eight corners produced by
+ * position x align, the width preset scale, the four corner modes, and a floating
+ * inset drawer. Deliberately hand-written — `npm run storybook:generate` would
+ * overwrite this file from a stale template.
+ */
+export const CornerPlacement = {
+  render: () => {
+    const CORNERS = [
+      { position: 'top', align: 'start', label: 'top-left' },
+      { position: 'top', align: 'center', label: 'top-center' },
+      { position: 'top', align: 'end', label: 'top-right' },
+      { position: 'bottom', align: 'start', label: 'bottom-left' },
+      { position: 'bottom', align: 'center', label: 'bottom-center' },
+      { position: 'bottom', align: 'end', label: 'bottom-right' },
+      { position: 'left', align: 'start', label: 'left-top' },
+      { position: 'left', align: 'end', label: 'left-bottom' },
+      { position: 'right', align: 'start', label: 'right-top' },
+      { position: 'right', align: 'end', label: 'right-bottom' }
+    ];
+    const SIZES = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', 'full'];
+    const CORNER_MODES = ['auto', 'flush', 'rounded', 'square'];
+
+    setTimeout(() => {
+      const drawer = document.querySelector('#placement-drawer');
+      if (!drawer) return;
+
+      const set = (attr, value) => {
+        if (value) drawer.setAttribute(attr, value);
+        else drawer.removeAttribute(attr);
+      };
+
+      document.querySelectorAll('[data-placement]').forEach((btn) => {
+        btn.onclick = () => {
+          const { position, align } = btn.dataset;
+          set('position', position);
+          set('align', align);
+          drawer.open = true;
+        };
+      });
+
+      document.querySelectorAll('[data-size]').forEach((btn) => {
+        btn.onclick = () => {
+          set('size', btn.dataset.size);
+          drawer.open = true;
+        };
+      });
+
+      document.querySelectorAll('[data-corners]').forEach((btn) => {
+        btn.onclick = () => {
+          set('corners', btn.dataset.corners);
+          drawer.open = true;
+        };
+      });
+
+      const insetBtn = document.querySelector('#toggle-inset');
+      if (insetBtn) {
+        insetBtn.onclick = () => {
+          drawer.toggleAttribute('inset');
+          drawer.open = true;
+        };
+      }
+
+      const resetBtn = document.querySelector('#reset-placement');
+      if (resetBtn) {
+        resetBtn.onclick = () => {
+          ['size', 'align', 'corners', 'inset'].forEach((a) => drawer.removeAttribute(a));
+          drawer.setAttribute('position', 'bottom');
+          drawer.open = false;
+        };
+      }
+    }, 0);
+
+    return html`
+      <div class="stack-md">
+        <header class="card surface-elevated stack-sm">
+          <h2>Placement, size and corners</h2>
+          <p>
+            <code>align</code> is the cross axis of <code>position</code>, so
+            <code>position="bottom" align="end"</code> is the bottom-right corner.
+            Leaving an attribute off keeps the position-derived default.
+          </p>
+        </header>
+
+        <article class="card stack-sm">
+          <h3>Eight corners (plus the two centered edges)</h3>
+          <div class="flex flex-wrap gap-sm">
+            ${CORNERS.map(
+              (c) => html`
+                <button
+                  class="btn-secondary"
+                  data-placement
+                  data-position=${c.position}
+                  data-align=${c.align}
+                >${c.label}</button>
+              `
+            )}
+          </div>
+        </article>
+
+        <article class="card stack-sm">
+          <h3>Width scale</h3>
+          <p class="text-muted">
+            Steps saturate against the cap rather than overflowing: on a 1440px display
+            <code>3xl</code> and <code>4xl</code> render identically and only diverge on ultrawide.
+          </p>
+          <div class="flex flex-wrap gap-sm">
+            ${SIZES.map(
+              (s) => html`<button class="btn-secondary" data-size=${s}>${s}</button>`
+            )}
+            <button class="btn-secondary" data-size="">unset</button>
+          </div>
+        </article>
+
+        <article class="card stack-sm">
+          <h3>Corner modes and inset</h3>
+          <div class="flex flex-wrap gap-sm">
+            ${CORNER_MODES.map(
+              (m) => html`<button class="btn-secondary" data-corners=${m}>${m}</button>`
+            )}
+            <button id="toggle-inset" class="btn-secondary">toggle inset</button>
+            <button id="reset-placement" class="btn-ghost">reset</button>
+          </div>
+        </article>
+
+        <pds-drawer id="placement-drawer" position="bottom" show-close>
+          <h3 slot="drawer-header">Placement demo</h3>
+          <div slot="drawer-content" class="stack-sm">
+            <p>Drag the header to dismiss, or click the backdrop beside the panel.</p>
+            <p class="text-muted">
+              Clicking beside the panel closes the drawer — that only works because the
+              positioning layer no longer captures pointer events.
+            </p>
+          </div>
+        </pds-drawer>
+      </div>
+    `;
+  }
+};
+
+CornerPlacement.storyName = 'Placement, Size & Corners';

@@ -11,18 +11,46 @@ const DRAWER_ALIGNMENTS = ["start", "center", "end", "stretch"];
 const DRAWER_CORNERS = ["auto", "flush", "rounded", "square"];
 
 /**
+ * A modal panel that slides in from any viewport edge, with a backdrop, focus
+ * trapping and drag-to-dismiss. Size it from a preset scale, align it along the edge
+ * it is attached to for any of eight corner placements, and control which corners
+ * round off.
+ *
  * @element pds-drawer
  * @fires toggle - Fired when the drawer opens or closes
- * 
+ *
+ * @attr {"bottom" | "top" | "left" | "right"} position - Viewport edge the drawer slides in from (default: bottom)
+ * @attr {"xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "full"} size - Width preset. Unset resolves to lg for top/bottom and sm for left/right
+ * @attr {"start" | "center" | "end" | "stretch"} align - Placement along the attachment edge. Unset resolves to center for top/bottom and stretch for left/right
+ * @attr {"auto" | "flush" | "rounded" | "square"} corners - Which corners round off (default: auto, which flattens the attachment edge only)
+ * @attr inset - Float the drawer away from the viewport edges by --drawer-inset. Implies rounded corners
+ * @attr {"header" | "none"} drag - Drag-to-dismiss affordance (default: header)
+ * @attr open - Whether the drawer is open
+ * @attr max-height - Maximum panel height (CSS value)
+ * @attr min-height - Minimum panel height (CSS value)
+ * @attr show-close - Show the close button in the header
+ *
  * @slot drawer-header - Header content for the drawer
  * @slot drawer-content - Main content of the drawer
- * 
+ *
  * @cssprop --drawer-duration - Animation duration (default: var(--transition-normal))
  * @cssprop --drawer-easing - Animation easing function (default: var(--easing-emphasized))
+ * @cssprop --drawer-width - Explicit panel width. Overrides the size preset entirely
+ * @cssprop --drawer-inset - Gap from the viewport edges when the inset attribute is set (default: var(--spacing-4))
  * @cssprop --drawer-max-height - Maximum height when position is top/bottom (default: 70vh)
  * @cssprop --drawer-min-height - Minimum height when position is top/bottom (default: auto)
- * 
+ * @cssprop --drawer-bg - Panel background (default: var(--color-surface-overlay))
+ * @cssprop --drawer-shadow - Panel drop shadow (default: var(--shadow-xl))
+ * @cssprop --drawer-radius - Corner radius before per-corner flattening (default: var(--radius-lg))
+ * @cssprop --drawer-handle-width - Grab handle width (default: var(--size-9))
+ * @cssprop --drawer-handle-height - Grab handle height (default: var(--size-1))
+ * @cssprop --drawer-handle-radius - Grab handle corner radius (default: var(--radius-full))
+ * @cssprop --drawer-handle-bg - Grab handle colour (default: var(--color-border))
+ * @cssprop --drawer-header-min-hit - Minimum header hit area (default: var(--control-min-height))
+ *
  * @csspart backdrop - The semi-transparent backdrop overlay
+ * @csspart layer - The full-viewport frame that aligns the panel against its edge
+ * @csspart motion - The animated element carrying the panel's size and inset
  * @csspart panel - The drawer panel container
  * @csspart header - The drawer header section
  * @csspart close-button - The close button
