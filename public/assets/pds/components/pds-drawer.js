@@ -570,6 +570,11 @@ class PdsDrawer extends HTMLElement {
         .motion-layer {
           flex: 0 0 auto;
           min-inline-size: 0;
+          /* Explicit, not just inherited from the primitives layer: keeps inline-size
+             and block-size equal to the border box (inset padding included) even if
+             this stylesheet is ever adopted without primitives. That equality is the
+             invariant #recalc and the drag transform math both depend on. */
+          box-sizing: border-box;
           inline-size: var(--drawer-width, min(var(--_w-cap), var(--_w-step)));
           max-inline-size: 100%;
           block-size: var(--_panel-block, auto);
