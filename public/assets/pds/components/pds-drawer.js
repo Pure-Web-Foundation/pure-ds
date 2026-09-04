@@ -1,18 +1,56 @@
 import { PDS } from "#pds";
 
+/** Viewport edge the drawer is attached to. */
+const DRAWER_POSITIONS = ["bottom", "top", "left", "right"];
+/** Width preset steps. Absence is meaningful: it resolves in CSS to the
+ *  position-derived default (lg for top/bottom, sm for left/right). */
+const DRAWER_SIZES = ["xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl", "full"];
+/** Placement along the edge the drawer is attached to (the cross axis of position). */
+const DRAWER_ALIGNMENTS = ["start", "center", "end", "stretch"];
+/** Which corners round off. */
+const DRAWER_CORNERS = ["auto", "flush", "rounded", "square"];
+
 /**
+ * A modal panel that slides in from any viewport edge, with a backdrop, focus
+ * trapping and drag-to-dismiss. Size it from a preset scale, align it along the edge
+ * it is attached to for any of eight corner placements, and control which corners
+ * round off.
+ *
  * @element pds-drawer
  * @fires toggle - Fired when the drawer opens or closes
- * 
+ *
+ * @attr {"bottom" | "top" | "left" | "right"} position - Viewport edge the drawer slides in from (default: bottom)
+ * @attr {"xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "full"} size - Width preset. Unset resolves to lg for top/bottom and sm for left/right
+ * @attr {"start" | "center" | "end" | "stretch"} align - Placement along the attachment edge. Unset resolves to center for top/bottom and stretch for left/right
+ * @attr {"auto" | "flush" | "rounded" | "square"} corners - Which corners round off (default: auto, which flattens the attachment edge only)
+ * @attr inset - Float the drawer away from the viewport edges by --drawer-inset. Implies rounded corners
+ * @attr {"header" | "none"} drag - Drag-to-dismiss affordance (default: header)
+ * @attr open - Whether the drawer is open
+ * @attr max-height - Maximum panel height (CSS value)
+ * @attr min-height - Minimum panel height (CSS value)
+ * @attr show-close - Show the close button in the header
+ *
  * @slot drawer-header - Header content for the drawer
  * @slot drawer-content - Main content of the drawer
- * 
+ *
  * @cssprop --drawer-duration - Animation duration (default: var(--transition-normal))
  * @cssprop --drawer-easing - Animation easing function (default: var(--easing-emphasized))
+ * @cssprop --drawer-width - Explicit panel width. Overrides the size preset entirely
+ * @cssprop --drawer-inset - Gap from the viewport edges when the inset attribute is set (default: var(--spacing-4))
  * @cssprop --drawer-max-height - Maximum height when position is top/bottom (default: 70vh)
  * @cssprop --drawer-min-height - Minimum height when position is top/bottom (default: auto)
- * 
+ * @cssprop --drawer-bg - Panel background (default: var(--color-surface-overlay))
+ * @cssprop --drawer-shadow - Panel drop shadow (default: var(--shadow-xl))
+ * @cssprop --drawer-radius - Corner radius before per-corner flattening (default: var(--radius-lg))
+ * @cssprop --drawer-handle-width - Grab handle width (default: var(--size-9))
+ * @cssprop --drawer-handle-height - Grab handle height (default: var(--size-1))
+ * @cssprop --drawer-handle-radius - Grab handle corner radius (default: var(--radius-full))
+ * @cssprop --drawer-handle-bg - Grab handle colour (default: var(--color-border))
+ * @cssprop --drawer-header-min-hit - Minimum header hit area (default: var(--control-min-height))
+ *
  * @csspart backdrop - The semi-transparent backdrop overlay
+ * @csspart layer - The full-viewport frame that aligns the panel against its edge
+ * @csspart motion - The animated element carrying the panel's size and inset
  * @csspart panel - The drawer panel container
  * @csspart header - The drawer header section
  * @csspart close-button - The close button
@@ -50,6 +88,13 @@ class PdsDrawer extends HTMLElement {
     this._maxHeight = "";
     this._minHeight = "";
     this._showClose = false;
+    // Empty string means "not set", which is NOT the same as a default: absence lets
+    // CSS resolve a position-dependent default, so these must not be seeded with a
+    // concrete value here.
+    this._size = "";
+    this._align = "";
+    this._corners = "";
+    this._inset = false;
   }
   static get observedAttributes() {
     return [
@@ -59,7 +104,34 @@ class PdsDrawer extends HTMLElement {
       "max-height",
       "min-height",
       "show-close",
+      "size",
+      "align",
+      "corners",
+      "inset",
     ];
+  }
+
+  /**
+   * Lowercase and validate an enumerated attribute value, warning once per bad value.
+   * Returns the fallback when the value is not recognised. Normalized values are
+   * deliberately NOT written back to the DOM: the CSS enumerates every valid value
+   * literally, so it is already self-validating, and a write-back risks a reflection
+   * loop through attributeChangedCallback.
+   * @param {unknown} value
+   * @param {string[]} allowed
+   * @param {string} attr
+   * @param {string} [fallback]
+   * @returns {string}
+   */
+  #normalizeEnum(value, allowed, attr, fallback = "") {
+    if (value == null || value === "") return fallback;
+    const v = String(value).trim().toLowerCase();
+    if (allowed.includes(v)) return v;
+    PDS.log(
+      "warn",
+      `<pds-drawer> ignoring invalid ${attr}="${value}". Expected one of: ${allowed.join(", ")}.`
+    );
+    return fallback;
   }
 
   // Attribute/property reflection
@@ -98,7 +170,7 @@ class PdsDrawer extends HTMLElement {
     return this._position;
   }
   set position(val) {
-    const v = String(val || "bottom");
+    const v = this.#normalizeEnum(val, DRAWER_POSITIONS, "position", "bottom");
     if (this._position === v) return;
     this._position = v;
     this.setAttribute("position", v);
@@ -182,6 +254,84 @@ class PdsDrawer extends HTMLElement {
     this.#renderCloseButtonVisibility();
   }
 
+  /**
+   * Width preset. Sized as min(cap, step) so the panel is specified in rem but
+   * self-clamps to the viewport. Unset resolves to the position-derived default:
+   * lg (50rem) for top/bottom, sm (28rem) for left/right. The larger steps saturate
+   * against the cap rather than overflowing, so on a 1440px display 3xl and 4xl look
+   * identical and only diverge on ultrawide.
+   * @type {"xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "full"}
+   * @attr size
+   */
+  get size() {
+    return this._size;
+  }
+  set size(val) {
+    const v = this.#normalizeEnum(val, DRAWER_SIZES, "size");
+    if (this._size === v) return;
+    this._size = v;
+    if (v) this.setAttribute("size", v);
+    else this.removeAttribute("size");
+    this.#recalc();
+  }
+
+  /**
+   * Placement along the edge the drawer is attached to - the cross axis of position.
+   * position="bottom" align="end" is the bottom-right corner; position="left"
+   * align="start" is the top-left. Unset resolves to center for top/bottom and
+   * stretch for left/right.
+   * @type {"start" | "center" | "end" | "stretch"}
+   * @attr align
+   */
+  get align() {
+    return this._align;
+  }
+  set align(val) {
+    const v = this.#normalizeEnum(val, DRAWER_ALIGNMENTS, "align");
+    if (this._align === v) return;
+    this._align = v;
+    if (v) this.setAttribute("align", v);
+    else this.removeAttribute("align");
+    this.#recalc();
+  }
+
+  /**
+   * Which corners round off. auto flattens the attachment edge only; flush also
+   * flattens every cross-axis edge the panel is pressed against; rounded never
+   * flattens; square removes all rounding.
+   * @type {"auto" | "flush" | "rounded" | "square"}
+   * @attr corners
+   */
+  get corners() {
+    return this._corners;
+  }
+  set corners(val) {
+    const v = this.#normalizeEnum(val, DRAWER_CORNERS, "corners");
+    if (this._corners === v) return;
+    this._corners = v;
+    if (v) this.setAttribute("corners", v);
+    else this.removeAttribute("corners");
+  }
+
+  /**
+   * Float the drawer away from the viewport edges by --drawer-inset. Implies rounded
+   * corners. Applied as padding on the motion layer, so the drawer's footprint is
+   * unchanged and it still slides fully off screen.
+   * @type {boolean}
+   * @attr inset
+   * @default false
+   */
+  get inset() {
+    return this._inset;
+  }
+  set inset(val) {
+    const bool = Boolean(val);
+    if (this._inset === bool) return;
+    this._inset = bool;
+    this.toggleAttribute("inset", this._inset);
+    this.#recalc();
+  }
+
   attributeChangedCallback(name, _old, value) {
     switch (name) {
       case "open":
@@ -194,11 +344,20 @@ class PdsDrawer extends HTMLElement {
         this.#syncAria();
         this.#syncFocusTrap();
         break;
-      case "position":
-        this._position = value || "bottom";
+      case "position": {
+        this._position = this.#normalizeEnum(value, DRAWER_POSITIONS, "position", "bottom");
+        // position is the one attribute that must be reflected back when it falls back.
+        // It has no meaningful "unset" state, every rule is keyed on :host([position=...]),
+        // and an unmatched value would leave .layer with no edge anchored at all. The
+        // guard is what keeps this from looping: setAttribute fires this callback again
+        // even when the value is unchanged.
+        if (this.getAttribute("position") !== this._position) {
+          this.setAttribute("position", this._position);
+        }
         this.#applyFraction(this.#currentFraction, false);
         this.#renderCloseButtonVisibility();
         break;
+      }
       case "drag":
         this._drag = value || "header";
         break;
@@ -222,6 +381,21 @@ class PdsDrawer extends HTMLElement {
         this._showClose = this.hasAttribute("show-close");
         this.#renderCloseButtonVisibility();
         break;
+      case "size":
+        this._size = this.#normalizeEnum(value, DRAWER_SIZES, "size");
+        this.#recalc();
+        break;
+      case "align":
+        this._align = this.#normalizeEnum(value, DRAWER_ALIGNMENTS, "align");
+        this.#recalc();
+        break;
+      case "corners":
+        this._corners = this.#normalizeEnum(value, DRAWER_CORNERS, "corners");
+        break;
+      case "inset":
+        this._inset = this.hasAttribute("inset");
+        this.#recalc();
+        break;
     }
   }
 
@@ -236,7 +410,7 @@ class PdsDrawer extends HTMLElement {
     // Compose shadow DOM
     this.shadowRoot.innerHTML = /*html*/`
       <div class="backdrop" part="backdrop"></div>
-      <div class="layer" id="layer" aria-hidden="true">
+      <div class="layer" id="layer" part="layer" aria-hidden="true">
         <div class="motion-layer" part="motion">
           <aside part="panel" tabindex="-1">
             <header part="header">
@@ -257,13 +431,83 @@ class PdsDrawer extends HTMLElement {
     // Adopt PDS layers + component stylesheet
     const componentStyles = PDS.createStylesheet(/*css*/ `
       @layer pds-drawer {
-        :host { position: fixed; inset: 0; display: contents; contain: layout style size; }
+        /* The host generates no principal box (display: contents), so position, inset
+           and contain on it were all inert. contain: size in particular is a landmine
+           for anyone who later reaches for the host to do geometry. */
+        :host { display: contents; }
 
         /* Timing tokens */
         :host { --_dur: var(--drawer-duration, var(--transition-normal)); }
         :host { --_easing: var(--drawer-easing, var(--easing-emphasized, cubic-bezier(0.25,1,0.5,1))); }
 
-        ::slotted(*) { 
+        /* Geometry tokens.
+           --_w-cap   max share of the viewport on the inline axis. A PERCENTAGE, not vw:
+                      html:has(pds-drawer[open]) forces scrollbar-gutter: stable, so vw
+                      overshoots the available width by the reserved gutter, misaligning
+                      the panel while open and flashing a scrollbar on close. Percentages
+                      resolve against the initial containing block, which excludes it.
+           --_w-step  the width step. min() of the two means the panel is sized in rem
+                      but self-clamps to the viewport, matching the house idiom.
+           --_inset   gap from the viewport edges. Applied as PADDING on .motion-layer,
+                      never as a margin on the panel: a block-axis margin collapses out
+                      of the motion layer's auto height and would leave a sliver of
+                      drawer on screen after closing.
+           --_r-*     per-corner radius switches. */
+        :host {
+          --_w-cap: 100%;
+          --_w-step: 50rem;
+          --_inset: 0px;
+          --_r: var(--drawer-radius, var(--radius-lg));
+          --_r-tl: var(--_r); --_r-tr: var(--_r); --_r-br: var(--_r); --_r-bl: var(--_r);
+        }
+
+        /* Side drawers: keep a backdrop gutter, narrower default, fill the block axis. */
+        :host([position="left"]), :host([position="right"]) {
+          --_w-cap: 90%;
+          --_w-step: 28rem;
+          --_panel-block: 100%;
+          --_aside-block: 100%;
+          --_aside-max-block: 100dvh;
+        }
+
+        /* Width presets. Declared AFTER the per-position defaults: equal specificity
+           (0,2,0), so source order lets an explicit size win over the position default.
+           The large steps saturate against --_w-cap rather than overflowing, which is
+           the whole point of min(): side drawers cap at 90%, so on a 1440px display 3xl
+           and 4xl both render 1296px and only diverge on ultrawide. */
+        :host([size="xs"])   { --_w-step: 20rem; }   /*  320px */
+        :host([size="sm"])   { --_w-step: 28rem; }   /*  448px */
+        :host([size="md"])   { --_w-step: 36rem; }   /*  576px */
+        :host([size="lg"])   { --_w-step: 50rem; }   /*  800px */
+        :host([size="xl"])   { --_w-step: 64rem; }   /* 1024px */
+        :host([size="2xl"])  { --_w-step: 80rem; }   /* 1280px */
+        :host([size="3xl"])  { --_w-step: 90rem; }   /* 1440px */
+        :host([size="4xl"])  { --_w-step: 100rem; }  /* 1600px */
+        :host([size="full"]) { --_w-step: 100%; --_w-cap: 100%; }
+        /* 5xl (120rem/1920px) is deliberately reserved: min(100%, 120rem) resolves to
+           100% on essentially every real display, so it would be indistinguishable from
+           full. Adding it later is a one-line, non-breaking change. */
+
+        /* stretch on a top/bottom drawer means fill the cross axis, and outranks size:
+           (0,3,0) beats the size rules' (0,2,0). */
+        :host(:is([position="top"],[position="bottom"])[align="stretch"]) {
+          --_w-step: 100%; --_w-cap: 100%;
+        }
+
+        /* An explicitly aligned side drawer stops being full height and hugs its
+           content. Setting these to the keyword initial is the guaranteed-invalid-value
+           trick: it makes var(--_x, fallback) resolve to the fallback, which avoids a
+           second set of selectors downstream. It also un-shadows --drawer-max-height,
+           which the full-height default deliberately overrides. */
+        :host(:is([position="left"],[position="right"]):is([align="start"],[align="center"],[align="end"])) {
+          --_panel-block: initial;
+          --_aside-block: initial;
+          --_aside-max-block: initial;
+        }
+
+        :host([inset]) { --_inset: var(--drawer-inset, var(--spacing-4)); }
+
+        ::slotted(*) {
           padding: var(--spacing-4);
           background-color: var(--color-surface-overlay);
         }
@@ -277,68 +521,115 @@ class PdsDrawer extends HTMLElement {
           transition: opacity var(--_dur) var(--_easing), visibility 0s var(--_dur);
           z-index: var(--z-modal);
         }
-        :host([open]) .backdrop { opacity: var(--backdrop-opacity); pointer-events: auto; visibility: visible; transition-delay: 0s; }
+        :host([open]) .backdrop { opacity: var(--backdrop-opacity, 1); pointer-events: auto; visibility: visible; transition-delay: 0s; }
 
-        /* Layer container */
+        /* Layer: a full-viewport frame pinned to the position edge, for ALL four
+           positions. It does the ALIGNMENT and nothing else. It NEVER captures pointer
+           events, so the backdrop stays clickable beside the panel, and it carries no
+           paint containment, which used to clip the panel's box-shadow. */
         .layer {
-          position: fixed; left: 0; right: 0; width: 100%; max-width: 100%;
-          contain: layout paint style;
+          position: fixed; left: 0; right: 0;
+          contain: layout style;
           z-index: var(--z-drawer);
-          display: flex; align-items: flex-end;
+          display: flex;
+          justify-content: center;
+          align-items: stretch;
           pointer-events: none; visibility: hidden;
           transition: visibility 0s var(--_dur);
         }
-        :host([open]) .layer { pointer-events: auto; visibility: visible; transition-delay: 0s; }
-        :host([position="bottom"]) .layer { bottom: 0; height: auto; }
-        :host([position="top"]) .layer { top: 0; height: auto; align-items: flex-start; }
+        :host([open]) .layer { visibility: visible; transition-delay: 0s; }
+        :host([open]) aside  { pointer-events: auto; }
 
-        /* Left/Right layout */
-        :host([position="left"]) .layer, :host([position="right"]) .layer {
-          top: 0; bottom: 0; translate: none;
-          width: var(--drawer-width, min(90vw, 28rem));
-          max-width: var(--drawer-width, min(90vw, 28rem));
-        }
-        :host([position="left"]) .layer { left: 0; right: auto; }
-        :host([position="right"]) .layer { right: 0; left: auto; }
+        :host([position="bottom"]) .layer { bottom: 0; top: auto; height: auto; align-items: flex-end; }
+        :host([position="top"])    .layer { top: 0; bottom: auto; height: auto; align-items: flex-start; }
+        :host([position="left"]) .layer,
+        :host([position="right"]) .layer { top: 0; bottom: 0; }
+        :host([position="left"])  .layer { justify-content: flex-start; }
+        :host([position="right"]) .layer { justify-content: flex-end; }
 
-        /* Motion layer — only this element is animated */
+        /* Cross-axis alignment: align places the panel along the edge it is attached to,
+           so position="bottom" align="end" is the bottom-right corner. For top/bottom the
+           inline axis is the flex main axis, hence justify-content; for left/right the
+           block axis is the flex cross axis, hence align-items. Every value is enumerated
+           literally, so an invalid align matches nothing and falls back to the default -
+           the CSS is self-validating. */
+        :host(:is([position="top"],[position="bottom"])[align="start"])  .layer { justify-content: flex-start; }
+        :host(:is([position="top"],[position="bottom"])[align="center"]) .layer { justify-content: center; }
+        :host(:is([position="top"],[position="bottom"])[align="end"])    .layer { justify-content: flex-end; }
+        :host(:is([position="left"],[position="right"])[align="start"])  .layer { align-items: flex-start; }
+        :host(:is([position="left"],[position="right"])[align="center"]) .layer { align-items: center; }
+        :host(:is([position="left"],[position="right"])[align="end"])    .layer { align-items: flex-end; }
+
+        /* Motion layer - the only animated element. #getTransformForFraction applies
+           translateX/Y(+/-100%) HERE, and percentage translations resolve against this
+           element's own border box, so its footprint must equal the panel's footprint
+           (including any inset) and #recalc must measure THIS element. Size and inset
+           therefore live here and nowhere else: on .layer they would shrink the frame
+           and make flex alignment impossible, and on the panel they would decouple the
+           visible panel from the transformed box. */
         .motion-layer {
-          width: 100%;
-          contain: layout paint style;
+          flex: 0 0 auto;
+          min-inline-size: 0;
+          /* Explicit, not just inherited from the primitives layer: keeps inline-size
+             and block-size equal to the border box (inset padding included) even if
+             this stylesheet is ever adopted without primitives. That equality is the
+             invariant #recalc and the drag transform math both depend on. */
+          box-sizing: border-box;
+          inline-size: var(--drawer-width, min(var(--_w-cap), var(--_w-step)));
+          max-inline-size: 100%;
+          block-size: var(--_panel-block, auto);
+          padding: var(--_inset);
+          contain: layout style;
           will-change: transform;
         }
-        :host([position="left"]) .motion-layer,
-        :host([position="right"]) .motion-layer { height: 100%; }
 
-        /* Panel */
+        /* Panel - carries the surface. */
         aside {
           display: flex; flex-direction: column;
           background: var(--drawer-bg, var(--color-surface-overlay, Canvas));
           box-shadow: var(--drawer-shadow, var(--shadow-xl));
-          max-height: var(--drawer-max-height, 70vh);
-          min-height: var(--drawer-min-height, auto);
-          width: 100%; max-width: 100%;
+          block-size: var(--_aside-block, auto);
+          /* The nesting is required: the maxHeight setter writes --drawer-max-height as
+             an inline style on the PANEL, not on the host, so the lookup has to sit in
+             the fallback slot of a declaration on the panel to keep resolving. */
+          max-block-size: var(--_aside-max-block, var(--drawer-max-height, 70vh));
+          min-block-size: var(--drawer-min-height, auto);
+          inline-size: 100%; max-inline-size: 100%;
           margin: 0;
-          border-radius: var(--drawer-radius, var(--radius-lg));
-          overflow: visible; contain: layout style;
+          border-radius: var(--_r-tl) var(--_r-tr) var(--_r-br) var(--_r-bl);
+          /* clip, not hidden: it creates no scroll container, so the browser cannot
+             scroll-on-focus and hide the header. Unconditional, because ::slotted(*)
+             paints an opaque background flush to the panel's square box and pokes a
+             square ear past each rounded corner otherwise. */
+          overflow: clip;
+          contain: layout style;
           touch-action: none;
           outline: none;
         }
-        :host([position="bottom"]) aside {
-          border-bottom-left-radius: 0; border-bottom-right-radius: 0;
-        }
-        :host([position="top"]) aside {
-          flex-direction: column-reverse;
-          border-top-left-radius: 0; border-top-right-radius: 0;
-        }
-        :host([position="left"]) aside {
-          border-top-left-radius: 0; border-bottom-left-radius: 0;
-          max-height: 100vh; height: 100%; width: 100%;
-        }
-        :host([position="right"]) aside {
-          border-top-right-radius: 0; border-bottom-right-radius: 0;
-          max-height: 100vh; height: 100%; width: 100%;
-        }
+        :host([position="top"]) aside { flex-direction: column-reverse; }
+
+        /* Corner rounding.
+           auto (the default): flatten the attachment edge only - byte-identical to the
+             previous behaviour for every position/align/size combination.
+           flush: additionally flatten every cross-axis edge the panel is pressed against.
+           rounded, and inset which implies it: never flatten.
+           square: no rounding at all.
+           The :where() guard contributes zero specificity, so the auto rules keep the
+           (0,2,0) they have always had.
+           RTL: justify-content is direction-aware but these corner vars are physical. The
+           repo has no RTL support today; when it lands, add a :host(:dir(rtl)) block
+           swapping --_r-tl with --_r-tr and --_r-bl with --_r-br. */
+        :host([position="bottom"]:where(:not([corners="rounded"], [inset]))) { --_r-bl: 0; --_r-br: 0; }
+        :host([position="top"]:where(:not([corners="rounded"], [inset])))    { --_r-tl: 0; --_r-tr: 0; }
+        :host([position="left"]:where(:not([corners="rounded"], [inset])))   { --_r-tl: 0; --_r-bl: 0; }
+        :host([position="right"]:where(:not([corners="rounded"], [inset])))  { --_r-tr: 0; --_r-br: 0; }
+
+        :host([corners="flush"]:is([position="top"],[position="bottom"]):is([align="start"],[align="stretch"],[size="full"])) { --_r-tl: 0; --_r-bl: 0; }
+        :host([corners="flush"]:is([position="top"],[position="bottom"]):is([align="end"],[align="stretch"],[size="full"]))   { --_r-tr: 0; --_r-br: 0; }
+        :host([corners="flush"]:is([position="left"],[position="right"]):where(:not([align="center"],[align="end"])))   { --_r-tl: 0; --_r-tr: 0; }
+        :host([corners="flush"]:is([position="left"],[position="right"]):where(:not([align="center"],[align="start"]))) { --_r-bl: 0; --_r-br: 0; }
+
+        :host([corners="square"]) { --_r: 0px; }
 
         header {
           position: relative;
@@ -395,11 +686,6 @@ class PdsDrawer extends HTMLElement {
 
         [part="content"] { flex: 1; min-height: 0; overflow: auto; -webkit-overflow-scrolling: touch; contain: layout paint style; }
 
-        main { overflow: auto; -webkit-overflow-scrolling: touch; contain: layout paint style; transition: height var(--_dur) var(--_easing); }
-
-        @media (min-width: 800px) {
-          aside { width: 100%; max-width: 800px; margin-inline: auto; border-radius: var(--drawer-radius, var(--radius-lg)); overflow: hidden; }
-        }
       }
     `);
 
@@ -435,7 +721,10 @@ class PdsDrawer extends HTMLElement {
 
     // Resize observers
     this.#resizeObs = new ResizeObserver(this.#recalc);
+    // Observe both: the panel drives the motion layer's auto height, and the motion
+    // layer is what #recalc actually measures.
     this.#resizeObs.observe(this.#aside);
+    if (this.#motionLayer) this.#resizeObs.observe(this.#motionLayer);
     window.addEventListener("resize", this.#recalc, { passive: true });
     if (window.visualViewport) window.visualViewport.addEventListener("resize", this.#recalc, { passive: true });
 
@@ -498,6 +787,10 @@ class PdsDrawer extends HTMLElement {
    * @param {"bottom"|"top"|"left"|"right"} [options.position] - Drawer position
    * @param {string} [options.maxHeight] - Maximum height (CSS value)
    * @param {string} [options.minHeight] - Minimum height (CSS value)
+   * @param {"xs"|"sm"|"md"|"lg"|"xl"|"2xl"|"3xl"|"4xl"|"full"} [options.size] - Width preset
+   * @param {"start"|"center"|"end"|"stretch"} [options.align] - Placement along the attachment edge
+   * @param {"auto"|"flush"|"rounded"|"square"} [options.corners] - Corner rounding
+   * @param {boolean} [options.inset] - Float the drawer away from the viewport edges
    * @param {boolean} [options.showClose] - Show close button
    * @param {boolean} [options.waitForMedia=true] - Wait for images/videos to load
    * @param {number} [options.mediaTimeout=500] - Media load timeout in ms
@@ -508,6 +801,14 @@ class PdsDrawer extends HTMLElement {
     if (options.position) this.position = options.position;
     if (options.maxHeight) this.maxHeight = options.maxHeight;
     if (options.minHeight) this.minHeight = options.minHeight;
+    // Tested with !== undefined rather than truthiness so that null or "" can CLEAR a
+    // stale value on a reused drawer instance. The three options above deliberately keep
+    // their existing truthiness test to avoid changing their behaviour here; worth
+    // reconciling the asymmetry in a follow-up.
+    if (options.size !== undefined) this.size = options.size;
+    if (options.align !== undefined) this.align = options.align;
+    if (options.corners !== undefined) this.corners = options.corners;
+    if (options.inset !== undefined) this.inset = options.inset;
 
     // Close button visibility
     const pos = this.position || "bottom";
@@ -679,7 +980,6 @@ class PdsDrawer extends HTMLElement {
     cancelAnimationFrame(this.#raf);
     this.style.userSelect = "none";
     document.documentElement.style.cursor = "grabbing";
-    this.shadowRoot.querySelector("main")?.style.setProperty("overflow", "hidden");
   };
 
   #onPointerMove = (e) => {
@@ -709,7 +1009,6 @@ class PdsDrawer extends HTMLElement {
     this.#isDragging = false;
   this.style.userSelect = "";
     document.documentElement.style.cursor = "";
-  this.shadowRoot.querySelector("main")?.style.removeProperty("overflow");
 
     //const isVertical = this.position === "bottom" || this.position === "top";
     const dir = this.position === "bottom" || this.position === "right" ? 1 : -1;
@@ -737,8 +1036,15 @@ class PdsDrawer extends HTMLElement {
   };
 
   #recalc = () => {
-    if (!this.#aside) return;
-    const rect = this.#aside.getBoundingClientRect();
+    // Measure the MOTION LAYER, not the panel. #getTransformForFraction applies
+    // translateX/Y(±100%) to .motion-layer, and percentage translations resolve
+    // against the transformed element's own border box — so the extent that feeds
+    // the drag fraction math and the matrix→fraction recovery in #cancelAnimations
+    // must be the motion layer's box. The two are equal while the panel fills the
+    // motion layer; they stop being equal as soon as sizing or inset decouples them.
+    const motionLayer = this.#motionLayer;
+    if (!motionLayer) return;
+    const rect = motionLayer.getBoundingClientRect();
     this.#drawerHeight = rect.height || 0;
     this.#drawerWidth = rect.width || 0;
     this.#applyFraction(this.#currentFraction, false);
