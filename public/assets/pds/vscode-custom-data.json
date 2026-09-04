@@ -73,16 +73,16 @@
     },
     {
       "name": "pds-drawer",
-      "description": "PdsDrawer component",
+      "description": "A modal panel that slides in from any viewport edge, with a backdrop, focus\ntrapping and drag-to-dismiss. Size it from a preset scale, align it along the edge\nit is attached to for any of eight corner placements, and control which corners\nround off.",
       "attributes": [
         {
           "name": "open",
-          "description": "Controls whether the drawer is open or closed",
+          "description": "Whether the drawer is open",
           "valueSet": "v"
         },
         {
           "name": "position",
-          "description": "Position of the drawer relative to the viewport",
+          "description": "Viewport edge the drawer slides in from (default: bottom)",
           "values": [
             {
               "name": "bottom"
@@ -100,7 +100,7 @@
         },
         {
           "name": "drag",
-          "description": "Controls drag interaction behavior",
+          "description": "Drag-to-dismiss affordance (default: header)",
           "values": [
             {
               "name": "header"
@@ -112,15 +112,89 @@
         },
         {
           "name": "max-height",
-          "description": "Maximum height for top/bottom positioned drawers (CSS value)"
+          "description": "Maximum panel height (CSS value)"
         },
         {
           "name": "min-height",
-          "description": "Minimum height for top/bottom positioned drawers (CSS value)"
+          "description": "Minimum panel height (CSS value)"
         },
         {
           "name": "show-close",
-          "description": "Whether to show the close button in the header",
+          "description": "Show the close button in the header",
+          "valueSet": "v"
+        },
+        {
+          "name": "size",
+          "description": "Width preset. Unset resolves to lg for top/bottom and sm for left/right",
+          "values": [
+            {
+              "name": "xs"
+            },
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            },
+            {
+              "name": "xl"
+            },
+            {
+              "name": "2xl"
+            },
+            {
+              "name": "3xl"
+            },
+            {
+              "name": "4xl"
+            },
+            {
+              "name": "full"
+            }
+          ]
+        },
+        {
+          "name": "align",
+          "description": "Placement along the attachment edge. Unset resolves to center for top/bottom and stretch for left/right",
+          "values": [
+            {
+              "name": "start"
+            },
+            {
+              "name": "center"
+            },
+            {
+              "name": "end"
+            },
+            {
+              "name": "stretch"
+            }
+          ]
+        },
+        {
+          "name": "corners",
+          "description": "Which corners round off (default: auto, which flattens the attachment edge only)",
+          "values": [
+            {
+              "name": "auto"
+            },
+            {
+              "name": "flush"
+            },
+            {
+              "name": "rounded"
+            },
+            {
+              "name": "square"
+            }
+          ]
+        },
+        {
+          "name": "inset",
+          "description": "Float the drawer away from the viewport edges by --drawer-inset. Implies rounded corners",
           "valueSet": "v"
         }
       ]
@@ -144,7 +218,7 @@
         },
         {
           "name": "start-angle",
-          "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\r\nIf not specified, the angle is auto-detected based on the FAB's corner position:\r\n- Bottom-right: 180-� (fly left/up)\r\n- Bottom-left: 315-� (fly right/up)\r\n- Top-right: 225-� (fly left/down)\r\n- Top-left: 45-� (fly right/down)"
+          "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\nIf not specified, the angle is auto-detected based on the FAB's corner position:\n- Bottom-right: 180-� (fly left/up)\n- Bottom-left: 315-� (fly right/up)\n- Top-right: 225-� (fly left/down)\n- Top-left: 45-� (fly right/down)"
         },
         {
           "name": "behavior",
@@ -172,7 +246,7 @@
         },
         {
           "name": "fab-class",
-          "description": "Space-separated class list forwarded to the internal button.\r\nUse this instead of host classes for btn-* and icon-only."
+          "description": "Space-separated class list forwarded to the internal button.\nUse this instead of host classes for btn-* and icon-only."
         }
       ]
     },
@@ -770,6 +844,10 @@
           "description": "Rotation angle in degrees"
         },
         {
+          "name": "flip",
+          "description": "Flip the icon: \"horizontal\" or (starting with) \"h\", \"vertical\" or (starting with) \"v\", \"both\" or (starting with) \"b\""
+        },
+        {
           "name": "morph",
           "description": "Morph the icon when the icon name changes",
           "valueSet": "v"
@@ -803,7 +881,7 @@
     },
     {
       "name": "pds-locale",
-      "description": "Locale switcher component.\r\n\r\nThe component only persists canonical 5-letter locale tags (`xx-YY`),\r\nfor example `en-US` and `nl-NL`.",
+      "description": "Locale switcher component.\n\nThe component only persists canonical 5-letter locale tags (`xx-YY`),\nfor example `en-US` and `nl-NL`.",
       "attributes": [
         {
           "name": "name",
@@ -1082,7 +1160,7 @@
     },
     {
       "name": "pds-tags",
-      "description": "Form-associated multi-select tags control built on top of `pds-omnibox`.\r\n\r\nUsers select suggestions from the omnibox and each selection is rendered as a removable\r\nchip. The component keeps selection state synchronized across:\r\n- the `value` attribute (comma-separated ids)\r\n- the `value` property (`string[]`)\r\n- form value via ElementInternals\r\n\r\nThe `options` object uses the same structure as `pds-omnibox.settings`.\r\nSee `pds-omnibox` JSDoc for the full options schema.\r\nBefore applying it, the component deep-merges internal defaults:\r\n- `hideCategory: true`\r\n- `itemGrid: \"0 1fr 0\"`\r\n- `iconHandler: () => \"\"`\r\n\r\nWhen `required` is set, at least one selected value is required for validity.",
+      "description": "Form-associated multi-select tags control built on top of `pds-omnibox`.\n\nUsers select suggestions from the omnibox and each selection is rendered as a removable\nchip. The component keeps selection state synchronized across:\n- the `value` attribute (comma-separated ids)\n- the `value` property (`string[]`)\n- form value via ElementInternals\n\nThe `options` object uses the same structure as `pds-omnibox.settings`.\nSee `pds-omnibox` JSDoc for the full options schema.\nBefore applying it, the component deep-merges internal defaults:\n- `hideCategory: true`\n- `itemGrid: \"0 1fr 0\"`\n- `iconHandler: () => \"\"`\n\nWhen `required` is set, at least one selected value is required for validity.",
       "attributes": [
         {
           "name": "name",

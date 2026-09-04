@@ -799,7 +799,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "",
+          "description": "A modal panel that slides in from any viewport edge, with a backdrop, focus\ntrapping and drag-to-dismiss. Size it from a preset scale, align it along the edge\nit is attached to for any of eight corner placements, and control which corners\nround off.",
           "name": "PdsDrawer",
           "cssProperties": [
             {
@@ -811,18 +811,66 @@
               "name": "--drawer-easing"
             },
             {
+              "description": "Explicit panel width. Overrides the size preset entirely",
+              "name": "--drawer-width"
+            },
+            {
+              "description": "Gap from the viewport edges when the inset attribute is set (default: var(--spacing-4))",
+              "name": "--drawer-inset"
+            },
+            {
               "description": "Maximum height when position is top/bottom (default: 70vh)",
               "name": "--drawer-max-height"
             },
             {
               "description": "Minimum height when position is top/bottom (default: auto)",
               "name": "--drawer-min-height"
+            },
+            {
+              "description": "Panel background (default: var(--color-surface-overlay))",
+              "name": "--drawer-bg"
+            },
+            {
+              "description": "Panel drop shadow (default: var(--shadow-xl))",
+              "name": "--drawer-shadow"
+            },
+            {
+              "description": "Corner radius before per-corner flattening (default: var(--radius-lg))",
+              "name": "--drawer-radius"
+            },
+            {
+              "description": "Grab handle width (default: var(--size-9))",
+              "name": "--drawer-handle-width"
+            },
+            {
+              "description": "Grab handle height (default: var(--size-1))",
+              "name": "--drawer-handle-height"
+            },
+            {
+              "description": "Grab handle corner radius (default: var(--radius-full))",
+              "name": "--drawer-handle-radius"
+            },
+            {
+              "description": "Grab handle colour (default: var(--color-border))",
+              "name": "--drawer-handle-bg"
+            },
+            {
+              "description": "Minimum header hit area (default: var(--control-min-height))",
+              "name": "--drawer-header-min-hit"
             }
           ],
           "cssParts": [
             {
               "description": "The semi-transparent backdrop overlay",
               "name": "backdrop"
+            },
+            {
+              "description": "The full-viewport frame that aligns the panel against its edge",
+              "name": "layer"
+            },
+            {
+              "description": "The animated element carrying the panel's size and inset",
+              "name": "motion"
             },
             {
               "description": "The drawer panel container",
@@ -916,6 +964,43 @@
               "attribute": "show-close"
             },
             {
+              "kind": "field",
+              "name": "size",
+              "description": "Width preset. Sized as min(cap, step) so the panel is specified in rem but\nself-clamps to the viewport. Unset resolves to the position-derived default:\nlg (50rem) for top/bottom, sm (28rem) for left/right. The larger steps saturate\nagainst the cap rather than overflowing, so on a 1440px display 3xl and 4xl look\nidentical and only diverge on ultrawide.",
+              "type": {
+                "text": "\"xs\" | \"sm\" | \"md\" | \"lg\" | \"xl\" | \"2xl\" | \"3xl\" | \"4xl\" | \"full\""
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "align",
+              "description": "Placement along the edge the drawer is attached to - the cross axis of position.\nposition=\"bottom\" align=\"end\" is the bottom-right corner; position=\"left\"\nalign=\"start\" is the top-left. Unset resolves to center for top/bottom and\nstretch for left/right.",
+              "type": {
+                "text": "\"start\" | \"center\" | \"end\" | \"stretch\""
+              },
+              "attribute": "align"
+            },
+            {
+              "kind": "field",
+              "name": "corners",
+              "description": "Which corners round off. auto flattens the attachment edge only; flush also\nflattens every cross-axis edge the panel is pressed against; rounded never\nflattens; square removes all rounding.",
+              "type": {
+                "text": "\"auto\" | \"flush\" | \"rounded\" | \"square\""
+              },
+              "attribute": "corners"
+            },
+            {
+              "kind": "field",
+              "name": "inset",
+              "description": "Float the drawer away from the viewport edges by --drawer-inset. Implies rounded\ncorners. Applied as padding on the motion layer, so the drawer's footprint is\nunchanged and it still slides fully off screen.",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "inset"
+            },
+            {
               "kind": "method",
               "name": "openDrawer",
               "description": "Opens the drawer",
@@ -950,7 +1035,7 @@
                   "description": "Configuration options",
                   "optional": true,
                   "type": {
-                    "text": "@param {any|HTMLElement|string} [options.header] - Header content\n   * @param {\"bottom\"|\"top\"|\"left\"|\"right\"} [options.position] - Drawer position\n   * @param {string} [options.maxHeight] - Maximum height (CSS value)\n   * @param {string} [options.minHeight] - Minimum height (CSS value)\n   * @param {boolean} [options.showClose] - Show close button\n   * @param {boolean} [options.waitForMedia=true] - Wait for images/videos to load\n   * @param {number} [options.mediaTimeout=500] - Media load timeout in ms\n   * "
+                    "text": "@param {any|HTMLElement|string} [options.header] - Header content\n   * @param {\"bottom\"|\"top\"|\"left\"|\"right\"} [options.position] - Drawer position\n   * @param {string} [options.maxHeight] - Maximum height (CSS value)\n   * @param {string} [options.minHeight] - Minimum height (CSS value)\n   * @param {\"xs\"|\"sm\"|\"md\"|\"lg\"|\"xl\"|\"2xl\"|\"3xl\"|\"4xl\"|\"full\"} [options.size] - Width preset\n   * @param {\"start\"|\"center\"|\"end\"|\"stretch\"} [options.align] - Placement along the attachment edge\n   * @param {\"auto\"|\"flush\"|\"rounded\"|\"square\"} [options.corners] - Corner rounding\n   * @param {boolean} [options.inset] - Float the drawer away from the viewport edges\n   * @param {boolean} [options.showClose] - Show close button\n   * @param {boolean} [options.waitForMedia=true] - Wait for images/videos to load\n   * @param {number} [options.mediaTimeout=500] - Media load timeout in ms\n   * "
                   }
                 }
               ],
@@ -1044,6 +1129,38 @@
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_size",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_align",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_corners",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\""
+            },
+            {
+              "kind": "field",
+              "name": "_inset",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
             }
           ],
           "events": [
@@ -1055,7 +1172,7 @@
           "attributes": [
             {
               "name": "open",
-              "description": "Controls whether the drawer is open or closed",
+              "description": "Whether the drawer is open",
               "type": {
                 "text": "boolean"
               },
@@ -1063,7 +1180,7 @@
             },
             {
               "name": "position",
-              "description": "Position of the drawer relative to the viewport",
+              "description": "Viewport edge the drawer slides in from (default: bottom)",
               "type": {
                 "text": "\"bottom\" | \"top\" | \"left\" | \"right\""
               },
@@ -1072,7 +1189,7 @@
             },
             {
               "name": "drag",
-              "description": "Controls drag interaction behavior",
+              "description": "Drag-to-dismiss affordance (default: header)",
               "type": {
                 "text": "\"header\" | \"none\""
               },
@@ -1081,7 +1198,7 @@
             },
             {
               "name": "max-height",
-              "description": "Maximum height for top/bottom positioned drawers (CSS value)",
+              "description": "Maximum panel height (CSS value)",
               "type": {
                 "text": "string"
               },
@@ -1090,7 +1207,7 @@
             },
             {
               "name": "min-height",
-              "description": "Minimum height for top/bottom positioned drawers (CSS value)",
+              "description": "Minimum panel height (CSS value)",
               "type": {
                 "text": "string"
               },
@@ -1099,12 +1216,45 @@
             },
             {
               "name": "show-close",
-              "description": "Whether to show the close button in the header",
+              "description": "Show the close button in the header",
               "type": {
                 "text": "boolean"
               },
               "default": "false",
               "fieldName": "showClose"
+            },
+            {
+              "name": "size",
+              "description": "Width preset. Unset resolves to lg for top/bottom and sm for left/right",
+              "type": {
+                "text": "\"xs\" | \"sm\" | \"md\" | \"lg\" | \"xl\" | \"2xl\" | \"3xl\" | \"4xl\" | \"full\""
+              },
+              "fieldName": "size"
+            },
+            {
+              "name": "align",
+              "description": "Placement along the attachment edge. Unset resolves to center for top/bottom and stretch for left/right",
+              "type": {
+                "text": "\"start\" | \"center\" | \"end\" | \"stretch\""
+              },
+              "fieldName": "align"
+            },
+            {
+              "name": "corners",
+              "description": "Which corners round off (default: auto, which flattens the attachment edge only)",
+              "type": {
+                "text": "\"auto\" | \"flush\" | \"rounded\" | \"square\""
+              },
+              "fieldName": "corners"
+            },
+            {
+              "name": "inset",
+              "description": "Float the drawer away from the viewport edges by --drawer-inset. Implies rounded corners",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "inset"
             }
           ],
           "superclass": {
@@ -1228,7 +1378,7 @@
             {
               "kind": "field",
               "name": "startAngle",
-              "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\r\nIf not specified, the angle is auto-detected based on the FAB's corner position:\r\n- Bottom-right: 180-� (fly left/up)\r\n- Bottom-left: 315-� (fly right/up)\r\n- Top-right: 225-� (fly left/down)\r\n- Top-left: 45-� (fly right/down)",
+              "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\nIf not specified, the angle is auto-detected based on the FAB's corner position:\n- Bottom-right: 180-� (fly left/up)\n- Bottom-left: 315-� (fly right/up)\n- Top-right: 225-� (fly left/down)\n- Top-left: 45-� (fly right/down)",
               "type": {
                 "text": "number"
               },
@@ -1238,7 +1388,7 @@
             {
               "kind": "field",
               "name": "behavior",
-              "description": "Interaction mode for satellite menu.\r\n- click: toggles satellites when main FAB is clicked\r\n- hover: opens on hover/focus and closes when pointer leaves safe area",
+              "description": "Interaction mode for satellite menu.\n- click: toggles satellites when main FAB is clicked\n- hover: opens on hover/focus and closes when pointer leaves safe area",
               "type": {
                 "text": "'click'|'hover'"
               },
@@ -1248,7 +1398,7 @@
             {
               "kind": "field",
               "name": "mode",
-              "description": "Layout mode for host positioning.\r\n- fixed: FAB is anchored to viewport bottom-right\r\n- inline: FAB participates in normal document flow",
+              "description": "Layout mode for host positioning.\n- fixed: FAB is anchored to viewport bottom-right\n- inline: FAB participates in normal document flow",
               "type": {
                 "text": "'fixed'|'inline'"
               },
@@ -1258,7 +1408,7 @@
             {
               "kind": "field",
               "name": "fabClass",
-              "description": "Space-separated class list forwarded to the internal button.\r\nUse this instead of host classes for btn-* and icon-only.",
+              "description": "Space-separated class list forwarded to the internal button.\nUse this instead of host classes for btn-* and icon-only.",
               "type": {
                 "text": "string"
               },
@@ -1311,7 +1461,7 @@
             },
             {
               "name": "start-angle",
-              "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\r\nIf not specified, the angle is auto-detected based on the FAB's corner position:\r\n- Bottom-right: 180-� (fly left/up)\r\n- Bottom-left: 315-� (fly right/up)\r\n- Top-right: 225-� (fly left/down)\r\n- Top-left: 45-� (fly right/down)",
+              "description": "Starting angle in degrees (0=right, 90=down, 180=left, 270=up)\nIf not specified, the angle is auto-detected based on the FAB's corner position:\n- Bottom-right: 180-� (fly left/up)\n- Bottom-left: 315-� (fly right/up)\n- Top-right: 225-� (fly left/down)\n- Top-left: 45-� (fly right/down)",
               "type": {
                 "text": "number"
               },
@@ -1338,7 +1488,7 @@
             },
             {
               "name": "fab-class",
-              "description": "Space-separated class list forwarded to the internal button.\r\nUse this instead of host classes for btn-* and icon-only.",
+              "description": "Space-separated class list forwarded to the internal button.\nUse this instead of host classes for btn-* and icon-only.",
               "type": {
                 "text": "string"
               },
@@ -1893,6 +2043,13 @@
                 "text": "number"
               },
               "description": "Rotation angle in degrees"
+            },
+            {
+              "name": "flip",
+              "type": {
+                "text": "string"
+              },
+              "description": "Flip the icon: \"horizontal\" or (starting with) \"h\", \"vertical\" or (starting with) \"v\", \"both\" or (starting with) \"b\""
             },
             {
               "name": "morph",
@@ -2896,7 +3053,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Locale switcher component.\r\n\r\nThe component only persists canonical 5-letter locale tags (`xx-YY`),\r\nfor example `en-US` and `nl-NL`.",
+          "description": "Locale switcher component.\n\nThe component only persists canonical 5-letter locale tags (`xx-YY`),\nfor example `en-US` and `nl-NL`.",
           "name": "PdsLocale",
           "members": [
             {
@@ -3626,7 +3783,7 @@
             {
               "kind": "field",
               "name": "innerHTML",
-              "default": "`\r\n      <style>\r\n        :host {\r\n          --rating-star-size: var(--spacing-lg);\r\n          --rating-star-gap: var(--spacing-2xs);\r\n          --rating-star-off: var(--color-text-muted);\r\n          --rating-star-on: var(--color-warning-500);\r\n          --rating-focus: var(--color-primary-500);\r\n          --rating-fill-pct: 0%;\r\n          display: inline-block;\r\n          inline-size: fit-content;\r\n          max-inline-size: 100%;\r\n          touch-action: none;\r\n        }\r\n\r\n        .wrap {\r\n          position: relative;\r\n          display: inline-grid;\r\n          gap: var(--spacing-2xs);\r\n          align-items: center;\r\n          justify-items: start;\r\n          min-block-size: calc(var(--rating-star-size) + var(--spacing-xs));\r\n        }\r\n\r\n        .interactive {\r\n          display: inline-grid;\r\n          place-items: center start;\r\n          inline-size: 100%;\r\n          cursor: pointer;\r\n          user-select: none;\r\n          -webkit-tap-highlight-color: transparent;\r\n          touch-action: pan-x;\r\n        }\r\n\r\n        :host([disabled]) .interactive,\r\n        :host([readonly]) .interactive {\r\n          cursor: default;\r\n        }\r\n\r\n        :host([disabled]) {\r\n          opacity: 0.5;\r\n        }\r\n\r\n        .stars {\r\n          display: block;\r\n          inline-size: auto;\r\n          block-size: var(--rating-star-size);\r\n          overflow: visible;\r\n          transition: transform 220ms ease, opacity 220ms ease;\r\n        }\r\n\r\n        :host([data-in-view=\"false\"]) .stars {\r\n          opacity: 0;\r\n          transform: translateY(var(--spacing-xs)) scale(0.98);\r\n        }\r\n\r\n        :host([data-in-view=\"true\"]) .stars {\r\n          opacity: 1;\r\n          transform: translateY(0) scale(1);\r\n        }\r\n\r\n        input[type=\"range\"] {\r\n          position: absolute !important;\r\n          inset-inline-start: 0 !important;\r\n          inset-block-start: 0 !important;\r\n          inline-size: 1px !important;\r\n          block-size: 1px !important;\r\n          min-inline-size: 1px !important;\r\n          min-block-size: 1px !important;\r\n          margin: -1px !important;\r\n          border: 0 !important;\r\n          padding: 0 !important;\r\n          opacity: 0 !important;\r\n          overflow: hidden !important;\r\n          clip: rect(0 0 0 0) !important;\r\n          clip-path: inset(50%) !important;\r\n          white-space: nowrap !important;\r\n          appearance: none !important;\r\n          -webkit-appearance: none !important;\r\n          pointer-events: none !important;\r\n        }\r\n\r\n        :host(:focus-within) .interactive {\r\n          outline: 2px solid var(--rating-focus);\r\n          outline-offset: var(--spacing-3xs);\r\n          border-radius: var(--radius-sm);\r\n        }\r\n\r\n        @media (prefers-reduced-motion: reduce) {\r\n          .stars {\r\n            transition: none;\r\n          }\r\n        }\r\n      </style>\r\n\r\n      <div class=\"wrap\" part=\"control\">\r\n        <div class=\"interactive\" part=\"interactive\" aria-hidden=\"true\">\r\n          <svg class=\"stars\" part=\"stars\" focusable=\"false\" aria-hidden=\"true\"></svg>\r\n        </div>\r\n        <input class=\"native-input\" type=\"range\" />\r\n      </div>\r\n    `"
+              "default": "`\n      <style>\n        :host {\n          --rating-star-size: var(--spacing-lg);\n          --rating-star-gap: var(--spacing-2xs);\n          --rating-star-off: var(--color-text-muted);\n          --rating-star-on: var(--color-warning-500);\n          --rating-focus: var(--color-primary-500);\n          --rating-fill-pct: 0%;\n          display: inline-block;\n          inline-size: fit-content;\n          max-inline-size: 100%;\n          touch-action: none;\n        }\n\n        .wrap {\n          position: relative;\n          display: inline-grid;\n          gap: var(--spacing-2xs);\n          align-items: center;\n          justify-items: start;\n          min-block-size: calc(var(--rating-star-size) + var(--spacing-xs));\n        }\n\n        .interactive {\n          display: inline-grid;\n          place-items: center start;\n          inline-size: 100%;\n          cursor: pointer;\n          user-select: none;\n          -webkit-tap-highlight-color: transparent;\n          touch-action: pan-x;\n        }\n\n        :host([disabled]) .interactive,\n        :host([readonly]) .interactive {\n          cursor: default;\n        }\n\n        :host([disabled]) {\n          opacity: 0.5;\n        }\n\n        .stars {\n          display: block;\n          inline-size: auto;\n          block-size: var(--rating-star-size);\n          overflow: visible;\n          transition: transform 220ms ease, opacity 220ms ease;\n        }\n\n        :host([data-in-view=\"false\"]) .stars {\n          opacity: 0;\n          transform: translateY(var(--spacing-xs)) scale(0.98);\n        }\n\n        :host([data-in-view=\"true\"]) .stars {\n          opacity: 1;\n          transform: translateY(0) scale(1);\n        }\n\n        input[type=\"range\"] {\n          position: absolute !important;\n          inset-inline-start: 0 !important;\n          inset-block-start: 0 !important;\n          inline-size: 1px !important;\n          block-size: 1px !important;\n          min-inline-size: 1px !important;\n          min-block-size: 1px !important;\n          margin: -1px !important;\n          border: 0 !important;\n          padding: 0 !important;\n          opacity: 0 !important;\n          overflow: hidden !important;\n          clip: rect(0 0 0 0) !important;\n          clip-path: inset(50%) !important;\n          white-space: nowrap !important;\n          appearance: none !important;\n          -webkit-appearance: none !important;\n          pointer-events: none !important;\n        }\n\n        :host(:focus-within) .interactive {\n          outline: 2px solid var(--rating-focus);\n          outline-offset: var(--spacing-3xs);\n          border-radius: var(--radius-sm);\n        }\n\n        @media (prefers-reduced-motion: reduce) {\n          .stars {\n            transition: none;\n          }\n        }\n      </style>\n\n      <div class=\"wrap\" part=\"control\">\n        <div class=\"interactive\" part=\"interactive\" aria-hidden=\"true\">\n          <svg class=\"stars\" part=\"stars\" focusable=\"false\" aria-hidden=\"true\"></svg>\n        </div>\n        <input class=\"native-input\" type=\"range\" />\n      </div>\n    `"
             }
           ],
           "events": [
@@ -3757,7 +3914,7 @@
                   }
                 }
               ],
-              "description": "Batch update iframe content using the public component contract.\r\nPrefer this method when applying multiple fields at once."
+              "description": "Batch update iframe content using the public component contract.\nPrefer this method when applying multiple fields at once."
             },
             {
               "kind": "field",
@@ -4223,11 +4380,7 @@
             },
             {
               "kind": "field",
-              "name": "_value",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\""
+              "name": "_value"
             },
             {
               "kind": "field",
@@ -4824,7 +4977,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Form-associated multi-select tags control built on top of `pds-omnibox`.\r\n\r\nUsers select suggestions from the omnibox and each selection is rendered as a removable\r\nchip. The component keeps selection state synchronized across:\r\n- the `value` attribute (comma-separated ids)\r\n- the `value` property (`string[]`)\r\n- form value via ElementInternals\r\n\r\nThe `options` object uses the same structure as `pds-omnibox.settings`.\r\nSee `pds-omnibox` JSDoc for the full options schema.\r\nBefore applying it, the component deep-merges internal defaults:\r\n- `hideCategory: true`\r\n- `itemGrid: \"0 1fr 0\"`\r\n- `iconHandler: () => \"\"`\r\n\r\nWhen `required` is set, at least one selected value is required for validity.",
+          "description": "Form-associated multi-select tags control built on top of `pds-omnibox`.\n\nUsers select suggestions from the omnibox and each selection is rendered as a removable\nchip. The component keeps selection state synchronized across:\n- the `value` attribute (comma-separated ids)\n- the `value` property (`string[]`)\n- form value via ElementInternals\n\nThe `options` object uses the same structure as `pds-omnibox.settings`.\nSee `pds-omnibox` JSDoc for the full options schema.\nBefore applying it, the component deep-merges internal defaults:\n- `hideCategory: true`\n- `itemGrid: \"0 1fr 0\"`\n- `iconHandler: () => \"\"`\n\nWhen `required` is set, at least one selected value is required for validity.",
           "name": "PdsTags",
           "members": [
             {
@@ -5523,7 +5676,7 @@
             {
               "kind": "field",
               "name": "multiselect",
-              "description": "Selection mode.\r\n\r\n- `off`: single select\r\n- `checkboxes`: persistent multiselect with checkboxes\r\n- `auto`: touch/coarse pointer gets checkbox mode",
+              "description": "Selection mode.\n\n- `off`: single select\n- `checkboxes`: persistent multiselect with checkboxes\n- `auto`: touch/coarse pointer gets checkbox mode",
               "type": {
                 "text": "\"off\"|\"checkboxes\"|\"auto\""
               },
@@ -5651,7 +5804,7 @@
                   }
                 }
               ],
-              "description": "Selects multiple nodes by value.\r\n\r\nIn single-select mode, only the first resolved value is selected.",
+              "description": "Selects multiple nodes by value.\n\nIn single-select mode, only the first resolved value is selected.",
               "return": {
                 "type": {
                   "text": "boolean"

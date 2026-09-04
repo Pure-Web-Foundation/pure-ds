@@ -203,7 +203,7 @@ export const ontology = {
       name: "Drawer", 
       description: "Slide-out panel overlay",
       selectors: ["pds-drawer"],
-      tags: ["panel", "overlay", "sidebar"],
+      tags: ["panel", "overlay", "sidebar", "corner", "alignment", "width"],
       category: "overlay"
     },
     { 
